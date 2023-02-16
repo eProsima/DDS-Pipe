@@ -70,7 +70,8 @@ std::set<types::ParticipantId> ParticipantsDatabase::get_rtps_participants_ids()
     return result;
 }
 
-const std::map<types::ParticipantId, std::shared_ptr<IParticipant>>& ParticipantsDatabase::get_participants_map() const noexcept
+const std::map<types::ParticipantId,
+        std::shared_ptr<IParticipant>>& ParticipantsDatabase::get_participants_map() const noexcept
 {
     std::shared_lock<std::shared_timed_mutex> lock(mutex_);
     return participants_;

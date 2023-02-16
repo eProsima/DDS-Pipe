@@ -56,7 +56,8 @@ public:
     // Protected ctor to make class abstract (only built by their childs).
 
     //! Remove internal RTPS Participant
-    DDSPIPE_PARTICIPANTS_DllAPI virtual ~CommonParticipant();
+    DDSPIPE_PARTICIPANTS_DllAPI
+    virtual ~CommonParticipant();
 
     /**
      * @brief Create the internal RTPS Participant using the attributes given.
@@ -70,27 +71,32 @@ public:
      * @warning this method is not thread safe.
      * @pre this method can only be called once.
      */
-    DDSPIPE_PARTICIPANTS_DllAPI void init();
+    DDSPIPE_PARTICIPANTS_DllAPI
+    void init();
 
     /////////////////////////
     // I PARTICIPANT METHODS
     /////////////////////////
 
     //! Implement parent method \c is_repeater .
-    DDSPIPE_PARTICIPANTS_DllAPI bool is_repeater() const noexcept override;
+    DDSPIPE_PARTICIPANTS_DllAPI
+    bool is_repeater() const noexcept override;
 
     //! Implement parent method \c id .
-    DDSPIPE_PARTICIPANTS_DllAPI core::types::ParticipantId id() const noexcept override;
+    DDSPIPE_PARTICIPANTS_DllAPI
+    core::types::ParticipantId id() const noexcept override;
 
     //! Implement parent method \c is_rtps_kind .
-    DDSPIPE_PARTICIPANTS_DllAPI virtual bool is_rtps_kind() const noexcept override;
+    DDSPIPE_PARTICIPANTS_DllAPI
+    virtual bool is_rtps_kind() const noexcept override;
 
     /**
      * @brief Create a writer object
      *
      * Depending on the Topic QoS creates a Basic or Specific Writer.
      */
-    DDSPIPE_PARTICIPANTS_DllAPI std::shared_ptr<core::IWriter> create_writer(
+    DDSPIPE_PARTICIPANTS_DllAPI
+    std::shared_ptr<core::IWriter> create_writer(
             const core::ITopic& topic) override;
 
     /**
@@ -98,7 +104,8 @@ public:
      *
      * Depending on the Topic QoS creates a Basic or Specific Reader.
      */
-    DDSPIPE_PARTICIPANTS_DllAPI std::shared_ptr<core::IReader> create_reader(
+    DDSPIPE_PARTICIPANTS_DllAPI
+    std::shared_ptr<core::IReader> create_reader(
             const core::ITopic& topic) override;
 
     /////////////////////////
@@ -110,7 +117,8 @@ public:
      *
      * This method only is for debugging purposes.
      */
-    DDSPIPE_PARTICIPANTS_DllAPI virtual void onParticipantDiscovery(
+    DDSPIPE_PARTICIPANTS_DllAPI
+    virtual void onParticipantDiscovery(
             fastrtps::rtps::RTPSParticipant* participant,
             fastrtps::rtps::ParticipantDiscoveryInfo&& info) override;
 
@@ -119,7 +127,8 @@ public:
      *
      * This method adds to database the endpoint discovered or modified.
      */
-    DDSPIPE_PARTICIPANTS_DllAPI virtual void onReaderDiscovery(
+    DDSPIPE_PARTICIPANTS_DllAPI
+    virtual void onReaderDiscovery(
             fastrtps::rtps::RTPSParticipant* participant,
             fastrtps::rtps::ReaderDiscoveryInfo&& info) override;
 
@@ -128,7 +137,8 @@ public:
      *
      * This method adds to database the endpoint discovered or modified.
      */
-    DDSPIPE_PARTICIPANTS_DllAPI virtual void onWriterDiscovery(
+    DDSPIPE_PARTICIPANTS_DllAPI
+    virtual void onWriterDiscovery(
             fastrtps::rtps::RTPSParticipant* participant,
             fastrtps::rtps::WriterDiscoveryInfo&& info) override;
 

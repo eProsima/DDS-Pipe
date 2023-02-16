@@ -30,7 +30,7 @@ namespace rtps {
  *
  * This uses the RouterCacheChange extra information.
  */
-DDSPIPE_PARTICIPANTS_DllAPI class RepeaterDataFilter : public SelfDataFilter
+class RepeaterDataFilter : public SelfDataFilter
 {
 public:
 
@@ -40,6 +40,7 @@ public:
      * @return true if the reader does not belong to Participant that previously sent this message.
      * @return false otherwise.
      */
+    DDSPIPE_PARTICIPANTS_DllAPI
     bool is_relevant(
             const fastrtps::rtps::CacheChange_t& change,
             const fastrtps::rtps::GUID_t& reader_guid

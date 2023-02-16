@@ -26,7 +26,8 @@ struct EchoParticipantConfiguration : public ParticipantConfiguration
     /////////////////////////
     // CONSTRUCTORS
     /////////////////////////
-    DDSPIPE_PARTICIPANTS_DllAPI EchoParticipantConfiguration() = default;
+    DDSPIPE_PARTICIPANTS_DllAPI
+    EchoParticipantConfiguration() = default;
 
     /////////////////////////
     // VARIABLES

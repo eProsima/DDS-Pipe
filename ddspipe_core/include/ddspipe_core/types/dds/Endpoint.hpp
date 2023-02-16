@@ -47,26 +47,32 @@ struct Endpoint
 {
 
     //! Default Endpoint that returns an invalid one
-    DDSPIPE_CORE_DllAPI Endpoint() = default;
+    DDSPIPE_CORE_DllAPI
+    Endpoint() = default;
 
     /********************
     * SPECIFIC GETTERS *
     ********************/
 
     //! Qos of the topic
-    DDSPIPE_CORE_DllAPI TopicQoS topic_qos() const noexcept;
+    DDSPIPE_CORE_DllAPI
+    TopicQoS topic_qos() const noexcept;
 
     //! Whether the endpoint is a writer
-    DDSPIPE_CORE_DllAPI bool is_writer() const noexcept;
+    DDSPIPE_CORE_DllAPI
+    bool is_writer() const noexcept;
 
     //! Whether the endpoint is a reader
-    DDSPIPE_CORE_DllAPI bool is_reader() const noexcept;
+    DDSPIPE_CORE_DllAPI
+    bool is_reader() const noexcept;
 
     //! Whether the endpoint belongs to a RPC server (i.e. is request reader or reply writer)
-    DDSPIPE_CORE_DllAPI bool is_server_endpoint() const noexcept;
+    DDSPIPE_CORE_DllAPI
+    bool is_server_endpoint() const noexcept;
 
     //! Equality operator (does not take \c active and \c discoverer_participant_id into consideration)
-    DDSPIPE_CORE_DllAPI bool operator ==(
+    DDSPIPE_CORE_DllAPI
+    bool operator ==(
             const Endpoint& other) const noexcept;
 
     //! Kind of the endpoint
@@ -91,7 +97,8 @@ struct Endpoint
 /**
  * @brief \c Endpoint to stream serialization
  */
-DDSPIPE_CORE_DllAPI std::ostream& operator <<(
+DDSPIPE_CORE_DllAPI
+std::ostream& operator <<(
         std::ostream& os,
         const Endpoint& endpoint);
 

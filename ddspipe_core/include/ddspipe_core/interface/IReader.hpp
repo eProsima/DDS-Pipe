@@ -40,13 +40,14 @@ namespace core {
  *
  * Readers will start being disabled.
  */
-DDSPIPE_CORE_DllAPI class IReader
+class IReader
 {
 public:
 
     /**
      * @brief Virtual dtor to allow inheritance.
      */
+    DDSPIPE_CORE_DllAPI
     virtual ~IReader() = default;
 
     /**
@@ -56,6 +57,7 @@ public:
      *
      * By default the Reader is disabled. Call this method to activate it.
      */
+    DDSPIPE_CORE_DllAPI
     virtual void enable() noexcept = 0;
 
     /**
@@ -67,6 +69,7 @@ public:
      * @warning: This method should stop calling the callback \c on_data_available_lambda if more data arrives while
      * disabled.
      */
+    DDSPIPE_CORE_DllAPI
     virtual void disable() noexcept = 0;
 
     /**
@@ -77,6 +80,7 @@ public:
      *
      * @param [in] on_data_available_lambda : \c Track callback
      */
+    DDSPIPE_CORE_DllAPI
     virtual void set_on_data_available_callback(
             std::function<void()> on_data_available_lambda) noexcept = 0;
 
@@ -85,6 +89,7 @@ public:
      *
      * After this method, the Reader should not notify any message that arrives.
      */
+    DDSPIPE_CORE_DllAPI
     virtual void unset_on_data_available_callback() noexcept = 0;
 
     /**
@@ -101,6 +106,7 @@ public:
      * @return \c RETCODE_ERROR if there has been any error while taking a sample
      * @return \c RETCODE_NOT_ENABLED if the reader is not enabled (this should not happen)
      */
+    DDSPIPE_CORE_DllAPI
     virtual utils::ReturnCode take(
             std::unique_ptr<IRoutingData>& data) noexcept = 0;
 
@@ -110,16 +116,21 @@ public:
     // TODO remove these methods once the double reference is solved
 
     //! Get GUID of internal RTPS reader
+    DDSPIPE_CORE_DllAPI
     virtual core::types::Guid guid() const = 0;
 
     //! Get internal RTPS reader mutex
+    DDSPIPE_CORE_DllAPI
     virtual fastrtps::RecursiveTimedMutex& get_rtps_mutex() const = 0;
 
     //! Get number of unread cache changes in internal RTPS reader
+    DDSPIPE_CORE_DllAPI
     virtual uint64_t get_unread_count() const = 0;
 
+    DDSPIPE_CORE_DllAPI
     virtual types::DdsTopic topic() const = 0;
 
+    DDSPIPE_CORE_DllAPI
     virtual types::ParticipantId participant_id() const = 0;
     /////////////////////////
 };

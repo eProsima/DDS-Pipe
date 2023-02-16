@@ -51,7 +51,8 @@ using OwnershipQosPolicyKind = eprosima::fastdds::dds::OwnershipQosPolicyKind;
  *
  * @todo add keys to Topic QoS
  */
-struct DDSPIPE_CORE_DllAPI TopicQoS
+struct DDSPIPE_CORE_DllAPI
+        TopicQoS
 {
     /////////////////////////
     // CONSTRUCTORS
@@ -127,28 +128,32 @@ struct DDSPIPE_CORE_DllAPI TopicQoS
 /**
  * @brief \c DurabilityKind to stream serialization
  */
-DDSPIPE_CORE_DllAPI std::ostream& operator <<(
+DDSPIPE_CORE_DllAPI
+std::ostream& operator <<(
         std::ostream& os,
         const DurabilityKind& kind);
 
 /**
  * @brief \c ReliabilityKind to stream serialization
  */
-DDSPIPE_CORE_DllAPI std::ostream& operator <<(
+DDSPIPE_CORE_DllAPI
+std::ostream& operator <<(
         std::ostream& os,
         const ReliabilityKind& kind);
 
 /**
  * @brief \c OwnershipQosPolicyKind to stream serialization
  */
-DDSPIPE_CORE_DllAPI std::ostream& operator <<(
+DDSPIPE_CORE_DllAPI
+std::ostream& operator <<(
         std::ostream& os,
         const OwnershipQosPolicyKind& qos);
 
 /**
  * @brief \c TopicQoS to stream serialization
  */
-DDSPIPE_CORE_DllAPI std::ostream& operator <<(
+DDSPIPE_CORE_DllAPI
+std::ostream& operator <<(
         std::ostream& os,
         const TopicQoS& qos);
 

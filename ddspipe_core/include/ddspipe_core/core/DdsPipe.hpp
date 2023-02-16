@@ -57,7 +57,8 @@ public:
      *
      * @todo change SlotThreadPool for a IThreadPool when exist.
      */
-    DDSPIPE_CORE_DllAPI DdsPipe(
+    DDSPIPE_CORE_DllAPI
+    DdsPipe(
             const std::shared_ptr<AllowedTopicList>& allowed_topics,
             const std::shared_ptr<DiscoveryDatabase>& discovery_database,
             const std::shared_ptr<PayloadPool>& payload_pool,
@@ -72,7 +73,8 @@ public:
      * Destroy all Bridges
      * Destroy all Participants
      */
-    DDSPIPE_CORE_DllAPI ~DdsPipe();
+    DDSPIPE_CORE_DllAPI
+    ~DdsPipe();
 
     /////////////////////////
     // INTERACTION METHODS
@@ -89,7 +91,8 @@ public:
      *
      * @throw \c ConfigurationException in case the new yaml is not well-formed
      */
-    DDSPIPE_CORE_DllAPI utils::ReturnCode reload_allowed_topics(
+    DDSPIPE_CORE_DllAPI
+    utils::ReturnCode reload_allowed_topics(
             const std::shared_ptr<AllowedTopicList>& allowed_topics);
 
     /////////////////////////
@@ -105,7 +108,8 @@ public:
      *
      * @return \c RETCODE_OK always
      */
-    DDSPIPE_CORE_DllAPI utils::ReturnCode start() noexcept;
+    DDSPIPE_CORE_DllAPI
+    utils::ReturnCode start() noexcept;
 
     /**
      * @brief Stop communication in DDS Router
@@ -116,7 +120,8 @@ public:
      *
      * @return \c RETCODE_OK always
      */
-    DDSPIPE_CORE_DllAPI utils::ReturnCode stop() noexcept;
+    DDSPIPE_CORE_DllAPI
+    utils::ReturnCode stop() noexcept;
 
 protected:
 
@@ -150,7 +155,8 @@ protected:
     /**
      * @brief  Create a disabled bridge for every real topic
      */
-    void init_bridges_(const std::set<utils::Heritable<types::DistributedTopic>>& builtin_topics);
+    void init_bridges_(
+            const std::set<utils::Heritable<types::DistributedTopic>>& builtin_topics);
 
     /////
     // INTERNAL AUXILIAR METHODS

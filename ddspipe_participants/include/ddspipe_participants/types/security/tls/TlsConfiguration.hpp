@@ -49,12 +49,14 @@ struct TlsConfiguration : public core::IConfiguration
     /**
      * @brief Constructs an undefined or inactive (valid nonetheless) TLSConfiguration
      */
-    DDSPIPE_PARTICIPANTS_DllAPI TlsConfiguration() = default;
+    DDSPIPE_PARTICIPANTS_DllAPI
+    TlsConfiguration() = default;
 
     /**
      * @brief Returns whether configuration is active
      */
-    DDSPIPE_PARTICIPANTS_DllAPI bool is_active() const noexcept;
+    DDSPIPE_PARTICIPANTS_DllAPI
+    bool is_active() const noexcept;
 
     /**
      * @brief Check configuration kind compatibility
@@ -73,24 +75,29 @@ struct TlsConfiguration : public core::IConfiguration
     }
 
     template <TlsKind Kind>
-    DDSPIPE_PARTICIPANTS_DllAPI bool is_valid_kind(
+    DDSPIPE_PARTICIPANTS_DllAPI
+    bool is_valid_kind(
             utils::Formatter& error_msg) const noexcept;
 
     //! Activate TLS configuration in a TCP transport descriptor
-    DDSPIPE_PARTICIPANTS_DllAPI void enable_tls(
+    DDSPIPE_PARTICIPANTS_DllAPI
+    void enable_tls(
             std::shared_ptr<eprosima::fastdds::rtps::TCPTransportDescriptor> descriptor,
             bool client = false) const;
 
     //! Activate TLS client configuration in a TCP transport descriptor
-    DDSPIPE_PARTICIPANTS_DllAPI void enable_tls_client(
+    DDSPIPE_PARTICIPANTS_DllAPI
+    void enable_tls_client(
             std::shared_ptr<eprosima::fastdds::rtps::TCPTransportDescriptor> descriptor,
             bool only_client) const;
 
     //! Activate TLS server configuration in a TCP transport descriptor
-    DDSPIPE_PARTICIPANTS_DllAPI void enable_tls_server(
+    DDSPIPE_PARTICIPANTS_DllAPI
+    void enable_tls_server(
             std::shared_ptr<eprosima::fastdds::rtps::TCPTransportDescriptor> descriptor) const;
 
-    DDSPIPE_PARTICIPANTS_DllAPI virtual bool is_valid(
+    DDSPIPE_PARTICIPANTS_DllAPI
+    virtual bool is_valid(
             utils::Formatter& error_msg) const noexcept override;
 
     ////////

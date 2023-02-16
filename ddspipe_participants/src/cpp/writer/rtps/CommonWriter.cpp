@@ -32,7 +32,7 @@ namespace participants {
 namespace rtps {
 
 using namespace eprosima::ddspipe::core::types;
-using eprosima::ddspipe::core::types::operator<<;
+using eprosima::ddspipe::core::types::operator <<;
 
 CommonWriter::CommonWriter(
         const ParticipantId& participant_id,
@@ -187,7 +187,8 @@ utils::ReturnCode CommonWriter::fill_to_send_data_(
     if (repeater_)
     {
         // Add origin to change in case the cache change is RouterCacheChange (only in repeater mode)
-        core::types::RouterCacheChange& change_ref = static_cast<core::types::RouterCacheChange&>(*to_send_change_to_fill);
+        core::types::RouterCacheChange& change_ref =
+                static_cast<core::types::RouterCacheChange&>(*to_send_change_to_fill);
         change_ref.last_writer_guid_prefix = data.source_guid.guidPrefix;
     }
 
@@ -202,9 +203,9 @@ utils::ReturnCode CommonWriter::fill_to_send_data_(
     {
         eprosima::fastrtps::rtps::IPayloadPool* payload_owner = payload_pool_.get();
         if (!payload_pool_->get_payload(
-                const_cast<core::types::Payload&>(data.payload),
-                payload_owner,
-                (*to_send_change_to_fill)))
+                    const_cast<core::types::Payload&>(data.payload),
+                    payload_owner,
+                    (*to_send_change_to_fill)))
         {
             logDevError(DDSROUTER_RTPS_COMMONWRITER, "Error getting Payload.");
             return utils::ReturnCode::RETCODE_ERROR;

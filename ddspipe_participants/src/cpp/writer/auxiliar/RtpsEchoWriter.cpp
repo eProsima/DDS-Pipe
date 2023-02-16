@@ -22,7 +22,7 @@ namespace eprosima {
 namespace ddspipe {
 namespace participants {
 
-using eprosima::ddspipe::core::types::operator<<;
+using eprosima::ddspipe::core::types::operator <<;
 
 RtpsEchoWriter::RtpsEchoWriter(
         const core::types::DdsTopic& topic,

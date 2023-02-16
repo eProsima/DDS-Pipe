@@ -22,8 +22,7 @@ using namespace eprosima::ddspipe::core;
 using namespace eprosima::ddspipe::core::types;
 using namespace eprosima::ddspipe::core::testing;
 
-namespace test
-{
+namespace test {
 
 constexpr const unsigned int TEST_ITERATIONS = 100;
 

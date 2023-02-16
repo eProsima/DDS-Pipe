@@ -28,7 +28,8 @@ namespace types {
 /**
  * Generic data struct that represent a filter for a DDS Topic.
  */
-struct DDSPIPE_CORE_DllAPI IFilterTopic
+struct DDSPIPE_CORE_DllAPI
+        IFilterTopic
 {
 
     virtual ~IFilterTopic() = default;
@@ -91,7 +92,8 @@ struct DDSPIPE_CORE_DllAPI IFilterTopic
 /**
  * Serialization method for \c IFilterTopic object.
  */
-DDSPIPE_CORE_DllAPI std::ostream& operator <<(
+DDSPIPE_CORE_DllAPI
+std::ostream& operator <<(
         std::ostream& os,
         const IFilterTopic& t);
 

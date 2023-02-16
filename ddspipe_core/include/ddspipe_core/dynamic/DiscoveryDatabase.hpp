@@ -35,7 +35,7 @@ namespace ddspipe {
 namespace core {
 
 //! Operations to perform on a DiscoveryDatabase
-DDSPIPE_CORE_DllAPI enum class DatabaseOperation
+enum class DatabaseOperation
 {
     add,
     update,
@@ -55,14 +55,16 @@ public:
      * Create a thread in charge of processing DB transactions stored in a queue.
      * Call \c start() function to enable the DiscoveryDatabase.
      */
-    DDSPIPE_CORE_DllAPI DiscoveryDatabase() noexcept;
+    DDSPIPE_CORE_DllAPI
+    DiscoveryDatabase() noexcept;
 
     /**
      * @brief Destroy the DiscoveryDatabase object
      *
      * Signal and wait for the queue processing thread to stop.
      */
-    DDSPIPE_CORE_DllAPI ~DiscoveryDatabase();
+    DDSPIPE_CORE_DllAPI
+    ~DiscoveryDatabase();
 
     /**
      * @brief Initialize the queue processing thread routine
@@ -74,14 +76,16 @@ public:
      * The builtin topics may have special topic configurations not detected in discovery
      * that would mean that the topic does not have the correct configuration.
      */
-    DDSPIPE_CORE_DllAPI void start() noexcept;
+    DDSPIPE_CORE_DllAPI
+    void start() noexcept;
 
     /**
      * @brief Stop the queue processing thread routine
      *
      * Join the thread in charge of processing the dynamic discovery of endpoints.
      */
-    DDSPIPE_CORE_DllAPI void stop() noexcept;
+    DDSPIPE_CORE_DllAPI
+    void stop() noexcept;
 
     /**
      * @brief Whether a topic exists in any Endpoint in the database
@@ -89,11 +93,13 @@ public:
      * @param [in] topic: topic to check if it exists
      * @return true if any endpoint has this topic, false otherwise
      */
-    DDSPIPE_CORE_DllAPI bool topic_exists(
+    DDSPIPE_CORE_DllAPI
+    bool topic_exists(
             const types::DdsTopic& topic) const noexcept;
 
     //! Whether this guid is in the database
-    DDSPIPE_CORE_DllAPI bool endpoint_exists(
+    DDSPIPE_CORE_DllAPI
+    bool endpoint_exists(
             const types::Guid& guid) const noexcept;
 
     /**
@@ -104,7 +110,8 @@ public:
      *
      * @param [in] new_endpoint: new endpoint to store
      */
-    DDSPIPE_CORE_DllAPI void add_endpoint(
+    DDSPIPE_CORE_DllAPI
+    void add_endpoint(
             const types::Endpoint& new_endpoint);
 
     /**
@@ -115,7 +122,8 @@ public:
      *
      * @param [in] endpoint_to_update: endpoint to update
      */
-    DDSPIPE_CORE_DllAPI void update_endpoint(
+    DDSPIPE_CORE_DllAPI
+    void update_endpoint(
             const types::Endpoint& endpoint_to_update);
 
     /**
@@ -126,7 +134,8 @@ public:
      *
      * @param [in] endpoint_to_erase endpoint that will be erased
      */
-    DDSPIPE_CORE_DllAPI void erase_endpoint(
+    DDSPIPE_CORE_DllAPI
+    void erase_endpoint(
             const types::Endpoint& endpoint_to_erase);
 
     /**
@@ -136,7 +145,8 @@ public:
      * @return Endpoint referring to this guid
      * @throw \c InconsistencyException in case there is no entry associated to this guid
      */
-    DDSPIPE_CORE_DllAPI types::Endpoint get_endpoint(
+    DDSPIPE_CORE_DllAPI
+    types::Endpoint get_endpoint(
             const types::Guid& endpoint_guid) const;
 
     /**
@@ -144,7 +154,8 @@ public:
      *
      * @param [in] endpoint_discovered_callback: callback to add
      */
-    DDSPIPE_CORE_DllAPI void add_endpoint_discovered_callback(
+    DDSPIPE_CORE_DllAPI
+    void add_endpoint_discovered_callback(
             std::function<void(types::Endpoint)> endpoint_discovered_callback) noexcept;
 
     /**
@@ -152,7 +163,8 @@ public:
      *
      * @param [in] endpoint_updated_callback: callback to add
      */
-    DDSPIPE_CORE_DllAPI void add_endpoint_updated_callback(
+    DDSPIPE_CORE_DllAPI
+    void add_endpoint_updated_callback(
             std::function<void(types::Endpoint)> endpoint_updated_callback) noexcept;
 
     /**
@@ -160,14 +172,16 @@ public:
      *
      * @param [in] endpoint_erased_callback: callback to add
      */
-    DDSPIPE_CORE_DllAPI void add_endpoint_erased_callback(
+    DDSPIPE_CORE_DllAPI
+    void add_endpoint_erased_callback(
             std::function<void(types::Endpoint)> endpoint_erased_callback) noexcept;
 
     /**
      * @brief Remove all callbacks from all types (endpoint discovered, updated and erased)
      *
      */
-    DDSPIPE_CORE_DllAPI void clear_all_callbacks() noexcept;
+    DDSPIPE_CORE_DllAPI
+    void clear_all_callbacks() noexcept;
 
 protected:
 
@@ -178,7 +192,8 @@ protected:
      * @return true if the endpoint has been added
      * @throw \c InconsistencyException in case an endpoint with the same guid already exists and is active
      */
-    DDSPIPE_CORE_DllAPI bool add_endpoint_(
+    DDSPIPE_CORE_DllAPI
+    bool add_endpoint_(
             const types::Endpoint& new_endpoint);
 
     /**
@@ -188,7 +203,8 @@ protected:
      * @return true if the endpoint has been updated
      * @throw \c InconsistencyException in case there is no entry associated to this endpoint
      */
-    DDSPIPE_CORE_DllAPI bool update_endpoint_(
+    DDSPIPE_CORE_DllAPI
+    bool update_endpoint_(
             const types::Endpoint& endpoint_to_update);
 
     /**
@@ -198,22 +214,26 @@ protected:
      * @return \c RETCODE_OK if correctly erased
      * @throw \c InconsistencyException in case there is no entry associated to this endpoint
      */
-    DDSPIPE_CORE_DllAPI utils::ReturnCode erase_endpoint_(
+    DDSPIPE_CORE_DllAPI
+    utils::ReturnCode erase_endpoint_(
             const types::Endpoint& endpoint_to_erase);
 
     //! Routine performed by dedicated thread performing database operations
-    DDSPIPE_CORE_DllAPI void queue_processing_thread_routine_() noexcept;
+    DDSPIPE_CORE_DllAPI
+    void queue_processing_thread_routine_() noexcept;
 
     /**
      * @brief Add new operation to the queue \c entities_to_process_
      *
      * @param [in] item: operation to add
      */
-    DDSPIPE_CORE_DllAPI void push_item_to_queue_(
+    DDSPIPE_CORE_DllAPI
+    void push_item_to_queue_(
             std::tuple<DatabaseOperation, types::Endpoint> item) noexcept;
 
     //! Process queue storing database operations
-    DDSPIPE_CORE_DllAPI void process_queue_() noexcept;
+    DDSPIPE_CORE_DllAPI
+    void process_queue_() noexcept;
 
     //! Database of endpoints indexed by guid
     std::map<types::Guid, types::Endpoint> entities_;

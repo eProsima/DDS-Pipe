@@ -29,31 +29,37 @@ namespace core {
 /**
  * Generic data struct that represents an ITopic of data flow in the Router.
  */
-DDSPIPE_CORE_DllAPI class ITopic
+class ITopic
 {
 public:
 
     /**
      * @brief Virtual dtor to allow inheritance.
      */
+    DDSPIPE_CORE_DllAPI
     virtual ~ITopic() = default;
 
+    DDSPIPE_CORE_DllAPI
     virtual bool operator < (
             const ITopic& other) const noexcept = 0;
 
+    DDSPIPE_CORE_DllAPI
     virtual bool operator == (
             const ITopic& other) const noexcept = 0;
 
     //! ITopic name
+    DDSPIPE_CORE_DllAPI
     virtual std::string topic_name() const noexcept = 0;
 
     //! ITopic unique name in processs
+    DDSPIPE_CORE_DllAPI
     virtual std::string topic_unique_name() const noexcept = 0;
 
     /**
      * This refers to an internal used identifier that declares which kind of data type is going to be
      * transmitted in this Itopic inside the core.
      */
+    DDSPIPE_CORE_DllAPI
     virtual types::TopicInternalTypeDiscriminator internal_type_discriminator() const noexcept = 0;
 };
 

@@ -39,18 +39,21 @@ struct WildcardDdsFilterTopic : public IFilterTopic
     /////////////////////////
 
     //! Default ctor that does match with every topic.
-    DDSPIPE_CORE_DllAPI WildcardDdsFilterTopic() = default;
+    DDSPIPE_CORE_DllAPI
+    WildcardDdsFilterTopic() = default;
 
     /////////////////////////
     // FILTER METHODS
     /////////////////////////
 
     //! Implement \c contains parent method.
-    DDSPIPE_CORE_DllAPI virtual bool contains(
+    DDSPIPE_CORE_DllAPI
+    virtual bool contains(
             const IFilterTopic& other) const override;
 
     //! Implement \c matches parent method.
-    DDSPIPE_CORE_DllAPI virtual bool matches(
+    DDSPIPE_CORE_DllAPI
+    virtual bool matches(
             const ITopic& topic) const override;
 
     /////////////////////////
@@ -58,7 +61,8 @@ struct WildcardDdsFilterTopic : public IFilterTopic
     /////////////////////////
 
     //! Override parent \c serialize method.
-    DDSPIPE_CORE_DllAPI virtual std::ostream& serialize(
+    DDSPIPE_CORE_DllAPI
+    virtual std::ostream& serialize(
             std::ostream& os) const override;
 
     /////////////////////////
@@ -78,14 +82,16 @@ protected:
     /////////////////////////
 
     //! Specialization for type of topic. Only specialized for DdsTopic.
-    DDSPIPE_CORE_DllAPI bool matches_(
+    DDSPIPE_CORE_DllAPI
+    bool matches_(
             const DdsTopic& real_topic) const;
 };
 
 /**
  * Serialization method for \c WildcardDdsFilterTopic object.
  */
-DDSPIPE_CORE_DllAPI std::ostream& operator <<(
+DDSPIPE_CORE_DllAPI
+std::ostream& operator <<(
         std::ostream& os,
         const WildcardDdsFilterTopic& t);
 

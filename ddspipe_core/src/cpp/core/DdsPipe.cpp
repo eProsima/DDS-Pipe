@@ -242,7 +242,8 @@ utils::ReturnCode DdsPipe::stop_() noexcept
     }
 }
 
-void DdsPipe::init_bridges_(const std::set<utils::Heritable<types::DistributedTopic>>& builtin_topics)
+void DdsPipe::init_bridges_(
+        const std::set<utils::Heritable<types::DistributedTopic>>& builtin_topics)
 {
     for (const auto& topic : builtin_topics)
     {
@@ -341,7 +342,8 @@ void DdsPipe::discovered_endpoint_(
         else if (endpoint.is_server_endpoint())
         {
             // Service server discovered
-            discovered_service_(types::RpcTopic(endpoint.topic), endpoint.discoverer_participant_id, endpoint.guid.guid_prefix());
+            discovered_service_(types::RpcTopic(
+                        endpoint.topic), endpoint.discoverer_participant_id, endpoint.guid.guid_prefix());
         }
     }
 }

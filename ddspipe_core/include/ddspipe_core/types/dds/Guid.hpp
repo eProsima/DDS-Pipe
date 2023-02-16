@@ -25,7 +25,7 @@ namespace core {
 namespace types {
 
 //! Unique Id of every Endpoint
-class DDSPIPE_CORE_DllAPI Guid : public fastrtps::rtps::GUID_t
+class Guid : public fastrtps::rtps::GUID_t
 {
 public:
 
@@ -33,17 +33,21 @@ public:
     using fastrtps::rtps::GUID_t::GUID_t;
 
     //! Default constructor
+    DDSPIPE_CORE_DllAPI
     Guid() = default;
 
     //! Copy constructor
+    DDSPIPE_CORE_DllAPI
     Guid(
             const fastrtps::rtps::GUID_t& x);
 
     //! Move constructor
+    DDSPIPE_CORE_DllAPI
     Guid(
             fastrtps::rtps::GUID_t&& x);
 
     //! Equal operator (inherited from GUID_t)
+    DDSPIPE_CORE_DllAPI
     Guid& operator = (
             const fastrtps::rtps::GUID_t& other) noexcept;
 
@@ -52,9 +56,11 @@ public:
      *
      * To be valid, the GuidPrefix and the EntityId must not be invalid / unknown
      */
+    DDSPIPE_CORE_DllAPI
     bool is_valid() const noexcept;
 
     //! Return GuidPrefix from this Guid
+    DDSPIPE_CORE_DllAPI
     GuidPrefix guid_prefix() const noexcept;
 };
 

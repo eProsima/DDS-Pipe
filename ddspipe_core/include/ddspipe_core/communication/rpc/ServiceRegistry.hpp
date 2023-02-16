@@ -54,38 +54,48 @@ public:
      *
      * @note Always created disabled. It is first enabled when a server is discovered.
      */
+    DDSPIPE_CORE_DllAPI
     ServiceRegistry(
             const types::RpcTopic& topic,
             const types::ParticipantId& participant_id);
 
     //! Enable registry
+    DDSPIPE_CORE_DllAPI
     void enable() noexcept;
 
     //! Disable registry
+    DDSPIPE_CORE_DllAPI
     void disable() noexcept;
 
     //! Whether the registry is enabled
+    DDSPIPE_CORE_DllAPI
     bool enabled() const noexcept;
 
+    DDSPIPE_CORE_DllAPI
     SampleIdentity related_sample_identity_nts() const noexcept;
 
     //! Add entry to the registry (if key not existing)
+    DDSPIPE_CORE_DllAPI
     void add(
             SequenceNumber idx,
             std::pair<types::ParticipantId, SampleIdentity> new_entry) noexcept;
 
     //! Fetch entry from the registry. Returns dummy item if not present.
+    DDSPIPE_CORE_DllAPI
     std::pair<types::ParticipantId, SampleIdentity> get(
             SequenceNumber idx) const noexcept;
 
     //! Remove entry from the registry (if present)
+    DDSPIPE_CORE_DllAPI
     void erase(
             SequenceNumber idx) noexcept;
 
     //! RpcTopic getter
+    DDSPIPE_CORE_DllAPI
     types::RpcTopic topic() const noexcept;
 
     //! Get \c mutex_
+    DDSPIPE_CORE_DllAPI
     std::recursive_mutex& get_mutex() noexcept;
 
 protected:

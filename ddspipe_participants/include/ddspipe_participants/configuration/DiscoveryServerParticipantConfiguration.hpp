@@ -37,13 +37,15 @@ struct DiscoveryServerParticipantConfiguration : public SimpleParticipantConfigu
     // CONSTRUCTORS
     /////////////////////////
 
-    DDSPIPE_PARTICIPANTS_DllAPI DiscoveryServerParticipantConfiguration() = default;
+    DDSPIPE_PARTICIPANTS_DllAPI
+    DiscoveryServerParticipantConfiguration() = default;
 
     /////////////////////////
     // METHODS
     /////////////////////////
 
-    DDSPIPE_PARTICIPANTS_DllAPI virtual bool is_valid(
+    DDSPIPE_PARTICIPANTS_DllAPI
+    virtual bool is_valid(
             utils::Formatter& error_msg) const noexcept override;
 
     /////////////////////////

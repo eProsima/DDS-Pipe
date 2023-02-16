@@ -29,7 +29,7 @@ namespace participants {
 namespace rtps {
 
 using namespace eprosima::ddspipe::core::types;
-using eprosima::ddspipe::core::types::operator<<;
+using eprosima::ddspipe::core::types::operator <<;
 
 CommonReader::CommonReader(
         const ParticipantId& participant_id,
@@ -189,7 +189,7 @@ utils::ReturnCode CommonReader::take_nts_(
 }
 
 RtpsPayloadData* CommonReader::create_data_(
-            const fastrtps::rtps::CacheChange_t& received_change) const noexcept
+        const fastrtps::rtps::CacheChange_t& received_change) const noexcept
 {
     return new RtpsPayloadData();
 }
@@ -210,7 +210,8 @@ void CommonReader::fill_received_data_(
     // NOTE: in case of keyed topics an empty payload is possible
     if (received_change.serializedPayload.length > 0)
     {
-        eprosima::fastrtps::rtps::IPayloadPool* payload_owner = const_cast<eprosima::fastrtps::rtps::IPayloadPool*>(received_change.payload_owner());
+        eprosima::fastrtps::rtps::IPayloadPool* payload_owner =
+                const_cast<eprosima::fastrtps::rtps::IPayloadPool*>(received_change.payload_owner());
         payload_pool_->get_payload(
             received_change.serializedPayload,
             payload_owner,

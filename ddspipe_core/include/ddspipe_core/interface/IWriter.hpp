@@ -32,13 +32,14 @@ namespace core {
  *
  * Writers will start being disabled.
  */
-DDSPIPE_CORE_DllAPI class IWriter
+class IWriter
 {
 public:
 
     /**
      * @brief Virtual dtor to allow inheritance.
      */
+    DDSPIPE_CORE_DllAPI
     virtual ~IWriter() = default;
 
     /**
@@ -48,6 +49,7 @@ public:
      *
      * By default the Writer is disabled. Call this method to activate it.
      */
+    DDSPIPE_CORE_DllAPI
     virtual void enable() noexcept = 0;
 
     /**
@@ -56,6 +58,7 @@ public:
      * A Writer disabled does not send data.
      * @note Method \c write should never be called from a disabled writer
      */
+    DDSPIPE_CORE_DllAPI
     virtual void disable() noexcept = 0;
 
     /**
@@ -76,6 +79,7 @@ public:
      * @return \c RETCODE_ERROR if there has been any error while writing the sample
      * @return \c RETCODE_NOT_ENABLED if the writer is not enabled (this should not happen)
      */
+    DDSPIPE_CORE_DllAPI
     virtual utils::ReturnCode write(
             IRoutingData& data) noexcept = 0;
 };

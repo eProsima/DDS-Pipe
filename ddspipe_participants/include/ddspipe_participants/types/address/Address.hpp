@@ -68,7 +68,8 @@ public:
      * @param ip_version ip version (4 or 6)
      * @param transport_protocol transport protocol (UDP or TCP)
      */
-    DDSPIPE_PARTICIPANTS_DllAPI Address(
+    DDSPIPE_PARTICIPANTS_DllAPI
+    Address(
             const IpType& ip,
             const PortType& port,
             const PortType& external_port,
@@ -84,7 +85,8 @@ public:
      * @param domain address domain name to call DNS
      * @param transport_protocol transport protocol (UDP or TCP)
      */
-    DDSPIPE_PARTICIPANTS_DllAPI Address(
+    DDSPIPE_PARTICIPANTS_DllAPI
+    Address(
             const PortType& port,
             const PortType& external_port,
             const IpVersion& ip_version,
@@ -98,7 +100,8 @@ public:
      * If the IP is a string with format IPv6, version will be set to IpVersion::v6.
      * If the IP has an incorrect format, version will be set to IpVersion::v4 and address will be invalid.
      */
-    DDSPIPE_PARTICIPANTS_DllAPI Address(
+    DDSPIPE_PARTICIPANTS_DllAPI
+    Address(
             const IpType& ip,
             const PortType& port,
             const PortType& external_port,
@@ -112,38 +115,50 @@ public:
      * @param domain address domain name to call DNS
      * @param transport_protocol transport protocol (UDP or TCP)
      */
-    DDSPIPE_PARTICIPANTS_DllAPI Address(
+    DDSPIPE_PARTICIPANTS_DllAPI
+    Address(
             const PortType& port,
             const PortType& external_port,
             const DomainType& domain,
             const TransportProtocol& transport_protocol) noexcept;
 
     //! Construct a default IP by default values (set in this class)
-    DDSPIPE_PARTICIPANTS_DllAPI Address();
+    DDSPIPE_PARTICIPANTS_DllAPI
+    Address();
 
     //! Address internal Port getter
-    DDSPIPE_PARTICIPANTS_DllAPI PortType port() const noexcept;
+    DDSPIPE_PARTICIPANTS_DllAPI
+    PortType port() const noexcept;
     //! Address external Port getter
-    DDSPIPE_PARTICIPANTS_DllAPI PortType external_port() const noexcept;
+    DDSPIPE_PARTICIPANTS_DllAPI
+    PortType external_port() const noexcept;
     //! Address IP getter
-    DDSPIPE_PARTICIPANTS_DllAPI IpType ip() const noexcept;
+    DDSPIPE_PARTICIPANTS_DllAPI
+    IpType ip() const noexcept;
     //! Address IP version getter
-    DDSPIPE_PARTICIPANTS_DllAPI IpVersion ip_version() const noexcept;
+    DDSPIPE_PARTICIPANTS_DllAPI
+    IpVersion ip_version() const noexcept;
     //! Address transport protocol version getter
-    DDSPIPE_PARTICIPANTS_DllAPI TransportProtocol transport_protocol() const noexcept;
+    DDSPIPE_PARTICIPANTS_DllAPI
+    TransportProtocol transport_protocol() const noexcept;
 
     //! Whether transport is UDP
-    DDSPIPE_PARTICIPANTS_DllAPI bool is_udp() const noexcept;
+    DDSPIPE_PARTICIPANTS_DllAPI
+    bool is_udp() const noexcept;
     //! Whether transport is TCP
-    DDSPIPE_PARTICIPANTS_DllAPI bool is_tcp() const noexcept;
+    DDSPIPE_PARTICIPANTS_DllAPI
+    bool is_tcp() const noexcept;
 
     //! Whether ip version is IpVersion::v4
-    DDSPIPE_PARTICIPANTS_DllAPI bool is_ipv4() const noexcept;
+    DDSPIPE_PARTICIPANTS_DllAPI
+    bool is_ipv4() const noexcept;
     //! Whether ip version is IpVersion::v6
-    DDSPIPE_PARTICIPANTS_DllAPI bool is_ipv6() const noexcept;
+    DDSPIPE_PARTICIPANTS_DllAPI
+    bool is_ipv6() const noexcept;
 
     //! Get FastDDS Locator kind
-    DDSPIPE_PARTICIPANTS_DllAPI LocatorType get_locator_kind() const noexcept;
+    DDSPIPE_PARTICIPANTS_DllAPI
+    LocatorType get_locator_kind() const noexcept;
 
     /**
      * @brief Whether the address is correct
@@ -151,33 +166,42 @@ public:
      * Checks if IP is in correct format regarding the IP version.
      * Checks if Port is correct.
      */
-    DDSPIPE_PARTICIPANTS_DllAPI virtual bool is_valid() const noexcept;
+    DDSPIPE_PARTICIPANTS_DllAPI
+    virtual bool is_valid() const noexcept;
 
     //! Minor operator
-    DDSPIPE_PARTICIPANTS_DllAPI bool operator <(
+    DDSPIPE_PARTICIPANTS_DllAPI
+    bool operator <(
             const Address& other) const noexcept;
 
     //! Equal operator
-    DDSPIPE_PARTICIPANTS_DllAPI bool operator ==(
+    DDSPIPE_PARTICIPANTS_DllAPI
+    bool operator ==(
             const Address& other) const noexcept;
 
     //! Whether string \c ip has correct IpVersion::v4 format.
-    DDSPIPE_PARTICIPANTS_DllAPI static bool is_ipv4_correct(
+    DDSPIPE_PARTICIPANTS_DllAPI
+    static bool is_ipv4_correct(
             const IpType& ip) noexcept;
 
     //! Whether string \c ip has correct IpVersion::v6 format.
-    DDSPIPE_PARTICIPANTS_DllAPI static bool is_ipv6_correct(
+    DDSPIPE_PARTICIPANTS_DllAPI
+    static bool is_ipv6_correct(
             const IpType& ip) noexcept;
 
     //! Default port for address when is not set: 11600
-    DDSPIPE_PARTICIPANTS_DllAPI static PortType default_port() noexcept;
+    DDSPIPE_PARTICIPANTS_DllAPI
+    static PortType default_port() noexcept;
     //! Default ip for address when is not set: 127.0.0.1
-    DDSPIPE_PARTICIPANTS_DllAPI static IpType default_ip(
+    DDSPIPE_PARTICIPANTS_DllAPI
+    static IpType default_ip(
             IpVersion ip_version = default_ip_version()) noexcept;
     //! Default ip version for address when is not set: IpVersion::v4
-    DDSPIPE_PARTICIPANTS_DllAPI static IpVersion default_ip_version() noexcept;
+    DDSPIPE_PARTICIPANTS_DllAPI
+    static IpVersion default_ip_version() noexcept;
     //! Default transport protocol for address when is not set: UDP
-    DDSPIPE_PARTICIPANTS_DllAPI static TransportProtocol default_transport_protocol() noexcept;
+    DDSPIPE_PARTICIPANTS_DllAPI
+    static TransportProtocol default_transport_protocol() noexcept;
 
     /**
      * @brief Return the IP corresponding to the \c domain name given with IP version specified in \c ip_version
@@ -191,7 +215,8 @@ public:
      *
      * @throw DNSException in case an IP for this domain could not be retrieved
      */
-    DDSPIPE_PARTICIPANTS_DllAPI static IpType resolve_dns(
+    DDSPIPE_PARTICIPANTS_DllAPI
+    static IpType resolve_dns(
             DomainType domain,
             IpVersion ip_version);
 
@@ -208,7 +233,8 @@ public:
      *
      * @throw DNSException in case an IP for this domain could not be retrieved
      */
-    DDSPIPE_PARTICIPANTS_DllAPI static std::pair<IpType, IpVersion> resolve_dns(
+    DDSPIPE_PARTICIPANTS_DllAPI
+    static std::pair<IpType, IpVersion> resolve_dns(
             DomainType domain);
 
 protected:
@@ -242,13 +268,15 @@ protected:
     static const TransportProtocol DEFAULT_TRANSPORT_PROTOCOL_;  // UDP
 
     // Allow operator << to use domain info
-    DDSPIPE_PARTICIPANTS_DllAPI friend std::ostream& operator <<(
+    DDSPIPE_PARTICIPANTS_DllAPI
+    friend std::ostream& operator <<(
             std::ostream& output,
             const Address& address);
 };
 
 //! \c Address to stream serializator
-DDSPIPE_PARTICIPANTS_DllAPI std::ostream& operator <<(
+DDSPIPE_PARTICIPANTS_DllAPI
+std::ostream& operator <<(
         std::ostream& output,
         const Address& address);
 

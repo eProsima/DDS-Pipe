@@ -47,6 +47,7 @@ public:
      * @param reader:   Reader that will receive the remote data
      * @param writers:  Map of Writers that will send the data received by \c source indexed by Participant id
      */
+    DDSPIPE_CORE_DllAPI
     Track(
             const utils::Heritable<types::DistributedTopic>& topic,
             const types::ParticipantId& reader_participant_id,
@@ -62,6 +63,7 @@ public:
      * It should stop and wait for the transmission thread.
      * It must not destroy any entity as it does not create them.
      */
+    DDSPIPE_CORE_DllAPI
     virtual ~Track();
 
     /**
@@ -69,6 +71,7 @@ public:
      *
      * Track creates in constructor all the inside Endpoints needed, and thus it should not be copied
      */
+    DDSPIPE_CORE_DllAPI
     void operator =(
             const Track&) = delete;
 
@@ -78,6 +81,7 @@ public:
      *
      * Thread safe
      */
+    DDSPIPE_CORE_DllAPI
     void enable() noexcept;
 
     /**
@@ -89,6 +93,7 @@ public:
      *
      * Thread safe
      */
+    DDSPIPE_CORE_DllAPI
     void disable() noexcept;
 
 protected:

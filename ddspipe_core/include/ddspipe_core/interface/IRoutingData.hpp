@@ -25,7 +25,8 @@ namespace core {
 /**
  * @brief TODO
  */
-DDSPIPE_CORE_DllAPI class IRoutingData
+
+class IRoutingData
 {
 
 public:
@@ -33,12 +34,14 @@ public:
     /**
      * @brief Virtual dtor to allow inheritance.
      */
+    DDSPIPE_CORE_DllAPI
     virtual ~IRoutingData() = default;
 
     /**
      * This refers to an internal used identifier that declares which kind of data type is going to be
      * transmitted in this Itopic inside the core.
      */
+    DDSPIPE_CORE_DllAPI
     virtual types::TopicInternalTypeDiscriminator internal_type_discriminator() const noexcept = 0;
 };
 

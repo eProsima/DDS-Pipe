@@ -27,24 +27,29 @@ namespace participants {
  * It does not receive anything.
  * It does not have messages to take.
  */
-DDSPIPE_PARTICIPANTS_DllAPI class BlankReader : public core::IReader
+class BlankReader : public core::IReader
 {
 public:
 
     //! Override enable() IReader method
+    DDSPIPE_PARTICIPANTS_DllAPI
     void enable() noexcept override;
 
     //! Override disable() IReader method
+    DDSPIPE_PARTICIPANTS_DllAPI
     void disable() noexcept override;
 
     //! Override set_on_data_available_callback() IReader method
+    DDSPIPE_PARTICIPANTS_DllAPI
     void set_on_data_available_callback(
             std::function<void()> on_data_available_lambda) noexcept override;
 
     //! Override unset_on_data_available_callback() IReader method
+    DDSPIPE_PARTICIPANTS_DllAPI
     void unset_on_data_available_callback() noexcept override;
 
     //! Override take() IReader method
+    DDSPIPE_PARTICIPANTS_DllAPI
     utils::ReturnCode take(
             std::unique_ptr<core::IRoutingData>& data) noexcept override;
 
@@ -54,16 +59,21 @@ public:
     // TODO remove these methods once the double reference is solved
 
     //! Get GUID of internal RTPS reader
+    DDSPIPE_PARTICIPANTS_DllAPI
     core::types::Guid guid() const override;
 
     //! Get internal RTPS reader mutex
+    DDSPIPE_PARTICIPANTS_DllAPI
     fastrtps::RecursiveTimedMutex& get_rtps_mutex() const override;
 
     //! Get number of unread cache changes in internal RTPS reader
+    DDSPIPE_PARTICIPANTS_DllAPI
     uint64_t get_unread_count() const override;
 
+    DDSPIPE_PARTICIPANTS_DllAPI
     core::types::DdsTopic topic() const override;
 
+    DDSPIPE_PARTICIPANTS_DllAPI
     core::types::ParticipantId participant_id() const override;
     /////////////////////////
 };

@@ -34,7 +34,8 @@ class InitialPeersParticipant
 {
 public:
 
-    DDSPIPE_PARTICIPANTS_DllAPI InitialPeersParticipant(
+    DDSPIPE_PARTICIPANTS_DllAPI
+    InitialPeersParticipant(
             const std::shared_ptr<InitialPeersParticipantConfiguration>& participant_configuration,
             const std::shared_ptr<core::PayloadPool>& payload_pool,
             const std::shared_ptr<core::DiscoveryDatabase>& discovery_database);

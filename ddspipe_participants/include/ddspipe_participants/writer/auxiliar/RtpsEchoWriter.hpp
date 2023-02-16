@@ -34,7 +34,8 @@ class RtpsEchoWriter : public BlankWriter
 public:
 
     //! Using parent class constructors
-    DDSPIPE_PARTICIPANTS_DllAPI RtpsEchoWriter(
+    DDSPIPE_PARTICIPANTS_DllAPI
+    RtpsEchoWriter(
             const core::types::DdsTopic& topic,
             bool verbose);
 

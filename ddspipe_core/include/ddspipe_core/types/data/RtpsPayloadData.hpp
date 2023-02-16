@@ -40,18 +40,23 @@ namespace types {
 struct RtpsPayloadData : public core::IRoutingData
 {
 
-    DDSPIPE_CORE_DllAPI RtpsPayloadData() = default;
+    DDSPIPE_CORE_DllAPI
+    RtpsPayloadData() = default;
 
     /**
      * @brief Destroy the Rtps Payload Data object
      *
      * Free the memory for the payload in the corresponding payload pool (if defined).
      */
-    DDSPIPE_CORE_DllAPI virtual ~RtpsPayloadData();
+    DDSPIPE_CORE_DllAPI
+    virtual ~RtpsPayloadData();
 
-    DDSPIPE_CORE_DllAPI RtpsPayloadData(const RtpsPayloadData& ) = delete;
+    DDSPIPE_CORE_DllAPI
+    RtpsPayloadData(
+            const RtpsPayloadData& ) = delete;
 
-    DDSPIPE_CORE_DllAPI virtual types::TopicInternalTypeDiscriminator internal_type_discriminator() const noexcept override;
+    DDSPIPE_CORE_DllAPI
+    virtual types::TopicInternalTypeDiscriminator internal_type_discriminator() const noexcept override;
 
     //! Payload of the data received. The data in this payload must belong to the PayloadPool.
     core::types::Payload payload{};

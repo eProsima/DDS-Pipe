@@ -214,7 +214,7 @@ T YamlReader::get_enumeration_from_builder(
     else
     {
         throw eprosima::utils::ConfigurationException(utils::Formatter()
-            << "Value <" << str_value << "> cannot be parsed as enum <" << TYPE_NAME(T) << ">.");
+                      << "Value <" << str_value << "> cannot be parsed as enum <" << TYPE_NAME(T) << ">.");
     }
 }
 
@@ -231,8 +231,8 @@ T YamlReader::get_enumeration_from_builder(
     catch (const std::exception& e)
     {
         throw eprosima::utils::ConfigurationException(utils::Formatter()
-            << "Error reading enumeration from builder under tag <"
-            << tag << "> :\n " << e.what());
+                      << "Error reading enumeration from builder under tag <"
+                      << tag << "> :\n " << e.what());
     }
 }
 

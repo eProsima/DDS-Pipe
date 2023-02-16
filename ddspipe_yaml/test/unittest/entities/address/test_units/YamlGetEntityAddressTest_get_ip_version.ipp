@@ -49,7 +49,8 @@ TEST(YamlGetEntityAddressTest, get_ip_version)
             YamlField<std::string>(ADDRESS_IP_VERSION_V4_TAG),
             ADDRESS_IP_VERSION_TAG);
 
-        participants::types::IpVersion iv = YamlReader::get<participants::types::IpVersion>(yml, ADDRESS_IP_VERSION_TAG, LATEST);
+        participants::types::IpVersion iv = YamlReader::get<participants::types::IpVersion>(yml, ADDRESS_IP_VERSION_TAG,
+                        LATEST);
 
         ASSERT_EQ(iv, participants::types::IpVersion::v4);
     }
@@ -62,7 +63,8 @@ TEST(YamlGetEntityAddressTest, get_ip_version)
             YamlField<std::string>(ADDRESS_IP_VERSION_V6_TAG),
             ADDRESS_IP_VERSION_TAG);
 
-        participants::types::IpVersion iv = YamlReader::get<participants::types::IpVersion>(yml, ADDRESS_IP_VERSION_TAG, LATEST);
+        participants::types::IpVersion iv = YamlReader::get<participants::types::IpVersion>(yml, ADDRESS_IP_VERSION_TAG,
+                        LATEST);
 
         ASSERT_EQ(iv, participants::types::IpVersion::v6);
     }

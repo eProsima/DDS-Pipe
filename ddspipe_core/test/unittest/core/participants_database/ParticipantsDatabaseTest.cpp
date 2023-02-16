@@ -56,6 +56,7 @@ struct MockParticipant : public IParticipant
         // NOTICE: be careful with this as this has a nullptr
         return std::shared_ptr<IReader>();
     }
+
 }
 
 } /* namespace test */

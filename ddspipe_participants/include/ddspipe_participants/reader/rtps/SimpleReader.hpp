@@ -41,7 +41,8 @@ public:
      *
      * @throw \c InitializationException in case any creation has failed
      */
-    DDSPIPE_PARTICIPANTS_DllAPI SimpleReader(
+    DDSPIPE_PARTICIPANTS_DllAPI
+    SimpleReader(
             const core::types::ParticipantId& participant_id,
             const core::types::DdsTopic& topic,
             const std::shared_ptr<core::PayloadPool>& payload_pool,

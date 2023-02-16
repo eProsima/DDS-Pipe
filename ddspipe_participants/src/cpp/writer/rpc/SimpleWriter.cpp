@@ -51,9 +51,9 @@ SimpleWriter::SimpleWriter(
 }
 
 utils::ReturnCode SimpleWriter::fill_to_send_data_(
-            fastrtps::rtps::CacheChange_t* to_send_change_to_fill,
-            eprosima::fastrtps::rtps::WriteParams& to_send_params,
-            const core::types::RtpsPayloadData& data) const noexcept
+        fastrtps::rtps::CacheChange_t* to_send_change_to_fill,
+        eprosima::fastrtps::rtps::WriteParams& to_send_params,
+        const core::types::RtpsPayloadData& data) const noexcept
 {
     CommonWriter::fill_to_send_data_(
         to_send_change_to_fill,

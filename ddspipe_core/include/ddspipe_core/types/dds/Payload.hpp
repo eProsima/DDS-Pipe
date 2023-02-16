@@ -53,12 +53,14 @@ using PayloadUnit = eprosima::fastrtps::rtps::octet;
 using Payload = eprosima::fastrtps::rtps::SerializedPayload_t;
 
 //! \c octet to stream serializator
-DDSPIPE_CORE_DllAPI std::ostream& operator <<(
+DDSPIPE_CORE_DllAPI
+std::ostream& operator <<(
         std::ostream& os,
         const PayloadUnit& octet);
 
 //! \c SerializedPayload_t to stream serializator
-DDSPIPE_CORE_DllAPI std::ostream& operator <<(
+DDSPIPE_CORE_DllAPI
+std::ostream& operator <<(
         std::ostream& os,
         const Payload& payload);
 

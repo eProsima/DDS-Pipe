@@ -50,12 +50,14 @@ public:
      *
      * @throw InitializationException in case \c IWriters or \c IReaders creation fails.
      */
+    DDSPIPE_CORE_DllAPI
     DdsBridge(
             const utils::Heritable<types::DistributedTopic>& topic,
             const std::shared_ptr<ParticipantsDatabase>& participants_database,
             const std::shared_ptr<PayloadPool>& payload_pool,
             const std::shared_ptr<utils::SlotThreadPool>& thread_pool);
 
+    DDSPIPE_CORE_DllAPI
     ~DdsBridge();
 
     /**
@@ -64,6 +66,7 @@ public:
      *
      * Thread safe
      */
+    DDSPIPE_CORE_DllAPI
     void enable() noexcept override;
 
     /**
@@ -72,6 +75,7 @@ public:
      *
      * Thread safe
      */
+    DDSPIPE_CORE_DllAPI
     void disable() noexcept override;
 
 protected:
@@ -88,6 +92,7 @@ protected:
     std::mutex mutex_;
 
     // Allow operator << to use private variables
+    DDSPIPE_CORE_DllAPI
     friend std::ostream& operator <<(
             std::ostream&,
             const DdsBridge&);
@@ -99,6 +104,7 @@ protected:
  * This method is merely a to_string of a Bridge definition.
  * It serialize the topic
  */
+DDSPIPE_CORE_DllAPI
 std::ostream& operator <<(
         std::ostream& os,
         const DdsBridge& bridge);

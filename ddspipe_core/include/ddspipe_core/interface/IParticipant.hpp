@@ -33,13 +33,14 @@ namespace core {
  *
  * @note In order to implement new Participants, create a subclass of this Interface and implement every method.
  */
-DDSPIPE_CORE_DllAPI class IParticipant
+class IParticipant
 {
 public:
 
     /**
      * @brief Virtual dtor to allow inheritance.
      */
+    DDSPIPE_CORE_DllAPI
     virtual ~IParticipant() = default;
 
     /**
@@ -47,14 +48,17 @@ public:
      *
      * @return This Participant id
      */
+    DDSPIPE_CORE_DllAPI
     virtual types::ParticipantId id() const noexcept = 0;
 
     //! Whether this participant is RTPS
+    DDSPIPE_CORE_DllAPI
     virtual bool is_rtps_kind() const noexcept = 0;
 
     /**
      * @brief Whether this Participant requires to connect ist own readers with its own writers.
      */
+    DDSPIPE_CORE_DllAPI
     virtual bool is_repeater() const noexcept = 0;
 
     /**
@@ -69,6 +73,7 @@ public:
      *
      * @throw \c InitializationException in case the writer creation fails.
      */
+    DDSPIPE_CORE_DllAPI
     virtual std::shared_ptr<IWriter> create_writer(
             const ITopic& topic) = 0;
 
@@ -84,6 +89,7 @@ public:
      *
      * @throw \c InitializationException in case the reader creation fails.
      */
+    DDSPIPE_CORE_DllAPI
     virtual std::shared_ptr<IReader> create_reader(
             const ITopic& topic) = 0;
 };

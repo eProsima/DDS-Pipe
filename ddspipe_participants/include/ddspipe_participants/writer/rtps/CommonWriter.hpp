@@ -78,7 +78,8 @@ public:
      *
      * Delete the RTPS Writer and Writer History in case they are set.
      */
-    DDSPIPE_PARTICIPANTS_DllAPI virtual ~CommonWriter();
+    DDSPIPE_PARTICIPANTS_DllAPI
+    virtual ~CommonWriter();
 
     /**
      * @brief Create the internal RTPS Writer.
@@ -92,7 +93,8 @@ public:
      * @warning this method is not thread safe.
      * @pre this method can only be called once.
      */
-    DDSPIPE_PARTICIPANTS_DllAPI void init();
+    DDSPIPE_PARTICIPANTS_DllAPI
+    void init();
 
     /////////////////////////
     // RTPS LISTENER METHODS
@@ -106,7 +108,8 @@ public:
      *
      * @param [in] info information about the matched Reader
      */
-    DDSPIPE_PARTICIPANTS_DllAPI void onWriterMatched(
+    DDSPIPE_PARTICIPANTS_DllAPI
+    void onWriterMatched(
             fastrtps::rtps::RTPSWriter*,
             fastrtps::rtps::MatchingInfo& info) noexcept override;
 

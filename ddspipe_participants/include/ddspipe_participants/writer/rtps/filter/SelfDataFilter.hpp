@@ -39,7 +39,7 @@ namespace rtps {
 /**
  * This filter allows to not send messages from this Writer to the Readers in the same Participant.
  */
-DDSPIPE_PARTICIPANTS_DllAPI class SelfDataFilter : public fastdds::rtps::IReaderDataFilter
+class SelfDataFilter : public fastdds::rtps::IReaderDataFilter
 {
 public:
 
@@ -49,6 +49,7 @@ public:
      * @return true if the reader does not belong to same Participant.
      * @return false otherwise.
      */
+    DDSPIPE_PARTICIPANTS_DllAPI
     bool is_relevant(
             const fastrtps::rtps::CacheChange_t& change,
             const fastrtps::rtps::GUID_t& reader_guid

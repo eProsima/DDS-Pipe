@@ -26,17 +26,20 @@ namespace participants {
  * Writer that has an empty implementation.
  * It does not send anything.
  */
-DDSPIPE_PARTICIPANTS_DllAPI class BlankWriter : public core::IWriter
+class BlankWriter : public core::IWriter
 {
 public:
 
     //! Override enable() IWriter method
+    DDSPIPE_PARTICIPANTS_DllAPI
     void enable() noexcept override;
 
     //! Override disable() IWriter method
+    DDSPIPE_PARTICIPANTS_DllAPI
     void disable() noexcept override;
 
     //! Override write() IWriter method
+    DDSPIPE_PARTICIPANTS_DllAPI
     utils::ReturnCode write(
             core::IRoutingData& data) noexcept override;
 };

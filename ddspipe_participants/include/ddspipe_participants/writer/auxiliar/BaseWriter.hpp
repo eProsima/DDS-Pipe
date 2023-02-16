@@ -59,7 +59,8 @@ public:
      *
      * Thread safe with mutex \c mutex_ .
      */
-    DDSPIPE_PARTICIPANTS_DllAPI void enable() noexcept override;
+    DDSPIPE_PARTICIPANTS_DllAPI
+    void enable() noexcept override;
 
     /**
      * @brief Set this Writer as disabled
@@ -71,7 +72,8 @@ public:
      *
      * Thread safe with mutex \c mutex_ .
      */
-    DDSPIPE_PARTICIPANTS_DllAPI void disable() noexcept override;
+    DDSPIPE_PARTICIPANTS_DllAPI
+    void disable() noexcept override;
 
     /**
      * @brief Override write() IWriter method
@@ -81,7 +83,8 @@ public:
      *
      * Thread safe with mutex \c mutex_ .
      */
-    DDSPIPE_PARTICIPANTS_DllAPI virtual utils::ReturnCode write(
+    DDSPIPE_PARTICIPANTS_DllAPI
+    virtual utils::ReturnCode write(
             core::IRoutingData& data) noexcept override;
 
 protected:

@@ -44,22 +44,27 @@ class AllowedTopicList
 public:
 
     //! Default constructor with empty lists
-    DDSPIPE_CORE_DllAPI AllowedTopicList();
+    DDSPIPE_CORE_DllAPI
+    AllowedTopicList();
 
     //! Constructor by initialization lists
-    DDSPIPE_CORE_DllAPI AllowedTopicList(
+    DDSPIPE_CORE_DllAPI
+    AllowedTopicList(
             const std::set<utils::Heritable<types::IFilterTopic>>& allowlist,
             const std::set<utils::Heritable<types::IFilterTopic>>& blocklist) noexcept;
 
     //! Copy constructor. It copies internal lists.
-    DDSPIPE_CORE_DllAPI AllowedTopicList& operator =(
+    DDSPIPE_CORE_DllAPI
+    AllowedTopicList& operator =(
             const AllowedTopicList& other);
 
     //! Destructor
-    DDSPIPE_CORE_DllAPI virtual ~AllowedTopicList();
+    DDSPIPE_CORE_DllAPI
+    virtual ~AllowedTopicList();
 
     //! Clear all topics in lists
-    DDSPIPE_CORE_DllAPI void clear() noexcept;
+    DDSPIPE_CORE_DllAPI
+    void clear() noexcept;
 
     /**
      * Whether topic \c topic is allowed by the lists that constitute this object
@@ -73,7 +78,8 @@ public:
      *
      * @return True if the topic is allowed, false otherwise
      */
-    DDSPIPE_CORE_DllAPI bool is_topic_allowed(
+    DDSPIPE_CORE_DllAPI
+    bool is_topic_allowed(
             const ITopic& topic) const noexcept;
 
     /**
@@ -87,7 +93,8 @@ public:
      *
      * @return True if the topic is allowed, false otherwise
      */
-    DDSPIPE_CORE_DllAPI bool is_service_allowed(
+    DDSPIPE_CORE_DllAPI
+    bool is_service_allowed(
             const types::RpcTopic& topic) const noexcept;
 
     /**
@@ -102,7 +109,8 @@ public:
      *
      * @return True if they are constituted by same topics, false otherwise
      */
-    DDSPIPE_CORE_DllAPI bool operator ==(
+    DDSPIPE_CORE_DllAPI
+    bool operator ==(
             const AllowedTopicList& other) const noexcept;
 
 protected:

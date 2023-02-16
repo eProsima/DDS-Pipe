@@ -43,15 +43,18 @@ public:
      * @param discovery_server_guid_ : Guid Prefix of the remote Discovery Server
      * @param addresses_ collection of addresses
      */
-    DDSPIPE_PARTICIPANTS_DllAPI DiscoveryServerConnectionAddress(
+    DDSPIPE_PARTICIPANTS_DllAPI
+    DiscoveryServerConnectionAddress(
             core::types::GuidPrefix discovery_server_guid,
             std::set<Address> addresses);
 
     //! Discovery Server \c GuidPrefix Port getter
-    DDSPIPE_PARTICIPANTS_DllAPI core::types::GuidPrefix discovery_server_guid_prefix() const noexcept;
+    DDSPIPE_PARTICIPANTS_DllAPI
+    core::types::GuidPrefix discovery_server_guid_prefix() const noexcept;
 
     //! Addresses getter
-    DDSPIPE_PARTICIPANTS_DllAPI std::set<Address> addresses() const noexcept;
+    DDSPIPE_PARTICIPANTS_DllAPI
+    std::set<Address> addresses() const noexcept;
 
     /**
      * @brief Whether the address is correct
@@ -59,14 +62,17 @@ public:
      * Checks if GuidPrefix is correct.
      * Checks if it has at least one correct address.
      */
-    DDSPIPE_PARTICIPANTS_DllAPI virtual bool is_valid() const noexcept;
+    DDSPIPE_PARTICIPANTS_DllAPI
+    virtual bool is_valid() const noexcept;
 
     //! Minor operator
-    DDSPIPE_PARTICIPANTS_DllAPI bool operator <(
+    DDSPIPE_PARTICIPANTS_DllAPI
+    bool operator <(
             const DiscoveryServerConnectionAddress& other) const noexcept;
 
     //! Equal operator
-    DDSPIPE_PARTICIPANTS_DllAPI bool operator ==(
+    DDSPIPE_PARTICIPANTS_DllAPI
+    bool operator ==(
             const DiscoveryServerConnectionAddress& other) const noexcept;
 
 protected:
@@ -79,7 +85,8 @@ protected:
 };
 
 //! \c DiscoveryServerConnectionAddress to stream serializator
-DDSPIPE_PARTICIPANTS_DllAPI std::ostream& operator <<(
+DDSPIPE_PARTICIPANTS_DllAPI
+std::ostream& operator <<(
         std::ostream& output,
         const DiscoveryServerConnectionAddress& address);
 

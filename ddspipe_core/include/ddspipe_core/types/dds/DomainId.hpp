@@ -33,13 +33,18 @@ using DomainIdType = eprosima::fastdds::dds::DomainId_t;
 struct DomainId : public IConfiguration
 {
 
-    DDSPIPE_CORE_DllAPI DomainId () = default;
+    DDSPIPE_CORE_DllAPI
+    DomainId () = default;
 
-    DDSPIPE_CORE_DllAPI DomainId (bool discovery_server) noexcept;
+    DDSPIPE_CORE_DllAPI
+    DomainId (
+            bool discovery_server) noexcept;
 
-    DDSPIPE_CORE_DllAPI operator DomainIdType() const noexcept;
+    DDSPIPE_CORE_DllAPI
+    operator DomainIdType() const noexcept;
 
-    DDSPIPE_CORE_DllAPI virtual bool is_valid(
+    DDSPIPE_CORE_DllAPI
+    virtual bool is_valid(
             utils::Formatter& error_msg) const noexcept override;
 
     //! Value of Fast DDS Domain ID
@@ -60,7 +65,8 @@ struct DomainId : public IConfiguration
 };
 
 //! \c DomainId serializator
-DDSPIPE_CORE_DllAPI std::ostream& operator <<(
+DDSPIPE_CORE_DllAPI
+std::ostream& operator <<(
         std::ostream& output,
         const DomainId& domain);
 

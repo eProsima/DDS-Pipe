@@ -86,7 +86,9 @@ void Track::enable() noexcept
 
     if (!enabled_)
     {
-        logInfo(DDSROUTER_TRACK, "Enabling Track " << reader_participant_id_ << " for topic " << topic_->topic_name() << ".");
+        logInfo(DDSROUTER_TRACK,
+                "Enabling Track " << reader_participant_id_ << " for topic " << topic_->topic_name() <<
+                ".");
         enabled_ = true;
 
         // Enable writers before reader, to avoid starting a transmission (not protected with \c track_mutex_) which may
@@ -110,7 +112,9 @@ void Track::disable() noexcept
 
     if (enabled_)
     {
-        logInfo(DDSROUTER_TRACK, "Disabling Track " << reader_participant_id_ << " for topic " << topic_->topic_name() << ".");
+        logInfo(DDSROUTER_TRACK,
+                "Disabling Track " << reader_participant_id_ << " for topic " << topic_->topic_name() <<
+                ".");
 
         // Do disable before stop in the mutex so the Track is forced to stop in next iteration
         enabled_ = false;

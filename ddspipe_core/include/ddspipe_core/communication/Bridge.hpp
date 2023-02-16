@@ -46,6 +46,7 @@ public:
      * @note Always created disabled. Enable in children constructors if needed.
      *
      */
+    DDSPIPE_CORE_DllAPI
     Bridge(
             const std::shared_ptr<ParticipantsDatabase>& participants_database,
             const std::shared_ptr<PayloadPool>& payload_pool,
@@ -56,17 +57,20 @@ public:
      *
      * Bridge creates in constructor all the inside Tracks needed, and thus it should not be copied
      */
+    DDSPIPE_CORE_DllAPI
     void operator =(
             const Bridge&) = delete;
 
     /**
      * Enable bridge
      */
+    DDSPIPE_CORE_DllAPI
     virtual void enable() noexcept = 0;
 
     /**
      * Disable bridge
      */
+    DDSPIPE_CORE_DllAPI
     virtual void disable() noexcept = 0;
 
 protected:

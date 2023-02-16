@@ -32,7 +32,7 @@ namespace types {
 /**
  * Generic data struct that represents a Topic of data flow in the Router.
  */
-struct Topic : public ITopic , public IConfiguration
+struct Topic : public ITopic, public IConfiguration
 {
 
     /////////////////////////
@@ -40,7 +40,8 @@ struct Topic : public ITopic , public IConfiguration
     /////////////////////////
 
     //! Default constructor
-    DDSPIPE_CORE_DllAPI Topic() = default;
+    DDSPIPE_CORE_DllAPI
+    Topic() = default;
 
     /////////////////////////
     // OPERATORS
@@ -51,28 +52,36 @@ struct Topic : public ITopic , public IConfiguration
      *
      * This is specialized so if the comparison object is a std Topic it is compared as it.
      */
-    DDSPIPE_CORE_DllAPI virtual bool operator==(const ITopic& other) const noexcept override;
+    DDSPIPE_CORE_DllAPI
+    virtual bool operator ==(
+            const ITopic& other) const noexcept override;
 
-    DDSPIPE_CORE_DllAPI virtual bool operator<(const ITopic& other) const noexcept override;
+    DDSPIPE_CORE_DllAPI
+    virtual bool operator <(
+            const ITopic& other) const noexcept override;
 
     /////////////////////////
     // METHODS
     /////////////////////////
 
     //! ITopic name
-    DDSPIPE_CORE_DllAPI virtual std::string topic_name() const noexcept override;
+    DDSPIPE_CORE_DllAPI
+    virtual std::string topic_name() const noexcept override;
 
-    DDSPIPE_CORE_DllAPI virtual TopicInternalTypeDiscriminator internal_type_discriminator() const noexcept override;
+    DDSPIPE_CORE_DllAPI
+    virtual TopicInternalTypeDiscriminator internal_type_discriminator() const noexcept override;
 
-    DDSPIPE_CORE_DllAPI virtual bool is_valid(
-        utils::Formatter& error_msg) const noexcept override;
+    DDSPIPE_CORE_DllAPI
+    virtual bool is_valid(
+            utils::Formatter& error_msg) const noexcept override;
 
     /////////////////////////
     // METHODS TO OVERRIDE
     /////////////////////////
 
     //! ITopic unique name in processs
-    DDSPIPE_CORE_DllAPI virtual std::string topic_unique_name() const noexcept override;
+    DDSPIPE_CORE_DllAPI
+    virtual std::string topic_unique_name() const noexcept override;
 
     /////////////////////////
     // VARIABLES
@@ -97,7 +106,8 @@ struct Topic : public ITopic , public IConfiguration
 /**
  * Serialization method for \c Topic object.
  */
-DDSPIPE_CORE_DllAPI std::ostream& operator <<(
+DDSPIPE_CORE_DllAPI
+std::ostream& operator <<(
         std::ostream& os,
         const Topic& t);
 

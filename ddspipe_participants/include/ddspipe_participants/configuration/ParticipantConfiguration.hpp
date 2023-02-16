@@ -30,14 +30,16 @@ struct ParticipantConfiguration : public core::IConfiguration
     // CONSTRUCTORS
     /////////////////////////
 
-    DDSPIPE_PARTICIPANTS_DllAPI ParticipantConfiguration() = default;
+    DDSPIPE_PARTICIPANTS_DllAPI
+    ParticipantConfiguration() = default;
 
 
     /////////////////////////
     // METHODS
     /////////////////////////
 
-    DDSPIPE_PARTICIPANTS_DllAPI virtual bool is_valid(
+    DDSPIPE_PARTICIPANTS_DllAPI
+    virtual bool is_valid(
             utils::Formatter& error_msg) const noexcept override;
 
     //! Participant Id associated with this configuration

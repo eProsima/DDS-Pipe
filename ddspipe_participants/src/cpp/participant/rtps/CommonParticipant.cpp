@@ -317,16 +317,16 @@ std::shared_ptr<core::IWriter> CommonParticipant::create_writer(
     if (topic.internal_type_discriminator() == core::types::INTERNAL_TOPIC_TYPE_RPC)
     {
         logDebug(DDSROUTER_RTPS_PARTICIPANT,
-            "Creating RPC Writer for topic " << topic.topic_name());
+                "Creating RPC Writer for topic " << topic.topic_name());
         auto writer = std::make_shared<rpc::SimpleWriter>(
-                this->id(),
-                dds_topic,
-                this->payload_pool_,
-                rtps_participant_,
-                this->configuration_->is_repeater);
-            writer->init();
+            this->id(),
+            dds_topic,
+            this->payload_pool_,
+            rtps_participant_,
+            this->configuration_->is_repeater);
+        writer->init();
 
-            return writer;
+        return writer;
     }
     else if (topic.internal_type_discriminator() == core::types::INTERNAL_TOPIC_TYPE_RTPS)
     {
@@ -375,7 +375,7 @@ std::shared_ptr<core::IReader> CommonParticipant::create_reader(
     if (topic.internal_type_discriminator() == core::types::INTERNAL_TOPIC_TYPE_RPC)
     {
         logDebug(DDSROUTER_RTPS_PARTICIPANT,
-            "Creating RPC Reader for topic " << topic.topic_name());
+                "Creating RPC Reader for topic " << topic.topic_name());
 
         auto reader = std::make_shared<rpc::SimpleReader>(
             this->id(),

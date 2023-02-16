@@ -50,7 +50,8 @@ public:
      *
      * @throw \c InitializationException in case any creation has failed
      */
-    DDSPIPE_PARTICIPANTS_DllAPI MultiWriter(
+    DDSPIPE_PARTICIPANTS_DllAPI
+    MultiWriter(
             const core::types::ParticipantId& participant_id,
             const core::types::DdsTopic& topic,
             const std::shared_ptr<core::PayloadPool>& payload_pool,
@@ -65,7 +66,8 @@ public:
      *
      * @todo Remove every change and release it in PayloadPool
      */
-    DDSPIPE_PARTICIPANTS_DllAPI virtual ~MultiWriter();
+    DDSPIPE_PARTICIPANTS_DllAPI
+    virtual ~MultiWriter();
 
 protected:
 

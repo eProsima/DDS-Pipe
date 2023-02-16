@@ -56,6 +56,7 @@ public:
      *
      * @note Always created disabled, manual enable required. First enable creates all endpoints.
      */
+    DDSPIPE_CORE_DllAPI
     RpcBridge(
             const types::RpcTopic& topic,
             const std::shared_ptr<ParticipantsDatabase>& participants_database,
@@ -68,6 +69,7 @@ public:
      * Before deleting, it calls \c disable.
      * It deletes all the endpoints created in this bridge.
      */
+    DDSPIPE_CORE_DllAPI
     virtual ~RpcBridge();
 
     /**
@@ -76,6 +78,7 @@ public:
      *
      * Thread safe
      */
+    DDSPIPE_CORE_DllAPI
     void enable() noexcept override;
 
     /**
@@ -84,14 +87,17 @@ public:
      *
      * Thread safe
      */
+    DDSPIPE_CORE_DllAPI
     void disable() noexcept override;
 
     //! New server discovered -> add to database and enable registry in discoverer participant (in case it was disabled)
+    DDSPIPE_CORE_DllAPI
     void discovered_service(
             const types::ParticipantId& server_participant_id,
             const types::GuidPrefix& server_guid_prefix) noexcept;
 
     //! Server removed -> delete from database (if present) and disable bridge if it was the last server available
+    DDSPIPE_CORE_DllAPI
     void removed_service(
             const types::ParticipantId& server_participant_id,
             const types::GuidPrefix& server_guid_prefix) noexcept;

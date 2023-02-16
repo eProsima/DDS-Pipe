@@ -36,7 +36,8 @@ using OwnershipStrengthQosPolicy = eprosima::fastdds::dds::OwnershipStrengthQosP
  *
  * @todo Divide this in Common, Reader and Writer QoS
  */
-struct DDSPIPE_CORE_DllAPI SpecificEndpointQoS
+struct DDSPIPE_CORE_DllAPI
+        SpecificEndpointQoS
 {
     /////////////////////////
     // CONSTRUCTORS
@@ -71,21 +72,24 @@ struct DDSPIPE_CORE_DllAPI SpecificEndpointQoS
 /**
  * @brief \c PartitionQosPolicy to stream serialization
  */
-DDSPIPE_CORE_DllAPI std::ostream& operator <<(
+DDSPIPE_CORE_DllAPI
+std::ostream& operator <<(
         std::ostream& os,
         const PartitionQosPolicy& qos);
 
 /**
  * @brief \c OwnershipStrengthQosPolicy to stream serialization
  */
-DDSPIPE_CORE_DllAPI std::ostream& operator <<(
+DDSPIPE_CORE_DllAPI
+std::ostream& operator <<(
         std::ostream& os,
         const OwnershipStrengthQosPolicy& qos);
 
 /**
  * @brief \c SpecificEndpointQoS to stream serialization
  */
-DDSPIPE_CORE_DllAPI std::ostream& operator <<(
+DDSPIPE_CORE_DllAPI
+std::ostream& operator <<(
         std::ostream& os,
         const SpecificEndpointQoS& qos);
 

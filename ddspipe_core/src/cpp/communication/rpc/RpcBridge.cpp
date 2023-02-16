@@ -354,7 +354,8 @@ void RpcBridge::transmit_(
                     if (!ret)
                     {
                         logWarning(DDSROUTER_RPCBRIDGE, "Error writting request in RpcBridge for service "
-                                << rpc_topic_ << ". Error code " << ret << ". Skipping data for this writer and continue.");
+                                << rpc_topic_ << ". Error code " << ret <<
+                                ". Skipping data for this writer and continue.");
                         continue;
                     }
 

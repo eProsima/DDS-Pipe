@@ -28,13 +28,15 @@ namespace types {
 // OPERATORS
 /////////////////////////
 
-bool Topic::operator==(const ITopic& other) const noexcept
+bool Topic::operator ==(
+        const ITopic& other) const noexcept
 {
     return
         topic_unique_name() == other.topic_unique_name();
 }
 
-bool Topic::operator<(const ITopic& other) const noexcept
+bool Topic::operator <(
+        const ITopic& other) const noexcept
 {
     return topic_unique_name() < other.topic_unique_name();
 }

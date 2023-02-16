@@ -39,23 +39,27 @@ struct DdsTopic : public DistributedTopic
     /////////////////////////
 
     //! Default constructor
-    DDSPIPE_CORE_DllAPI DdsTopic();
+    DDSPIPE_CORE_DllAPI
+    DdsTopic();
 
     /////////////////////////
     // METHODS
     /////////////////////////
 
-    DDSPIPE_CORE_DllAPI virtual bool is_valid(
-        utils::Formatter& error_msg) const noexcept override;
+    DDSPIPE_CORE_DllAPI
+    virtual bool is_valid(
+            utils::Formatter& error_msg) const noexcept override;
 
-    DDSPIPE_CORE_DllAPI virtual std::string topic_unique_name() const noexcept override;
+    DDSPIPE_CORE_DllAPI
+    virtual std::string topic_unique_name() const noexcept override;
 
     /////////////////////////
     // STATIC METHODS
     /////////////////////////
 
     //! Whether a name and type can refer to a correct DDS Topic.
-    DDSPIPE_CORE_DllAPI static bool is_valid_dds_topic(
+    DDSPIPE_CORE_DllAPI
+    static bool is_valid_dds_topic(
             const std::string& topic_name,
             const std::string& type_name,
             utils::Formatter& error_msg) noexcept;
@@ -79,7 +83,8 @@ struct DdsTopic : public DistributedTopic
 /**
  * Serialization method for \c DdsTopic object.
  */
-DDSPIPE_CORE_DllAPI std::ostream& operator <<(
+DDSPIPE_CORE_DllAPI
+std::ostream& operator <<(
         std::ostream& os,
         const DdsTopic& t);
 

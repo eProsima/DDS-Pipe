@@ -32,13 +32,15 @@ public:
     /////////////////////////
     // CONSTRUCTORS
     /////////////////////////
-    DDSPIPE_PARTICIPANTS_DllAPI SimpleParticipantConfiguration() = default;
+    DDSPIPE_PARTICIPANTS_DllAPI
+    SimpleParticipantConfiguration() = default;
 
     /////////////////////////
     // METHODS
     /////////////////////////
 
-    DDSPIPE_PARTICIPANTS_DllAPI virtual bool is_valid(
+    DDSPIPE_PARTICIPANTS_DllAPI
+    virtual bool is_valid(
             utils::Formatter& error_msg) const noexcept override;
 
     /////////////////////////

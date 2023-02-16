@@ -24,8 +24,7 @@ using namespace eprosima::ddspipe::core::types;
 
 using pair_topic_type = std::pair<std::string, std::string>;
 
-namespace test
-{
+namespace test {
 
 /******************
 * FILTER METHODS *
