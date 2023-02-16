@@ -1,5 +1,5 @@
-name: Install DDS Router subpackages
-description: Install and setup DDS Router subpackages for linking and building application in Windows
+name: Install DDS Pipe subpackages
+description: Install and setup DDS Pipe subpackages for linking and building application in Windows
 inputs:
   cmake_extra_args:
     description: 'Specifies cmake arguments different from default'
@@ -22,7 +22,7 @@ runs:
       cmake -DCMAKE_PREFIX_PATH='C:\Program Files\gtest;C:\Program Files\yamlcpp;C:\Program Files;${{ github.workspace }}\..\fastdds\install' `
         -DCMAKE_CXX_FLAGS="/WX /EHsc" -DBUILD_TOOL_TESTS=ON -DBUILD_LIBRARY_TESTS=ON `
         ${{ inputs.cmake_extra_args }} `
-        -B build\${{ inputs.subpackage }} -A x64 -T host=x64 DDS-Router/${{ inputs.subpackage_dir }};
+        -B build\${{ inputs.subpackage }} -A x64 -T host=x64 DDS-Pipe/${{ inputs.subpackage_dir }};
       cmake --build build\${{ inputs.subpackage }} --config ${{ inputs.cmake_build_type }} --target install;
 
     shell: pwsh

@@ -1,6 +1,6 @@
 # Platform Support
 
-This document reflects the level of support offered by *eprosima DDS Router* on different platforms as per the following
+This document reflects the level of support offered by *eprosima DDS Pipe* on different platforms as per the following
 definitions:
 
 ## Tier 1
@@ -14,7 +14,7 @@ priority errors in Tier 1 platforms prior to new version releases.
 ## Tier 2
 
 Tier 2 platforms are subject to periodic CI testing which runs both builds and tests with publicly accessible results.
-The CI is expected to be run at least within a week of relevant changes for the current release of *DDS Router*.
+The CI is expected to be run at least within a week of relevant changes for the current release of *DDS Pipe*.
 Installation instructions should be available and up-to-date in order for a platform to be listed in this category.
 Package-level binary packages may not be provided but providing a downloadable archive of the built workspace is
 encouraged.
