@@ -127,7 +127,7 @@ void TlsConfiguration::enable_tls_server(
 }
 
 template <>
-DDSPIPE_CORE_DllAPI
+DDSPIPE_PARTICIPANTS_DllAPI
 bool TlsConfiguration::is_valid_kind<TlsKind::client>(
         utils::Formatter& error_msg) const noexcept
 {
@@ -144,7 +144,7 @@ bool TlsConfiguration::is_valid_kind<TlsKind::client>(
 }
 
 template <>
-DDSPIPE_CORE_DllAPI
+DDSPIPE_PARTICIPANTS_DllAPI
 bool TlsConfiguration::is_valid_kind<TlsKind::server>(
         utils::Formatter& error_msg) const noexcept
 {
@@ -174,7 +174,7 @@ bool TlsConfiguration::is_valid_kind<TlsKind::server>(
 }
 
 template <>
-DDSPIPE_CORE_DllAPI
+DDSPIPE_PARTICIPANTS_DllAPI
 bool TlsConfiguration::is_valid_kind<TlsKind::both>(
         utils::Formatter& error_msg) const noexcept
 {
