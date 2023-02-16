@@ -1,0 +1,102 @@
+# Main CI for DDS Pipe repository
+# This is executed:
+#  - every PullRequest (new or update)
+#  - every merge in main
+#  - every night
+#
+# These jobs that require to install fastrtps library uses the artifact generated for build_dependencies
+# so they do not have to compile the whole fastrtps project. This saves huge amount of time.
+#
+# JOBS:
+#
+#   - uncrustify
+#     - ubuntu-20.04
+#     - test uncrustify
+
+name: test
+
+on:
+  workflow_dispatch:
+  pull_request:
+  push:
+    branches:
+      - main
+  schedule:
+    - cron: '0 1 * * *'
+
+jobs:
+
+  uncrustify:
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Sync eProsima/DDS-Pipe repository
+        uses: actions/checkout@v3
+        with:
+          path: src/DDS-Pipe
+
+      - name: Fetch all branches and tags
+        run: |
+          cd src/DDS-Pipe
+          git fetch --prune --unshallow
+
+      - name: Install apt packages
+        uses: ./src/DDS-Pipe/.github/actions/install-apt-packages
+
+      - name: Install Python packages
+        uses: ./src/DDS-Pipe/.github/actions/install-python-packages
+
+      - name: Install uncrustify
+        run: |
+          git clone https://github.com/uncrustify/uncrustify.git \
+            --branch uncrustify-0.71.0 \
+            --single-branch uncrustify
+          mkdir -p uncrustify/build
+          cd uncrustify/build
+          cmake ..
+          sudo cmake --build . --target install
+          cd ../..
+          sudo rm -rf uncrustify
+
+      # (TODO) Change to main branch when PR is merged
+      - name: Clone ament_lint
+        run: |
+          git clone --branch feature/fix-language-set https://github.com/jparisu/ament_lint.git src/ament_lint
+
+      - name: Build ament_uncrustify
+        run: colcon build --packages-up-to ament_uncrustify
+
+      - name: Fetch uncrustify config file
+        run: |
+          curl \
+            -l https://raw.githubusercontent.com/eProsima/cpp-style/master/uncrustify.cfg \
+            -o uncrustify.cfg
+
+      - name: Get difference
+        run: |
+          cd src/DDS-Pipe
+          echo "MODIFIED_FILES=$(git diff --name-only origin/${GITHUB_BASE_REF} origin/${GITHUB_HEAD_REF} | grep -e '\.h' -e '\.hpp' -e '\.cpp' -e '\.ipp' | tr '\n' ' ')" >> $GITHUB_ENV
+
+      - name: Check difference
+        run: |
+          cd src/DDS-Pipe
+          if [[ -z "${MODIFIED_FILES}" ]]
+          then
+            touch empty.hpp
+            echo "MODIFIED_FILES=empty.hpp" >> $GITHUB_ENV
+          fi
+
+      - name: Check style
+        run: |
+          source install/local_setup.bash
+          cd src/DDS-Pipe
+          ament_uncrustify \
+            -c ../../uncrustify.cfg \
+            --language CPP \
+            --xunit-file ../../uncrustify_results.xml \
+            ${MODIFIED_FILES}
+
+      - name: Upload uncrustify results
+        uses: actions/upload-artifact@v3
+        with:
+          name: uncrustify_results
+          path: uncrustify_results.xml
