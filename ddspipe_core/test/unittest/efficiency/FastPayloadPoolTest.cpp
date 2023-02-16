@@ -17,9 +17,11 @@
 
 #include <fastdds/rtps/common/CacheChange.h>
 
+#include <cpp_utils/testing/LogChecker.hpp>
+#include <cpp_utils/exception/InconsistencyException.hpp>
+
 #include <ddspipe_core/efficiency/payload/PayloadPool.hpp>
 #include <ddspipe_core/efficiency/payload/FastPayloadPool.hpp>
-#include <cpp_utils/exception/InconsistencyException.hpp>
 
 using namespace eprosima::ddspipe;
 using namespace eprosima::ddspipe::core;
@@ -306,6 +308,9 @@ TEST(FastPayloadPoolTest, release_payload)
  */
 TEST(FastPayloadPoolTest, release_payload_negative)
 {
+    // 1 log error expected
+    INSTANTIATE_LOG_TESTER(eprosima::utils::Log::Kind::Error, 1, 1);
+
     test::MockFastPayloadPool pool;
     test::MockFastPayloadPool pool_aux;
     Payload payload;
