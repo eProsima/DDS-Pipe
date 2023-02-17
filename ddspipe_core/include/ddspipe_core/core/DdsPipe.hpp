@@ -64,12 +64,13 @@ public:
             const std::shared_ptr<PayloadPool>& payload_pool,
             const std::shared_ptr<ParticipantsDatabase>& participants_database,
             const std::shared_ptr<utils::SlotThreadPool>& thread_pool,
-            const std::set<utils::Heritable<types::DistributedTopic>>& builtin_topics = {});
+            const std::set<utils::Heritable<types::DistributedTopic>>& builtin_topics = {},
+            bool start_enable = false);
 
     /**
      * @brief Destroy the DdsPipe object
      *
-     * Stop the DdsPipe
+     * disable the DdsPipe
      * Destroy all Bridges
      * Destroy all Participants
      */
@@ -100,7 +101,7 @@ public:
     /////////////////////////
 
     /**
-     * @brief Start communication in DDS Router
+     * @brief enable communication in DDS Router
      *
      * Enable every topic Bridge.
      *
@@ -109,10 +110,10 @@ public:
      * @return \c RETCODE_OK always
      */
     DDSPIPE_CORE_DllAPI
-    utils::ReturnCode start() noexcept;
+    utils::ReturnCode enable() noexcept;
 
     /**
-     * @brief Stop communication in DDS Router
+     * @brief disable communication in DDS Router
      *
      * Disable every topic Bridge.
      *
@@ -121,45 +122,45 @@ public:
      * @return \c RETCODE_OK always
      */
     DDSPIPE_CORE_DllAPI
-    utils::ReturnCode stop() noexcept;
+    utils::ReturnCode disable() noexcept;
 
 protected:
 
-    /**
-     * @brief Internal Start method
-     *
-     * Enable every topic Bridge.
-     *
-     * @note this method returns a ReturnCode for future possible errors
-     *
-     * @return \c RETCODE_OK if ok
-     * @return \c RETCODE_PRECONDITION_NOT_MET if Router was not disabled
-     */
-    utils::ReturnCode start_() noexcept;
+    /////////////////////////
+    // CALLBACK METHODS
+    /////////////////////////
 
     /**
-     * @brief Internal Stop method
+     * @brief Method called every time a new endpoint has been discovered/updated
      *
-     * Disable every topic Bridge.
+     * This method calls \c discovered_topic_ with the topic of \c endpoint as parameter.
      *
-     * @note this method returns a ReturnCode for future possible errors
-     *
-     * @return \c RETCODE_OK if ok
-     * @return \c RETCODE_PRECONDITION_NOT_MET if Router was not enabled
+     * @param [in] endpoint : endpoint discovered
      */
-    utils::ReturnCode stop_() noexcept;
+    void discovered_endpoint_(
+            const types::Endpoint& endpoint) noexcept;
 
-    /////
-    // INTERNAL INITIALIZATION METHODS
+    /**
+     * @brief Method called every time an endpoint has been removed/dropped
+     *
+     * @param [in] endpoint : endpoint removed/dropped
+     */
+    void removed_endpoint_(
+            const types::Endpoint& endpoint) noexcept;
+
+    /////////////////////////
+    // INTERNAL CTOR METHODS
+    /////////////////////////
 
     /**
      * @brief  Create a disabled bridge for every real topic
      */
-    void init_bridges_(
+    void init_bridges_nts_(
             const std::set<utils::Heritable<types::DistributedTopic>>& builtin_topics);
 
-    /////
-    // INTERNAL AUXILIAR METHODS
+    /////////////////////////
+    // INTERNAL AUXILIARY METHODS
+    /////////////////////////
 
     /**
      * @brief Method called every time a new endpoint has been discovered/updated
@@ -171,7 +172,7 @@ protected:
      *
      * @param [in] topic : topic discovered
      */
-    void discovered_topic_(
+    void discovered_topic_nts_(
             const utils::Heritable<types::DistributedTopic>& topic) noexcept;
 
     /**
@@ -186,7 +187,7 @@ protected:
      * @param [in] server_participant_id : id of participant discovering server
      * @param [in] server_guid_prefix : GUID Prefix of discovered server
      */
-    void discovered_service_(
+    void discovered_service_nts_(
             const types::RpcTopic& topic,
             const types::ParticipantId& server_participant_id,
             const types::GuidPrefix& server_guid_prefix) noexcept;
@@ -200,28 +201,10 @@ protected:
      * @param [in] server_participant_id : id of participant discovering server
      * @param [in] server_guid_prefix : GUID Prefix of discovered server
      */
-    void removed_service_(
+    void removed_service_nts_(
             const types::RpcTopic& topic,
             const types::ParticipantId& server_participant_id,
             const types::GuidPrefix& server_guid_prefix) noexcept;
-
-    /**
-     * @brief Method called every time a new endpoint has been discovered/updated
-     *
-     * This method calls \c discovered_topic_ with the topic of \c endpoint as parameter.
-     *
-     * @param [in] endpoint : endpoint discovered
-     */
-    void discovered_endpoint_(
-            const types::Endpoint& endpoint) noexcept;
-
-    /**
-     * @brief Method called every time a new endpoint has been removed/dropped
-     *
-     * @param [in] endpoint : endpoint removed/dropped
-     */
-    void removed_endpoint_(
-            const types::Endpoint& endpoint) noexcept;
 
     /**
      * @brief Create a new \c DdsBridge object
@@ -230,7 +213,7 @@ protected:
      *
      * @param [in] topic : new topic
      */
-    void create_new_bridge_(
+    void create_new_bridge_nts_(
             const utils::Heritable<types::DistributedTopic>& topic,
             bool enabled = false) noexcept;
 
@@ -241,7 +224,7 @@ protected:
      *
      * @param [in] topic : new topic
      */
-    void create_new_service_(
+    void create_new_service_nts_(
             const types::RpcTopic& topic) noexcept;
 
     /**
@@ -251,7 +234,7 @@ protected:
      *
      * @param [in] topic : Topic to be enabled
      */
-    void activate_topic_(
+    void activate_topic_nts_(
             const utils::Heritable<types::DistributedTopic>& topic) noexcept;
 
     /**
@@ -261,18 +244,18 @@ protected:
      *
      * @param [in] topic : Topic to be disabled
      */
-    void deactivate_topic_(
+    void deactivate_topic_nts_(
             const utils::Heritable<types::DistributedTopic>& topic) noexcept;
 
     /**
      * @brief Activate all Topics that are allowed by the allowed topics list
      */
-    void activate_all_topics_() noexcept;
+    void activate_all_topics_nts_() noexcept;
 
     /**
      * @brief Disable all Bridges
      */
-    void deactivate_all_topics_() noexcept;
+    void deactivate_all_topics_nts_() noexcept;
 
     /////////////////////////
     // SHARED DATA STORAGE
@@ -337,14 +320,12 @@ protected:
     // AUXILIAR VARIABLES
 
     //! Whether the DDSRouterImpl is currently communicating data or not
-    std::atomic<bool> enabled_;
+    bool enabled_;
 
     /**
      * @brief Internal mutex for concurrent calls
-     *
-     * @todo this should not require to be recursive.
      */
-    std::recursive_mutex mutex_;
+    mutable std::mutex mutex_;
 };
 
 } /* namespace core */
