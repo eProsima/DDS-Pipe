@@ -12,6 +12,17 @@
 #   - uncrustify
 #     - ubuntu-20.04
 #     - test uncrustify
+#
+#   - ubuntu-test
+#     - [ ubuntu-20.04 | ubuntu-22.04 ]
+#     - [ Debug | Release ]
+#     - compile ; run tests
+#
+#   - windows-build-test
+#     - [ windows-2019 | windows-2022 ]
+#     - [ Debug | Release ]
+#     - compile ; run tests
+#
 
 name: test
 
@@ -25,6 +36,9 @@ on:
     - cron: '0 1 * * *'
 
 jobs:
+
+####################################################################################################
+####################################################################################################
 
   uncrustify:
     runs-on: ubuntu-20.04
@@ -100,3 +114,181 @@ jobs:
         with:
           name: uncrustify_results
           path: uncrustify_results.xml
+
+####################################################################################################
+####################################################################################################
+
+  ubuntu-test:
+    runs-on: ${{ matrix.ubuntu-version }}
+    strategy:
+      fail-fast: false
+      matrix:
+        cmake-config:
+          - 'Release'
+          - 'Debug'
+        ubuntu-version:
+          - 'ubuntu-20.04'
+          - 'ubuntu-22.04'
+
+    steps:
+      - name: Sync eProsima/DDS-Pipe repository
+        uses: actions/checkout@v2
+        with:
+          path: src/DDS-Pipe
+
+      - name: Install apt packages
+        uses: ./src/DDS-Pipe/.github/actions/install-apt-packages
+
+      - name: Install GTest
+        uses: ./src/DDS-Pipe/.github/actions/install-gtest-linux
+
+      - name: Install Python packages
+        uses: ./src/DDS-Pipe/.github/actions/install-python-packages
+
+      - name: Get build eProsima dependencies Job Id
+        run: |
+          export JOB_ID=$(curl -sL $GITHUB_API_URL/repos/$GITHUB_REPOSITORY/actions/workflows/build_dependencies.yml/runs | \
+            jq '.workflow_runs[] | select(.status == "completed") | .id' | \
+            head -n 1)
+          echo "fastdds_job_id=${JOB_ID}" >> $GITHUB_ENV
+
+      - name: Download eProsima dependencies
+        uses: dawidd6/action-download-artifact@v2
+        with:
+          workflow: build_dependencies.yml
+          path: /home/runner/work/fastdds/install
+          name: ${{ matrix.ubuntu-version }}_fastdds_install
+          run_id: ${{ env.fastdds_job_id }}
+
+      - name: Update colcon mixin
+        run: |
+          colcon mixin add default \
+            https://raw.githubusercontent.com/colcon/colcon-mixin-repository/master/index.yaml
+          colcon mixin update default
+        continue-on-error: true
+
+      # By default it is built in release mode
+      - name: Build workspace
+        run: |
+          source /home/runner/work/fastdds/install/setup.bash
+          colcon build \
+            --event-handlers=console_direct+ \
+            --cmake-args -DBUILD_TESTS=ON
+
+      - name: Run tests ddspipe
+        run: |
+          source install/setup.bash && \
+          colcon test \
+            --packages-select-regex ddspipe \
+            --event-handlers=console_direct+ \
+            --return-code-on-test-failure \
+            --ctest-args \
+              --label-exclude xfail \
+              --timeout 60
+
+      - name: Upload Logs
+        uses: actions/upload-artifact@v1
+        with:
+          name: colcon-logs-ubuntu
+          path: log/
+        if: always()
+
+####################################################################################################
+####################################################################################################
+
+  windows-build-test:
+    runs-on: ${{ matrix.windows-version }}
+    strategy:
+      fail-fast: false
+      matrix:
+        cmake-config:
+          - 'Release'
+          - 'Debug'
+        windows-version:
+          - 'windows-2019'
+          - 'windows-2022'
+    env:
+      CXXFLAGS: /MP
+      OPENSSL64_ROOT: "C:/Program Files/OpenSSL-Win64"
+
+    steps:
+      - name: Sync eProsima/DDS-Pipe repository
+        uses: actions/checkout@v2
+        with:
+          path: DDS-Pipe
+
+      - name: Install OpenSSL
+        uses: ./DDS-Pipe/.github/actions/install-openssl-windows
+
+      - name: Install GTest
+        uses: ./DDS-Pipe/.github/actions/install-gtest-windows
+        with:
+          cmake_build_type: ${{ matrix.cmake-config }}
+
+      - name: Install yaml-cpp
+        uses: ./DDS-Pipe/.github/actions/install-yamlcpp-windows
+        with:
+          cmake_build_type: ${{ matrix.cmake-config }}
+
+      - name: Get build eProsima dependencies Job Id
+        shell: pwsh
+        run: |
+          $secret = ConvertTo-SecureString -String "${{ secrets.GITHUB_TOKEN }}" -AsPlainText
+          $RUNS_URI = '${{ github.api_url }}/repos/${{ github.repository }}/actions/workflows/build_dependencies.yml/runs'
+
+          # Check available queries according with github policy
+          "::group::Rate Limits with github action token"
+          ((Invoke-WebRequest -Authentication OAuth -Token $secret `
+            -Uri https://api.github.com/users/octocat).Headers.GetEnumerator() |
+            ? Key -like "X-RateLimit*") | Out-Host
+          "::endgroup::"
+
+          ((Invoke-WebRequest -Authentication OAuth -Token $secret -Uri $RUNS_URI).Content | ConvertFrom-Json).workflow_runs | ? status -eq 'completed' |
+           select -first 1 id | % { "fastdds_job_id=" + $_.id } | Out-File $env:GITHUB_ENV -Append
+
+      - name: Download eProsima dependencies
+        uses: dawidd6/action-download-artifact@v2
+        with:
+          workflow: build_dependencies.yml
+          path: ${{ github.workspace }}\..\fastdds\install
+          name: ${{ matrix.windows-version }}_${{ matrix.cmake-config }}_fastdds_install
+          run_id: ${{ env.fastdds_job_id }}
+
+      - name: Install ddspipe_core
+        uses: ./DDS-Pipe/.github/actions/install-router-subpackage-windows
+        with:
+          cmake_build_type: ${{ matrix.cmake-config }}
+          subpackage: ddspipe_core
+          subpackage_dir: ddspipe_core
+
+      - name: Run tests ddspipe_core
+        uses: ./DDS-Pipe/.github/actions/run-test-windows
+        with:
+          package_name: ddspipe_core
+          cmake_build_type: ${{ matrix.cmake-config }}
+
+      - name: Install ddspipe_participants
+        uses: ./DDS-Pipe/.github/actions/install-router-subpackage-windows
+        with:
+          cmake_build_type: ${{ matrix.cmake-config }}
+          subpackage: ddspipe_participants
+          subpackage_dir: ddspipe_participants
+
+      - name: Run tests ddspipe_participants
+        uses: ./DDS-Pipe/.github/actions/run-test-windows
+        with:
+          package_name: ddspipe_participants
+          cmake_build_type: ${{ matrix.cmake-config }}
+
+      - name: Install ddspipe_yaml
+        uses: ./DDS-Pipe/.github/actions/install-router-subpackage-windows
+        with:
+          cmake_build_type: ${{ matrix.cmake-config }}
+          subpackage: ddspipe_yaml
+          subpackage_dir: ddspipe_yaml
+
+      - name: Run tests ddspipe_yaml
+        uses: ./DDS-Pipe/.github/actions/run-test-windows
+        with:
+          package_name: ddspipe_yaml
+          cmake_build_type: ${{ matrix.cmake-config }}
