@@ -261,6 +261,7 @@ void DdsPipe::init_bridges_nts_(
 {
     for (const auto& topic : builtin_topics)
     {
+        discovered_topic_nts_(topic);
         create_new_bridge_nts_(topic, false);
     }
 }

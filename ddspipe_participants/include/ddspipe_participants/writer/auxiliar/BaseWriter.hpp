@@ -97,12 +97,9 @@ protected:
      * @brief Construct a new Base Writer object
      *
      * @param participant_id id of participant
-     * @param topic topic that this Writer will refer to
-     * @param payload_pool DDS Router shared PayloadPool
      */
     BaseWriter(
-            const core::types::ParticipantId& participant_id,
-            const std::shared_ptr<core::PayloadPool>& payload_pool);
+            const core::types::ParticipantId& participant_id);
 
     /////////////////////////
     // METHODS TO IMPLEMENT BY SUBCLASSES
@@ -127,7 +124,7 @@ protected:
      *
      * Implement this method in every inherited Writer class with write functionality.
      */
-    virtual utils::ReturnCode write_(
+    virtual utils::ReturnCode write_nts_(
             core::IRoutingData& data) noexcept  = 0;
 
     /////////////////////////
@@ -136,9 +133,6 @@ protected:
 
     //! Participant parent ID
     const core::types::ParticipantId participant_id_;
-
-    //! DDS Router shared Payload Pool
-    std::shared_ptr<core::PayloadPool> payload_pool_;
 
     //! Whether the Writer is currently enabled
     std::atomic<bool> enabled_;

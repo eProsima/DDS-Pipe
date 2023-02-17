@@ -63,7 +63,7 @@ public:
 protected:
 
     //! Participant Id
-    core::types::ParticipantId id_;
+    const core::types::ParticipantId id_;
 };
 
 } /* namespace participants */

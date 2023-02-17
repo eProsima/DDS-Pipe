@@ -12,8 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# TODO do these tests
-# add_subdirectory(core)
+add_subdirectory(core)
 add_subdirectory(dynamic)
 add_subdirectory(efficiency)
 add_subdirectory(types)

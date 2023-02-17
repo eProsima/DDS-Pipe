@@ -130,18 +130,18 @@ public:
 
     //! Get GUID of internal RTPS reader
     DDSPIPE_PARTICIPANTS_DllAPI
-    core::types::Guid guid() const override = 0;
+    core::types::Guid guid() const override;
 
     //! Get internal RTPS reader mutex
     DDSPIPE_PARTICIPANTS_DllAPI
-    fastrtps::RecursiveTimedMutex& get_rtps_mutex() const override = 0;
+    fastrtps::RecursiveTimedMutex& get_rtps_mutex() const override;
 
     //! Get number of unread cache changes in internal RTPS reader
     DDSPIPE_PARTICIPANTS_DllAPI
-    uint64_t get_unread_count() const override = 0;
+    uint64_t get_unread_count() const override;
 
     DDSPIPE_PARTICIPANTS_DllAPI
-    core::types::DdsTopic topic() const override = 0;
+    core::types::DdsTopic topic() const override;
     /////////////////////////
 
 protected:
@@ -154,12 +154,9 @@ protected:
      * @brief Construct a new Base Reader object
      *
      * @param participant_id parent participant id
-     * @param topic topic that this Reader will refer to
-     * @param payload_pool DDS Router shared PayloadPool
      */
     BaseReader(
-            const core::types::ParticipantId& participant_id,
-            const std::shared_ptr<core::PayloadPool>& payload_pool);
+            const core::types::ParticipantId& participant_id);
 
     /////////////////////////
     // PROTECTED METHODS
@@ -206,9 +203,6 @@ protected:
 
     //! Participant parent ID
     const core::types::ParticipantId participant_id_;
-
-    //! DDS Router shared Payload Pool
-    const std::shared_ptr<core::PayloadPool> payload_pool_;
 
     //! Lambda to call the callback whenever a new data arrives
     std::function<void()> on_data_available_lambda_;

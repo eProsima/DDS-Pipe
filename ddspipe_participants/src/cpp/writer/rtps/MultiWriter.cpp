@@ -41,7 +41,8 @@ MultiWriter::MultiWriter(
         const std::shared_ptr<core::PayloadPool>& payload_pool,
         fastrtps::rtps::RTPSParticipant* rtps_participant,
         const bool repeater /* = false */)
-    : BaseWriter(participant_id, payload_pool)
+    : BaseWriter(participant_id)
+    , payload_pool_(payload_pool)
     , rtps_participant_(rtps_participant)
     , repeater_(repeater)
     , topic_(topic)
@@ -138,7 +139,7 @@ QoSSpecificWriter* MultiWriter::create_writer_nts_(
 }
 
 // Specific enable/disable do not need to be implemented
-utils::ReturnCode MultiWriter::write_(
+utils::ReturnCode MultiWriter::write_nts_(
         core::IRoutingData& data) noexcept
 {
     auto& rtps_data = dynamic_cast<core::types::RtpsPayloadData&>(data);

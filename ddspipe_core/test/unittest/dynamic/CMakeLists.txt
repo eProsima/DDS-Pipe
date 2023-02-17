@@ -13,3 +13,5 @@
 # limitations under the License.
 
 add_subdirectory(allowed_topic_list)
+# TODO uncomment when ready
+# add_subdirectory(participants_database)

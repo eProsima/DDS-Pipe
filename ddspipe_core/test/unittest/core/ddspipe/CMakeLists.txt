@@ -12,4 +12,28 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-add_subdirectory(ddspipe)
+set(TEST_NAME DdsPipeTest)
+
+set(TEST_SOURCES
+        DdsPipeTest.cpp
+    )
+all_library_sources("${TEST_SOURCES}")
+
+set(TEST_LIST
+        default_initialization
+        enable_disable
+        reload
+    )
+
+set(TEST_EXTRA_LIBRARIES
+        fastcdr
+        fastrtps
+        cpp_utils
+    )
+
+add_unittest_executable(
+        "${TEST_NAME}"
+        "${TEST_SOURCES}"
+        "${TEST_LIST}"
+        "${TEST_EXTRA_LIBRARIES}"
+    )

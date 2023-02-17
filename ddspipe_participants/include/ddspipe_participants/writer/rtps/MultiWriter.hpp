@@ -79,7 +79,7 @@ protected:
     /**
      * TODO
      */
-    virtual utils::ReturnCode write_(
+    virtual utils::ReturnCode write_nts_(
             core::IRoutingData& data) noexcept override;
 
     bool exist_partition_(
@@ -96,6 +96,8 @@ protected:
     using WritersMapType = utils::SharedAtomicable<std::map<core::types::SpecificEndpointQoS, QoSSpecificWriter*>>;
     //! Map of writer indexed by Specific QoS of each.
     WritersMapType writers_map_;
+
+    const std::shared_ptr<core::PayloadPool>& payload_pool_;
 
     core::types::DdsTopic topic_;
 

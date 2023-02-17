@@ -45,7 +45,8 @@ CommonWriter::CommonWriter(
         const fastrtps::TopicAttributes& topic_attributes,
         const fastrtps::WriterQos& writer_qos,
         const utils::PoolConfiguration& pool_configuration)
-    : BaseWriter(participant_id, payload_pool)
+    : BaseWriter(participant_id)
+    , payload_pool_(payload_pool)
     , rtps_participant_(rtps_participant)
     , repeater_(repeater)
     , history_attributes_(history_attributes)
@@ -118,7 +119,7 @@ bool CommonWriter::come_from_this_participant_(
 }
 
 // Specific enable/disable do not need to be implemented
-utils::ReturnCode CommonWriter::write_(
+utils::ReturnCode CommonWriter::write_nts_(
         core::IRoutingData& data) noexcept
 {
     auto& rtps_data = dynamic_cast<RtpsPayloadData&>(data);
