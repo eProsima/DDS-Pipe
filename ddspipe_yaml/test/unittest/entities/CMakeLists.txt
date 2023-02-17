@@ -12,4 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-add_subdirectory(unittest)
+#########################
+# Yaml GetEntities Test #
+#########################
+
+add_subdirectory(address)
+add_subdirectory(guid)
+# TODO uncommment when ready
+# add_subdirectory(topic)
