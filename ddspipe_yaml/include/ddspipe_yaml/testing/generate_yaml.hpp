@@ -19,6 +19,8 @@
 #include <ddspipe_core/types/dds/DomainId.hpp>
 #include <ddspipe_core/types/dds/GuidPrefix.hpp>
 #include <ddspipe_core/types/participant/ParticipantId.hpp>
+#include <ddspipe_core/types/topic/dds/DdsTopic.hpp>
+#include <ddspipe_core/types/topic/filter/WildcardDdsFilterTopic.hpp>
 #include <ddspipe_core/testing/random_values.hpp>
 
 #include <ddspipe_participants/types/address/Address.hpp>
@@ -163,42 +165,44 @@ void repeater_to_yaml(
         IS_REPEATER_TAG);
 }
 
-// // Create a yaml QoS object only with reliability
-// void qos_to_yaml(
-//         Yaml& yml,
-//         const TopicQoS& qos)
-// {
-//     // TODO: extend this for all qos
-//     add_field_to_yaml(yml, YamlField<bool>(qos.is_reliable()), QOS_RELIABLE_TAG);
-// }
+// Create a yaml QoS object only with reliability
+void qos_to_yaml(
+        Yaml& yml,
+        const core::types::TopicQoS& qos)
+{
+    // TODO: extend this for all qos
+    add_field_to_yaml(yml, YamlField<bool>(qos.is_reliable()), QOS_RELIABLE_TAG);
+}
 
-// // Create a yaml Topic object with name, type and key tags
-// void filter_topic_to_yaml(
-//         Yaml& yml,
-//         const WildcardDdsFilterTopic& topic)
-// {
-//     if (topic.topic_name.is_set())
-//     {
-//         add_field_to_yaml(yml, YamlField<std::string>(topic.topic_name), TOPIC_NAME_TAG);
-//     }
+// Create a yaml Topic object with name, type and key tags
+void filter_topic_to_yaml(
+        Yaml& yml,
+        const core::types::WildcardDdsFilterTopic& topic)
+{
+    if (topic.topic_name.is_set())
+    {
+        add_field_to_yaml(yml, YamlField<std::string>(topic.topic_name.get_reference()), TOPIC_NAME_TAG);
+    }
 
-//     if (topic.type_name.is_set())
-//     {
-//         add_field_to_yaml(yml, YamlField<std::string>(topic.type_name), TOPIC_TYPE_NAME_TAG);
-//     }
-// }
+    if (topic.type_name.is_set())
+    {
+        add_field_to_yaml(yml, YamlField<std::string>(topic.type_name.get_reference()), TOPIC_TYPE_NAME_TAG);
+    }
+}
 
-// // Create a yaml DdsTopic object with name, type, key and reliable tags
-// void real_topic_to_yaml(
-//         Yaml& yml,
-//         const DdsTopic& topic,
-//         const YamlField<std::string>& type,
-//         const YamlField<Yaml>& qos)
-// {
-//     add_field_to_yaml(yml, YamlField<std::string>(topic.m_topic_name), TOPIC_NAME_TAG);
-//     add_field_to_yaml(yml, YamlField<std::string>(topic.type_name), TOPIC_TYPE_NAME_TAG);
-//     add_field_to_yaml(yml, YamlField<Yaml>(topic.topic_qos), TOPIC_QOS_TAG);
-// }
+// Create a yaml DdsTopic object with name, type, key and reliable tags
+void real_topic_to_yaml(
+        Yaml& yml,
+        const core::types::DdsTopic& topic)
+{
+    add_field_to_yaml(yml, YamlField<std::string>(topic.m_topic_name), TOPIC_NAME_TAG);
+    add_field_to_yaml(yml, YamlField<std::string>(topic.type_name), TOPIC_TYPE_NAME_TAG);
+
+    // QoS
+    Yaml yml_qos;
+    qos_to_yaml(yml_qos, topic.topic_qos);
+    add_field_to_yaml(yml, YamlField<Yaml>(yml_qos), TOPIC_QOS_TAG);
+}
 
 } /* namespace testing */
 } /* namespace yaml */

@@ -15,6 +15,9 @@
 #include <cpp_utils/testing/gtest_aux.hpp>
 #include <gtest/gtest.h>
 
+#include <cpp_utils/memory/Heritable.hpp>
+#include <cpp_utils/types/cast.hpp>
+
 #include <ddspipe_participants/types/address/Address.hpp>
 #include <ddspipe_core/types/topic/dds/DdsTopic.hpp>
 #include <ddspipe_core/types/dds/TopicQoS.hpp>
@@ -27,50 +30,13 @@
 using namespace eprosima;
 using namespace eprosima::ddspipe;
 using namespace eprosima::ddspipe::yaml;
-using namespace eprosima::ddspipe::core::testing;
 using namespace eprosima::ddspipe::yaml::testing;
 
-namespace eprosima {
-namespace ddspipe {
-namespace yaml {
 namespace test {
-
-// Create a yaml QoS object only with reliability
-void qos_to_yaml(
-        Yaml& yml,
-        const YamlField<bool>& reliable)
-{
-    // TODO: extend this for all qos
-    add_field_to_yaml(yml, reliable, QOS_RELIABLE_TAG);
-}
-
-// Create a yaml Topic object with name, type and key tags
-void topic_to_yaml(
-        Yaml& yml,
-        const YamlField<std::string>& name,
-        const YamlField<std::string>& type,
-        const YamlField<Yaml>& qos)
-{
-    add_field_to_yaml(yml, name, TOPIC_NAME_TAG);
-    add_field_to_yaml(yml, type, TOPIC_TYPE_NAME_TAG);
-    add_field_to_yaml(yml, qos, TOPIC_QOS_TAG);
-}
-
-// Create a yaml DdsTopic object with name, type, key and reliable tags
-void real_topic_to_yaml(
-        Yaml& yml,
-        const YamlField<std::string>& name,
-        const YamlField<std::string>& type,
-        const YamlField<Yaml>& qos)
-{
-    add_field_to_yaml(yml, name, TOPIC_NAME_TAG);
-    add_field_to_yaml(yml, type, TOPIC_TYPE_NAME_TAG);
-    add_field_to_yaml(yml, qos, TOPIC_QOS_TAG);
-}
 
 // Check the values of a real topic are the expected ones
 void compare_topic(
-        core::types::DdsTopic topic,
+        const core::types::DdsTopic& topic,
         std::string name,
         std::string type,
         bool has_reliability_set = false,
@@ -97,7 +63,7 @@ void compare_topic(
 
 // Check the values of a wildcard topic are the expected ones
 void compare_wildcard_topic(
-        core::types::WildcardDdsFilterTopic topic,
+        const core::types::WildcardDdsFilterTopic& topic,
         std::string name,
         bool type_set,
         std::string type)
@@ -111,68 +77,73 @@ void compare_wildcard_topic(
     }
 }
 
+const std::string TOPIC_NAME = "topic_name";
+const std::string TOPIC_TYPE = "topic_type";
+
 } /* namespace test */
-} /* namespace yaml */
-} /* namespace ddspipe */
-} /* namespace eprosima */
 
 /**
  * Test read core::types::DdsTopic from yaml
  *
  * POSITIVE CASES:
  * - Topic Std
- *
- * NEGATIVE CASES:
- * - Empty
- * - Topic without name
- * - Topic without type
+ * - Topic with QoS
  */
 TEST(YamlGetEntityTopicTest, get_real_topic)
 {
-    std::string name = "topic_name";
-    std::string type = "topic_type";
-
     // Topic Std
     {
+        core::types::DdsTopic real_topic;
+        real_topic.m_topic_name = test::TOPIC_NAME;
+        real_topic.type_name = test::TOPIC_TYPE;
+
         Yaml yml_topic;
-        topic_to_yaml(
+        real_topic_to_yaml(
             yml_topic,
-            YamlField<std::string>(name),
-            YamlField<std::string>(type),
-            YamlField<bool>(),
-            YamlField<Yaml>());
+            real_topic);
 
         Yaml yml;
         yml["topic"] = yml_topic;
 
         core::types::DdsTopic topic = YamlReader::get<core::types::DdsTopic>(yml, "topic", LATEST);
 
-        compare_topic(topic, name, type, false);
+        ASSERT_EQ(topic, real_topic);
     }
 
     // Checks that a topic yaml object has been parsed correctly with the topic reliable tag set to true.
     // A topic configured as reliable creates RELIABLE-TRANSIENT_LOCAL RTPS Readers in order to ensure
     // that no data is lost in the information relay.
+    // TODO: extend for other QoS
     {
-        Yaml yml_qos;
-        qos_to_yaml(yml_qos, YamlField<bool>(true));
+        core::types::DdsTopic real_topic;
+        real_topic.m_topic_name = test::TOPIC_NAME;
+        real_topic.type_name = test::TOPIC_TYPE;
+        real_topic.topic_qos.reliability_qos = core::types::ReliabilityKind::RELIABLE;
 
         Yaml yml_topic;
         real_topic_to_yaml(
             yml_topic,
-            YamlField<std::string>(name),
-            YamlField<std::string>(type),
-            YamlField<bool>(false),
-            YamlField<Yaml>(yml_qos));
+            real_topic);
 
         Yaml yml;
         yml["topic"] = yml_topic;
 
         core::types::DdsTopic topic = YamlReader::get<core::types::DdsTopic>(yml, "topic", LATEST);
 
-        compare_topic(topic, name, type, true, true);
+        ASSERT_EQ(topic, real_topic);
+        ASSERT_TRUE(topic.topic_qos.is_reliable());
     }
+}
 
+/**
+ * Test read core::types::DdsTopic from yaml in negative cases
+ * CASES:
+ * - Empty
+ * - Topic without name
+ * - Topic without type
+ */
+TEST(YamlGetEntityTopicTest, get_real_topic_negative)
+{
     // Empty
     {
         Yaml yml_topic;
@@ -186,12 +157,7 @@ TEST(YamlGetEntityTopicTest, get_real_topic)
     // Topic without name
     {
         Yaml yml_topic;
-        topic_to_yaml(
-            yml_topic,
-            YamlField<std::string>(),
-            YamlField<std::string>(type),
-            YamlField<bool>(),
-            YamlField<Yaml>());
+        add_field_to_yaml(yml_topic, YamlField<std::string>(test::TOPIC_TYPE), TOPIC_TYPE_NAME_TAG);
 
         Yaml yml;
         yml["topic"] = yml_topic;
@@ -203,12 +169,7 @@ TEST(YamlGetEntityTopicTest, get_real_topic)
     // Topic without type
     {
         Yaml yml_topic;
-        topic_to_yaml(
-            yml_topic,
-            YamlField<std::string>(name),
-            YamlField<std::string>(),
-            YamlField<bool>(),
-            YamlField<Yaml>());
+        add_field_to_yaml(yml_topic, YamlField<std::string>(test::TOPIC_NAME), TOPIC_NAME_TAG);
 
         Yaml yml;
         yml["topic"] = yml_topic;
@@ -223,90 +184,115 @@ TEST(YamlGetEntityTopicTest, get_real_topic)
  *
  * POSITIVE CASES:
  * - Topic Std
+ * - Topic without name
  * - Topic without type
  */
 TEST(YamlGetEntityTopicTest, get_wildcard_topic)
 {
-    std::string name = "topic_name";
-    std::string type = "topic_type";
-
     // Topic Std
     {
+        core::types::WildcardDdsFilterTopic w_topic;
+        w_topic.topic_name.set_value(test::TOPIC_NAME);
+        w_topic.type_name.set_value(test::TOPIC_TYPE);
+
         Yaml yml_topic;
-        topic_to_yaml(
+        filter_topic_to_yaml(
             yml_topic,
-            YamlField<std::string>(name),
-            YamlField<std::string>(type),
-            YamlField<bool>(),
-            YamlField<Yaml>());
+            w_topic);
 
         Yaml yml;
         yml["topic"] = yml_topic;
 
-        core::types::WildcardDdsFilterTopic topic = YamlReader::get<core::types::WildcardDdsFilterTopic>(yml, "topic",
-                        LATEST);
+        core::types::WildcardDdsFilterTopic topic = YamlReader::get<core::types::WildcardDdsFilterTopic>(yml, "topic", LATEST);
 
-        compare_wildcard_topic(topic, name, true, type, false);
+        ASSERT_EQ(topic, w_topic);
+    }
+
+    // Topic without name
+    {
+        core::types::WildcardDdsFilterTopic w_topic;
+        w_topic.type_name.set_value(test::TOPIC_TYPE);
+
+        Yaml yml_topic;
+        filter_topic_to_yaml(
+            yml_topic,
+            w_topic);
+
+        Yaml yml;
+        yml["topic"] = yml_topic;
+
+        core::types::WildcardDdsFilterTopic topic = YamlReader::get<core::types::WildcardDdsFilterTopic>(yml, "topic", LATEST);
+
+        ASSERT_EQ(topic, w_topic);
+        ASSERT_TRUE(topic.type_name.is_set());
+        ASSERT_FALSE(topic.topic_name.is_set());
     }
 
     // Topic without type
     {
+        core::types::WildcardDdsFilterTopic w_topic;
+        w_topic.topic_name.set_value(test::TOPIC_NAME);
+
         Yaml yml_topic;
-        topic_to_yaml(
+        filter_topic_to_yaml(
             yml_topic,
-            YamlField<std::string>(name),
-            YamlField<std::string>(),
-            YamlField<bool>(),
-            YamlField<Yaml>());
+            w_topic);
 
         Yaml yml;
         yml["topic"] = yml_topic;
 
-        core::types::WildcardDdsFilterTopic topic = YamlReader::get<core::types::WildcardDdsFilterTopic>(yml, "topic",
-                        LATEST);
+        core::types::WildcardDdsFilterTopic topic = YamlReader::get<core::types::WildcardDdsFilterTopic>(yml, "topic", LATEST);
 
-        compare_wildcard_topic(topic, name, false, "*", false);
+        ASSERT_EQ(topic, w_topic);
+        ASSERT_TRUE(topic.topic_name.is_set());
+        ASSERT_FALSE(topic.type_name.is_set());
     }
 }
 
 /**
- * Test read correct core::types::WildcardDdsFilterTopic from yaml
- *
- * NEGATIVE CASES:
- * - empty
- * - without name
+ * Test read correct a DdsTopic from a Heritable object
  */
-TEST(YamlGetEntityTopicTest, get_wildcard_topic_negative)
+TEST(YamlGetEntityTopicTest, get_real_topic_heritable)
 {
-    std::string name = "topic_name";
-    std::string type = "topic_type";
+    core::types::DdsTopic real_topic;
+    real_topic.m_topic_name = test::TOPIC_NAME;
+    real_topic.type_name = test::TOPIC_TYPE;
 
-    // empty
-    {
-        Yaml yml_topic;
-        Yaml yml;
-        yml["topic"] = yml_topic;
+    Yaml yml_topic;
+    real_topic_to_yaml(
+        yml_topic,
+        real_topic);
 
-        ASSERT_THROW(YamlReader::get<core::types::WildcardDdsFilterTopic>(yml, "topic",
-                LATEST), eprosima::utils::ConfigurationException);
-    }
+    Yaml yml;
+    yml["topic"] = yml_topic;
 
-    // Topic without type
-    {
-        Yaml yml_topic;
-        topic_to_yaml(
-            yml_topic,
-            YamlField<std::string>(),
-            YamlField<std::string>(type),
-            YamlField<bool>(),
-            YamlField<Yaml>());
+    auto topic = YamlReader::get<utils::Heritable<core::types::DistributedTopic>>(yml, "topic", LATEST);
 
-        Yaml yml;
-        yml["topic"] = yml_topic;
+    ASSERT_EQ(real_topic, topic.get_reference());
+    ASSERT_TRUE(utils::can_cast<core::types::DdsTopic>(topic.get_reference()));
+}
 
-        ASSERT_THROW(YamlReader::get<core::types::WildcardDdsFilterTopic>(yml, "topic",
-                LATEST), eprosima::utils::ConfigurationException);
-    }
+/**
+ * Test read correct a DdsTopic from a Heritable object
+ */
+TEST(YamlGetEntityTopicTest, get_wildcard_topic_heritable)
+{
+    core::types::WildcardDdsFilterTopic w_topic;
+    w_topic.topic_name.set_value(test::TOPIC_NAME);
+    w_topic.type_name.set_value(test::TOPIC_TYPE);
+
+    Yaml yml_topic;
+    filter_topic_to_yaml(
+        yml_topic,
+        w_topic);
+
+    Yaml yml;
+    yml["topic"] = yml_topic;
+
+    auto topic = YamlReader::get<utils::Heritable<core::types::IFilterTopic>>(yml, "topic", LATEST);
+
+    ASSERT_EQ(w_topic, topic.get_reference());
+    ASSERT_TRUE(utils::can_cast<core::types::WildcardDdsFilterTopic>(topic.get_reference()));
 }
 
 int main(

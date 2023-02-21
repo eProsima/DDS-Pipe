@@ -29,8 +29,10 @@ set(TEST_SOURCES
 
 set(TEST_LIST
         get_real_topic
+        get_real_topic_negative
         get_wildcard_topic
-        get_wildcard_topic_negative
+        get_real_topic_heritable
+        get_wildcard_topic_heritable
     )
 
 set(TEST_EXTRA_LIBRARIES

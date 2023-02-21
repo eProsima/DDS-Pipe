@@ -18,5 +18,4 @@
 
 add_subdirectory(address)
 add_subdirectory(guid)
-# TODO uncommment when ready
-# add_subdirectory(topic)
+add_subdirectory(topic)
