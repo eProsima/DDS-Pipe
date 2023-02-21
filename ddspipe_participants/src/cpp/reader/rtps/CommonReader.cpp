@@ -238,17 +238,6 @@ void CommonReader::fill_received_data_(
 
 }
 
-void CommonReader::enable_() noexcept
-{
-    // If the topic is reliable, the reader will keep the samples received when it was disabled.
-    // However, if the topic is best_effort, the reader will discard the samples received when it was disabled.
-    if (topic_.topic_qos.is_reliable())
-    {
-        std::lock_guard<eprosima::fastrtps::RecursiveTimedMutex> lock(get_rtps_mutex());
-        on_data_available_();
-    }
-}
-
 bool CommonReader::come_from_this_participant_(
         const fastrtps::rtps::CacheChange_t* change) const noexcept
 {

@@ -103,6 +103,9 @@ void Track::enable() noexcept
         // Enabling reader
         reader_->enable();
 
+        // Force a on_data_available callback in case there are readers with data already prepared (in case it )
+        // was enabled before or it is transient local)
+        data_available_();
     }
 }
 

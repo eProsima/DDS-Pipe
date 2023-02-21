@@ -119,10 +119,12 @@ struct DDSPIPE_CORE_DllAPI
      * @note Default value would be taken from \c default_history_depth in object creation.
      * @note It only stores the depth because in router it will always be keep last, as RTPS has not resource limits.
      */
-    HistoryDepthType history_depth = 5000;
+    HistoryDepthType history_depth = HISTORY_DEPTH_DEFAULT;
 
     //! Whether the topic has key or not
     bool keyed = false;
+
+    static constexpr HistoryDepthType HISTORY_DEPTH_DEFAULT = 5000;
 };
 
 /**
