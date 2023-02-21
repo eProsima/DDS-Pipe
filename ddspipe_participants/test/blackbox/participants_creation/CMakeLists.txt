@@ -12,5 +12,23 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-add_subdirectory(mock_core)
-add_subdirectory(participants_creation)
+set(TEST_NAME ParticipantsCreationgTest)
+
+set(TEST_SOURCES
+        ParticipantsCreationgTest.cpp
+    )
+
+set(TEST_LIST
+        creation_trivial
+        ddspipe_all_creation_builtin_topic
+    )
+
+set(TEST_NEEDED_SOURCES
+    )
+
+add_blackbox_executable(
+        "${TEST_NAME}"
+        "${TEST_SOURCES}"
+        "${TEST_LIST}"
+        "${TEST_NEEDED_SOURCES}"
+    )

@@ -26,7 +26,7 @@ using namespace eprosima::ddspipe::participants::types;
 Address random_address(
         unsigned int seed /* = 0 */)
 {
-    return Address("127.0.0.1", seed, seed, TransportProtocol::udp);
+    return Address("127.0.0.1", 10000 + seed, 10000 + seed, TransportProtocol::udp);
 }
 
 DiscoveryServerConnectionAddress random_connection_address(
