@@ -197,6 +197,8 @@ protected:
     virtual utils::ReturnCode take_nts_(
             std::unique_ptr<core::IRoutingData>& data) noexcept override;
 
+    virtual void enable_nts_() noexcept override;
+
     /////
     // RTPS specific methods
 
