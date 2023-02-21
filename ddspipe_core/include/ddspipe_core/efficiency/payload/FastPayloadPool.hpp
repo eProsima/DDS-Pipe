@@ -67,6 +67,7 @@ public:
      * @return true if everything OK
      * @return false if something went wrong
      */
+    DDSPIPE_CORE_DllAPI
     bool get_payload(
             uint32_t size,
             types::Payload& payload) override;
@@ -86,6 +87,7 @@ public:
      *
      * @throw utils::InconsistencyException if \c data_owner is \c this but the data in \c src_payload is not from this pool.
      */
+    DDSPIPE_CORE_DllAPI
     bool get_payload(
             const types::Payload& src_payload,
             IPayloadPool*& data_owner,
@@ -103,6 +105,7 @@ public:
      *
      * @throw utils::InconsistencyException if the data in \c payload is not from this pool.
      */
+    DDSPIPE_CORE_DllAPI
     bool release_payload(
             types::Payload& payload) override;
 
@@ -120,6 +123,7 @@ protected:
      * @return true if everything ok
      * @return false if something went wrong
      */
+    DDSPIPE_CORE_DllAPI
     virtual bool reserve_(
             uint32_t size,
             types::Payload& payload) override;
@@ -134,6 +138,7 @@ protected:
      * @return true if everything ok
      * @return false if something went wrong
      */
+    DDSPIPE_CORE_DllAPI
     virtual bool release_(
             types::Payload& payload) override;
 };

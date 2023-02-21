@@ -46,11 +46,14 @@ class MockParticipant : public BlankParticipant
 {
 public:
 
+    DDSPIPE_PARTICIPANTS_DllAPI
     MockParticipant(const core::types::ParticipantId& id);
 
+    DDSPIPE_PARTICIPANTS_DllAPI
     std::shared_ptr<core::IWriter> create_writer(
             const core::ITopic& topic) override;
 
+    DDSPIPE_PARTICIPANTS_DllAPI
     std::shared_ptr<core::IReader> create_reader(
             const core::ITopic& topic) override;
 
@@ -58,14 +61,33 @@ public:
     std::map<std::string, std::shared_ptr<MockReader>> readers;
 };
 
+/**
+ * @note this should be declared before queue in readers and writers for windows sake (C2027)
+ */
+struct MockRoutingData : public core::IRoutingData
+{
+public:
+
+    DDSPIPE_PARTICIPANTS_DllAPI
+    bool operator==(const MockRoutingData& other) const;
+
+    DDSPIPE_PARTICIPANTS_DllAPI
+    core::types::TopicInternalTypeDiscriminator internal_type_discriminator() const noexcept override;
+
+    std::string data;
+};
+
 class MockReader : public BaseReader
 {
 public:
 
+    DDSPIPE_PARTICIPANTS_DllAPI
     MockReader(const core::types::ParticipantId& id);
 
+    DDSPIPE_PARTICIPANTS_DllAPI
     void simulate_data_reception(MockRoutingData&& data);
 
+    DDSPIPE_PARTICIPANTS_DllAPI
     utils::ReturnCode take_nts_(
             std::unique_ptr<core::IRoutingData>& data) noexcept override;
 
@@ -79,11 +101,14 @@ class MockWriter : public BaseWriter
 {
 public:
 
+    DDSPIPE_PARTICIPANTS_DllAPI
     MockWriter(const core::types::ParticipantId& id);
 
+    DDSPIPE_PARTICIPANTS_DllAPI
     utils::ReturnCode write_nts_(
             core::IRoutingData& data) noexcept override;
 
+    DDSPIPE_PARTICIPANTS_DllAPI
     MockRoutingData wait_data();
 
 protected:
@@ -96,23 +121,14 @@ class MockTopic : public core::types::DistributedTopic
 {
 public:
 
+    DDSPIPE_PARTICIPANTS_DllAPI
     core::types::TopicInternalTypeDiscriminator internal_type_discriminator() const noexcept override;
-};
-
-struct MockRoutingData : public core::IRoutingData
-{
-public:
-
-    bool operator==(const MockRoutingData& other) const;
-
-    core::types::TopicInternalTypeDiscriminator internal_type_discriminator() const noexcept override;
-
-    std::string data;
 };
 
 /**
  * Serialization method for \c MockRoutingData object.
  */
+DDSPIPE_PARTICIPANTS_DllAPI
 std::ostream& operator <<(
         std::ostream& os,
         const MockRoutingData& t);
