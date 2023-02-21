@@ -107,6 +107,16 @@ utils::ReturnCode MockReader::take_nts_(
     return utils::ReturnCode::RETCODE_OK;
 }
 
+void MockReader::enable_nts_() noexcept
+{
+    // If there is data, notify it
+    std::lock_guard<utils::Atomicable<std::queue<MockRoutingData>>> _(data_queue_);
+    if (!data_queue_.empty())
+    {
+        on_data_available_();
+    }
+}
+
 MockWriter::MockWriter(const core::types::ParticipantId& id)
     : BaseWriter(id)
 {

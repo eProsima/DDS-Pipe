@@ -94,6 +94,8 @@ public:
 
 protected:
 
+    virtual void enable_nts_() noexcept override;
+
     utils::Atomicable<std::queue<MockRoutingData>> data_queue_;
 
 };
