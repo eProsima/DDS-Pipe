@@ -25,6 +25,7 @@
 #include <ddspipe_core/interface/IParticipant.hpp>
 #include <ddspipe_core/interface/ITopic.hpp>
 #include <ddspipe_core/interface/IRoutingData.hpp>
+#include <ddspipe_core/types/topic/filter/IFilterTopic.hpp>
 
 #include <ddspipe_participants/participant/auxiliar/BlankParticipant.hpp>
 #include <ddspipe_participants/reader/auxiliar/BaseReader.hpp>
@@ -111,6 +112,9 @@ public:
     DDSPIPE_PARTICIPANTS_DllAPI
     MockRoutingData wait_data();
 
+    DDSPIPE_PARTICIPANTS_DllAPI
+    unsigned int n_to_send_data();
+
 protected:
 
     utils::event::CounterWaitHandler waiter_{0, 0, true};
@@ -123,6 +127,19 @@ public:
 
     DDSPIPE_PARTICIPANTS_DllAPI
     core::types::TopicInternalTypeDiscriminator internal_type_discriminator() const noexcept override;
+};
+
+class MockFilterAllTopic : public core::types::IFilterTopic
+{
+public:
+    virtual bool contains(
+            const core::types::IFilterTopic& other) const;
+
+    virtual bool matches(
+            const core::ITopic& topic) const;
+
+    virtual std::ostream& serialize(
+            std::ostream& os) const;
 };
 
 /**

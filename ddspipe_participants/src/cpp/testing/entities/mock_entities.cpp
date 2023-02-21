@@ -139,6 +139,13 @@ MockRoutingData MockWriter::wait_data()
     return data;
 }
 
+unsigned int MockWriter::n_to_send_data()
+{
+    // Lock access to queue
+    std::lock_guard<utils::Atomicable<std::queue<MockRoutingData>>> _(data_queue_);
+    return data_queue_.size();
+}
+
 core::types::TopicInternalTypeDiscriminator MockTopic::internal_type_discriminator() const noexcept
 {
     return INTERNAL_TOPIC_TYPE_MOCK_TEST;
@@ -152,6 +159,25 @@ core::types::TopicInternalTypeDiscriminator MockRoutingData::internal_type_discr
 bool MockRoutingData::operator==(const MockRoutingData& other) const
 {
     return data == other.data;
+}
+
+bool MockFilterAllTopic::contains(
+        const core::types::IFilterTopic& other) const
+{
+    return true;
+}
+
+bool MockFilterAllTopic::matches(
+        const core::ITopic& topic) const
+{
+    return true;
+}
+
+std::ostream& MockFilterAllTopic::serialize(
+        std::ostream& os) const
+{
+    os << "{MockFilterAllTopic}";
+    return os;
 }
 
 std::ostream& operator <<(
