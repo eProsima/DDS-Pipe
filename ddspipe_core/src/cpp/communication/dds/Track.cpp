@@ -102,7 +102,6 @@ void Track::enable() noexcept
 
         // Enabling reader
         reader_->enable();
-
     }
 }
 

@@ -19,6 +19,7 @@
 
 #include <cpp_utils/Log.hpp>
 #include <cpp_utils/utils.hpp>
+#include <cpp_utils/memory/Heritable.hpp>
 
 #include <ddspipe_core/types/dds/DomainId.hpp>
 #include <ddspipe_core/types/dds/GuidPrefix.hpp>
@@ -401,13 +402,16 @@ void YamlReader::fill(
         const Yaml& yml,
         const YamlReaderVersion version)
 {
-    // Required name
-    object.topic_name = get<std::string>(yml, TOPIC_NAME_TAG, version);
+    // Optional name
+    if (is_tag_present(yml, TOPIC_NAME_TAG))
+    {
+        object.topic_name.set_value(get<std::string>(yml, TOPIC_NAME_TAG, version));
+    }
 
     // Optional data type
     if (is_tag_present(yml, TOPIC_TYPE_NAME_TAG))
     {
-        object.type_name = get<std::string>(yml, TOPIC_TYPE_NAME_TAG, version);
+        object.type_name.set_value(get<std::string>(yml, TOPIC_TYPE_NAME_TAG, version));
     }
 
     // TODO: decide whether we want to use QoS as filtering
@@ -421,6 +425,28 @@ WildcardDdsFilterTopic YamlReader::get(
     WildcardDdsFilterTopic object;
     fill<WildcardDdsFilterTopic>(object, yml, version);
     return object;
+}
+
+template <>
+utils::Heritable<DistributedTopic> YamlReader::get(
+        const Yaml& yml,
+        const YamlReaderVersion version)
+{
+    // TODO: do not assume it is a Dds Topic
+    auto topic = utils::Heritable<DdsTopic>::make_heritable();
+    fill<DdsTopic>(topic.get_reference(), yml, version);
+    return topic;
+}
+
+template <>
+utils::Heritable<IFilterTopic> YamlReader::get(
+        const Yaml& yml,
+        const YamlReaderVersion version)
+{
+    // TODO: do not assume it is a Wildcard Topic
+    auto topic = utils::Heritable<WildcardDdsFilterTopic>::make_heritable();
+    fill<WildcardDdsFilterTopic>(topic.get_reference(), yml, version);
+    return topic;
 }
 
 /************************

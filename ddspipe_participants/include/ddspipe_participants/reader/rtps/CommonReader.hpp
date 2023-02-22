@@ -180,13 +180,6 @@ protected:
     // Specific enable/disable do not need to be implemented
 
     /**
-     * @brief Enable specific method for RTPS reader
-     *
-     * Check if there is data available to read
-     */
-    void enable_() noexcept;
-
-    /**
      * @brief Take specific method
      *
      * Check if there are messages to take.
@@ -203,6 +196,8 @@ protected:
      */
     virtual utils::ReturnCode take_nts_(
             std::unique_ptr<core::IRoutingData>& data) noexcept override;
+
+    virtual void enable_nts_() noexcept override;
 
     /////
     // RTPS specific methods

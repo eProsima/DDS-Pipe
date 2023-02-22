@@ -25,7 +25,7 @@ namespace ddspipe {
 namespace core {
 namespace types {
 
-std::atomic<HistoryDepthType> TopicQoS::default_history_depth{1000};
+std::atomic<HistoryDepthType> TopicQoS::default_history_depth{HISTORY_DEPTH_DEFAULT};
 
 TopicQoS::TopicQoS()
 {

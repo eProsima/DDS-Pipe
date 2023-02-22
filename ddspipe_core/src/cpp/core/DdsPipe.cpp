@@ -28,15 +28,14 @@ namespace core {
 
 using namespace eprosima::ddspipe::core::types;
 
-// TODO: Use initial topics to start execution and start bridges
-
 DdsPipe::DdsPipe(
         const std::shared_ptr<AllowedTopicList>& allowed_topics,
         const std::shared_ptr<DiscoveryDatabase>& discovery_database,
         const std::shared_ptr<PayloadPool>& payload_pool,
         const std::shared_ptr<ParticipantsDatabase>& participants_database,
         const std::shared_ptr<utils::SlotThreadPool>& thread_pool,
-        const std::set<utils::Heritable<types::DistributedTopic>>& builtin_topics /* = {} */)
+        const std::set<utils::Heritable<types::DistributedTopic>>& builtin_topics, /* = {} */
+        bool start_enable /* = false */)
     : allowed_topics_(allowed_topics)
     , discovery_database_(discovery_database)
     , payload_pool_(payload_pool)
@@ -45,8 +44,6 @@ DdsPipe::DdsPipe(
     , enabled_(false)
 {
     logDebug(DDSROUTER, "Creating DDS Pipe.");
-
-    // TODO set default history qos somewhere else
 
     // Add callback to be called by the discovery database when an Endpoint is discovered
     discovery_database_->add_endpoint_discovered_callback(std::bind(&DdsPipe::discovered_endpoint_, this,
@@ -57,7 +54,16 @@ DdsPipe::DdsPipe(
             std::placeholders::_1));
 
     // Create Bridges for builtin topics
-    init_bridges_(builtin_topics);
+    init_bridges_nts_(builtin_topics);
+
+    // Enable thread pool
+    thread_pool_->enable();
+
+    // Enable if set
+    if (start_enable)
+    {
+        enable();
+    }
 
     // Init discovery database
     // The entities should not be added to the Discovery Database until the builtin topics have been created.
@@ -75,8 +81,11 @@ DdsPipe::~DdsPipe()
     // Stop Discovery Database
     discovery_database_->stop();
 
+    // Disable thread pool
+    thread_pool_->disable();
+
     // Stop all communications
-    stop_();
+    disable();
 
     // Destroy Bridges, so Writers and Readers are destroyed before the Databases
     bridges_.clear();
@@ -92,113 +101,77 @@ DdsPipe::~DdsPipe()
 utils::ReturnCode DdsPipe::reload_allowed_topics(
         const std::shared_ptr<AllowedTopicList>& allowed_topics)
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
+    std::lock_guard<std::mutex> lock(mutex_);
 
-    if (enabled_.load())
+    logDebug(DDSROUTER, "Reloading DDS Pipe configuration...");
+
+    // Check if it should change or is the same configuration
+    if (*allowed_topics == *allowed_topics_)
     {
-        logDebug(DDSROUTER, "Reloading DDS Pipe configuration...");
+        logDebug(DDSROUTER, "Same configuration, do nothing in reload.");
+        return utils::ReturnCode::RETCODE_NO_DATA;
+    }
 
-        // Check if it should change or is the same configuration
-        if (*allowed_topics == *allowed_topics_)
-        {
-            logDebug(DDSROUTER, "Same configuration, do nothing in reload.");
-            return utils::ReturnCode::RETCODE_NO_DATA;
-        }
+    // Set new Allowed list
+    allowed_topics_ = allowed_topics;
 
-        // Set new Allowed list
-        allowed_topics_ = allowed_topics;
+    logDebug(DDSROUTER, "New DDS Pipe allowed topics configuration: " << allowed_topics_);
 
-        logDebug(DDSROUTER, "New DDS Pipe allowed topics configuration: " << allowed_topics_);
-
-        // It must change the configuration. Check every topic discovered and activate/deactivate it if needed.
-        for (auto& topic_it : current_topics_)
-        {
-            // If topic is active and it is blocked, deactivate it
-            if (topic_it.second)
-            {
-                if (!allowed_topics_->is_topic_allowed(*topic_it.first))
-                {
-                    deactivate_topic_(topic_it.first);
-                }
-            }
-            else
-            {
-                // If topic is not active and it is allowed, activate it
-                if (allowed_topics_->is_topic_allowed(*topic_it.first))
-                {
-                    activate_topic_(topic_it.first);
-                }
-            }
-        }
-
-        // Check every service discovered and activate/deactivate it if needed.
-        for (auto& service_it : current_services_)
-        {
-            if (allowed_topics_->is_service_allowed(service_it.first))
-            {
-                service_it.second = true;
-                rpc_bridges_[service_it.first]->enable();
-            }
-            else
-            {
-                service_it.second = false;
-                rpc_bridges_[service_it.first]->disable();
-            }
-        }
-
+    if (!enabled_)
+    {
         return utils::ReturnCode::RETCODE_OK;
     }
-    else
+
+    // It must change the configuration. Check every topic discovered and activate/deactivate it if needed.
+    for (auto& topic_it : current_topics_)
     {
-        allowed_topics_ = allowed_topics;
-        return utils::ReturnCode::RETCODE_NOT_ENABLED;
+        // If topic is active and it is blocked, deactivate it
+        if (topic_it.second)
+        {
+            if (!allowed_topics_->is_topic_allowed(*topic_it.first))
+            {
+                deactivate_topic_nts_(topic_it.first);
+            }
+        }
+        else
+        {
+            // If topic is not active and it is allowed, activate it
+            if (allowed_topics_->is_topic_allowed(*topic_it.first))
+            {
+                activate_topic_nts_(topic_it.first);
+            }
+        }
     }
+
+    // Check every service discovered and activate/deactivate it if needed.
+    for (auto& service_it : current_services_)
+    {
+        if (allowed_topics_->is_service_allowed(service_it.first))
+        {
+            service_it.second = true;
+            rpc_bridges_[service_it.first]->enable();
+        }
+        else
+        {
+            service_it.second = false;
+            rpc_bridges_[service_it.first]->disable();
+        }
+    }
+
+    return utils::ReturnCode::RETCODE_OK;
 }
 
-utils::ReturnCode DdsPipe::start() noexcept
+utils::ReturnCode DdsPipe::enable() noexcept
 {
-    utils::ReturnCode ret = start_();
-    if (ret == utils::ReturnCode::RETCODE_OK)
+    std::lock_guard<std::mutex> lock(mutex_);
+
+    if (!enabled_)
     {
-        logInfo(DDSROUTER, "Starting DDS Pipe.");
-    }
-    else if (ret == utils::ReturnCode::RETCODE_PRECONDITION_NOT_MET)
-    {
-        logInfo(DDSROUTER, "Trying to start an enabled DDS Pipe.");
-    }
+        enabled_ = true;
 
-    return ret;
-}
+        logInfo(DDSROUTER, "Enabling DDS Pipe.");
 
-utils::ReturnCode DdsPipe::stop() noexcept
-{
-    utils::ReturnCode ret = stop_();
-    if (ret == utils::ReturnCode::RETCODE_OK)
-    {
-        logInfo(DDSROUTER, "Stopping DDS Pipe.");
-    }
-    else if (ret == utils::ReturnCode::RETCODE_PRECONDITION_NOT_MET)
-    {
-        logInfo(DDSROUTER, "Trying to stop a not enabled DDS Pipe.");
-    }
-
-    return ret;
-}
-
-utils::ReturnCode DdsPipe::start_() noexcept
-{
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
-
-    if (!enabled_.load())
-    {
-        enabled_.store(true);
-
-        logInfo(DDSROUTER, "Starting DDS Pipe.");
-
-        // Enable thread pool
-        thread_pool_->enable();
-
-        activate_all_topics_();
+        activate_all_topics_nts_();
 
         // Enable services discovered while router disabled
         for (auto it : current_services_)
@@ -214,48 +187,87 @@ utils::ReturnCode DdsPipe::start_() noexcept
     }
     else
     {
-        logInfo(DDSROUTER, "Trying to start an already enabled DDS Pipe.");
+        logInfo(DDSROUTER, "Trying to enable an already enabled DDS Pipe.");
         return utils::ReturnCode::RETCODE_PRECONDITION_NOT_MET;
     }
 }
 
-utils::ReturnCode DdsPipe::stop_() noexcept
+utils::ReturnCode DdsPipe::disable() noexcept
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
+    std::lock_guard<std::mutex> lock(mutex_);
 
-    if (enabled_.load())
+    if (enabled_)
     {
-        enabled_.store(false);
+        enabled_ = false;
 
-        logInfo(DDSROUTER, "Stopping DDS Pipe.");
+        logInfo(DDSROUTER, "Disabling DDS Pipe.");
 
-        // Disable thread pool so tasks running finish and new tasks are not taken by threads
-        thread_pool_->disable();
+        deactivate_all_topics_nts_();
 
-        deactivate_all_topics_();
         return utils::ReturnCode::RETCODE_OK;
     }
     else
     {
-        logInfo(DDSROUTER, "Trying to stop a disabled DDS Pipe.");
+        logInfo(DDSROUTER, "Trying to disable a disabled DDS Pipe.");
         return utils::ReturnCode::RETCODE_PRECONDITION_NOT_MET;
     }
 }
 
-void DdsPipe::init_bridges_(
+void DdsPipe::discovered_endpoint_(
+        const Endpoint& endpoint) noexcept
+{
+    std::lock_guard<std::mutex> lock(mutex_);
+
+    logDebug(DDSROUTER, "Endpoint discovered in DDS Pipe core: " << endpoint << ".");
+
+    // Set as discovered only if the endpoint is a Reader
+    // If non Readers in topics, it is considered as non discovered
+    if (endpoint.is_reader())
+    {
+        if (!RpcTopic::is_service_topic(endpoint.topic))
+        {
+            discovered_topic_nts_(utils::Heritable<DdsTopic>::make_heritable(endpoint.topic));
+        }
+        else if (endpoint.is_server_endpoint())
+        {
+            // Service server discovered
+            discovered_service_nts_(types::RpcTopic(
+                        endpoint.topic), endpoint.discoverer_participant_id, endpoint.guid.guid_prefix());
+        }
+    }
+}
+
+void DdsPipe::removed_endpoint_(
+        const Endpoint& endpoint) noexcept
+{
+    std::lock_guard<std::mutex> lock(mutex_);
+
+    logDebug(DDSROUTER, "Endpoint removed/dropped: " << endpoint << ".");
+
+    const DdsTopic& topic = endpoint.topic;
+    if (RpcTopic::is_service_topic(topic))
+    {
+        if (endpoint.is_server_endpoint())
+        {
+            // Service server removed/dropped
+            removed_service_nts_(types::RpcTopic(topic), endpoint.discoverer_participant_id,
+                    endpoint.guid.guid_prefix());
+        }
+    }
+}
+
+void DdsPipe::init_bridges_nts_(
         const std::set<utils::Heritable<types::DistributedTopic>>& builtin_topics)
 {
     for (const auto& topic : builtin_topics)
     {
-        discovered_topic_(topic);
+        create_new_bridge_nts_(topic, false);
     }
 }
 
-void DdsPipe::discovered_topic_(
+void DdsPipe::discovered_topic_nts_(
         const utils::Heritable<types::DistributedTopic>& topic) noexcept
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
-
     logInfo(DDSROUTER, "Discovered topic: " << topic << ".");
 
     // Check if topic already exists
@@ -270,19 +282,17 @@ void DdsPipe::discovered_topic_(
     current_topics_.emplace(topic, false);
 
     // If Pipe is enabled and topic allowed, activate it
-    if (enabled_.load() && allowed_topics_->is_topic_allowed(*topic))
+    if (enabled_ && allowed_topics_->is_topic_allowed(*topic))
     {
-        activate_topic_(topic);
+        activate_topic_nts_(topic);
     }
 }
 
-void DdsPipe::discovered_service_(
+void DdsPipe::discovered_service_nts_(
         const types::RpcTopic& topic,
         const ParticipantId& server_participant_id,
         const GuidPrefix& server_guid_prefix) noexcept
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
-
     logInfo(DDSROUTER, "Discovered service: " << topic << ".");
 
     auto it_bridge = rpc_bridges_.find(topic);
@@ -290,7 +300,7 @@ void DdsPipe::discovered_service_(
     if (it_bridge == rpc_bridges_.end())
     {
         // Create RpcBridge even if topic not allowed, as we need to store server in database
-        create_new_service_(topic);
+        create_new_service_nts_(topic);
 
         if (allowed_topics_->is_service_allowed(topic))
         {
@@ -303,19 +313,17 @@ void DdsPipe::discovered_service_(
     }
 
     rpc_bridges_[topic]->discovered_service(server_participant_id, server_guid_prefix);
-    if (enabled_.load() && current_services_[topic])
+    if (enabled_ && current_services_[topic])
     {
         rpc_bridges_[topic]->enable();
     }
 }
 
-void DdsPipe::removed_service_(
+void DdsPipe::removed_service_nts_(
         const types::RpcTopic& topic,
         const ParticipantId& server_participant_id,
         const GuidPrefix& server_guid_prefix) noexcept
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
-
     logInfo(DDSROUTER, "Removed service: " << topic << ".");
 
     auto it_bridge = rpc_bridges_.find(topic);
@@ -326,56 +334,16 @@ void DdsPipe::removed_service_(
     }
 }
 
-void DdsPipe::discovered_endpoint_(
-        const Endpoint& endpoint) noexcept
-{
-    logDebug(DDSROUTER, "Endpoint discovered in DDS Pipe core: " << endpoint << ".");
-
-    // Set as discovered only if the endpoint is a Reader
-    // If non Readers in topics, it is considered as non discovered
-    if (endpoint.is_reader())
-    {
-        if (!RpcTopic::is_service_topic(endpoint.topic))
-        {
-            discovered_topic_(utils::Heritable<DdsTopic>::make_heritable(endpoint.topic));
-        }
-        else if (endpoint.is_server_endpoint())
-        {
-            // Service server discovered
-            discovered_service_(types::RpcTopic(
-                        endpoint.topic), endpoint.discoverer_participant_id, endpoint.guid.guid_prefix());
-        }
-    }
-}
-
-void DdsPipe::removed_endpoint_(
-        const Endpoint& endpoint) noexcept
-{
-    logDebug(DDSROUTER, "Endpoint removed/dropped: " << endpoint << ".");
-
-    const DdsTopic& topic = endpoint.topic;
-    if (RpcTopic::is_service_topic(topic))
-    {
-        if (endpoint.is_server_endpoint())
-        {
-            // Service server removed/dropped
-            removed_service_(types::RpcTopic(topic), endpoint.discoverer_participant_id, endpoint.guid.guid_prefix());
-        }
-    }
-}
-
-void DdsPipe::create_new_bridge_(
+void DdsPipe::create_new_bridge_nts_(
         const utils::Heritable<types::DistributedTopic>& topic,
         bool enabled /*= false*/) noexcept
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
-
     logInfo(DDSROUTER, "Creating Bridge for topic: " << topic << ".");
 
     try
     {
         auto new_bridge = std::make_unique<DdsBridge>(topic, participants_database_, payload_pool_, thread_pool_);
-        if (enabled_)
+        if (enabled)
         {
             new_bridge->enable();
         }
@@ -389,22 +357,18 @@ void DdsPipe::create_new_bridge_(
     }
 }
 
-void DdsPipe::create_new_service_(
+void DdsPipe::create_new_service_nts_(
         const types::RpcTopic& topic) noexcept
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
-
     logInfo(DDSROUTER, "Creating Service: " << topic << ".");
 
     // Endpoints not created until enabled for the first time, so no exception can be thrown
     rpc_bridges_[topic] = std::make_unique<RpcBridge>(topic, participants_database_, payload_pool_, thread_pool_);
 }
 
-void DdsPipe::activate_topic_(
+void DdsPipe::activate_topic_nts_(
         const utils::Heritable<types::DistributedTopic>& topic) noexcept
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
-
     logInfo(DDSROUTER, "Activating topic: " << topic << ".");
 
     // Modify current_topics_ and set this topic as active
@@ -416,7 +380,7 @@ void DdsPipe::activate_topic_(
     if (it_bridge == bridges_.end())
     {
         // The Bridge did not exist
-        create_new_bridge_(topic, true);
+        create_new_bridge_nts_(topic, true);
     }
     else
     {
@@ -425,11 +389,9 @@ void DdsPipe::activate_topic_(
     }
 }
 
-void DdsPipe::deactivate_topic_(
+void DdsPipe::deactivate_topic_nts_(
         const utils::Heritable<types::DistributedTopic>& topic) noexcept
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
-
     logInfo(DDSROUTER, "Deactivating topic: " << topic << ".");
 
     // Modify current_topics_ and set this topic as non active
@@ -446,24 +408,24 @@ void DdsPipe::deactivate_topic_(
     // If the Bridge does not exist, is not need to create it
 }
 
-void DdsPipe::activate_all_topics_() noexcept
+void DdsPipe::activate_all_topics_nts_() noexcept
 {
     for (auto it : current_topics_)
     {
         // Activate all topics allowed
         if (allowed_topics_->is_topic_allowed(*it.first))
         {
-            activate_topic_(it.first);
+            activate_topic_nts_(it.first);
         }
     }
 }
 
-void DdsPipe::deactivate_all_topics_() noexcept
+void DdsPipe::deactivate_all_topics_nts_() noexcept
 {
     for (auto it : current_topics_)
     {
         // Deactivate all topics
-        deactivate_topic_(it.first);
+        deactivate_topic_nts_(it.first);
     }
 }
 

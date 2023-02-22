@@ -238,7 +238,7 @@ void CommonReader::fill_received_data_(
 
 }
 
-void CommonReader::enable_() noexcept
+void CommonReader::enable_nts_() noexcept
 {
     // If the topic is reliable, the reader will keep the samples received when it was disabled.
     // However, if the topic is best_effort, the reader will discard the samples received when it was disabled.
