@@ -32,21 +32,25 @@ struct DdsPipe : public eprosima::ddspipe::core::DdsPipe
 
     bool is_enabled() const
     {
+        std::lock_guard<std::mutex> _(mutex_);
         return enabled_;
     }
 
     bool is_topic_discovered(const eprosima::utils::Heritable<types::DistributedTopic>& topic) const
     {
+        std::lock_guard<std::mutex> _(mutex_);
         return current_topics_.find(topic) != current_topics_.end();
     }
 
     bool is_topic_discovered(const types::RpcTopic service) const
     {
+        std::lock_guard<std::mutex> _(mutex_);
         return current_services_.find(service) != current_services_.end();
     }
 
     bool is_topic_active(const eprosima::utils::Heritable<types::DistributedTopic>& topic) const
     {
+        std::lock_guard<std::mutex> _(mutex_);
         auto it = current_topics_.find(topic);
         if (it == current_topics_.end())
         {
@@ -57,6 +61,7 @@ struct DdsPipe : public eprosima::ddspipe::core::DdsPipe
 
     bool is_topic_active(const types::RpcTopic service) const
     {
+        std::lock_guard<std::mutex> _(mutex_);
         auto it = current_services_.find(service);
         if (it == current_services_.end())
         {
@@ -67,11 +72,13 @@ struct DdsPipe : public eprosima::ddspipe::core::DdsPipe
 
     bool is_bridge_created(const eprosima::utils::Heritable<types::DistributedTopic>& topic) const
     {
+        std::lock_guard<std::mutex> _(mutex_);
         return bridges_.find(topic) != bridges_.end();
     }
 
     bool is_bridge_created(const types::RpcTopic service) const
     {
+        std::lock_guard<std::mutex> _(mutex_);
         return rpc_bridges_.find(service) != rpc_bridges_.end();
     }
 };

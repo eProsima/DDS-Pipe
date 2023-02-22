@@ -36,16 +36,19 @@ std::shared_ptr<core::IWriter> MockParticipant::create_writer(
         return std::make_shared<BlankWriter>();
     }
 
+    // Block access to internal struct
+    std::lock_guard<std::mutex> _(mutex_);
+
     // Look in case it already exists
-    auto it = writers.find(topic.topic_unique_name());
-    if (it != writers.end())
+    auto it = writers_.find(topic.topic_unique_name());
+    if (it != writers_.end())
     {
         return it->second;
     }
 
     // Create a new one, store it and return it
     auto entity = std::make_shared<MockWriter>(id_);
-    writers[topic.topic_unique_name()] = entity;
+    writers_[topic.topic_unique_name()] = entity;
 
     return entity;
 }
@@ -59,18 +62,57 @@ std::shared_ptr<core::IReader> MockParticipant::create_reader(
         return std::make_shared<BlankReader>();
     }
 
+    // Block access to internal struct
+    std::lock_guard<std::mutex> _(mutex_);
+
     // Look in case it already exists
-    auto it = readers.find(topic.topic_unique_name());
-    if (it != readers.end())
+    auto it = readers_.find(topic.topic_unique_name());
+    if (it != readers_.end())
     {
         return it->second;
     }
 
     // Create a new one, store it and return it
     auto entity = std::make_shared<MockReader>(id_);
-    readers[topic.topic_unique_name()] = entity;
+    readers_[topic.topic_unique_name()] = entity;
 
     return entity;
+}
+
+unsigned int MockParticipant::n_writers() const
+{
+    std::lock_guard<std::mutex> _(mutex_);
+    return writers_.size();
+}
+
+unsigned int MockParticipant::n_readers() const
+{
+    std::lock_guard<std::mutex> _(mutex_);
+    return readers_.size();
+}
+
+std::shared_ptr<MockWriter> MockParticipant::get_writer(
+        const core::ITopic& topic) const
+{
+    std::lock_guard<std::mutex> _(mutex_);
+    auto it = writers_.find(topic.topic_unique_name());
+    if (it == writers_.end())
+    {
+        return std::shared_ptr<MockWriter>();
+    }
+    return it->second;
+}
+
+std::shared_ptr<MockReader> MockParticipant::get_reader(
+        const core::ITopic& topic) const
+{
+    std::lock_guard<std::mutex> _(mutex_);
+    auto it = readers_.find(topic.topic_unique_name());
+    if (it == readers_.end())
+    {
+        return std::shared_ptr<MockReader>();
+    }
+    return it->second;
 }
 
 MockReader::MockReader(const core::types::ParticipantId& id)

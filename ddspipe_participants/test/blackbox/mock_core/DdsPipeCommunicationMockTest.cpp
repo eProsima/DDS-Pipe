@@ -80,8 +80,8 @@ TEST(DdsPipeCommunicationMockTest, mock_communication_trivial)
     );
 
     // Look for the reader in participant 1 and writer in participant 2
-    auto reader_1 = part_1->readers[topic_1.topic_unique_name()];
-    auto writer_2 = part_2->writers[topic_1.topic_unique_name()];
+    auto reader_1 = part_1->get_reader(topic_1);
+    auto writer_2 = part_2->get_writer(topic_1);
     ASSERT_NE(reader_1, nullptr);
     ASSERT_NE(writer_2, nullptr);
 
@@ -147,8 +147,8 @@ TEST(DdsPipeCommunicationMockTest, mock_communication_before_enabling)
     );
 
     // Look for the reader in participant 1 and writer in participant 2
-    auto reader_1 = part_1->readers[topic_1.topic_unique_name()];
-    auto writer_2 = part_2->writers[topic_1.topic_unique_name()];
+    auto reader_1 = part_1->get_reader(topic_1);
+    auto writer_2 = part_2->get_writer(topic_1);
     ASSERT_NE(reader_1, nullptr);
     ASSERT_NE(writer_2, nullptr);
 
@@ -246,10 +246,10 @@ TEST(DdsPipeCommunicationMockTest, mock_communication_topic_discovery)
     ddspipe.enable();
 
     // Check there are no endpoints created yet
-    ASSERT_EQ(part_1->readers.size(), 0);
-    ASSERT_EQ(part_1->writers.size(), 0);
-    ASSERT_EQ(part_2->readers.size(), 0);
-    ASSERT_EQ(part_2->writers.size(), 0);
+    ASSERT_EQ(part_1->n_readers(), 0);
+    ASSERT_EQ(part_1->n_writers(), 0);
+    ASSERT_EQ(part_2->n_readers(), 0);
+    ASSERT_EQ(part_2->n_writers(), 0);
 
     // Simulate endpoint to discover topic
     core::types::Endpoint endpoint = core::testing::random_endpoint();
@@ -258,11 +258,11 @@ TEST(DdsPipeCommunicationMockTest, mock_communication_topic_discovery)
     disc_db->add_endpoint(endpoint);
 
     // Wait for entities to be created
-    utils::sleep_for(50);
+    utils::sleep_for(100);
 
     // Look for the reader in participant 1 and writer in participant 2
-    auto reader_1 = part_1->readers[topic_1.topic_unique_name()];
-    auto writer_2 = part_2->writers[topic_1.topic_unique_name()];
+    auto reader_1 = part_1->get_reader(topic_1);
+    auto writer_2 = part_2->get_writer(topic_1);
     ASSERT_NE(reader_1, nullptr);
     ASSERT_NE(writer_2, nullptr);
 
@@ -336,8 +336,8 @@ TEST(DdsPipeCommunicationMockTest, mock_communication_topic_allow)
     );
 
     // Look for the reader in participant 1 and writer in participant 2
-    auto reader_1 = part_1->readers[topic_1.topic_unique_name()];
-    auto writer_2 = part_2->writers[topic_1.topic_unique_name()];
+    auto reader_1 = part_1->get_reader(topic_1);
+    auto writer_2 = part_2->get_writer(topic_1);
     ASSERT_NE(reader_1, nullptr);
     ASSERT_NE(writer_2, nullptr);
 
@@ -421,7 +421,7 @@ TEST(DdsPipeCommunicationMockTest, mock_communication_multiple_participant_topic
     {
         for (unsigned int j=0; j<test::N_TOPICS; j++)
         {
-            auto reader = participants[i]->readers[topics[j].first.topic_unique_name()];
+            auto reader = participants[i]->get_reader(topics[j].first);
             ASSERT_NE(reader, nullptr);
 
             // Simulate N messages
@@ -439,7 +439,7 @@ TEST(DdsPipeCommunicationMockTest, mock_communication_multiple_participant_topic
     {
         for (unsigned int j=0; j<test::N_TOPICS; j++)
         {
-            auto writer = participants[i]->writers[topics[j].first.topic_unique_name()];
+            auto writer = participants[i]->get_writer(topics[j].first);
             ASSERT_NE(writer, nullptr);
 
             // Wait for (#Participants x #messages) messages

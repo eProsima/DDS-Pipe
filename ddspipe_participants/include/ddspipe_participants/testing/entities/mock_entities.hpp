@@ -58,8 +58,26 @@ public:
     std::shared_ptr<core::IReader> create_reader(
             const core::ITopic& topic) override;
 
-    std::map<std::string, std::shared_ptr<MockWriter>> writers;
-    std::map<std::string, std::shared_ptr<MockReader>> readers;
+    DDSPIPE_PARTICIPANTS_DllAPI
+    unsigned int n_writers() const;
+
+    DDSPIPE_PARTICIPANTS_DllAPI
+    unsigned int n_readers() const;
+
+    DDSPIPE_PARTICIPANTS_DllAPI
+    std::shared_ptr<MockWriter> get_writer(
+            const core::ITopic& topic) const;
+
+    DDSPIPE_PARTICIPANTS_DllAPI
+    std::shared_ptr<MockReader> get_reader(
+            const core::ITopic& topic) const;
+
+protected:
+
+    std::map<std::string, std::shared_ptr<MockWriter>> writers_;
+    std::map<std::string, std::shared_ptr<MockReader>> readers_;
+
+    mutable std::mutex mutex_;
 };
 
 /**
