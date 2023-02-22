@@ -13,15 +13,18 @@
 // limitations under the License.
 
 /**
- * @file SchemaWriter.cpp
+ * @file TypeObjectWriter.cpp
  */
 
 #include <cpp_utils/Log.hpp>
-#include <cpp_utils/exception/InconsistencyException.hpp>
 
-#include <ddspipe_core/types/data/RtpsPayloadData.hpp>
+#include <fastrtps/types/DynamicType.h>
+#include <fastrtps/types/DynamicTypePtr.h>
 
-#include <ddspipe_participants/writer/dyn_types/SchemaWriter.hpp>
+#include <ddspipe_core/types/dynamic_types/schema.hpp>
+#include <ddspipe_core/types/dynamic_types/types.hpp>
+
+#include <ddspipe_participants/writer/dynamic_types/TypeObjectWriter.hpp>
 
 namespace eprosima {
 namespace ddspipe {
@@ -29,41 +32,31 @@ namespace participants {
 
 using namespace eprosima::ddspipe::core;
 using namespace eprosima::ddspipe::core::types;
-using eprosima::ddspipe::core::types::operator <<;
 
-SchemaWriter::SchemaWriter(
+TypeObjectWriter::TypeObjectWriter(
         const ParticipantId& participant_id,
-        const DdsTopic& topic,
-        std::shared_ptr<PayloadPool> payload_pool,
         std::shared_ptr<ISchemaHandler> schema_handler)
-    : BaseWriter(participant_id, payload_pool)
-    , topic_(topic)
+    : BaseWriter(participant_id)
     , schema_handler_(schema_handler)
 {
     // Do nothing
 }
 
-utils::ReturnCode SchemaWriter::write_(
-        core::IRoutingData& data) noexcept
+utils::ReturnCode TypeObjectWriter::write_nts_(
+        IRoutingData& data) noexcept
 {
-    auto& rtps_data = dynamic_cast<RtpsPayloadData&>(data);
-
-    logInfo(DDSPIPE_SCHEMA_WRITER,
-            "Data in topic: "
-            << topic_ << " received: "
-            << rtps_data.payload
-            );
-
-    // Add this data to the schema handler
+    // Add schema
     try
     {
-        schema_handler_->add_data(topic_, rtps_data);
+        auto& dynamic_type_data = dynamic_cast<DynamicTypeData&>(data);
+        schema_handler_->add_schema(dynamic_type_data.dynamic_type);
     }
     catch (const utils::Exception& e)
     {
-        logWarning(
-            DDSPIPE_SCHEMA_WRITER,
-            "Error writting data: <" << e.what() << ">.");
+        logError(
+            DDSPIPE_TYPEOBJECT_WRITER,
+            "Error generating schema: <" << e.what() << ">.");
+        return utils::ReturnCode::RETCODE_ERROR;
     }
 
     return utils::ReturnCode::RETCODE_OK;

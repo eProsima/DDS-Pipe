@@ -13,13 +13,20 @@
 // limitations under the License.
 
 /**
- * @file SchemaHandler.hpp
+ * @file SchemaWriter.hpp
  */
 
 #pragma once
 
-#include <ddspipe_core/types/data/RtpsPayloadData.hpp>
+#include <condition_variable>
+#include <mutex>
+
+#include <cpp_utils/time/time_utils.hpp>
+
 #include <ddspipe_core/types/topic/dds/DdsTopic.hpp>
+
+#include <ddspipe_participants/participant/dynamic_types/ISchemaHandler.hpp>
+#include <ddspipe_participants/writer/auxiliar/BaseWriter.hpp>
 
 namespace eprosima {
 namespace ddspipe {
@@ -28,17 +35,32 @@ namespace participants {
 /**
  * TODO
  */
-class ISchemaHandler
+class SchemaWriter : public BaseWriter
 {
 public:
 
-    virtual void add_schema(
-            const std::string& schema_name,
-            const std::string& schema_text) = 0;
-
-    virtual void add_data(
+    SchemaWriter(
+            const core::types::ParticipantId& participant_id,
             const core::types::DdsTopic& topic,
-            core::types::RtpsPayloadData& data) = 0;
+            std::shared_ptr<core::PayloadPool> payload_pool,
+            std::shared_ptr<ISchemaHandler> schema_handler);
+
+protected:
+
+    /**
+     * @brief Write specific method
+     *
+     * @param data : data to simulate publication
+     * @return RETCODE_OK always
+     */
+    utils::ReturnCode write_nts_(
+            core::IRoutingData& data) noexcept override;
+
+    core::types::DdsTopic topic_;
+
+    std::shared_ptr<ISchemaHandler> schema_handler_;
+
+    std::shared_ptr<core::PayloadPool> payload_pool_;
 };
 
 } /* namespace participants */

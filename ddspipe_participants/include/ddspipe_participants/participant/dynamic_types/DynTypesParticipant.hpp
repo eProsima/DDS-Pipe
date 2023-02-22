@@ -32,6 +32,8 @@ namespace participants {
 /**
  * This is an abomination Participant that is a Simple RTPS Participant with a built-in DDS Participant.
  * The DDS Part that is only used to read type objects and type lookup services.
+ *
+ * TODO: separate these 2 participants
  */
 class DynTypesParticipant : public rtps::SimpleParticipant, public eprosima::fastdds::dds::DomainParticipantListener
 {

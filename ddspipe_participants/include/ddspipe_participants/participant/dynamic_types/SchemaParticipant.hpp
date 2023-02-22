@@ -12,10 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-/**
- * @file SchemaParticipant.hpp
- */
-
 #pragma once
 
 #include <ddspipe_core/dynamic/DiscoveryDatabase.hpp>
@@ -23,7 +19,7 @@
 #include <ddspipe_core/interface/IParticipant.hpp>
 
 #include <ddspipe_participants/configuration/ParticipantConfiguration.hpp>
-#include <ddspipe_participants/participant/dyn_types/ISchemaHandler.hpp>
+#include <ddspipe_participants/participant/dynamic_types/ISchemaHandler.hpp>
 
 namespace eprosima {
 namespace ddspipe {

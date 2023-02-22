@@ -25,7 +25,7 @@ namespace ddspipe {
 namespace core {
 namespace types {
 
-std::string generate_dyn_type_schema(
+std::string generate_ros2_schema(
         const fastrtps::types::DynamicType_ptr& dynamic_type);
 
 } /* namespace types */

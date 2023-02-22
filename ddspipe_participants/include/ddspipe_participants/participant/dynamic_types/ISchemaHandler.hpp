@@ -12,19 +12,36 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include <ddspipe_core/types/data/DynamicTypeData.hpp>
+/**
+ * @file SchemaHandler.hpp
+ */
+
+#pragma once
+
+#include <fastrtps/types/DynamicTypePtr.h>
+
+#include <ddspipe_core/types/data/RtpsPayloadData.hpp>
+#include <ddspipe_core/types/topic/dds/DdsTopic.hpp>
 
 namespace eprosima {
 namespace ddspipe {
-namespace core {
-namespace types {
+namespace participants {
 
-types::TopicInternalTypeDiscriminator DynamicTypeData::internal_type_discriminator() const noexcept
+/**
+ * TODO
+ */
+class ISchemaHandler
 {
-    return INTERNAL_TOPIC_TYPE_DYNAMIC_TYPE;
-}
+public:
 
-} /* namespace types */
-} /* namespace core */
+    virtual void add_schema(
+            const fastrtps::types::DynamicType_ptr& schema) = 0;
+
+    virtual void add_data(
+            const core::types::DdsTopic& topic,
+            core::types::RtpsPayloadData& data) = 0;
+};
+
+} /* namespace participants */
 } /* namespace ddspipe */
 } /* namespace eprosima */
