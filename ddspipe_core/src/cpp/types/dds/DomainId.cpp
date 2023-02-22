@@ -19,6 +19,8 @@ namespace ddspipe {
 namespace core {
 namespace types {
 
+constexpr const DomainIdType DomainId::MAX_DOMAIN_ID;
+
 DomainId::DomainId (
         bool discovery_server) noexcept
     : domain_id(DEFAULT_DOMAIN_ID)
