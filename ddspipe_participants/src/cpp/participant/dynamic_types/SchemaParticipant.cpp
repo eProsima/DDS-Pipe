@@ -17,15 +17,16 @@
  */
 
 #include <cpp_utils/Log.hpp>
+#include <cpp_utils/types/cast.hpp>
 
 #include <ddspipe_participants/reader/auxiliar/BlankReader.hpp>
 #include <ddspipe_participants/writer/auxiliar/BlankWriter.hpp>
-#include <ddspipe_participants/writer/dyn_types/SchemaWriter.hpp>
-#include <ddspipe_participants/writer/dyn_types/TypeObjectWriter.hpp>
+#include <ddspipe_participants/writer/dynamic_types/SchemaWriter.hpp>
+#include <ddspipe_participants/writer/dynamic_types/TypeObjectWriter.hpp>
 
 #include <ddspipe_core/types/dynamic_types/types.hpp>
 
-#include <ddspipe_participants/participant/dyn_types/SchemaParticipant.hpp>
+#include <ddspipe_participants/participant/dynamic_types/SchemaParticipant.hpp>
 
 namespace eprosima {
 namespace ddspipe {
@@ -82,21 +83,18 @@ bool SchemaParticipant::is_rtps_kind() const noexcept
 std::shared_ptr<IWriter> SchemaParticipant::create_writer(
         const ITopic& topic)
 {
-    const DdsTopic* dds_topic_ptr = dynamic_cast<const DdsTopic*>(&topic);
-    if (!dds_topic_ptr)
+    if (is_type_object_topic(topic))
     {
-        logDebug(DDSPIPE_SCHEMA_PARTICIPANT, "Not creating Writer for topic " << topic.topic_name());
-        return std::make_shared<BlankWriter>();
-    }
-    const core::types::DdsTopic& dds_topic = *dds_topic_ptr;
-
-    if (is_type_object_topic(dds_topic))
-    {
-        return std::make_shared<TypeObjectWriter>(id(), payload_pool_, schema_handler_);
+        return std::make_shared<TypeObjectWriter>(id(), schema_handler_);
     }
     else
     {
-        return std::make_shared<SchemaWriter>(id(), dds_topic, payload_pool_, schema_handler_);
+        if (utils::can_cast<DdsTopic>(topic))
+        {
+            logDebug(DDSPIPE_SCHEMA_PARTICIPANT, "Not creating Writer for topic " << topic.topic_name());
+            return std::make_shared<BlankWriter>();
+        }
+        return std::make_shared<SchemaWriter>(id(), dynamic_cast<const DdsTopic&>(topic), payload_pool_, schema_handler_);
     }
 }
 
@@ -111,7 +109,7 @@ Endpoint SchemaParticipant::simulate_endpoint_(
 {
     Endpoint endpoint;
     endpoint.kind = EndpointKind::reader;
-    endpoint.guid = new_unique_guid();
+    endpoint.guid = Guid::new_unique_guid();
     endpoint.topic = topic;
     endpoint.discoverer_participant_id = this->id();
 

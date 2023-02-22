@@ -29,23 +29,10 @@ using namespace eprosima::ddspipe::core;
 using namespace eprosima::ddspipe::core::types;
 
 InternalReader::InternalReader(
-        const ParticipantId& participant_id,
-        const std::shared_ptr<PayloadPool>& payload_pool)
-    : BaseReader(participant_id, payload_pool)
+        const ParticipantId& participant_id)
+    : BaseReader(participant_id)
 {
     // Do nothing
-}
-
-InternalReader::~InternalReader()
-{
-    std::lock_guard<DataReceivedType> lock(data_to_send_);
-
-    while (!data_to_send_.empty())
-    {
-        // Get first value
-        std::unique_ptr<IRoutingData> next_data_to_send = std::move(data_to_send_.front());
-        data_to_send_.pop();
-    }
 }
 
 void InternalReader::enable_nts_() noexcept
@@ -56,26 +43,6 @@ void InternalReader::enable_nts_() noexcept
     {
         on_data_available_();
     }
-}
-
-Guid InternalReader::guid() const
-{
-    throw utils::UnsupportedException("guid method not allowed for non RTPS readers.");
-}
-
-fastrtps::RecursiveTimedMutex& InternalReader::get_rtps_mutex() const
-{
-    throw utils::UnsupportedException("get_rtps_mutex method not allowed for non RTPS readers.");
-}
-
-uint64_t InternalReader::get_unread_count() const
-{
-    throw utils::UnsupportedException("get_unread_count method not allowed for non RTPS readers.");
-}
-
-DdsTopic InternalReader::topic() const
-{
-    throw utils::UnsupportedException("topic method not allowed for non RTPS readers.");
 }
 
 void InternalReader::simulate_data_reception(

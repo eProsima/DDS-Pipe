@@ -25,36 +25,25 @@ namespace ddspipe {
 namespace core {
 namespace types {
 
+types::TopicInternalTypeDiscriminator DynamicTypeData::internal_type_discriminator() const noexcept
+{
+    return INTERNAL_TOPIC_TYPE_DYNAMIC_TYPE;
+}
+
 DdsTopic type_object_topic()
 {
     DdsTopic topic;
     topic.m_topic_name = TYPE_OBJECT_TOPIC_NAME;
     topic.type_name = TYPE_OBJECT_DATA_TYPE_NAME;
+    topic.m_internal_type_discriminator = INTERNAL_TOPIC_TYPE_DYNAMIC_TYPE;
 
     return topic;
 }
 
 bool is_type_object_topic(
-        const DdsTopic& topic)
+        const ITopic& topic)
 {
-    return (strcmp(topic.m_topic_name.c_str(), TYPE_OBJECT_TOPIC_NAME) == 0)
-           && (strcmp(topic.type_name.c_str(), TYPE_OBJECT_DATA_TYPE_NAME) == 0);
-}
-
-Guid new_unique_guid()
-{
-    static unsigned int current_unique_value = 0;
-
-    Guid new_guid;
-    unsigned int numer = ++current_unique_value;
-    unsigned int denom = 256;
-    for (int i = 0; i < fastrtps::rtps::EntityId_t::size; i++)
-    {
-        new_guid.entityId.value[i] = numer % denom;
-        numer = floor(numer / denom);
-    }
-
-    return new_guid;
+    return topic.internal_type_discriminator() == INTERNAL_TOPIC_TYPE_DYNAMIC_TYPE;
 }
 
 } /* namespace types */

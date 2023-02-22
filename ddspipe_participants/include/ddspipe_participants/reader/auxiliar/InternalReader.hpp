@@ -47,33 +47,9 @@ public:
      */
     DDSPIPE_PARTICIPANTS_DllAPI
     InternalReader(
-            const core::types::ParticipantId& participant_id,
-            const std::shared_ptr<core::PayloadPool>& payload_pool);
+            const core::types::ParticipantId& participant_id);
 
-    ~InternalReader();
-
-    void enable_nts_() noexcept override;
-
-    /////////////////////////
-    // RPC REQUIRED METHODS
-    /////////////////////////
-    // TODO remove these methods once the double reference is solved
-
-    //! Get GUID of internal RTPS reader
-    DDSPIPE_PARTICIPANTS_DllAPI
-    core::types::Guid guid() const override;
-
-    //! Get internal RTPS reader mutex
-    DDSPIPE_PARTICIPANTS_DllAPI
-    fastrtps::RecursiveTimedMutex& get_rtps_mutex() const override;
-
-    //! Get number of unread cache changes in internal RTPS reader
-    DDSPIPE_PARTICIPANTS_DllAPI
-    uint64_t get_unread_count() const override;
-
-    DDSPIPE_PARTICIPANTS_DllAPI
-    core::types::DdsTopic topic() const override;
-    /////////////////////////
+    ~InternalReader() = default;
 
     /**
      * @brief Simulate data reception on Reader
@@ -85,6 +61,8 @@ public:
             std::unique_ptr<core::IRoutingData>&& data) noexcept;
 
 protected:
+
+    void enable_nts_() noexcept override;
 
     /**
      * @brief Take specific method

@@ -62,6 +62,9 @@ public:
     //! Return GuidPrefix from this Guid
     DDSPIPE_CORE_DllAPI
     GuidPrefix guid_prefix() const noexcept;
+
+    DDSPIPE_CORE_DllAPI
+    static Guid new_unique_guid();
 };
 
 } /* namespace types */

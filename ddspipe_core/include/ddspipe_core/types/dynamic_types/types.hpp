@@ -12,15 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-/**
- * @file types.hpp
- */
-
 #pragma once
 
 #include <fastrtps/types/DynamicTypePtr.h>
 
-#include <ddspipe_core/types/dds/Guid.hpp>
+#include <ddspipe_core/interface/IRoutingData.hpp>
+#include <ddspipe_core/library/library_dll.h>
+#include <ddspipe_core/types/topic/TopicInternalTypeDiscriminator.hpp>
 #include <ddspipe_core/types/topic/dds/DdsTopic.hpp>
 
 namespace eprosima {
@@ -28,15 +26,27 @@ namespace ddspipe {
 namespace core {
 namespace types {
 
-constexpr const char* TYPE_OBJECT_TOPIC_NAME = "__internal__/type_object";
-constexpr const char* TYPE_OBJECT_DATA_TYPE_NAME = "__internal__::type_object";
+struct DynamicTypeData : public core::IRoutingData
+{
+
+    DDSPIPE_CORE_DllAPI
+    DynamicTypeData() = default;
+
+    DDSPIPE_CORE_DllAPI
+    virtual types::TopicInternalTypeDiscriminator internal_type_discriminator() const noexcept override;
+
+    fastrtps::types::DynamicType_ptr dynamic_type{nullptr};
+};
 
 DdsTopic type_object_topic();
 
 bool is_type_object_topic(
-        const DdsTopic& topic);
+        const ITopic& topic);
 
-Guid new_unique_guid();
+constexpr const char* TYPE_OBJECT_TOPIC_NAME = "__internal__/type_object";
+constexpr const char* TYPE_OBJECT_DATA_TYPE_NAME = "__internal__::type_object";
+
+const core::types::TopicInternalTypeDiscriminator INTERNAL_TOPIC_TYPE_DYNAMIC_TYPE = "dynamic::type::v0";
 
 } /* namespace types */
 } /* namespace core */

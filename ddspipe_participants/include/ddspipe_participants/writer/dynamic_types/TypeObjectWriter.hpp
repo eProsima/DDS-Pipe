@@ -13,7 +13,7 @@
 // limitations under the License.
 
 /**
- * @file SchemaWriter.hpp
+ * @file TypeObjectWriter.hpp
  */
 
 #pragma once
@@ -23,9 +23,8 @@
 
 #include <cpp_utils/time/time_utils.hpp>
 
-#include <ddspipe_core/types/topic/dds/DdsTopic.hpp>
-
-#include <ddspipe_participants/participant/dyn_types/ISchemaHandler.hpp>
+#include <ddspipe_participants/library/library_dll.h>
+#include <ddspipe_participants/participant/dynamic_types/ISchemaHandler.hpp>
 #include <ddspipe_participants/writer/auxiliar/BaseWriter.hpp>
 
 namespace eprosima {
@@ -35,14 +34,13 @@ namespace participants {
 /**
  * TODO
  */
-class SchemaWriter : public BaseWriter
+class TypeObjectWriter : public BaseWriter
 {
 public:
 
-    SchemaWriter(
+    DDSPIPE_PARTICIPANTS_DllAPI
+    TypeObjectWriter(
             const core::types::ParticipantId& participant_id,
-            const core::types::DdsTopic& topic,
-            std::shared_ptr<core::PayloadPool> payload_pool,
             std::shared_ptr<ISchemaHandler> schema_handler);
 
 protected:
@@ -53,10 +51,8 @@ protected:
      * @param data : data to simulate publication
      * @return RETCODE_OK always
      */
-    utils::ReturnCode write_(
+    utils::ReturnCode write_nts_(
             core::IRoutingData& data) noexcept override;
-
-    core::types::DdsTopic topic_;
 
     std::shared_ptr<ISchemaHandler> schema_handler_;
 };

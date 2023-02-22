@@ -27,7 +27,6 @@
 #include <fastrtps/types/DynamicTypePtr.h>
 #include <fastrtps/types/TypeObjectFactory.h>
 
-#include <ddspipe_core/types/data/DynamicTypeData.hpp>
 #include <ddspipe_core/types/dynamic_types/types.hpp>
 
 #include <ddspipe_participants/reader/auxiliar/BlankReader.hpp>
@@ -35,7 +34,7 @@
 #include <ddspipe_participants/reader/rtps/SpecificQoSReader.hpp>
 #include <ddspipe_participants/writer/auxiliar/BlankWriter.hpp>
 
-#include <ddspipe_participants/participant/dyn_types/DynTypesParticipant.hpp>
+#include <ddspipe_participants/participant/dynamic_types/DynTypesParticipant.hpp>
 
 namespace eprosima {
 namespace ddspipe {
@@ -53,8 +52,7 @@ DynTypesParticipant::DynTypesParticipant(
         payload_pool,
         discovery_database)
     , type_object_reader_(std::make_shared<InternalReader>(
-                this->id(),
-                this->payload_pool_))
+                this->id()))
 {
     // Do nothing
 }
@@ -75,51 +73,21 @@ void DynTypesParticipant::init()
 std::shared_ptr<IWriter> DynTypesParticipant::create_writer(
         const ITopic& topic)
 {
+    // This participant does not write anything
     return std::make_shared<BlankWriter>();
 }
 
 std::shared_ptr<IReader> DynTypesParticipant::create_reader(
         const ITopic& topic)
 {
-    // Can only create DDS Topics
-    const DdsTopic* dds_topic_ptr = dynamic_cast<const DdsTopic*>(&topic);
-    if (!dds_topic_ptr)
-    {
-        logDebug(DDSPIPE_DYNTYPES_PARTICIPANT, "Not creating Writer for topic " << topic.topic_name());
-        return std::make_shared<BlankReader>();
-    }
-    const DdsTopic& dds_topic = *dds_topic_ptr;
-
-    if (is_type_object_topic(dds_topic))
+    // If type object topic, return the internal reader for type objects
+    if (is_type_object_topic(topic))
     {
         return this->type_object_reader_;
     }
-    else
-    {
-        if (dds_topic.topic_qos.has_partitions() || dds_topic.topic_qos.has_ownership())
-        {
-            auto reader = std::make_shared<rtps::SpecificQoSReader>(
-                this->id(),
-                dds_topic,
-                this->payload_pool_,
-                rtps_participant_,
-                discovery_database_);
-            reader->init();
 
-            return reader;
-        }
-        else
-        {
-            auto reader = std::make_shared<rtps::SimpleReader>(
-                this->id(),
-                dds_topic,
-                this->payload_pool_,
-                rtps_participant_);
-            reader->init();
-
-            return reader;
-        }
-    }
+    // If not type object, use the parent method
+    return rtps::SimpleParticipant::create_reader(topic);
 }
 
 void DynTypesParticipant::on_type_discovery(

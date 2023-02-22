@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#include<cmath>
+
 #include <ddspipe_core/types/dds/Guid.hpp>
 
 namespace eprosima {
@@ -50,6 +52,23 @@ bool Guid::is_valid() const noexcept
 GuidPrefix Guid::guid_prefix() const noexcept
 {
     return GuidPrefix(guidPrefix);
+}
+
+Guid Guid::new_unique_guid()
+{
+    static unsigned int current_unique_value = 0;
+
+    // TODO randomize the guid prefix as well ¿?
+    Guid new_guid;
+    unsigned int numer = ++current_unique_value;
+    unsigned int denom = 256;
+    for (int i = 0; i < fastrtps::rtps::EntityId_t::size; i++)
+    {
+        new_guid.entityId.value[i] = numer % denom;
+        numer = std::floor(numer / denom);
+    }
+
+    return new_guid;
 }
 
 } /* namespace types */
