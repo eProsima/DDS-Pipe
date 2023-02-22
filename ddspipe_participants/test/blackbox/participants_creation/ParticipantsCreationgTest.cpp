@@ -62,7 +62,7 @@ TEST(ParticipantsCreationgTest, creation_trivial)
     // Echo
     {
         std::shared_ptr<participants::EchoParticipantConfiguration> conf(
-                new participants::EchoParticipantConfiguration());
+            new participants::EchoParticipantConfiguration());
         conf->id = part_id;
 
         participants::EchoParticipant participant(conf, discovery_database);
@@ -71,7 +71,7 @@ TEST(ParticipantsCreationgTest, creation_trivial)
     // Simple
     {
         std::shared_ptr<participants::SimpleParticipantConfiguration> conf(
-                new participants::SimpleParticipantConfiguration());
+            new participants::SimpleParticipantConfiguration());
         conf->id = part_id;
 
         participants::rtps::SimpleParticipant participant(conf, payload_pool, discovery_database);
@@ -81,7 +81,7 @@ TEST(ParticipantsCreationgTest, creation_trivial)
     // Discovery Server
     {
         std::shared_ptr<participants::InitialPeersParticipantConfiguration> conf(
-                new participants::InitialPeersParticipantConfiguration());
+            new participants::InitialPeersParticipantConfiguration());
         conf->id = part_id;
         conf->listening_addresses.insert(participants::testing::random_address());
 
@@ -92,7 +92,7 @@ TEST(ParticipantsCreationgTest, creation_trivial)
     // Initial Peers
     {
         std::shared_ptr<participants::DiscoveryServerParticipantConfiguration> conf(
-                new participants::DiscoveryServerParticipantConfiguration());
+            new participants::DiscoveryServerParticipantConfiguration());
         conf->id = part_id;
         conf->listening_addresses.insert(participants::testing::random_address());
 
@@ -125,17 +125,17 @@ TEST(ParticipantsCreationgTest, ddspipe_all_creation_builtin_topic)
     // Echo
     {
         std::shared_ptr<participants::EchoParticipantConfiguration> conf(
-                new participants::EchoParticipantConfiguration());
+            new participants::EchoParticipantConfiguration());
         conf->id = core::types::ParticipantId("Echo");
 
         part_db->add_participant(conf->id, std::make_shared<participants::EchoParticipant>(
-            conf, discovery_database));
+                    conf, discovery_database));
     }
 
     // Simple
     {
         std::shared_ptr<participants::SimpleParticipantConfiguration> conf(
-                new participants::SimpleParticipantConfiguration());
+            new participants::SimpleParticipantConfiguration());
         conf->id = core::types::ParticipantId("Simple");
 
         auto part = std::make_shared<participants::rtps::SimpleParticipant>(
@@ -147,7 +147,7 @@ TEST(ParticipantsCreationgTest, ddspipe_all_creation_builtin_topic)
     // Discovery Server
     {
         std::shared_ptr<participants::DiscoveryServerParticipantConfiguration> conf(
-                new participants::DiscoveryServerParticipantConfiguration());
+            new participants::DiscoveryServerParticipantConfiguration());
         conf->id = core::types::ParticipantId("DiscoveryServer");
         conf->listening_addresses.insert(participants::testing::random_address(1));
 
@@ -160,7 +160,7 @@ TEST(ParticipantsCreationgTest, ddspipe_all_creation_builtin_topic)
     // Initial Peers
     {
         std::shared_ptr<participants::InitialPeersParticipantConfiguration> conf(
-                new participants::InitialPeersParticipantConfiguration());
+            new participants::InitialPeersParticipantConfiguration());
         conf->id = core::types::ParticipantId("InitialPeers");
         conf->listening_addresses.insert(participants::testing::random_address(2));
 
@@ -175,7 +175,7 @@ TEST(ParticipantsCreationgTest, ddspipe_all_creation_builtin_topic)
     topic_1.m_topic_name = "topic1";
     topic_1.type_name = "type1";
     eprosima::utils::Heritable<core::types::DistributedTopic> htopic_1 =
-        eprosima::utils::Heritable<core::types::DdsTopic>::make_heritable(topic_1);
+            eprosima::utils::Heritable<core::types::DdsTopic>::make_heritable(topic_1);
 
     // Create DDS Pipe
     core::DdsPipe ddspipe(
@@ -186,7 +186,7 @@ TEST(ParticipantsCreationgTest, ddspipe_all_creation_builtin_topic)
         thread_pool,
         {htopic_1},
         true
-    );
+        );
 
     // Let everything destroy by itself
 }

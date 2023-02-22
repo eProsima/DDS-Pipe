@@ -21,7 +21,8 @@ namespace ddspipe {
 namespace participants {
 namespace testing {
 
-MockParticipant::MockParticipant(const core::types::ParticipantId& id)
+MockParticipant::MockParticipant(
+        const core::types::ParticipantId& id)
     : BlankParticipant(id)
 {
     // Do nothing
@@ -115,13 +116,15 @@ std::shared_ptr<MockReader> MockParticipant::get_reader(
     return it->second;
 }
 
-MockReader::MockReader(const core::types::ParticipantId& id)
+MockReader::MockReader(
+        const core::types::ParticipantId& id)
     : BaseReader(id)
 {
     // Do nothing
 }
 
-void MockReader::simulate_data_reception(MockRoutingData&& data)
+void MockReader::simulate_data_reception(
+        MockRoutingData&& data)
 {
     {
         // Lock access to queue
@@ -159,7 +162,8 @@ void MockReader::enable_nts_() noexcept
     }
 }
 
-MockWriter::MockWriter(const core::types::ParticipantId& id)
+MockWriter::MockWriter(
+        const core::types::ParticipantId& id)
     : BaseWriter(id)
 {
     // Do nothing
@@ -208,7 +212,8 @@ core::types::TopicInternalTypeDiscriminator MockRoutingData::internal_type_discr
     return INTERNAL_TOPIC_TYPE_MOCK_TEST;
 }
 
-bool MockRoutingData::operator==(const MockRoutingData& other) const
+bool MockRoutingData::operator ==(
+        const MockRoutingData& other) const
 {
     return data == other.data;
 }

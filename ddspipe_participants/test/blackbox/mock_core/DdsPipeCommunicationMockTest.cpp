@@ -36,8 +36,8 @@ constexpr const unsigned int N_PARTICIPANTS = 3;
 constexpr const unsigned int N_TOPICS = 2;
 
 participants::testing::MockRoutingData new_data(
-    const core::types::ParticipantId& id,
-    unsigned int index)
+        const core::types::ParticipantId& id,
+        unsigned int index)
 {
     participants::testing::MockRoutingData new_data;
     new_data.data = id + std::string("::") + std::to_string(index);
@@ -55,7 +55,7 @@ TEST(DdsPipeCommunicationMockTest, mock_communication_trivial)
     participants::testing::MockTopic topic_1;
     topic_1.m_topic_name = "topic1";
     eprosima::utils::Heritable<core::types::DistributedTopic> htopic_1 =
-        eprosima::utils::Heritable<participants::testing::MockTopic>::make_heritable(topic_1);
+            eprosima::utils::Heritable<participants::testing::MockTopic>::make_heritable(topic_1);
 
     // Create Participants
     core::types::ParticipantId part_1_id("Participant_1");
@@ -77,7 +77,7 @@ TEST(DdsPipeCommunicationMockTest, mock_communication_trivial)
         std::make_shared<eprosima::utils::SlotThreadPool>(test::N_THREADS),
         {htopic_1},
         true
-    );
+        );
 
     // Look for the reader in participant 1 and writer in participant 2
     auto reader_1 = part_1->get_reader(topic_1);
@@ -86,13 +86,13 @@ TEST(DdsPipeCommunicationMockTest, mock_communication_trivial)
     ASSERT_NE(writer_2, nullptr);
 
     // Simulate N messages
-    for (unsigned int i=0; i<test::N_MESSAGES; i++)
+    for (unsigned int i = 0; i < test::N_MESSAGES; i++)
     {
         reader_1->simulate_data_reception(test::new_data(part_1_id, i));
     }
 
     // Wait for all messages
-    for (unsigned int i=0; i<test::N_MESSAGES; i++)
+    for (unsigned int i = 0; i < test::N_MESSAGES; i++)
     {
         auto received_data = writer_2->wait_data();
         ASSERT_EQ(received_data, test::new_data(part_1_id, i));
@@ -123,7 +123,7 @@ TEST(DdsPipeCommunicationMockTest, mock_communication_before_enabling)
     participants::testing::MockTopic topic_1;
     topic_1.m_topic_name = "topic1";
     eprosima::utils::Heritable<core::types::DistributedTopic> htopic_1 =
-        eprosima::utils::Heritable<participants::testing::MockTopic>::make_heritable(topic_1);
+            eprosima::utils::Heritable<participants::testing::MockTopic>::make_heritable(topic_1);
 
     // Create Participants
     core::types::ParticipantId part_1_id("Participant_1");
@@ -144,7 +144,7 @@ TEST(DdsPipeCommunicationMockTest, mock_communication_before_enabling)
         part_db,
         std::make_shared<eprosima::utils::SlotThreadPool>(test::N_THREADS),
         {htopic_1}
-    );
+        );
 
     // Look for the reader in participant 1 and writer in participant 2
     auto reader_1 = part_1->get_reader(topic_1);
@@ -153,7 +153,7 @@ TEST(DdsPipeCommunicationMockTest, mock_communication_before_enabling)
     ASSERT_NE(writer_2, nullptr);
 
     // Simulate N messages
-    for (unsigned int i=0; i<test::N_MESSAGES; i++)
+    for (unsigned int i = 0; i < test::N_MESSAGES; i++)
     {
         reader_1->simulate_data_reception(test::new_data(part_1_id, i));
     }
@@ -166,20 +166,20 @@ TEST(DdsPipeCommunicationMockTest, mock_communication_before_enabling)
     ddspipe.enable();
 
     // Wait for all messages
-    for (unsigned int i=0; i<test::N_MESSAGES; i++)
+    for (unsigned int i = 0; i < test::N_MESSAGES; i++)
     {
         auto received_data = writer_2->wait_data();
         ASSERT_EQ(received_data, test::new_data(part_1_id, i));
     }
 
     // Simulate N messages
-    for (unsigned int i=test::N_MESSAGES; i<test::N_MESSAGES*2; i++)
+    for (unsigned int i = test::N_MESSAGES; i < test::N_MESSAGES*2; i++)
     {
         reader_1->simulate_data_reception(test::new_data(part_1_id, i));
     }
 
     // Wait for all messages
-    for (unsigned int i=test::N_MESSAGES; i<test::N_MESSAGES*2; i++)
+    for (unsigned int i = test::N_MESSAGES; i < test::N_MESSAGES*2; i++)
     {
         auto received_data = writer_2->wait_data();
         ASSERT_EQ(received_data, test::new_data(part_1_id, i));
@@ -189,7 +189,7 @@ TEST(DdsPipeCommunicationMockTest, mock_communication_before_enabling)
     ddspipe.disable();
 
     // Simulate N messages
-    for (unsigned int i=test::N_MESSAGES*2; i<test::N_MESSAGES*3; i++)
+    for (unsigned int i = test::N_MESSAGES * 2; i < test::N_MESSAGES*3; i++)
     {
         reader_1->simulate_data_reception(test::new_data(part_1_id, i));
     }
@@ -202,7 +202,7 @@ TEST(DdsPipeCommunicationMockTest, mock_communication_before_enabling)
     ddspipe.enable();
 
     // Wait for all messages
-    for (unsigned int i=test::N_MESSAGES*2; i<test::N_MESSAGES*3; i++)
+    for (unsigned int i = test::N_MESSAGES * 2; i < test::N_MESSAGES*3; i++)
     {
         auto received_data = writer_2->wait_data();
         ASSERT_EQ(received_data, test::new_data(part_1_id, i));
@@ -220,7 +220,7 @@ TEST(DdsPipeCommunicationMockTest, mock_communication_topic_discovery)
     topic_1.type_name = "type1";
     topic_1.m_internal_type_discriminator = participants::testing::INTERNAL_TOPIC_TYPE_MOCK_TEST;
     eprosima::utils::Heritable<core::types::DistributedTopic> htopic_1 =
-        eprosima::utils::Heritable<core::types::DdsTopic>::make_heritable(topic_1);
+            eprosima::utils::Heritable<core::types::DdsTopic>::make_heritable(topic_1);
 
     // Create Participants
     core::types::ParticipantId part_1_id("Participant_1");
@@ -242,7 +242,7 @@ TEST(DdsPipeCommunicationMockTest, mock_communication_topic_discovery)
         std::make_shared<core::FastPayloadPool>(),
         part_db,
         std::make_shared<eprosima::utils::SlotThreadPool>(test::N_THREADS)
-    );
+        );
     ddspipe.enable();
 
     // Check there are no endpoints created yet
@@ -267,13 +267,13 @@ TEST(DdsPipeCommunicationMockTest, mock_communication_topic_discovery)
     ASSERT_NE(writer_2, nullptr);
 
     // Simulate N messages
-    for (unsigned int i=0; i<test::N_MESSAGES; i++)
+    for (unsigned int i = 0; i < test::N_MESSAGES; i++)
     {
         reader_1->simulate_data_reception(test::new_data(part_1_id, i));
     }
 
     // Wait for all messages
-    for (unsigned int i=0; i<test::N_MESSAGES; i++)
+    for (unsigned int i = 0; i < test::N_MESSAGES; i++)
     {
         auto received_data = writer_2->wait_data();
         ASSERT_EQ(received_data, test::new_data(part_1_id, i));
@@ -301,7 +301,7 @@ TEST(DdsPipeCommunicationMockTest, mock_communication_topic_allow)
     topic_1.type_name = "type1";
     topic_1.m_internal_type_discriminator = participants::testing::INTERNAL_TOPIC_TYPE_MOCK_TEST;
     eprosima::utils::Heritable<core::types::DistributedTopic> htopic_1 =
-        eprosima::utils::Heritable<core::types::DdsTopic>::make_heritable(topic_1);
+            eprosima::utils::Heritable<core::types::DdsTopic>::make_heritable(topic_1);
 
     // Create Participants
     core::types::ParticipantId part_1_id("Participant_1");
@@ -316,7 +316,7 @@ TEST(DdsPipeCommunicationMockTest, mock_communication_topic_allow)
 
     // Blocks all topics
     utils::Heritable<core::types::IFilterTopic> filter_topic =
-        utils::Heritable<participants::testing::MockFilterAllTopic>::make_heritable();
+            utils::Heritable<participants::testing::MockFilterAllTopic>::make_heritable();
     std::shared_ptr<core::AllowedTopicList> atl(new core::AllowedTopicList({}, {filter_topic}));
     // TODO for education sake, check whit this not compile
     // auto atl = std::make_shared<core::AllowedTopicList>(
@@ -333,7 +333,7 @@ TEST(DdsPipeCommunicationMockTest, mock_communication_topic_allow)
         std::make_shared<eprosima::utils::SlotThreadPool>(test::N_THREADS),
         {htopic_1},
         true
-    );
+        );
 
     // Look for the reader in participant 1 and writer in participant 2
     auto reader_1 = part_1->get_reader(topic_1);
@@ -342,7 +342,7 @@ TEST(DdsPipeCommunicationMockTest, mock_communication_topic_allow)
     ASSERT_NE(writer_2, nullptr);
 
     // Simulate N messages
-    for (unsigned int i=0; i<test::N_MESSAGES; i++)
+    for (unsigned int i = 0; i < test::N_MESSAGES; i++)
     {
         reader_1->simulate_data_reception(test::new_data(part_1_id, i));
     }
@@ -355,7 +355,7 @@ TEST(DdsPipeCommunicationMockTest, mock_communication_topic_allow)
     ddspipe.reload_allowed_topics(std::make_shared<core::AllowedTopicList>());
 
     // Wait for all messages
-    for (unsigned int i=0; i<test::N_MESSAGES; i++)
+    for (unsigned int i = 0; i < test::N_MESSAGES; i++)
     {
         auto received_data = writer_2->wait_data();
         ASSERT_EQ(received_data, test::new_data(part_1_id, i));
@@ -365,7 +365,7 @@ TEST(DdsPipeCommunicationMockTest, mock_communication_topic_allow)
     ddspipe.reload_allowed_topics(atl);
 
     // Simulate N messages
-    for (unsigned int i=0; i<test::N_MESSAGES; i++)
+    for (unsigned int i = 0; i < test::N_MESSAGES; i++)
     {
         reader_1->simulate_data_reception(test::new_data(part_1_id, i));
     }
@@ -382,9 +382,9 @@ TEST(DdsPipeCommunicationMockTest, mock_communication_multiple_participant_topic
 {
     // Create all topics required
     std::vector<std::pair<participants::testing::MockTopic, eprosima::utils::Heritable<core::types::DistributedTopic>>>
-        topics;
+    topics;
     std::set<utils::Heritable<core::types::DistributedTopic>> builtin;
-    for (unsigned int i=0; i<test::N_TOPICS; i++)
+    for (unsigned int i = 0; i < test::N_TOPICS; i++)
     {
         participants::testing::MockTopic topic;
         topic.m_topic_name = "topic" + std::to_string(i);
@@ -397,7 +397,7 @@ TEST(DdsPipeCommunicationMockTest, mock_communication_multiple_participant_topic
     // Create all participants
     auto part_db = std::make_shared<core::ParticipantsDatabase>();
     std::vector<std::shared_ptr<participants::testing::MockParticipant>> participants;
-    for (unsigned int i=0; i<test::N_PARTICIPANTS; i++)
+    for (unsigned int i = 0; i < test::N_PARTICIPANTS; i++)
     {
         core::types::ParticipantId part_id("Participant_" + std::to_string(i));
         auto part = std::make_shared<participants::testing::MockParticipant>(part_id);
@@ -414,18 +414,18 @@ TEST(DdsPipeCommunicationMockTest, mock_communication_multiple_participant_topic
         std::make_shared<eprosima::utils::SlotThreadPool>(test::N_THREADS),
         builtin,
         true
-    );
+        );
 
     // For every reader in every participant, send N data
-    for (unsigned int i=0; i<test::N_PARTICIPANTS; i++)
+    for (unsigned int i = 0; i < test::N_PARTICIPANTS; i++)
     {
-        for (unsigned int j=0; j<test::N_TOPICS; j++)
+        for (unsigned int j = 0; j < test::N_TOPICS; j++)
         {
             auto reader = participants[i]->get_reader(topics[j].first);
             ASSERT_NE(reader, nullptr);
 
             // Simulate N messages
-            for (unsigned int i=0; i<test::N_MESSAGES; i++)
+            for (unsigned int i = 0; i < test::N_MESSAGES; i++)
             {
                 participants::testing::MockRoutingData data;
                 data.data = "some_data";
@@ -435,15 +435,15 @@ TEST(DdsPipeCommunicationMockTest, mock_communication_multiple_participant_topic
     }
 
     // Check that every writer has the amount of data expected
-    for (unsigned int i=0; i<test::N_PARTICIPANTS; i++)
+    for (unsigned int i = 0; i < test::N_PARTICIPANTS; i++)
     {
-        for (unsigned int j=0; j<test::N_TOPICS; j++)
+        for (unsigned int j = 0; j < test::N_TOPICS; j++)
         {
             auto writer = participants[i]->get_writer(topics[j].first);
             ASSERT_NE(writer, nullptr);
 
             // Wait for (#Participants x #messages) messages
-            for (unsigned int i=0; i<test::N_MESSAGES; i++)
+            for (unsigned int i = 0; i < test::N_MESSAGES; i++)
             {
                 writer->wait_data();
             }

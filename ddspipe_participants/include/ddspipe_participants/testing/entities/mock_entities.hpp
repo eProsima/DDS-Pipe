@@ -48,7 +48,8 @@ class MockParticipant : public BlankParticipant
 public:
 
     DDSPIPE_PARTICIPANTS_DllAPI
-    MockParticipant(const core::types::ParticipantId& id);
+    MockParticipant(
+            const core::types::ParticipantId& id);
 
     DDSPIPE_PARTICIPANTS_DllAPI
     std::shared_ptr<core::IWriter> create_writer(
@@ -88,7 +89,8 @@ struct MockRoutingData : public core::IRoutingData
 public:
 
     DDSPIPE_PARTICIPANTS_DllAPI
-    bool operator==(const MockRoutingData& other) const;
+    bool operator ==(
+            const MockRoutingData& other) const;
 
     DDSPIPE_PARTICIPANTS_DllAPI
     core::types::TopicInternalTypeDiscriminator internal_type_discriminator() const noexcept override;
@@ -101,10 +103,12 @@ class MockReader : public BaseReader
 public:
 
     DDSPIPE_PARTICIPANTS_DllAPI
-    MockReader(const core::types::ParticipantId& id);
+    MockReader(
+            const core::types::ParticipantId& id);
 
     DDSPIPE_PARTICIPANTS_DllAPI
-    void simulate_data_reception(MockRoutingData&& data);
+    void simulate_data_reception(
+            MockRoutingData&& data);
 
     DDSPIPE_PARTICIPANTS_DllAPI
     utils::ReturnCode take_nts_(
@@ -123,7 +127,8 @@ class MockWriter : public BaseWriter
 public:
 
     DDSPIPE_PARTICIPANTS_DllAPI
-    MockWriter(const core::types::ParticipantId& id);
+    MockWriter(
+            const core::types::ParticipantId& id);
 
     DDSPIPE_PARTICIPANTS_DllAPI
     utils::ReturnCode write_nts_(
@@ -152,6 +157,7 @@ public:
 class MockFilterAllTopic : public core::types::IFilterTopic
 {
 public:
+
     virtual bool contains(
             const core::types::IFilterTopic& other) const;
 

@@ -36,19 +36,22 @@ struct DdsPipe : public eprosima::ddspipe::core::DdsPipe
         return enabled_;
     }
 
-    bool is_topic_discovered(const eprosima::utils::Heritable<types::DistributedTopic>& topic) const
+    bool is_topic_discovered(
+            const eprosima::utils::Heritable<types::DistributedTopic>& topic) const
     {
         std::lock_guard<std::mutex> _(mutex_);
         return current_topics_.find(topic) != current_topics_.end();
     }
 
-    bool is_topic_discovered(const types::RpcTopic service) const
+    bool is_topic_discovered(
+            const types::RpcTopic service) const
     {
         std::lock_guard<std::mutex> _(mutex_);
         return current_services_.find(service) != current_services_.end();
     }
 
-    bool is_topic_active(const eprosima::utils::Heritable<types::DistributedTopic>& topic) const
+    bool is_topic_active(
+            const eprosima::utils::Heritable<types::DistributedTopic>& topic) const
     {
         std::lock_guard<std::mutex> _(mutex_);
         auto it = current_topics_.find(topic);
@@ -59,7 +62,8 @@ struct DdsPipe : public eprosima::ddspipe::core::DdsPipe
         return it->second;
     }
 
-    bool is_topic_active(const types::RpcTopic service) const
+    bool is_topic_active(
+            const types::RpcTopic service) const
     {
         std::lock_guard<std::mutex> _(mutex_);
         auto it = current_services_.find(service);
@@ -70,17 +74,20 @@ struct DdsPipe : public eprosima::ddspipe::core::DdsPipe
         return it->second;
     }
 
-    bool is_bridge_created(const eprosima::utils::Heritable<types::DistributedTopic>& topic) const
+    bool is_bridge_created(
+            const eprosima::utils::Heritable<types::DistributedTopic>& topic) const
     {
         std::lock_guard<std::mutex> _(mutex_);
         return bridges_.find(topic) != bridges_.end();
     }
 
-    bool is_bridge_created(const types::RpcTopic service) const
+    bool is_bridge_created(
+            const types::RpcTopic service) const
     {
         std::lock_guard<std::mutex> _(mutex_);
         return rpc_bridges_.find(service) != rpc_bridges_.end();
     }
+
 };
 
 } // test
@@ -104,7 +111,7 @@ TEST(DdsPipeTest, default_initialization)
             std::make_shared<FastPayloadPool>(),
             std::make_shared<ParticipantsDatabase>(),
             std::make_shared<eprosima::utils::SlotThreadPool>(test::N_THREADS)
-        );
+            );
 
         ASSERT_FALSE(ddspipe.is_enabled());
     }
@@ -119,7 +126,7 @@ TEST(DdsPipeTest, default_initialization)
             std::make_shared<eprosima::utils::SlotThreadPool>(test::N_THREADS),
             {},
             true
-        );
+            );
 
         ASSERT_TRUE(ddspipe.is_enabled());
     }
@@ -130,7 +137,7 @@ TEST(DdsPipeTest, default_initialization)
         topic_1.m_topic_name = "topic1";
         topic_1.type_name = "type1";
         eprosima::utils::Heritable<types::DistributedTopic> htopic_1 =
-            eprosima::utils::Heritable<types::DdsTopic>::make_heritable(topic_1);
+                eprosima::utils::Heritable<types::DdsTopic>::make_heritable(topic_1);
 
         test::DdsPipe ddspipe(
             std::make_shared<AllowedTopicList>(),
@@ -138,10 +145,10 @@ TEST(DdsPipeTest, default_initialization)
             std::make_shared<FastPayloadPool>(),
             std::make_shared<ParticipantsDatabase>(),
             std::make_shared<eprosima::utils::SlotThreadPool>(test::N_THREADS),
-            {
-                htopic_1
-            }
-        );
+        {
+            htopic_1
+        }
+            );
 
         ASSERT_FALSE(ddspipe.is_enabled());
 
@@ -156,7 +163,7 @@ TEST(DdsPipeTest, default_initialization)
         topic_1.m_topic_name = "topic1";
         topic_1.type_name = "type1";
         eprosima::utils::Heritable<types::DistributedTopic> htopic_1 =
-            eprosima::utils::Heritable<types::DdsTopic>::make_heritable(topic_1);
+                eprosima::utils::Heritable<types::DdsTopic>::make_heritable(topic_1);
 
         test::DdsPipe ddspipe(
             std::make_shared<AllowedTopicList>(),
@@ -164,11 +171,11 @@ TEST(DdsPipeTest, default_initialization)
             std::make_shared<FastPayloadPool>(),
             std::make_shared<ParticipantsDatabase>(),
             std::make_shared<eprosima::utils::SlotThreadPool>(test::N_THREADS),
-            {
-                htopic_1
-            },
+        {
+            htopic_1
+        },
             true
-        );
+            );
 
         ASSERT_TRUE(ddspipe.is_enabled());
 
@@ -196,13 +203,13 @@ TEST(DdsPipeTest, enable_disable)
             std::make_shared<FastPayloadPool>(),
             std::make_shared<ParticipantsDatabase>(),
             std::make_shared<eprosima::utils::SlotThreadPool>(test::N_THREADS)
-        );
+            );
 
         types::DdsTopic topic_1;
         topic_1.m_topic_name = "topic1";
         topic_1.type_name = "type1";
         eprosima::utils::Heritable<types::DistributedTopic> htopic_1 =
-            eprosima::utils::Heritable<types::DdsTopic>::make_heritable(topic_1);
+                eprosima::utils::Heritable<types::DdsTopic>::make_heritable(topic_1);
 
         ASSERT_FALSE(ddspipe.is_topic_discovered(htopic_1));
         ASSERT_FALSE(ddspipe.is_topic_active(htopic_1));
@@ -240,7 +247,7 @@ TEST(DdsPipeTest, enable_disable)
         topic_1.m_topic_name = "topic1";
         topic_1.type_name = "type1";
         eprosima::utils::Heritable<types::DistributedTopic> htopic_1 =
-            eprosima::utils::Heritable<types::DdsTopic>::make_heritable(topic_1);
+                eprosima::utils::Heritable<types::DdsTopic>::make_heritable(topic_1);
 
         auto discovery_database = std::make_shared<DiscoveryDatabase>();
         test::DdsPipe ddspipe(
@@ -250,7 +257,7 @@ TEST(DdsPipeTest, enable_disable)
             std::make_shared<ParticipantsDatabase>(),
             std::make_shared<eprosima::utils::SlotThreadPool>(test::N_THREADS),
             {htopic_1}
-        );
+            );
 
         ASSERT_TRUE(ddspipe.is_topic_discovered(htopic_1));
         ASSERT_FALSE(ddspipe.is_topic_active(htopic_1));
