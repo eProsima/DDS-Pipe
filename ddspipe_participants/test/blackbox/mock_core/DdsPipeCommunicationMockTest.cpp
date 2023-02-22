@@ -16,6 +16,7 @@
 #include <gtest/gtest.h>
 
 #include <cpp_utils/time/time_utils.hpp>
+#include <cpp_utils/Log.hpp>
 
 #include <ddspipe_core/core/DdsPipe.hpp>
 #include <ddspipe_core/dynamic/AllowedTopicList.hpp>
@@ -455,6 +456,7 @@ int main(
         int argc,
         char** argv)
 {
+    utils::Log::SetVerbosity(utils::Log::Kind::Info);
     ::testing::InitGoogleTest(&argc, argv);
     return RUN_ALL_TESTS();
 }
