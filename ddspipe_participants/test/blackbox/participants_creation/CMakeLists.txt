@@ -36,11 +36,11 @@ add_blackbox_executable(
 # Set as TSAN errors due to Fast DDS
 # TODO: use a cmake_utils macro
 set(
-    TEST_LIST
+    XTSAN_TEST_LIST
         "ParticipantsCreationgTest.creation_trivial"
         "ParticipantsCreationgTest.ddspipe_all_creation_builtin_topic"
 )
 
-foreach(XTSAN_TEST ${TEST_LIST})
+foreach(XTSAN_TEST ${XTSAN_TEST_LIST})
     set_property(TEST ${XTSAN_TEST} PROPERTY LABELS xtsan)
 endforeach()

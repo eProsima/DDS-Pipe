@@ -1,4 +1,4 @@
-# Copyright 2021 Proyectos y Sistemas de Mantenimiento SL (eProsima).
+# Copyright 2023 Proyectos y Sistemas de Mantenimiento SL (eProsima).
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -22,7 +22,6 @@ all_library_sources("${TEST_SOURCES}")
 set(TEST_LIST
         default_initialization
         enable_disable
-        reload
     )
 
 set(TEST_EXTRA_LIBRARIES
