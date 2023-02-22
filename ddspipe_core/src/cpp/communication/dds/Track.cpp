@@ -130,6 +130,8 @@ void Track::disable() noexcept
         {
             writer_it.second->disable();
         }
+
+        data_available_status_.store(DataAvailableStatus::no_more_data);
     }
 }
 
