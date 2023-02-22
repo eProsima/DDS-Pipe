@@ -203,7 +203,8 @@ TEST(YamlGetEntityTopicTest, get_wildcard_topic)
         Yaml yml;
         yml["topic"] = yml_topic;
 
-        core::types::WildcardDdsFilterTopic topic = YamlReader::get<core::types::WildcardDdsFilterTopic>(yml, "topic", LATEST);
+        core::types::WildcardDdsFilterTopic topic = YamlReader::get<core::types::WildcardDdsFilterTopic>(yml, "topic",
+                        LATEST);
 
         ASSERT_EQ(topic, w_topic);
     }
@@ -221,7 +222,8 @@ TEST(YamlGetEntityTopicTest, get_wildcard_topic)
         Yaml yml;
         yml["topic"] = yml_topic;
 
-        core::types::WildcardDdsFilterTopic topic = YamlReader::get<core::types::WildcardDdsFilterTopic>(yml, "topic", LATEST);
+        core::types::WildcardDdsFilterTopic topic = YamlReader::get<core::types::WildcardDdsFilterTopic>(yml, "topic",
+                        LATEST);
 
         ASSERT_EQ(topic, w_topic);
         ASSERT_TRUE(topic.type_name.is_set());
@@ -241,7 +243,8 @@ TEST(YamlGetEntityTopicTest, get_wildcard_topic)
         Yaml yml;
         yml["topic"] = yml_topic;
 
-        core::types::WildcardDdsFilterTopic topic = YamlReader::get<core::types::WildcardDdsFilterTopic>(yml, "topic", LATEST);
+        core::types::WildcardDdsFilterTopic topic = YamlReader::get<core::types::WildcardDdsFilterTopic>(yml, "topic",
+                        LATEST);
 
         ASSERT_EQ(topic, w_topic);
         ASSERT_TRUE(topic.topic_name.is_set());

@@ -250,7 +250,8 @@ void DdsPipe::removed_endpoint_(
         if (endpoint.is_server_endpoint())
         {
             // Service server removed/dropped
-            removed_service_nts_(types::RpcTopic(topic), endpoint.discoverer_participant_id, endpoint.guid.guid_prefix());
+            removed_service_nts_(types::RpcTopic(topic), endpoint.discoverer_participant_id,
+                    endpoint.guid.guid_prefix());
         }
     }
 }
