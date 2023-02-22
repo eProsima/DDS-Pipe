@@ -72,7 +72,7 @@ public:
      * @pre this method can only be called once.
      */
     DDSPIPE_PARTICIPANTS_DllAPI
-    void init();
+    virtual void init();
 
     /////////////////////////
     // I PARTICIPANT METHODS
