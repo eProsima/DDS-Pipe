@@ -91,6 +91,11 @@ void Track::enable() noexcept
                 ".");
         enabled_ = true;
 
+        // As it is going to start again, it should be checked as no more data, in case it wasnt set as it
+        // for a race condition in transmit and disable
+        // Without this, it could enable and never send the track slot again
+        data_available_status_.store(DataAvailableStatus::no_more_data);
+
         // Enable writers before reader, to avoid starting a transmission (not protected with \c track_mutex_) which may
         // attempt to write with a yet disabled writer
 
