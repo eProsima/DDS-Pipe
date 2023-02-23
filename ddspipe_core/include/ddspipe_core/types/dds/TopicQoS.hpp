@@ -117,7 +117,7 @@ struct DDSPIPE_CORE_DllAPI
      * @brief History Qos
      *
      * @note Default value would be taken from \c default_history_depth in object creation.
-     * @note It only stores the depth because in router it will always be keep last, as RTPS has not resource limits.
+     * @note It only stores the depth because in pipe it will always be keep last, as RTPS has not resource limits.
      */
     HistoryDepthType history_depth = HISTORY_DEPTH_DEFAULT;
 

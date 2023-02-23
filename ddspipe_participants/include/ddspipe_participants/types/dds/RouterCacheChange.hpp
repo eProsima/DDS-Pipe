@@ -25,7 +25,7 @@ namespace core {
 namespace types {
 
 /**
- * @brief Specialization of CacheChange for DDS Router.
+ * @brief Specialization of CacheChange for DDS Pipe.
  *
  * It adds the following attributes:
  * - last_writer_guid_prefix: store last jump of message Participant GuidPrefix
@@ -41,9 +41,9 @@ public:
     using fastrtps::rtps::CacheChange_t::CacheChange_t;
 
     /**
-     * @brief GuidPrefix of the Participant that has sent this message through the router.
+     * @brief GuidPrefix of the Participant that has sent this message through the pipe.
      *
-     * @note it is not the same as origin writer, as there could be more routers in the path.
+     * @note it is not the same as origin writer, as there could be more pipes in the path.
      */
     fastrtps::rtps::GuidPrefix_t last_writer_guid_prefix;
 };

@@ -173,7 +173,7 @@ utils::ReturnCode DdsPipe::enable() noexcept
 
         activate_all_topics_nts_();
 
-        // Enable services discovered while router disabled
+        // Enable services discovered while pipe disabled
         for (auto it : current_services_)
         {
             // Enable only allowed services

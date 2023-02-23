@@ -39,7 +39,7 @@ using SequenceNumber = eprosima::fastrtps::rtps::SequenceNumber_t;
  * This information is stored in a map, whose insertions and deletions are protected with a mutex.
  * Insertions are performed every time a request is sent, and deletions after a reply has been received and forwarded.
  *
- * There exists a service registry per router participant.
+ * There exists a service registry per pipe participant.
  *
  */
 class ServiceRegistry

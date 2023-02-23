@@ -375,7 +375,7 @@ void RpcBridge::transmit_(
                     "RpcBridge for service " << rpc_topic_ <<
                     " transmitting reply from remote endpoint " << pcr_data.source_guid << ".");
 
-            // A Server could be answering a different client in this same DDS Router or a remote client
+            // A Server could be answering a different client in this same DDS Pipe or a remote client
             // Thus, it must be filtered so only replies to this client are processed.
             if (pcr_data.write_params.get_reference().sample_identity().writer_guid() != reader->guid())
             {

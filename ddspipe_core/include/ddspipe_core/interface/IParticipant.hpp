@@ -26,7 +26,7 @@ namespace core {
 /**
  * Interface that represents a generic Participant as part of a DdsPipe.
  *
- * This class manages the discovery of new remote entities (that do not belong to the router).
+ * This class manages the discovery of new remote entities (that do not belong to the pipe).
  * It also works as a factory for Writers and Readers.
  *
  * Every Participant is associated to a \c ParticipantId that uniquely identifies it.
