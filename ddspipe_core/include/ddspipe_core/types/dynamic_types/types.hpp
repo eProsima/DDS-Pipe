@@ -38,8 +38,10 @@ struct DynamicTypeData : public core::IRoutingData
     fastrtps::types::DynamicType_ptr dynamic_type{nullptr};
 };
 
+DDSPIPE_CORE_DllAPI
 DdsTopic type_object_topic();
 
+DDSPIPE_CORE_DllAPI
 bool is_type_object_topic(
         const ITopic& topic);
 
