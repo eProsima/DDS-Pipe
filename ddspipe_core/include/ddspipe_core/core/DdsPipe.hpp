@@ -166,7 +166,7 @@ protected:
      * @brief Method called every time a new endpoint has been discovered/updated
      *
      * This method is called with the topic of a new/updated \c Endpoint discovered.
-     * If the DDSRouterImpl is enabled, the new Bridge is created and enabled.
+     * If the DdsPipeImpl is enabled, the new Bridge is created and enabled.
      *
      * @note This is the only method that adds topics to \c current_topics_
      *
@@ -179,7 +179,7 @@ protected:
      * @brief Method called every time a new endpoint (corresponding to a server) has been discovered/updated
      *
      * This method is called with the topic of a new/updated \c Endpoint discovered.
-     * If the DDSRouterImpl is enabled and no bridge exists, the new RpcBridge is created (and enabled if allowed).
+     * If the DdsPipeImpl is enabled and no bridge exists, the new RpcBridge is created (and enabled if allowed).
      *
      * @note This is the only method that adds topics to \c current_services_
      *
@@ -209,7 +209,7 @@ protected:
     /**
      * @brief Create a new \c DdsBridge object
      *
-     * It is created enabled if the DDSRouterImpl is enabled.
+     * It is created enabled if the DdsPipeImpl is enabled.
      *
      * @param [in] topic : new topic
      */
@@ -283,7 +283,7 @@ protected:
     std::shared_ptr<PayloadPool> payload_pool_;
 
     /**
-     * @brief Object that stores every Participant running in the DDSRouterImpl
+     * @brief Object that stores every Participant running in the DdsPipeImpl
      */
     std::shared_ptr<ParticipantsDatabase> participants_database_;
 
@@ -319,7 +319,7 @@ protected:
     /////
     // AUXILIAR VARIABLES
 
-    //! Whether the DDSRouterImpl is currently communicating data or not
+    //! Whether the DdsPipeImpl is currently communicating data or not
     bool enabled_;
 
     /**

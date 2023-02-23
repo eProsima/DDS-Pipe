@@ -24,7 +24,7 @@ namespace ddspipe {
 namespace core {
 
 /**
- * Interface that represents a generic Participant as part of a DDSRouter.
+ * Interface that represents a generic Participant as part of a DdsPipe.
  *
  * This class manages the discovery of new remote entities (that do not belong to the router).
  * It also works as a factory for Writers and Readers.

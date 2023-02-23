@@ -207,7 +207,7 @@ void CommonReader::fill_received_data_(
     // Get Participant receiver
     data_to_fill.participant_receiver = participant_id_;
 
-    // Store it in DDSRouter PayloadPool if size is bigger than 0
+    // Store it in DdsPipe PayloadPool if size is bigger than 0
     // NOTE: in case of keyed topics an empty payload is possible
     if (received_change.serializedPayload.length > 0)
     {

@@ -30,7 +30,7 @@ namespace ddspipe {
 namespace core {
 
 /**
- * Interface that represents a generic Reader as part of a DDSRouter.
+ * Interface that represents a generic Reader as part of a DdsPipe.
  *
  * This class manages the reception of new remote data in a specific topic.
  * It also calls the \c Track on_data_available callback whenever new data is received.

@@ -43,7 +43,7 @@ enum class DatabaseOperation
 };
 
 /**
- * Class that stores a collection of discovered remote (not belonging to this DDSRouter) Endpoints.
+ * Class that stores a collection of discovered remote (not belonging to this DdsPipe) Endpoints.
  */
 class DiscoveryDatabase
 {
