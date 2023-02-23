@@ -94,7 +94,8 @@ std::shared_ptr<IWriter> SchemaParticipant::create_writer(
             logWarning(DDSPIPE_SCHEMA_PARTICIPANT, "Not creating Writer for topic " << topic.topic_name());
             return std::make_shared<BlankWriter>();
         }
-        return std::make_shared<SchemaWriter>(id(), dynamic_cast<const DdsTopic&>(topic), payload_pool_, schema_handler_);
+        return std::make_shared<SchemaWriter>(id(), dynamic_cast<const DdsTopic&>(topic), payload_pool_,
+                       schema_handler_);
     }
 }
 
