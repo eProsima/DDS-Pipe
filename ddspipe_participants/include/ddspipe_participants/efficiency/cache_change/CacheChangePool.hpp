@@ -57,6 +57,9 @@ protected:
     //! Override the UnboundedPool::create_element method to create a RouterCacheChange object.
     virtual fastrtps::rtps::CacheChange_t* new_element_() override;
 
+    //! Override the IPool::reset_element_ method to reset the CacheChange as a new obj.
+    virtual void reset_element_(
+            fastrtps::rtps::CacheChange_t* change) override;
 };
 
 } /* namespace core */
