@@ -45,17 +45,21 @@ TypeObjectWriter::TypeObjectWriter(
 utils::ReturnCode TypeObjectWriter::write_nts_(
         IRoutingData& data) noexcept
 {
+    // Get the subclass DynamicTypeData
+    // NOTE: if this fails it is a developer failure, thus the exception is correctly raised
+    auto& dynamic_type_data = dynamic_cast<DynamicTypeData&>(data);
+
     // Add schema
     try
     {
-        auto& dynamic_type_data = dynamic_cast<DynamicTypeData&>(data);
         schema_handler_->add_schema(dynamic_type_data.dynamic_type);
     }
     catch (const utils::Exception& e)
     {
         logError(
             DDSPIPE_TYPEOBJECT_WRITER,
-            "Error generating schema: <" << e.what() << ">.");
+            "Error generating schema for type " << dynamic_type_data.dynamic_type->get_name()
+                                                << " : <" << e.what() << ">.");
         return utils::ReturnCode::RETCODE_ERROR;
     }
 

@@ -64,7 +64,8 @@ utils::ReturnCode SchemaWriter::write_nts_(
     {
         logWarning(
             DDSPIPE_SCHEMA_WRITER,
-            "Error writting data: <" << e.what() << ">.");
+            "Error writting data in topic " << topic_ << " : <" << e.what() << ">.");
+        return utils::ReturnCode::RETCODE_ERROR;
     }
 
     return utils::ReturnCode::RETCODE_OK;
