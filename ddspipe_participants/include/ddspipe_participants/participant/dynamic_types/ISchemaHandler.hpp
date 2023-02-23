@@ -35,7 +35,7 @@ class ISchemaHandler
 public:
 
     virtual void add_schema(
-            const fastrtps::types::DynamicType_ptr& schema) = 0;
+            const fastrtps::types::DynamicType_ptr& dynamic_type) = 0;
 
     virtual void add_data(
             const core::types::DdsTopic& topic,

@@ -315,7 +315,7 @@ std::string generate_dyn_type_schema_from_tree(
     return ss.str();
 }
 
-std::string generate_dyn_type_schema(
+std::string generate_ros2_schema(
         const fastrtps::types::DynamicType_ptr& dynamic_type)
 {
     // Generate type tree

@@ -42,6 +42,7 @@ namespace participants {
 
 using namespace eprosima::ddspipe::core;
 using namespace eprosima::ddspipe::core::types;
+using namespace eprosima::fastrtps::types;
 
 DynTypesParticipant::DynTypesParticipant(
         std::shared_ptr<SimpleParticipantConfiguration> participant_configuration,
@@ -101,7 +102,7 @@ void DynTypesParticipant::on_type_discovery(
     if (nullptr != dyn_type)
     {
         // Register type obj in singleton factory
-        eprosima::fastrtps::types::TypeObjectFactory::get_instance()->add_type_object(
+        TypeObjectFactory::get_instance()->add_type_object(
             dyn_type->get_name(), identifier, object);
         internal_notify_type_object_(dyn_type);
     }
@@ -113,22 +114,57 @@ void DynTypesParticipant::on_type_information_received(
         const fastrtps::string_255 type_name,
         const fastrtps::types::TypeInformation& type_information)
 {
-    std::function<void(const std::string&, const eprosima::fastrtps::types::DynamicType_ptr)> callback(
-        [this]
-            (const std::string& /* type_name */, const eprosima::fastrtps::types::DynamicType_ptr type)
-        {
-            this->internal_notify_type_object_(type);
-        });
+    std::string type_name_ = type_name.to_string();
+    const TypeIdentifier* type_identifier = nullptr;
+    const TypeObject* type_object = nullptr;
+    DynamicType_ptr dynamic_type(nullptr);
 
-    // Registering type and creating reader
-    participant->register_remote_type(
-        type_information,
-        type_name.to_string(),
-        callback);
+    // Check if complete identifier already present in factory
+    type_identifier = TypeObjectFactory::get_instance()->get_type_identifier(type_name_, true);
+    if (type_identifier)
+    {
+        type_object = TypeObjectFactory::get_instance()->get_type_object(type_name_, true);
+    }
+
+    // If complete not found, try with minimal
+    if (!type_object)
+    {
+        type_identifier = TypeObjectFactory::get_instance()->get_type_identifier(type_name_, false);
+        if (type_identifier)
+        {
+            type_object = TypeObjectFactory::get_instance()->get_type_object(type_name_, false);
+        }
+    }
+
+    // Build dynamic type if type identifier and object found in factory
+    if (type_identifier && type_object)
+    {
+        dynamic_type = TypeObjectFactory::get_instance()->build_dynamic_type(type_name_, type_identifier, type_object);
+    }
+
+    // Request type object through TypeLookup if not present in factory, or if type building failed
+    if (!dynamic_type)
+    {
+        std::function<void(const std::string&, const DynamicType_ptr)> callback(
+            [this]
+                (const std::string& /* type_name */, const DynamicType_ptr type)
+            {
+                this->internal_notify_type_object_(type);
+            });
+        // Registering type and creating reader
+        participant->register_remote_type(
+            type_information,
+            type_name_,
+            callback);
+    }
+    else
+    {
+        internal_notify_type_object_(dynamic_type);
+    }
 }
 
 void DynTypesParticipant::internal_notify_type_object_(
-        eprosima::fastrtps::types::DynamicType_ptr dynamic_type)
+        DynamicType_ptr dynamic_type)
 {
     logInfo(DDSPIPE_DYNTYPES_PARTICIPANT,
             "Participant " << this->id() << " discovered type object " << dynamic_type->get_name());
