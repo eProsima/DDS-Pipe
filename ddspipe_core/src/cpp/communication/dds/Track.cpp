@@ -206,7 +206,7 @@ void Track::transmit_() noexcept
         {
             // Error reading data
             logWarning(DDSPIPE_TRACK, "Error taking data in Track " << topic_->topic_name() << ". Error code " << ret
-                                                                      << ". Skipping data and continue.");
+                                                                    << ". Skipping data and continue.");
             continue;
         }
 
@@ -226,7 +226,7 @@ void Track::transmit_() noexcept
             if (!ret)
             {
                 logWarning(DDSPIPE_TRACK, "Error writting data in Track " << topic_->topic_name() << ". Error code "
-                                                                            << ret <<
+                                                                          << ret <<
                         ". Skipping data for this writer and continue.");
                 continue;
             }
