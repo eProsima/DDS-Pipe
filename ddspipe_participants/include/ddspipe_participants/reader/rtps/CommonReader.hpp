@@ -247,6 +247,8 @@ protected:
     /////
     // INTERNAL VARIABLES
 
+    const std::shared_ptr<core::PayloadPool>& payload_pool_;
+
     //!
     core::types::DdsTopic topic_;
 

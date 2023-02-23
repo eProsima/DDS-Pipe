@@ -40,8 +40,9 @@ CommonReader::CommonReader(
         const fastrtps::rtps::ReaderAttributes& reader_attributes,
         const fastrtps::TopicAttributes& topic_attributes,
         const fastrtps::ReaderQos& reader_qos)
-    : BaseReader(participant_id, payload_pool)
+    : BaseReader(participant_id)
     , topic_(topic)
+    , payload_pool_(payload_pool)
     , rtps_participant_(rtps_participant)
     , history_attributes_(history_attributes)
     , reader_attributes_(reader_attributes)

@@ -29,10 +29,8 @@ const std::function<void()> BaseReader::DEFAULT_ON_DATA_AVAILABLE_CALLBACK =
         };
 
 BaseReader::BaseReader(
-        const core::types::ParticipantId& participant_id,
-        const std::shared_ptr<core::PayloadPool>& payload_pool)
+        const core::types::ParticipantId& participant_id)
     : participant_id_(participant_id)
-    , payload_pool_(payload_pool)
     , on_data_available_lambda_(DEFAULT_ON_DATA_AVAILABLE_CALLBACK)
     , on_data_available_lambda_set_(false)
     , enabled_(false)
@@ -140,6 +138,26 @@ void BaseReader::enable_nts_() noexcept
 void BaseReader::disable_nts_() noexcept
 {
     // It does nothing. Override this method so it has functionality.
+}
+
+core::types::Guid BaseReader::guid() const
+{
+    throw utils::UnsupportedException("guid method not allowed for non RTPS readers.");
+}
+
+fastrtps::RecursiveTimedMutex& BaseReader::get_rtps_mutex() const
+{
+    throw utils::UnsupportedException("get_rtps_mutex method not allowed for non RTPS readers.");
+}
+
+uint64_t BaseReader::get_unread_count() const
+{
+    throw utils::UnsupportedException("get_unread_count method not allowed for non RTPS readers.");
+}
+
+core::types::DdsTopic BaseReader::topic() const
+{
+    throw utils::UnsupportedException("topic method not allowed for non RTPS readers.");
 }
 
 std::ostream& operator <<(

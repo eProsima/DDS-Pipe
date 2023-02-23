@@ -21,10 +21,8 @@ namespace ddspipe {
 namespace participants {
 
 BaseWriter::BaseWriter(
-        const core::types::ParticipantId& participant_id,
-        const std::shared_ptr<core::PayloadPool>& payload_pool)
+        const core::types::ParticipantId& participant_id)
     : participant_id_(participant_id)
-    , payload_pool_(payload_pool)
     , enabled_(false)
 {
     logDebug(DDSROUTER_BASEWRITER, "Creating Writer " << *this << ".");
@@ -65,7 +63,7 @@ utils::ReturnCode BaseWriter::write(
 
     if (enabled_.load())
     {
-        return write_(data);
+        return write_nts_(data);
     }
     else
     {

@@ -261,6 +261,7 @@ void DdsPipe::init_bridges_nts_(
 {
     for (const auto& topic : builtin_topics)
     {
+        discovered_topic_nts_(topic);
         create_new_bridge_nts_(topic, false);
     }
 }
@@ -279,7 +280,7 @@ void DdsPipe::discovered_topic_nts_(
     }
 
     // Add topic to current_topics as non activated
-    current_topics_.emplace(topic, false);
+    current_topics_.emplace(topic, false    );
 
     // If Pipe is enabled and topic allowed, activate it
     if (enabled_ && allowed_topics_->is_topic_allowed(*topic))

@@ -153,7 +153,7 @@ protected:
      * @return \c RETCODE_NO_DATA if \c data is empty
      * @return \c RETCODE_ERROR if error occurred
      */
-    virtual utils::ReturnCode write_(
+    virtual utils::ReturnCode write_nts_(
             core::IRoutingData& data) noexcept override;
 
     /**
@@ -237,6 +237,8 @@ protected:
     // INTERNAL VARIABLES
 
     core::types::DdsTopic topic_;
+
+    const std::shared_ptr<core::PayloadPool>& payload_pool_;
 
     //! RTPS CommonWriter pointer
     fastrtps::rtps::RTPSWriter* rtps_writer_;
