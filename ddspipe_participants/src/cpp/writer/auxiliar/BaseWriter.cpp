@@ -25,7 +25,7 @@ BaseWriter::BaseWriter(
     : participant_id_(participant_id)
     , enabled_(false)
 {
-    logDebug(DDSROUTER_BASEWRITER, "Creating Writer " << *this << ".");
+    logDebug(DDSPIPE_BASEWRITER, "Creating Writer " << *this << ".");
 }
 
 void BaseWriter::enable() noexcept
@@ -67,7 +67,7 @@ utils::ReturnCode BaseWriter::write(
     }
     else
     {
-        logDevError(DDSROUTER_BASEWRITER,
+        logDevError(DDSPIPE_BASEWRITER,
                 "Attempt to write data from disabled Writer in topic in Participant " << participant_id_);
         return utils::ReturnCode::RETCODE_NOT_ENABLED;
     }

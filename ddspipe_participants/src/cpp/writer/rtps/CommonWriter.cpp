@@ -79,7 +79,7 @@ CommonWriter::~CommonWriter()
         delete rtps_history_;
     }
 
-    logInfo(DDSROUTER_RTPS_COMMONWRITER, "Deleting CommonWriter created in Participant " <<
+    logInfo(DDSPIPE_RTPS_COMMONWRITER, "Deleting CommonWriter created in Participant " <<
             participant_id_ << " for topic " << topic_);
 }
 
@@ -101,12 +101,12 @@ void CommonWriter::onWriterMatched(
     {
         if (info.status == fastrtps::rtps::MatchingStatus::MATCHED_MATCHING)
         {
-            logInfo(DDSROUTER_RTPS_COMMONWRITER_LISTENER,
+            logInfo(DDSPIPE_RTPS_COMMONWRITER_LISTENER,
                     "Writer " << *this << " matched with a new Reader with guid " << info.remoteEndpointGuid);
         }
         else
         {
-            logInfo(DDSROUTER_RTPS_COMMONWRITER_LISTENER,
+            logInfo(DDSPIPE_RTPS_COMMONWRITER_LISTENER,
                     "Writer " << *this << " unmatched with Reader " << info.remoteEndpointGuid);
         }
     }
@@ -144,7 +144,7 @@ utils::ReturnCode CommonWriter::write_nts_(
         return utils::ReturnCode::RETCODE_ERROR;
     }
 
-    logDebug(DDSROUTER_RTPS_COMMONWRITER,
+    logDebug(DDSPIPE_RTPS_COMMONWRITER,
             "CommonWriter " << *this << " sending payload " << new_change->serializedPayload << " from " <<
             rtps_data.source_guid);
 
@@ -155,7 +155,7 @@ utils::ReturnCode CommonWriter::write_nts_(
     auto ret = fill_to_send_data_(new_change, write_params, rtps_data);
     if (!ret)
     {
-        logError(DDSROUTER_RTPS_COMMONWRITER, "Error setting change to send.");
+        logError(DDSPIPE_RTPS_COMMONWRITER, "Error setting change to send.");
         return ret;
     }
 
@@ -208,7 +208,7 @@ utils::ReturnCode CommonWriter::fill_to_send_data_(
                     payload_owner,
                     (*to_send_change_to_fill)))
         {
-            logDevError(DDSROUTER_RTPS_COMMONWRITER, "Error getting Payload.");
+            logDevError(DDSPIPE_RTPS_COMMONWRITER, "Error getting Payload.");
             return utils::ReturnCode::RETCODE_ERROR;
         }
     }
@@ -249,7 +249,7 @@ void CommonWriter::internal_entities_creation_(
     // It is safe to do so here as object is already created and callbacks do not require anything set in this method
     if (repeater_)
     {
-        logDebug(DDSROUTER_RTPS_COMMONWRITER, "CommonWriter created with repeater filter");
+        logDebug(DDSPIPE_RTPS_COMMONWRITER, "CommonWriter created with repeater filter");
 
         rtps_writer_ = fastrtps::rtps::RTPSDomain::createRTPSWriter(
             rtps_participant_,
@@ -299,7 +299,7 @@ void CommonWriter::internal_entities_creation_(
     rtps_writer_->reader_data_filter(data_filter_.get());
 
     logInfo(
-        DDSROUTER_RTPS_COMMONWRITER,
+        DDSPIPE_RTPS_COMMONWRITER,
         "New CommonWriter created in Participant " << participant_id_ <<
             " for topic " << topic_ <<
             " with guid " << rtps_writer_->getGuid());

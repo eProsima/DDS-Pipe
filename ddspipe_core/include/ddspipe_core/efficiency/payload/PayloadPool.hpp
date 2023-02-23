@@ -127,7 +127,7 @@ public:
             eprosima::fastrtps::rtps::CacheChange_t& cache_change) override; // TODO add noexcept once is implemented
 
     /////
-    // DDSROUTER PART
+    // DDSPIPE PART
 
     /**
      * @brief Reserve a new data in \c payload of size \c size.

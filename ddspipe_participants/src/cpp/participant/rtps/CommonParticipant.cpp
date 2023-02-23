@@ -81,20 +81,20 @@ void CommonParticipant::onParticipantDiscovery(
     {
         if (info.status == fastrtps::rtps::ParticipantDiscoveryInfo::DISCOVERED_PARTICIPANT)
         {
-            logInfo(DDSROUTER_DISCOVERY,
+            logInfo(DDSPIPE_DISCOVERY,
                     "Found in Participant " << configuration_->id << " new Participant " << info.info.m_guid << ".");
         }
         else if (info.status == fastrtps::rtps::ParticipantDiscoveryInfo::CHANGED_QOS_PARTICIPANT)
         {
-            logInfo(DDSROUTER_DISCOVERY, "Participant " << info.info.m_guid << " changed QoS.");
+            logInfo(DDSPIPE_DISCOVERY, "Participant " << info.info.m_guid << " changed QoS.");
         }
         else if (info.status == fastrtps::rtps::ParticipantDiscoveryInfo::REMOVED_PARTICIPANT)
         {
-            logInfo(DDSROUTER_DISCOVERY, "Participant " << info.info.m_guid << " removed.");
+            logInfo(DDSPIPE_DISCOVERY, "Participant " << info.info.m_guid << " removed.");
         }
         else
         {
-            logInfo(DDSROUTER_DISCOVERY, "Participant " << info.info.m_guid << " dropped.");
+            logInfo(DDSPIPE_DISCOVERY, "Participant " << info.info.m_guid << " dropped.");
         }
     }
 }
@@ -195,27 +195,27 @@ void CommonParticipant::onReaderDiscovery(
 
         if (info.status == fastrtps::rtps::ReaderDiscoveryInfo::DISCOVERED_READER)
         {
-            logInfo(DDSROUTER_DISCOVERY,
+            logInfo(DDSPIPE_DISCOVERY,
                     "Found in Participant " << configuration_->id << " new Reader " << info.info.guid() << ".");
 
             this->discovery_database_->add_endpoint(info_reader);
         }
         else if (info.status == fastrtps::rtps::ReaderDiscoveryInfo::CHANGED_QOS_READER)
         {
-            logInfo(DDSROUTER_DISCOVERY, "Reader " << info.info.guid() << " changed TopicQoS.");
+            logInfo(DDSPIPE_DISCOVERY, "Reader " << info.info.guid() << " changed TopicQoS.");
 
             this->discovery_database_->update_endpoint(info_reader);
         }
         else if (info.status == fastrtps::rtps::ReaderDiscoveryInfo::REMOVED_READER)
         {
-            logInfo(DDSROUTER_DISCOVERY, "Reader " << info.info.guid() << " removed.");
+            logInfo(DDSPIPE_DISCOVERY, "Reader " << info.info.guid() << " removed.");
 
             info_reader.active = false;
             this->discovery_database_->update_endpoint(info_reader);
         }
         else
         {
-            logInfo(DDSROUTER_DISCOVERY, "Reader " << info.info.guid() << " dropped.");
+            logInfo(DDSPIPE_DISCOVERY, "Reader " << info.info.guid() << " dropped.");
 
             info_reader.active = false;
             this->discovery_database_->update_endpoint(info_reader);
@@ -233,27 +233,27 @@ void CommonParticipant::onWriterDiscovery(
 
         if (info.status == fastrtps::rtps::WriterDiscoveryInfo::DISCOVERED_WRITER)
         {
-            logInfo(DDSROUTER_DISCOVERY,
+            logInfo(DDSPIPE_DISCOVERY,
                     "Found in Participant " << configuration_->id << " new Writer " << info.info.guid() << ".");
 
             this->discovery_database_->add_endpoint(info_writer);
         }
         else if (info.status == fastrtps::rtps::WriterDiscoveryInfo::CHANGED_QOS_WRITER)
         {
-            logInfo(DDSROUTER_DISCOVERY, "Writer " << info.info.guid() << " changed TopicQoS.");
+            logInfo(DDSPIPE_DISCOVERY, "Writer " << info.info.guid() << " changed TopicQoS.");
 
             this->discovery_database_->update_endpoint(info_writer);
         }
         else if (info.status == fastrtps::rtps::WriterDiscoveryInfo::REMOVED_WRITER)
         {
-            logInfo(DDSROUTER_DISCOVERY, "Writer " << info.info.guid() << " removed.");
+            logInfo(DDSPIPE_DISCOVERY, "Writer " << info.info.guid() << " removed.");
 
             info_writer.active = false;
             this->discovery_database_->update_endpoint(info_writer);
         }
         else
         {
-            logInfo(DDSROUTER_DISCOVERY, "Writer " << info.info.guid() << " dropped.");
+            logInfo(DDSPIPE_DISCOVERY, "Writer " << info.info.guid() << " dropped.");
 
             info_writer.active = false;
             this->discovery_database_->update_endpoint(info_writer);
@@ -280,7 +280,7 @@ void CommonParticipant::create_participant_(
         const core::types::DomainId& domain,
         const fastrtps::rtps::RTPSParticipantAttributes& participant_attributes)
 {
-    logInfo(DDSROUTER_RTPS_PARTICIPANT,
+    logInfo(DDSPIPE_RTPS_PARTICIPANT,
             "Creating Participant in domain " << domain);
 
     // Listener must be set in creation as no callbacks should be missed
@@ -296,7 +296,7 @@ void CommonParticipant::create_participant_(
                   utils::Formatter() << "Error creating RTPS Participant " << this->id());
     }
 
-    logInfo(DDSROUTER_RTPS_PARTICIPANT,
+    logInfo(DDSPIPE_RTPS_PARTICIPANT,
             "New Participant created with id " << this->id() <<
             " in domain " << domain << " with guid " << rtps_participant_->getGuid() <<
             (this->is_repeater() ? " (repeater)" : " (non repeater)"));
@@ -309,14 +309,14 @@ std::shared_ptr<core::IWriter> CommonParticipant::create_writer(
     const core::types::DdsTopic* dds_topic_ptr = dynamic_cast<const core::types::DdsTopic*>(&topic);
     if (!dds_topic_ptr)
     {
-        logDebug(DDSROUTER_RTPS_PARTICIPANT, "Not creating Writer for topic " << topic.topic_name());
+        logDebug(DDSPIPE_RTPS_PARTICIPANT, "Not creating Writer for topic " << topic.topic_name());
         return std::make_shared<BlankWriter>();
     }
     const core::types::DdsTopic& dds_topic = *dds_topic_ptr;
 
     if (topic.internal_type_discriminator() == core::types::INTERNAL_TOPIC_TYPE_RPC)
     {
-        logDebug(DDSROUTER_RTPS_PARTICIPANT,
+        logDebug(DDSPIPE_RTPS_PARTICIPANT,
                 "Creating RPC Writer for topic " << topic.topic_name());
         auto writer = std::make_shared<rpc::SimpleWriter>(
             this->id(),
@@ -355,7 +355,7 @@ std::shared_ptr<core::IWriter> CommonParticipant::create_writer(
     }
     else
     {
-        logDevError(DDSROUTER_RTPS_PARTICIPANT, "Incorrect dds Topic in Writer creation.");
+        logDevError(DDSPIPE_RTPS_PARTICIPANT, "Incorrect dds Topic in Writer creation.");
         return std::make_shared<BlankWriter>();
     }
 }
@@ -367,14 +367,14 @@ std::shared_ptr<core::IReader> CommonParticipant::create_reader(
     const core::types::DdsTopic* dds_topic_ptr = dynamic_cast<const core::types::DdsTopic*>(&topic);
     if (!dds_topic_ptr)
     {
-        logDebug(DDSROUTER_RTPS_PARTICIPANT, "Not creating Reader for topic " << topic.topic_name());
+        logDebug(DDSPIPE_RTPS_PARTICIPANT, "Not creating Reader for topic " << topic.topic_name());
         return std::make_shared<BlankReader>();
     }
     const core::types::DdsTopic& dds_topic = *dds_topic_ptr;
 
     if (topic.internal_type_discriminator() == core::types::INTERNAL_TOPIC_TYPE_RPC)
     {
-        logDebug(DDSROUTER_RTPS_PARTICIPANT,
+        logDebug(DDSPIPE_RTPS_PARTICIPANT,
                 "Creating RPC Reader for topic " << topic.topic_name());
 
         auto reader = std::make_shared<rpc::SimpleReader>(
@@ -414,7 +414,7 @@ std::shared_ptr<core::IReader> CommonParticipant::create_reader(
     }
     else
     {
-        logDevError(DDSROUTER_RTPS_PARTICIPANT, "Incorrect dds Topic in Reader creation.");
+        logDevError(DDSPIPE_RTPS_PARTICIPANT, "Incorrect dds Topic in Reader creation.");
         return std::make_shared<BlankReader>();
     }
 }

@@ -50,7 +50,7 @@ Track::Track(
     , transmit_task_id_(utils::new_unique_task_id())
     , thread_pool_(thread_pool)
 {
-    logDebug(DDSROUTER_TRACK, "Creating Track " << *this << ".");
+    logDebug(DDSPIPE_TRACK, "Creating Track " << *this << ".");
 
     // Set this track to on_data_available lambda call
     reader_->set_on_data_available_callback(std::bind(&Track::data_available_, this));
@@ -60,12 +60,12 @@ Track::Track(
         transmit_task_id_,
         std::bind(&Track::transmit_, this));
 
-    logDebug(DDSROUTER_TRACK, "Track " << *this << " created.");
+    logDebug(DDSPIPE_TRACK, "Track " << *this << " created.");
 }
 
 Track::~Track()
 {
-    logDebug(DDSROUTER_TRACK, "Destroying Track " << *this << ".");
+    logDebug(DDSPIPE_TRACK, "Destroying Track " << *this << ".");
 
     // Disable reader and writers
     disable();
@@ -77,7 +77,7 @@ Track::~Track()
     // Set exit status and call transmit thread to awake and terminate. Then wait for it.
     exit_.store(true);
 
-    logDebug(DDSROUTER_TRACK, "Track " << *this << " destroyed.");
+    logDebug(DDSPIPE_TRACK, "Track " << *this << " destroyed.");
 }
 
 void Track::enable() noexcept
@@ -86,7 +86,7 @@ void Track::enable() noexcept
 
     if (!enabled_)
     {
-        logInfo(DDSROUTER_TRACK,
+        logInfo(DDSPIPE_TRACK,
                 "Enabling Track " << reader_participant_id_ << " for topic " << topic_->topic_name() <<
                 ".");
         enabled_ = true;
@@ -116,7 +116,7 @@ void Track::disable() noexcept
 
     if (enabled_)
     {
-        logInfo(DDSROUTER_TRACK,
+        logInfo(DDSPIPE_TRACK,
                 "Disabling Track " << reader_participant_id_ << " for topic " << topic_->topic_name() <<
                 ".");
 
@@ -148,7 +148,7 @@ void Track::data_available_() noexcept
     // Only hear callback if it is enabled
     if (enabled_)
     {
-        logDebug(DDSROUTER_TRACK, "Track " << *this << " has data ready to be sent.");
+        logDebug(DDSPIPE_TRACK, "Track " << *this << " has data ready to be sent.");
 
         // Get previous status and set current one to >=2 (it it was already >=2 it will keep being >2)
         unsigned int previous_status = data_available_status_.fetch_add(DataAvailableStatus::new_data_arrived);
@@ -158,7 +158,7 @@ void Track::data_available_() noexcept
             // no_more_data was set as current status, so no thread was running
             // (and will not start as 2 is set as new current status)
             thread_pool_->emit(transmit_task_id_);
-            logDebug(DDSROUTER_TRACK, "Track " << *this << " send callback to queue.");
+            logDebug(DDSPIPE_TRACK, "Track " << *this << " send callback to queue.");
         }
     }
 }
@@ -205,12 +205,12 @@ void Track::transmit_() noexcept
         else if (!ret)
         {
             // Error reading data
-            logWarning(DDSROUTER_TRACK, "Error taking data in Track " << topic_->topic_name() << ". Error code " << ret
+            logWarning(DDSPIPE_TRACK, "Error taking data in Track " << topic_->topic_name() << ". Error code " << ret
                                                                       << ". Skipping data and continue.");
             continue;
         }
 
-        logDebug(DDSROUTER_TRACK,
+        logDebug(DDSPIPE_TRACK,
                 "Track " << reader_participant_id_ << " for topic " << topic_->topic_name() <<
                 " transmitting data from remote endpoint.");
 
@@ -218,14 +218,14 @@ void Track::transmit_() noexcept
         for (auto& writer_it : writers_)
         {
             logDebug(
-                DDSROUTER_TRACK,
+                DDSPIPE_TRACK,
                 "Forwarding data to writer " << writer_it.first << ".");
 
             ret = writer_it.second->write(*data);
 
             if (!ret)
             {
-                logWarning(DDSROUTER_TRACK, "Error writting data in Track " << topic_->topic_name() << ". Error code "
+                logWarning(DDSPIPE_TRACK, "Error writting data in Track " << topic_->topic_name() << ". Error code "
                                                                             << ret <<
                         ". Skipping data for this writer and continue.");
                 continue;

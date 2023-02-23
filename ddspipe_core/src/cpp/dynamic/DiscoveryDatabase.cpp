@@ -32,12 +32,12 @@ DiscoveryDatabase::DiscoveryDatabase() noexcept
     : exit_(false)
     , enabled_(false)
 {
-    logDebug(DDSROUTER_DISCOVERY_DATABASE, "Creating queue processing thread.");
+    logDebug(DDSPIPE_DISCOVERY_DATABASE, "Creating queue processing thread.");
 }
 
 DiscoveryDatabase::~DiscoveryDatabase()
 {
-    logDebug(DDSROUTER_DISCOVERY_DATABASE, "Destroying Discovery Database.");
+    logDebug(DDSPIPE_DISCOVERY_DATABASE, "Destroying Discovery Database.");
 
     stop();
 }
@@ -48,11 +48,11 @@ void DiscoveryDatabase::start() noexcept
     {
         queue_processing_thread_ = std::thread(&DiscoveryDatabase::queue_processing_thread_routine_, this);
         enabled_.store(true);
-        logDebug(DDSROUTER_DISCOVERY_DATABASE, "Creating queue processing thread routine.");
+        logDebug(DDSPIPE_DISCOVERY_DATABASE, "Creating queue processing thread routine.");
     }
     else
     {
-        logDebug(DDSROUTER_DISCOVERY_DATABASE, "Processing thread routine already started.");
+        logDebug(DDSPIPE_DISCOVERY_DATABASE, "Processing thread routine already started.");
     }
 }
 
@@ -68,13 +68,13 @@ void DiscoveryDatabase::stop() noexcept
         }
         entities_to_process_cv_.notify_one();
 
-        logDebug(DDSROUTER_DISCOVERY_DATABASE, "Waiting for queue processing thread to finish.");
+        logDebug(DDSPIPE_DISCOVERY_DATABASE, "Waiting for queue processing thread to finish.");
         enabled_.store(false);
         queue_processing_thread_.join();
     }
     else
     {
-        logDebug(DDSROUTER_DISCOVERY_DATABASE, "Processing thread routine already stopped.");
+        logDebug(DDSPIPE_DISCOVERY_DATABASE, "Processing thread routine already stopped.");
     }
 }
 
@@ -123,7 +123,7 @@ bool DiscoveryDatabase::add_endpoint_(
                 // If exists but inactive, modify entry
                 it->second = new_endpoint;
 
-                logInfo(DDSROUTER_DISCOVERY_DATABASE,
+                logInfo(DDSPIPE_DISCOVERY_DATABASE,
                         "Modifying an already discovered (inactive) Endpoint " << new_endpoint << ".");
 
                 return true;
@@ -131,7 +131,7 @@ bool DiscoveryDatabase::add_endpoint_(
         }
         else
         {
-            logInfo(DDSROUTER_DISCOVERY_DATABASE, "Inserting a new discovered Endpoint " << new_endpoint << ".");
+            logInfo(DDSPIPE_DISCOVERY_DATABASE, "Inserting a new discovered Endpoint " << new_endpoint << ".");
 
             // Add it to the dictionary
             entities_.insert(std::pair<Guid, Endpoint>(new_endpoint.guid, new_endpoint));
@@ -163,7 +163,7 @@ bool DiscoveryDatabase::update_endpoint_(
         }
         else
         {
-            logInfo(DDSROUTER_DISCOVERY_DATABASE,
+            logInfo(DDSPIPE_DISCOVERY_DATABASE,
                     "Modifying an already discovered Endpoint " << endpoint_to_update << ".");
 
             // Modify entry
@@ -187,7 +187,7 @@ utils::ReturnCode DiscoveryDatabase::erase_endpoint_(
     {
         std::unique_lock<std::shared_timed_mutex> lock(mutex_);
 
-        logInfo(DDSROUTER_DISCOVERY_DATABASE, "Erasing Endpoint " << endpoint_to_erase << ".");
+        logInfo(DDSPIPE_DISCOVERY_DATABASE, "Erasing Endpoint " << endpoint_to_erase << ".");
 
         auto erased = entities_.erase(endpoint_to_erase.guid);
 
@@ -335,7 +335,7 @@ void DiscoveryDatabase::process_queue_() noexcept
         }
         catch (const utils::InconsistencyException& e)
         {
-            logDevError(DDSROUTER_DISCOVERY_DATABASE,
+            logDevError(DDSPIPE_DISCOVERY_DATABASE,
                     "Error processing database operations queue:" << e.what() << ".");
         }
         entities_to_process_.Pop();

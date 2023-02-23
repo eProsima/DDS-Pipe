@@ -31,7 +31,7 @@ DdsBridge::DdsBridge(
     : Bridge(participants_database, payload_pool, thread_pool)
     , topic_(topic)
 {
-    logDebug(DDSROUTER_DDSBRIDGE, "Creating DdsBridge " << *this << ".");
+    logDebug(DDSPIPE_DDSBRIDGE, "Creating DdsBridge " << *this << ".");
 
     std::set<ParticipantId> ids = participants_->get_participants_ids();
 
@@ -60,7 +60,7 @@ DdsBridge::DdsBridge(
             writers_except_one.erase(id);
 
             logDebug(
-                DDSROUTER_DDSBRIDGE,
+                DDSPIPE_DDSBRIDGE,
                 "Not adding own Writer to Track in " << *this << " in Participant " << id << ".");
         }
 
@@ -76,17 +76,17 @@ DdsBridge::DdsBridge(
             thread_pool);
     }
 
-    logDebug(DDSROUTER_DDSBRIDGE, "DdsBridge " << *this << " created.");
+    logDebug(DDSPIPE_DDSBRIDGE, "DdsBridge " << *this << " created.");
 }
 
 DdsBridge::~DdsBridge()
 {
-    logDebug(DDSROUTER_DDSBRIDGE, "Destroying DdsBridge " << *this << ".");
+    logDebug(DDSPIPE_DDSBRIDGE, "Destroying DdsBridge " << *this << ".");
 
     // Disable every Track before destruction
     disable();
 
-    logDebug(DDSROUTER_DDSBRIDGE, "DdsBridge " << *this << " destroyed.");
+    logDebug(DDSPIPE_DDSBRIDGE, "DdsBridge " << *this << " destroyed.");
 }
 
 void DdsBridge::enable() noexcept
@@ -95,7 +95,7 @@ void DdsBridge::enable() noexcept
 
     if (!enabled_)
     {
-        logInfo(DDSROUTER_DDSBRIDGE, "Enabling DdsBridge for topic " << topic_->topic_name() << ".");
+        logInfo(DDSPIPE_DDSBRIDGE, "Enabling DdsBridge for topic " << topic_->topic_name() << ".");
 
         // ATTENTION: reference needed or it would copy Track
         for (auto& track_it : tracks_)
@@ -113,7 +113,7 @@ void DdsBridge::disable() noexcept
 
     if (enabled_)
     {
-        logInfo(DDSROUTER_DDSBRIDGE, "Disabling DdsBridge for topic " << topic_->topic_name() << ".");
+        logInfo(DDSPIPE_DDSBRIDGE, "Disabling DdsBridge for topic " << topic_->topic_name() << ".");
 
         // ATTENTION: reference needed or it would copy Track
         for (auto& track_it : tracks_)

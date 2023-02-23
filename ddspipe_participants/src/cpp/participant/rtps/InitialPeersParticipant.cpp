@@ -68,7 +68,7 @@ fastrtps::rtps::RTPSParticipantAttributes InitialPeersParticipant::reckon_partic
         if (!address.is_valid())
         {
             // Invalid address, continue with next one
-            logWarning(DDSROUTER_INITIALPEERS_PARTICIPANT,
+            logWarning(DDSPIPE_INITIALPEERS_PARTICIPANT,
                     "Discard listening address: " << address <<
                     " in Participant " << configuration->id << " initialization.");
             continue;
@@ -183,7 +183,7 @@ fastrtps::rtps::RTPSParticipantAttributes InitialPeersParticipant::reckon_partic
         params.builtin.metatrafficUnicastLocatorList.push_back(locator);
         params.defaultUnicastLocatorList.push_back(locator);
 
-        logDebug(DDSROUTER_INITIALPEERS_PARTICIPANT,
+        logDebug(DDSPIPE_INITIALPEERS_PARTICIPANT,
                 "Add listening address " << address << " to Participant " << configuration->id << ".");
     }
 
@@ -194,7 +194,7 @@ fastrtps::rtps::RTPSParticipantAttributes InitialPeersParticipant::reckon_partic
         if (!connection_address.is_valid())
         {
             // Invalid connection address, continue with next one
-            logWarning(DDSROUTER_INITIALPEERS_PARTICIPANT,
+            logWarning(DDSPIPE_INITIALPEERS_PARTICIPANT,
                     "Discard connection address: " << connection_address <<
                     " in Participant " << configuration->id << " initialization.");
             continue;
@@ -242,7 +242,7 @@ fastrtps::rtps::RTPSParticipantAttributes InitialPeersParticipant::reckon_partic
         // Add it to builtin
         params.builtin.initialPeersList.push_back(locator);
 
-        logDebug(DDSROUTER_INITIALPEERS_PARTICIPANT,
+        logDebug(DDSPIPE_INITIALPEERS_PARTICIPANT,
                 "Add connection address " << connection_address <<
                 " to Participant " << configuration->id << ".");
     }
@@ -264,7 +264,7 @@ fastrtps::rtps::RTPSParticipantAttributes InitialPeersParticipant::reckon_partic
 
         params.userTransports.push_back(descriptor);
 
-        logDebug(DDSROUTER_INITIALPEERS_PARTICIPANT,
+        logDebug(DDSPIPE_INITIALPEERS_PARTICIPANT,
                 "Adding TCPv4 Transport to Participant " << configuration->id << ".");
     }
 
@@ -281,7 +281,7 @@ fastrtps::rtps::RTPSParticipantAttributes InitialPeersParticipant::reckon_partic
 
         params.userTransports.push_back(descriptor);
 
-        logDebug(DDSROUTER_INITIALPEERS_PARTICIPANT,
+        logDebug(DDSPIPE_INITIALPEERS_PARTICIPANT,
                 "Adding TCPv6 Transport to Participant " << configuration->id << ".");
     }
 
@@ -292,7 +292,7 @@ fastrtps::rtps::RTPSParticipantAttributes InitialPeersParticipant::reckon_partic
                 std::make_shared<eprosima::fastdds::rtps::UDPv4TransportDescriptor>();
         params.userTransports.push_back(descriptor);
 
-        logDebug(DDSROUTER_INITIALPEERS_PARTICIPANT,
+        logDebug(DDSPIPE_INITIALPEERS_PARTICIPANT,
                 "Adding UDPv4 Transport to Participant " << configuration->id << ".");
     }
 
@@ -302,7 +302,7 @@ fastrtps::rtps::RTPSParticipantAttributes InitialPeersParticipant::reckon_partic
                 std::make_shared<eprosima::fastdds::rtps::UDPv6TransportDescriptor>();
         params.userTransports.push_back(descriptor_v6);
 
-        logDebug(DDSROUTER_INITIALPEERS_PARTICIPANT,
+        logDebug(DDSPIPE_INITIALPEERS_PARTICIPANT,
                 "Adding UDPv6 Transport to Participant " << configuration->id << ".");
     }
 
@@ -325,7 +325,7 @@ fastrtps::rtps::RTPSParticipantAttributes InitialPeersParticipant::reckon_partic
         }
     }
 
-    logDebug(DDSROUTER_INITIALPEERS_PARTICIPANT,
+    logDebug(DDSPIPE_INITIALPEERS_PARTICIPANT,
             "Configured Participant " << configuration->id);
 
     return params;
