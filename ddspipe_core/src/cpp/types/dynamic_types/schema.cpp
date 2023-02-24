@@ -141,7 +141,7 @@ std::string type_kind_to_str(
     switch (dyn_type->get_kind())
     {
         case fastrtps::types::TK_BOOLEAN:
-            return "boolean";
+            return "bool";
 
         case fastrtps::types::TK_BYTE:
             return "byte";
