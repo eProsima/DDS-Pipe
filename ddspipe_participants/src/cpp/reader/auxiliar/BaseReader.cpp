@@ -25,7 +25,7 @@ namespace participants {
 const std::function<void()> BaseReader::DEFAULT_ON_DATA_AVAILABLE_CALLBACK =
         []()
         {
-            logDevError(DDSROUTER_READER, "Calling unset callback");
+            logDevError(DDSPIPE_READER, "Calling unset callback");
         };
 
 BaseReader::BaseReader(
@@ -35,7 +35,7 @@ BaseReader::BaseReader(
     , on_data_available_lambda_set_(false)
     , enabled_(false)
 {
-    logDebug(DDSROUTER_BASEREADER, "Creating Reader " << *this << ".");
+    logDebug(DDSPIPE_BASEREADER, "Creating Reader " << *this << ".");
 }
 
 void BaseReader::enable() noexcept
@@ -73,7 +73,7 @@ void BaseReader::set_on_data_available_callback(
 
     if (on_data_available_lambda_set_)
     {
-        logDevError(DDSROUTER_BASEREADER,
+        logDevError(DDSPIPE_BASEREADER,
                 "Changing on_data_available callback for Reader in Participant " << participant_id_);
     }
 
@@ -87,7 +87,7 @@ void BaseReader::unset_on_data_available_callback() noexcept
 
     if (!on_data_available_lambda_set_)
     {
-        logDevError(DDSROUTER_BASEREADER,
+        logDevError(DDSPIPE_BASEREADER,
                 "Unsetting a non set on_data_available callback for Reader in Participant " << participant_id_);
     }
 
@@ -106,7 +106,7 @@ utils::ReturnCode BaseReader::take(
     }
     else
     {
-        logDevError(DDSROUTER_BASEREADER,
+        logDevError(DDSPIPE_BASEREADER,
                 "Attempt to take data from disabled Reader in Participant " << participant_id_);
         return utils::ReturnCode::RETCODE_NOT_ENABLED;
     }
@@ -125,7 +125,7 @@ void BaseReader::on_data_available_() const noexcept
     }
     else
     {
-        logDevError(DDSROUTER_BASEREADER,
+        logDevError(DDSPIPE_BASEREADER,
                 "Calling not set on_data_available callback for Reader in Participant " << participant_id_);
     }
 }

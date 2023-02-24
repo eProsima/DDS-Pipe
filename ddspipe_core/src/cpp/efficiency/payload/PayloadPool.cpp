@@ -38,16 +38,16 @@ PayloadPool::~PayloadPool()
 {
     if (reserve_count_ < release_count_)
     {
-        logDevError(DDSROUTER_PAYLOADPOOL, "Removing non Consistent PayloadPool.");
+        logDevError(DDSPIPE_PAYLOADPOOL, "Removing non Consistent PayloadPool.");
     }
     else if (reserve_count_ != release_count_)
     {
-        logDevError(DDSROUTER_PAYLOADPOOL,
+        logDevError(DDSPIPE_PAYLOADPOOL,
                 "From " << reserve_count_ << " payloads reserved only " << release_count_ << " has been released.");
     }
     else
     {
-        logInfo(DDSROUTER_PAYLOADPOOL,
+        logInfo(DDSPIPE_PAYLOADPOOL,
                 "Removing PayloadPool correctly after reserve: " << reserve_count_ << " payloads.");
     }
 }
@@ -66,7 +66,7 @@ bool PayloadPool::get_payload(
     }
     else
     {
-        logDevError(DDSROUTER_PAYLOADPOOL, "Error occurred while creating payload.")
+        logDevError(DDSPIPE_PAYLOADPOOL, "Error occurred while creating payload.")
         return false;
     }
 }
@@ -83,7 +83,7 @@ bool PayloadPool::get_payload(
     }
     else
     {
-        logDevError(DDSROUTER_PAYLOADPOOL, "Error occurred while referencing payload.")
+        logDevError(DDSPIPE_PAYLOADPOOL, "Error occurred while referencing payload.")
         return false;
     }
 }
@@ -100,13 +100,13 @@ bool PayloadPool::release_payload(
         }
         else
         {
-            logDevError(DDSROUTER_PAYLOADPOOL, "Error occurred while releasing payload.")
+            logDevError(DDSPIPE_PAYLOADPOOL, "Error occurred while releasing payload.")
             return false;
         }
     }
     else
     {
-        logError(DDSROUTER_PAYLOADPOOL, "Trying to remove a cache change in an incorrect pool.")
+        logError(DDSPIPE_PAYLOADPOOL, "Trying to remove a cache change in an incorrect pool.")
         throw utils::InconsistencyException("Trying to remove a cache change in an incorrect pool.");
     }
 }
@@ -129,7 +129,7 @@ void PayloadPool::add_release_payload_()
     ++release_count_;
     if (release_count_ > reserve_count_)
     {
-        logError(DDSROUTER_PAYLOADPOOL,
+        logError(DDSPIPE_PAYLOADPOOL,
                 "Inconsistent PayloadPool, releasing more payloads than reserved.");
         throw utils::InconsistencyException("Inconsistent PayloadPool, releasing more payloads than reserved.");
     }
@@ -141,7 +141,7 @@ bool PayloadPool::reserve_(
 {
     if (size == 0)
     {
-        logDevError(DDSROUTER_PAYLOADPOOL,
+        logDevError(DDSPIPE_PAYLOADPOOL,
                 "Trying to reserve a data block of 0 bytes.");
         return false;
     }

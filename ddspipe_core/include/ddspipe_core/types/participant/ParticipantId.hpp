@@ -24,9 +24,9 @@ namespace core {
 namespace types {
 
 /**
- * @brief Unique Id for each DDSRouter Participant
+ * @brief Unique Id for each DdsPipe Participant
  *
- * This class represents the ID that uniquely identifies a Participant inside the DDSRouter.
+ * This class represents the ID that uniquely identifies a Participant inside the DdsPipe.
  */
 using ParticipantId = std::string;
 

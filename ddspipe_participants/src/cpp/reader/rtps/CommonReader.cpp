@@ -71,7 +71,7 @@ CommonReader::~CommonReader()
         delete rtps_history_;
     }
 
-    logInfo(DDSROUTER_RTPS_READER, "Deleting CommonReader created in Participant " <<
+    logInfo(DDSPIPE_RTPS_READER, "Deleting CommonReader created in Participant " <<
             participant_id_ << " for topic " << topic_);
 }
 
@@ -126,7 +126,7 @@ void CommonReader::internal_entities_creation_(
                       " for Simple RTPSReader in Participant " << participant_id_);
     }
 
-    logInfo(DDSROUTER_RTPS_READER, "New CommonReader created in Participant " << participant_id_ << " for topic " <<
+    logInfo(DDSPIPE_RTPS_READER, "New CommonReader created in Participant " << participant_id_ << " for topic " <<
             topic_ << " with guid " << rtps_reader_->getGuid());
 }
 
@@ -207,7 +207,7 @@ void CommonReader::fill_received_data_(
     // Get Participant receiver
     data_to_fill.participant_receiver = participant_id_;
 
-    // Store it in DDSRouter PayloadPool if size is bigger than 0
+    // Store it in DdsPipe PayloadPool if size is bigger than 0
     // NOTE: in case of keyed topics an empty payload is possible
     if (received_change.serializedPayload.length > 0)
     {
@@ -233,7 +233,7 @@ void CommonReader::fill_received_data_(
     // Note: do not fill writer specific properties in this data_to_fill from this kind of Readers.
     // Implement specific class for filling it.
 
-    logDebug(DDSROUTER_RTPS_COMMONREADER_LISTENER,
+    logDebug(DDSPIPE_RTPS_COMMONREADER_LISTENER,
             "Data transmiting to track from Reader " << *this << " with payload " <<
             data_to_fill.payload << " from remote writer " << data_to_fill.source_guid);
 
@@ -366,7 +366,7 @@ void CommonReader::onNewCacheChangeAdded(
         {
             // Call Track callback (by calling BaseReader callback method)
             // TODO (paris) Uncomment
-            // logDebug(DDSROUTER_RTPS_COMMONREADER_LISTENER,
+            // logDebug(DDSPIPE_RTPS_COMMONREADER_LISTENER,
             //         "Data arrived to Reader " << *this << " with payload " << change->serializedPayload << " from " <<
             //         change->writerGUID);
             on_data_available_();
@@ -378,7 +378,7 @@ void CommonReader::onNewCacheChangeAdded(
             if (!topic_.topic_qos.is_reliable())
             {
                 reader->getHistory()->remove_change((fastrtps::rtps::CacheChange_t*)change);
-                logDebug(DDSROUTER_RTPS_COMMONREADER_LISTENER,
+                logDebug(DDSPIPE_RTPS_COMMONREADER_LISTENER,
                         "Change removed from history");
             }
         }
@@ -386,7 +386,7 @@ void CommonReader::onNewCacheChangeAdded(
     else
     {
         logWarning(
-            DDSROUTER_RTPS_COMMONREADER_LISTENER,
+            DDSPIPE_RTPS_COMMONREADER_LISTENER,
             "Ignoring data from this same Participant in reader " << *this << ".");
 
         // If it is a message from this Participant, do not send it forward and remove it
@@ -403,12 +403,12 @@ void CommonReader::onReaderMatched(
     {
         if (info.status == fastrtps::rtps::MatchingStatus::MATCHED_MATCHING)
         {
-            logInfo(DDSROUTER_RTPS_COMMONREADER_LISTENER,
+            logInfo(DDSPIPE_RTPS_COMMONREADER_LISTENER,
                     "Reader " << *this << " matched with a new Writer with guid " << info.remoteEndpointGuid);
         }
         else
         {
-            logInfo(DDSROUTER_RTPS_COMMONREADER_LISTENER,
+            logInfo(DDSPIPE_RTPS_COMMONREADER_LISTENER,
                     "Reader " << *this << " unmatched with Writer " << info.remoteEndpointGuid);
         }
     }
@@ -420,7 +420,7 @@ utils::ReturnCode CommonReader::is_data_correct_(
     // Check that the guid is consistent
     if (received_change->writerGUID == fastrtps::rtps::GUID_t::unknown())
     {
-        logWarning(DDSROUTER_RTPS_COMMONREADER_LISTENER,
+        logWarning(DDSPIPE_RTPS_COMMONREADER_LISTENER,
                 "Error taking data without correct writer GUID.");
 
         return utils::ReturnCode::RETCODE_ERROR;
@@ -432,7 +432,7 @@ utils::ReturnCode CommonReader::is_data_correct_(
         // Data with 0 bytes is only correct if keyed topic and if data is being disposed
         if (!(topic_.topic_qos.keyed && received_change->kind != eprosima::fastrtps::rtps::ChangeKind_t::ALIVE))
         {
-            logWarning(DDSROUTER_RTPS_COMMONREADER_LISTENER,
+            logWarning(DDSPIPE_RTPS_COMMONREADER_LISTENER,
                     "Error taking data with length " << received_change->serializedPayload.length << ".");
 
             return utils::ReturnCode::RETCODE_ERROR;

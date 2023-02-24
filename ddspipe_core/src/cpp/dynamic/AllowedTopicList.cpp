@@ -39,8 +39,8 @@ AllowedTopicList::AllowedTopicList(
     allowlist_ = AllowedTopicList::get_topic_list_without_repetition_(allowlist);
     blocklist_ = AllowedTopicList::get_topic_list_without_repetition_(blocklist);
 
-    logDebug(DDSROUTER_ALLOWEDTOPICLIST, "New Allowed topic list created:");
-    logDebug(DDSROUTER_ALLOWEDTOPICLIST, "New Allowed topic list created: " << *this << ".");
+    logDebug(DDSPIPE_ALLOWEDTOPICLIST, "New Allowed topic list created:");
+    logDebug(DDSPIPE_ALLOWEDTOPICLIST, "New Allowed topic list created: " << *this << ".");
 }
 
 AllowedTopicList& AllowedTopicList::operator =(

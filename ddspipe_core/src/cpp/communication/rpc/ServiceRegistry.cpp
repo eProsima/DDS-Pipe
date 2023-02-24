@@ -39,7 +39,7 @@ ServiceRegistry::ServiceRegistry(
     , participant_id_(participant_id)
     , enabled_(false)
 {
-    logDebug(DDSROUTER_SERVICEREGISTRY,
+    logDebug(DDSPIPE_SERVICEREGISTRY,
             "ServiceRegistry created for service " << topic <<
             " in participant " << participant_id << ".");
 }
@@ -68,7 +68,7 @@ void ServiceRegistry::add(
     if (registry_.count(idx))
     {
         // Should never occur as each sequence number associated to a write operation is unique
-        logWarning(DDSROUTER_SERVICEREGISTRY,
+        logWarning(DDSPIPE_SERVICEREGISTRY,
                 "ServiceRegistry for service " << topic_ << " in participant " << participant_id_ <<
                 " attempting to add entry with already present SequenceNumber.");
         return;

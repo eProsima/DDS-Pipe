@@ -111,7 +111,7 @@ bool FastPayloadPool::reserve_(
 {
     if (size == 0)
     {
-        logDevError(DDSROUTER_PAYLOADPOOL,
+        logDevError(DDSPIPE_PAYLOADPOOL,
                 "Trying to reserve a data block of 0 bytes.");
         return false;
     }

@@ -50,7 +50,7 @@ struct RpcPayloadData : public RtpsPayloadData
     //! Sequence number of the received cache change
     eprosima::fastrtps::rtps::SequenceNumber_t origin_sequence_number{};
 
-    //! Sequence Number with which the internal writer (ddsrouter writer) has sent this message
+    //! Sequence Number with which the internal writer (ddspipe rpc writer) has sent this message
     eprosima::fastrtps::rtps::SequenceNumber_t sent_sequence_number;
 };
 

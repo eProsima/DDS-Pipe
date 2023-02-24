@@ -101,7 +101,7 @@ void ParticipantsDatabase::add_participant(
     }
     else
     {
-        logInfo(DDSROUTER_PARTICIPANT_DATABASE, "Inserting a new Participant " << id);
+        logInfo(DDSPIPE_PARTICIPANT_DATABASE, "Inserting a new Participant " << id);
     }
 
     participants_[id] = participant;

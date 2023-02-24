@@ -73,7 +73,7 @@ DiscoveryServerParticipant::reckon_participant_attributes_(
         if (!address.is_valid())
         {
             // Invalid address, continue with next one
-            logWarning(DDSROUTER_DISCOVERYSERVER_PARTICIPANT,
+            logWarning(DDSPIPE_DISCOVERYSERVER_PARTICIPANT,
                     "Discard listening address: " << address <<
                     " in Participant " << configuration->id << " initialization.");
             continue;
@@ -187,7 +187,7 @@ DiscoveryServerParticipant::reckon_participant_attributes_(
         params.builtin.metatrafficUnicastLocatorList.push_back(locator);
         params.defaultUnicastLocatorList.push_back(locator);
 
-        logDebug(DDSROUTER_DISCOVERYSERVER_PARTICIPANT,
+        logDebug(DDSPIPE_DISCOVERYSERVER_PARTICIPANT,
                 "Add listening address " << address << " to Participant " << configuration->id << ".");
     }
 
@@ -198,7 +198,7 @@ DiscoveryServerParticipant::reckon_participant_attributes_(
         if (!connection_address.is_valid())
         {
             // Invalid connection address, continue with next one
-            logWarning(DDSROUTER_DISCOVERYSERVER_PARTICIPANT,
+            logWarning(DDSPIPE_DISCOVERYSERVER_PARTICIPANT,
                     "Discard connection address with remote server: " <<
                     connection_address.discovery_server_guid_prefix() <<
                     " in Participant " << configuration->id << " initialization.");
@@ -213,7 +213,7 @@ DiscoveryServerParticipant::reckon_participant_attributes_(
             if (!address.is_valid())
             {
                 // Invalid ip address, continue with next one
-                logWarning(DDSROUTER_DISCOVERYSERVER_PARTICIPANT,
+                logWarning(DDSPIPE_DISCOVERYSERVER_PARTICIPANT,
                         "Discard connection address with remote server: " <<
                         connection_address.discovery_server_guid_prefix() <<
                         " due to invalid ip address " << address.ip() << " in Participant " << configuration->id <<
@@ -262,7 +262,7 @@ DiscoveryServerParticipant::reckon_participant_attributes_(
             server_attr.metatrafficUnicastLocatorList.push_back(locator);
             params.builtin.discovery_config.m_DiscoveryServers.push_back(server_attr);
 
-            logDebug(DDSROUTER_DISCOVERYSERVER_PARTICIPANT,
+            logDebug(DDSPIPE_DISCOVERYSERVER_PARTICIPANT,
                     "Add connection address " << address << " for server " << server_prefix <<
                     " to Participant " << configuration->id << ".");
         }
@@ -282,7 +282,7 @@ DiscoveryServerParticipant::reckon_participant_attributes_(
 
         if (!has_connection_addresses)
         {
-            logWarning(DDSROUTER_DISCOVERYSERVER_PARTICIPANT,
+            logWarning(DDSPIPE_DISCOVERYSERVER_PARTICIPANT,
                     "Creating Participant " << configuration->id << " without listening or connection addresses. " <<
                     "It will not communicate with any other Participant.");
         }
@@ -309,7 +309,7 @@ DiscoveryServerParticipant::reckon_participant_attributes_(
 
         params.userTransports.push_back(descriptor);
 
-        logDebug(DDSROUTER_DISCOVERYSERVER_PARTICIPANT,
+        logDebug(DDSPIPE_DISCOVERYSERVER_PARTICIPANT,
                 "Adding TCPv4 Transport to Participant " << configuration->id << ".");
     }
     if (has_connection_tcp_ipv6 && !has_listening_tcp_ipv6)
@@ -325,7 +325,7 @@ DiscoveryServerParticipant::reckon_participant_attributes_(
 
         params.userTransports.push_back(descriptor);
 
-        logDebug(DDSROUTER_DISCOVERYSERVER_PARTICIPANT,
+        logDebug(DDSPIPE_DISCOVERYSERVER_PARTICIPANT,
                 "Adding TCPv6 Transport to Participant " << configuration->id << ".");
     }
 
@@ -336,7 +336,7 @@ DiscoveryServerParticipant::reckon_participant_attributes_(
                 std::make_shared<eprosima::fastdds::rtps::UDPv4TransportDescriptor>();
         params.userTransports.push_back(descriptor);
 
-        logDebug(DDSROUTER_DISCOVERYSERVER_PARTICIPANT,
+        logDebug(DDSPIPE_DISCOVERYSERVER_PARTICIPANT,
                 "Adding UDPv4 Transport to Participant " << configuration->id << ".");
     }
     if (has_udp_ipv6)
@@ -345,11 +345,11 @@ DiscoveryServerParticipant::reckon_participant_attributes_(
                 std::make_shared<eprosima::fastdds::rtps::UDPv6TransportDescriptor>();
         params.userTransports.push_back(descriptor_v6);
 
-        logDebug(DDSROUTER_DISCOVERYSERVER_PARTICIPANT,
+        logDebug(DDSPIPE_DISCOVERYSERVER_PARTICIPANT,
                 "Adding UDPv6 Transport to Participant " << configuration->id << ".");
     }
 
-    logDebug(DDSROUTER_DISCOVERYSERVER_PARTICIPANT,
+    logDebug(DDSPIPE_DISCOVERYSERVER_PARTICIPANT,
             "Configured Participant " << configuration->id << " with server guid: " <<
             discovery_server_guid_prefix);
 

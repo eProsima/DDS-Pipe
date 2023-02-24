@@ -32,7 +32,7 @@ EchoParticipant::EchoParticipant(
     : BlankParticipant(participant_configuration->id)
     , configuration_(participant_configuration)
 {
-    logDebug(DDSROUTER_TRACK, "Creating Echo Participant : " << configuration_->id << " .");
+    logDebug(DDSPIPE_TRACK, "Creating Echo Participant : " << configuration_->id << " .");
 
     if (configuration_->echo_discovery)
     {
@@ -50,7 +50,7 @@ void EchoParticipant::echo_discovery(
 {
     // TODO write this in a way that is efficient and easy to read and allow verbose option
     logUser(
-        DDSROUTER_ECHO_DISCOVERY,
+        DDSPIPE_ECHO_DISCOVERY,
         "New endpoint discovered: " << endpoint_discovered << ".");
 }
 
@@ -70,7 +70,7 @@ std::shared_ptr<core::IWriter> EchoParticipant::create_writer(
     }
     else
     {
-        logInfo(DDSROUTER_ECHO_DISCOVERY, "Ignoring topic " << topic.topic_name() << " as it is not RTPS.");
+        logInfo(DDSPIPE_ECHO_DISCOVERY, "Ignoring topic " << topic.topic_name() << " as it is not RTPS.");
     }
 
     return std::make_shared<BlankWriter>();

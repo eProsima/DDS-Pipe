@@ -25,7 +25,7 @@ namespace core {
 namespace types {
 
 /**
- * @brief GuidPrefix specific class for DDSRouter
+ * @brief GuidPrefix specific class for DdsPipe
  *
  * This class extends the \c GuidPrefix_t class in FastDDS, which is a RTPS Participant Unique Id.
  * This class does not belong to class \c Guid due to a design flaw in OOP (parallel hierarchy is the future).
@@ -70,7 +70,7 @@ public:
      *
      * Use \c id as seed to create an arbitrary \c GuidPrefix.
      * It could be used as default Guid the ROS2 Discovery Server Guid [44.53.00.5f.45.50.52.4f.53.49.4d.41]
-     * or the DDSRouter Discovery Server Guid [01.0f.00.00.00.00.00.00.00.00.ca.fe].
+     * or the DdsPipe Discovery Server Guid [01.0f.00.00.00.00.00.00.00.00.ca.fe].
      *
      * The value in 3rd position ([2]) is the one set by seed.
      *
@@ -105,7 +105,7 @@ public:
     DDSPIPE_CORE_DllAPI
     bool is_valid() const noexcept;
 
-    //! Default DDSRouter Discovery Server Guid Prefix
+    //! Default DdsPipe Discovery Server Guid Prefix
     static constexpr const char* SERVER_DEFAULT_GUID_PREFIX_STR = "01.0f.00.00.00.00.00.00.00.00.ca.fe";
 
     /**

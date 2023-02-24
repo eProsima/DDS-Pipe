@@ -62,7 +62,7 @@ MultiWriter::~MultiWriter()
         delete writer.second;
     }
 
-    logInfo(DDSROUTER_RTPS_WRITER, "Deleting MultiWriter created in Participant " <<
+    logInfo(DDSPIPE_RTPS_WRITER, "Deleting MultiWriter created in Participant " <<
             participant_id_ << " for topic " << topic_);
 }
 
@@ -123,7 +123,7 @@ QoSSpecificWriter* MultiWriter::create_writer_nts_(
         const core::types::SpecificEndpointQoS& data_qos)
 {
     logDebug(
-        DDSROUTER_MULTIWRITER,
+        DDSPIPE_MULTIWRITER,
         "Creating a new Writer in " << *this << " for qos " << data_qos << ".");
 
     auto writer = new QoSSpecificWriter(
@@ -145,7 +145,7 @@ utils::ReturnCode MultiWriter::write_nts_(
     auto& rtps_data = dynamic_cast<core::types::RtpsPayloadData&>(data);
 
     logDebug(
-        DDSROUTER_MULTIWRITER,
+        DDSPIPE_MULTIWRITER,
         "Writing in Partitions Writer " << *this << " a data with qos " << rtps_data.writer_qos << " from " <<
             rtps_data.source_guid);
 
@@ -153,7 +153,7 @@ utils::ReturnCode MultiWriter::write_nts_(
     auto this_qos_writer = get_writer_or_create_(rtps_data.writer_qos);
 
     logDebug(
-        DDSROUTER_MULTIWRITER,
+        DDSPIPE_MULTIWRITER,
         "Writer chosen to send is " << *this_qos_writer << ".");
 
     // Write

@@ -34,7 +34,7 @@ MapPayloadPool::~MapPayloadPool()
     if (reserved_payloads_.size() > 0)
     {
         logDevError(
-            DDSROUTER_PAYLOADPOOL,
+            DDSPIPE_PAYLOADPOOL,
             "Removing MapPayloadPool with still " << reserved_payloads_.size() << " payloads referenced.");
 
         // Data could not be erased because they will be erased once the Payload is destroyed
@@ -87,7 +87,7 @@ bool MapPayloadPool::get_payload(
         auto payload_it = reserved_payloads_.find(src_payload.data);
         if (payload_it == reserved_payloads_.end())
         {
-            logError(DDSROUTER_PAYLOADPOOL, "Payload ownership is this pool, but it is not reserved from here.");
+            logError(DDSPIPE_PAYLOADPOOL, "Payload ownership is this pool, but it is not reserved from here.");
             throw utils::InconsistencyException("Payload ownership is this pool, but it is not reserved from here.");
         }
 
@@ -111,7 +111,7 @@ bool MapPayloadPool::release_payload(
     auto payload_it = reserved_payloads_.find(payload.data);
     if (payload_it == reserved_payloads_.end())
     {
-        logError(DDSROUTER_PAYLOADPOOL, "Trying to release a payload from this pool that is not present.");
+        logError(DDSPIPE_PAYLOADPOOL, "Trying to release a payload from this pool that is not present.");
         throw utils::InconsistencyException("Trying to release a payload from this pool that is not present.");
     }
 

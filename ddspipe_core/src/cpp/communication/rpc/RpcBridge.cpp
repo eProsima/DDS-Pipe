@@ -42,24 +42,24 @@ RpcBridge::RpcBridge(
     , init_(false)
     , rpc_topic_(topic)
 {
-    logDebug(DDSROUTER_RPCBRIDGE, "Creating RpcBridge " << *this << ".");
+    logDebug(DDSPIPE_RPCBRIDGE, "Creating RpcBridge " << *this << ".");
 
-    logDebug(DDSROUTER_RPCBRIDGE, "RpcBridge " << *this << " created.");
+    logDebug(DDSPIPE_RPCBRIDGE, "RpcBridge " << *this << " created.");
 }
 
 RpcBridge::~RpcBridge()
 {
-    logDebug(DDSROUTER_RPCBRIDGE, "Destroying RpcBridge " << *this << ".");
+    logDebug(DDSPIPE_RPCBRIDGE, "Destroying RpcBridge " << *this << ".");
 
     // Disable all entities before destruction
     disable();
 
-    logDebug(DDSROUTER_RPCBRIDGE, "RpcBridge " << *this << " destroyed.");
+    logDebug(DDSPIPE_RPCBRIDGE, "RpcBridge " << *this << " destroyed.");
 }
 
 void RpcBridge::init_nts_()
 {
-    logInfo(DDSROUTER_RPCBRIDGE, "Creating endpoints in RpcBridge for service " << rpc_topic_ << ".");
+    logInfo(DDSPIPE_RPCBRIDGE, "Creating endpoints in RpcBridge for service " << rpc_topic_ << ".");
 
     // TODO: remove and use every participant
     std::set<ParticipantId> ids = participants_->get_rtps_participants_ids();
@@ -113,7 +113,7 @@ void RpcBridge::enable() noexcept
 
     if (!enabled_ && servers_available_())
     {
-        logInfo(DDSROUTER_RPCBRIDGE, "Enabling RpcBridge for service " << rpc_topic_ << ".");
+        logInfo(DDSPIPE_RPCBRIDGE, "Enabling RpcBridge for service " << rpc_topic_ << ".");
 
         if (!init_)
         {
@@ -123,7 +123,7 @@ void RpcBridge::enable() noexcept
             }
             catch (const utils::InitializationException& e)
             {
-                logError(DDSROUTER_RPCBRIDGE,
+                logError(DDSPIPE_RPCBRIDGE,
                         "Error while creating endpoints in RpcBridge for service " << rpc_topic_ <<
                         ". Error code:" << e.what() << ".");
                 return;
@@ -163,7 +163,7 @@ void RpcBridge::disable() noexcept
 
     if (enabled_)
     {
-        logInfo(DDSROUTER_RPCBRIDGE, "Disabling RpcBridge for service " << rpc_topic_ << ".");
+        logInfo(DDSPIPE_RPCBRIDGE, "Disabling RpcBridge for service " << rpc_topic_ << ".");
 
         enabled_ = false;
 
@@ -238,7 +238,7 @@ void RpcBridge::data_available_(
     if (enabled_)
     {
         logDebug(
-            DDSROUTER_RPCBRIDGE, "RpcBridge " << *this <<
+            DDSPIPE_RPCBRIDGE, "RpcBridge " << *this <<
                 " has data ready to be sent in reader " << reader_guid << " .");
 
         // Protected by internal RTPS Reader mutex, as called within \c onNewCacheChangeAdded callback
@@ -248,12 +248,12 @@ void RpcBridge::data_available_(
         {
             task.first = true;
             thread_pool_->emit(task.second);
-            logDebug(DDSROUTER_RPCBRIDGE, "RpcBridge " << *this <<
+            logDebug(DDSPIPE_RPCBRIDGE, "RpcBridge " << *this <<
                     " - " << reader_guid << " send callback to queue.");
         }
         else
         {
-            logDebug(DDSROUTER_RPCBRIDGE, "RpcBridge " << *this <<
+            logDebug(DDSPIPE_RPCBRIDGE, "RpcBridge " << *this <<
                     " - " << reader_guid << " callback NOT sent (task already queued).");
         }
     }
@@ -265,7 +265,7 @@ void RpcBridge::transmit_(
     // Avoid being disabled while transmitting
     std::shared_lock<std::shared_timed_mutex> lock(on_transmission_mutex_);
 
-    logDebug(DDSROUTER_RPCBRIDGE, "RpcBridge " << *this <<
+    logDebug(DDSPIPE_RPCBRIDGE, "RpcBridge " << *this <<
             " transmitting for reader " << reader->guid() << " .");
 
     while (true)
@@ -277,12 +277,12 @@ void RpcBridge::transmit_(
             {
                 if (!enabled_)
                 {
-                    logDebug(DDSROUTER_RPCBRIDGE,
+                    logDebug(DDSPIPE_RPCBRIDGE,
                             "RpcBridge service " << *this << " finishing transmitting: bridge disabled.");
                 }
                 else
                 {
-                    logDebug(DDSROUTER_RPCBRIDGE,
+                    logDebug(DDSPIPE_RPCBRIDGE,
                             "RpcBridge service " << *this << " finishing transmitting: no more data available.");
                 }
 
@@ -304,7 +304,7 @@ void RpcBridge::transmit_(
         if (!ret)
         {
             // Error reading data
-            logWarning(DDSROUTER_RPCBRIDGE,
+            logWarning(DDSPIPE_RPCBRIDGE,
                     "Error taking data at service Reader in topic " << reader->topic()
                                                                     << ". Error code " << ret
                                                                     << ". Skipping data and continue.");
@@ -313,7 +313,7 @@ void RpcBridge::transmit_(
 
         if (RpcTopic::is_request_topic(reader->topic()))
         {
-            logDebug(DDSROUTER_RPCBRIDGE,
+            logDebug(DDSPIPE_RPCBRIDGE,
                     "RpcBridge for service " << rpc_topic_ <<
                     " transmitting request from remote endpoint " << pcr_data.source_guid << ".");
 
@@ -323,7 +323,7 @@ void RpcBridge::transmit_(
 
             if (reply_related_sample_identity == SampleIdentity::unknown())
             {
-                logWarning(DDSROUTER_RPCBRIDGE,
+                logWarning(DDSPIPE_RPCBRIDGE,
                         "RpcBridge for service " << rpc_topic_ <<
                         " received ill-formed request from remote endpoint " << pcr_data.source_guid <<
                         ". Ignoring...");
@@ -353,7 +353,7 @@ void RpcBridge::transmit_(
 
                     if (!ret)
                     {
-                        logWarning(DDSROUTER_RPCBRIDGE, "Error writting request in RpcBridge for service "
+                        logWarning(DDSPIPE_RPCBRIDGE, "Error writting request in RpcBridge for service "
                                 << rpc_topic_ << ". Error code " << ret <<
                                 ". Skipping data for this writer and continue.");
                         continue;
@@ -371,15 +371,15 @@ void RpcBridge::transmit_(
         }
         else if (RpcTopic::is_reply_topic(reader->topic()))
         {
-            logDebug(DDSROUTER_RPCBRIDGE,
+            logDebug(DDSPIPE_RPCBRIDGE,
                     "RpcBridge for service " << rpc_topic_ <<
                     " transmitting reply from remote endpoint " << pcr_data.source_guid << ".");
 
-            // A Server could be answering a different client in this same DDS Router or a remote client
+            // A Server could be answering a different client in this same DDS Pipe or a remote client
             // Thus, it must be filtered so only replies to this client are processed.
             if (pcr_data.write_params.get_reference().sample_identity().writer_guid() != reader->guid())
             {
-                logDebug(DDSROUTER_RPCBRIDGE,
+                logDebug(DDSPIPE_RPCBRIDGE,
                         "RpcBridge for service " << *this << " from reader " << reader->guid() <<
                         " received response meant for other client: " <<
                         pcr_data.write_params.get_reference().sample_identity().writer_guid());
@@ -410,7 +410,7 @@ void RpcBridge::transmit_(
 
                     if (!ret)
                     {
-                        logWarning(DDSROUTER_RPCBRIDGE, "Error writting reply in RpcBridge for service "
+                        logWarning(DDSPIPE_RPCBRIDGE, "Error writting reply in RpcBridge for service "
                                 << rpc_topic_ << ". Error code " << ret << ".");
                     }
                     else

@@ -31,7 +31,7 @@ RtpsEchoWriter::RtpsEchoWriter(
     , verbose_(verbose)
 {
     logDebug(
-        DDSROUTER_BASEWRITER,
+        DDSPIPE_BASEWRITER,
         "Creating Echo Writer with verbose: " <<
             (verbose_ ? "active" : "inactive") << ".");
 }
@@ -45,7 +45,7 @@ utils::ReturnCode RtpsEchoWriter::write(
     if (!verbose_)
     {
         logUser(
-            DDSROUTER_ECHO_DATA,
+            DDSPIPE_ECHO_DATA,
             "Received data in Participant: " << rtps_data.participant_receiver <<
                 " in topic: " << topic_.topic_name() <<
                 ".");
@@ -53,7 +53,7 @@ utils::ReturnCode RtpsEchoWriter::write(
     else
     {
         logUser(
-            DDSROUTER_ECHO_DATA,
+            DDSPIPE_ECHO_DATA,
             "In Endpoint: " << rtps_data.source_guid <<
                 " from Participant: " << rtps_data.participant_receiver <<
                 " in topic: " << topic_.topic_name() <<

@@ -23,7 +23,7 @@ namespace ddspipe {
 namespace core {
 
 /**
- * Interface that represents a generic Writer as part of a DDSRouter.
+ * Interface that represents a generic Writer as part of a DdsPipe.
  *
  * This class manages the sending of data to remote endpoints in a specific topic.
  *
@@ -66,7 +66,7 @@ public:
      *
      * This method will take the data received by another Participant's Reader and should send it forward.
      * In the variable \c data there is the \c Guid of the Endpoint that originally sent the data.
-     * In \c data there is also the payload of the data. This payload should be copied/moved from the DDSRouter's
+     * In \c data there is also the payload of the data. This payload should be copied/moved from the DdsPipe's
      * PayloadPool to the Writer's PayloadPool (in case it is the same Pool, the data will not be copied).
      * The writer should write asynchronously. It should take the data and exit the function,
      * and internally send the data.

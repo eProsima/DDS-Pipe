@@ -61,7 +61,7 @@ void TlsConfiguration::enable_tls(
     {
         if (!compatible<types::TlsKind::client>())
         {
-            logError(DDSROUTER_DISCOVERYSERVER_PARTICIPANT,
+            logError(DDSPIPE_DISCOVERYSERVER_PARTICIPANT,
                     "TLS Configuration expected a Client configuration.");
             throw utils::ConfigurationException("TLS Configuration expected a Client configuration.");
         }
@@ -74,7 +74,7 @@ void TlsConfiguration::enable_tls(
     {
         if (!compatible<types::TlsKind::server>())
         {
-            logError(DDSROUTER_DISCOVERYSERVER_PARTICIPANT,
+            logError(DDSPIPE_DISCOVERYSERVER_PARTICIPANT,
                     "TLS Configuration expected a Server configuration.");
             throw utils::ConfigurationException("TLS Configuration expected a Server configuration.");
         }
@@ -91,7 +91,7 @@ void TlsConfiguration::enable_tls(
         }
     }
 
-    logDebug(DDSROUTER_DISCOVERYSERVER_PARTICIPANT,
+    logDebug(DDSPIPE_DISCOVERYSERVER_PARTICIPANT,
             "TLS configured.");
 }
 

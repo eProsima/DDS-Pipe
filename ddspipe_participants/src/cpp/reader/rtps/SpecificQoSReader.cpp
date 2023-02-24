@@ -59,7 +59,7 @@ void SpecificQoSReader::fill_received_data_(
     {
         data_to_fill.writer_qos = specific_qos_of_writer_(data_to_fill.source_guid);
         logDebug(
-            DDSROUTER_SpecificQoSReader,
+            DDSPIPE_SpecificQoSReader,
             "Set QoS " << data_to_fill.writer_qos << " for data from " << data_to_fill.source_guid << ".");
     }
     catch (const utils::InconsistencyException& e)
@@ -67,7 +67,7 @@ void SpecificQoSReader::fill_received_data_(
         // Get a message from a writer not in database, this is an error.
         // Remove data and make as it has not been received.
         logError(
-            DDSROUTER_SpecificQoSReader,
+            DDSPIPE_SpecificQoSReader,
             "Received a message from Writer " << data_to_fill.source_guid << " that is not stored in DB.");
     }
 }

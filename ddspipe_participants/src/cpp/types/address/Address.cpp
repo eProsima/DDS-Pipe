@@ -75,7 +75,7 @@ Address::Address(
     catch (const utils::DNSException& )
     {
         logWarning(
-            DDSROUTER_ADDRESS, "Address created without IP because given domain " << domain << " was not found.");
+            DDSPIPE_ADDRESS, "Address created without IP because given domain " << domain << " was not found.");
     }
 }
 
@@ -115,7 +115,7 @@ Address::Address(
     catch (const utils::DNSException& )
     {
         logWarning(
-            DDSROUTER_ADDRESS, "Address created without IP because given domain " << domain << " was not found.");
+            DDSPIPE_ADDRESS, "Address created without IP because given domain " << domain << " was not found.");
     }
 }
 
@@ -340,7 +340,7 @@ IpType Address::resolve_dns(
         else
         {
             logInfo(
-                DDSROUTER_ADDRESS,
+                DDSPIPE_ADDRESS,
                 "Getting first IpVersion::v4: " << dns_response.first.begin()->data() <<
                     " for Domain name: " << domain <<
                     " from DNS response from " << dns_response.first.size() << " valid IPs.");
@@ -357,7 +357,7 @@ IpType Address::resolve_dns(
         else
         {
             logInfo(
-                DDSROUTER_ADDRESS,
+                DDSPIPE_ADDRESS,
                 "Getting first IpVersion::v6: " << dns_response.second.begin()->data() <<
                     " for Domain name: " << domain <<
                     " from DNS response from " << dns_response.second.size() << " valid IPs.");
@@ -384,7 +384,7 @@ std::pair<IpType, IpVersion> Address::resolve_dns(
         else
         {
             logInfo(
-                DDSROUTER_ADDRESS,
+                DDSPIPE_ADDRESS,
                 "Getting first IpVersion::v6: " << dns_response.second.begin()->data() <<
                     " for Domain name: " << domain <<
                     " from DNS response from " << dns_response.second.size() << " valid IPs.");
@@ -394,7 +394,7 @@ std::pair<IpType, IpVersion> Address::resolve_dns(
     else
     {
         logInfo(
-            DDSROUTER_ADDRESS,
+            DDSPIPE_ADDRESS,
             "Getting first IpVersion::v4: " << dns_response.first.begin()->data() <<
                 " for Domain name: " << domain <<
                 " from DNS response from " << (dns_response.first.size() + dns_response.second.size()) <<
