@@ -113,13 +113,13 @@ unsigned int YamlReader::get_positive_int(
     catch (const std::exception& e)
     {
         throw eprosima::utils::ConfigurationException(
-                utils::Formatter() << "Error reading positive integer under tag <" << tag << "> :\n " << e.what());
+                  utils::Formatter() << "Error reading positive integer under tag <" << tag << "> :\n " << e.what());
     }
 
     if (!ret)
     {
         throw eprosima::utils::ConfigurationException(
-                utils::Formatter() << "Error reading positive integer under tag <" << tag << "> : 0 is not valid.");
+                  utils::Formatter() << "Error reading positive integer under tag <" << tag << "> : 0 is not valid.");
     }
 
     return ret;
