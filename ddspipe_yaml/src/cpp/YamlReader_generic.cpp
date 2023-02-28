@@ -105,10 +105,11 @@ unsigned int YamlReader::get_positive_int(
         const Yaml& yml,
         const TagType& tag)
 {
-    unsigned int ret;
+    int ret;
     try
     {
-        ret = get_scalar<unsigned int>(get_value_in_tag(yml, tag));
+        // NOTE: get signed int and check positive afterwards to avoid underflow when negative values provided
+        ret = get_scalar<int>(get_value_in_tag(yml, tag));
     }
     catch (const std::exception& e)
     {
@@ -116,10 +117,11 @@ unsigned int YamlReader::get_positive_int(
                   utils::Formatter() << "Error reading positive integer under tag <" << tag << "> :\n " << e.what());
     }
 
-    if (!ret)
+    if (!(ret > 0))
     {
         throw eprosima::utils::ConfigurationException(
-                  utils::Formatter() << "Error reading positive integer under tag <" << tag << "> : 0 is not valid.");
+                  utils::Formatter() << "Error reading positive integer under tag <" << tag <<
+                      "> : value is not greater than 0.");
     }
 
     return ret;
