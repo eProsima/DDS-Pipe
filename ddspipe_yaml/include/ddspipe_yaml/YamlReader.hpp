@@ -210,6 +210,11 @@ public:
             const Yaml& yml,
             const TagType& tag);
 
+    //! Get positive integer value inside \c tag
+    static unsigned int get_positive_int(
+            const Yaml& yml,
+            const TagType& tag);
+
     //! TODO comment
     template <typename T>
     static T get_enumeration(
