@@ -101,6 +101,32 @@ unsigned int YamlReader::get<unsigned int>(
     return get_scalar<unsigned int>(yml);
 }
 
+unsigned int YamlReader::get_positive_int(
+        const Yaml& yml,
+        const TagType& tag)
+{
+    int ret;
+    try
+    {
+        // NOTE: get signed int and check positive afterwards to avoid underflow when negative values provided
+        ret = get_scalar<int>(get_value_in_tag(yml, tag));
+    }
+    catch (const std::exception& e)
+    {
+        throw eprosima::utils::ConfigurationException(
+                  utils::Formatter() << "Error reading positive integer under tag <" << tag << "> :\n " << e.what());
+    }
+
+    if (!(ret > 0))
+    {
+        throw eprosima::utils::ConfigurationException(
+                  utils::Formatter() << "Error reading positive integer under tag <" << tag <<
+                      "> : value is not greater than 0.");
+    }
+
+    return ret;
+}
+
 template <>
 bool YamlReader::get<bool>(
         const Yaml& yml,
