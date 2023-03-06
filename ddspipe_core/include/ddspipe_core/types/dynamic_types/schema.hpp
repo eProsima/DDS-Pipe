@@ -20,11 +20,14 @@
 
 #include <fastrtps/types/DynamicTypePtr.h>
 
+#include <ddspipe_core/library/library_dll.h>
+
 namespace eprosima {
 namespace ddspipe {
 namespace core {
 namespace types {
 
+DDSPIPE_CORE_DllAPI
 std::string generate_ros2_schema(
         const fastrtps::types::DynamicType_ptr& dynamic_type);
 
