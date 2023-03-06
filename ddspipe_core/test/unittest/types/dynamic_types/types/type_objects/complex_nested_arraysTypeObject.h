@@ -31,10 +31,10 @@
 #define eProsima_user_DllExport __declspec( dllexport )
 #else
 #define eProsima_user_DllExport
-#endif
+#endif // if defined(EPROSIMA_USER_DLL_EXPORT)
 #else
 #define eProsima_user_DllExport
-#endif
+#endif // if defined(_WIN32)
 
 #if defined(_WIN32)
 #if defined(EPROSIMA_USER_DLL_EXPORT)
@@ -45,7 +45,7 @@
 #endif // complex_nested_arrays_SOURCE
 #else
 #define complex_nested_arrays_DllAPI
-#endif
+#endif // if defined(EPROSIMA_USER_DLL_EXPORT)
 #else
 #define complex_nested_arrays_DllAPI
 #endif // _WIN32
@@ -54,23 +54,31 @@ using namespace eprosima::fastrtps::types;
 
 eProsima_user_DllExport void registercomplex_nested_arraysTypes();
 
-eProsima_user_DllExport const TypeIdentifier* GetThirdLevelElementIdentifier(bool complete = false);
-eProsima_user_DllExport const TypeObject* GetThirdLevelElementObject(bool complete = false);
+eProsima_user_DllExport const TypeIdentifier* GetThirdLevelElementIdentifier(
+        bool complete = false);
+eProsima_user_DllExport const TypeObject* GetThirdLevelElementObject(
+        bool complete = false);
 eProsima_user_DllExport const TypeObject* GetMinimalThirdLevelElementObject();
 eProsima_user_DllExport const TypeObject* GetCompleteThirdLevelElementObject();
 
-eProsima_user_DllExport const TypeIdentifier* GetSecondLevelElementIdentifier(bool complete = false);
-eProsima_user_DllExport const TypeObject* GetSecondLevelElementObject(bool complete = false);
+eProsima_user_DllExport const TypeIdentifier* GetSecondLevelElementIdentifier(
+        bool complete = false);
+eProsima_user_DllExport const TypeObject* GetSecondLevelElementObject(
+        bool complete = false);
 eProsima_user_DllExport const TypeObject* GetMinimalSecondLevelElementObject();
 eProsima_user_DllExport const TypeObject* GetCompleteSecondLevelElementObject();
 
-eProsima_user_DllExport const TypeIdentifier* GetFirstLevelElementIdentifier(bool complete = false);
-eProsima_user_DllExport const TypeObject* GetFirstLevelElementObject(bool complete = false);
+eProsima_user_DllExport const TypeIdentifier* GetFirstLevelElementIdentifier(
+        bool complete = false);
+eProsima_user_DllExport const TypeObject* GetFirstLevelElementObject(
+        bool complete = false);
 eProsima_user_DllExport const TypeObject* GetMinimalFirstLevelElementObject();
 eProsima_user_DllExport const TypeObject* GetCompleteFirstLevelElementObject();
 
-eProsima_user_DllExport const TypeIdentifier* Getcomplex_nested_arraysIdentifier(bool complete = false);
-eProsima_user_DllExport const TypeObject* Getcomplex_nested_arraysObject(bool complete = false);
+eProsima_user_DllExport const TypeIdentifier* Getcomplex_nested_arraysIdentifier(
+        bool complete = false);
+eProsima_user_DllExport const TypeObject* Getcomplex_nested_arraysObject(
+        bool complete = false);
 eProsima_user_DllExport const TypeObject* GetMinimalcomplex_nested_arraysObject();
 eProsima_user_DllExport const TypeObject* GetCompletecomplex_nested_arraysObject();
 

@@ -31,10 +31,10 @@
 #define eProsima_user_DllExport __declspec( dllexport )
 #else
 #define eProsima_user_DllExport
-#endif
+#endif // if defined(EPROSIMA_USER_DLL_EXPORT)
 #else
 #define eProsima_user_DllExport
-#endif
+#endif // if defined(_WIN32)
 
 #if defined(_WIN32)
 #if defined(EPROSIMA_USER_DLL_EXPORT)
@@ -45,7 +45,7 @@
 #endif // numeric_array_SOURCE
 #else
 #define numeric_array_DllAPI
-#endif
+#endif // if defined(EPROSIMA_USER_DLL_EXPORT)
 #else
 #define numeric_array_DllAPI
 #endif // _WIN32
@@ -54,8 +54,10 @@ using namespace eprosima::fastrtps::types;
 
 eProsima_user_DllExport void registernumeric_arrayTypes();
 
-eProsima_user_DllExport const TypeIdentifier* Getnumeric_arrayIdentifier(bool complete = false);
-eProsima_user_DllExport const TypeObject* Getnumeric_arrayObject(bool complete = false);
+eProsima_user_DllExport const TypeIdentifier* Getnumeric_arrayIdentifier(
+        bool complete = false);
+eProsima_user_DllExport const TypeObject* Getnumeric_arrayObject(
+        bool complete = false);
 eProsima_user_DllExport const TypeObject* GetMinimalnumeric_arrayObject();
 eProsima_user_DllExport const TypeObject* GetCompletenumeric_arrayObject();
 

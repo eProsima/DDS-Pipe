@@ -31,10 +31,10 @@
 #define eProsima_user_DllExport __declspec( dllexport )
 #else
 #define eProsima_user_DllExport
-#endif
+#endif // if defined(EPROSIMA_USER_DLL_EXPORT)
 #else
 #define eProsima_user_DllExport
-#endif
+#endif // if defined(_WIN32)
 
 #if defined(_WIN32)
 #if defined(EPROSIMA_USER_DLL_EXPORT)
@@ -45,7 +45,7 @@
 #endif // arrays_and_sequences_SOURCE
 #else
 #define arrays_and_sequences_DllAPI
-#endif
+#endif // if defined(EPROSIMA_USER_DLL_EXPORT)
 #else
 #define arrays_and_sequences_DllAPI
 #endif // _WIN32
@@ -54,13 +54,17 @@ using namespace eprosima::fastrtps::types;
 
 eProsima_user_DllExport void registerarrays_and_sequencesTypes();
 
-eProsima_user_DllExport const TypeIdentifier* GetAnInternalObjectIdentifier(bool complete = false);
-eProsima_user_DllExport const TypeObject* GetAnInternalObjectObject(bool complete = false);
+eProsima_user_DllExport const TypeIdentifier* GetAnInternalObjectIdentifier(
+        bool complete = false);
+eProsima_user_DllExport const TypeObject* GetAnInternalObjectObject(
+        bool complete = false);
 eProsima_user_DllExport const TypeObject* GetMinimalAnInternalObjectObject();
 eProsima_user_DllExport const TypeObject* GetCompleteAnInternalObjectObject();
 
-eProsima_user_DllExport const TypeIdentifier* Getarrays_and_sequencesIdentifier(bool complete = false);
-eProsima_user_DllExport const TypeObject* Getarrays_and_sequencesObject(bool complete = false);
+eProsima_user_DllExport const TypeIdentifier* Getarrays_and_sequencesIdentifier(
+        bool complete = false);
+eProsima_user_DllExport const TypeObject* Getarrays_and_sequencesObject(
+        bool complete = false);
 eProsima_user_DllExport const TypeObject* GetMinimalarrays_and_sequencesObject();
 eProsima_user_DllExport const TypeObject* GetCompletearrays_and_sequencesObject();
 

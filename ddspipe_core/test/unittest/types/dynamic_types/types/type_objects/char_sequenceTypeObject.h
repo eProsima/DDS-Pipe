@@ -31,10 +31,10 @@
 #define eProsima_user_DllExport __declspec( dllexport )
 #else
 #define eProsima_user_DllExport
-#endif
+#endif // if defined(EPROSIMA_USER_DLL_EXPORT)
 #else
 #define eProsima_user_DllExport
-#endif
+#endif // if defined(_WIN32)
 
 #if defined(_WIN32)
 #if defined(EPROSIMA_USER_DLL_EXPORT)
@@ -45,7 +45,7 @@
 #endif // char_sequence_SOURCE
 #else
 #define char_sequence_DllAPI
-#endif
+#endif // if defined(EPROSIMA_USER_DLL_EXPORT)
 #else
 #define char_sequence_DllAPI
 #endif // _WIN32
@@ -54,8 +54,10 @@ using namespace eprosima::fastrtps::types;
 
 eProsima_user_DllExport void registerchar_sequenceTypes();
 
-eProsima_user_DllExport const TypeIdentifier* Getchar_sequenceIdentifier(bool complete = false);
-eProsima_user_DllExport const TypeObject* Getchar_sequenceObject(bool complete = false);
+eProsima_user_DllExport const TypeIdentifier* Getchar_sequenceIdentifier(
+        bool complete = false);
+eProsima_user_DllExport const TypeObject* Getchar_sequenceObject(
+        bool complete = false);
 eProsima_user_DllExport const TypeObject* GetMinimalchar_sequenceObject();
 eProsima_user_DllExport const TypeObject* GetCompletechar_sequenceObject();
 

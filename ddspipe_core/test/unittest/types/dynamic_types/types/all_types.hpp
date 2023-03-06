@@ -53,9 +53,10 @@ ENUMERATION_BUILDER(
     float_bounded_sequence,
     arrays_and_sequences,
     complex_nested_arrays
-);
+    );
 
-eprosima::fastrtps::types::DynamicType_ptr get_dynamic_type(SupportedType type)
+eprosima::fastrtps::types::DynamicType_ptr get_dynamic_type(
+        SupportedType type)
 {
     registerhello_worldTypes();
     registernumeric_arrayTypes();

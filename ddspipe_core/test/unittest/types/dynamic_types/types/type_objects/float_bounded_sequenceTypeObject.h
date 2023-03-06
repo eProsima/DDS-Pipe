@@ -31,10 +31,10 @@
 #define eProsima_user_DllExport __declspec( dllexport )
 #else
 #define eProsima_user_DllExport
-#endif
+#endif // if defined(EPROSIMA_USER_DLL_EXPORT)
 #else
 #define eProsima_user_DllExport
-#endif
+#endif // if defined(_WIN32)
 
 #if defined(_WIN32)
 #if defined(EPROSIMA_USER_DLL_EXPORT)
@@ -45,7 +45,7 @@
 #endif // float_bounded_sequence_SOURCE
 #else
 #define float_bounded_sequence_DllAPI
-#endif
+#endif // if defined(EPROSIMA_USER_DLL_EXPORT)
 #else
 #define float_bounded_sequence_DllAPI
 #endif // _WIN32
@@ -54,8 +54,10 @@ using namespace eprosima::fastrtps::types;
 
 eProsima_user_DllExport void registerfloat_bounded_sequenceTypes();
 
-eProsima_user_DllExport const TypeIdentifier* Getfloat_bounded_sequenceIdentifier(bool complete = false);
-eProsima_user_DllExport const TypeObject* Getfloat_bounded_sequenceObject(bool complete = false);
+eProsima_user_DllExport const TypeIdentifier* Getfloat_bounded_sequenceIdentifier(
+        bool complete = false);
+eProsima_user_DllExport const TypeObject* Getfloat_bounded_sequenceObject(
+        bool complete = false);
 eProsima_user_DllExport const TypeObject* GetMinimalfloat_bounded_sequenceObject();
 eProsima_user_DllExport const TypeObject* GetCompletefloat_bounded_sequenceObject();
 

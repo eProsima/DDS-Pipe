@@ -31,10 +31,10 @@
 #define eProsima_user_DllExport __declspec( dllexport )
 #else
 #define eProsima_user_DllExport
-#endif
+#endif // if defined(EPROSIMA_USER_DLL_EXPORT)
 #else
 #define eProsima_user_DllExport
-#endif
+#endif // if defined(_WIN32)
 
 #if defined(_WIN32)
 #if defined(EPROSIMA_USER_DLL_EXPORT)
@@ -45,7 +45,7 @@
 #endif // hello_world_SOURCE
 #else
 #define hello_world_DllAPI
-#endif
+#endif // if defined(EPROSIMA_USER_DLL_EXPORT)
 #else
 #define hello_world_DllAPI
 #endif // _WIN32
@@ -54,8 +54,10 @@ using namespace eprosima::fastrtps::types;
 
 eProsima_user_DllExport void registerhello_worldTypes();
 
-eProsima_user_DllExport const TypeIdentifier* Gethello_worldIdentifier(bool complete = false);
-eProsima_user_DllExport const TypeObject* Gethello_worldObject(bool complete = false);
+eProsima_user_DllExport const TypeIdentifier* Gethello_worldIdentifier(
+        bool complete = false);
+eProsima_user_DllExport const TypeObject* Gethello_worldObject(
+        bool complete = false);
 eProsima_user_DllExport const TypeObject* GetMinimalhello_worldObject();
 eProsima_user_DllExport const TypeObject* GetCompletehello_worldObject();
 

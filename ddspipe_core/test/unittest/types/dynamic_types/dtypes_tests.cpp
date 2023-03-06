@@ -30,22 +30,27 @@ using namespace eprosima;
 
 namespace test {
 
-std::string read_msg_from_file_(const std::string& file_name)
+std::string read_msg_from_file_(
+        const std::string& file_name)
 {
     return utils::file_to_string(file_name.c_str());
 }
 
-std::string file_name_by_type(SupportedType type)
+std::string file_name_by_type(
+        SupportedType type)
 {
     return std::string("resources/") + to_string(type) + ".msg";
 }
 
-void compare_schemas(const std::string& schema1, const std::string& schema2)
+void compare_schemas(
+        const std::string& schema1,
+        const std::string& schema2)
 {
     ASSERT_EQ(schema1, schema2);
 }
 
-void execute_test_by_type(SupportedType type)
+void execute_test_by_type(
+        SupportedType type)
 {
     // Get msg file in string with the value expected to be generated in the schema
     std::string msg_file = read_msg_from_file_(file_name_by_type(type));
@@ -65,6 +70,7 @@ void execute_test_by_type(SupportedType type)
 class ParametrizedTests : public ::testing::TestWithParam<test::SupportedType>
 {
 public:
+
     void SetUp()
     {
         type_ = GetParam();
@@ -82,15 +88,15 @@ TEST_P(ParametrizedTests, msg_schema_generation)
 }
 
 INSTANTIATE_TEST_SUITE_P(dtypes_tests, ParametrizedTests, ::testing::Values(
-    test::SupportedType::hello_world,
-    test::SupportedType::numeric_array,
-    test::SupportedType::char_sequence,
-    test::SupportedType::basic_struct,
-    test::SupportedType::basic_array_struct,
-    test::SupportedType::float_bounded_sequence,
-    test::SupportedType::arrays_and_sequences,
-    test::SupportedType::complex_nested_arrays
-));
+            test::SupportedType::hello_world,
+            test::SupportedType::numeric_array,
+            test::SupportedType::char_sequence,
+            test::SupportedType::basic_struct,
+            test::SupportedType::basic_array_struct,
+            test::SupportedType::float_bounded_sequence,
+            test::SupportedType::arrays_and_sequences,
+            test::SupportedType::complex_nested_arrays
+            ));
 
 int main(
         int argc,

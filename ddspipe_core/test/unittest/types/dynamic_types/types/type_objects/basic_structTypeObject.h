@@ -31,10 +31,10 @@
 #define eProsima_user_DllExport __declspec( dllexport )
 #else
 #define eProsima_user_DllExport
-#endif
+#endif // if defined(EPROSIMA_USER_DLL_EXPORT)
 #else
 #define eProsima_user_DllExport
-#endif
+#endif // if defined(_WIN32)
 
 #if defined(_WIN32)
 #if defined(EPROSIMA_USER_DLL_EXPORT)
@@ -45,7 +45,7 @@
 #endif // basic_struct_SOURCE
 #else
 #define basic_struct_DllAPI
-#endif
+#endif // if defined(EPROSIMA_USER_DLL_EXPORT)
 #else
 #define basic_struct_DllAPI
 #endif // _WIN32
@@ -54,13 +54,17 @@ using namespace eprosima::fastrtps::types;
 
 eProsima_user_DllExport void registerbasic_structTypes();
 
-eProsima_user_DllExport const TypeIdentifier* GetTheOtherObjectIdentifier(bool complete = false);
-eProsima_user_DllExport const TypeObject* GetTheOtherObjectObject(bool complete = false);
+eProsima_user_DllExport const TypeIdentifier* GetTheOtherObjectIdentifier(
+        bool complete = false);
+eProsima_user_DllExport const TypeObject* GetTheOtherObjectObject(
+        bool complete = false);
 eProsima_user_DllExport const TypeObject* GetMinimalTheOtherObjectObject();
 eProsima_user_DllExport const TypeObject* GetCompleteTheOtherObjectObject();
 
-eProsima_user_DllExport const TypeIdentifier* Getbasic_structIdentifier(bool complete = false);
-eProsima_user_DllExport const TypeObject* Getbasic_structObject(bool complete = false);
+eProsima_user_DllExport const TypeIdentifier* Getbasic_structIdentifier(
+        bool complete = false);
+eProsima_user_DllExport const TypeObject* Getbasic_structObject(
+        bool complete = false);
 eProsima_user_DllExport const TypeObject* GetMinimalbasic_structObject();
 eProsima_user_DllExport const TypeObject* GetCompletebasic_structObject();
 
