@@ -12,5 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+add_subdirectory(dynamic_types)
 add_subdirectory(endpoint)
 add_subdirectory(topic)
