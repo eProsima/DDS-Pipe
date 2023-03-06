@@ -86,6 +86,7 @@ Yaml YamlReader::get_value_in_tag(
 ************************/
 
 template <>
+DDSPIPE_YAML_DllAPI
 int YamlReader::get<int>(
         const Yaml& yml,
         const YamlReaderVersion version /* version */)
@@ -94,6 +95,7 @@ int YamlReader::get<int>(
 }
 
 template <>
+DDSPIPE_YAML_DllAPI
 unsigned int YamlReader::get<unsigned int>(
         const Yaml& yml,
         const YamlReaderVersion version /* version */)
@@ -128,6 +130,7 @@ unsigned int YamlReader::get_positive_int(
 }
 
 template <>
+DDSPIPE_YAML_DllAPI
 bool YamlReader::get<bool>(
         const Yaml& yml,
         const YamlReaderVersion version /* version */)
@@ -136,6 +139,7 @@ bool YamlReader::get<bool>(
 }
 
 template <>
+DDSPIPE_YAML_DllAPI
 std::string YamlReader::get<std::string>(
         const Yaml& yml,
         const YamlReaderVersion version /* version */)

@@ -52,6 +52,7 @@ using namespace eprosima::ddspipe::participants::types;
 //////////////////////////////////
 // ParticipantConfiguration
 template <>
+DDSPIPE_YAML_DllAPI
 void YamlReader::fill(
         participants::ParticipantConfiguration& object,
         const Yaml& yml,
@@ -62,6 +63,7 @@ void YamlReader::fill(
 }
 
 template <>
+DDSPIPE_YAML_DllAPI
 participants::ParticipantConfiguration YamlReader::get(
         const Yaml& yml,
         const YamlReaderVersion version)
@@ -74,6 +76,7 @@ participants::ParticipantConfiguration YamlReader::get(
 //////////////////////////////////
 // EchoParticipantConfiguration
 template <>
+DDSPIPE_YAML_DllAPI
 void YamlReader::fill(
         participants::EchoParticipantConfiguration& object,
         const Yaml& yml,
@@ -102,6 +105,7 @@ void YamlReader::fill(
 }
 
 template <>
+DDSPIPE_YAML_DllAPI
 participants::EchoParticipantConfiguration YamlReader::get(
         const Yaml& yml,
         const YamlReaderVersion version)
@@ -114,6 +118,7 @@ participants::EchoParticipantConfiguration YamlReader::get(
 //////////////////////////////////
 // SimpleParticipantConfiguration
 template <>
+DDSPIPE_YAML_DllAPI
 void YamlReader::fill(
         participants::SimpleParticipantConfiguration& object,
         const Yaml& yml,
@@ -130,6 +135,7 @@ void YamlReader::fill(
 }
 
 template <>
+DDSPIPE_YAML_DllAPI
 participants::SimpleParticipantConfiguration YamlReader::get(
         const Yaml& yml,
         const YamlReaderVersion version)
@@ -142,6 +148,7 @@ participants::SimpleParticipantConfiguration YamlReader::get(
 //////////////////////////////////
 // DiscoveryServerParticipantConfiguration
 template <>
+DDSPIPE_YAML_DllAPI
 void YamlReader::fill(
         participants::DiscoveryServerParticipantConfiguration& object,
         const Yaml& yml,
@@ -190,6 +197,7 @@ void YamlReader::fill(
 }
 
 template <>
+DDSPIPE_YAML_DllAPI
 participants::DiscoveryServerParticipantConfiguration YamlReader::get(
         const Yaml& yml,
         const YamlReaderVersion version)
@@ -202,6 +210,7 @@ participants::DiscoveryServerParticipantConfiguration YamlReader::get(
 //////////////////////////////////
 // InitialPeersParticipantConfiguration
 template <>
+DDSPIPE_YAML_DllAPI
 void YamlReader::fill(
         participants::InitialPeersParticipantConfiguration& object,
         const Yaml& yml,
@@ -242,6 +251,7 @@ void YamlReader::fill(
 }
 
 template <>
+DDSPIPE_YAML_DllAPI
 participants::InitialPeersParticipantConfiguration YamlReader::get(
         const Yaml& yml,
         const YamlReaderVersion version)
