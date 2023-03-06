@@ -49,6 +49,7 @@ using namespace eprosima::ddspipe::core::types;
 using namespace eprosima::ddspipe::participants::types;
 
 template <>
+DDSPIPE_YAML_DllAPI
 YamlReaderVersion YamlReader::get<YamlReaderVersion>(
         const Yaml& yml,
         const YamlReaderVersion /* version */)
@@ -63,6 +64,7 @@ YamlReaderVersion YamlReader::get<YamlReaderVersion>(
 }
 
 template <>
+DDSPIPE_YAML_DllAPI
 TransportProtocol YamlReader::get<TransportProtocol>(
         const Yaml& yml,
         const YamlReaderVersion /* version */)
@@ -76,6 +78,7 @@ TransportProtocol YamlReader::get<TransportProtocol>(
 }
 
 template <>
+DDSPIPE_YAML_DllAPI
 IpVersion YamlReader::get<IpVersion>(
         const Yaml& yml,
         const YamlReaderVersion /* version */)
@@ -89,6 +92,7 @@ IpVersion YamlReader::get<IpVersion>(
 }
 
 template <>
+DDSPIPE_YAML_DllAPI
 PortType YamlReader::get<PortType>(
         const Yaml& yml,
         const YamlReaderVersion /* version */)
@@ -98,6 +102,7 @@ PortType YamlReader::get<PortType>(
 }
 
 template <>
+DDSPIPE_YAML_DllAPI
 DomainId YamlReader::get<DomainId>(
         const Yaml& yml,
         const YamlReaderVersion /* version */)
@@ -109,6 +114,7 @@ DomainId YamlReader::get<DomainId>(
 }
 
 template <>
+DDSPIPE_YAML_DllAPI
 GuidPrefix YamlReader::get<GuidPrefix>(
         const Yaml& yml,
         const YamlReaderVersion /* version */)
@@ -143,6 +149,7 @@ GuidPrefix YamlReader::get<GuidPrefix>(
 }
 
 template <>
+DDSPIPE_YAML_DllAPI
 Address YamlReader::get<Address>(
         const Yaml& yml,
         const YamlReaderVersion version)
@@ -281,6 +288,7 @@ DiscoveryServerConnectionAddress _get_discovery_server_connection_address_latest
 }
 
 template <>
+DDSPIPE_YAML_DllAPI
 DiscoveryServerConnectionAddress YamlReader::get<DiscoveryServerConnectionAddress>(
         const Yaml& yml,
         const YamlReaderVersion version)
@@ -300,6 +308,7 @@ DiscoveryServerConnectionAddress YamlReader::get<DiscoveryServerConnectionAddres
 ************************/
 
 template <>
+DDSPIPE_YAML_DllAPI
 void YamlReader::fill(
         TopicQoS& object,
         const Yaml& yml,
@@ -368,6 +377,7 @@ void YamlReader::fill(
 ************************/
 
 template <>
+DDSPIPE_YAML_DllAPI
 void YamlReader::fill(
         DdsTopic& object,
         const Yaml& yml,
@@ -387,6 +397,7 @@ void YamlReader::fill(
 }
 
 template <>
+DDSPIPE_YAML_DllAPI
 DdsTopic YamlReader::get(
         const Yaml& yml,
         const YamlReaderVersion version)
@@ -397,6 +408,7 @@ DdsTopic YamlReader::get(
 }
 
 template <>
+DDSPIPE_YAML_DllAPI
 void YamlReader::fill(
         WildcardDdsFilterTopic& object,
         const Yaml& yml,
@@ -418,6 +430,7 @@ void YamlReader::fill(
 }
 
 template <>
+DDSPIPE_YAML_DllAPI
 WildcardDdsFilterTopic YamlReader::get(
         const Yaml& yml,
         const YamlReaderVersion version)
@@ -428,6 +441,7 @@ WildcardDdsFilterTopic YamlReader::get(
 }
 
 template <>
+DDSPIPE_YAML_DllAPI
 utils::Heritable<DistributedTopic> YamlReader::get(
         const Yaml& yml,
         const YamlReaderVersion version)
@@ -439,6 +453,7 @@ utils::Heritable<DistributedTopic> YamlReader::get(
 }
 
 template <>
+DDSPIPE_YAML_DllAPI
 utils::Heritable<IFilterTopic> YamlReader::get(
         const Yaml& yml,
         const YamlReaderVersion version)
@@ -454,6 +469,7 @@ utils::Heritable<IFilterTopic> YamlReader::get(
 ************************/
 
 template <>
+DDSPIPE_YAML_DllAPI
 void YamlReader::fill(
         TlsConfiguration& object,
         const Yaml& yml,
@@ -529,6 +545,7 @@ void YamlReader::fill(
 }
 
 template <>
+DDSPIPE_YAML_DllAPI
 TlsConfiguration YamlReader::get(
         const Yaml& yml,
         const YamlReaderVersion version)
