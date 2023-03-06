@@ -11,6 +11,7 @@ inputs:
 runs:
   using: composite
   steps:
-  - run: >
+  - run: |
+      $env:PATH+=";C:\Program Files\gtest;C:\Program Files\yamlcpp;${{ github.workspace }}\..\fastdds\install\bin"
       ctest -C ${{ inputs.cmake_build_type }} --test-dir build\${{ inputs.package_name }} -V --timeout 60 --label-exclude xfail
     shell: pwsh
