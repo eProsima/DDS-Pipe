@@ -22,6 +22,7 @@
 #include <fastdds/dds/domain/DomainParticipantListener.hpp>
 
 #include <ddspipe_participants/configuration/SimpleParticipantConfiguration.hpp>
+#include <ddspipe_participants/library/library_dll.h>
 #include <ddspipe_participants/participant/rtps/SimpleParticipant.hpp>
 #include <ddspipe_participants/reader/auxiliar/InternalReader.hpp>
 
@@ -40,11 +41,13 @@ class DynTypesParticipant : public rtps::SimpleParticipant, public eprosima::fas
 public:
 
     // TODO
+    DDSPIPE_PARTICIPANTS_DllAPI
     DynTypesParticipant(
             std::shared_ptr<SimpleParticipantConfiguration> participant_configuration,
             std::shared_ptr<core::PayloadPool> payload_pool,
             std::shared_ptr<core::DiscoveryDatabase> discovery_database);
 
+    DDSPIPE_PARTICIPANTS_DllAPI
     ~DynTypesParticipant();
 
     virtual void init() override;
@@ -54,6 +57,7 @@ public:
      *
      * Depending on the Topic QoS creates a Basic or Specific Writer.
      */
+    DDSPIPE_PARTICIPANTS_DllAPI
     std::shared_ptr<core::IWriter> create_writer(
             const core::ITopic& topic) override;
 
@@ -62,9 +66,11 @@ public:
      *
      * Depending on the Topic QoS creates a Basic or Specific Reader.
      */
+    DDSPIPE_PARTICIPANTS_DllAPI
     std::shared_ptr<core::IReader> create_reader(
             const core::ITopic& topic) override;
 
+    DDSPIPE_PARTICIPANTS_DllAPI
     void on_type_discovery(
             eprosima::fastdds::dds::DomainParticipant* participant,
             const eprosima::fastrtps::rtps::SampleIdentity& request_sample_id,
@@ -73,6 +79,7 @@ public:
             const eprosima::fastrtps::types::TypeObject* object,
             eprosima::fastrtps::types::DynamicType_ptr dyn_type) override;
 
+    DDSPIPE_PARTICIPANTS_DllAPI
     virtual void on_type_information_received(
             eprosima::fastdds::dds::DomainParticipant* participant,
             const eprosima::fastrtps::string_255 topic_name,
