@@ -15,6 +15,8 @@
 
 #pragma once
 
+#include <string>
+
 #include <ddspipe_core/library/library_dll.h>
 
 namespace eprosima {
