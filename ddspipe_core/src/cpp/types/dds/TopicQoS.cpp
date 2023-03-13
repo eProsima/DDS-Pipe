@@ -26,11 +26,17 @@ namespace core {
 namespace types {
 
 std::atomic<HistoryDepthType> TopicQoS::default_history_depth{HISTORY_DEPTH_DEFAULT};
+std::atomic<unsigned int> TopicQoS::default_downsampling{1};
+std::atomic<unsigned int> TopicQoS::default_max_reception_rate{0};
 
 TopicQoS::TopicQoS()
 {
     // Set history by default
     history_depth = default_history_depth;
+    // Set downsampling by default
+    downsampling = default_downsampling;
+    // Set max reception rate by default
+    max_reception_rate = default_max_reception_rate;
 }
 
 bool TopicQoS::operator ==(
@@ -41,7 +47,10 @@ bool TopicQoS::operator ==(
         this->durability_qos == other.durability_qos &&
         this->history_depth == other.history_depth &&
         this->ownership_qos == other.ownership_qos &&
-        this->use_partitions == other.use_partitions;
+        this->use_partitions == other.use_partitions &&
+        this->keyed == other.keyed &&
+        this->downsampling == other.downsampling &&
+        this->max_reception_rate == other.max_reception_rate;
 }
 
 bool TopicQoS::is_reliable() const noexcept
@@ -147,7 +156,10 @@ std::ostream& operator <<(
         ";" << qos.reliability_qos <<
         ";" << qos.ownership_qos <<
         (qos.has_partitions() ? ";partitions" : "") <<
+        (qos.keyed ? ";keyed" : "") <<
         ";depth(" << qos.history_depth << ")" <<
+        ";downsampling(" << qos.downsampling << ")" <<
+        ";max_reception_rate(" << qos.max_reception_rate << ")" <<
         "}";
 
     return os;

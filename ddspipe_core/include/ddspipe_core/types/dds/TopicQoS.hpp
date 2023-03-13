@@ -97,6 +97,22 @@ struct DDSPIPE_CORE_DllAPI
      */
     static std::atomic<HistoryDepthType> default_history_depth;
 
+    /**
+     * @brief Global value to store the default downsampling factor in this execution.
+     *
+     * This value can change along the execution.
+     * Every new TopicQoS object will use this value as \c downsampling default.
+     */
+    static std::atomic<unsigned int> default_downsampling;
+
+    /**
+     * @brief Global value to store the default max reception rate in this execution.
+     *
+     * This value can change along the execution.
+     * Every new TopicQoS object will use this value as \c max_reception_rate default.
+     */
+    static std::atomic<unsigned int> default_max_reception_rate;
+
     /////////////////////////
     // VARIABLES
     /////////////////////////
@@ -123,6 +139,12 @@ struct DDSPIPE_CORE_DllAPI
 
     //! Whether the topic has key or not
     bool keyed = false;
+
+    //! Downsampling factor: keep 1 out of every *downsampling* samples received (downsampling=1 <=> no downsampling)
+    unsigned int downsampling = 1;
+
+    //! Accept/Process up to *max_reception_rate* samples in a 1 second bin [samples/s]. Default: 0 (no limit)
+    unsigned int max_reception_rate = 0;
 
     static constexpr HistoryDepthType HISTORY_DEPTH_DEFAULT = 5000;
 };

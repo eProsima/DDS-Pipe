@@ -353,9 +353,9 @@ void YamlReader::fill(
     }
 
     // Optional keyed
-    if (is_tag_present(yml, TOPIC_KIND_TAG))
+    if (is_tag_present(yml, QOS_KEYED_TAG))
     {
-        object.keyed = get<bool>(yml, TOPIC_KIND_TAG, version);
+        object.keyed = get<bool>(yml, QOS_KEYED_TAG, version);
     }
 
     // Ownership optional
@@ -369,6 +369,18 @@ void YamlReader::fill(
         {
             object.ownership_qos = eprosima::ddspipe::core::types::OwnershipQosPolicyKind::SHARED_OWNERSHIP_QOS;
         }
+    }
+
+    // Downsampling optional
+    if (is_tag_present(yml, QOS_DOWNSAMPLING_TAG))
+    {
+        object.downsampling = get_positive_int(yml, QOS_DOWNSAMPLING_TAG);
+    }
+
+    // Max Reception Rate optional
+    if (is_tag_present(yml, QOS_MAX_RECEPTION_RATE_TAG))
+    {
+        object.max_reception_rate = get<unsigned int>(yml, QOS_MAX_RECEPTION_RATE_TAG, version);
     }
 }
 

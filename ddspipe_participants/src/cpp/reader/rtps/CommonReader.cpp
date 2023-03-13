@@ -17,6 +17,7 @@
 
 #include <cpp_utils/exception/InitializationException.hpp>
 #include <cpp_utils/Log.hpp>
+#include <cpp_utils/math/math_extension.hpp>
 
 #include <ddspipe_core/interface/IRoutingData.hpp>
 #include <ddspipe_core/types/data/RtpsPayloadData.hpp>
@@ -252,6 +253,32 @@ void CommonReader::enable_nts_() noexcept
     }
 }
 
+bool CommonReader::accept_change_(
+        const fastrtps::rtps::CacheChange_t* change) noexcept
+{
+    bool accept = !come_from_this_participant_(change);
+
+    // Downsampling
+    downsampling_idx_ = utils::fast_module(downsampling_idx_ + 1, topic_.topic_qos.downsampling);
+    accept &= (downsampling_idx_ == 0);
+
+    // Max Reception Rate
+    if (topic_.topic_qos.max_reception_rate > 0)
+    {
+        auto now = utils::now();
+        auto threshold = samples_received_counter_.first + std::chrono::seconds(1);
+        if (now > threshold)
+        {
+            samples_received_counter_ = {now, 1};
+        }
+        else
+        {
+            accept &= (++samples_received_counter_.second <= topic_.topic_qos.max_reception_rate);
+        }
+    }
+    return accept;
+}
+
 bool CommonReader::come_from_this_participant_(
         const fastrtps::rtps::CacheChange_t* change) const noexcept
 {
@@ -361,22 +388,20 @@ void CommonReader::onNewCacheChangeAdded(
         fastrtps::rtps::RTPSReader* reader,
         const fastrtps::rtps::CacheChange_t* const change) noexcept
 {
-    if (!come_from_this_participant_(change))
+    if (accept_change_(change))
     {
         // Do not remove previous received changes so they can be read when the reader is enabled
         if (enabled_)
         {
             // Call Track callback (by calling BaseReader callback method)
-            // TODO (paris) Uncomment
-            // logDebug(DDSPIPE_RTPS_COMMONREADER_LISTENER,
-            //         "Data arrived to Reader " << *this << " with payload " << change->serializedPayload << " from " <<
-            //         change->writerGUID);
+            logDebug(DDSPIPE_RTPS_COMMONREADER_LISTENER,
+                    "Data arrived to Reader " << *this << " with payload " << change->serializedPayload << " from " <<
+                    change->writerGUID);
             on_data_available_();
         }
         else
         {
             // Remove received change if the CommonReader is disbled and the topic is not reliable
-            // NOTE: this should be is_reliable and not is_transient_local for RPC sake
             if (!topic_.topic_qos.is_reliable())
             {
                 reader->getHistory()->remove_change((fastrtps::rtps::CacheChange_t*)change);
@@ -387,11 +412,11 @@ void CommonReader::onNewCacheChangeAdded(
     }
     else
     {
-        logWarning(
+        logInfo(
             DDSPIPE_RTPS_COMMONREADER_LISTENER,
-            "Ignoring data from this same Participant in reader " << *this << ".");
+            "Rejected received data in reader " << *this << ".");
 
-        // If it is a message from this Participant, do not send it forward and remove it
+        // Change rejected, do not send it forward and remove it
         // TODO: do this more elegant
         reader->getHistory()->remove_change((fastrtps::rtps::CacheChange_t*)change);
     }
