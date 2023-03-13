@@ -43,9 +43,9 @@ MultiWriter::MultiWriter(
         const bool repeater /* = false */)
     : BaseWriter(participant_id)
     , payload_pool_(payload_pool)
+    , topic_(topic)
     , rtps_participant_(rtps_participant)
     , repeater_(repeater)
-    , topic_(topic)
 {
     // Do nothing
 }
