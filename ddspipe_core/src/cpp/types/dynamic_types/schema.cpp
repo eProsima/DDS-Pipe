@@ -77,7 +77,7 @@ std::vector<uint32_t> array_size(
     else
     {
         std::vector<uint32_t> result;
-        for (int i = 0; i < dyn_type->get_descriptor()->get_bounds_size(); i++)
+        for (unsigned int i = 0; i < dyn_type->get_descriptor()->get_bounds_size(); i++)
         {
             result.push_back(dyn_type->get_descriptor()->get_bounds(i));
         }

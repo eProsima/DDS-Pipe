@@ -46,15 +46,17 @@ CommonWriter::CommonWriter(
         const fastrtps::WriterQos& writer_qos,
         const utils::PoolConfiguration& pool_configuration)
     : BaseWriter(participant_id)
-    , payload_pool_(payload_pool)
     , rtps_participant_(rtps_participant)
     , repeater_(repeater)
+    , topic_(topic)
+    , payload_pool_(payload_pool)
+    , rtps_writer_(nullptr)
+    , rtps_history_(nullptr)
     , history_attributes_(history_attributes)
     , writer_attributes_(writer_attributes)
     , topic_attributes_(topic_attributes)
     , writer_qos_(writer_qos)
     , pool_configuration_(pool_configuration)
-    , topic_(topic)
 {
     // Do nothing
 }
