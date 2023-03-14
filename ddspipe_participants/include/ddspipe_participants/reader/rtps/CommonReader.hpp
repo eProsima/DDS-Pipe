@@ -229,6 +229,7 @@ protected:
     /////
     // CommonReader specific methods
 
+    //! Whether a change received should be processed
     virtual bool accept_change_(
             const fastrtps::rtps::CacheChange_t* change) noexcept;
 
