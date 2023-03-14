@@ -16,6 +16,8 @@
 
 #include <mutex>
 
+#include <cpp_utils/time/time_utils.hpp>
+
 #include <fastdds/rtps/rtps_fwd.h>
 #include <fastrtps/rtps/attributes/HistoryAttributes.h>
 #include <fastrtps/attributes/TopicAttributes.h>
@@ -227,6 +229,10 @@ protected:
     /////
     // CommonReader specific methods
 
+    //! Whether a change received should be processed
+    virtual bool accept_change_(
+            const fastrtps::rtps::CacheChange_t* change) noexcept;
+
     //! Whether a change received is from this Participant (to avoid auto-feedback)
     bool come_from_this_participant_(
             const fastrtps::rtps::CacheChange_t* change) const noexcept;
@@ -270,6 +276,11 @@ protected:
     //! Reader QoS to create the internal RTPS Reader.
     fastrtps::ReaderQos reader_qos_;
 
+    //! Counter used to keep only 1 sample of every N received, with N being the topic's downsampling factor.
+    unsigned int downsampling_idx_ = 0;
+
+    //! Keep track of number of received samples in the last second, upon which max reception rate can be applied.
+    std::pair<utils::Timestamp, unsigned int> samples_received_counter_ = {utils::now(), 0};
 };
 
 } /* namespace rtps */

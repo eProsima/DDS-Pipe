@@ -33,15 +33,17 @@ constexpr const char* BLOCKLIST_TAG("blocklist");     //! List of blocked topics
 constexpr const char* BUILTIN_TAG("builtin-topics");  //! List of builtin topics
 constexpr const char* TOPIC_NAME_TAG("name");         //! Name of a topic
 constexpr const char* TOPIC_TYPE_NAME_TAG("type");    //! Type name of a topic
-constexpr const char* TOPIC_KIND_TAG("keyed");        //! Kind of a topic (with or without key)
 constexpr const char* TOPIC_QOS_TAG("qos");           //! QoS of a topic
 
 // QoS related tags
-constexpr const char* QOS_RELIABLE_TAG("reliability");  //! The Endpoints of that topic will be configured as RELIABLE
-constexpr const char* QOS_TRANSIENT_TAG("durability");  //! The Endpoints of that topic will be configured as TRANSIENT_LOCAL
-constexpr const char* QOS_HISTORY_DEPTH_TAG("depth");   //! The Endpoints of that topic will be configured as this History Depth
-constexpr const char* QOS_PARTITION_TAG("partitions");  //! The Endpoints of that topic will be configured with partitions
-constexpr const char* QOS_OWNERSHIP_TAG("ownership");   //! The Endpoints of that topic will be configured with partitions
+constexpr const char* QOS_RELIABLE_TAG("reliability"); //! The Endpoints of that topic will be configured as RELIABLE
+constexpr const char* QOS_TRANSIENT_TAG("durability"); //! The Endpoints of that topic will be configured as TRANSIENT_LOCAL
+constexpr const char* QOS_HISTORY_DEPTH_TAG("depth"); //! The Endpoints of that topic will be configured as this History Depth
+constexpr const char* QOS_PARTITION_TAG("partitions"); //! The Endpoints of that topic will be configured with partitions
+constexpr const char* QOS_OWNERSHIP_TAG("ownership"); //! The Endpoints of that topic will be configured with partitions
+constexpr const char* QOS_KEYED_TAG("keyed"); //! Kind of a topic (with or without key)
+constexpr const char* QOS_DOWNSAMPLING_TAG("downsampling"); //! Topic specific downsampling factor
+constexpr const char* QOS_MAX_RECEPTION_RATE_TAG("max-reception-rate"); //! Topic specific max reception rate
 
 // Participant related tags
 constexpr const char* PARTICIPANT_KIND_TAG("kind");   //! Participant Kind
@@ -97,6 +99,8 @@ constexpr const char* DISCOVERY_SERVER_ID_ROS_TAG("ros-discovery-server"); //! T
 constexpr const char* SPECS_TAG("specs"); //! Specs options for DDS Router configuration
 constexpr const char* NUMBER_THREADS_TAG("threads"); //! Number of threads to configure the thread pool
 constexpr const char* MAX_HISTORY_DEPTH_TAG("max-depth"); //! Maximum size (number of stored cache changes) for RTPS History instances
+constexpr const char* DOWNSAMPLING_TAG("downsampling"); //! Keep 1 out of every *downsampling* samples received
+constexpr const char* MAX_RECEPTION_RATE_TAG("max-reception-rate"); //! Process up to *max_reception_rate* samples in a 1 second bin
 
 // Old versions tags
 constexpr const char* PARTICIPANT_KIND_TAG_V1("type"); //! Participant Kind
