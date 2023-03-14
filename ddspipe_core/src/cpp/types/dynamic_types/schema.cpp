@@ -16,8 +16,9 @@
  * @file schema.cpp
  */
 
-#include <ostream>
 #include <map>
+#include <ostream>
+#include <regex>
 
 #include <fastrtps/types/DynamicType.h>
 #include <fastrtps/types/DynamicTypeMember.h>
@@ -315,6 +316,32 @@ std::string generate_dyn_type_schema_from_tree(
     return ss.str();
 }
 
+std::string to_ros2_compatible_schema(const std::string& schema_text)
+{
+    std::string ros2_compatible_schema = schema_text;
+
+    // Match type names internally generated for TypeLookupService
+    std::regex regexp("type_[a-z0-9]+_[a-z0-9]+_[0-9]+");
+    std::smatch m;
+    std::regex_search(schema_text, m, regexp);
+
+    for (auto x : m)
+    {
+        std::string current_type = std::string(x);
+        std::string new_type = current_type;
+
+        // Make first letter uppercase
+        new_type = std::regex_replace(new_type, std::regex("type_"), "Type_");
+
+        // Remove all underscores
+        new_type = std::regex_replace(new_type, std::regex("_"), "");
+
+        // Substitute all occurrences by new type name
+        ros2_compatible_schema = std::regex_replace(ros2_compatible_schema, std::regex(current_type), new_type);
+    }
+    return ros2_compatible_schema;
+}
+
 std::string generate_ros2_schema(
         const fastrtps::types::DynamicType_ptr& dynamic_type)
 {
@@ -322,7 +349,10 @@ std::string generate_ros2_schema(
     utils::TreeNode<TreeNodeType> parent_type = generate_dyn_type_tree(dynamic_type);
 
     // From tree, generate string
-    return generate_dyn_type_schema_from_tree(parent_type);
+    std::string schema = generate_dyn_type_schema_from_tree(parent_type);
+
+    // Transform a general MCAP schema to a ROS 2 specific one
+    return to_ros2_compatible_schema(schema);
 }
 
 } /* namespace types */
