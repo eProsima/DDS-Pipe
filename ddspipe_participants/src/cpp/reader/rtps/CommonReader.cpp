@@ -259,9 +259,9 @@ bool CommonReader::accept_change_(
     // Reject samples sent by a Writer from the same Participant this Reader belongs to
     bool accept = !come_from_this_participant_(change);
 
-    // Downsampling
-    downsampling_idx_ = utils::fast_module(downsampling_idx_ + 1, topic_.topic_qos.downsampling);
+    // Downsampling (keep 1 out of every \c downsampling samples)
     accept &= (downsampling_idx_ == 0);
+    downsampling_idx_ = utils::fast_module(downsampling_idx_ + 1, topic_.topic_qos.downsampling);
 
     // Max Reception Rate
     if (topic_.topic_qos.max_reception_rate > 0)
