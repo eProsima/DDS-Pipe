@@ -1,0 +1,416 @@
+// Copyright 2023 Proyectos y Sistemas de Mantenimiento SL (eProsima).
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+#include <cpp_utils/testing/gtest_aux.hpp>
+#include <gtest/gtest.h>
+
+#include <cpp_utils/exception/PreconditionNotMet.hpp>
+
+#include <ddspipe_yaml/YamlWriter.hpp>
+#include <ddspipe_yaml/YamlReader.hpp>
+
+using namespace eprosima;
+using namespace eprosima::ddspipe::yaml;
+
+namespace test {
+
+const TagType tag = "tag";
+const int value = 42;
+
+template <typename T>
+T get(
+        const Yaml& yml)
+{
+    return YamlReader::get<T>(yml, YamlReaderVersion::LATEST);
+}
+
+template <typename T>
+T get(
+        const Yaml& yml,
+        const TagType& tag)
+{
+    return YamlReader::get<T>(yml, tag, YamlReaderVersion::LATEST);
+}
+
+struct A
+{
+    std::string name {};
+    int value {0};
+
+    bool operator==(const A& other) const
+    {
+        return name == other.name && value == other.value;
+    }
+};
+
+struct B
+{
+    bool active {true};
+    A a {};
+
+    bool operator==(const B& other) const
+    {
+        return active == other.active && a == other.a;
+    }
+};
+
+const TagType A_VALUE_TAG = "value";
+const TagType A_NAME_TAG = "name";
+const TagType B_ACTIVE_TAG = "active";
+const TagType B_A_TAG = "a";
+
+} // namespace test
+
+namespace eprosima {
+namespace ddspipe {
+namespace yaml {
+
+template <>
+void YamlWriter::set(
+        Yaml& yml,
+        const test::A& a)
+{
+    set(yml, test::A_VALUE_TAG, a.value);
+    set(yml, test::A_NAME_TAG, a.name);
+}
+
+template <>
+void YamlWriter::set(
+        Yaml& yml,
+        const test::B& b)
+{
+    set(yml, test::B_ACTIVE_TAG, b.active);
+    set(yml, test::B_A_TAG, b.a);
+}
+
+template <>
+test::A YamlReader::get(
+        const Yaml& yml,
+        const YamlReaderVersion version)
+{
+    test::A a;
+    a.value = get<int>(yml, test::A_VALUE_TAG, version);
+    a.name = get<std::string>(yml, test::A_NAME_TAG, version);
+    return a;
+}
+
+template <>
+test::B YamlReader::get(
+        const Yaml& yml,
+        const YamlReaderVersion version)
+{
+    test::B b;
+    b.active = get<bool>(yml, test::B_ACTIVE_TAG, version);
+    b.a = get<test::A>(yml, test::B_A_TAG, version);
+    return b;
+}
+
+} /* namespace yaml */
+} /* namespace ddspipe */
+} /* namespace eprosima */
+
+/**
+ * Test << operator with bool value
+ *
+ * CASES:
+ * - true
+ * - false
+ */
+TEST(YamlWriterTest, set_scalar_bool)
+{
+    // true
+    {
+        Yaml yml;
+        YamlWriter::set(yml, true);
+        ASSERT_TRUE(test::get<bool>(yml));
+    }
+
+    // false
+    {
+        Yaml yml;
+        YamlWriter::set(yml, false);
+        ASSERT_FALSE(test::get<bool>(yml));
+    }
+}
+
+/**
+ * Test << operator with int value
+ *
+ * Set an array of numbers and test each of them
+ */
+TEST(YamlWriterTest, set_scalar_int)
+{
+    std::vector<int> cases = {
+        0,
+        1,
+        999999,
+        -1
+    };
+
+    for (int i : cases)
+    {
+        Yaml yml;
+        YamlWriter::set(yml, i);
+        ASSERT_EQ(test::get<int>(yml), i);
+    }
+}
+
+/**
+ * Test << operator with int value
+ *
+ * Set an array of numbers and test each of them
+ */
+TEST(YamlWriterTest, set_scalar_string)
+{
+    std::vector<std::string> cases = {
+        "0",
+        "a",
+        "Some text with spaces and punctuation.",
+        "(☞ ͡° ͜ʖ ͡°)☞"
+    };
+
+    for (std::string st : cases)
+    {
+        Yaml yml;
+        YamlWriter::set(yml, st);
+        ASSERT_EQ(test::get<std::string>(yml), st);
+    }
+}
+
+/**
+ * Test add_tag function with default variables.
+ *
+ * CASES:
+ * - create new tag
+ * - create new tag and set it
+ * - add tag already existent
+ * - add multiple tags
+ */
+TEST(YamlWriterTest, add_tag)
+{
+    // create new tag
+    {
+        Yaml yml;
+        Yaml under_tag = YamlWriter::add_tag(yml, test::tag);
+
+        ASSERT_FALSE(under_tag);
+        ASSERT_EQ(yml[test::tag], under_tag);
+    }
+
+    // create new tag and set it
+    {
+        Yaml yml;
+        Yaml under_tag = YamlWriter::add_tag(yml, test::tag);
+        YamlWriter::set(under_tag, test::value);
+
+        ASSERT_EQ(test::get<int>(under_tag), test::value);
+        ASSERT_EQ(test::get<int>(yml, test::tag), test::value);
+    }
+
+    // add tag already existent
+    {
+        Yaml yml;
+        Yaml under_tag = YamlWriter::add_tag(yml, test::tag);
+        YamlWriter::set(under_tag, test::value);
+
+        Yaml under_tag_again = YamlWriter::add_tag(yml, test::tag);
+        YamlWriter::set(under_tag_again, 0);
+
+        ASSERT_EQ(test::get<int>(under_tag), 0);
+        ASSERT_EQ(test::get<int>(under_tag_again), 0);
+        ASSERT_EQ(test::get<int>(yml, test::tag), 0);
+    }
+
+    // add multiple tags
+    {
+        TagType tag2 = "tag2";
+        int value2 = 24;
+
+        Yaml yml;
+        Yaml under_tag1 = YamlWriter::add_tag(yml, test::tag);
+        YamlWriter::set(under_tag1, test::value);
+
+        Yaml under_tag2 = YamlWriter::add_tag(yml, tag2);
+        YamlWriter::set(under_tag2, value2);
+
+        ASSERT_EQ(test::get<int>(under_tag1), test::value);
+        ASSERT_EQ(test::get<int>(under_tag2), value2);
+    }
+}
+
+/**
+ * Test add_tag function with initialize variable
+ *
+ * CASES:
+ * - create new tag and set it
+ * - create new tag already existent
+ */
+TEST(YamlWriterTest, add_tag_initialize)
+{
+    // create new tag and set it
+    {
+        Yaml yml;
+        Yaml under_tag = YamlWriter::add_tag(yml, test::tag, true);
+        YamlWriter::set(under_tag, test::value);
+
+        ASSERT_EQ(test::get<int>(under_tag), test::value);
+        ASSERT_EQ(test::get<int>(yml, test::tag), test::value);
+    }
+
+    // create new tag already existent
+    {
+        TagType tag2 = "tag2";
+
+        Yaml yml;
+        Yaml under_tag = YamlWriter::add_tag(yml, test::tag);
+        YamlWriter::set(under_tag, test::value);
+
+        Yaml under_tag_again = YamlWriter::add_tag(yml, test::tag, true);
+
+        ASSERT_FALSE(under_tag_again)
+            << under_tag_again;
+        ASSERT_EQ(yml[test::tag], under_tag_again);
+    }
+}
+
+/**
+ * Test add_tag function with initialize variable
+ *
+ * CASES:
+ * - create new tag and set it
+ */
+TEST(YamlWriterTest, add_tag_initialize_no_overwrite)
+{
+    // create new tag and set it
+    {
+        Yaml yml;
+        Yaml under_tag = YamlWriter::add_tag(yml, test::tag, true, false);
+        YamlWriter::set(under_tag, test::value);
+
+        ASSERT_EQ(test::get<int>(under_tag), test::value);
+        ASSERT_EQ(test::get<int>(yml, test::tag), test::value);
+    }
+}
+
+/**
+ * Test add_tag function with initialize variable
+ *
+ * CASES:
+ * - attempt to create a new tag that already exist defining no overwrite
+ */
+TEST(YamlWriterTest, add_tag_initialize_no_overwrite_negtive)
+{
+    // attempt to create a new tag that already exist defining no overwrite
+    {
+        Yaml yml;
+        Yaml under_tag = YamlWriter::add_tag(yml, test::tag, true, false);
+        YamlWriter::set(under_tag, test::value);
+
+        ASSERT_THROW(YamlWriter::add_tag(yml, test::tag, true, false), utils::PreconditionNotMet);
+    }
+}
+
+/**
+ * Test << operator with a complex tree example
+ *
+ * Final tree:
+ * os:
+ *   linux:
+ *     name: ubuntu
+ *     version: 20
+ *   windows:
+ *     useful: false
+ */
+TEST(YamlWriterTest, set_under_tags)
+{
+    // Create Tree
+    Yaml yml;
+    Yaml yml_os = YamlWriter::add_tag(yml, "os");
+    Yaml yml_linux = YamlWriter::add_tag(yml_os, "linux");
+    Yaml yml_name = YamlWriter::add_tag(yml_linux, "name");
+    Yaml yml_version = YamlWriter::add_tag(yml_linux, "version");
+    Yaml yml_windows = YamlWriter::add_tag(yml_os, "windows");
+    Yaml yml_useful = YamlWriter::add_tag(yml_windows, "useful");
+
+    // Set values
+    YamlWriter::set<std::string>(yml_name, "ubuntu");
+    YamlWriter::set(yml_version, 20);
+    YamlWriter::set(yml_useful, false);
+
+    // Construct yml by native API
+    Yaml yml_expected;
+    yml_expected["os"]["linux"]["name"] = "ubuntu";
+    yml_expected["os"]["linux"]["version"] = 20;
+    yml_expected["os"]["windows"]["useful"] = false;
+
+    // Check yamls
+    ASSERT_EQ(
+        utils::generic_to_string(yml),
+        utils::generic_to_string(yml_expected));
+}
+
+/**
+ * Test << operator with a complex tree example
+ *
+ * Final tree:
+ * os:
+ *   linux:
+ *     name: ubuntu
+ *     version: 20
+ *   windows:
+ *     useful: false
+ */
+TEST(YamlWriterTest, set_specific_type)
+{
+    // Create object
+    test::B b;
+    b.a.name = "test";
+    b.a.value = 666;
+
+    // Create yml
+    Yaml yml;
+    YamlWriter::set(yml, "b", b);
+
+    // Check the b tag exists, and some inside
+    ASSERT_TRUE(yml["b"]);
+    ASSERT_TRUE(yml["b"]["a"]);
+
+    // Check that reading this object it gets the origina object
+    auto b_read = YamlReader::get<test::B>(yml, "b", YamlReaderVersion::LATEST);
+    ASSERT_EQ(b, b_read);
+
+    // Parse other object
+    test::B b2;
+    b.a.value = 3;
+    Yaml yml2;
+    YamlWriter::set(yml2, "b", b2);
+
+    // Check that ymls are not equal
+    ASSERT_NE(
+        utils::generic_to_string(yml),
+        utils::generic_to_string(yml2));
+
+    // Get new b and check is as expected and different from first
+    auto b_read2 = YamlReader::get<test::B>(yml2, "b", YamlReaderVersion::LATEST);
+    ASSERT_EQ(b2, b_read2);
+    ASSERT_FALSE(b_read == b_read2);
+}
+
+int main(
+        int argc,
+        char** argv)
+{
+    ::testing::InitGoogleTest(&argc, argv);
+    return RUN_ALL_TESTS();
+}

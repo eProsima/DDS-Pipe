@@ -1,4 +1,4 @@
-// Copyright 2022 Proyectos y Sistemas de Mantenimiento SL (eProsima).
+// Copyright 2023 Proyectos y Sistemas de Mantenimiento SL (eProsima).
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,22 +14,20 @@
 
 #pragma once
 
-#include <string>
-
-#include <yaml-cpp/yaml.h>
-
 namespace eprosima {
+namespace ddspipe {
+namespace yaml {
 
-/**
- * Configuration is in dictionary format
- *
- * YAML spec: https://yaml.org/spec/1.2.2/
- *
- * @note: It is not legal to repeat keys in a YAML
- */
-using Yaml = YAML::Node;
+template <typename T>
+void YamlWriter::set(
+        Yaml& yml,
+        const TagType& tag,
+        const T& value)
+{
+    auto yml_under_tag = YamlWriter::add_tag(yml, tag);
+    YamlWriter::set<T>(yml_under_tag, value);
+}
 
-//! Type of tag in the yaml
-using TagType = std::string;
-
+} /* namespace yaml */
+} /* namespace ddspipe */
 } /* namespace eprosima */
