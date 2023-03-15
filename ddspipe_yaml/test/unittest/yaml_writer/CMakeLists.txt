@@ -52,3 +52,37 @@ add_unittest_executable(
     "${TEST_SOURCES}"
     "${TEST_LIST}"
     "${TEST_EXTRA_LIBRARIES}")
+
+####################################
+# Yaml Writer Test for Collections #
+####################################
+
+set(TEST_NAME YamlWriter_collections_test)
+
+set(TEST_SOURCES
+        ${PROJECT_SOURCE_DIR}/src/cpp/YamlReader_generic.cpp
+        ${PROJECT_SOURCE_DIR}/src/cpp/YamlWriter.cpp
+        YamlWriter_collections_test.cpp
+    )
+
+set(TEST_LIST
+        set_int_vector
+        set_int_set
+        test_set_map
+        set_specific_type_vector
+    )
+
+set(TEST_EXTRA_LIBRARIES
+        yaml-cpp
+        fastcdr
+        fastrtps
+        cpp_utils
+        ddspipe_core
+        ddspipe_participants
+    )
+
+add_unittest_executable(
+    "${TEST_NAME}"
+    "${TEST_SOURCES}"
+    "${TEST_LIST}"
+    "${TEST_EXTRA_LIBRARIES}")

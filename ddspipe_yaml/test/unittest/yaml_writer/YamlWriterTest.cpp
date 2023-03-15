@@ -77,7 +77,7 @@ namespace ddspipe {
 namespace yaml {
 
 template <>
-void YamlWriter::set(
+void set(
         Yaml& yml,
         const test::A& a)
 {
@@ -86,7 +86,7 @@ void YamlWriter::set(
 }
 
 template <>
-void YamlWriter::set(
+void set(
         Yaml& yml,
         const test::B& b)
 {
@@ -132,14 +132,14 @@ TEST(YamlWriterTest, set_scalar_bool)
     // true
     {
         Yaml yml;
-        YamlWriter::set(yml, true);
+        set(yml, true);
         ASSERT_TRUE(test::get<bool>(yml));
     }
 
     // false
     {
         Yaml yml;
-        YamlWriter::set(yml, false);
+        set(yml, false);
         ASSERT_FALSE(test::get<bool>(yml));
     }
 }
@@ -161,7 +161,7 @@ TEST(YamlWriterTest, set_scalar_int)
     for (int i : cases)
     {
         Yaml yml;
-        YamlWriter::set(yml, i);
+        set(yml, i);
         ASSERT_EQ(test::get<int>(yml), i);
     }
 }
@@ -183,7 +183,7 @@ TEST(YamlWriterTest, set_scalar_string)
     for (std::string st : cases)
     {
         Yaml yml;
-        YamlWriter::set(yml, st);
+        set(yml, st);
         ASSERT_EQ(test::get<std::string>(yml), st);
     }
 }
@@ -202,7 +202,7 @@ TEST(YamlWriterTest, add_tag)
     // create new tag
     {
         Yaml yml;
-        Yaml under_tag = YamlWriter::add_tag(yml, test::tag);
+        Yaml under_tag = add_tag(yml, test::tag);
 
         ASSERT_FALSE(under_tag);
         ASSERT_EQ(yml[test::tag], under_tag);
@@ -211,8 +211,8 @@ TEST(YamlWriterTest, add_tag)
     // create new tag and set it
     {
         Yaml yml;
-        Yaml under_tag = YamlWriter::add_tag(yml, test::tag);
-        YamlWriter::set(under_tag, test::value);
+        Yaml under_tag = add_tag(yml, test::tag);
+        set(under_tag, test::value);
 
         ASSERT_EQ(test::get<int>(under_tag), test::value);
         ASSERT_EQ(test::get<int>(yml, test::tag), test::value);
@@ -221,11 +221,11 @@ TEST(YamlWriterTest, add_tag)
     // add tag already existent
     {
         Yaml yml;
-        Yaml under_tag = YamlWriter::add_tag(yml, test::tag);
-        YamlWriter::set(under_tag, test::value);
+        Yaml under_tag = add_tag(yml, test::tag);
+        set(under_tag, test::value);
 
-        Yaml under_tag_again = YamlWriter::add_tag(yml, test::tag);
-        YamlWriter::set(under_tag_again, 0);
+        Yaml under_tag_again = add_tag(yml, test::tag);
+        set(under_tag_again, 0);
 
         ASSERT_EQ(test::get<int>(under_tag), 0);
         ASSERT_EQ(test::get<int>(under_tag_again), 0);
@@ -238,11 +238,11 @@ TEST(YamlWriterTest, add_tag)
         int value2 = 24;
 
         Yaml yml;
-        Yaml under_tag1 = YamlWriter::add_tag(yml, test::tag);
-        YamlWriter::set(under_tag1, test::value);
+        Yaml under_tag1 = add_tag(yml, test::tag);
+        set(under_tag1, test::value);
 
-        Yaml under_tag2 = YamlWriter::add_tag(yml, tag2);
-        YamlWriter::set(under_tag2, value2);
+        Yaml under_tag2 = add_tag(yml, tag2);
+        set(under_tag2, value2);
 
         ASSERT_EQ(test::get<int>(under_tag1), test::value);
         ASSERT_EQ(test::get<int>(under_tag2), value2);
@@ -261,8 +261,8 @@ TEST(YamlWriterTest, add_tag_initialize)
     // create new tag and set it
     {
         Yaml yml;
-        Yaml under_tag = YamlWriter::add_tag(yml, test::tag, true);
-        YamlWriter::set(under_tag, test::value);
+        Yaml under_tag = add_tag(yml, test::tag, true);
+        set(under_tag, test::value);
 
         ASSERT_EQ(test::get<int>(under_tag), test::value);
         ASSERT_EQ(test::get<int>(yml, test::tag), test::value);
@@ -273,10 +273,10 @@ TEST(YamlWriterTest, add_tag_initialize)
         TagType tag2 = "tag2";
 
         Yaml yml;
-        Yaml under_tag = YamlWriter::add_tag(yml, test::tag);
-        YamlWriter::set(under_tag, test::value);
+        Yaml under_tag = add_tag(yml, test::tag);
+        set(under_tag, test::value);
 
-        Yaml under_tag_again = YamlWriter::add_tag(yml, test::tag, true);
+        Yaml under_tag_again = add_tag(yml, test::tag, true);
 
         ASSERT_FALSE(under_tag_again)
             << under_tag_again;
@@ -295,8 +295,8 @@ TEST(YamlWriterTest, add_tag_initialize_no_overwrite)
     // create new tag and set it
     {
         Yaml yml;
-        Yaml under_tag = YamlWriter::add_tag(yml, test::tag, true, false);
-        YamlWriter::set(under_tag, test::value);
+        Yaml under_tag = add_tag(yml, test::tag, true, false);
+        set(under_tag, test::value);
 
         ASSERT_EQ(test::get<int>(under_tag), test::value);
         ASSERT_EQ(test::get<int>(yml, test::tag), test::value);
@@ -314,10 +314,10 @@ TEST(YamlWriterTest, add_tag_initialize_no_overwrite_negtive)
     // attempt to create a new tag that already exist defining no overwrite
     {
         Yaml yml;
-        Yaml under_tag = YamlWriter::add_tag(yml, test::tag, true, false);
-        YamlWriter::set(under_tag, test::value);
+        Yaml under_tag = add_tag(yml, test::tag, true, false);
+        set(under_tag, test::value);
 
-        ASSERT_THROW(YamlWriter::add_tag(yml, test::tag, true, false), utils::PreconditionNotMet);
+        ASSERT_THROW(add_tag(yml, test::tag, true, false), utils::PreconditionNotMet);
     }
 }
 
@@ -336,17 +336,17 @@ TEST(YamlWriterTest, set_under_tags)
 {
     // Create Tree
     Yaml yml;
-    Yaml yml_os = YamlWriter::add_tag(yml, "os");
-    Yaml yml_linux = YamlWriter::add_tag(yml_os, "linux");
-    Yaml yml_name = YamlWriter::add_tag(yml_linux, "name");
-    Yaml yml_version = YamlWriter::add_tag(yml_linux, "version");
-    Yaml yml_windows = YamlWriter::add_tag(yml_os, "windows");
-    Yaml yml_useful = YamlWriter::add_tag(yml_windows, "useful");
+    Yaml yml_os = add_tag(yml, "os");
+    Yaml yml_linux = add_tag(yml_os, "linux");
+    Yaml yml_name = add_tag(yml_linux, "name");
+    Yaml yml_version = add_tag(yml_linux, "version");
+    Yaml yml_windows = add_tag(yml_os, "windows");
+    Yaml yml_useful = add_tag(yml_windows, "useful");
 
     // Set values
-    YamlWriter::set<std::string>(yml_name, "ubuntu");
-    YamlWriter::set(yml_version, 20);
-    YamlWriter::set(yml_useful, false);
+    set<std::string>(yml_name, "ubuntu");
+    set(yml_version, 20);
+    set(yml_useful, false);
 
     // Construct yml by native API
     Yaml yml_expected;
@@ -380,7 +380,7 @@ TEST(YamlWriterTest, set_specific_type)
 
     // Create yml
     Yaml yml;
-    YamlWriter::set(yml, "b", b);
+    set(yml, "b", b);
 
     // Check the b tag exists, and some inside
     ASSERT_TRUE(yml["b"]);
@@ -394,7 +394,7 @@ TEST(YamlWriterTest, set_specific_type)
     test::B b2;
     b.a.value = 3;
     Yaml yml2;
-    YamlWriter::set(yml2, "b", b2);
+    set(yml2, "b", b2);
 
     // Check that ymls are not equal
     ASSERT_NE(

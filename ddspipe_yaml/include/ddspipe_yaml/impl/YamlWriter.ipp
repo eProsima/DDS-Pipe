@@ -14,18 +14,81 @@
 
 #pragma once
 
+#include <map>
+#include <string>
+#include <vector>
+
+#include <cpp_utils/utils.hpp>
+
 namespace eprosima {
 namespace ddspipe {
 namespace yaml {
 
+////////////////////////////////////
+// SPECIALIZATIONS NEEDED
+////////////////////////////////////
+
 template <typename T>
-void YamlWriter::set(
+void set(
         Yaml& yml,
         const TagType& tag,
         const T& value)
 {
-    auto yml_under_tag = YamlWriter::add_tag(yml, tag);
-    YamlWriter::set<T>(yml_under_tag, value);
+    auto yml_under_tag = add_tag(yml, tag);
+    set<T>(yml_under_tag, value);
+}
+
+template <typename T>
+void set_collection(
+        Yaml& yml,
+        const std::vector<T>& collection)
+{
+    for (const auto& v : collection)
+    {
+        Yaml yml_value;
+        set<T>(yml_value, v);
+        yml.push_back(yml_value);
+    }
+}
+
+template <typename K, typename T>
+void set_map(
+        Yaml& yml,
+        const std::map<K, T>& collection)
+{
+    for (const auto& v : collection)
+    {
+        Yaml yml_in_new_tag = yml[utils::generic_to_string(v.first)];
+        set<T>(yml_in_new_tag, v.second);
+    }
+}
+
+////////////////////////////////////
+// SPECIALIZATIONS FOR OTHER TYPES
+////////////////////////////////////
+
+template <typename T>
+void set(
+        Yaml& yml,
+        const std::vector<T>& collection)
+{
+    set_collection(yml, collection);
+}
+
+template <typename T>
+void set(
+        Yaml& yml,
+        const std::set<T>& collection)
+{
+    set_collection(yml, std::vector<T>(collection.begin(), collection.end()));
+}
+
+template <typename K, typename T>
+void set(
+        Yaml& yml,
+        const std::map<K, T>& collection)
+{
+    set_map(yml, collection);
 }
 
 } /* namespace yaml */

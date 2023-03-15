@@ -21,35 +21,25 @@ namespace eprosima {
 namespace ddspipe {
 namespace yaml {
 
-/**
- * @brief Class that encapsulates methods to get values from Yaml Node.
- *
- * Every method is implemented
- */
-class DDSPIPE_YAML_DllAPI YamlWriter
-{
-public:
+//! TODO comment
+Yaml add_tag(
+        Yaml& yml,
+        const TagType& tag,
+        bool initialize = false,
+        bool overwrite = true);
 
-    //! TODO comment
-    static Yaml add_tag(
-            Yaml& yml,
-            const TagType& tag,
-            bool initialize = false,
-            bool overwrite = true);
+//! TODO comment
+template <typename T>
+void set(
+        Yaml& yml,
+        const T& value);
 
-    //! TODO comment
-    template <typename T>
-    static void set(
-            Yaml& yml,
-            const T& value);
-
-    //! TODO comment
-    template <typename T>
-    static void set(
-            Yaml& yml,
-            const TagType& tag,
-            const T& value);
-};
+//! TODO comment
+template <typename T>
+void set(
+        Yaml& yml,
+        const TagType& tag,
+        const T& value);
 
 } /* namespace yaml */
 } /* namespace ddspipe */

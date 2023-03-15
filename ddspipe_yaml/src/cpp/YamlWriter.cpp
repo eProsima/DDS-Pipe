@@ -21,7 +21,7 @@ namespace eprosima {
 namespace ddspipe {
 namespace yaml {
 
-Yaml YamlWriter::add_tag(
+Yaml add_tag(
         Yaml& yml,
         const TagType& tag,
         bool initialize /* = false */,
@@ -54,7 +54,7 @@ Yaml YamlWriter::add_tag(
 ////////////////////////////////////
 
 template <>
-void YamlWriter::set(
+void set(
         Yaml& yml,
         const int& value)
 {
@@ -62,7 +62,7 @@ void YamlWriter::set(
 }
 
 template <>
-void YamlWriter::set(
+void set(
         Yaml& yml,
         const std::string& value)
 {
@@ -70,7 +70,7 @@ void YamlWriter::set(
 }
 
 template <>
-void YamlWriter::set(
+void set(
         Yaml& yml,
         const bool& value)
 {
