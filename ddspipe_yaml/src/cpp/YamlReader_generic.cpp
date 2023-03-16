@@ -131,6 +131,74 @@ unsigned int YamlReader::get_positive_int(
 
 template <>
 DDSPIPE_YAML_DllAPI
+float YamlReader::get<float>(
+        const Yaml& yml,
+        const YamlReaderVersion version /* version */)
+{
+    return get_scalar<float>(yml);
+}
+
+float YamlReader::get_positive_float(
+        const Yaml& yml,
+        const TagType& tag)
+{
+    float ret;
+    try
+    {
+        ret = get_scalar<float>(get_value_in_tag(yml, tag));
+    }
+    catch (const std::exception& e)
+    {
+        throw eprosima::utils::ConfigurationException(
+                  utils::Formatter() << "Error reading positive float under tag <" << tag << "> :\n " << e.what());
+    }
+
+    if (!(ret > 0))
+    {
+        throw eprosima::utils::ConfigurationException(
+                  utils::Formatter() << "Error reading positive float under tag <" << tag <<
+                      "> : value is not greater than 0.");
+    }
+
+    return ret;
+}
+
+template <>
+DDSPIPE_YAML_DllAPI
+double YamlReader::get<double>(
+        const Yaml& yml,
+        const YamlReaderVersion version /* version */)
+{
+    return get_scalar<double>(yml);
+}
+
+double YamlReader::get_positive_double(
+        const Yaml& yml,
+        const TagType& tag)
+{
+    double ret;
+    try
+    {
+        ret = get_scalar<double>(get_value_in_tag(yml, tag));
+    }
+    catch (const std::exception& e)
+    {
+        throw eprosima::utils::ConfigurationException(
+                  utils::Formatter() << "Error reading positive double under tag <" << tag << "> :\n " << e.what());
+    }
+
+    if (!(ret > 0))
+    {
+        throw eprosima::utils::ConfigurationException(
+                  utils::Formatter() << "Error reading positive double under tag <" << tag <<
+                      "> : value is not greater than 0.");
+    }
+
+    return ret;
+}
+
+template <>
+DDSPIPE_YAML_DllAPI
 bool YamlReader::get<bool>(
         const Yaml& yml,
         const YamlReaderVersion version /* version */)

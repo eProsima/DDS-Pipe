@@ -215,6 +215,16 @@ public:
             const Yaml& yml,
             const TagType& tag);
 
+    //! Get positive float value inside \c tag
+    static float get_positive_float(
+            const Yaml& yml,
+            const TagType& tag);
+
+    //! Get positive double value inside \c tag
+    static double get_positive_double(
+            const Yaml& yml,
+            const TagType& tag);
+
     //! TODO comment
     template <typename T>
     static T get_enumeration(
