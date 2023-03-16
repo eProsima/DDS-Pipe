@@ -28,6 +28,7 @@ set(TEST_SOURCES
 set(TEST_LIST
         get_scalar_bool
         get_scalar_int
+        get_scalar_decimal
         get_scalar_string
         get_scalar_from_tag
         get_scalar_negative_cases
