@@ -111,7 +111,7 @@ struct DDSPIPE_CORE_DllAPI
      * This value can change along the execution.
      * Every new TopicQoS object will use this value as \c max_reception_rate default.
      */
-    static std::atomic<unsigned int> default_max_reception_rate;
+    static std::atomic<float> default_max_reception_rate;
 
     /////////////////////////
     // VARIABLES
@@ -143,8 +143,8 @@ struct DDSPIPE_CORE_DllAPI
     //! Downsampling factor: keep 1 out of every *downsampling* samples received (downsampling=1 <=> no downsampling)
     unsigned int downsampling = 1;
 
-    //! Accept/Process up to *max_reception_rate* samples in a 1 second bin [samples/s]. Default: 0 (no limit)
-    unsigned int max_reception_rate = 0;
+    //! Discard msgs if less than 1/rate seconds elapsed since the last sample was processed [Hz]. Default: 0 (no limit)
+    float max_reception_rate = 0;
 
     static constexpr HistoryDepthType HISTORY_DEPTH_DEFAULT = 5000;
 };

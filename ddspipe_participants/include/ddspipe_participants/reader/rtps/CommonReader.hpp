@@ -279,8 +279,11 @@ protected:
     //! Counter used to keep only 1 sample of every N received, with N being the topic's downsampling factor.
     unsigned int downsampling_idx_ = 0;
 
-    //! Keep track of number of received samples in the last second, upon which max reception rate can be applied.
-    std::pair<utils::Timestamp, unsigned int> samples_received_counter_ = {utils::now(), 0};
+    // ! Reception timestamp of the last received (and processed) message, upon which max reception rate can be applied.
+    utils::Timestamp last_received_ts_ = utils::the_beginning_of_time();
+
+    //! Minimum time [ns] between received samples required to be processed (0 <=> no restriction).
+    std::chrono::nanoseconds min_intersample_period_ = std::chrono::nanoseconds(0);
 };
 
 } /* namespace rtps */

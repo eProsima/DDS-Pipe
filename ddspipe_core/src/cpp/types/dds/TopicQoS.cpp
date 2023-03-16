@@ -27,7 +27,7 @@ namespace types {
 
 std::atomic<HistoryDepthType> TopicQoS::default_history_depth{HISTORY_DEPTH_DEFAULT};
 std::atomic<unsigned int> TopicQoS::default_downsampling{1};
-std::atomic<unsigned int> TopicQoS::default_max_reception_rate{0};
+std::atomic<float> TopicQoS::default_max_reception_rate{0};
 
 TopicQoS::TopicQoS()
 {
