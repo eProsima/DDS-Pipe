@@ -21,20 +21,50 @@ namespace eprosima {
 namespace ddspipe {
 namespace yaml {
 
-//! TODO comment
+/**
+ * @brief Add a new yaml under tag \c tag .
+ *
+ * It creates a new yaml under the given one indexed by tag.
+ * If the tag already existed, it reuses the yaml already there, unless \c initialize is set to true, in which
+ * case it always must be reset.
+ *
+ * @param yml yaml base where new tag will be added.
+ * @param tag name of the tad.
+ * @param initialize whether the new yaml must be initialized (reset). This only affects if tag already existed.
+ * @param overwrite whether the initialization must overwrite the existing flag.
+ *
+ * Using initialize=true and and overwrite=false leads to an error if tag already exist.
+ *
+ * @return Yaml new yaml under \c tag .
+ *
+ * @throw \c PreconditionNotMet if \c tag already exist, \c initialize set to true and \c overwrite set to false.
+ */
 Yaml add_tag(
         Yaml& yml,
         const TagType& tag,
         bool initialize = false,
         bool overwrite = true);
 
-//! TODO comment
+/**
+ * @brief Set a new value in \c yml .
+ *
+ * This method is thought to be specialized for each different type coding the serialization method to a yaml.
+ *
+ * @param yml base yaml where to write the value
+ * @param value value to write
+ *
+ * @tparam T type of the value to set in the yaml.
+ *
+ * @note some specializations are already implemented:
+ * - native types (int, string, boolean)
+ * - collections (vector, set, map)
+ */
 template <typename T>
 void set(
         Yaml& yml,
         const T& value);
 
-//! TODO comment
+//! Set the \c value in a new yaml in \c yml under \c tag .
 template <typename T>
 void set(
         Yaml& yml,

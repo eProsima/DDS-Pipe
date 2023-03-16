@@ -32,7 +32,7 @@ set(TEST_LIST
         add_tag
         add_tag_initialize
         add_tag_initialize_no_overwrite
-        add_tag_initialize_no_overwrite_negtive
+        add_tag_initialize_no_overwrite_negative
 
         set_under_tags
         set_specific_type

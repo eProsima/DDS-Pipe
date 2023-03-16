@@ -28,6 +28,7 @@ namespace test {
 const TagType tag = "tag";
 const int value = 42;
 
+//! Helper function to avoid calling YamlReader get with YamlReaderVersion
 template <typename T>
 T get(
         const Yaml& yml)
@@ -35,6 +36,7 @@ T get(
     return YamlReader::get<T>(yml, YamlReaderVersion::LATEST);
 }
 
+//! Helper function to avoid calling YamlReader get with YamlReaderVersion
 template <typename T>
 T get(
         const Yaml& yml,
@@ -43,6 +45,7 @@ T get(
     return YamlReader::get<T>(yml, tag, YamlReaderVersion::LATEST);
 }
 
+//! Simple data struct to implement a serialization and deserialization method to yaml.
 struct A
 {
     std::string name {};
@@ -54,6 +57,7 @@ struct A
     }
 };
 
+//! Complex data struct with an internal A to implement a serialization and deserialization method to yaml.
 struct B
 {
     bool active {true};
@@ -65,6 +69,7 @@ struct B
     }
 };
 
+// Tags to serialize the A and B classes in a yaml
 const TagType A_VALUE_TAG = "value";
 const TagType A_NAME_TAG = "name";
 const TagType B_ACTIVE_TAG = "active";
@@ -76,6 +81,7 @@ namespace eprosima {
 namespace ddspipe {
 namespace yaml {
 
+//! Serialize an object A in a yaml
 template <>
 void set(
         Yaml& yml,
@@ -85,6 +91,7 @@ void set(
     set(yml, test::A_NAME_TAG, a.name);
 }
 
+//! Serialize an object B in a yaml
 template <>
 void set(
         Yaml& yml,
@@ -94,6 +101,7 @@ void set(
     set(yml, test::B_A_TAG, b.a);
 }
 
+//! Deserialize an object A from a yaml
 template <>
 test::A YamlReader::get(
         const Yaml& yml,
@@ -105,6 +113,7 @@ test::A YamlReader::get(
     return a;
 }
 
+//! Deserialize an object B from a yaml
 template <>
 test::B YamlReader::get(
         const Yaml& yml,
@@ -169,7 +178,7 @@ TEST(YamlWriterTest, set_scalar_int)
 /**
  * Test << operator with int value
  *
- * Set an array of numbers and test each of them
+ * Set an array of strings and test each of them
  */
 TEST(YamlWriterTest, set_scalar_string)
 {
@@ -309,7 +318,7 @@ TEST(YamlWriterTest, add_tag_initialize_no_overwrite)
  * CASES:
  * - attempt to create a new tag that already exist defining no overwrite
  */
-TEST(YamlWriterTest, add_tag_initialize_no_overwrite_negtive)
+TEST(YamlWriterTest, add_tag_initialize_no_overwrite_negative)
 {
     // attempt to create a new tag that already exist defining no overwrite
     {
@@ -361,15 +370,15 @@ TEST(YamlWriterTest, set_under_tags)
 }
 
 /**
- * Test << operator with a complex tree example
+ * This test the \c set functions implemented in this same test for classes A and B.
+ * These classes specialize function \c set to serialize themselves in a yaml.
+ * There is also a specialization of YamlReader::get for them, so they can be read from yaml afterwards.
  *
- * Final tree:
- * os:
- *   linux:
- *     name: ubuntu
- *     version: 20
- *   windows:
- *     useful: false
+ * In the test a value of type B (that contains an object of type A) is created and serialized in a yaml.
+ * This yaml is then introspected to check it has correctly being set, and also is deserialized in other B object.
+ * Then 2 b objects are compared and should be the same.
+ *
+ * It also tries to serialize a different B object and check everything works as expected.
  */
 TEST(YamlWriterTest, set_specific_type)
 {

@@ -25,7 +25,10 @@ namespace eprosima {
  *
  * YAML spec: https://yaml.org/spec/1.2.2/
  *
- * @note: It is not legal to repeat keys in a YAML
+ * @note It is not legal to repeat keys in a YAML
+ *
+ * @note this object contains a reference to the actual yaml object. Thus passing it by value or by reference
+ * makes no different.
  */
 using Yaml = YAML::Node;
 
