@@ -106,6 +106,106 @@ TEST(YamlReaderScalarTest, get_scalar_int)
 }
 
 /**
+ * Check to get a decimal number from a yaml (note: integers are also valid)
+ *
+ * For each case are tested arbitrary numbers (power of 2) and negative ones in signed cases
+ *
+ * CASES:
+ *  float
+ *  double
+ *  int
+ *  uint
+ *  uint16
+ *  int64
+ *  fail with bool
+ */
+TEST(YamlReaderScalarTest, get_scalar_decimal)
+{
+    // float
+    {
+        float delta = 0.123;
+        for (int i = 1; i < 0x1000; i *= 2)
+        {
+            float decimal = i + delta;
+            ASSERT_EQ(YamlReader::get_scalar<float>(Yaml(decimal)), decimal) << decimal;
+            ASSERT_EQ(YamlReader::get_scalar<float>(Yaml(-decimal)), -decimal) << -decimal;
+        }
+    }
+
+    // double
+    {
+        double delta = 0.123;
+        for (int i = 1; i < 0x1000; i *= 2)
+        {
+            double decimal = i + delta;
+            ASSERT_EQ(YamlReader::get_scalar<double>(Yaml(decimal)), decimal) << decimal;
+            ASSERT_EQ(YamlReader::get_scalar<double>(Yaml(-decimal)), -decimal) << -decimal;
+        }
+    }
+
+    // int
+    {
+        for (int i = 1; i < 0x1000; i *= 2)
+        {
+            // float
+            ASSERT_EQ(YamlReader::get_scalar<float>(Yaml(i)), i) << i;
+            ASSERT_EQ(YamlReader::get_scalar<float>(Yaml(-i)), -i) << -i;
+
+            // double
+            ASSERT_EQ(YamlReader::get_scalar<double>(Yaml(i)), i) << i;
+            ASSERT_EQ(YamlReader::get_scalar<double>(Yaml(-i)), -i) << -i;
+        }
+    }
+
+    // uint
+    {
+        for (unsigned int i = 1; i < 0x1000; i *= 2)
+        {
+            // float
+            ASSERT_EQ(YamlReader::get_scalar<float>(Yaml(i)), i) << i;
+
+            // double
+            ASSERT_EQ(YamlReader::get_scalar<double>(Yaml(i)), i) << i;
+        }
+    }
+
+    // uint16
+    {
+        for (uint16_t i = 1; i < 0x1000; i *= 2)
+        {
+            // float
+            ASSERT_EQ(YamlReader::get_scalar<float>(Yaml(i)), i) << i;
+
+            // double
+            ASSERT_EQ(YamlReader::get_scalar<double>(Yaml(i)), i) << i;
+        }
+    }
+
+    // int64
+    {
+        for (int64_t i = 1; i < 0x1000; i *= 2)
+        {
+            // float
+            ASSERT_EQ(YamlReader::get_scalar<float>(Yaml(i)), i) << i;
+            ASSERT_EQ(YamlReader::get_scalar<float>(Yaml(-i)), -i) << -i;
+
+            // double
+            ASSERT_EQ(YamlReader::get_scalar<double>(Yaml(i)), i) << i;
+            ASSERT_EQ(YamlReader::get_scalar<double>(Yaml(-i)), -i) << -i;
+        }
+    }
+
+    // fail with bool
+    {
+        // double
+        ASSERT_THROW(YamlReader::get_scalar<float>(Yaml(false)), eprosima::utils::ConfigurationException);
+
+        // double
+        ASSERT_THROW(YamlReader::get_scalar<double>(Yaml(false)), eprosima::utils::ConfigurationException);
+    }
+}
+
+/**
  * Check to get a string from a yaml
 
  * CASES:
