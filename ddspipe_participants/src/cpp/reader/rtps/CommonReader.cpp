@@ -54,7 +54,7 @@ CommonReader::CommonReader(
 {
     // Calculate min_intersample_period_ from topic's max_reception_rate only once to lighten hot path
     assert(topic_.topic_qos.max_reception_rate >= 0);
-    min_intersample_period_ = std::chrono::nanoseconds((unsigned int)(1e9/topic_.topic_qos.max_reception_rate));
+    min_intersample_period_ = std::chrono::nanoseconds((unsigned int)(1e9 / topic_.topic_qos.max_reception_rate));
 }
 
 CommonReader::~CommonReader()
