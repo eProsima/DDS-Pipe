@@ -52,7 +52,9 @@ CommonReader::CommonReader(
     , topic_attributes_(topic_attributes)
     , reader_qos_(reader_qos)
 {
-    // Do nothing
+    // Calculate min_intersample_period_ from topic's max_reception_rate only once to lighten hot path
+    assert(topic_.topic_qos.max_reception_rate >= 0);
+    min_intersample_period_ = std::chrono::nanoseconds((unsigned int)(1e9/topic_.topic_qos.max_reception_rate));
 }
 
 CommonReader::~CommonReader()
@@ -257,27 +259,36 @@ bool CommonReader::accept_change_(
         const fastrtps::rtps::CacheChange_t* change) noexcept
 {
     // Reject samples sent by a Writer from the same Participant this Reader belongs to
-    bool accept = !come_from_this_participant_(change);
-
-    // Downsampling (keep 1 out of every \c downsampling samples)
-    accept &= (downsampling_idx_ == 0);
-    downsampling_idx_ = utils::fast_module(downsampling_idx_ + 1, topic_.topic_qos.downsampling);
+    if (come_from_this_participant_(change))
+    {
+        return false;
+    }
 
     // Max Reception Rate
     if (topic_.topic_qos.max_reception_rate > 0)
     {
         auto now = utils::now();
-        auto threshold = samples_received_counter_.first + std::chrono::seconds(1);
+        auto threshold = last_received_ts_ + min_intersample_period_;
         if (now > threshold)
         {
-            samples_received_counter_ = {now, 1};
+            last_received_ts_ = now;
         }
         else
         {
-            accept &= (++samples_received_counter_.second <= topic_.topic_qos.max_reception_rate);
+            return false;
         }
     }
-    return accept;
+
+    // Downsampling (keep 1 out of every \c downsampling samples)
+    // NOTE: Downsampling is applied to messages that already passed previous filters
+    auto prev_downsampling_idx = downsampling_idx_;
+    downsampling_idx_ = utils::fast_module(downsampling_idx_ + 1, topic_.topic_qos.downsampling);
+    if (prev_downsampling_idx != 0)
+    {
+        return false;
+    }
+
+    return true;
 }
 
 bool CommonReader::come_from_this_participant_(
