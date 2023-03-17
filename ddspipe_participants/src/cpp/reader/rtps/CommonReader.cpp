@@ -258,6 +258,9 @@ void CommonReader::enable_nts_() noexcept
 bool CommonReader::accept_change_(
         const fastrtps::rtps::CacheChange_t* change) noexcept
 {
+    // Get reception timestamp
+    auto now = utils::now();
+
     // Reject samples sent by a Writer from the same Participant this Reader belongs to
     if (come_from_this_participant_(change))
     {
@@ -267,13 +270,8 @@ bool CommonReader::accept_change_(
     // Max Reception Rate
     if (topic_.topic_qos.max_reception_rate > 0)
     {
-        auto now = utils::now();
         auto threshold = last_received_ts_ + min_intersample_period_;
-        if (now > threshold)
-        {
-            last_received_ts_ = now;
-        }
-        else
+        if (now < threshold)
         {
             return false;
         }
@@ -287,6 +285,9 @@ bool CommonReader::accept_change_(
     {
         return false;
     }
+
+    // All filters passed -> Update last received timestamp with this sample's reception timestamp
+    last_received_ts_ = now;
 
     return true;
 }
