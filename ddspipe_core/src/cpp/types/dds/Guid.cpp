@@ -21,7 +21,8 @@ namespace ddspipe {
 namespace core {
 namespace types {
 
-Guid::Guid(const std::string& st)
+Guid::Guid(
+        const std::string& st)
 {
     std::stringstream ss(st);
     ss >> *this;
