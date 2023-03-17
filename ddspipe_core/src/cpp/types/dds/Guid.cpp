@@ -21,6 +21,12 @@ namespace ddspipe {
 namespace core {
 namespace types {
 
+Guid::Guid(const std::string& st)
+{
+    std::stringstream ss(st);
+    ss >> *this;
+}
+
 Guid::Guid(
         const fastrtps::rtps::GUID_t& x)
 {

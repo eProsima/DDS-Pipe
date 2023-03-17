@@ -36,6 +36,11 @@ public:
     DDSPIPE_CORE_DllAPI
     Guid() = default;
 
+    //! Constructor from string
+    DDSPIPE_CORE_DllAPI
+    Guid(
+            const std::string& st);
+
     //! Copy constructor
     DDSPIPE_CORE_DllAPI
     Guid(
