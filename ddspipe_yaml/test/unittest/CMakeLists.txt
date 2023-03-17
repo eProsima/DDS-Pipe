@@ -18,3 +18,4 @@
 
 add_subdirectory(entities)
 add_subdirectory(yaml_reader)
+add_subdirectory(yaml_writer)

@@ -86,8 +86,6 @@ enum YamlReaderVersion
     LATEST,
 };
 
-using TagType = std::string;
-
 /**
  * @brief Class that encapsulates methods to get values from Yaml Node.
  *
