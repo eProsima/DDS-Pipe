@@ -51,10 +51,12 @@ struct A
     std::string name {};
     int value {0};
 
-    bool operator==(const A& other) const
+    bool operator ==(
+            const A& other) const
     {
         return name == other.name && value == other.value;
     }
+
 };
 
 //! Complex data struct with an internal A to implement a serialization and deserialization method to yaml.
@@ -63,10 +65,12 @@ struct B
     bool active {true};
     A a {};
 
-    bool operator==(const B& other) const
+    bool operator ==(
+            const B& other) const
     {
         return active == other.active && a == other.a;
     }
+
 };
 
 // Tags to serialize the A and B classes in a yaml

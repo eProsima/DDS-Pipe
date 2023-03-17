@@ -31,9 +31,9 @@ Yaml add_tag(
     if (initialize && !overwrite && YamlReader::is_tag_present(yml, tag))
     {
         throw utils::PreconditionNotMet(
-            STR_ENTRY
-            << "Tag <" << tag
-            << "> already exist and could not overwrite.");
+                  STR_ENTRY
+                      << "Tag <" << tag
+                      << "> already exist and could not overwrite.");
     }
 
     // If node must be initialized, independent on if it exist or not, create a new one and set.

@@ -34,10 +34,12 @@ struct A
     std::string name {};
     int value {0};
 
-    bool operator==(const A& other) const
+    bool operator ==(
+            const A& other) const
     {
         return name == other.name && value == other.value;
     }
+
 };
 
 struct B
@@ -45,10 +47,12 @@ struct B
     bool active {true};
     A a {};
 
-    bool operator==(const B& other) const
+    bool operator ==(
+            const B& other) const
     {
         return active == other.active && a == other.a;
     }
+
 };
 
 const TagType A_VALUE_TAG = "value";
