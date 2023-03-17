@@ -15,6 +15,7 @@
 #pragma once
 
 #include <map>
+#include <set>
 #include <string>
 #include <vector>
 
@@ -24,44 +25,15 @@ namespace eprosima {
 namespace ddspipe {
 namespace yaml {
 
-////////////////////////////////////
-// SPECIALIZATIONS NEEDED
-////////////////////////////////////
-
-template <typename T>
-void set(
-        Yaml& yml,
-        const TagType& tag,
-        const T& value)
-{
-    auto yml_under_tag = add_tag(yml, tag);
-    set<T>(yml_under_tag, value);
-}
-
 template <typename T>
 void set_collection(
         Yaml& yml,
-        const std::vector<T>& collection)
-{
-    for (const auto& v : collection)
-    {
-        Yaml yml_value;
-        set<T>(yml_value, v);
-        yml.push_back(yml_value);
-    }
-}
+        const std::vector<T>& collection);
 
 template <typename K, typename T>
 void set_map(
         Yaml& yml,
-        const std::map<K, T>& collection)
-{
-    for (const auto& v : collection)
-    {
-        Yaml yml_in_new_tag = yml[utils::generic_to_string(v.first)];
-        set<T>(yml_in_new_tag, v.second);
-    }
-}
+        const std::map<K, T>& collection);
 
 ////////////////////////////////////
 // SPECIALIZATIONS FOR OTHER TYPES
@@ -89,6 +61,45 @@ void set(
         const std::map<K, T>& collection)
 {
     set_map(yml, collection);
+}
+
+////////////////////////////////////
+// SPECIALIZATIONS NEEDED
+////////////////////////////////////
+
+template <typename T>
+void set(
+        Yaml& yml,
+        const TagType& tag,
+        const T& value)
+{
+    auto yml_under_tag = add_tag(yml, tag);
+    set(yml_under_tag, value);
+}
+
+template <typename T>
+void set_collection(
+        Yaml& yml,
+        const std::vector<T>& collection)
+{
+    for (const auto& v : collection)
+    {
+        Yaml yml_value;
+        set<T>(yml_value, v);
+        yml.push_back(yml_value);
+    }
+}
+
+template <typename K, typename T>
+void set_map(
+        Yaml& yml,
+        const std::map<K, T>& collection)
+{
+    for (const auto& v : collection)
+    {
+        Yaml yml_in_new_tag = yml[utils::generic_to_string(v.first)];
+        set<T>(yml_in_new_tag, v.second);
+    }
 }
 
 } /* namespace yaml */
