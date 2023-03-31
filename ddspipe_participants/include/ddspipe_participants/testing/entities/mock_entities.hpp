@@ -41,7 +41,7 @@ class MockParticipant;
 class MockReader;
 class MockWriter;
 class MockTopic;
-class MockRoutingData;
+struct MockRoutingData;
 
 class MockParticipant : public BlankParticipant
 {
@@ -60,10 +60,10 @@ public:
             const core::ITopic& topic) override;
 
     DDSPIPE_PARTICIPANTS_DllAPI
-    unsigned int n_writers() const;
+    std::size_t n_writers() const;
 
     DDSPIPE_PARTICIPANTS_DllAPI
-    unsigned int n_readers() const;
+    std::size_t n_readers() const;
 
     DDSPIPE_PARTICIPANTS_DllAPI
     std::shared_ptr<MockWriter> get_writer(
@@ -138,7 +138,7 @@ public:
     MockRoutingData wait_data();
 
     DDSPIPE_PARTICIPANTS_DllAPI
-    unsigned int n_to_send_data();
+    std::size_t n_to_send_data();
 
 protected:
 

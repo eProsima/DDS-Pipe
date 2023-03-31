@@ -36,14 +36,15 @@ using OwnershipStrengthQosPolicy = eprosima::fastdds::dds::OwnershipStrengthQosP
  *
  * @todo Divide this in Common, Reader and Writer QoS
  */
-struct DDSPIPE_CORE_DllAPI
-        SpecificEndpointQoS
+struct
+SpecificEndpointQoS
 {
     /////////////////////////
     // CONSTRUCTORS
     /////////////////////////
 
     //! Default SpecificEndpointQoS with reader less restrictive parameters
+    DDSPIPE_CORE_DllAPI
     SpecificEndpointQoS() = default;
 
     /////////////////////////
@@ -51,10 +52,12 @@ struct DDSPIPE_CORE_DllAPI
     /////////////////////////
 
     //! Minor comparison operator
+    DDSPIPE_CORE_DllAPI
     bool operator < (
             const SpecificEndpointQoS& other) const noexcept;
 
     //! Equality operator
+    DDSPIPE_CORE_DllAPI
     bool operator == (
             const SpecificEndpointQoS& other) const noexcept;
 

@@ -34,18 +34,11 @@
 /////
 // Forward declarations
 namespace eprosima {
-namespace ddspipe {
-namespace participants {
-
-struct CacheChangePoolConfiguration;
-
-} /* namespace participants */
-} /* namespace ddspipe */
 
 namespace fastdds {
 namespace rtps {
 
-struct IReaderDataFilter;
+class IReaderDataFilter;
 
 } /* namespace rtps */
 } /* namespace fastdds */
@@ -124,6 +117,7 @@ protected:
      *
      * @throw \c InitializationException in case any creation has failed
      */
+    DDSPIPE_PARTICIPANTS_DllAPI
     CommonWriter(
             const core::types::ParticipantId& participant_id,
             const core::types::DdsTopic& topic,
@@ -153,6 +147,7 @@ protected:
      * @return \c RETCODE_NO_DATA if \c data is empty
      * @return \c RETCODE_ERROR if error occurred
      */
+    DDSPIPE_PARTICIPANTS_DllAPI
     virtual utils::ReturnCode write_nts_(
             core::IRoutingData& data) noexcept override;
 
@@ -163,6 +158,7 @@ protected:
      * @param [out] to_send_params write params to be filled and sent.
      * @param [in] data data received that must be sent.
      */
+    DDSPIPE_PARTICIPANTS_DllAPI
     virtual utils::ReturnCode fill_to_send_data_(
             fastrtps::rtps::CacheChange_t* to_send_change_to_fill,
             eprosima::fastrtps::rtps::WriteParams& to_send_params,
@@ -174,6 +170,7 @@ protected:
      * @param [in] to_send_params write params of the cache change sent.
      * @param [out] data data to be fulfilled with params.
      */
+    DDSPIPE_PARTICIPANTS_DllAPI
     virtual void fill_sent_data_(
             const eprosima::fastrtps::rtps::WriteParams& sent_params,
             core::types::RtpsPayloadData& data_to_fill) const noexcept;

@@ -143,6 +143,7 @@ protected:
      *
      * @throw \c InitializationException in case any creation has failed
      */
+    DDSPIPE_PARTICIPANTS_DllAPI
     CommonReader(
             const core::types::ParticipantId& participant_id,
             const core::types::DdsTopic& topic,
@@ -158,6 +159,7 @@ protected:
     /**
      * @brief Auxiliary method to create the internal RTPS Reader and History.
      */
+    DDSPIPE_PARTICIPANTS_DllAPI
     virtual void internal_entities_creation_(
             const fastrtps::rtps::HistoryAttributes& history_attributes,
             const fastrtps::rtps::ReaderAttributes& reader_attributes,
@@ -169,12 +171,14 @@ protected:
      *
      * @attention this method allocates memory.
      */
+    DDSPIPE_PARTICIPANTS_DllAPI
     virtual core::types::RtpsPayloadData* create_data_(
             const fastrtps::rtps::CacheChange_t& received_change) const noexcept;
 
     /**
      * @brief Auxiliary method used in \c take to fill the received data.
      */
+    DDSPIPE_PARTICIPANTS_DllAPI
     virtual void fill_received_data_(
             const fastrtps::rtps::CacheChange_t& received_change,
             core::types::RtpsPayloadData& data_to_fill) const noexcept;
@@ -196,9 +200,11 @@ protected:
      * @return \c RETCODE_NO_DATA if there is no data to send
      * @return \c RETCODE_ERROR if there has been an error reading the data or the data read is corrupted
      */
+    DDSPIPE_PARTICIPANTS_DllAPI
     virtual utils::ReturnCode take_nts_(
             std::unique_ptr<core::IRoutingData>& data) noexcept override;
 
+    DDSPIPE_PARTICIPANTS_DllAPI
     virtual void enable_nts_() noexcept override;
 
     /////
@@ -230,6 +236,7 @@ protected:
     // CommonReader specific methods
 
     //! Whether a change received should be processed
+    DDSPIPE_PARTICIPANTS_DllAPI
     virtual bool accept_change_(
             const fastrtps::rtps::CacheChange_t* change) noexcept;
 
