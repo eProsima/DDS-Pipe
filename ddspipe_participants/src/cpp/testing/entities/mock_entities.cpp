@@ -80,13 +80,13 @@ std::shared_ptr<core::IReader> MockParticipant::create_reader(
     return entity;
 }
 
-unsigned int MockParticipant::n_writers() const
+std::size_t MockParticipant::n_writers() const
 {
     std::lock_guard<std::mutex> _(mutex_);
     return writers_.size();
 }
 
-unsigned int MockParticipant::n_readers() const
+std::size_t MockParticipant::n_readers() const
 {
     std::lock_guard<std::mutex> _(mutex_);
     return readers_.size();
@@ -195,7 +195,7 @@ MockRoutingData MockWriter::wait_data()
     return data;
 }
 
-unsigned int MockWriter::n_to_send_data()
+std::size_t MockWriter::n_to_send_data()
 {
     // Lock access to queue
     std::lock_guard<utils::Atomicable<std::queue<MockRoutingData>>> _(data_queue_);

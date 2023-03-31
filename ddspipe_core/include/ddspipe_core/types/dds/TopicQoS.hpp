@@ -51,14 +51,15 @@ using OwnershipQosPolicyKind = eprosima::fastdds::dds::OwnershipQosPolicyKind;
  *
  * @todo add keys to Topic QoS
  */
-struct DDSPIPE_CORE_DllAPI
-        TopicQoS
+struct
+TopicQoS
 {
     /////////////////////////
     // CONSTRUCTORS
     /////////////////////////
 
     //! Default TopicQoS with reader less restrictive parameters
+    DDSPIPE_CORE_DllAPI
     TopicQoS();
 
     /////////////////////////
@@ -66,6 +67,7 @@ struct DDSPIPE_CORE_DllAPI
     /////////////////////////
 
     //! Equality operator
+    DDSPIPE_CORE_DllAPI
     bool operator ==(
             const TopicQoS& other) const noexcept;
 
@@ -74,15 +76,19 @@ struct DDSPIPE_CORE_DllAPI
     /////////////////////////
 
     //! Whether the Topic is RELIABLE, not BEST_EFFORT
+    DDSPIPE_CORE_DllAPI
     bool is_reliable() const noexcept;
 
     //! Whether the Topic is TRANSIENT_LOCAL, not VOLATILE
+    DDSPIPE_CORE_DllAPI
     bool is_transient_local() const noexcept;
 
     //! Whether the Topic has EXCLUSIVE_OWNERSHIP, not SHARED_OWNERSHIP
+    DDSPIPE_CORE_DllAPI
     bool has_ownership() const noexcept;
 
     //! Whether the Topic has partitions, not empty partition
+    DDSPIPE_CORE_DllAPI
     bool has_partitions() const noexcept;
 
     /////////////////////////
