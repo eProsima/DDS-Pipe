@@ -380,7 +380,7 @@ void YamlReader::fill(
     // Max Reception Rate optional
     if (is_tag_present(yml, QOS_MAX_RECEPTION_RATE_TAG))
     {
-        object.max_reception_rate = get<unsigned int>(yml, QOS_MAX_RECEPTION_RATE_TAG, version);
+        object.max_reception_rate = get<RateType>(yml, QOS_MAX_RECEPTION_RATE_TAG, version);
     }
 }
 

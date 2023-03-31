@@ -54,6 +54,12 @@ using OwnershipQosPolicyKind = eprosima::fastdds::dds::OwnershipQosPolicyKind;
 struct
 TopicQoS
 {
+
+    /////////////////////////
+    // ALIASES
+    /////////////////////////
+    using RateType = float;
+
     /////////////////////////
     // CONSTRUCTORS
     /////////////////////////
@@ -117,7 +123,7 @@ TopicQoS
      * This value can change along the execution.
      * Every new TopicQoS object will use this value as \c max_reception_rate default.
      */
-    static std::atomic<float> default_max_reception_rate;
+    static std::atomic<RateType> default_max_reception_rate;
 
     /////////////////////////
     // VARIABLES
@@ -150,7 +156,7 @@ TopicQoS
     unsigned int downsampling = 1;
 
     //! Discard msgs if less than 1/rate seconds elapsed since the last sample was processed [Hz]. Default: 0 (no limit)
-    float max_reception_rate = 0;
+    RateType max_reception_rate = 0;
 
     static constexpr HistoryDepthType HISTORY_DEPTH_DEFAULT = 5000;
 };
