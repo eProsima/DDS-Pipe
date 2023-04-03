@@ -50,6 +50,7 @@ public:
     DDSPIPE_PARTICIPANTS_DllAPI
     ~DynTypesParticipant();
 
+    DDSPIPE_PARTICIPANTS_DllAPI
     virtual void init() override;
 
     /**

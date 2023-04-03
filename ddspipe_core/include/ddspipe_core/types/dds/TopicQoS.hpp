@@ -101,6 +101,7 @@ TopicQoS
      * This value can change along the execution.
      * Every new TopicQoS object will use this value as \c history_depth default.
      */
+    DDSPIPE_CORE_DllAPI
     static std::atomic<HistoryDepthType> default_history_depth;
 
     /**

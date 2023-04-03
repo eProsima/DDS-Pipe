@@ -220,6 +220,7 @@ protected:
     static const std::function<void()> DEFAULT_ON_DATA_AVAILABLE_CALLBACK;
 
     // Allow operator << to use private variables
+    DDSPIPE_PARTICIPANTS_DllAPI
     friend std::ostream& operator <<(
             std::ostream&,
             const BaseReader&);
@@ -231,6 +232,7 @@ protected:
  * This method is merely a to_string of a BaseReader definition.
  * It serialize the ParticipantId and topic
  */
+DDSPIPE_PARTICIPANTS_DllAPI
 std::ostream& operator <<(
         std::ostream& os,
         const BaseReader& reader);

@@ -154,6 +154,7 @@ core::types::Endpoint CommonParticipant::create_common_endpoint_from_info_(
 }
 
 template<>
+DDSPIPE_PARTICIPANTS_DllAPI
 core::types::Endpoint CommonParticipant::create_endpoint_from_info_<fastrtps::rtps::WriterDiscoveryInfo>(
         fastrtps::rtps::WriterDiscoveryInfo& info)
 {
@@ -173,6 +174,7 @@ core::types::Endpoint CommonParticipant::create_endpoint_from_info_<fastrtps::rt
 }
 
 template<>
+DDSPIPE_PARTICIPANTS_DllAPI
 core::types::Endpoint CommonParticipant::create_endpoint_from_info_<fastrtps::rtps::ReaderDiscoveryInfo>(
         fastrtps::rtps::ReaderDiscoveryInfo& info)
 {

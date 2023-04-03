@@ -21,6 +21,7 @@ namespace eprosima {
 namespace ddspipe {
 namespace yaml {
 
+DDSPIPE_YAML_DllAPI
 Yaml add_tag(
         Yaml& yml,
         const TagType& tag,
@@ -54,6 +55,7 @@ Yaml add_tag(
 ////////////////////////////////////
 
 template <>
+DDSPIPE_YAML_DllAPI
 void set(
         Yaml& yml,
         const int& value)
@@ -62,6 +64,7 @@ void set(
 }
 
 template <>
+DDSPIPE_YAML_DllAPI
 void set(
         Yaml& yml,
         const std::string& value)
@@ -70,6 +73,7 @@ void set(
 }
 
 template <>
+DDSPIPE_YAML_DllAPI
 void set(
         Yaml& yml,
         const bool& value)
