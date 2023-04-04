@@ -21,9 +21,27 @@
 
 #include <cpp_utils/utils.hpp>
 
+#include <ddspipe_yaml/library/library_dll.h>
+#include <ddspipe_yaml/Yaml.hpp>
+
 namespace eprosima {
 namespace ddspipe {
 namespace yaml {
+
+template <typename T>
+void set(
+        Yaml& yml,
+        const std::vector<T>& collection);
+
+template <typename T>
+void set(
+        Yaml& yml,
+        const std::set<T>& collection);
+
+template <typename K, typename T>
+void set(
+        Yaml& yml,
+        const std::map<K, T>& collection);
 
 template <typename T>
 void set_collection(
@@ -35,9 +53,31 @@ void set_map(
         Yaml& yml,
         const std::map<K, T>& collection);
 
-////////////////////////////////////
+////////////////////////////////////////////////
+// SPECIALIZATIONS FOR TRIVIAL TYPES
+////////////////////////////////////////////////
+
+template <>
+DDSPIPE_YAML_DllAPI
+void set(
+        Yaml& yml,
+        const std::string& value);
+
+template <>
+DDSPIPE_YAML_DllAPI
+void set(
+        Yaml& yml,
+        const bool& value);
+
+template <>
+DDSPIPE_YAML_DllAPI
+void set(
+        Yaml& yml,
+        const int& value);
+
+////////////////////////////////////////////////
 // SPECIALIZATIONS FOR OTHER TYPES
-////////////////////////////////////
+////////////////////////////////////////////////
 
 template <typename T>
 void set(

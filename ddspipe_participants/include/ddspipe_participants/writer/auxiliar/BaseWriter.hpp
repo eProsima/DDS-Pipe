@@ -98,6 +98,7 @@ protected:
      *
      * @param participant_id id of participant
      */
+    DDSPIPE_PARTICIPANTS_DllAPI
     BaseWriter(
             const core::types::ParticipantId& participant_id);
 
@@ -110,6 +111,7 @@ protected:
      *
      * Implement this method for a specific enable functionality.
      */
+    DDSPIPE_PARTICIPANTS_DllAPI
     virtual void enable_() noexcept;
 
     /**
@@ -117,6 +119,7 @@ protected:
      *
      * Implement this method for a specific disable functionality.
      */
+    DDSPIPE_PARTICIPANTS_DllAPI
     virtual void disable_() noexcept;
 
     /**

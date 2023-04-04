@@ -14,6 +14,7 @@
 
 #include <cpp_utils/exception/PreconditionNotMet.hpp>
 
+#include <ddspipe_yaml/library/library_dll.h>
 #include <ddspipe_yaml/YamlReader.hpp>
 #include <ddspipe_yaml/YamlWriter.hpp>
 
@@ -49,18 +50,6 @@ Yaml add_tag(
     return yml[tag];
 }
 
-////////////////////////////////////
-// TRIVIAL VALUES
-////////////////////////////////////
-
-template <>
-void set(
-        Yaml& yml,
-        const int& value)
-{
-    yml = value;
-}
-
 template <>
 void set(
         Yaml& yml,
@@ -73,6 +62,14 @@ template <>
 void set(
         Yaml& yml,
         const bool& value)
+{
+    yml = value;
+}
+
+template <>
+void set(
+        Yaml& yml,
+        const int& value)
 {
     yml = value;
 }

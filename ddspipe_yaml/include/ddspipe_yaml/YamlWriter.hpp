@@ -39,6 +39,7 @@ namespace yaml {
  *
  * @throw \c PreconditionNotMet if \c tag already exist, \c initialize set to true and \c overwrite set to false.
  */
+DDSPIPE_YAML_DllAPI
 Yaml add_tag(
         Yaml& yml,
         const TagType& tag,
