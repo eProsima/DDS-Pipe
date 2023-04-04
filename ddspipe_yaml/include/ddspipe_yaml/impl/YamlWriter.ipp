@@ -61,28 +61,19 @@ template <>
 DDSPIPE_YAML_DllAPI
 void set(
         Yaml& yml,
-        const std::string& value)
-{
-    yml = value;
-}
+        const std::string& value);
 
 template <>
 DDSPIPE_YAML_DllAPI
 void set(
         Yaml& yml,
-        const bool& value)
-{
-    yml = value;
-}
+        const bool& value);
 
 template <>
 DDSPIPE_YAML_DllAPI
 void set(
         Yaml& yml,
-        const int& value)
-{
-    yml = value;
-}
+        const int& value);
 
 ////////////////////////////////////////////////
 // SPECIALIZATIONS FOR OTHER TYPES
