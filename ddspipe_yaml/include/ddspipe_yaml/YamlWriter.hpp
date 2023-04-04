@@ -61,14 +61,12 @@ Yaml add_tag(
  * - collections (vector, set, map)
  */
 template <typename T>
-DDSPIPE_YAML_DllAPI
 void set(
         Yaml& yml,
         const T& value);
 
 //! Set the \c value in a new yaml in \c yml under \c tag .
 template <typename T>
-DDSPIPE_YAML_DllAPI
 void set(
         Yaml& yml,
         const TagType& tag,

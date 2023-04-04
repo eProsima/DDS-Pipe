@@ -29,31 +29,26 @@ namespace ddspipe {
 namespace yaml {
 
 template <typename T>
-DDSPIPE_YAML_DllAPI
 void set(
         Yaml& yml,
         const std::vector<T>& collection);
 
 template <typename T>
-DDSPIPE_YAML_DllAPI
 void set(
         Yaml& yml,
         const std::set<T>& collection);
 
 template <typename K, typename T>
-DDSPIPE_YAML_DllAPI
 void set(
         Yaml& yml,
         const std::map<K, T>& collection);
 
 template <typename T>
-DDSPIPE_YAML_DllAPI
 void set_collection(
         Yaml& yml,
         const std::vector<T>& collection);
 
 template <typename K, typename T>
-DDSPIPE_YAML_DllAPI
 void set_map(
         Yaml& yml,
         const std::map<K, T>& collection);
@@ -66,19 +61,28 @@ template <>
 DDSPIPE_YAML_DllAPI
 void set(
         Yaml& yml,
-        const std::string& value);
+        const std::string& value)
+{
+    yml = value;
+}
 
 template <>
 DDSPIPE_YAML_DllAPI
 void set(
         Yaml& yml,
-        const bool& value);
+        const bool& value)
+{
+    yml = value;
+}
 
 template <>
 DDSPIPE_YAML_DllAPI
 void set(
         Yaml& yml,
-        const int& value);
+        const int& value)
+{
+    yml = value;
+}
 
 ////////////////////////////////////////////////
 // SPECIALIZATIONS FOR OTHER TYPES

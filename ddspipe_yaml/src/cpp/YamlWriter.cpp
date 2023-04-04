@@ -50,34 +50,6 @@ Yaml add_tag(
     return yml[tag];
 }
 
-////////////////////////////////////
-// TRIVIAL VALUES
-////////////////////////////////////
-
-template <>
-void set(
-        Yaml& yml,
-        const std::string& value)
-{
-    yml = value;
-}
-
-template <>
-void set(
-        Yaml& yml,
-        const bool& value)
-{
-    yml = value;
-}
-
-template <>
-void set(
-        Yaml& yml,
-        const int& value)
-{
-    yml = value;
-}
-
 } /* namespace yaml */
 } /* namespace ddspipe */
 } /* namespace eprosima */
