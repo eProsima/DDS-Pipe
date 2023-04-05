@@ -110,6 +110,7 @@ TopicQoS
      * This value can change along the execution.
      * Every new TopicQoS object will use this value as \c downsampling default.
      */
+    DDSPIPE_CORE_DllAPI
     static std::atomic<unsigned int> default_downsampling;
 
     /**
@@ -118,6 +119,7 @@ TopicQoS
      * This value can change along the execution.
      * Every new TopicQoS object will use this value as \c max_reception_rate default.
      */
+    DDSPIPE_CORE_DllAPI
     static std::atomic<float> default_max_reception_rate;
 
     /////////////////////////
