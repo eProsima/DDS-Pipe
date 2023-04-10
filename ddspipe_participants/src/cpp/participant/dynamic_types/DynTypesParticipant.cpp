@@ -186,11 +186,26 @@ void DynTypesParticipant::initialize_internal_dds_participant_()
     pqos.wire_protocol().builtin.typelookup_config.use_server = false;
     pqos.wire_protocol().builtin.typelookup_config.use_client = true;
 
+    // Force DDS entities to be created disabled
+    // NOTE: this is very dangerous because we are modifying a global variable (and a not thread safe one) in a
+    // local function.
+    // However, this is required, otherwise we could fail in two points:
+    // - receive in this object, maybe in same thread a discovery callback, which could use this variable
+    //    (e.g to check if the Participant called is this one)
+    // - lose a discovery callback
+    fastdds::dds::DomainParticipantFactoryQos fact_qos;
+    fact_qos.entity_factory().autoenable_created_entities = false;
+    eprosima::fastdds::dds::DomainParticipantFactory::get_instance()->set_qos(
+        fact_qos);
+
     // CREATE THE PARTICIPANT
     dds_participant_ = eprosima::fastdds::dds::DomainParticipantFactory::get_instance()->create_participant(
         std::dynamic_pointer_cast<SimpleParticipantConfiguration>(this->configuration_)->domain,
-        pqos,
-        this);
+        pqos);
+
+    dds_participant_->set_listener(this);
+
+    dds_participant_->enable();
 
     if (dds_participant_ == nullptr)
     {
