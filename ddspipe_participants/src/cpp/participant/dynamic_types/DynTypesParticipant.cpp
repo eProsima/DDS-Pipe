@@ -207,6 +207,12 @@ void DynTypesParticipant::initialize_internal_dds_participant_()
 
     dds_participant_->enable();
 
+    // Restore default DomainParticipantQoS (create enabled entities) after creating and enabling this participant
+    // WARNING: not thread safe at the moment of this writing, see note above.
+    fact_qos.entity_factory().autoenable_created_entities = true;
+    eprosima::fastdds::dds::DomainParticipantFactory::get_instance()->set_qos(
+        fact_qos);
+
     if (dds_participant_ == nullptr)
     {
         throw utils::InitializationException("Error creating DDS Participant.");
