@@ -16,6 +16,7 @@
 
 #include <ddspipe_participants/configuration/ParticipantConfiguration.hpp>
 #include <ddspipe_participants/library/library_dll.h>
+#include <ddspipe_participants/types/address/Address.hpp>
 #include <ddspipe_core/types/dds/DomainId.hpp>
 
 namespace eprosima {
@@ -47,7 +48,10 @@ public:
     // VARIABLES
     /////////////////////////
 
-    core::types::DomainId domain {0u};
+    eprosima::ddspipe::core::types::DomainId domain {0u};
+
+    std::set<eprosima::ddspipe::participants::types::IpType> whitelist {};
+
 };
 
 } /* namespace participants */
