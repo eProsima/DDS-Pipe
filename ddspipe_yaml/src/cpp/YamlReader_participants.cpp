@@ -132,6 +132,12 @@ void YamlReader::fill(
     {
         object.domain = get<DomainId>(yml, DOMAIN_ID_TAG, version);
     }
+
+    // Optional whitelist interfaces
+    // if (YamlReader::is_tag_present(yml, WHITELIST_INTERFACES_TAG))
+    // {
+    //     object.whitelist = YamlReader::get_set<IpType>(yml, WHITELIST_INTERFACES_TAG, version);
+    // }
 }
 
 template <>
