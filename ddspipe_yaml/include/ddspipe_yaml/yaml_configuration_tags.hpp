@@ -59,6 +59,7 @@ constexpr const char* ECHO_VERBOSE_TAG("verbose");      //! Echo in verbose mode
 // RTPS related tags
 // Simple RTPS related tags
 constexpr const char* DOMAIN_ID_TAG("domain"); //! Domain Id of the participant
+constexpr const char* WHITELIST_INTERFACES_TAG("whitelist-interfaces"); //! Domain Id of the participant
 
 // Discovery Server related tags
 constexpr const char* DISCOVERY_SERVER_GUID_PREFIX_TAG("discovery-server-guid"); //! TODO: add comment

@@ -26,6 +26,8 @@
 #include <fastrtps/types/DynamicType.h>
 #include <fastrtps/types/DynamicTypePtr.h>
 #include <fastrtps/types/TypeObjectFactory.h>
+#include <fastdds/rtps/transport/UDPv4TransportDescriptor.h>
+#include <fastdds/rtps/transport/shared_mem/SharedMemTransportDescriptor.h>
 
 #include <ddspipe_core/types/dynamic_types/types.hpp>
 
@@ -179,12 +181,51 @@ void DynTypesParticipant::internal_notify_type_object_(
 
 void DynTypesParticipant::initialize_internal_dds_participant_()
 {
+
+    std::shared_ptr<SimpleParticipantConfiguration> configuration =
+            std::dynamic_pointer_cast<SimpleParticipantConfiguration>(this->configuration_);
+
     eprosima::fastdds::dds::DomainParticipantQos pqos;
     pqos.name(this->id());
 
     // Set Type LookUp to ON
     pqos.wire_protocol().builtin.typelookup_config.use_server = false;
     pqos.wire_protocol().builtin.typelookup_config.use_client = true;
+
+    // Configure whitelist interfaces
+    if (!configuration->whitelist.empty())
+    {
+        pqos.transport().use_builtin_transports = false;
+
+        std::shared_ptr<eprosima::fastdds::rtps::SharedMemTransportDescriptor> shm_transport =
+                std::make_shared<eprosima::fastdds::rtps::SharedMemTransportDescriptor>();
+
+        std::shared_ptr<eprosima::fastdds::rtps::UDPv4TransportDescriptor> udp_transport =
+                std::make_shared<eprosima::fastdds::rtps::UDPv4TransportDescriptor>();
+
+
+        for (const types::IpType& ip : configuration->whitelist)
+        {
+            if (types::Address::is_ipv4_correct(ip))
+            {
+                udp_transport->interfaceWhiteList.emplace_back(ip);
+                logInfo(DDSPIPE_DYNTYPES_PARTICIPANT,
+                    "Adding " << ip << " to whitelist interfaces " <<
+                    " in Participant " << configuration->id << " initialization.");
+
+            }
+            else
+            {
+                // Invalid address, continue with next one
+                logWarning(DDSPIPE_DYNTYPES_PARTICIPANT,
+                        "Not valid IPv4. Discarding whitelist interface " << ip <<
+                        " in Participant " << configuration->id << " initialization.");
+            }
+        }
+
+        pqos.transport().user_transports.push_back(shm_transport);
+        pqos.transport().user_transports.push_back(udp_transport);
+    }
 
     // Force DDS entities to be created disabled
     // NOTE: this is very dangerous because we are modifying a global variable (and a not thread safe one) in a
@@ -200,7 +241,7 @@ void DynTypesParticipant::initialize_internal_dds_participant_()
 
     // CREATE THE PARTICIPANT
     dds_participant_ = eprosima::fastdds::dds::DomainParticipantFactory::get_instance()->create_participant(
-        std::dynamic_pointer_cast<SimpleParticipantConfiguration>(this->configuration_)->domain,
+        configuration->domain,
         pqos);
 
     dds_participant_->set_listener(this);
