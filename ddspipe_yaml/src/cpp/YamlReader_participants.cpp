@@ -134,10 +134,30 @@ void YamlReader::fill(
     }
 
     // Optional whitelist interfaces
-    // if (YamlReader::is_tag_present(yml, WHITELIST_INTERFACES_TAG))
-    // {
-    //     object.whitelist = YamlReader::get_set<IpType>(yml, WHITELIST_INTERFACES_TAG, version);
-    // }
+    if (YamlReader::is_tag_present(yml, WHITELIST_INTERFACES_TAG))
+    {
+        object.whitelist = YamlReader::get_set<participants::types::IpType>(yml, WHITELIST_INTERFACES_TAG, version);
+    }
+
+    // Optional get Transport protocol
+    if (YamlReader::is_tag_present(yml, ADDRESS_TRANSPORT_TAG))
+    {
+        object.transport = get<participants::types::TransportProtocol>(yml, ADDRESS_TRANSPORT_TAG, version);
+    }
+    else
+    {
+        object.transport = participants::types::TransportProtocol::builtin;
+    }
+
+    // Optional get ignore participant flags
+    if (YamlReader::is_tag_present(yml, IGNORE_PARTICIPANT_FLAGS_TAG))
+    {
+        object.ignore_participant_flags = get<core::types::IgnoreParticipantFlags>(yml, IGNORE_PARTICIPANT_FLAGS_TAG, version);
+    }
+    else
+    {
+        object.ignore_participant_flags = core::types::IgnoreParticipantFlags::no_filter;
+    }
 }
 
 template <>
