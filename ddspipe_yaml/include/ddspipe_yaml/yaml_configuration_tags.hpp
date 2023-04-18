@@ -61,6 +61,14 @@ constexpr const char* ECHO_VERBOSE_TAG("verbose");      //! Echo in verbose mode
 constexpr const char* DOMAIN_ID_TAG("domain"); //! Domain Id of the participant
 constexpr const char* WHITELIST_INTERFACES_TAG("whitelist-interfaces"); //! Domain Id of the participant
 
+// Participant disvoery settings
+constexpr const char* IGNORE_PARTICIPANT_FLAGS_TAG("ignore-participant-flags"); //! Domain Id of the participant
+constexpr const char* IGNORE_PARTICIPANT_FLAGS_NO_FILTER_TAG("no_filter"); //! Domain Id of the participant
+constexpr const char* IGNORE_PARTICIPANT_FLAGS_DIFFERENT_HOST_TAG("filter_different_host"); //! Domain Id of the participant
+constexpr const char* IGNORE_PARTICIPANT_FLAGS_DIFFERENT_PROCESS_TAG("filter_different_process"); //! Domain Id of the participant
+constexpr const char* IGNORE_PARTICIPANT_FLAGS_SAME_PROCESS_TAG("filter_same_process"); //! Domain Id of the participant
+constexpr const char* IGNORE_PARTICIPANT_FLAGS_DIFFERENT_AND_SAME_PROCESS_TAG("filter_different_and_same_process"); //! Domain Id of the participant
+
 // Discovery Server related tags
 constexpr const char* DISCOVERY_SERVER_GUID_PREFIX_TAG("discovery-server-guid"); //! TODO: add comment
 constexpr const char* LISTENING_ADDRESSES_TAG("listening-addresses"); //! TODO: add comment
@@ -90,6 +98,8 @@ constexpr const char* ADDRESS_IP_VERSION_V6_TAG("v6"); //! TODO: add comment
 constexpr const char* ADDRESS_TRANSPORT_TAG("transport"); //! TODO: add comment
 constexpr const char* ADDRESS_TRANSPORT_UDP_TAG("udp"); //! TODO: add comment
 constexpr const char* ADDRESS_TRANSPORT_TCP_TAG("tcp"); //! TODO: add comment
+constexpr const char* ADDRESS_TRANSPORT_SHM_TAG("shm"); //! TODO: add comment
+constexpr const char* ADDRESS_TRANSPORT_BUILTIN_TAG("builtin"); //! TODO: add comment
 
 // Discovery Server Guid related tags
 constexpr const char* DISCOVERY_SERVER_GUID_TAG("guid"); //! TODO: add comment

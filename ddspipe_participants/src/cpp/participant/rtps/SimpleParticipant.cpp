@@ -18,6 +18,7 @@
 #include <fastrtps/rtps/RTPSDomain.h>
 #include <fastdds/rtps/transport/UDPv4TransportDescriptor.h>
 #include <fastdds/rtps/transport/shared_mem/SharedMemTransportDescriptor.h>
+#include <fastdds/rtps/attributes/RTPSParticipantAttributes.h>
 
 #include <ddspipe_participants/participant/rtps/SimpleParticipant.hpp>
 
@@ -46,41 +47,90 @@ SimpleParticipant::reckon_participant_attributes_(
     // Use default as base attributes
     fastrtps::rtps::RTPSParticipantAttributes params = CommonParticipant::reckon_participant_attributes_(configuration);
 
-    if (!configuration->whitelist.empty())
+    // Configure Participant transports
+    if (configuration->transport == participants::types::TransportProtocol::builtin)
+    {
+        if (!configuration->whitelist.empty())
+        {
+            params.useBuiltinTransports = false;
+
+            std::shared_ptr<eprosima::fastdds::rtps::SharedMemTransportDescriptor> shm_transport =
+                    std::make_shared<eprosima::fastdds::rtps::SharedMemTransportDescriptor>();
+            params.userTransports.push_back(shm_transport);
+
+            std::shared_ptr<eprosima::fastdds::rtps::UDPv4TransportDescriptor> udp_transport =
+                    configure_upd_transport_(configuration->whitelist);
+            params.userTransports.push_back(udp_transport);
+
+        }
+    }
+    else if (configuration->transport == participants::types::TransportProtocol::shm)
     {
         params.useBuiltinTransports = false;
 
         std::shared_ptr<eprosima::fastdds::rtps::SharedMemTransportDescriptor> shm_transport =
                 std::make_shared<eprosima::fastdds::rtps::SharedMemTransportDescriptor>();
-
-        std::shared_ptr<eprosima::fastdds::rtps::UDPv4TransportDescriptor> udp_transport =
-                std::make_shared<eprosima::fastdds::rtps::UDPv4TransportDescriptor>();
-
-
-        for (const types::IpType& ip : configuration->whitelist)
-        {
-            if (types::Address::is_ipv4_correct(ip))
-            {
-                udp_transport->interfaceWhiteList.emplace_back(ip);
-                logInfo(DDSPIPE_SIMPLE_PARTICIPANT,
-                    "Adding " << ip << " to whitelist interfaces " <<
-                    " in Participant " << configuration->id << " initialization.");
-            }
-            else
-            {
-                // Invalid address, continue with next one
-                logWarning(DDSPIPE_SIMPLE_PARTICIPANT,
-                        "Not valid IPv4. Discarding whitelist interface " << ip <<
-                        " in Participant " << configuration->id << " initialization.");
-            }
-        }
-
         params.userTransports.push_back(shm_transport);
+    }
+    else if (configuration->transport == participants::types::TransportProtocol::udp)
+    {
+        std::shared_ptr<eprosima::fastdds::rtps::UDPv4TransportDescriptor> udp_transport =
+                configure_upd_transport_(configuration->whitelist);
         params.userTransports.push_back(udp_transport);
     }
 
+    // Participant discovery filter configuration
+    switch (configuration->ignore_participant_flags)
+    {
+        case core::types::IgnoreParticipantFlags::no_filter:
+            params.builtin.discovery_config.ignoreParticipantFlags = eprosima::fastrtps::rtps::ParticipantFilteringFlags_t::NO_FILTER;
+            break;
+        case core::types::IgnoreParticipantFlags::filter_different_host:
+            params.builtin.discovery_config.ignoreParticipantFlags = eprosima::fastrtps::rtps::ParticipantFilteringFlags_t::FILTER_DIFFERENT_HOST;
+            break;
+        case core::types::IgnoreParticipantFlags::filter_different_process:
+            params.builtin.discovery_config.ignoreParticipantFlags = eprosima::fastrtps::rtps::ParticipantFilteringFlags_t::FILTER_DIFFERENT_PROCESS;
+            break;
+        case core::types::IgnoreParticipantFlags::filter_same_process:
+            params.builtin.discovery_config.ignoreParticipantFlags = eprosima::fastrtps::rtps::ParticipantFilteringFlags_t::FILTER_SAME_PROCESS;
+            break;
+        case core::types::IgnoreParticipantFlags::filter_different_and_same_process:
+            params.builtin.discovery_config.ignoreParticipantFlags =
+                    static_cast<eprosima::fastrtps::rtps::ParticipantFilteringFlags_t>(
+                eprosima::fastrtps::rtps::ParticipantFilteringFlags_t::FILTER_DIFFERENT_PROCESS |
+                eprosima::fastrtps::rtps::ParticipantFilteringFlags_t::FILTER_SAME_PROCESS);
+            break;
+        default:
+            break;
+    }
 
     return params;
+}
+
+std::shared_ptr<eprosima::fastdds::rtps::UDPv4TransportDescriptor>
+SimpleParticipant::configure_upd_transport_(
+        std::set<participants::types::IpType> whitelist)
+{
+    std::shared_ptr<eprosima::fastdds::rtps::UDPv4TransportDescriptor> udp_transport =
+                    std::make_shared<eprosima::fastdds::rtps::UDPv4TransportDescriptor>();
+
+    for (const types::IpType& ip : whitelist)
+    {
+        if (types::Address::is_ipv4_correct(ip))
+        {
+            udp_transport->interfaceWhiteList.emplace_back(ip);
+            logInfo(DDSPIPE_SIMPLE_PARTICIPANT,
+                "Adding " << ip << " to whitelist interfaces.");
+        }
+        else
+        {
+            // Invalid address, continue with next one
+            logWarning(DDSPIPE_SIMPLE_PARTICIPANT,
+                    "Not valid IPv4. Discarding whitelist interface " << ip << ".");
+        }
+    }
+
+    return udp_transport;
 }
 
 } /* namespace rtps */
