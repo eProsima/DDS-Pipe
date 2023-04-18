@@ -14,6 +14,8 @@
 
 #pragma once
 
+#include <fastdds/rtps/transport/UDPv4TransportDescriptor.h>
+
 #include <ddspipe_participants/configuration/SimpleParticipantConfiguration.hpp>
 #include <ddspipe_participants/participant/rtps/CommonParticipant.hpp>
 
@@ -52,6 +54,8 @@ protected:
     static fastrtps::rtps::RTPSParticipantAttributes reckon_participant_attributes_(
             const SimpleParticipantConfiguration* configuration);
 
+    static std::shared_ptr<eprosima::fastdds::rtps::UDPv4TransportDescriptor> configure_upd_transport_(
+        std::set<participants::types::IpType> whitelist = {});
 };
 
 } /* namespace rtps */

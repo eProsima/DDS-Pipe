@@ -23,6 +23,7 @@
 
 #include <ddspipe_core/types/dds/DomainId.hpp>
 #include <ddspipe_core/types/dds/GuidPrefix.hpp>
+#include <ddspipe_core/types/dds/Participant.hpp>
 #include <ddspipe_core/types/participant/ParticipantId.hpp>
 #include <ddspipe_core/types/topic/dds/DdsTopic.hpp>
 #include <ddspipe_core/types/topic/filter/WildcardDdsFilterTopic.hpp>
@@ -50,6 +51,23 @@ using namespace eprosima::ddspipe::participants::types;
 
 template <>
 DDSPIPE_YAML_DllAPI
+IgnoreParticipantFlags YamlReader::get<IgnoreParticipantFlags>(
+        const Yaml& yml,
+        const YamlReaderVersion /* version */)
+{
+    return get_enumeration<IgnoreParticipantFlags>(
+        yml,
+                {
+                    {IGNORE_PARTICIPANT_FLAGS_NO_FILTER_TAG, IgnoreParticipantFlags::no_filter},
+                    {IGNORE_PARTICIPANT_FLAGS_DIFFERENT_HOST_TAG, IgnoreParticipantFlags::filter_different_host},
+                    {IGNORE_PARTICIPANT_FLAGS_DIFFERENT_PROCESS_TAG, IgnoreParticipantFlags::filter_different_process},
+                    {IGNORE_PARTICIPANT_FLAGS_SAME_PROCESS_TAG, IgnoreParticipantFlags::filter_same_process},
+                    {IGNORE_PARTICIPANT_FLAGS_DIFFERENT_AND_SAME_PROCESS_TAG, IgnoreParticipantFlags::filter_different_and_same_process},
+                });
+}
+
+template <>
+DDSPIPE_YAML_DllAPI
 YamlReaderVersion YamlReader::get<YamlReaderVersion>(
         const Yaml& yml,
         const YamlReaderVersion /* version */)
@@ -74,6 +92,8 @@ TransportProtocol YamlReader::get<TransportProtocol>(
                 {
                     {ADDRESS_TRANSPORT_TCP_TAG, TransportProtocol::tcp},
                     {ADDRESS_TRANSPORT_UDP_TAG, TransportProtocol::udp},
+                    {ADDRESS_TRANSPORT_SHM_TAG, TransportProtocol::shm},
+                    {ADDRESS_TRANSPORT_BUILTIN_TAG, TransportProtocol::builtin}
                 });
 }
 
