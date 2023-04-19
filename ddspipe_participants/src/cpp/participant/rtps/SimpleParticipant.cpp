@@ -61,7 +61,6 @@ SimpleParticipant::reckon_participant_attributes_(
             std::shared_ptr<eprosima::fastdds::rtps::UDPv4TransportDescriptor> udp_transport =
                     configure_upd_transport_(configuration->whitelist);
             params.userTransports.push_back(udp_transport);
-
         }
     }
     else if (configuration->transport == participants::types::TransportProtocol::shm)
@@ -74,6 +73,8 @@ SimpleParticipant::reckon_participant_attributes_(
     }
     else if (configuration->transport == participants::types::TransportProtocol::udp)
     {
+        params.useBuiltinTransports = false;
+
         std::shared_ptr<eprosima::fastdds::rtps::UDPv4TransportDescriptor> udp_transport =
                 configure_upd_transport_(configuration->whitelist);
         params.userTransports.push_back(udp_transport);
