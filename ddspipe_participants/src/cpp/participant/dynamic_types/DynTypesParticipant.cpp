@@ -206,7 +206,6 @@ void DynTypesParticipant::initialize_internal_dds_participant_()
             std::shared_ptr<eprosima::fastdds::rtps::UDPv4TransportDescriptor> udp_transport =
                     SimpleParticipant::configure_upd_transport_(configuration->whitelist);
             pqos.transport().user_transports.push_back(udp_transport);
-
         }
     }
     else if (configuration->transport == participants::types::TransportProtocol::shm)
@@ -219,6 +218,8 @@ void DynTypesParticipant::initialize_internal_dds_participant_()
     }
     else if (configuration->transport == participants::types::TransportProtocol::udp)
     {
+        pqos.transport().use_builtin_transports = false;
+
         std::shared_ptr<eprosima::fastdds::rtps::UDPv4TransportDescriptor> udp_transport =
                 SimpleParticipant::configure_upd_transport_(configuration->whitelist);
             pqos.transport().user_transports.push_back(udp_transport);
