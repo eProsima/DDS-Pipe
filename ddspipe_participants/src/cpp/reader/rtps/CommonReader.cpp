@@ -486,7 +486,7 @@ void CommonReader::on_requested_incompatible_qos(
         fastrtps::rtps::RTPSReader*,
         eprosima::fastdds::dds::PolicyMask qos)
 {
-    logInfo(DDSPIPE_RTPS_COMMONREADER_LISTENER,
+    logWarning(DDSPIPE_RTPS_COMMONREADER_LISTENER,
             "Reader " << *this << " found a remote Topic with incompatible QoS: " << qos);
 }
 
@@ -494,7 +494,7 @@ void CommonReader::on_sample_lost(
         fastrtps::rtps::RTPSReader*,
         int32_t sample_lost_since_last_update)
 {
-    logInfo(DDSPIPE_RTPS_COMMONREADER_LISTENER,
+    logWarning(DDSPIPE_RTPS_COMMONREADER_LISTENER,
             "On reader " << *this << " a data sample was lost and will not be received");
 }
 
