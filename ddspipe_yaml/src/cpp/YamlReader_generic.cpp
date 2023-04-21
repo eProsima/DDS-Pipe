@@ -224,7 +224,7 @@ bool check_tags(
     if (!yml.IsMap() && !yml.IsNull())
     {
         throw eprosima::utils::ConfigurationException(STR_ENTRY
-                  << "Trying to check tags: in a not yaml object map.");
+                      << "Trying to check tags: in a not yaml object map.");
     }
 
     // First, check that every required flag is present
@@ -237,7 +237,7 @@ bool check_tags(
                 if (fail_with_exception)
                 {
                     throw eprosima::utils::ConfigurationException(STR_ENTRY
-                        << "Required tag <" << field.tag << "> not present.");
+                                  << "Required tag <" << field.tag << "> not present.");
                 }
                 else
                 {
@@ -269,7 +269,7 @@ bool check_tags(
             if (fail_with_exception)
             {
                 throw eprosima::utils::ConfigurationException(STR_ENTRY
-                    << "Unexpected tag <" << tag << "> present.");
+                              << "Unexpected tag <" << tag << "> present.");
             }
             else
             {

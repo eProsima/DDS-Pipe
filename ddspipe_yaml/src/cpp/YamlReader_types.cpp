@@ -397,15 +397,15 @@ void YamlReader::fill(
 {
     static const std::vector<YamlFieldCheck> fields_allowed =
     {
-        { TagKind::required , TOPIC_NAME_TAG },
-        { TagKind::required , TOPIC_TYPE_NAME_TAG },
-        { TagKind::optional , TOPIC_QOS_TAG },
+        { TagKind::required, TOPIC_NAME_TAG },
+        { TagKind::required, TOPIC_TYPE_NAME_TAG },
+        { TagKind::optional, TOPIC_QOS_TAG },
     };
 
     check_tags(
         fields_allowed,
         yml
-    );
+        );
 
     // Name required
     object.m_topic_name = get<std::string>(yml, TOPIC_NAME_TAG, version);
