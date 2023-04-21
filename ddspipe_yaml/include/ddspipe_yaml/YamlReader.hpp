@@ -92,8 +92,8 @@ enum YamlReaderVersion
  * Every method is implemented
  */
 class
-DDSPIPE_YAML_DllAPI
-YamlReader
+    DDSPIPE_YAML_DllAPI
+            YamlReader
 {
 public:
 
