@@ -215,6 +215,72 @@ std::string YamlReader::get<std::string>(
     return get_scalar<std::string>(yml);
 }
 
+bool check_tags(
+        const std::vector<YamlFieldCheck>& tags_allowed,
+        const Yaml& yml,
+        bool fail_with_extra_tags /* = true */,
+        bool fail_with_exception /* = true */)
+{
+    if (!yml.IsMap() && !yml.IsNull())
+    {
+        throw eprosima::utils::ConfigurationException(STR_ENTRY
+                  << "Trying to check tags: in a not yaml object map.");
+    }
+
+    // First, check that every required flag is present
+    for (const auto& field : tags_allowed)
+    {
+        if (field.kind == TagKind::required)
+        {
+            if (!YamlReader::is_tag_present(yml, field.tag))
+            {
+                if (fail_with_exception)
+                {
+                    throw eprosima::utils::ConfigurationException(STR_ENTRY
+                        << "Required tag <" << field.tag << "> not present.");
+                }
+                else
+                {
+                    return false;
+                }
+            }
+        }
+    }
+
+    // Now that every required field is present, check for extra tags
+    for (const auto& yaml_field : yml)
+    {
+        auto tag = yaml_field.first.as<std::string>();
+        bool should_be_present = false;
+
+        // For each tag, check if it is inside allowed tags
+        for (const auto& field : tags_allowed)
+        {
+            if (field.tag == tag)
+            {
+                should_be_present = true;
+                break;
+            }
+        }
+
+        // If present tag is not inside allowed ones, fail
+        if (!should_be_present)
+        {
+            if (fail_with_exception)
+            {
+                throw eprosima::utils::ConfigurationException(STR_ENTRY
+                    << "Unexpected tag <" << tag << "> present.");
+            }
+            else
+            {
+                return false;
+            }
+        }
+    }
+
+    return true;
+}
+
 } /* namespace yaml */
 } /* namespace ddspipe */
 } /* namespace eprosima */

@@ -264,8 +264,8 @@ DiscoveryServerConnectionAddress _get_discovery_server_connection_address_v1(
         const YamlReaderVersion version)
 {
     // GuidPrefix required
-    GuidPrefix server_guid = YamlReader::get<GuidPrefix>(yml, version);
 
+    GuidPrefix server_guid = YamlReader::get<GuidPrefix>(yml, version);
     // Addresses required
     std::set<Address> addresses = YamlReader::get_set<Address>(yml, COLLECTION_ADDRESSES_TAG, version);
 
@@ -395,6 +395,18 @@ void YamlReader::fill(
         const Yaml& yml,
         const YamlReaderVersion version)
 {
+    static const std::vector<YamlFieldCheck> fields_allowed =
+    {
+        { TagKind::required , TOPIC_NAME_TAG },
+        { TagKind::required , TOPIC_TYPE_NAME_TAG },
+        { TagKind::optional , TOPIC_QOS_TAG },
+    };
+
+    check_tags(
+        fields_allowed,
+        yml
+    );
+
     // Name required
     object.m_topic_name = get<std::string>(yml, TOPIC_NAME_TAG, version);
 

@@ -252,6 +252,26 @@ public:
             const utils::EnumBuilder<T>& enum_builder);
 };
 
+ENUMERATION_BUILDER
+(
+    TagKind,
+    required,
+    optional
+);
+
+struct YamlFieldCheck
+{
+    TagKind kind;
+    std::string tag;
+};
+
+DDSPIPE_YAML_DllAPI
+bool check_tags(
+        const std::vector<YamlFieldCheck>& tags_allowed,
+        const Yaml& yml,
+        bool fail_with_extra_tags = true,
+        bool fail_with_exception = true);
+
 /**
  * @brief \c YamlReaderVersion to stream serialization
  */
