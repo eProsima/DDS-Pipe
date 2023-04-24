@@ -393,6 +393,10 @@ fastrtps::TopicAttributes CommonWriter::reckon_topic_attributes_(
     att.topicName = topic.m_topic_name;
     att.topicDataType = topic.type_name;
 
+    // Disable type object/information filling
+    att.auto_fill_type_information = false;
+    att.auto_fill_type_object = false;
+
     return att;
 }
 

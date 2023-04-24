@@ -340,6 +340,10 @@ fastrtps::TopicAttributes CommonReader::reckon_topic_attributes_(
     att.historyQos.kind = eprosima::fastdds::dds::HistoryQosPolicyKind::KEEP_LAST_HISTORY_QOS;
     att.historyQos.depth = topic.topic_qos.history_depth;
 
+    // Disable type object/information filling
+    att.auto_fill_type_information = false;
+    att.auto_fill_type_object = false;
+
     return att;
 }
 
