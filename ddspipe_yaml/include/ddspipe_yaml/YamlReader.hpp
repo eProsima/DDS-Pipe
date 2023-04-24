@@ -91,7 +91,9 @@ enum YamlReaderVersion
  *
  * Every method is implemented
  */
-class DDSPIPE_YAML_DllAPI YamlReader
+class
+    DDSPIPE_YAML_DllAPI
+            YamlReader
 {
 public:
 
@@ -253,6 +255,7 @@ public:
 /**
  * @brief \c YamlReaderVersion to stream serialization
  */
+DDSPIPE_YAML_DllAPI
 std::ostream& operator <<(
         std::ostream& os,
         const YamlReaderVersion& version);
