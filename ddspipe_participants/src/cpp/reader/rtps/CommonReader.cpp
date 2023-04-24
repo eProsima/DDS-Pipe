@@ -477,9 +477,10 @@ void CommonReader::on_writer_discovery(
             break;
     }
 
+    std::string topic_name = writer_info != nullptr ? writer_info->topicName().to_string() : "UNKNOWN";
     logInfo(DDSPIPE_RTPS_COMMONREADER_LISTENER,
             "Reader " << *this << " discovered a Writer (" << writer_guid << ") in topic "
-            << writer_info->topicName() << ". Reason: " << reason_str);
+            << topic_name << ". Reason: " << reason_str);
 }
 
 void CommonReader::on_requested_incompatible_qos(
