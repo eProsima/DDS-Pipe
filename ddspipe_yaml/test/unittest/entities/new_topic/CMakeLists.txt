@@ -12,11 +12,32 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-#########################
-# Yaml GetEntities Test #
-#########################
+###############################
+# Yaml GetEntities Topic Test #
+###############################
 
-add_subdirectory(address)
-add_subdirectory(guid)
-add_subdirectory(topic)
-add_subdirectory(new_topic)
+set(TEST_NAME NewYamlGetEntityTopicTest)
+
+set(TEST_SOURCES
+        NewYamlGetEntityTopicTest.cpp
+        ${PROJECT_SOURCE_DIR}/src/cpp/NewYamlReader_generic.cpp
+    )
+
+set(TEST_LIST
+        get_real_topic
+    )
+
+set(TEST_EXTRA_LIBRARIES
+        yaml-cpp
+        fastcdr
+        fastrtps
+        cpp_utils
+        ddspipe_core
+        ddspipe_participants
+    )
+
+add_unittest_executable(
+    "${TEST_NAME}"
+    "${TEST_SOURCES}"
+    "${TEST_LIST}"
+    "${TEST_EXTRA_LIBRARIES}")

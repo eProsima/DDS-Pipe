@@ -16,6 +16,7 @@
 
 #include <cpp_utils/types/Fuzzy.hpp>
 #include <cpp_utils/enum/EnumBuilder.hpp>
+#include <cpp_utils/exception/ConfigurationException.hpp>
 
 #include <ddspipe_yaml/library/library_dll.h>
 #include <ddspipe_yaml/Yaml.hpp>
@@ -269,6 +270,134 @@ bool check_tags(
         const Yaml& yml,
         bool fail_with_extra_tags = true,
         bool fail_with_exception = true);
+
+struct IYamlFieldGetter
+{
+    IYamlFieldGetter(
+            TagKind kind_arg,
+            std::string tag_arg)
+        : kind(kind_arg)
+        , tag(tag_arg)
+    {
+    }
+
+    virtual ~IYamlFieldGetter() = default;
+    virtual void get(const Yaml& yml) = 0;
+
+    TagKind kind;
+    std::string tag;
+};
+
+template <typename T>
+struct YamlFieldGetter : IYamlFieldGetter
+{
+    YamlFieldGetter(
+            std::string tag_arg,
+            TagKind kind_arg,
+            T& vessel_arg)
+        : IYamlFieldGetter(kind_arg, tag_arg)
+        , vessel(vessel_arg)
+    {
+    }
+
+    virtual void get(
+            const Yaml& yml) override
+    {
+        vessel = YamlReader::get<T>(yml, tag, YamlReaderVersion::LATEST);
+    }
+
+    T& vessel;
+};
+
+template <typename T>
+struct YamlFieldGetterFuzzy : IYamlFieldGetter
+{
+    YamlFieldGetterFuzzy(
+            std::string tag_arg,
+            TagKind kind_arg,
+            utils::Fuzzy<T>& vessel_arg)
+        : IYamlFieldGetter(kind_arg, tag_arg)
+        , vessel(vessel_arg)
+    {
+    }
+
+    virtual void get(
+            const Yaml& yml) override
+    {
+        vessel.set_value(YamlReader::get<T>(yml, tag, YamlReaderVersion::LATEST));
+    }
+
+    utils::Fuzzy<T>& vessel;
+};
+
+DDSPIPE_YAML_DllAPI
+inline bool get_tags(
+        const std::vector<IYamlFieldGetter*>& tags_to_get,
+        const Yaml& yml,
+        bool fail_with_extra_tags = true,
+        bool fail_with_exception = true)
+{
+    if (!yml.IsMap() && !yml.IsNull())
+    {
+        throw eprosima::utils::ConfigurationException(STR_ENTRY
+                      << "Trying to get tags: in a not yaml object map.");
+    }
+
+    // First, check that every required flag is present
+    for (const auto& field : tags_to_get)
+    {
+        bool present = YamlReader::is_tag_present(yml, field->tag);
+        if (present)
+        {
+            field->get(yml);
+        }
+        else if (field->kind == TagKind::required)
+        {
+            if (fail_with_exception)
+            {
+                throw eprosima::utils::ConfigurationException(STR_ENTRY
+                                << "Required tag <" << field->tag << "> not present.");
+            }
+            else
+            {
+                return false;
+            }
+        }
+    }
+
+    // Now that every required field is present, check for extra tags
+    for (const auto& yaml_field : yml)
+    {
+        auto tag = yaml_field.first.as<std::string>();
+        bool should_be_present = false;
+
+        // For each tag, check if it is inside allowed tags
+        for (const auto& field : tags_to_get)
+        {
+            if (field->tag == tag)
+            {
+                should_be_present = true;
+                break;
+            }
+        }
+
+        // If present tag is not inside allowed ones, fail
+        if (!should_be_present)
+        {
+            if (fail_with_exception)
+            {
+                throw eprosima::utils::ConfigurationException(STR_ENTRY
+                              << "Unexpected tag <" << tag << "> present.");
+            }
+            else
+            {
+                return false;
+            }
+        }
+    }
+
+    return true;
+}
 
 /**
  * @brief \c YamlReaderVersion to stream serialization

@@ -384,6 +384,17 @@ void YamlReader::fill(
     }
 }
 
+template <>
+DDSPIPE_YAML_DllAPI
+TopicQoS YamlReader::get<TopicQoS>(
+        const Yaml& yml,
+        const YamlReaderVersion version)
+{
+    TopicQoS qos;
+    fill<TopicQoS>(qos, yml, version);
+    return qos;
+}
+
 /************************
 * TOPICS                *
 ************************/
@@ -395,29 +406,17 @@ void YamlReader::fill(
         const Yaml& yml,
         const YamlReaderVersion version)
 {
-    static const std::vector<YamlFieldCheck> fields_allowed =
+    static const std::vector<IYamlFieldGetter*> fields_allowed =
     {
-        { TagKind::required, TOPIC_NAME_TAG },
-        { TagKind::required, TOPIC_TYPE_NAME_TAG },
-        { TagKind::optional, TOPIC_QOS_TAG },
+        new YamlFieldGetter(TOPIC_NAME_TAG,       TagKind::required,  object.m_topic_name),
+        new YamlFieldGetter(TOPIC_TYPE_NAME_TAG,  TagKind::required,  object.type_name),
+        new YamlFieldGetter(TOPIC_QOS_TAG,        TagKind::optional,  object.topic_qos)
     };
 
-    check_tags(
+    get_tags(
         fields_allowed,
         yml
-        );
-
-    // Name required
-    object.m_topic_name = get<std::string>(yml, TOPIC_NAME_TAG, version);
-
-    // Data Type required
-    object.type_name = get<std::string>(yml, TOPIC_TYPE_NAME_TAG, version);
-
-    // Optional QoS
-    if (is_tag_present(yml, TOPIC_QOS_TAG))
-    {
-        fill<TopicQoS>(object.topic_qos, get_value_in_tag(yml, TOPIC_QOS_TAG), version);
-    }
+    );
 }
 
 template <>
@@ -438,19 +437,16 @@ void YamlReader::fill(
         const Yaml& yml,
         const YamlReaderVersion version)
 {
-    // Optional name
-    if (is_tag_present(yml, TOPIC_NAME_TAG))
+    static const std::vector<IYamlFieldGetter*> fields_allowed =
     {
-        object.topic_name.set_value(get<std::string>(yml, TOPIC_NAME_TAG, version));
-    }
+        new YamlFieldGetterFuzzy(TOPIC_NAME_TAG,       TagKind::optional,  object.topic_name),
+        new YamlFieldGetterFuzzy(TOPIC_TYPE_NAME_TAG,  TagKind::optional,  object.type_name)
+    };
 
-    // Optional data type
-    if (is_tag_present(yml, TOPIC_TYPE_NAME_TAG))
-    {
-        object.type_name.set_value(get<std::string>(yml, TOPIC_TYPE_NAME_TAG, version));
-    }
-
-    // TODO: decide whether we want to use QoS as filtering
+    get_tags(
+        fields_allowed,
+        yml
+    );
 }
 
 template <>
