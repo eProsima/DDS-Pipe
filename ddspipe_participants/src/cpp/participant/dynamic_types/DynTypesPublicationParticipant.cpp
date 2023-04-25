@@ -111,6 +111,8 @@ utils::ReturnCode DynTypesPublicationParticipant::receive_type_object_(
 
     auto type_name = dynamic_type->get_name();
 
+    logInfo(DDSPIPE_DYNTYPES_DDSPARTICIPANT, "Received type object for type " << type_name);
+
     // First, check if the type already exist. If so, nothing to do
     auto it = types_discovered_.find(type_name);
     if (it != types_discovered_.end())
@@ -194,6 +196,8 @@ void DynTypesPublicationParticipant::create_empty_datawriter_nts_(
             dds_topic,
             default_empty_datawriter_qos_(topic))
     };
+
+    logInfo(DDSPIPE_DYNTYPES_DDSPARTICIPANT, "Created writer for topic " << topic);
 }
 
 fastdds::dds::DataWriterQos
