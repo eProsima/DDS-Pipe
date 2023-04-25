@@ -203,8 +203,16 @@ DynTypesPublicationParticipant::default_empty_datawriter_qos_(
 {
     // TODO decide which qos to use. Using less restrictive
     auto qos = fastdds::dds::DataWriterQos();
-    qos.durability().kind = fastdds::dds::DurabilityQosPolicyKind::TRANSIENT_LOCAL_DURABILITY_QOS;
-    qos.reliability().kind = fastdds::dds::ReliabilityQosPolicyKind::RELIABLE_RELIABILITY_QOS;
+    qos.durability().kind =
+        ( topic.topic_qos.is_transient_local() ?
+            fastdds::dds::DurabilityQosPolicyKind::TRANSIENT_LOCAL_DURABILITY_QOS :
+            fastdds::dds::DurabilityQosPolicyKind::VOLATILE_DURABILITY_QOS
+        );
+    qos.reliability().kind =
+        ( topic.topic_qos.is_reliable() ?
+            fastdds::dds::ReliabilityQosPolicyKind::RELIABLE_RELIABILITY_QOS :
+            fastdds::dds::ReliabilityQosPolicyKind::BEST_EFFORT_RELIABILITY_QOS
+        );
 
     return qos;
 }
