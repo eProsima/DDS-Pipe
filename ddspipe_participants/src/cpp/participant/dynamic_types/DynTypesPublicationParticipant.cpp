@@ -69,8 +69,11 @@ DynTypesPublicationParticipant::~DynTypesPublicationParticipant()
 {
     for (auto& writer : writers_)
     {
-        dds_publisher_->delete_datawriter(writer.second.second);
-        dds_participant_->delete_topic(writer.second.first);
+        if (nullptr != writer.second.second)
+        {
+            dds_publisher_->delete_datawriter(writer.second.second);
+            dds_participant_->delete_topic(writer.second.first);
+        }
     }
 }
 
