@@ -64,10 +64,6 @@ public:
 
 protected:
 
-    DDSPIPE_PARTICIPANTS_DllAPI
-    core::types::Endpoint simulate_endpoint_(
-            const core::types::DdsTopic& topic) const;
-
     //! Participant Id
     core::types::ParticipantId id_;
 

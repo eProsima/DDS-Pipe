@@ -19,6 +19,7 @@
 #include <cpp_utils/Log.hpp>
 #include <cpp_utils/types/cast.hpp>
 
+#include <ddspipe_participants/participant/rtps/CommonParticipant.hpp>
 #include <ddspipe_participants/reader/auxiliar/BlankReader.hpp>
 #include <ddspipe_participants/writer/auxiliar/BlankWriter.hpp>
 #include <ddspipe_participants/writer/dynamic_types/SchemaWriter.hpp>
@@ -47,7 +48,7 @@ SchemaParticipant::SchemaParticipant(
 {
     // Simulate that there is a reader of type object to force this track creation
     discovery_database_->add_endpoint(
-        simulate_endpoint_(type_object_topic())
+        rtps::CommonParticipant::simulate_endpoint(type_object_topic(), this->id())
         );
 
     // Force for every topic found to create track by creating simulated readers
@@ -58,7 +59,8 @@ SchemaParticipant::SchemaParticipant(
             if (endpoint_discovered.is_writer() && endpoint_discovered.discoverer_participant_id != this->id())
             {
                 discovery_database_->add_endpoint(
-                    simulate_endpoint_(endpoint_discovered.topic)
+                    rtps::CommonParticipant::simulate_endpoint(endpoint_discovered.topic,
+                    endpoint_discovered.discoverer_participant_id)
                     );
             }
         }
@@ -103,18 +105,6 @@ std::shared_ptr<IReader> SchemaParticipant::create_reader(
         const ITopic& /* topic */)
 {
     return std::make_shared<BlankReader>();
-}
-
-Endpoint SchemaParticipant::simulate_endpoint_(
-        const DdsTopic& topic) const
-{
-    Endpoint endpoint;
-    endpoint.kind = EndpointKind::reader;
-    endpoint.guid = Guid::new_unique_guid();
-    endpoint.topic = topic;
-    endpoint.discoverer_participant_id = this->id();
-
-    return endpoint;
 }
 
 } /* namespace participants */

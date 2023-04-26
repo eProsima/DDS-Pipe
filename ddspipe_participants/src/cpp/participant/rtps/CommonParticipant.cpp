@@ -263,6 +263,19 @@ void CommonParticipant::onWriterDiscovery(
     }
 }
 
+core::types::Endpoint CommonParticipant::simulate_endpoint(
+        const core::types::DdsTopic& topic,
+        const core::types::ParticipantId& discoverer_id)
+{
+    core::types::Endpoint endpoint;
+    endpoint.kind = core::types::EndpointKind::reader;
+    endpoint.guid = core::types::Guid::new_unique_guid();
+    endpoint.topic = topic;
+    endpoint.discoverer_participant_id = discoverer_id;
+
+    return endpoint;
+}
+
 bool CommonParticipant::is_repeater() const noexcept
 {
     return configuration_->is_repeater;

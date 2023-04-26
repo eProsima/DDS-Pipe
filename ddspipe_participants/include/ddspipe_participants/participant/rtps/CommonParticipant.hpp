@@ -142,6 +142,20 @@ public:
             fastrtps::rtps::RTPSParticipant* participant,
             fastrtps::rtps::WriterDiscoveryInfo&& info) override;
 
+    //////////////////
+    // STATIC METHODS
+    //////////////////
+
+    /**
+     * @brief Create an endpoint in a given topic with unique GUID.
+     *
+     * The created endpoint is of reader kind, and the \c discoverer_id is user-provided.
+     */
+    DDSPIPE_PARTICIPANTS_DllAPI
+    static core::types::Endpoint simulate_endpoint(
+            const core::types::DdsTopic& topic,
+            const core::types::ParticipantId& discoverer_id);
+
 protected:
 
     /**
