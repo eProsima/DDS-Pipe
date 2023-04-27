@@ -14,11 +14,37 @@
 
 #pragma once
 
+#include <cpp_utils/exception/InconsistencyException.hpp>
 #include <cpp_utils/utils.hpp>
 
 namespace eprosima {
 namespace ddspipe {
 namespace yaml {
+
+////////////////////////////////////////////////
+// DEFINITION OF SPECIFIC TYPES
+////////////////////////////////////////////////
+
+template <typename T>
+void write_enumeration(
+        Yaml& yml,
+        const T& value,
+        const std::map<TagType, T>& enum_values)
+{
+    // TODO check if value exists
+    for (const auto& it : enum_values)
+    {
+        if (value == it.second)
+        {
+            write(yml, it.first);
+        }
+        return;
+    }
+
+    // If it finished without finding value, error
+    throw utils::InconsistencyException(
+            STR_ENTRY << "Value <" << value << "> of enumeration type <" << TYPE_NAME(T) << " has no parse value.");
+}
 
 ////////////////////////////////////////////////
 // SPECIALIZATIONS FOR TEMPLATED TYPES
@@ -27,33 +53,45 @@ namespace yaml {
 template <typename T>
 void write(
         Yaml& yml,
-        const utils::Fuzzy<T>& fuzzy)
+        const TagType& tag,
+        const utils::Fuzzy<T>& object)
 {
-    write_fuzzy<T>(yml, fuzzy);
+    if (object.is_set())
+    {
+        write(yml, tag, object.get_reference());
+    }
 }
 
 template <typename T>
 void write(
         Yaml& yml,
-        const std::vector<T>& collection)
+        const utils::Fuzzy<T>& object)
 {
-    write_collection(yml, collection);
+    write_fuzzy<T>(yml, object);
 }
 
 template <typename T>
 void write(
         Yaml& yml,
-        const std::set<T>& collection)
+        const std::vector<T>& object)
 {
-    write_collection(yml, std::vector<T>(collection.begin(), collection.end()));
+    write_vector(yml, object);
+}
+
+template <typename T>
+void write(
+        Yaml& yml,
+        const std::set<T>& object)
+{
+    write_vector(yml, std::vector<T>(object.begin(), object.end()));
 }
 
 template <typename K, typename T>
 void write(
         Yaml& yml,
-        const std::map<K, T>& collection)
+        const std::map<K, T>& object)
 {
-    write_map(yml, collection);
+    write_map(yml, object);
 }
 
 ////////////////////////////////////////////////
@@ -64,10 +102,10 @@ template <typename T>
 void write(
         Yaml& yml,
         const TagType& tag,
-        const T& value)
+        const T& object)
 {
     auto yml_under_tag = add_tag(yml, tag);
-    write(yml_under_tag, value);
+    write(yml_under_tag, object);
 }
 
 template <typename T>
@@ -75,7 +113,7 @@ void operator <<(
         Yaml& yml,
         const T& object)
 {
-    write<T>(yml, object);
+    write(yml, object);
 }
 
 ////////////////////////////////////////////////
@@ -85,20 +123,20 @@ void operator <<(
 template <typename T>
 void write_fuzzy(
         Yaml& yml,
-        const utils::Fuzzy<T>& fuzzy)
+        const utils::Fuzzy<T>& object)
 {
-    write<T>(yml, fuzzy.get_reference());
+    write(yml, object.get_reference());
 }
 
 template <typename T>
-void write_collection(
+void write_vector(
         Yaml& yml,
-        const std::vector<T>& collection)
+        const std::vector<T>& object)
 {
-    for (const auto& v : collection)
+    for (const auto& v : object)
     {
         Yaml yml_value;
-        write<T>(yml_value, v);
+        write(yml_value, v);
         yml.push_back(yml_value);
     }
 }
@@ -106,12 +144,12 @@ void write_collection(
 template <typename K, typename T>
 void write_map(
         Yaml& yml,
-        const std::map<K, T>& collection)
+        const std::map<K, T>& object)
 {
-    for (const auto& v : collection)
+    for (const auto& v : object)
     {
         Yaml yml_in_new_tag = yml[utils::generic_to_string(v.first)];
-        write<T>(yml_in_new_tag, v.second);
+        write(yml_in_new_tag, v.second);
     }
 }
 

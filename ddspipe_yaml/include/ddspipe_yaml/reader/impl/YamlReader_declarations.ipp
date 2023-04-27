@@ -14,11 +14,25 @@
 
 #pragma once
 
+#include <map>
+#include <set>
+#include <string>
+#include <vector>
+
 #include <cpp_utils/types/Fuzzy.hpp>
 
 namespace eprosima {
 namespace ddspipe {
 namespace yaml {
+
+////////////////////////////////////////////////
+// DEFINITION OF SPECIFIC TYPES
+////////////////////////////////////////////////
+
+template <typename T>
+T read_enumeration(
+        const Yaml& yml,
+        const std::map<TagType, T>& enum_values);
 
 ////////////////////////////////////////////////
 // DEFINITION OF FUNCTIONS FOR TEMPLATED TYPES
@@ -29,6 +43,16 @@ void read_fuzzy(
         const Yaml& yml,
         utils::Fuzzy<T>& fuzzy);
 
+template <typename T>
+void read_collection(
+        const Yaml& yml,
+        std::vector<T>& collection);
+
+template <typename K, typename T>
+void read_map(
+        const Yaml& yml,
+        std::map<K, T>& collection);
+
 ////////////////////////////////////////////////
 // SPECIALIZATION DECLARATIONS FOR TEMPLATED TYPES
 ////////////////////////////////////////////////
@@ -37,6 +61,21 @@ template <typename T>
 void read(
         const Yaml& yml,
         utils::Fuzzy<T>& fuzzy);
+
+template <typename T>
+void read(
+        const Yaml& yml,
+        std::vector<T>& collection);
+
+template <typename T>
+void read(
+        const Yaml& yml,
+        std::set<T>& collection);
+
+template <typename K, typename T>
+void read(
+        const Yaml& yml,
+        std::map<K, T>& collection);
 
 } /* namespace yaml */
 } /* namespace ddspipe */

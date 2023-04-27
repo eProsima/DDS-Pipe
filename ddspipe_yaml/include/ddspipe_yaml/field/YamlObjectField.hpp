@@ -37,7 +37,8 @@ ENUMERATION_BUILDER
     OptionalKind,
     required,
     optional,
-    advisable
+    advisable,
+    extra
 );
 
 // Forward declaration

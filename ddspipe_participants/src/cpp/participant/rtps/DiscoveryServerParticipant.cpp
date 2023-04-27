@@ -200,22 +200,22 @@ DiscoveryServerParticipant::reckon_participant_attributes_(
             // Invalid connection address, continue with next one
             logWarning(DDSPIPE_DISCOVERYSERVER_PARTICIPANT,
                     "Discard connection address with remote server: " <<
-                    connection_address.discovery_server_guid_prefix() <<
+                    connection_address.discovery_server_guid_prefix <<
                     " in Participant " << configuration->id << " initialization.");
             continue;
         }
 
         // Set Server GUID
-        core::types::GuidPrefix server_prefix = connection_address.discovery_server_guid_prefix();
+        core::types::GuidPrefix server_prefix = connection_address.discovery_server_guid_prefix;
 
-        for (types::Address address : connection_address.addresses())
+        for (types::Address address : connection_address.addresses)
         {
             if (!address.is_valid())
             {
                 // Invalid ip address, continue with next one
                 logWarning(DDSPIPE_DISCOVERYSERVER_PARTICIPANT,
                         "Discard connection address with remote server: " <<
-                        connection_address.discovery_server_guid_prefix() <<
+                        connection_address.discovery_server_guid_prefix <<
                         " due to invalid ip address " << address.ip() << " in Participant " << configuration->id <<
                         " initialization.");
                 continue;

@@ -110,16 +110,19 @@ void YamlObjectField<T>::read_field(
     bool present = is_tag_present(yml, this->tag_);
     if (present)
     {
-        read<T>(yml, this->tag_, vessel_);
+        // If value in tag present, read it
+        read(yml, this->tag_, vessel_);
     }
     else if (this->kind_ == OptionalKind::required)
     {
+        // If field was required and it is not present, fail
         throw eprosima::utils::ConfigurationException(STR_ENTRY
                             << "Required tag <" << this->tag_
                             << "> not present.");
     }
     else if (this->kind_ == OptionalKind::advisable)
     {
+        // If field was advisable and it is not present, show warning
         logWarning(DDSPIPE_YAML, "Tag <" << this->tag_ << "> is advisable but not present in YAML.");
     }
 }
@@ -128,7 +131,11 @@ template <typename T>
 void YamlObjectField<T>::write_field(
         Yaml& yml) const
 {
-    write<T>(yml, tag_, vessel_);
+    // Write every field except extra ones
+    if (kind_ != OptionalKind::extra)
+    {
+        write(yml, tag_, vessel_);
+    }
 }
 
 template <typename T>

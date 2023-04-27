@@ -39,15 +39,15 @@ template <>
 TopicQoS arbitrary(
         unsigned int seed /* = 0 */)
 {
-    TopicQoS qos;
+    TopicQoS object;
 
     if (seed % 2)
     {
-        qos.reliability_qos = ReliabilityKind::BEST_EFFORT;
+        object.reliability_qos = ReliabilityKind::BEST_EFFORT;
     }
     else
     {
-        qos.reliability_qos = ReliabilityKind::RELIABLE;
+        object.reliability_qos = ReliabilityKind::RELIABLE;
     }
 
     seed /= 2;
@@ -55,19 +55,19 @@ TopicQoS arbitrary(
     switch ((seed / 2) % 4)
     {
         case 0:
-            qos.durability_qos = DurabilityKind::VOLATILE;
+            object.durability_qos = DurabilityKind::VOLATILE;
             break;
 
         case 1:
-            qos.durability_qos = DurabilityKind::TRANSIENT_LOCAL;
+            object.durability_qos = DurabilityKind::TRANSIENT_LOCAL;
             break;
 
         case 2:
-            qos.durability_qos = DurabilityKind::TRANSIENT;
+            object.durability_qos = DurabilityKind::TRANSIENT;
             break;
 
         case 3:
-            qos.durability_qos = DurabilityKind::PERSISTENT;
+            object.durability_qos = DurabilityKind::PERSISTENT;
             break;
 
         default:
@@ -78,66 +78,74 @@ TopicQoS arbitrary(
 
     if (seed % 2)
     {
-        qos.ownership_qos = OwnershipQosPolicyKind::SHARED_OWNERSHIP_QOS;
+        object.ownership_qos = OwnershipQosPolicyKind::SHARED_OWNERSHIP_QOS;
     }
     else
     {
-        qos.ownership_qos = OwnershipQosPolicyKind::EXCLUSIVE_OWNERSHIP_QOS;
+        object.ownership_qos = OwnershipQosPolicyKind::EXCLUSIVE_OWNERSHIP_QOS;
     }
 
     seed /= 2;
 
-    qos.use_partitions = ((seed % 2) == 0);
+    object.use_partitions = ((seed % 2) == 0);
 
     seed /= 2;
 
-    qos.keyed = ((seed % 2) == 0);
+    object.keyed = ((seed % 2) == 0);
 
     seed /= 2;
 
-    qos.downsampling = (seed % 2) + 1;
+    object.downsampling = (seed % 2) + 1;
 
     seed /= 2;
 
-    qos.max_reception_rate = seed % 2;
+    object.max_reception_rate = seed % 2;
 
     seed /= 2;
 
-    qos.history_depth = seed;
+    object.history_depth = seed + 1;
 
-    return qos;
+    return object;
 }
 
 template <>
 DdsTopic arbitrary(
         unsigned int seed /* = 0 */)
 {
-    DdsTopic topic;
-    topic.m_topic_name = "TopicName_" + std::to_string(seed);
-    topic.type_name = "TopicType_" + std::to_string(seed);
-    topic.topic_qos = arbitrary<TopicQoS>(seed);
-    return topic;
+    DdsTopic object;
+    object.m_topic_name = "TopicName_" + std::to_string(seed);
+    object.type_name = "TopicType_" + std::to_string(seed);
+    object.topic_qos = arbitrary<TopicQoS>(seed);
+    return object;
 }
 
 template <>
 WildcardDdsFilterTopic arbitrary(
         unsigned int seed /* = 0 */)
 {
-    WildcardDdsFilterTopic topic;
+    WildcardDdsFilterTopic object;
 
     if (seed % 2)
     {
-        topic.topic_name.set_value("TopicName_" + std::to_string(seed));
+        object.topic_name.set_value("TopicName_" + std::to_string(seed));
     }
 
     seed /= 2;
 
     if (seed % 2)
     {
-        topic.type_name.set_value("TopicName_" + std::to_string(seed));
+        object.type_name.set_value("TopicName_" + std::to_string(seed));
     }
 
-    return topic;
+    return object;
+}
+
+template <>
+GuidPrefix arbitrary(
+        unsigned int seed /* = 0 */)
+{
+    // TODO do it more generic and arbitrary
+    return GuidPrefix(static_cast<uint32_t>(seed));
 }
 
 ////////////////////////////////////////////////
@@ -149,21 +157,21 @@ TopicQoS arbitrary(
         unsigned int seed,
         bool limit_durability)
 {
-    TopicQoS qos = arbitrary<TopicQoS>(seed);
+    TopicQoS object = arbitrary<TopicQoS>(seed);
 
     // Reliability
     seed /= 2;
 
     if (seed % 2)
     {
-        qos.durability_qos = DurabilityKind::VOLATILE;
+        object.durability_qos = DurabilityKind::VOLATILE;
     }
     else
     {
-        qos.durability_qos = DurabilityKind::TRANSIENT_LOCAL;
+        object.durability_qos = DurabilityKind::TRANSIENT_LOCAL;
     }
 
-    return qos;
+    return object;
 }
 
 } /* namespace testing */

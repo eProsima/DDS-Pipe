@@ -33,28 +33,9 @@ namespace types {
  * This class has several address associated with one \c GuidPrefix in order to connect with
  * a remote Discovery Server.
  */
-class DiscoveryServerConnectionAddress
+struct DiscoveryServerConnectionAddress
 {
 public:
-
-    /**
-     * @brief Construct a new \c DiscoveryServerConnectionAddress object with all the parameters
-     *
-     * @param discovery_server_guid_ : Guid Prefix of the remote Discovery Server
-     * @param addresses_ collection of addresses
-     */
-    DDSPIPE_PARTICIPANTS_DllAPI
-    DiscoveryServerConnectionAddress(
-            core::types::GuidPrefix discovery_server_guid,
-            std::set<Address> addresses);
-
-    //! Discovery Server \c GuidPrefix Port getter
-    DDSPIPE_PARTICIPANTS_DllAPI
-    core::types::GuidPrefix discovery_server_guid_prefix() const noexcept;
-
-    //! Addresses getter
-    DDSPIPE_PARTICIPANTS_DllAPI
-    std::set<Address> addresses() const noexcept;
 
     /**
      * @brief Whether the address is correct
@@ -75,13 +56,11 @@ public:
     bool operator ==(
             const DiscoveryServerConnectionAddress& other) const noexcept;
 
-protected:
-
     //! Internal Discovery Server Guid Prefix object
-    core::types::GuidPrefix discovery_server_guid_prefix_;
+    core::types::GuidPrefix discovery_server_guid_prefix;
 
     //! Internal Addresses object
-    std::set<Address> addresses_;
+    std::set<Address> addresses;
 };
 
 //! \c DiscoveryServerConnectionAddress to stream serializator

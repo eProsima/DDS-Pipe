@@ -12,8 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#include <ddspipe_core/types/dds/GuidPrefix.hpp>
 #include <ddspipe_core/types/topic/dds/DdsTopic.hpp>
 #include <ddspipe_core/types/topic/filter/WildcardDdsFilterTopic.hpp>
+
+#include <ddspipe_participants/types/address/Address.hpp>
+#include <ddspipe_participants/types/address/DiscoveryServerConnectionAddress.hpp>
 
 #include <ddspipe_yaml/library/library_dll.h>
 #include <ddspipe_yaml/writer/YamlWriter.hpp>
@@ -25,7 +29,68 @@ namespace ddspipe {
 namespace yaml {
 
 ////////////////////////////////////////////////
-// IMPLEMENTATION OF TYPES
+// IMPLEMENTATION OF ENUMERATIONS
+////////////////////////////////////////////////
+
+template <>
+void write(
+        Yaml& yml,
+        const participants::types::TransportProtocol& object)
+{
+    // TODO get a way of not duplicating this map in write and write
+    write_enumeration<participants::types::TransportProtocol>(
+        yml,
+        object,
+        {
+            {ADDRESS_TRANSPORT_TCP_TAG, participants::types::TransportProtocol::tcp},
+            {ADDRESS_TRANSPORT_UDP_TAG, participants::types::TransportProtocol::udp},
+        });
+}
+
+template <>
+void write(
+        Yaml& yml,
+        const participants::types::IpVersion& object)
+{
+    write_enumeration<participants::types::IpVersion>(
+        yml,
+        object,
+        {
+            {ADDRESS_IP_VERSION_V4_TAG, participants::types::IpVersion::v4},
+            {ADDRESS_IP_VERSION_V6_TAG, participants::types::IpVersion::v6},
+        });
+}
+
+////////////////////////////////////////////////
+// IMPLEMENTATION OF TYPES BY DEFAULT
+////////////////////////////////////////////////
+
+template <>
+void write(
+        Yaml& yml,
+        const core::types::DdsTopic& object)
+{
+    write_from_fields(yml, object);
+}
+
+template <>
+void write(
+        Yaml& yml,
+        const core::types::WildcardDdsFilterTopic& object)
+{
+    write_from_fields(yml, object);
+}
+
+template <>
+void write(
+        Yaml& yml,
+        const participants::types::DiscoveryServerConnectionAddress& object)
+{
+    write_from_fields(yml, object);
+}
+
+////////////////////////////////////////////////
+// IMPLEMENTATION OF SPECIFIC TYPES
 ////////////////////////////////////////////////
 
 template <>
@@ -43,17 +108,25 @@ void write(
 template <>
 void write(
         Yaml& yml,
-        const core::types::DdsTopic& object)
+        const core::types::GuidPrefix& object)
 {
-    write_from_fields(yml, object);
+    write<std::string>(yml, DISCOVERY_SERVER_GUID_TAG, utils::generic_to_string(object));
 }
 
 template <>
 void write(
         Yaml& yml,
-        const core::types::WildcardDdsFilterTopic& object)
+        const participants::types::Address& object)
 {
-    write_from_fields(yml, object);
+    write<participants::types::IpType>(yml, ADDRESS_IP_TAG, object.ip());
+    write<participants::types::PortType>(yml, ADDRESS_PORT_TAG, object.port());
+    write<participants::types::IpVersion>(yml, ADDRESS_IP_VERSION_TAG, object.ip_version());
+    write<participants::types::TransportProtocol>(yml, ADDRESS_TRANSPORT_TAG, object.transport_protocol());
+
+    if (object.port() != object.external_port())
+    {
+        write<participants::types::PortType>(yml, ADDRESS_PORT_TAG, object.external_port());
+    }
 }
 
 } /* namespace yaml */

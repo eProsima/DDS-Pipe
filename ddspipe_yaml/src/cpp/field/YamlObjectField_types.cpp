@@ -18,6 +18,8 @@
 #include <ddspipe_core/types/topic/dds/DdsTopic.hpp>
 #include <ddspipe_core/types/topic/filter/WildcardDdsFilterTopic.hpp>
 
+#include <ddspipe_participants/types/address/DiscoveryServerConnectionAddress.hpp>
+
 #include <ddspipe_yaml/core/Yaml.hpp>
 #include <ddspipe_yaml/field/YamlObjectField.hpp>
 #include <ddspipe_yaml/tags/yaml_configuration_tags.hpp>
@@ -60,8 +62,19 @@ std::vector<utils::Heritable<IYamlObjectField>> object_fields(
 {
     return
     {
-        // create_object_field(TOPIC_NAME_TAG, OptionalKind::optional, object.topic_name),
-        // create_object_field(TOPIC_TYPE_NAME_TAG, OptionalKind::optional, object.type_name),
+        create_object_field(TOPIC_NAME_TAG, OptionalKind::optional, object.topic_name),
+        create_object_field(TOPIC_TYPE_NAME_TAG, OptionalKind::optional, object.type_name),
+    };
+}
+
+template <>
+std::vector<utils::Heritable<IYamlObjectField>> object_fields(
+        const participants::types::DiscoveryServerConnectionAddress& object)
+{
+    return
+    {
+        create_object_field(DISCOVERY_SERVER_GUID_PREFIX_TAG, OptionalKind::required, object.discovery_server_guid_prefix),
+        create_object_field(COLLECTION_ADDRESSES_TAG, OptionalKind::advisable, object.addresses),
     };
 }
 

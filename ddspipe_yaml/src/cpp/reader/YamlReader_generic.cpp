@@ -56,6 +56,20 @@ void read(
 template <>
 void read(
         const Yaml& yml,
+        unsigned short& object)
+{
+    short x = yml.as<short>();
+    if (x < 0)
+    {
+        throw eprosima::utils::ConfigurationException(
+                  utils::Formatter() << "Expected to read a positive integer.");
+    }
+    object = x;
+}
+
+template <>
+void read(
+        const Yaml& yml,
         float& object)
 {
     object = yml.as<float>();

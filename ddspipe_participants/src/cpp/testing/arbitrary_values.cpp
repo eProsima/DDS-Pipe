@@ -12,44 +12,48 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include <ddspipe_core/testing/random_values.hpp>
+#include <ddspipe_core/testing/arbitrary_values.hpp>
+#include <ddspipe_core/types/dds/GuidPrefix.hpp>
 
-#include <ddspipe_participants/testing/random_values.hpp>
+#include <ddspipe_participants/types/address/Address.hpp>
+#include <ddspipe_participants/types/address/DiscoveryServerConnectionAddress.hpp>
 
 namespace eprosima {
 namespace ddspipe {
-namespace participants {
+namespace core {
 namespace testing {
 
 using namespace eprosima::ddspipe::participants::types;
 
-Address random_address(
+template <>
+Address arbitrary(
         unsigned int seed /* = 0 */)
 {
+    // TODO do it more generic and arbitrary
     return Address("127.0.0.1", 10000 + seed, 10000 + seed, TransportProtocol::udp);
 }
 
-DiscoveryServerConnectionAddress random_connection_address(
-        unsigned int seed /* = 0 */,
-        unsigned int size /* = 1 */,
-        bool ros /* = false */)
+template <>
+DiscoveryServerConnectionAddress arbitrary(
+        unsigned int seed /* = 0 */)
 {
-    std::set<Address> addresses;
+    DiscoveryServerConnectionAddress object;
+
+    object.discovery_server_guid_prefix = arbitrary<core::types::GuidPrefix>(seed);
+
+    unsigned int size = seed % 10;
+
+    // TODO do it more generic and arbitrary
     for (unsigned int i = 0; i < size; ++i)
     {
-        addresses.insert(
-            random_address((seed + i)));
+        object.addresses.insert(
+            arbitrary<Address>((seed + i)));
     }
 
-    DiscoveryServerConnectionAddress obj;
-
-    obj.discovery_server_guid_prefix = core::testing::random_guid_prefix(seed, ros),
-    obj.addresses = addresses;
-
-    return obj;
+    return object;
 }
 
 } /* namespace testing */
-} /* namespace participants */
+} /* namespace core */
 } /* namespace ddspipe */
 } /* namespace eprosima */

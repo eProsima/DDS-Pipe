@@ -17,9 +17,11 @@
 
 #include <ddspipe_core/testing/arbitrary_values.hpp>
 #include <ddspipe_core/types/topic/dds/DdsTopic.hpp>
+#include <ddspipe_core/types/dds/GuidPrefix.hpp>
 #include <ddspipe_core/types/topic/filter/WildcardDdsFilterTopic.hpp>
 
 #include <ddspipe_participants/types/address/Address.hpp>
+#include <ddspipe_participants/types/address/DiscoveryServerConnectionAddress.hpp>
 
 #include <ddspipe_yaml/reader/YamlReader.hpp>
 #include <ddspipe_yaml/writer/YamlWriter.hpp>
@@ -78,8 +80,11 @@ REGISTER_TYPED_TEST_SUITE_P(
 // Set types used in parametrization
 typedef ::testing::Types<
         ddspipe::core::types::DdsTopic,
-        ddspipe::core::types::TopicQoS
-        // ddspipe::core::types::WildcardDdsFilterTopic
+        ddspipe::core::types::TopicQoS,
+        ddspipe::core::types::WildcardDdsFilterTopic,
+        ddspipe::core::types::GuidPrefix,
+        ddspipe::participants::types::Address,
+        ddspipe::participants::types::DiscoveryServerConnectionAddress
     > CaseTypes;
 
 // Generate each test case for each type case

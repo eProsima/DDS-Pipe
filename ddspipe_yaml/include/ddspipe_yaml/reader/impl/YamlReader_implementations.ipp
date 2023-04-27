@@ -14,9 +14,40 @@
 
 #pragma once
 
+#include <map>
+#include <set>
+#include <string>
+#include <vector>
+
 namespace eprosima {
 namespace ddspipe {
 namespace yaml {
+
+////////////////////////////////////////////////
+// DEFINITION OF SPECIFIC TYPES
+////////////////////////////////////////////////
+
+template <typename T>
+T read_enumeration(
+        const Yaml& yml,
+        const std::map<TagType, T>& enum_values)
+{
+    TagType value;
+    read<TagType>(yml, value);
+
+    // Find value
+    auto it = enum_values.find(value);
+
+    if (it == enum_values.end())
+    {
+        throw eprosima::utils::ConfigurationException(
+                  STR_ENTRY << "Value <" << value << "> is not valid in enumeration <" << TYPE_NAME(T) << ".");
+    }
+    else
+    {
+        return it->second;
+    }
+}
 
 ////////////////////////////////////////////////
 // DEFINITION OF FUNCTIONS FOR TEMPLATED TYPES
@@ -31,6 +62,32 @@ void read_fuzzy(
     fuzzy.set_level();
 }
 
+template <typename T>
+void read_collection(
+        const Yaml& yml,
+        std::vector<T>& collection)
+{
+    if (!yml.IsSequence())
+    {
+        throw eprosima::utils::ConfigurationException(
+                  STR_ENTRY << "Incorrect format, yaml Sequence expected.");
+    }
+
+    try
+    {
+        for (Yaml yml_element : yml)
+        {
+            collection.push_back(read<T>(yml_element));
+        }
+    }
+    catch (const std::exception& e)
+    {
+        throw eprosima::utils::ConfigurationException(
+                  STR_ENTRY << "Error reading yaml sequence of type <" << TYPE_NAME(T) << "> :\n " <<
+                      e.what());
+    }
+}
+
 ////////////////////////////////////////////////
 // SPECIALIZATION DECLARATIONS FOR TEMPLATED TYPES
 ////////////////////////////////////////////////
@@ -41,6 +98,32 @@ void read(
         utils::Fuzzy<T>& fuzzy)
 {
     read_fuzzy(yml, fuzzy);
+}
+
+template <typename T>
+void read(
+        const Yaml& yml,
+        std::vector<T>& collection)
+{
+    read_collection<T>(yml, collection);
+}
+
+template <typename T>
+void read(
+        const Yaml& yml,
+        std::set<T>& collection)
+{
+    std::vector<T> collection_vector;
+    read_collection<T>(yml, collection_vector);
+    collection = std::set<T>(collection_vector.begin(), collection_vector.end());
+}
+
+template <typename K, typename T>
+void read(
+        const Yaml& yml,
+        std::map<K, T>& collection)
+{
+    read_map<K, T>(yml, collection);
 }
 
 ////////////////////////////////////////////////
@@ -56,12 +139,12 @@ void read(
     // ATTENTION: This try catch can be avoided, it is only used to add verbose information
     try
     {
-        return read<T>(get_value_in_tag(yml, tag), object);
+        return read(get_value_in_tag(yml, tag), object);
     }
     catch (const std::exception& e)
     {
         throw eprosima::utils::ConfigurationException(
-                  utils::Formatter() <<
+                  STR_ENTRY <<
                       "Error reading object of type <" << TYPE_NAME(T) <<
                       "> in tag <" << tag << "> :\n " << e.what());
     }

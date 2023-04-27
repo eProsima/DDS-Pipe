@@ -59,6 +59,20 @@ void write(
 template <>
 void write(
         Yaml& yml,
+        const unsigned short& value)
+{
+    int x = value;
+    if (x < 0)
+    {
+        throw eprosima::utils::ConfigurationException(
+                  utils::Formatter() << "Expected to write a positive short.");
+    }
+    yml = value;
+}
+
+template <>
+void write(
+        Yaml& yml,
         const bool& value)
 {
     yml = value;

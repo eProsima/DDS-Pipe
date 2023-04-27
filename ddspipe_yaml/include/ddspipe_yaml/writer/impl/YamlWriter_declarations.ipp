@@ -26,23 +26,33 @@ namespace ddspipe {
 namespace yaml {
 
 ////////////////////////////////////////////////
+// DEFINITION OF SPECIFIC TYPES
+////////////////////////////////////////////////
+
+template <typename T>
+void write_enumeration(
+        Yaml& yml,
+        const T& object,
+        const std::map<TagType, T>& enum_values);
+
+////////////////////////////////////////////////
 // DEFINITION OF FUNCTIONS FOR TEMPLATED TYPES
 ////////////////////////////////////////////////
 
 template <typename T>
 void write_fuzzy(
         Yaml& yml,
-        const utils::Fuzzy<T>& fuzzy);
+        const utils::Fuzzy<T>& object);
 
 template <typename T>
-void write_collection(
+void write_vector(
         Yaml& yml,
-        const std::vector<T>& collection);
+        const std::vector<T>& object);
 
 template <typename K, typename T>
 void write_map(
         Yaml& yml,
-        const std::map<K, T>& collection);
+        const std::map<K, T>& object);
 
 ////////////////////////////////////////////////
 // DEFINITION OF FUNCTIONS FOR TRIVIAL TYPES
@@ -50,22 +60,19 @@ void write_map(
 // These are needed for Dll export
 
 template <>
-DDSPIPE_YAML_DllAPI
 void write(
         Yaml& yml,
-        const std::string& value);
+        const std::string& object);
 
 template <>
-DDSPIPE_YAML_DllAPI
 void write(
         Yaml& yml,
-        const bool& value);
+        const bool& object);
 
 template <>
-DDSPIPE_YAML_DllAPI
 void write(
         Yaml& yml,
-        const int& value);
+        const int& object);
 
 ////////////////////////////////////////////////
 // SPECIALIZATION DECLARATIONS FOR TEMPLATED TYPES
@@ -74,22 +81,28 @@ void write(
 template <typename T>
 void write(
         Yaml& yml,
-        const utils::Fuzzy<T>& collection);
+        const TagType& tag,
+        const utils::Fuzzy<T>& object);
 
 template <typename T>
 void write(
         Yaml& yml,
-        const std::vector<T>& collection);
+        const utils::Fuzzy<T>& object);
 
 template <typename T>
 void write(
         Yaml& yml,
-        const std::set<T>& collection);
+        const std::vector<T>& object);
+
+template <typename T>
+void write(
+        Yaml& yml,
+        const std::set<T>& object);
 
 template <typename K, typename T>
 void write(
         Yaml& yml,
-        const std::map<K, T>& collection);
+        const std::map<K, T>& object);
 
 } /* namespace yaml */
 } /* namespace ddspipe */
