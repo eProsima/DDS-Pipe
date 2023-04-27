@@ -29,11 +29,13 @@
 
 #include <ddspipe_core/types/dynamic_types/types.hpp>
 
+#include <ddspipe_participants/participant/rtps/CommonParticipant.hpp>
 #include <ddspipe_participants/reader/auxiliar/BlankReader.hpp>
 #include <ddspipe_participants/reader/rtps/SimpleReader.hpp>
 #include <ddspipe_participants/reader/rtps/SpecificQoSReader.hpp>
 #include <ddspipe_participants/writer/auxiliar/BlankWriter.hpp>
 #include <ddspipe_participants/writer/auxiliar/InternalWriter.hpp>
+
 #include <ddspipe_participants/participant/dynamic_types/DynTypesPublicationParticipant.hpp>
 
 namespace eprosima {
@@ -61,7 +63,7 @@ DynTypesPublicationParticipant::DynTypesPublicationParticipant(
         participant_callback);
 
     discovery_database->add_endpoint(
-        simulate_endpoint_(type_object_topic())
+        rtps::CommonParticipant::simulate_endpoint(type_object_topic(), this->id())
     );
 }
 

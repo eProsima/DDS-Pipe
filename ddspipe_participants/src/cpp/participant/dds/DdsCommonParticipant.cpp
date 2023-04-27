@@ -181,18 +181,6 @@ void DdsCommonParticipant::init()
     dds_subscriber_ = dds_participant_->create_subscriber(fastdds::dds::SubscriberQos());
 }
 
-core::types::Endpoint DdsCommonParticipant::simulate_endpoint_(
-        const DdsTopic& topic) const
-{
-    core::types::Endpoint endpoint;
-    endpoint.kind = core::types::EndpointKind::reader;
-    endpoint.guid = core::types::Guid::new_unique_guid();
-    endpoint.topic = topic;
-    endpoint.discoverer_participant_id = this->id();
-
-    return endpoint;
-}
-
 } /* namespace dds */
 } /* namespace participants */
 } /* namespace ddspipe */
