@@ -62,10 +62,6 @@ protected:
     DdsCommonParticipant(
         const std::shared_ptr<SimpleParticipantConfiguration>& participant_configuration);
 
-    DDSPIPE_PARTICIPANTS_DllAPI
-    core::types::Endpoint simulate_endpoint_(
-        const core::types::DdsTopic& topic) const;
-
     eprosima::fastdds::dds::DomainParticipant* dds_participant_;
     eprosima::fastdds::dds::Publisher* dds_publisher_;
     eprosima::fastdds::dds::Subscriber* dds_subscriber_;
