@@ -16,28 +16,14 @@
 # Yaml GetEntities Topic Test #
 ###############################
 
-set(TEST_NAME NewYamlGetEntityTopicTest)
+set(TEST_NAME ParametrizedGenericReaderWriterTest)
 
 set(TEST_SOURCES
-        NewYamlGetEntityTopicTest.cpp
-        ${PROJECT_SOURCE_DIR}/src/cpp/NewYamlReader_generic.cpp
+        GenericReaderWriterTest.cpp
     )
 
-set(TEST_LIST
-        get_real_topic
-    )
-
-set(TEST_EXTRA_LIBRARIES
-        yaml-cpp
-        fastcdr
-        fastrtps
-        cpp_utils
-        ddspipe_core
-        ddspipe_participants
-    )
-
-add_unittest_executable(
+add_blackbox_executable(
     "${TEST_NAME}"
     "${TEST_SOURCES}"
-    "${TEST_LIST}"
-    "${TEST_EXTRA_LIBRARIES}")
+    ""
+    "")

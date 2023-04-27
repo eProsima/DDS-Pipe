@@ -1,4 +1,4 @@
-// Copyright 2022 Proyectos y Sistemas de Mantenimiento SL (eProsima).
+// Copyright 2021 Proyectos y Sistemas de Mantenimiento SL (eProsima).
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -10,29 +10,25 @@
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
-// limitations under the License.
+// limitations under the License\.
 
 #pragma once
 
-#include <string>
-
-#include <yaml-cpp/yaml.h>
-
 namespace eprosima {
+namespace ddspipe {
+namespace core {
+namespace testing {
 
-/**
- * Configuration is in dictionary format
- *
- * YAML spec: https://yaml.org/spec/1.2.2/
- *
- * @note It is not legal to repeat keys in a YAML
- *
- * @note this object contains a reference to the actual yaml object. Thus passing it by value or by reference
- * makes no different.
- */
-using Yaml = YAML::Node;
+template <typename T>
+T arbitrary(
+        unsigned int seed = 0);
 
-//! Type of tag in the yaml
-using TagType = std::string;
+template <typename T, typename ... Args>
+T arbitrary(
+        unsigned int seed,
+        Args... args);
 
+} /* namespace testing */
+} /* namespace core */
+} /* namespace ddspipe */
 } /* namespace eprosima */

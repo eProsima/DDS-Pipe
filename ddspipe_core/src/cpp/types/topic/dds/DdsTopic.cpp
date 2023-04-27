@@ -37,7 +37,7 @@ std::ostream& operator <<(
         std::ostream& os,
         const DdsTopic& t)
 {
-    os << "DdsTopic{" << t.topic_name() << ";" << t.type_name << t.topic_qos << "}";
+    os << "DdsTopic{" << t.topic_name() << ";" << t.type_name << ";" << t.topic_qos << "}";
     return os;
 }
 

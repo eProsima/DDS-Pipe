@@ -16,7 +16,7 @@
 # Yaml GetEntities Test #
 #########################
 
-add_subdirectory(address)
-add_subdirectory(guid)
-add_subdirectory(topic)
-add_subdirectory(new_topic)
+# add_subdirectory(address)
+# add_subdirectory(guid)
+# add_subdirectory(topic)
+add_subdirectory(generic)

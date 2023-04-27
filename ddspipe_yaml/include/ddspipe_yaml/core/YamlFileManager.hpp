@@ -12,34 +12,25 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-/**
- * @file YamlManager.cpp
- *
- */
+#pragma once
 
-#include <cpp_utils/exception/ConfigurationException.hpp>
-
-#include <ddspipe_yaml/YamlManager.hpp>
-#include <ddspipe_yaml/Yaml.hpp>
+#include <ddspipe_yaml/library/library_dll.h>
+#include <ddspipe_yaml/core/Yaml.hpp>
 
 namespace eprosima {
 namespace ddspipe {
 namespace yaml {
 
-Yaml YamlManager::load_file(
-        const std::string& file_path)
+/**
+ * Class that manages generic methods related with yaml load and yaml validation.
+ */
+class DDSPIPE_YAML_DllAPI YamlFileManager
 {
-    try
-    {
-        return YAML::LoadFile(file_path);
-    }
-    catch (const std::exception& e)
-    {
-        throw eprosima::utils::ConfigurationException(
-                  utils::Formatter() << "Error occured while loading yaml from file: "
-                                     << file_path << " : " << e.what());
-    }
-}
+public:
+
+    static Yaml load_file(
+            const std::string& file_path);
+};
 
 } /* namespace yaml */
 } /* namespace ddspipe */

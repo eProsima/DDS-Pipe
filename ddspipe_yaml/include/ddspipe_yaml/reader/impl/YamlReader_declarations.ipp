@@ -1,4 +1,4 @@
-// Copyright 2022 Proyectos y Sistemas de Mantenimiento SL (eProsima).
+// Copyright 2023 Proyectos y Sistemas de Mantenimiento SL (eProsima).
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,23 +14,29 @@
 
 #pragma once
 
-#include <ddspipe_yaml/library/library_dll.h>
-#include <ddspipe_yaml/Yaml.hpp>
+#include <cpp_utils/types/Fuzzy.hpp>
 
 namespace eprosima {
 namespace ddspipe {
 namespace yaml {
 
-/**
- * Class that manages generic methods related with yaml load and yaml validation.
- */
-class DDSPIPE_YAML_DllAPI YamlManager
-{
-public:
+////////////////////////////////////////////////
+// DEFINITION OF FUNCTIONS FOR TEMPLATED TYPES
+////////////////////////////////////////////////
 
-    static Yaml load_file(
-            const std::string& file_path);
-};
+template <typename T>
+void read_fuzzy(
+        const Yaml& yml,
+        utils::Fuzzy<T>& fuzzy);
+
+////////////////////////////////////////////////
+// SPECIALIZATION DECLARATIONS FOR TEMPLATED TYPES
+////////////////////////////////////////////////
+
+template <typename T>
+void read(
+        const Yaml& yml,
+        utils::Fuzzy<T>& fuzzy);
 
 } /* namespace yaml */
 } /* namespace ddspipe */

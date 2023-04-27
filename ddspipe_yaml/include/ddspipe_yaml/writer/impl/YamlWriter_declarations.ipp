@@ -19,128 +19,77 @@
 #include <string>
 #include <vector>
 
-#include <cpp_utils/utils.hpp>
-
-#include <ddspipe_yaml/library/library_dll.h>
-#include <ddspipe_yaml/Yaml.hpp>
+#include <cpp_utils/types/Fuzzy.hpp>
 
 namespace eprosima {
 namespace ddspipe {
 namespace yaml {
 
-template <typename T>
-void set(
-        Yaml& yml,
-        const std::vector<T>& collection);
+////////////////////////////////////////////////
+// DEFINITION OF FUNCTIONS FOR TEMPLATED TYPES
+////////////////////////////////////////////////
 
 template <typename T>
-void set(
+void write_fuzzy(
         Yaml& yml,
-        const std::set<T>& collection);
-
-template <typename K, typename T>
-void set(
-        Yaml& yml,
-        const std::map<K, T>& collection);
+        const utils::Fuzzy<T>& fuzzy);
 
 template <typename T>
-void set_collection(
+void write_collection(
         Yaml& yml,
         const std::vector<T>& collection);
 
 template <typename K, typename T>
-void set_map(
+void write_map(
         Yaml& yml,
         const std::map<K, T>& collection);
 
 ////////////////////////////////////////////////
-// SPECIALIZATIONS FOR TRIVIAL TYPES
+// DEFINITION OF FUNCTIONS FOR TRIVIAL TYPES
 ////////////////////////////////////////////////
+// These are needed for Dll export
 
 template <>
 DDSPIPE_YAML_DllAPI
-void set(
+void write(
         Yaml& yml,
         const std::string& value);
 
 template <>
 DDSPIPE_YAML_DllAPI
-void set(
+void write(
         Yaml& yml,
         const bool& value);
 
 template <>
 DDSPIPE_YAML_DllAPI
-void set(
+void write(
         Yaml& yml,
         const int& value);
 
 ////////////////////////////////////////////////
-// SPECIALIZATIONS FOR OTHER TYPES
+// SPECIALIZATION DECLARATIONS FOR TEMPLATED TYPES
 ////////////////////////////////////////////////
 
 template <typename T>
-void set(
+void write(
         Yaml& yml,
-        const std::vector<T>& collection)
-{
-    set_collection(yml, collection);
-}
+        const utils::Fuzzy<T>& collection);
 
 template <typename T>
-void set(
+void write(
         Yaml& yml,
-        const std::set<T>& collection)
-{
-    set_collection(yml, std::vector<T>(collection.begin(), collection.end()));
-}
+        const std::vector<T>& collection);
+
+template <typename T>
+void write(
+        Yaml& yml,
+        const std::set<T>& collection);
 
 template <typename K, typename T>
-void set(
+void write(
         Yaml& yml,
-        const std::map<K, T>& collection)
-{
-    set_map(yml, collection);
-}
-
-////////////////////////////////////
-// SPECIALIZATIONS NEEDED
-////////////////////////////////////
-
-template <typename T>
-void set(
-        Yaml& yml,
-        const TagType& tag,
-        const T& value)
-{
-    auto yml_under_tag = add_tag(yml, tag);
-    set(yml_under_tag, value);
-}
-
-template <typename T>
-void set_collection(
-        Yaml& yml,
-        const std::vector<T>& collection)
-{
-    for (const auto& v : collection)
-    {
-        Yaml yml_value;
-        set<T>(yml_value, v);
-        yml.push_back(yml_value);
-    }
-}
-
-template <typename K, typename T>
-void set_map(
-        Yaml& yml,
-        const std::map<K, T>& collection)
-{
-    for (const auto& v : collection)
-    {
-        Yaml yml_in_new_tag = yml[utils::generic_to_string(v.first)];
-        set<T>(yml_in_new_tag, v.second);
-    }
-}
+        const std::map<K, T>& collection);
 
 } /* namespace yaml */
 } /* namespace ddspipe */

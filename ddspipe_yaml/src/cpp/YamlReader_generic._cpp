@@ -36,7 +36,7 @@
 #include <ddspipe_participants/configuration/EchoParticipantConfiguration.hpp>
 #include <ddspipe_participants/configuration/SimpleParticipantConfiguration.hpp>
 
-#include <ddspipe_yaml/Yaml.hpp>
+#include <ddspipe_yaml/core/Yaml.hpp>
 #include <ddspipe_yaml/YamlReader.hpp>
 #include <ddspipe_yaml/yaml_configuration_tags.hpp>
 

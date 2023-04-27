@@ -12,44 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-/**
- * @file YamlReader.cpp
- *
- */
+#include <yaml-cpp/yaml.h>
 
-#include <cpp_utils/Log.hpp>
-#include <cpp_utils/utils.hpp>
+#include <cpp_utils/exception/ConfigurationException.hpp>
+#include <cpp_utils/exception/PreconditionNotMet.hpp>
 
-#include <ddspipe_core/types/dds/DomainId.hpp>
-#include <ddspipe_core/types/dds/GuidPrefix.hpp>
-#include <ddspipe_core/types/participant/ParticipantId.hpp>
-#include <ddspipe_core/types/topic/dds/DdsTopic.hpp>
-#include <ddspipe_core/types/topic/filter/WildcardDdsFilterTopic.hpp>
-
-#include <ddspipe_participants/types/address/Address.hpp>
-#include <ddspipe_participants/types/address/DiscoveryServerConnectionAddress.hpp>
-#include <ddspipe_participants/types/security/tls/TlsConfiguration.hpp>
-
-#include <ddspipe_participants/configuration/DiscoveryServerParticipantConfiguration.hpp>
-#include <ddspipe_participants/configuration/InitialPeersParticipantConfiguration.hpp>
-#include <ddspipe_participants/configuration/ParticipantConfiguration.hpp>
-#include <ddspipe_participants/configuration/EchoParticipantConfiguration.hpp>
-#include <ddspipe_participants/configuration/SimpleParticipantConfiguration.hpp>
-
-#include <ddspipe_yaml/Yaml.hpp>
-#include <ddspipe_yaml/YamlReader.hpp>
-#include <ddspipe_yaml/yaml_configuration_tags.hpp>
+#include <ddspipe_yaml/core/Yaml.hpp>
 
 namespace eprosima {
 namespace ddspipe {
 namespace yaml {
-
-using namespace eprosima::ddspipe::core::types;
-using namespace eprosima::ddspipe::participants::types;
-
-/************************
-* GENERIC              *
-************************/
 
 bool is_tag_present(
         const Yaml& yml,
@@ -57,7 +29,7 @@ bool is_tag_present(
 {
     if (!yml.IsMap() && !yml.IsNull())
     {
-        throw eprosima::utils::ConfigurationException(
+        throw eprosima::utils::PreconditionNotMet(
                   utils::Formatter() << "Trying to find a tag: <" << tag << "> in a not yaml object map.");
     }
 
@@ -76,9 +48,37 @@ Yaml get_value_in_tag(
     }
     else
     {
-        throw eprosima::utils::ConfigurationException(
+        throw eprosima::utils::PreconditionNotMet(
                   utils::Formatter() << "Required tag not found: <" << tag << ">.");
     }
+}
+
+Yaml add_tag(
+        Yaml& yml,
+        const TagType& tag,
+        bool initialize /* = false */,
+        bool overwrite /* = true */)
+{
+    // If node must be initialized and could not overwrite, and node already exist, throw failure.
+    if (initialize && !overwrite && is_tag_present(yml, tag))
+    {
+        throw utils::PreconditionNotMet(
+                  STR_ENTRY
+                      << "Tag <" << tag
+                      << "> already exist and could not overwrite.");
+    }
+
+    // If node must be initialized, independent on if it exist or not, create a new one and set.
+    if (initialize && overwrite)
+    {
+        yml.remove(tag);
+        return yml[tag];
+    }
+
+    // If node must not be initialized and exist or
+    // node must be created
+    // This call reuses yaml inside or create it if it does not exist
+    return yml[tag];
 }
 
 } /* namespace yaml */

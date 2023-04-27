@@ -19,9 +19,9 @@
 set(TEST_NAME YamlReaderScalarTest)
 
 set(TEST_SOURCES
-        ${PROJECT_SOURCE_DIR}/src/cpp/YamlReader_generic.cpp
-        ${PROJECT_SOURCE_DIR}/src/cpp/YamlReader_participants.cpp
-        ${PROJECT_SOURCE_DIR}/src/cpp/YamlReader_types.cpp
+        ${PROJECT_SOURCE_DIR}/src/cpp/reader/YamlReader_generic.cpp
+        ${PROJECT_SOURCE_DIR}/src/cpp/reader/YamlReader_participants.cpp
+        ${PROJECT_SOURCE_DIR}/src/cpp/reader/YamlReader_types.cpp
         YamlReaderScalarTest.cpp
     )
 

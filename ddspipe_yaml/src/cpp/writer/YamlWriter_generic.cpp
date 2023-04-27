@@ -15,43 +15,19 @@
 #include <cpp_utils/exception/PreconditionNotMet.hpp>
 
 #include <ddspipe_yaml/library/library_dll.h>
-#include <ddspipe_yaml/YamlReader.hpp>
-#include <ddspipe_yaml/YamlWriter.hpp>
+#include <ddspipe_yaml/reader/YamlReader.hpp>
+#include <ddspipe_yaml/writer/YamlWriter.hpp>
 
 namespace eprosima {
 namespace ddspipe {
 namespace yaml {
 
-Yaml add_tag(
-        Yaml& yml,
-        const TagType& tag,
-        bool initialize /* = false */,
-        bool overwrite /* = true */)
-{
-    // If node must be initialized and could not overwrite, and node already exist, throw failure.
-    if (initialize && !overwrite && YamlReader::is_tag_present(yml, tag))
-    {
-        throw utils::PreconditionNotMet(
-                  STR_ENTRY
-                      << "Tag <" << tag
-                      << "> already exist and could not overwrite.");
-    }
-
-    // If node must be initialized, independent on if it exist or not, create a new one and set.
-    if (initialize && overwrite)
-    {
-        yml.remove(tag);
-        return yml[tag];
-    }
-
-    // If node must not be initialized and exist or
-    // node must be created
-    // This call reuses yaml inside or create it if it does not exist
-    return yml[tag];
-}
+////////////////////////////////////////////////
+// IMPLEMENTATION OF TRIVIAL TYPES
+////////////////////////////////////////////////
 
 template <>
-void set(
+void write(
         Yaml& yml,
         const std::string& value)
 {
@@ -59,7 +35,29 @@ void set(
 }
 
 template <>
-void set(
+void write(
+        Yaml& yml,
+        const int& value)
+{
+    yml = value;
+}
+
+template <>
+void write(
+        Yaml& yml,
+        const unsigned int& value)
+{
+    int x = value;
+    if (x < 0)
+    {
+        throw eprosima::utils::ConfigurationException(
+                  utils::Formatter() << "Expected to write a positive integer.");
+    }
+    yml = value;
+}
+
+template <>
+void write(
         Yaml& yml,
         const bool& value)
 {
@@ -67,9 +65,9 @@ void set(
 }
 
 template <>
-void set(
+void write(
         Yaml& yml,
-        const int& value)
+        const float& value)
 {
     yml = value;
 }
