@@ -141,6 +141,7 @@ TEST(YamlGetEntityTopicTest, get_real_topic)
  * - Empty
  * - Topic without name
  * - Topic without type
+ * - Topic with extra field
  */
 TEST(YamlGetEntityTopicTest, get_real_topic_negative)
 {
@@ -170,6 +171,20 @@ TEST(YamlGetEntityTopicTest, get_real_topic_negative)
     {
         Yaml yml_topic;
         add_field_to_yaml(yml_topic, YamlField<std::string>(test::TOPIC_NAME), TOPIC_NAME_TAG);
+
+        Yaml yml;
+        yml["topic"] = yml_topic;
+
+        ASSERT_THROW(YamlReader::get<core::types::DdsTopic>(yml, "topic",
+                LATEST), eprosima::utils::ConfigurationException);
+    }
+
+    // Topic without type
+    {
+        Yaml yml_topic;
+        add_field_to_yaml(yml_topic, YamlField<std::string>(test::TOPIC_TYPE), TOPIC_TYPE_NAME_TAG);
+        add_field_to_yaml(yml_topic, YamlField<std::string>(test::TOPIC_NAME), TOPIC_NAME_TAG);
+        add_field_to_yaml(yml_topic, YamlField<std::string>("some_value"), "some_tag");
 
         Yaml yml;
         yml["topic"] = yml_topic;

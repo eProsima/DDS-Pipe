@@ -37,7 +37,7 @@
 #include <ddspipe_participants/configuration/EchoParticipantConfiguration.hpp>
 #include <ddspipe_participants/configuration/SimpleParticipantConfiguration.hpp>
 
-#include <ddspipe_yaml/Yaml.hpp>
+#include <ddspipe_yaml/core/Yaml.hpp>
 #include <ddspipe_yaml/YamlReader.hpp>
 #include <ddspipe_yaml/yaml_configuration_tags.hpp>
 
@@ -264,8 +264,8 @@ DiscoveryServerConnectionAddress _get_discovery_server_connection_address_v1(
         const YamlReaderVersion version)
 {
     // GuidPrefix required
-    GuidPrefix server_guid = YamlReader::get<GuidPrefix>(yml, version);
 
+    GuidPrefix server_guid = YamlReader::get<GuidPrefix>(yml, version);
     // Addresses required
     std::set<Address> addresses = YamlReader::get_set<Address>(yml, COLLECTION_ADDRESSES_TAG, version);
 
@@ -384,6 +384,17 @@ void YamlReader::fill(
     }
 }
 
+template <>
+DDSPIPE_YAML_DllAPI
+TopicQoS YamlReader::get<TopicQoS>(
+        const Yaml& yml,
+        const YamlReaderVersion version)
+{
+    TopicQoS qos;
+    fill<TopicQoS>(qos, yml, version);
+    return qos;
+}
+
 /************************
 * TOPICS                *
 ************************/
@@ -395,17 +406,17 @@ void YamlReader::fill(
         const Yaml& yml,
         const YamlReaderVersion version)
 {
-    // Name required
-    object.m_topic_name = get<std::string>(yml, TOPIC_NAME_TAG, version);
-
-    // Data Type required
-    object.type_name = get<std::string>(yml, TOPIC_TYPE_NAME_TAG, version);
-
-    // Optional QoS
-    if (is_tag_present(yml, TOPIC_QOS_TAG))
+    static const std::vector<IYamlFieldGetter*> fields_allowed =
     {
-        fill<TopicQoS>(object.topic_qos, get_value_in_tag(yml, TOPIC_QOS_TAG), version);
-    }
+        new YamlFieldGetter(TOPIC_NAME_TAG,       TagKind::required,  object.m_topic_name),
+        new YamlFieldGetter(TOPIC_TYPE_NAME_TAG,  TagKind::required,  object.type_name),
+        new YamlFieldGetter(TOPIC_QOS_TAG,        TagKind::optional,  object.topic_qos)
+    };
+
+    get_tags(
+        fields_allowed,
+        yml
+    );
 }
 
 template <>
@@ -426,19 +437,16 @@ void YamlReader::fill(
         const Yaml& yml,
         const YamlReaderVersion version)
 {
-    // Optional name
-    if (is_tag_present(yml, TOPIC_NAME_TAG))
+    static const std::vector<IYamlFieldGetter*> fields_allowed =
     {
-        object.topic_name.set_value(get<std::string>(yml, TOPIC_NAME_TAG, version));
-    }
+        new YamlFieldGetterFuzzy(TOPIC_NAME_TAG,       TagKind::optional,  object.topic_name),
+        new YamlFieldGetterFuzzy(TOPIC_TYPE_NAME_TAG,  TagKind::optional,  object.type_name)
+    };
 
-    // Optional data type
-    if (is_tag_present(yml, TOPIC_TYPE_NAME_TAG))
-    {
-        object.type_name.set_value(get<std::string>(yml, TOPIC_TYPE_NAME_TAG, version));
-    }
-
-    // TODO: decide whether we want to use QoS as filtering
+    get_tags(
+        fields_allowed,
+        yml
+    );
 }
 
 template <>

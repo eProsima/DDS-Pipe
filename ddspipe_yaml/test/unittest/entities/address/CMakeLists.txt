@@ -19,9 +19,9 @@
 set(TEST_NAME YamlGetEntityAddressTest)
 
 set(TEST_SOURCES
-        ${PROJECT_SOURCE_DIR}/src/cpp/YamlReader_generic.cpp
-        ${PROJECT_SOURCE_DIR}/src/cpp/YamlReader_participants.cpp
-        ${PROJECT_SOURCE_DIR}/src/cpp/YamlReader_types.cpp
+        ${PROJECT_SOURCE_DIR}/src/cpp/reader/YamlReader_generic.cpp
+        ${PROJECT_SOURCE_DIR}/src/cpp/reader/YamlReader_participants.cpp
+        ${PROJECT_SOURCE_DIR}/src/cpp/reader/YamlReader_types.cpp
         YamlGetEntityAddressTest.cpp
     )
 
@@ -58,9 +58,9 @@ add_unittest_executable(
 set(TEST_NAME YamlGetEntityDiscoveryServerAddressTest)
 
 set(TEST_SOURCES
-        ${PROJECT_SOURCE_DIR}/src/cpp/YamlReader_generic.cpp
-        ${PROJECT_SOURCE_DIR}/src/cpp/YamlReader_participants.cpp
-        ${PROJECT_SOURCE_DIR}/src/cpp/YamlReader_types.cpp
+        ${PROJECT_SOURCE_DIR}/src/cpp/reader/YamlReader_generic.cpp
+        ${PROJECT_SOURCE_DIR}/src/cpp/reader/YamlReader_participants.cpp
+        ${PROJECT_SOURCE_DIR}/src/cpp/reader/YamlReader_types.cpp
         YamlGetEntityDiscoveryServerAddressTest.cpp
     )
 

@@ -1,4 +1,4 @@
-// Copyright 2023 Proyectos y Sistemas de Mantenimiento SL (eProsima).
+// Copyright 2022 Proyectos y Sistemas de Mantenimiento SL (eProsima).
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,15 +12,46 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#include <yaml-cpp/yaml.h>
+
+#include <cpp_utils/exception/ConfigurationException.hpp>
 #include <cpp_utils/exception/PreconditionNotMet.hpp>
 
-#include <ddspipe_yaml/library/library_dll.h>
-#include <ddspipe_yaml/YamlReader.hpp>
-#include <ddspipe_yaml/YamlWriter.hpp>
+#include <ddspipe_yaml/core/Yaml.hpp>
 
 namespace eprosima {
 namespace ddspipe {
 namespace yaml {
+
+bool is_tag_present(
+        const Yaml& yml,
+        const TagType& tag)
+{
+    if (!yml.IsMap() && !yml.IsNull())
+    {
+        throw eprosima::utils::PreconditionNotMet(
+                  utils::Formatter() << "Trying to find a tag: <" << tag << "> in a not yaml object map.");
+    }
+
+    // Explicit conversion to avoid windows format warning
+    // This method performace is the same as only retrieving bool
+    return (yml[tag]) ? true : false;
+}
+
+Yaml get_value_in_tag(
+        const Yaml& yml,
+        const TagType& tag)
+{
+    if (is_tag_present(yml, tag))
+    {
+        return yml[tag];
+    }
+    else
+    {
+        throw eprosima::utils::PreconditionNotMet(
+                  utils::Formatter() << "Required tag not found: <" << tag << ">.");
+    }
+}
 
 Yaml add_tag(
         Yaml& yml,
@@ -29,7 +60,7 @@ Yaml add_tag(
         bool overwrite /* = true */)
 {
     // If node must be initialized and could not overwrite, and node already exist, throw failure.
-    if (initialize && !overwrite && YamlReader::is_tag_present(yml, tag))
+    if (initialize && !overwrite && is_tag_present(yml, tag))
     {
         throw utils::PreconditionNotMet(
                   STR_ENTRY
@@ -48,30 +79,6 @@ Yaml add_tag(
     // node must be created
     // This call reuses yaml inside or create it if it does not exist
     return yml[tag];
-}
-
-template <>
-void set(
-        Yaml& yml,
-        const std::string& value)
-{
-    yml = value;
-}
-
-template <>
-void set(
-        Yaml& yml,
-        const bool& value)
-{
-    yml = value;
-}
-
-template <>
-void set(
-        Yaml& yml,
-        const int& value)
-{
-    yml = value;
 }
 
 } /* namespace yaml */

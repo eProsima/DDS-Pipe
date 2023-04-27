@@ -18,6 +18,8 @@
 
 #include <fastdds/rtps/common/Locator.h>
 
+#include <cpp_utils/macros/custom_enumeration.hpp>
+
 #include <ddspipe_participants/library/library_dll.h>
 
 namespace eprosima {
@@ -35,18 +37,18 @@ using DomainType = std::string;
 using PortType = uint16_t;
 
 //! Different versions allowed for IP
-enum class IpVersion : int
-{
-    v4 = 4,
-    v6 = 6,
-};
+ENUMERATION_BUILDER(
+    IpVersion,
+    v4,
+    v6
+);
 
 //! Different Transport Protocols allowed
-enum class TransportProtocol
-{
+ENUMERATION_BUILDER(
+    TransportProtocol,
     udp,
     tcp
-};
+);
 
 /**
  * @brief Address that works as a collection of data defining a network address.

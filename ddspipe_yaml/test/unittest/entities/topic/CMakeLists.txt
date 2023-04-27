@@ -20,9 +20,9 @@ set(TEST_NAME YamlGetEntityTopicTest)
 
 set(TEST_SOURCES
         YamlGetEntityTopicTest.cpp
-        ${PROJECT_SOURCE_DIR}/src/cpp/YamlReader_generic.cpp
-        ${PROJECT_SOURCE_DIR}/src/cpp/YamlReader_participants.cpp
-        ${PROJECT_SOURCE_DIR}/src/cpp/YamlReader_types.cpp
+        ${PROJECT_SOURCE_DIR}/src/cpp/reader/YamlReader_generic.cpp
+        ${PROJECT_SOURCE_DIR}/src/cpp/reader/YamlReader_participants.cpp
+        ${PROJECT_SOURCE_DIR}/src/cpp/reader/YamlReader_types.cpp
         ${PROJECT_SOURCE_DIR}/src/cpp/YamlManager.cpp
 
     )

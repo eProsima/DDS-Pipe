@@ -12,11 +12,18 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-#########################
-# Yaml GetEntities Test #
-#########################
+###############################
+# Yaml GetEntities Topic Test #
+###############################
 
-# add_subdirectory(address)
-# add_subdirectory(guid)
-# add_subdirectory(topic)
-add_subdirectory(generic)
+set(TEST_NAME ParametrizedGenericReaderWriterTest)
+
+set(TEST_SOURCES
+        GenericReaderWriterTest.cpp
+    )
+
+add_blackbox_executable(
+    "${TEST_NAME}"
+    "${TEST_SOURCES}"
+    ""
+    "")

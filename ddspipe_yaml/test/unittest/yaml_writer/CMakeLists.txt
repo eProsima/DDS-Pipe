@@ -19,8 +19,8 @@
 set(TEST_NAME YamlWriterTest)
 
 set(TEST_SOURCES
-        ${PROJECT_SOURCE_DIR}/src/cpp/YamlReader_generic.cpp
-        ${PROJECT_SOURCE_DIR}/src/cpp/YamlWriter.cpp
+        ${PROJECT_SOURCE_DIR}/src/cpp/reader/YamlReader_generic.cpp
+        ${PROJECT_SOURCE_DIR}/src/cpp/writer/YamlWriter.cpp
         YamlWriterTest.cpp
     )
 
@@ -60,8 +60,8 @@ add_unittest_executable(
 set(TEST_NAME YamlWriter_collections_test)
 
 set(TEST_SOURCES
-        ${PROJECT_SOURCE_DIR}/src/cpp/YamlReader_generic.cpp
-        ${PROJECT_SOURCE_DIR}/src/cpp/YamlWriter.cpp
+        ${PROJECT_SOURCE_DIR}/src/cpp/reader/YamlReader_generic.cpp
+        ${PROJECT_SOURCE_DIR}/src/cpp/writer/YamlWriter.cpp
         YamlWriter_collections_test.cpp
     )
 
