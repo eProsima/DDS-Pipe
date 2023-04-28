@@ -18,6 +18,7 @@
  */
 
 #include <cpp_utils/Log.hpp>
+#include <cpp_utils/time/time_utils.hpp>
 #include <cpp_utils/utils.hpp>
 
 #include <ddspipe_core/types/dds/DomainId.hpp>
@@ -288,6 +289,74 @@ std::string YamlReader::get<std::string>(
         const YamlReaderVersion version /* version */)
 {
     return get_scalar<std::string>(yml);
+}
+
+template <>
+DDSPIPE_YAML_DllAPI
+utils::Timestamp YamlReader::get<utils::Timestamp>(
+        const Yaml& yml,
+        const YamlReaderVersion version /* version */)
+{
+    utils::Timestamp ret_timestamp;
+    std::string datetime_str;
+    std::string datetime_format("%Y-%m-%d_%H-%M-%S");
+    bool local = true;
+    std::chrono::milliseconds ms(0);
+    std::chrono::microseconds us(0);
+    std::chrono::nanoseconds ns(0);
+
+    // Get optional datetime format
+    if (is_tag_present(yml, TIMESTAMP_DATETIME_FORMAT_TAG))
+    {
+        datetime_format = get<std::string>(yml, TIMESTAMP_DATETIME_FORMAT_TAG, version);
+    }
+
+    // Get optional local
+    if (is_tag_present(yml, TIMESTAMP_LOCAL_TAG))
+    {
+        local = get<bool>(yml, TIMESTAMP_LOCAL_TAG, version);
+    }
+
+    // Get required datetime
+    if (is_tag_present(yml, TIMESTAMP_DATETIME_TAG))
+    {
+        datetime_str = get<std::string>(yml, TIMESTAMP_DATETIME_TAG, version);
+        try
+        {
+            ret_timestamp = utils::string_to_timestamp(datetime_str, datetime_format, local);
+        }
+        catch (const std::exception& e)
+        {
+            throw eprosima::utils::ConfigurationException(utils::Formatter() <<
+                          "Error parsing datetime " << datetime_str << " with error:\n " <<
+                          e.what());
+        }
+    }
+    else
+    {
+        throw eprosima::utils::ConfigurationException(utils::Formatter() <<
+                      "Timestamp requires to specify <" << TIMESTAMP_DATETIME_TAG << ">.");
+    }
+
+    // Get optional milliseconds
+    if (is_tag_present(yml, TIMESTAMP_MILLISECONDS_TAG))
+    {
+        ms = std::chrono::milliseconds(get_nonnegative_int(yml, TIMESTAMP_MILLISECONDS_TAG));
+    }
+
+    // Get optional microseconds
+    if (is_tag_present(yml, TIMESTAMP_MICROSECONDS_TAG))
+    {
+        us = std::chrono::microseconds(get_nonnegative_int(yml, TIMESTAMP_MICROSECONDS_TAG));
+    }
+
+    // Get optional nanoseconds
+    if (is_tag_present(yml, TIMESTAMP_NANOSECONDS_TAG))
+    {
+        ns = std::chrono::nanoseconds(get_nonnegative_int(yml, TIMESTAMP_NANOSECONDS_TAG));
+    }
+
+    return ret_timestamp + ms + us + ns;
 }
 
 } /* namespace yaml */
