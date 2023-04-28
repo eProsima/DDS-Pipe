@@ -55,6 +55,10 @@ public:
     DDSPIPE_CORE_DllAPI
     virtual std::string topic_unique_name() const noexcept = 0;
 
+    //! ITopic serialization to string
+    DDSPIPE_CORE_DllAPI
+    virtual std::string serialize() const noexcept = 0;
+
     /**
      * This refers to an internal used identifier that declares which kind of data type is going to be
      * transmitted in this Itopic inside the core.

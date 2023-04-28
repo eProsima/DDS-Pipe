@@ -53,6 +53,9 @@ struct DdsTopic : public DistributedTopic
     DDSPIPE_CORE_DllAPI
     virtual std::string topic_unique_name() const noexcept override;
 
+    DDSPIPE_CORE_DllAPI
+    virtual std::string serialize() const noexcept override;
+
     /////////////////////////
     // STATIC METHODS
     /////////////////////////
@@ -79,14 +82,6 @@ struct DdsTopic : public DistributedTopic
      */
     types::TopicQoS topic_qos{};
 };
-
-/**
- * Serialization method for \c DdsTopic object.
- */
-DDSPIPE_CORE_DllAPI
-std::ostream& operator <<(
-        std::ostream& os,
-        const DdsTopic& t);
 
 } /* namespace types */
 } /* namespace core */

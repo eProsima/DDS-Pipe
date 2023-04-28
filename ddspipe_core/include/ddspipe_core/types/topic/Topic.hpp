@@ -83,6 +83,10 @@ struct Topic : public ITopic, public IConfiguration
     DDSPIPE_CORE_DllAPI
     virtual std::string topic_unique_name() const noexcept override;
 
+    //! ITopic serialization to string
+    DDSPIPE_CORE_DllAPI
+    virtual std::string serialize() const noexcept override;
+
     /////////////////////////
     // VARIABLES
     /////////////////////////

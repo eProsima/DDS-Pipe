@@ -33,14 +33,6 @@ DdsTopic::DdsTopic()
     m_internal_type_discriminator = INTERNAL_TOPIC_TYPE_RTPS;
 }
 
-std::ostream& operator <<(
-        std::ostream& os,
-        const DdsTopic& t)
-{
-    os << "DdsTopic{" << t.topic_name() << ";" << t.type_name << t.topic_qos << "}";
-    return os;
-}
-
 /////////////////////////
 // METHODS
 /////////////////////////
@@ -59,6 +51,14 @@ bool DdsTopic::is_valid(
 std::string DdsTopic::topic_unique_name() const noexcept
 {
     return Topic::topic_unique_name() + type_name;
+}
+
+std::string DdsTopic::serialize() const noexcept
+{
+    std::stringstream ss;
+    ss << "Topic{" << m_topic_name << ";" << type_name << ";" << topic_qos << "(" << m_internal_type_discriminator <<
+        ")}";
+    return ss.str();
 }
 
 /////////////////////////

@@ -87,7 +87,7 @@ void Track::enable() noexcept
     if (!enabled_)
     {
         logInfo(DDSPIPE_TRACK,
-                "Enabling Track " << reader_participant_id_ << " for topic " << topic_->topic_name() <<
+                "Enabling Track " << reader_participant_id_ << " for topic " << topic_->serialize() <<
                 ".");
         enabled_ = true;
 
@@ -117,7 +117,7 @@ void Track::disable() noexcept
     if (enabled_)
     {
         logInfo(DDSPIPE_TRACK,
-                "Disabling Track " << reader_participant_id_ << " for topic " << topic_->topic_name() <<
+                "Disabling Track " << reader_participant_id_ << " for topic " << topic_->serialize() <<
                 ".");
 
         // Do disable before stop in the mutex so the Track is forced to stop in next iteration
@@ -205,13 +205,13 @@ void Track::transmit_() noexcept
         else if (!ret)
         {
             // Error reading data
-            logWarning(DDSPIPE_TRACK, "Error taking data in Track " << topic_->topic_name() << ". Error code " << ret
+            logWarning(DDSPIPE_TRACK, "Error taking data in Track " << topic_->serialize() << ". Error code " << ret
                                                                     << ". Skipping data and continue.");
             continue;
         }
 
         logDebug(DDSPIPE_TRACK,
-                "Track " << reader_participant_id_ << " for topic " << topic_->topic_name() <<
+                "Track " << reader_participant_id_ << " for topic " << topic_->serialize() <<
                 " transmitting data from remote endpoint.");
 
         // Send data through writers
@@ -225,7 +225,7 @@ void Track::transmit_() noexcept
 
             if (!ret)
             {
-                logWarning(DDSPIPE_TRACK, "Error writting data in Track " << topic_->topic_name() << ". Error code "
+                logWarning(DDSPIPE_TRACK, "Error writting data in Track " << topic_->serialize() << ". Error code "
                                                                           << ret <<
                         ". Skipping data for this writer and continue.");
                 continue;
@@ -240,7 +240,7 @@ std::ostream& operator <<(
         std::ostream& os,
         const Track& track)
 {
-    os << "Track{" << track.topic_->topic_name() << ";" << track.reader_participant_id_ << "}";
+    os << "Track{" << track.topic_->serialize() << ";" << track.reader_participant_id_ << "}";
     return os;
 }
 
