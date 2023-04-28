@@ -210,13 +210,28 @@ public:
             const Yaml& yml,
             const TagType& tag);
 
+    //! Get nonnegative integer value inside \c tag
+    static unsigned int get_nonnegative_int(
+            const Yaml& yml,
+            const TagType& tag);
+
     //! Get positive integer value inside \c tag
     static unsigned int get_positive_int(
             const Yaml& yml,
             const TagType& tag);
 
+    //! Get nonnegative float value inside \c tag
+    static float get_nonnegative_float(
+            const Yaml& yml,
+            const TagType& tag);
+
     //! Get positive float value inside \c tag
     static float get_positive_float(
+            const Yaml& yml,
+            const TagType& tag);
+
+    //! Get nonnegative double value inside \c tag
+    static double get_nonnegative_double(
             const Yaml& yml,
             const TagType& tag);
 
