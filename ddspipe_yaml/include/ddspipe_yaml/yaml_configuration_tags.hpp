@@ -95,6 +95,14 @@ constexpr const char* DISCOVERY_SERVER_GUID_TAG("guid"); //! TODO: add comment
 constexpr const char* DISCOVERY_SERVER_ID_TAG("id"); //! TODO: add comment
 constexpr const char* DISCOVERY_SERVER_ID_ROS_TAG("ros-discovery-server"); //! TODO: add comment
 
+// Timestamp (std::chrono::time_point) related tags
+constexpr const char* TIMESTAMP_DATETIME_TAG("datetime"); //! TODO: add comment
+constexpr const char* TIMESTAMP_DATETIME_FORMAT_TAG("format"); //! TODO: add comment
+constexpr const char* TIMESTAMP_LOCAL_TAG("local"); //! TODO: add comment
+constexpr const char* TIMESTAMP_MILLISECONDS_TAG("milliseconds"); //! TODO: add comment
+constexpr const char* TIMESTAMP_MICROSECONDS_TAG("microseconds"); //! TODO: add comment
+constexpr const char* TIMESTAMP_NANOSECONDS_TAG("nanoseconds"); //! TODO: add comment
+
 // Advanced configuration
 constexpr const char* SPECS_TAG("specs"); //! Specs options for DDS Router configuration
 constexpr const char* NUMBER_THREADS_TAG("threads"); //! Number of threads to configure the thread pool
