@@ -356,7 +356,7 @@ utils::Timestamp YamlReader::get<utils::Timestamp>(
         ns = std::chrono::nanoseconds(get_nonnegative_int(yml, TIMESTAMP_NANOSECONDS_TAG));
     }
 
-    return ret_timestamp + ms + us + ns;
+    return std::chrono::time_point_cast<utils::Timestamp::duration>(ret_timestamp + ms + us + ns);
 }
 
 } /* namespace yaml */
