@@ -50,6 +50,13 @@ std::string Topic::topic_name() const noexcept
     return m_topic_name;
 }
 
+std::string Topic::serialize() const noexcept
+{
+    std::stringstream ss;
+    ss << "Topic{" << m_topic_name << ";(" << m_internal_type_discriminator << ")}";
+    return ss.str();
+}
+
 TopicInternalTypeDiscriminator Topic::internal_type_discriminator() const noexcept
 {
     return m_internal_type_discriminator;
@@ -91,7 +98,7 @@ std::ostream& operator <<(
         std::ostream& os,
         const Topic& t)
 {
-    os << "Topic{" << t.m_topic_name << ";(" << t.m_internal_type_discriminator << ")}";
+    os << t.serialize();
     return os;
 }
 
