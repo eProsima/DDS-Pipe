@@ -103,6 +103,32 @@ unsigned int YamlReader::get<unsigned int>(
     return get_scalar<unsigned int>(yml);
 }
 
+unsigned int YamlReader::get_nonnegative_int(
+        const Yaml& yml,
+        const TagType& tag)
+{
+    int ret;
+    try
+    {
+        // NOTE: get signed int and check nonnegative afterwards to avoid underflow when negative values provided
+        ret = get_scalar<int>(get_value_in_tag(yml, tag));
+    }
+    catch (const std::exception& e)
+    {
+        throw eprosima::utils::ConfigurationException(
+                  utils::Formatter() << "Error reading nonnegative integer under tag <" << tag << "> :\n " << e.what());
+    }
+
+    if (!(ret >= 0))
+    {
+        throw eprosima::utils::ConfigurationException(
+                  utils::Formatter() << "Error reading nonnegative integer under tag <" << tag <<
+                      "> : value is negative.");
+    }
+
+    return ret;
+}
+
 unsigned int YamlReader::get_positive_int(
         const Yaml& yml,
         const TagType& tag)
@@ -110,8 +136,7 @@ unsigned int YamlReader::get_positive_int(
     int ret;
     try
     {
-        // NOTE: get signed int and check positive afterwards to avoid underflow when negative values provided
-        ret = get_scalar<int>(get_value_in_tag(yml, tag));
+        ret = get_nonnegative_int(yml, tag);
     }
     catch (const std::exception& e)
     {
@@ -138,7 +163,7 @@ float YamlReader::get<float>(
     return get_scalar<float>(yml);
 }
 
-float YamlReader::get_positive_float(
+float YamlReader::get_nonnegative_float(
         const Yaml& yml,
         const TagType& tag)
 {
@@ -146,6 +171,31 @@ float YamlReader::get_positive_float(
     try
     {
         ret = get_scalar<float>(get_value_in_tag(yml, tag));
+    }
+    catch (const std::exception& e)
+    {
+        throw eprosima::utils::ConfigurationException(
+                  utils::Formatter() << "Error reading nonnegative float under tag <" << tag << "> :\n " << e.what());
+    }
+
+    if (!(ret >= 0))
+    {
+        throw eprosima::utils::ConfigurationException(
+                  utils::Formatter() << "Error reading nonnegative float under tag <" << tag <<
+                      "> : value is negative.");
+    }
+
+    return ret;
+}
+
+float YamlReader::get_positive_float(
+        const Yaml& yml,
+        const TagType& tag)
+{
+    float ret;
+    try
+    {
+        ret = get_nonnegative_float(yml, tag);
     }
     catch (const std::exception& e)
     {
@@ -172,7 +222,7 @@ double YamlReader::get<double>(
     return get_scalar<double>(yml);
 }
 
-double YamlReader::get_positive_double(
+double YamlReader::get_nonnegative_double(
         const Yaml& yml,
         const TagType& tag)
 {
@@ -180,6 +230,31 @@ double YamlReader::get_positive_double(
     try
     {
         ret = get_scalar<double>(get_value_in_tag(yml, tag));
+    }
+    catch (const std::exception& e)
+    {
+        throw eprosima::utils::ConfigurationException(
+                  utils::Formatter() << "Error reading nonnegative double under tag <" << tag << "> :\n " << e.what());
+    }
+
+    if (!(ret >= 0))
+    {
+        throw eprosima::utils::ConfigurationException(
+                  utils::Formatter() << "Error reading nonnegative double under tag <" << tag <<
+                      "> : value is negative.");
+    }
+
+    return ret;
+}
+
+double YamlReader::get_positive_double(
+        const Yaml& yml,
+        const TagType& tag)
+{
+    double ret;
+    try
+    {
+        ret = get_nonnegative_double(yml, tag);
     }
     catch (const std::exception& e)
     {
