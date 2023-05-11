@@ -14,6 +14,8 @@
 
 #pragma once
 
+#include <cpp_utils/time/time_utils.hpp>
+
 #include <fastdds/rtps/rtps_fwd.h>
 #include <fastrtps/rtps/attributes/HistoryAttributes.h>
 #include <fastrtps/attributes/TopicAttributes.h>
@@ -105,6 +107,14 @@ public:
     void onWriterMatched(
             fastrtps::rtps::RTPSWriter*,
             fastrtps::rtps::MatchingInfo& info) noexcept override;
+
+    /////////////////////
+    // STATIC ATTRIBUTES
+    /////////////////////
+
+    //! Maximum time that a RELIABLE RTPSWriter will wait to receive the acknowledgements relative to all sent messages.
+    DDSPIPE_PARTICIPANTS_DllAPI
+    static std::atomic<utils::Duration_ms> wait_all_acked_timeout;
 
 protected:
 
@@ -227,7 +237,7 @@ protected:
     //! RTPS Participant
     fastrtps::rtps::RTPSParticipant* rtps_participant_;
 
-    //! Wether it is repeater or not (used for data filters and/or qos)
+    //! Whether it is repeater or not (used for data filters and/or qos)
     bool repeater_;
 
     /////

@@ -19,6 +19,7 @@
 
 #include <cpp_utils/exception/InitializationException.hpp>
 #include <cpp_utils/Log.hpp>
+#include <cpp_utils/time/time_utils.hpp>
 
 #include <ddspipe_participants/efficiency/cache_change/CacheChangePool.hpp>
 #include <ddspipe_participants/writer/rtps/CommonWriter.hpp>
@@ -33,6 +34,8 @@ namespace rtps {
 
 using namespace eprosima::ddspipe::core::types;
 using eprosima::ddspipe::core::types::operator <<;
+
+std::atomic<utils::Duration_ms> CommonWriter::wait_all_acked_timeout{0};
 
 CommonWriter::CommonWriter(
         const ParticipantId& participant_id,
@@ -71,6 +74,12 @@ CommonWriter::~CommonWriter()
     {
         // Unset listener before destruction (not necessary in principle, but just in case)
         rtps_writer_->set_listener(nullptr);
+
+        if (wait_all_acked_timeout > 0)
+        {
+            rtps_writer_->wait_for_all_acked(wait_all_acked_timeout.load());
+        }
+
         // Delete the CommonWriter the History is cleaned
         fastrtps::rtps::RTPSDomain::removeRTPSWriter(rtps_writer_);
     }
@@ -147,7 +156,7 @@ utils::ReturnCode CommonWriter::write_nts_(
     }
 
     logDebug(DDSPIPE_RTPS_COMMONWRITER,
-            "CommonWriter " << *this << " sending payload " << new_change->serializedPayload << " from " <<
+            "CommonWriter " << *this << " sending payload " << rtps_data.payload << " from " <<
             rtps_data.source_guid);
 
     // Get params to write (if set)
