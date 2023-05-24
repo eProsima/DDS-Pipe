@@ -29,6 +29,7 @@
 #include <ddspipe_participants/reader/auxiliar/BlankReader.hpp>
 #include <ddspipe_participants/reader/dds/SimpleReader.hpp>
 #include <ddspipe_participants/reader/dds/SpecificQoSReader.hpp>
+#include <ddspipe_participants/types/dds/TopicDataType.hpp>
 
 #include <utils/utils.hpp>
 
@@ -292,7 +293,13 @@ fastdds::dds::Topic* CommonParticipant::topic_related_(const core::types::DdsTop
         return it->second;
     }
 
-    // TODO register type
+    // If type is not registered, register it
+    if (type_names_registered_.find(topic.type_name) == type_names_registered_.end())
+    {
+        dds_participant_->register_type(
+            eprosima::fastdds::dds::TypeSupport(new TopicDataType(topic))
+        );
+    }
 
     // Create the new topic
     fastdds::dds::Topic* dds_topic = dds_participant_->create_topic(

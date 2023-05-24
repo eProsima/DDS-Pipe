@@ -154,6 +154,13 @@ protected:
             fastdds::dds::Topic*>>;
     TopicsMapType dds_topics_;
 
+    /**
+     * @brief
+     *
+     * @note this variable is protected with dds_topics_ mutex
+     */
+    std::set<std::string> type_names_registered_;
+
     const std::shared_ptr<SimpleParticipantConfiguration> configuration_;
 
     //! DDS Router shared Payload Pool

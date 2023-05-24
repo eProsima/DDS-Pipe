@@ -181,17 +181,17 @@ TEST(ParticipantsCreationgTest, ddspipe_all_creation_builtin_topic)
     }
 
     // TODO uncomment
-    // // Xml
-    // {
-    //     std::shared_ptr<participants::XmlParticipantConfiguration> conf(
-    //         new participants::XmlParticipantConfiguration());
-    //     conf->id = core::types::ParticipantId("Xml");
+    // Xml
+    {
+        std::shared_ptr<participants::XmlParticipantConfiguration> conf(
+            new participants::XmlParticipantConfiguration());
+        conf->id = core::types::ParticipantId("Xml");
 
-    //     auto part = std::make_shared<participants::dds::XmlParticipant>(
-    //         conf, payload_pool, discovery_database);
-    //     part->init();
-    //     part_db->add_participant(conf->id, part);
-    // }
+        auto part = std::make_shared<participants::dds::XmlParticipant>(
+            conf, payload_pool, discovery_database);
+        part->init();
+        part_db->add_participant(conf->id, part);
+    }
 
     // Topic
     core::types::DdsTopic topic_1;
