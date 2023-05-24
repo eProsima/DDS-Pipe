@@ -19,35 +19,32 @@
 #include <cpp_utils/exception/InconsistencyException.hpp>
 #include <cpp_utils/Log.hpp>
 
-#include <ddspipe_participants/reader/rtps/SpecificQoSReader.hpp>
+#include <ddspipe_participants/reader/dds/SpecificQoSReader.hpp>
 #include <utils/utils.hpp>
 
 namespace eprosima {
 namespace ddspipe {
 namespace participants {
-namespace rtps {
+namespace dds {
 
 SpecificQoSReader::SpecificQoSReader(
         const core::types::ParticipantId& participant_id,
         const core::types::DdsTopic& topic,
         const std::shared_ptr<core::PayloadPool>& payload_pool,
-        fastrtps::rtps::RTPSParticipant* rtps_participant,
+        fastdds::dds::Subscriber* subscriber,
+        fastdds::dds::Topic* topic_entity,
         const std::shared_ptr<core::DiscoveryDatabase>& discovery_database)
     : CommonReader(
-        participant_id, topic, payload_pool, rtps_participant,
-        reckon_history_attributes_(topic),
-        reckon_reader_attributes_(topic),
-        reckon_topic_attributes_(topic),
-        reckon_reader_qos_(topic))
+        participant_id, topic, payload_pool, subscriber, topic_entity)
     , discovery_database_(discovery_database)
 {
 }
 
 void SpecificQoSReader::fill_received_data_(
-        const fastrtps::rtps::CacheChange_t& received_change,
+        const fastdds::dds::SampleInfo& info,
         core::types::RtpsPayloadData& data_to_fill) const noexcept
 {
-    CommonReader::fill_received_data_(received_change, data_to_fill);
+    CommonReader::fill_received_data_(info, data_to_fill);
 
     // Find qos of writer
     try
@@ -67,7 +64,7 @@ void SpecificQoSReader::fill_received_data_(
     }
 }
 
-} /* namespace rtps */
+} /* namespace dds */
 } /* namespace participants */
 } /* namespace ddspipe */
 } /* namespace eprosima */

@@ -43,6 +43,8 @@
 #include <ddspipe_participants/writer/rtps/QoSSpecificWriter.hpp>
 #include <ddspipe_participants/writer/rtps/SimpleWriter.hpp>
 
+#include <utils/utils.hpp>
+
 namespace eprosima {
 namespace ddspipe {
 namespace participants {
@@ -104,101 +106,13 @@ void CommonParticipant::onParticipantDiscovery(
     }
 }
 
-template<class DiscoveryInfoKind>
-core::types::Endpoint CommonParticipant::create_common_endpoint_from_info_(
-        DiscoveryInfoKind& info)
-{
-    // Endpoint struct to fill
-    core::types::Endpoint endpoint;
-
-    // Parse GUID
-    endpoint.guid = info.info.guid();
-
-    // Parse TopicQoS
-    // Durability
-    endpoint.topic.topic_qos.durability_qos = info.info.m_qos.m_durability.durabilityKind();
-    // Reliability
-    if (info.info.m_qos.m_reliability.kind == fastdds::dds::BEST_EFFORT_RELIABILITY_QOS)
-    {
-        endpoint.topic.topic_qos.reliability_qos = fastrtps::rtps::BEST_EFFORT;
-    }
-    else if (info.info.m_qos.m_reliability.kind == fastdds::dds::RELIABLE_RELIABILITY_QOS)
-    {
-        endpoint.topic.topic_qos.reliability_qos = fastrtps::rtps::RELIABLE;
-    }
-    else
-    {
-        utils::tsnh(
-            utils::Formatter() <<
-                "Invalid ReliabilityQoS value found while parsing DiscoveryInfo for Endpoint creation.");
-    }
-    // Set Topic with Partitions
-    endpoint.topic.topic_qos.use_partitions = !info.info.m_qos.m_partition.empty();
-    // Set Topic with ownership
-    endpoint.topic.topic_qos.ownership_qos = info.info.m_qos.m_ownership.kind;
-    // Set Topic key
-    endpoint.topic.topic_qos.keyed = info.info.topicKind() == eprosima::fastrtps::rtps::TopicKind_t::WITH_KEY;
-
-    // Parse Topic
-    core::types::DdsTopic info_topic;
-    endpoint.topic.m_topic_name = std::string(info.info.topicName());
-    endpoint.topic.type_name = std::string(info.info.typeName());
-    endpoint.topic.m_internal_type_discriminator = core::types::INTERNAL_TOPIC_TYPE_RTPS;
-
-    // Parse specific QoS of the entity
-    if (endpoint.topic.topic_qos.has_partitions())
-    {
-        endpoint.specific_qos.partitions = info.info.m_qos.m_partition;
-    }
-
-    // Set participant that discovered
-    endpoint.discoverer_participant_id = configuration_->id;
-
-    // NOTE: ownership is only for Writer
-    return endpoint;
-}
-
-template<>
-DDSPIPE_PARTICIPANTS_DllAPI
-core::types::Endpoint CommonParticipant::create_endpoint_from_info_<fastrtps::rtps::WriterDiscoveryInfo>(
-        fastrtps::rtps::WriterDiscoveryInfo& info)
-{
-    // Create Endpoint from common info
-    core::types::Endpoint endpoint = create_common_endpoint_from_info_(info);
-
-    if (endpoint.topic.topic_qos.has_ownership())
-    {
-        // Only for writers
-        endpoint.specific_qos.ownership_strength = info.info.m_qos.m_ownershipStrength;
-    }
-
-    // Set type
-    endpoint.kind = core::types::EndpointKind::writer;
-
-    return endpoint;
-}
-
-template<>
-DDSPIPE_PARTICIPANTS_DllAPI
-core::types::Endpoint CommonParticipant::create_endpoint_from_info_<fastrtps::rtps::ReaderDiscoveryInfo>(
-        fastrtps::rtps::ReaderDiscoveryInfo& info)
-{
-    // Create Endpoint from common info
-    core::types::Endpoint endpoint = create_common_endpoint_from_info_(info);
-
-    // Set type
-    endpoint.kind = core::types::EndpointKind::reader;
-
-    return endpoint;
-}
-
 void CommonParticipant::onReaderDiscovery(
         fastrtps::rtps::RTPSParticipant* participant,
         fastrtps::rtps::ReaderDiscoveryInfo&& info)
 {
     if (info.info.guid().guidPrefix != participant->getGuid().guidPrefix)
     {
-        core::types::Endpoint info_reader = create_endpoint_from_info_<fastrtps::rtps::ReaderDiscoveryInfo>(info);
+        core::types::Endpoint info_reader = detail::create_endpoint_from_info_<fastrtps::rtps::ReaderDiscoveryInfo>(info, this->id());
 
         if (info.status == fastrtps::rtps::ReaderDiscoveryInfo::DISCOVERED_READER)
         {
@@ -236,7 +150,7 @@ void CommonParticipant::onWriterDiscovery(
 {
     if (info.info.guid().guidPrefix != participant->getGuid().guidPrefix)
     {
-        core::types::Endpoint info_writer = create_endpoint_from_info_<fastrtps::rtps::WriterDiscoveryInfo>(info);
+        core::types::Endpoint info_writer = detail::create_endpoint_from_info_<fastrtps::rtps::WriterDiscoveryInfo>(info, this->id());
 
         if (info.status == fastrtps::rtps::WriterDiscoveryInfo::DISCOVERED_WRITER)
         {

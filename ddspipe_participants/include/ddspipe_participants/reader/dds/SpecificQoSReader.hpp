@@ -17,12 +17,12 @@
 #include <ddspipe_core/dynamic/DiscoveryDatabase.hpp>
 
 #include <ddspipe_participants/library/library_dll.h>
-#include <ddspipe_participants/reader/rtps/CommonReader.hpp>
+#include <ddspipe_participants/reader/dds/CommonReader.hpp>
 
 namespace eprosima {
 namespace ddspipe {
 namespace participants {
-namespace rtps {
+namespace dds {
 
 /**
  * RTPS Reader with specific QoS implements abstract CommonReader.
@@ -42,7 +42,8 @@ public:
      * @param participant_id    Router Id of the Participant that has created this SpecificQoSReader.
      * @param topic             Topic that this SpecificQoSReader subscribes to.
      * @param payload_pool      Shared Payload Pool to received data and take it.
-     * @param rtps_participant  RTPS Participant pointer (this is not stored).
+     * @param subscriber  DDS Subscriber
+     * @param topic_entity  DDS Topic
      *
      * @throw \c InitializationException in case any creation has failed
      */
@@ -51,7 +52,8 @@ public:
             const core::types::ParticipantId& participant_id,
             const core::types::DdsTopic& topic,
             const std::shared_ptr<core::PayloadPool>& payload_pool,
-            fastrtps::rtps::RTPSParticipant* rtps_participant,
+            fastdds::dds::Subscriber* subscriber,
+            fastdds::dds::Topic* topic_entity,
             const std::shared_ptr<core::DiscoveryDatabase>& discovery_database);
 
 protected:
@@ -60,16 +62,15 @@ protected:
      * Specializes \c CommonReader method and set the QoS of the data received.
      */
     virtual void fill_received_data_(
-            const fastrtps::rtps::CacheChange_t& received_change,
+            const fastdds::dds::SampleInfo& info,
             core::types::RtpsPayloadData& data_to_fill) const noexcept override;
-
 
     //! Reference to the \c DiscoveryDatabase .
     std::shared_ptr<core::DiscoveryDatabase> discovery_database_;
 
 };
 
-} /* namespace rtps */
+} /* namespace dds */
 } /* namespace participants */
 } /* namespace ddspipe */
 } /* namespace eprosima */

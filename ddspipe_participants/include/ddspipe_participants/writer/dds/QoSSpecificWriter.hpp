@@ -14,62 +14,56 @@
 
 #pragma once
 
-#include <ddspipe_core/dynamic/DiscoveryDatabase.hpp>
-
 #include <ddspipe_participants/library/library_dll.h>
-#include <ddspipe_participants/reader/rtps/CommonReader.hpp>
+#include <ddspipe_participants/writer/dds/CommonWriter.hpp>
 
 namespace eprosima {
 namespace ddspipe {
 namespace participants {
-namespace rtps {
+namespace dds {
 
 /**
- * RTPS Reader with specific QoS implements abstract CommonReader.
+ * RTPS Writer with specific QoS implements abstract CommonWriter.
  *
- * This class fills the data receive information with the QoS of the Writer that has sent the data.
- * In order to access this QoS it has a reference to the DiscoveryDatabase.
+ * This class implements a RTPS Writer with specific QoS policies.
  */
-class SpecificQoSReader : public CommonReader
+class QoSSpecificWriter : public CommonWriter
 {
 public:
 
     /**
-     * @brief Construct a new SpecificQoSReader object
+     * @brief Construct a new QoSSpecificWriter object
      *
-     * Get the Attributes and TopicQoS and create the SpecificQoSReader History and the RTPS SpecificQoSReader.
+     * Get the Attributes and TopicQoS and create the QoSSpecificWriter History and the RTPS QoSSpecificWriter.
      *
-     * @param participant_id    Router Id of the Participant that has created this SpecificQoSReader.
-     * @param topic             Topic that this SpecificQoSReader subscribes to.
+     * @param participant_id    Router Id of the Participant that has created this QoSSpecificWriter.
+     * @param topic             Topic that this QoSSpecificWriter subscribes to.
      * @param payload_pool      Shared Payload Pool to received data and take it.
      * @param rtps_participant  RTPS Participant pointer (this is not stored).
      *
      * @throw \c InitializationException in case any creation has failed
      */
     DDSPIPE_PARTICIPANTS_DllAPI
-    SpecificQoSReader(
+    QoSSpecificWriter(
             const core::types::ParticipantId& participant_id,
             const core::types::DdsTopic& topic,
             const std::shared_ptr<core::PayloadPool>& payload_pool,
-            fastrtps::rtps::RTPSParticipant* rtps_participant,
-            const std::shared_ptr<core::DiscoveryDatabase>& discovery_database);
+            const core::types::SpecificEndpointQoS& specific_qos,
+            const fastdds::dds::Publisher* publisher,
+            const fastdds::dds::Topic* topic_entity);
 
 protected:
 
-    /**
-     * Specializes \c CommonReader method and set the QoS of the data received.
-     */
-    virtual void fill_received_data_(
-            const fastrtps::rtps::CacheChange_t& received_change,
-            core::types::RtpsPayloadData& data_to_fill) const noexcept override;
+    //! Specific writer QoS to override (more or less) the CommonWriter qos
+    virtual
+    fastdds::dds::DataWriterQos
+    reckon_writer_qos_() const;
 
-
-    //! Reference to the \c DiscoveryDatabase .
-    std::shared_ptr<core::DiscoveryDatabase> discovery_database_;
-
+    //! Specific QoS of the Endpoint
+    core::types::SpecificEndpointQoS specific_qos_;
 };
 
-} /* namespace rtps */
+} /* namespace dds */
 } /* namespace participants */
 } /* namespace ddspipe */
 } /* namespace eprosima */

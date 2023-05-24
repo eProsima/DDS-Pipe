@@ -25,6 +25,7 @@
 #include <ddspipe_participants/participant/rtps/DiscoveryServerParticipant.hpp>
 #include <ddspipe_participants/participant/rtps/SimpleParticipant.hpp>
 #include <ddspipe_participants/participant/rtps/InitialPeersParticipant.hpp>
+#include <ddspipe_participants/participant/dds/XmlParticipant.hpp>
 #include <ddspipe_participants/testing/entities/mock_entities.hpp>
 #include <ddspipe_participants/testing/random_values.hpp>
 
@@ -100,6 +101,15 @@ TEST(ParticipantsCreationgTest, creation_trivial)
         participant.init();
     }
 
+    // Xml Participant
+    {
+        std::shared_ptr<participants::XmlParticipantConfiguration> conf(
+            new participants::XmlParticipantConfiguration());
+        conf->id = part_id;
+
+        participants::dds::XmlParticipant participant(conf, payload_pool, discovery_database);
+        participant.init();
+    }
 }
 
 /**
@@ -170,12 +180,35 @@ TEST(ParticipantsCreationgTest, ddspipe_all_creation_builtin_topic)
         part_db->add_participant(conf->id, part);
     }
 
+    // TODO uncomment
+    // // Xml
+    // {
+    //     std::shared_ptr<participants::XmlParticipantConfiguration> conf(
+    //         new participants::XmlParticipantConfiguration());
+    //     conf->id = core::types::ParticipantId("Xml");
+
+    //     auto part = std::make_shared<participants::dds::XmlParticipant>(
+    //         conf, payload_pool, discovery_database);
+    //     part->init();
+    //     part_db->add_participant(conf->id, part);
+    // }
+
     // Topic
     core::types::DdsTopic topic_1;
     topic_1.m_topic_name = "topic1";
     topic_1.type_name = "type1";
     eprosima::utils::Heritable<core::types::DistributedTopic> htopic_1 =
             eprosima::utils::Heritable<core::types::DdsTopic>::make_heritable(topic_1);
+
+    // Special QoS Topic
+    core::types::DdsTopic topic_2;
+    topic_2.m_topic_name = "topic2";
+    topic_2.type_name = "type2";
+    topic_2.topic_qos.keyed = true;
+    topic_2.topic_qos.ownership_qos = eprosima::ddspipe::core::types::OwnershipQosPolicyKind::EXCLUSIVE_OWNERSHIP_QOS;
+    topic_2.topic_qos.use_partitions = true;
+    eprosima::utils::Heritable<core::types::DistributedTopic> htopic_2 =
+            eprosima::utils::Heritable<core::types::DdsTopic>::make_heritable(topic_2);
 
     // Create DDS Pipe
     core::DdsPipe ddspipe(
@@ -184,7 +217,7 @@ TEST(ParticipantsCreationgTest, ddspipe_all_creation_builtin_topic)
         payload_pool,
         part_db,
         thread_pool,
-        {htopic_1},
+        {htopic_1, htopic_2},
         true
         );
 
