@@ -55,8 +55,8 @@ public:
             const core::types::ParticipantId& participant_id,
             const core::types::DdsTopic& topic,
             const std::shared_ptr<core::PayloadPool>& payload_pool,
-            const fastdds::dds::Publisher* publisher,
-            const fastdds::dds::Topic* topic_entity);
+            fastdds::dds::DomainParticipant* participant,
+            fastdds::dds::Topic* topic_entity);
 
     /**
      * @brief Destroy the MultiWriter object
@@ -76,43 +76,45 @@ protected:
     //! Override specific disable to call disable in internal writers.
     virtual void disable_() noexcept override;
 
-    /**
-     * TODO
-     */
+    /////////////////////////
+    // IWRITER OVERRIDES
+    /////////////////////////
+
     virtual utils::ReturnCode write_nts_(
             core::IRoutingData& data) noexcept override;
 
-    bool exist_partition_(
-            const core::types::SpecificEndpointQoS& data_qos);
+    /////////////////////////
+    // INTERNAL METHODS
+    /////////////////////////
+
     QoSSpecificWriter* get_writer_or_create_(
             const core::types::SpecificEndpointQoS& data_qos);
     QoSSpecificWriter* create_writer_nts_(
             const core::types::SpecificEndpointQoS& data_qos);
 
     /////////////////////////
-    // INTERNAL VARIABLES
-    /////////////////////////
-
-    /////////////////////////
     // EXTERNAL VARIABLES
     /////////////////////////
 
-    const fastdds::dds::Publisher* dds_publisher_;
-    const fastdds::dds::Topic* dds_topic_;
+    fastdds::dds::DomainParticipant* dds_participant_;
+    fastdds::dds::Topic* dds_topic_;
 
     /////////////////////////
     // INTERNAL VARIABLES
     /////////////////////////
 
-    using WritersMapType = utils::SharedAtomicable<std::map<core::types::SpecificEndpointQoS, QoSSpecificWriter*>>;
+    using WritersMapType =
+        utils::SharedAtomicable<
+            std::map<
+                core::types::SpecificEndpointQoS,
+                std::unique_ptr<
+                    QoSSpecificWriter>>>;
     //! Map of writer indexed by Specific QoS of each.
     WritersMapType writers_map_;
 
     const std::shared_ptr<core::PayloadPool>& payload_pool_;
 
     core::types::DdsTopic topic_;
-
-    fastdds::dds::DataWriter* writer_;
 };
 
 } /* namespace dds */

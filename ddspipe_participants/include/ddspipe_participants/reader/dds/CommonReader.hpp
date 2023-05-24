@@ -18,6 +18,7 @@
 
 #include <cpp_utils/time/time_utils.hpp>
 
+#include <fastdds/dds/domain/DomainParticipant.hpp>
 #include <fastdds/dds/subscriber/DataReader.hpp>
 #include <fastdds/dds/subscriber/DataReaderListener.hpp>
 #include <fastdds/dds/subscriber/Subscriber.hpp>
@@ -92,7 +93,7 @@ protected:
             const core::types::ParticipantId& participant_id,
             const core::types::DdsTopic& topic,
             const std::shared_ptr<core::PayloadPool>& payload_pool,
-            fastdds::dds::Subscriber* subscriber,
+            fastdds::dds::DomainParticipant* participant,
             fastdds::dds::Topic* topic_entity);
 
     // Specific enable/disable do not need to be implemented
@@ -128,6 +129,10 @@ protected:
     /////////////////////////
 
     virtual
+    fastdds::dds::SubscriberQos
+    reckon_subscriber_qos_() const;
+
+    virtual
     fastdds::dds::DataReaderQos
     reckon_reader_qos_() const;
 
@@ -140,7 +145,7 @@ protected:
     // EXTERNAL METHODS
     /////////////////////////
 
-    fastdds::dds::Subscriber* dds_subscriber_;
+    fastdds::dds::DomainParticipant* dds_participant_;
     fastdds::dds::Topic* dds_topic_;
 
     /////////////////////////
@@ -151,6 +156,7 @@ protected:
 
     core::types::DdsTopic topic_;
 
+    fastdds::dds::Subscriber* dds_subscriber_;
     fastdds::dds::DataReader* reader_;
 };
 

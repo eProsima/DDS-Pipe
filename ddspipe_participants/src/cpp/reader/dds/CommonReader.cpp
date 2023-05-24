@@ -34,18 +34,32 @@ CommonReader::~CommonReader()
 {
     // This variables should be set, otherwise the creation should have fail
     // Anyway, the if case is used for safety reasons
-    if (reader_)
+    if (dds_subscriber_)
     {
         reader_->set_listener(nullptr);
         dds_subscriber_->delete_datareader(reader_);
+
+        dds_participant_->delete_subscriber(dds_subscriber_);
     }
 
-    logInfo(DDSPIPE_RTPS_READER, "Deleting CommonReader created in Participant " <<
+    logInfo(DDSPIPE_DDS_WRITER, "Deleting CommonReader created in Participant " <<
             participant_id_ << " for topic " << topic_);
 }
 
 void CommonReader::init()
 {
+    // Create subscriber
+    dds_subscriber_ = dds_participant_->create_subscriber(
+        reckon_subscriber_qos_()
+    );
+
+    if (!dds_subscriber_)
+    {
+        throw utils::InitializationException(
+                  utils::Formatter() << "Error creating Subscriber for Participant " <<
+                      participant_id_ << " in topic " << topic_ << ".");
+    }
+
     // Create CommonReader
     // Listener must be set in creation as no callbacks should be missed
     // It is safe to do so here as object is already created and callbacks do not require anything set in this method
@@ -77,13 +91,14 @@ CommonReader::CommonReader(
         const core::types::ParticipantId& participant_id,
         const core::types::DdsTopic& topic,
         const std::shared_ptr<core::PayloadPool>& payload_pool,
-        fastdds::dds::Subscriber* subscriber,
+        fastdds::dds::DomainParticipant* participant,
         fastdds::dds::Topic* topic_entity)
     : BaseReader(participant_id)
-    , dds_subscriber_(subscriber)
+    , dds_participant_(participant)
     , dds_topic_(topic_entity)
     , payload_pool_(payload_pool)
     , topic_(topic)
+    , dds_subscriber_(nullptr)
     , reader_(nullptr)
 {
     // Do nothing
@@ -93,42 +108,7 @@ utils::ReturnCode CommonReader::take_nts_(
         std::unique_ptr<core::IRoutingData>& data) noexcept
 {
     return utils::ReturnCode::RETCODE_NO_DATA;
-
     // TODO
-    // // Check if there is data available
-    // if (!(rtps_reader_->get_unread_count() > 0))
-    // {
-    //     return utils::ReturnCode::RETCODE_NO_DATA;
-    // }
-
-    // fastrtps::rtps::CacheChange_t* received_change = nullptr;
-    // fastrtps::rtps::WriterProxy* wp = nullptr;
-
-    // // Read first change of the history
-    // if (!rtps_reader_->nextUntakenCache(&received_change, &wp))
-    // {
-    //     // Error reading.
-    //     return utils::ReturnCode::RETCODE_ERROR;
-    // }
-
-    // // If data received is not correct, discard it and remove it from history
-    // auto ret = is_data_correct_(received_change);
-    // if (!ret)
-    // {
-    //     // Remove the change in the History and release it in the reader
-    //     rtps_reader_->getHistory()->remove_change(received_change);
-    //     return ret;
-    // }
-
-    // // Store the new data that has arrived in the Track data
-    // auto data_ptr = create_data_(*received_change);
-    // fill_received_data_(*received_change, *data_ptr);
-    // data.reset(data_ptr);
-
-    // // Remove the change in the History and release it in the reader
-    // rtps_reader_->getHistory()->remove_change(received_change);
-
-    return utils::ReturnCode::RETCODE_OK;
 }
 
 void CommonReader::enable_nts_() noexcept
@@ -139,6 +119,16 @@ void CommonReader::enable_nts_() noexcept
     {
         on_data_available_();
     }
+}
+
+fastdds::dds::SubscriberQos CommonReader::reckon_subscriber_qos_() const
+{
+    fastdds::dds::SubscriberQos qos = dds_participant_->get_default_subscriber_qos();
+    if (topic_.topic_qos.has_partitions())
+    {
+        qos.partition().push_back("*");
+    }
+    return qos;
 }
 
 fastdds::dds::DataReaderQos CommonReader::reckon_reader_qos_() const

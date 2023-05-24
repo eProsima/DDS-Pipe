@@ -12,25 +12,30 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+
 #include <fastrtps/rtps/RTPSDomain.h>
 #include <fastrtps/rtps/participant/RTPSParticipant.h>
+#include <fastrtps/rtps/common/CacheChange.h>
 
-#include <ddspipe_participants/reader/dds/SimpleReader.hpp>
 #include <cpp_utils/exception/InitializationException.hpp>
 #include <cpp_utils/Log.hpp>
+
+#include <ddspipe_participants/efficiency/cache_change/CacheChangePool.hpp>
+#include <ddspipe_participants/writer/dds/SimpleWriter.hpp>
+#include <ddspipe_participants/types/dds/RouterCacheChange.hpp>
 
 namespace eprosima {
 namespace ddspipe {
 namespace participants {
 namespace dds {
 
-SimpleReader::SimpleReader(
+SimpleWriter::SimpleWriter(
         const core::types::ParticipantId& participant_id,
         const core::types::DdsTopic& topic,
         const std::shared_ptr<core::PayloadPool>& payload_pool,
         fastdds::dds::DomainParticipant* participant,
         fastdds::dds::Topic* topic_entity)
-    : CommonReader(
+    : CommonWriter(
         participant_id, topic, payload_pool, participant, topic_entity)
 {
     // Do nothing

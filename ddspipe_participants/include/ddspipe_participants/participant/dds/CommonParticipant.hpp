@@ -146,8 +146,7 @@ protected:
     /////////////////////////
 
     fastdds::dds::DomainParticipant* dds_participant_{nullptr};
-    fastdds::dds::Publisher* dds_publisher_{nullptr};
-    fastdds::dds::Subscriber* dds_subscriber_{nullptr};
+    // NOTE: the publisher and subscriber is inside each endpoint because partitions depends on them.
 
     using TopicsMapType = utils::Atomicable<
         std::map<

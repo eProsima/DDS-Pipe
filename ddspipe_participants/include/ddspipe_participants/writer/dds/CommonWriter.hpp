@@ -16,7 +16,9 @@
 
 #include <cpp_utils/time/time_utils.hpp>
 
+#include <fastdds/dds/domain/DomainParticipant.hpp>
 #include <fastdds/dds/publisher/DataWriter.hpp>
+#include <fastdds/dds/publisher/Publisher.hpp>
 #include <fastdds/dds/publisher/qos/DataWriterQos.hpp>
 #include <fastdds/dds/topic/Topic.hpp>
 
@@ -97,8 +99,8 @@ protected:
             const core::types::ParticipantId& participant_id,
             const core::types::DdsTopic& topic,
             const std::shared_ptr<core::PayloadPool>& payload_pool,
-            const fastdds::dds::Publisher* publisher,
-            const fastdds::dds::Topic* topic_entity);
+            fastdds::dds::DomainParticipant* participant,
+            fastdds::dds::Topic* topic_entity);
 
     /////////////////////////
     // IWRITER METHODS
@@ -128,15 +130,19 @@ protected:
     /////////////////////////
 
     virtual
+    fastdds::dds::PublisherQos
+    reckon_publisher_qos_() const noexcept;
+
+    virtual
     fastdds::dds::DataWriterQos
-    reckon_writer_qos_() const;
+    reckon_writer_qos_() const noexcept;
 
     /////////////////////////
     // EXTERNAL VARIABLES
     /////////////////////////
 
-    const fastdds::dds::Publisher* dds_publisher_;
-    const fastdds::dds::Topic* dds_topic_;
+    fastdds::dds::DomainParticipant* dds_participant_;
+    fastdds::dds::Topic* dds_topic_;
 
     /////////////////////////
     // INTERNAL VARIABLES
@@ -146,6 +152,7 @@ protected:
 
     core::types::DdsTopic topic_;
 
+    fastdds::dds::Publisher* dds_publisher_;
     fastdds::dds::DataWriter* writer_;
 };
 

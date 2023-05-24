@@ -49,15 +49,19 @@ public:
             const core::types::DdsTopic& topic,
             const std::shared_ptr<core::PayloadPool>& payload_pool,
             const core::types::SpecificEndpointQoS& specific_qos,
-            const fastdds::dds::Publisher* publisher,
-            const fastdds::dds::Topic* topic_entity);
+            fastdds::dds::DomainParticipant* participant,
+            fastdds::dds::Topic* topic_entity);
 
 protected:
+
+    virtual
+    fastdds::dds::PublisherQos
+    reckon_publisher_qos_() const noexcept override;
 
     //! Specific writer QoS to override (more or less) the CommonWriter qos
     virtual
     fastdds::dds::DataWriterQos
-    reckon_writer_qos_() const;
+    reckon_writer_qos_() const noexcept override;
 
     //! Specific QoS of the Endpoint
     core::types::SpecificEndpointQoS specific_qos_;

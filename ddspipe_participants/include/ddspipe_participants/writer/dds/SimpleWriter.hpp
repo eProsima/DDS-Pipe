@@ -50,8 +50,8 @@ public:
             const core::types::ParticipantId& participant_id,
             const core::types::DdsTopic& topic,
             const std::shared_ptr<core::PayloadPool>& payload_pool,
-            const fastdds::dds::Publisher* publisher,
-            const fastdds::dds::Topic* topic_entity);
+            fastdds::dds::DomainParticipant* participant,
+            fastdds::dds::Topic* topic_entity);
 
 };
 
