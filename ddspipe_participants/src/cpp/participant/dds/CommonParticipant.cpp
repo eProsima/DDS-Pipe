@@ -297,7 +297,11 @@ fastdds::dds::Topic* CommonParticipant::topic_related_(const core::types::DdsTop
     if (type_names_registered_.find(topic.type_name) == type_names_registered_.end())
     {
         dds_participant_->register_type(
-            eprosima::fastdds::dds::TypeSupport(new TopicDataType(topic))
+            eprosima::fastdds::dds::TypeSupport(
+                new TopicDataType(
+                    topic.type_name,
+                    topic.topic_qos.keyed,
+                    payload_pool_))
         );
     }
 

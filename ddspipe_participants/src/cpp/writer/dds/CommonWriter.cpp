@@ -101,8 +101,17 @@ CommonWriter::CommonWriter(
 utils::ReturnCode CommonWriter::write_nts_(
         core::IRoutingData& data) noexcept
 {
-    return utils::ReturnCode::RETCODE_ERROR;
-    // TODO
+    auto& rtps_data = dynamic_cast<core::types::RtpsPayloadData&>(data);
+
+    if (topic_.topic_qos.keyed)
+    {
+        // TODO check if in case of dispose it must be done something differently
+        return writer_->write(&rtps_data.payload, rtps_data.instanceHandle);
+    }
+    else
+    {
+        return writer_->write(&rtps_data.payload);
+    }
 }
 
 fastdds::dds::PublisherQos CommonWriter::reckon_publisher_qos_() const noexcept

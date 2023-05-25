@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#include <cpp_utils/Log.hpp>
+
 #include <fastcdr/FastBuffer.h>
 #include <fastcdr/Cdr.h>
 
@@ -22,20 +24,22 @@ namespace ddspipe {
 namespace participants {
 namespace dds {
 
-using InternalDataType = fastrtps::rtps::SerializedPayload_t;
-
 TopicDataType::TopicDataType(
-        const core::types::DdsTopic& topic)
-    : topic_(topic)
+        const std::string& type_name,
+        const bool keyed,
+        const std::shared_ptr<core::PayloadPool>& payload_pool)
+    : type_name_(type_name)
+    , keyed_(keyed)
+    , payload_pool_(payload_pool)
 {
     // Set topic data
     m_typeSize = 4;
-    m_isGetKeyDefined = topic_.topic_qos.keyed;
+    m_isGetKeyDefined = keyed_;
     auto_fill_type_object(false);
     auto_fill_type_information(false);
 
     // Set name
-    setName(topic_.type_name.c_str());
+    setName(type_name_.c_str());
 }
 
 TopicDataType::~TopicDataType()
@@ -47,9 +51,10 @@ bool TopicDataType::serialize(
         void* data,
         fastrtps::rtps::SerializedPayload_t* target_payload)
 {
-    InternalDataType* src_payload = static_cast<InternalDataType*>(data);
+    DataType* src_payload = static_cast<DataType*>(data);
 
-    // Copy each varible
+    // TODO: this could be done when we have access to Fast DDS PayloadPool
+    // Copy each variable
     target_payload = src_payload;
 
     // Copy internal data
@@ -62,13 +67,11 @@ bool TopicDataType::deserialize(
         eprosima::fastrtps::rtps::SerializedPayload_t* src_payload,
         void* data)
 {
-    InternalDataType* target_payload = static_cast<InternalDataType*>(data);
+    DataType* target_payload = static_cast<DataType*>(data);
 
-    // Copy each varible
-    target_payload = src_payload;
-
-    // Copy internal data
-    std::memcpy(target_payload->data, src_payload->data, src_payload->length);
+    // Get data and store it in PayloadPool
+    eprosima::fastrtps::rtps::IPayloadPool* _ = nullptr;
+    payload_pool_->get_payload(*src_payload, _, *target_payload);
 
     return true;
 }
@@ -78,38 +81,37 @@ std::function<uint32_t()> TopicDataType::getSerializedSizeProvider(
 {
     return [data]() -> uint32_t
            {
-               auto p = static_cast<InternalDataType*>(data);
+               auto p = static_cast<DataType*>(data);
                return p->length;
            };
 }
 
 bool TopicDataType::getKey(
-        void* data,
-        eprosima::fastrtps::rtps::InstanceHandle_t* handle,
-        bool force_md5 /* = false */)
+        void* ,
+        eprosima::fastrtps::rtps::InstanceHandle_t* ,
+        bool  /* = false */)
 {
-    if (!m_isGetKeyDefined)
+    if (m_isGetKeyDefined)
     {
-        return false;
+        // NOTE: this should not happen, if Fast asks for a key we are not able to give it
+        // This should not happen as using reader qos expects_inline_qos the instance handle should arrive in
+        // inline_qos and this function should not be called
+        // PD for reviewer: You shall remember this line, as it will bring hell on hearth in a possible future.
+        logDevError(DDSPIPE_PARTICIPANTS_TYPESUPPORT,
+            "Generic TypeSupport does not know how to give the key, this should not happen.");
     }
-
-    InternalDataType* src_payload = static_cast<InternalDataType*>(data);
-    for (uint8_t i = 0; i < 16; ++i)
-    {
-        handle->value[i] = src_payload->data[i];
-    }
-    return true;
+    return false;
 }
 
 void* TopicDataType::createData()
 {
-    return reinterpret_cast<void*>(new InternalDataType());
+    return reinterpret_cast<void*>(new DataType());
 }
 
 void TopicDataType::deleteData(
         void* data)
 {
-    delete(reinterpret_cast<InternalDataType*>(data));
+    delete(reinterpret_cast<DataType*>(data));
 }
 
 } /* namespace dds */

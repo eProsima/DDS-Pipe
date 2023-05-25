@@ -16,6 +16,7 @@
 
 #include <fastdds/dds/topic/TopicDataType.hpp>
 
+#include <ddspipe_core/efficiency/payload/PayloadPool.hpp>
 #include <ddspipe_core/types/topic/dds/DdsTopic.hpp>
 
 namespace eprosima {
@@ -23,13 +24,7 @@ namespace ddspipe {
 namespace participants {
 namespace dds {
 
-using Byte = uint8_t;
-
-struct GenericData
-{
-    size_t data_size;
-    Byte* data;
-};
+using DataType = fastrtps::rtps::SerializedPayload_t;
 
 class TopicDataType : public eprosima::fastdds::dds::TopicDataType
 {
@@ -37,7 +32,9 @@ public:
 
     //! Default constructor
     TopicDataType(
-        const core::types::DdsTopic& topic);
+        const std::string& type_name,
+        const bool keyed,
+        const std::shared_ptr<core::PayloadPool>& payload_pool);
 
     //! Default destructor
     virtual ~TopicDataType();
@@ -71,7 +68,10 @@ public:
 
 protected:
 
-    core::types::DdsTopic topic_;
+    const std::string type_name_;
+    const bool keyed_;
+
+    std::shared_ptr<core::PayloadPool> payload_pool_;
 
 };
 

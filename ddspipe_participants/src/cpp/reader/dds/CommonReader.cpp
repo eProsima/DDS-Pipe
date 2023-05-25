@@ -22,6 +22,7 @@
 #include <ddspipe_core/types/data/RtpsPayloadData.hpp>
 
 #include <ddspipe_participants/reader/dds/CommonReader.hpp>
+#include <ddspipe_participants/types/dds/TopicDataType.hpp>
 
 namespace eprosima {
 namespace ddspipe {
@@ -107,8 +108,30 @@ CommonReader::CommonReader(
 utils::ReturnCode CommonReader::take_nts_(
         std::unique_ptr<core::IRoutingData>& data) noexcept
 {
-    return utils::ReturnCode::RETCODE_NO_DATA;
-    // TODO
+    // NOTE: we assume this function is called always from same thread
+    // NOTE: we assume this function is called always with nullptr data
+
+    // Check if there is data available
+    if (!(reader_->get_unread_count() > 0))
+    {
+        return utils::ReturnCode::RETCODE_NO_DATA;
+    }
+
+    RtpsPayloadData* rtps_data = new core::types::RtpsPayloadData();
+    data.reset(rtps_data);
+    fastdds::dds::SampleInfo info;
+
+    auto ret = reader_->take_next_sample(&rtps_data->payload, &info);
+
+    // If error reading data
+    if (!ret)
+    {
+        return ret;
+    }
+
+    fill_received_data_(info, *rtps_data);
+
+    return utils::ReturnCode::RETCODE_OK;
 }
 
 void CommonReader::enable_nts_() noexcept
@@ -134,6 +157,16 @@ fastdds::dds::SubscriberQos CommonReader::reckon_subscriber_qos_() const
 fastdds::dds::DataReaderQos CommonReader::reckon_reader_qos_() const
 {
     fastdds::dds::DataReaderQos qos = dds_subscriber_->get_default_datareader_qos();
+
+    // IMPORTANT
+    // As we do not have access to TypeSupport, we do not know the size of the key
+    // In order to be able to get correctly the key from a sample, it must be added in the InlineQoS
+    // There is a QoS in the reader that forces the writer to do so
+    // This is computational cost, so it is only done when
+    if (topic_.topic_qos.keyed)
+    {
+        qos.expects_inline_qos(true);
+    }
 
     qos.durability().kind =
         (topic_.topic_qos.is_transient_local())
@@ -191,6 +224,8 @@ void CommonReader::fill_received_data_(
         data_to_fill.kind = ChangeKind::NOT_ALIVE_UNREGISTERED;
         break;
     }
+
+    data_to_fill.payload_owner = payload_pool_.get();
 }
 
 } /* namespace dds */
