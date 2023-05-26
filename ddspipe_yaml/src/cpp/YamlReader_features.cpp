@@ -31,7 +31,7 @@ namespace yaml {
 template <>
 DDSPIPE_YAML_DllAPI
 void YamlReader::fill(
-        XmlHandlerConfiguration& object,
+        participants::XmlHandlerConfiguration& object,
         const Yaml& yml,
         const YamlReaderVersion version)
 {
@@ -50,12 +50,12 @@ void YamlReader::fill(
 
 template <>
 DDSPIPE_YAML_DllAPI
-XmlHandlerConfiguration YamlReader::get(
+participants::XmlHandlerConfiguration YamlReader::get(
         const Yaml& yml,
         const YamlReaderVersion version)
 {
-    XmlHandlerConfiguration object;
-    fill<XmlHandlerConfiguration>(object, yml, version);
+    participants::XmlHandlerConfiguration object;
+    fill<participants::XmlHandlerConfiguration>(object, yml, version);
     return object;
 }
 

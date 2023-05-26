@@ -313,11 +313,8 @@ void YamlReader::fill(
     // Parent class fill
     fill<participants::SimpleParticipantConfiguration>(object, yml, version);
 
-    // Optional participant profile
-    if (YamlReader::is_tag_present(yml, XML_PARTICIPANT_PROFILE_TAG))
-    {
-        object.participant_profile = YamlReader::get<std::string>(yml, XML_PARTICIPANT_PROFILE_TAG, version);
-    }
+    // Mandatory participant profile
+    object.participant_profile = YamlReader::get<std::string>(yml, XML_PARTICIPANT_PROFILE_TAG, version);
 }
 
 template <>
