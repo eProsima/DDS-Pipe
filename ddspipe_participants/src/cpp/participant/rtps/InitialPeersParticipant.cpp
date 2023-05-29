@@ -115,7 +115,8 @@ fastrtps::rtps::RTPSParticipantAttributes InitialPeersParticipant::reckon_partic
                 }
                 else
                 {
-                    descriptor = create_descriptor_<eprosima::fastdds::rtps::TCPv4TransportDescriptor>(configuration->whitelist);
+                    descriptor = create_descriptor_<eprosima::fastdds::rtps::TCPv4TransportDescriptor>(
+                        configuration->whitelist);
                     descriptor->add_listener_port(address.port());
                     descriptor->set_WAN_address(address.ip());
 

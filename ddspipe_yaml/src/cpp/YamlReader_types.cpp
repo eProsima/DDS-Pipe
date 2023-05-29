@@ -77,7 +77,8 @@ IgnoreParticipantFlags YamlReader::get<IgnoreParticipantFlags>(
                     {IGNORE_PARTICIPANT_FLAGS_DIFFERENT_HOST_TAG, IgnoreParticipantFlags::filter_different_host},
                     {IGNORE_PARTICIPANT_FLAGS_DIFFERENT_PROCESS_TAG, IgnoreParticipantFlags::filter_different_process},
                     {IGNORE_PARTICIPANT_FLAGS_SAME_PROCESS_TAG, IgnoreParticipantFlags::filter_same_process},
-                    {IGNORE_PARTICIPANT_FLAGS_DIFFERENT_AND_SAME_PROCESS_TAG, IgnoreParticipantFlags::filter_different_and_same_process},
+                    {IGNORE_PARTICIPANT_FLAGS_DIFFERENT_AND_SAME_PROCESS_TAG,
+                     IgnoreParticipantFlags::filter_different_and_same_process},
                 });
 }
 

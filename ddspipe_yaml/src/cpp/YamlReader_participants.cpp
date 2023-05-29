@@ -152,7 +152,8 @@ void YamlReader::fill(
     // Optional get ignore participant flags
     if (YamlReader::is_tag_present(yml, IGNORE_PARTICIPANT_FLAGS_TAG))
     {
-        object.ignore_participant_flags = get<core::types::IgnoreParticipantFlags>(yml, IGNORE_PARTICIPANT_FLAGS_TAG, version);
+        object.ignore_participant_flags = get<core::types::IgnoreParticipantFlags>(yml, IGNORE_PARTICIPANT_FLAGS_TAG,
+                        version);
     }
     else
     {
