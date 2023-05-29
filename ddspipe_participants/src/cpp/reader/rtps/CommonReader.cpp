@@ -496,7 +496,7 @@ void CommonReader::on_sample_rejected(
     }
     logInfo(DDSPIPE_RTPS_COMMONREADER_LISTENER,
             "Reader " << *this << " rejected a sample from " << change->writerGUID
-            << ". Reason: " << reason_str);
+                      << ". Reason: " << reason_str);
 }
 
 utils::ReturnCode CommonReader::is_data_correct_(
