@@ -59,6 +59,7 @@ CommonParticipant::~CommonParticipant()
 
 void CommonParticipant::init()
 {
+    logInfo(DDSPIPE_DDS_PARTICIPANT, "Initializing DDS Participant " << id() << ".");
 
     // Force DDS entities to be created disabled
     // NOTE: this is very dangerous because we are modifying a global variable (and a not thread safe one) in a
@@ -114,7 +115,7 @@ std::shared_ptr<core::IWriter> CommonParticipant::create_writer(
     const core::types::DdsTopic* topic_ptr = dynamic_cast<const core::types::DdsTopic*>(&topic);
     if (!topic_ptr)
     {
-        logDebug(DDSPIPE_RTPS_PARTICIPANT, "Not creating Writer for topic " << topic.topic_name());
+        logDebug(DDSPIPE_DDS_PARTICIPANT, "Not creating Writer for topic " << topic.topic_name());
         return std::make_shared<BlankWriter>();
     }
     const core::types::DdsTopic& dds_topic = *topic_ptr;
@@ -122,7 +123,7 @@ std::shared_ptr<core::IWriter> CommonParticipant::create_writer(
     // Check that it is RTPS topic
     if (dds_topic.internal_type_discriminator() != core::types::INTERNAL_TOPIC_TYPE_RTPS)
     {
-        logDebug(DDSPIPE_RTPS_PARTICIPANT, "Not creating Writer for non RTPS topic " << dds_topic.topic_name());
+        logDebug(DDSPIPE_DDS_PARTICIPANT, "Not creating Writer for non RTPS topic " << dds_topic.topic_name());
         return std::make_shared<BlankWriter>();
     }
 
@@ -160,7 +161,7 @@ std::shared_ptr<core::IReader> CommonParticipant::create_reader(
     const core::types::DdsTopic* topic_ptr = dynamic_cast<const core::types::DdsTopic*>(&topic);
     if (!topic_ptr)
     {
-        logDebug(DDSPIPE_RTPS_PARTICIPANT, "Not creating Reader for topic " << topic.topic_name());
+        logDebug(DDSPIPE_DDS_PARTICIPANT, "Not creating Reader for topic " << topic.topic_name());
         return std::make_shared<BlankReader>();
     }
     const core::types::DdsTopic& dds_topic = *topic_ptr;
@@ -168,7 +169,7 @@ std::shared_ptr<core::IReader> CommonParticipant::create_reader(
     // Check that it is RTPS topic
     if (dds_topic.internal_type_discriminator() != core::types::INTERNAL_TOPIC_TYPE_RTPS)
     {
-        logDebug(DDSPIPE_RTPS_PARTICIPANT, "Not creating Reader for non RTPS topic " << dds_topic.topic_name());
+        logDebug(DDSPIPE_DDS_PARTICIPANT, "Not creating Reader for non RTPS topic " << dds_topic.topic_name());
         return std::make_shared<BlankReader>();
     }
 
@@ -208,7 +209,7 @@ void CommonParticipant::on_subscriber_discovery(
         fastrtps::rtps::ReaderDiscoveryInfo&& info)
 {
     // If reader is from other participant, store it in discovery database
-    if (info.info.guid().guidPrefix == this->dds_participant_->guid().guidPrefix)
+    if (detail::come_from_same_participant_(info.info.guid(), this->dds_participant_->guid()))
     {
         // Come from this participant, do nothing
         return;
@@ -235,7 +236,7 @@ void CommonParticipant::on_publisher_discovery(
         fastrtps::rtps::WriterDiscoveryInfo&& info)
 {
     // If writer is from other participant, store it in discovery database
-    if (info.info.guid().guidPrefix == this->dds_participant_->guid().guidPrefix)
+    if (detail::come_from_same_participant_(info.info.guid(), this->dds_participant_->guid()))
     {
         // Come from this participant, do nothing
         return;
@@ -275,10 +276,16 @@ fastdds::dds::DomainParticipantQos CommonParticipant::reckon_participant_qos_() 
 
 fastdds::dds::DomainParticipant* CommonParticipant::create_dds_participant_()
 {
+    // Set listener mask so reader read its own messages
+    fastdds::dds::StatusMask mask;
+    mask << fastdds::dds::StatusMask::publication_matched();
+    mask << fastdds::dds::StatusMask::subscription_matched();
+
     return eprosima::fastdds::dds::DomainParticipantFactory::get_instance()->create_participant(
         configuration_->domain,
         reckon_participant_qos_(),
-        this);
+        this,
+        mask);
 }
 
 fastdds::dds::Topic* CommonParticipant::topic_related_(const core::types::DdsTopic& topic)
@@ -296,6 +303,10 @@ fastdds::dds::Topic* CommonParticipant::topic_related_(const core::types::DdsTop
     // If type is not registered, register it
     if (type_names_registered_.find(topic.type_name) == type_names_registered_.end())
     {
+        logDebug(DDSPIPE_DDS_PARTICIPANT, "Registering type "
+            << topic.type_name << " in dds participant "
+            << id() << ".");
+
         dds_participant_->register_type(
             eprosima::fastdds::dds::TypeSupport(
                 new TopicDataType(
@@ -304,6 +315,11 @@ fastdds::dds::Topic* CommonParticipant::topic_related_(const core::types::DdsTop
                     payload_pool_))
         );
     }
+
+    logDebug(DDSPIPE_DDS_PARTICIPANT, "Creating topic "
+        << topic.m_topic_name << " and type "
+        << topic.type_name << " in dds participant "
+        << id() << ".");
 
     // Create the new topic
     fastdds::dds::Topic* dds_topic = dds_participant_->create_topic(

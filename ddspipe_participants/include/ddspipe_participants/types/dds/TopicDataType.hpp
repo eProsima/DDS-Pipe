@@ -17,6 +17,7 @@
 #include <fastdds/dds/topic/TopicDataType.hpp>
 
 #include <ddspipe_core/efficiency/payload/PayloadPool.hpp>
+#include <ddspipe_core/types/data/RtpsPayloadData.hpp>
 #include <ddspipe_core/types/topic/dds/DdsTopic.hpp>
 
 namespace eprosima {
@@ -24,7 +25,7 @@ namespace ddspipe {
 namespace participants {
 namespace dds {
 
-using DataType = fastrtps::rtps::SerializedPayload_t;
+using DataType = core::types::RtpsPayloadData;
 
 class TopicDataType : public eprosima::fastdds::dds::TopicDataType
 {

@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#include <cpp_utils/Log.hpp>
+
 #include <ddspipe_core/types/data/RtpsPayloadData.hpp>
 
 namespace eprosima {
@@ -19,8 +21,14 @@ namespace ddspipe {
 namespace core {
 namespace types {
 
+RtpsPayloadData::RtpsPayloadData()
+{
+    logDebug(DDSPIPE_PAYLOAD, "Creating Payload " << this << ".");
+}
+
 RtpsPayloadData::~RtpsPayloadData()
 {
+    logDebug(DDSPIPE_PAYLOAD, "Deleting Payload " << this << ": " << *this << ".");
     // If payload owner exists and payload has size, release it correctly in pool
     if (payload_owner && payload.length > 0)
     {
@@ -31,6 +39,24 @@ RtpsPayloadData::~RtpsPayloadData()
 types::TopicInternalTypeDiscriminator RtpsPayloadData::internal_type_discriminator() const noexcept
 {
     return INTERNAL_TOPIC_TYPE_RTPS;
+}
+
+std::ostream& operator <<(
+        std::ostream& os,
+        const RtpsPayloadData& data)
+{
+    // TODO: do it better
+    os << "RtpsPayloadData{";
+    os << data.payload << ";";
+    os << data.instanceHandle << ";";
+    os << data.kind << ";";
+    os << data.participant_receiver << ";";
+    os << data.payload_owner << ";";
+    os << data.source_guid << ";";
+    os << data.source_timestamp << ";";
+    os << data.writer_qos << ";";
+    os << "}";
+    return os;
 }
 
 } /* namespace types */

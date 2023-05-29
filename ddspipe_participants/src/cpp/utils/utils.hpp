@@ -16,6 +16,7 @@
 
 #include <fastdds/rtps/reader/ReaderDiscoveryInfo.h>
 #include <fastdds/rtps/writer/WriterDiscoveryInfo.h>
+#include <fastrtps/rtps/common/InstanceHandle.h>
 
 #include <ddspipe_core/dynamic/DiscoveryDatabase.hpp>
 #include <ddspipe_core/types/dds/Endpoint.hpp>
@@ -47,6 +48,9 @@ core::types::Endpoint create_endpoint_from_info_(
 bool come_from_same_participant_(
             const fastrtps::rtps::GUID_t src_guid,
             const fastrtps::rtps::GUID_t target_guid) noexcept;
+
+fastrtps::rtps::GUID_t guid_from_instance_handle(
+            const fastrtps::rtps::InstanceHandle_t& ihandle) noexcept;
 
 } /* namespace detail */
 } /* namespace participants */

@@ -61,11 +61,17 @@ fastdds::dds::DomainParticipantQos XmlParticipant::reckon_participant_qos_() con
 
 fastdds::dds::DomainParticipant* XmlParticipant::create_dds_participant_()
 {
+    // Set listener mask so reader read its own messages
+    fastdds::dds::StatusMask mask;
+    mask << fastdds::dds::StatusMask::publication_matched();
+    mask << fastdds::dds::StatusMask::subscription_matched();
+
     if (specific_configuration_.participant_profile.is_set())
     {
         return eprosima::fastdds::dds::DomainParticipantFactory::get_instance()->create_participant_with_profile(
             specific_configuration_.participant_profile.get_value(),
-            this);
+            this,
+            mask);
     }
     else
     {

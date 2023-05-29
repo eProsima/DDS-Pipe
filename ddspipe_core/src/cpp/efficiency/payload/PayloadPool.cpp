@@ -148,6 +148,8 @@ bool PayloadPool::reserve_(
 
     payload.reserve(size);
 
+    logDebug(DDSPIPE_PAYLOADPOOL, "Reserved payload ptr: " << payload.data << ".");
+
     add_reserved_payload_();
 
     return true;
@@ -156,6 +158,8 @@ bool PayloadPool::reserve_(
 bool PayloadPool::release_(
         Payload& payload)
 {
+    logDebug(DDSPIPE_PAYLOADPOOL, "Releasing payload ptr: " << payload.data << ".");
+
     payload.empty();
 
     if (payload.data != nullptr)

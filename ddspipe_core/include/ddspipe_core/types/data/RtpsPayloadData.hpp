@@ -41,7 +41,7 @@ struct RtpsPayloadData : public core::IRoutingData
 {
 
     DDSPIPE_CORE_DllAPI
-    RtpsPayloadData() = default;
+    RtpsPayloadData();
 
     /**
      * @brief Destroy the Rtps Payload Data object
@@ -91,6 +91,10 @@ struct RtpsPayloadData : public core::IRoutingData
  * @brief Id to identify the internal topic type id that uses \c RtpsPayloadData .
  */
 const core::types::TopicInternalTypeDiscriminator INTERNAL_TOPIC_TYPE_RTPS = "payload::rtps::v0";
+
+std::ostream& operator <<(
+        std::ostream& os,
+        const RtpsPayloadData& data);
 
 } /* namespace types */
 } /* namespace core */

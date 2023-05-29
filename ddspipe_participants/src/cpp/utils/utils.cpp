@@ -130,6 +130,12 @@ bool come_from_same_participant_(
     return src_guid.guidPrefix == target_guid.guidPrefix;
 }
 
+fastrtps::rtps::GUID_t guid_from_instance_handle(
+            const fastrtps::rtps::InstanceHandle_t& ihandle) noexcept
+{
+    return fastrtps::rtps::iHandle2GUID(ihandle);
+}
+
 } /* namespace detail */
 } /* namespace participants */
 } /* namespace ddspipe */

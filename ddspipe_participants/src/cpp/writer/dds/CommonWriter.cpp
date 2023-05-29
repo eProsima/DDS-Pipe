@@ -52,6 +52,8 @@ CommonWriter::~CommonWriter()
 
 void CommonWriter::init()
 {
+    logInfo(DDSPIPE_DDS_WRITER, "Initializing writer in " << participant_id_ << " for topic " << topic_ << ".");
+
     // Create publisher
     dds_publisher_ = dds_participant_->create_publisher(
         reckon_publisher_qos_()
@@ -101,16 +103,25 @@ CommonWriter::CommonWriter(
 utils::ReturnCode CommonWriter::write_nts_(
         core::IRoutingData& data) noexcept
 {
+    logInfo(DDSPIPE_DDS_WRITER, "Writing data in " << participant_id_ << " for topic " << topic_ << ".");
+
     auto& rtps_data = dynamic_cast<core::types::RtpsPayloadData&>(data);
 
     if (topic_.topic_qos.keyed)
     {
         // TODO check if in case of dispose it must be done something differently
-        return writer_->write(&rtps_data.payload, rtps_data.instanceHandle);
+        return writer_->write(&rtps_data, rtps_data.instanceHandle);
     }
     else
     {
-        return writer_->write(&rtps_data.payload);
+        if (writer_->write(&rtps_data))
+        {
+            return utils::ReturnCode::RETCODE_OK;
+        }
+        else
+        {
+            return utils::ReturnCode::RETCODE_ERROR;
+        }
     }
 }
 

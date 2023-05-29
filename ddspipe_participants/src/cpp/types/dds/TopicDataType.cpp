@@ -24,6 +24,8 @@ namespace ddspipe {
 namespace participants {
 namespace dds {
 
+using eprosima::ddspipe::core::types::operator<<;
+
 TopicDataType::TopicDataType(
         const std::string& type_name,
         const bool keyed,
@@ -53,12 +55,11 @@ bool TopicDataType::serialize(
 {
     DataType* src_payload = static_cast<DataType*>(data);
 
+    logDebug(DDSPIPE_DDS_TYPESUPPORT, "Serializing data " << *src_payload << ".");
+
     // TODO: this could be done when we have access to Fast DDS PayloadPool
     // Copy each variable
-    target_payload = src_payload;
-
-    // Copy internal data
-    std::memcpy(target_payload->data, src_payload->data, src_payload->length);
+    target_payload->copy(&src_payload->payload);
 
     return true;
 }
@@ -67,11 +68,14 @@ bool TopicDataType::deserialize(
         eprosima::fastrtps::rtps::SerializedPayload_t* src_payload,
         void* data)
 {
+    logDebug(DDSPIPE_DDS_TYPESUPPORT, "Deserializing data " << *src_payload << ".");
+
     DataType* target_payload = static_cast<DataType*>(data);
 
     // Get data and store it in PayloadPool
     eprosima::fastrtps::rtps::IPayloadPool* _ = nullptr;
-    payload_pool_->get_payload(*src_payload, _, *target_payload);
+    payload_pool_->get_payload(*src_payload, _, target_payload->payload);
+    target_payload->payload_owner = payload_pool_.get();
 
     return true;
 }
@@ -82,7 +86,7 @@ std::function<uint32_t()> TopicDataType::getSerializedSizeProvider(
     return [data]() -> uint32_t
            {
                auto p = static_cast<DataType*>(data);
-               return p->length;
+               return p->payload.length;
            };
 }
 
@@ -98,7 +102,7 @@ bool TopicDataType::getKey(
         // inline_qos and this function should not be called
         // PD for reviewer: You shall remember this line, as it will bring hell on hearth in a possible future.
         logDevError(DDSPIPE_PARTICIPANTS_TYPESUPPORT,
-            "Generic TypeSupport does not know how to give the key, this should not happen.");
+            "Generic TypeSupport does not know how to retrieve the key, this should not happen.");
     }
     return false;
 }

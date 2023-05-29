@@ -16,13 +16,13 @@
 #include <cpp_utils/Log.hpp>
 #include <cpp_utils/math/math_extension.hpp>
 
-#include <fastrtps/rtps/common/InstanceHandle.h>
-
 #include <ddspipe_core/interface/IRoutingData.hpp>
 #include <ddspipe_core/types/data/RtpsPayloadData.hpp>
 
 #include <ddspipe_participants/reader/dds/CommonReader.hpp>
 #include <ddspipe_participants/types/dds/TopicDataType.hpp>
+
+#include <utils/utils.hpp>
 
 namespace eprosima {
 namespace ddspipe {
@@ -43,12 +43,14 @@ CommonReader::~CommonReader()
         dds_participant_->delete_subscriber(dds_subscriber_);
     }
 
-    logInfo(DDSPIPE_DDS_WRITER, "Deleting CommonReader created in Participant " <<
+    logInfo(DDSPIPE_DDS_READER, "Deleting CommonReader created in Participant " <<
             participant_id_ << " for topic " << topic_);
 }
 
 void CommonReader::init()
 {
+    logInfo(DDSPIPE_DDS_READER, "Initializing reader in " << participant_id_ << " for topic " << topic_ << ".");
+
     // Create subscriber
     dds_subscriber_ = dds_participant_->create_subscriber(
         reckon_subscriber_qos_()
@@ -85,6 +87,7 @@ void CommonReader::init()
 void CommonReader::on_data_available(
         fastdds::dds::DataReader* /* reader */)
 {
+    logInfo(DDSPIPE_DDS_READER, "On data available in reader in " << participant_id_ << " for topic " << topic_ << ".");
     on_data_available_();
 }
 
@@ -111,6 +114,8 @@ utils::ReturnCode CommonReader::take_nts_(
     // NOTE: we assume this function is called always from same thread
     // NOTE: we assume this function is called always with nullptr data
 
+    logInfo(DDSPIPE_DDS_READER, "Taking data in " << participant_id_ << " for topic " << topic_ << ".");
+
     // Check if there is data available
     if (!(reader_->get_unread_count() > 0))
     {
@@ -121,13 +126,34 @@ utils::ReturnCode CommonReader::take_nts_(
     data.reset(rtps_data);
     fastdds::dds::SampleInfo info;
 
-    auto ret = reader_->take_next_sample(&rtps_data->payload, &info);
-
-    // If error reading data
-    if (!ret)
+    // Loop for read messages until we receive one that does not come from same participant
+    // NOTE: not reading local messages must be done in this loop because:
+    // 1. there is no way in DDS to ignore this reader from writer as there were in RTPS
+    // 2. ignore_local_endpoints would be override by xml configuration
+    while (true)
     {
-        return ret;
+        auto ret = reader_->take_next_sample(rtps_data, &info);
+
+        // If error reading data
+        if (!ret)
+        {
+            return ret;
+        }
+
+        // Check if it comes from same participant. If so, discard and continue
+        if (detail::come_from_same_participant_(
+            detail::guid_from_instance_handle(info.publication_handle),
+            this->dds_participant_->guid()))
+        {
+            continue;
+        }
+        else
+        {
+            break;
+        }
     }
+
+    logInfo(DDSPIPE_DDS_READER, "Data taken in " << participant_id_ << " for topic " << topic_ << ".");
 
     fill_received_data_(info, *rtps_data);
 
@@ -194,38 +220,39 @@ void CommonReader::fill_received_data_(
 {
     // Store the new data that has arrived in the Track data
     // Get the writer guid
-    data_to_fill.source_guid = fastrtps::rtps::iHandle2GUID(info.publication_handle);
+    data_to_fill.source_guid = detail::guid_from_instance_handle(info.publication_handle);
     // Get source timestamp
     data_to_fill.source_timestamp = info.source_timestamp;
     // Get Participant receiver
     data_to_fill.participant_receiver = participant_id_;
 
     // TODO modify when access to payload pool
-    // TODO add data read
 
     // Set Instance Handle to data_to_fill
     if (topic_.topic_qos.keyed)
     {
         data_to_fill.instanceHandle = info.instance_handle;
-    }
 
-    // Set change kind
-    switch (info.sample_state)
+        // Set change kind
+        switch (info.instance_state)
+        {
+        case fastdds::dds::InstanceStateKind::ALIVE_INSTANCE_STATE:
+            data_to_fill.kind = ChangeKind::ALIVE;
+            break;
+
+        case fastdds::dds::InstanceStateKind::NOT_ALIVE_DISPOSED_INSTANCE_STATE:
+            data_to_fill.kind = ChangeKind::NOT_ALIVE_DISPOSED;
+            break;
+
+        default:
+            data_to_fill.kind = ChangeKind::NOT_ALIVE_UNREGISTERED;
+            break;
+        }
+    }
+    else
     {
-    case fastdds::dds::InstanceStateKind::ALIVE_INSTANCE_STATE:
         data_to_fill.kind = ChangeKind::ALIVE;
-        break;
-
-    case fastdds::dds::InstanceStateKind::NOT_ALIVE_DISPOSED_INSTANCE_STATE:
-        data_to_fill.kind = ChangeKind::NOT_ALIVE_DISPOSED;
-        break;
-
-    default:
-        data_to_fill.kind = ChangeKind::NOT_ALIVE_UNREGISTERED;
-        break;
     }
-
-    data_to_fill.payload_owner = payload_pool_.get();
 }
 
 } /* namespace dds */

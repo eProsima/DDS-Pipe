@@ -116,6 +116,7 @@ bool FastPayloadPool::reserve_(
         return false;
     }
 
+
     // Allocate memory + 4 bytes for reference
     void* memory_allocated = std::malloc(size + sizeof(MetaInfoType));
 
@@ -128,12 +129,16 @@ bool FastPayloadPool::reserve_(
 
     add_reserved_payload_();
 
+    logDebug(DDSPIPE_PAYLOADPOOL_FAST, "Reserved payload ptr: " << static_cast<void*>(payload.data) << ".");
+
     return true;
 }
 
 bool FastPayloadPool::release_(
         types::Payload& payload)
 {
+    logDebug(DDSPIPE_PAYLOADPOOL_FAST, "Releasing payload ptr: " << static_cast<void*>(payload.data) << ".");
+
     // Free memory from the initial allocation, 4 bytes before
     MetaInfoType* reference_place = reinterpret_cast<MetaInfoType*>(payload.data);
     reference_place--;
