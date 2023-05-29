@@ -206,7 +206,7 @@ protected:
 
     template<typename T>
     static std::shared_ptr<T> create_descriptor_(
-        std::set<types::IpType> whitelist = {});
+            std::set<types::IpType> whitelist = {});
 
     /////
     // VARIABLES

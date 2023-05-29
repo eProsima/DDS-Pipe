@@ -84,16 +84,20 @@ SimpleParticipant::reckon_participant_attributes_(
     switch (configuration->ignore_participant_flags)
     {
         case core::types::IgnoreParticipantFlags::no_filter:
-            params.builtin.discovery_config.ignoreParticipantFlags = eprosima::fastrtps::rtps::ParticipantFilteringFlags_t::NO_FILTER;
+            params.builtin.discovery_config.ignoreParticipantFlags =
+                    eprosima::fastrtps::rtps::ParticipantFilteringFlags_t::NO_FILTER;
             break;
         case core::types::IgnoreParticipantFlags::filter_different_host:
-            params.builtin.discovery_config.ignoreParticipantFlags = eprosima::fastrtps::rtps::ParticipantFilteringFlags_t::FILTER_DIFFERENT_HOST;
+            params.builtin.discovery_config.ignoreParticipantFlags =
+                    eprosima::fastrtps::rtps::ParticipantFilteringFlags_t::FILTER_DIFFERENT_HOST;
             break;
         case core::types::IgnoreParticipantFlags::filter_different_process:
-            params.builtin.discovery_config.ignoreParticipantFlags = eprosima::fastrtps::rtps::ParticipantFilteringFlags_t::FILTER_DIFFERENT_PROCESS;
+            params.builtin.discovery_config.ignoreParticipantFlags =
+                    eprosima::fastrtps::rtps::ParticipantFilteringFlags_t::FILTER_DIFFERENT_PROCESS;
             break;
         case core::types::IgnoreParticipantFlags::filter_same_process:
-            params.builtin.discovery_config.ignoreParticipantFlags = eprosima::fastrtps::rtps::ParticipantFilteringFlags_t::FILTER_SAME_PROCESS;
+            params.builtin.discovery_config.ignoreParticipantFlags =
+                    eprosima::fastrtps::rtps::ParticipantFilteringFlags_t::FILTER_SAME_PROCESS;
             break;
         case core::types::IgnoreParticipantFlags::filter_different_and_same_process:
             params.builtin.discovery_config.ignoreParticipantFlags =

@@ -456,7 +456,7 @@ CommonParticipant::create_descriptor_(
         std::set<types::IpType> whitelist)
 {
     std::shared_ptr<eprosima::fastdds::rtps::UDPv4TransportDescriptor> udp_transport =
-                    std::make_shared<eprosima::fastdds::rtps::UDPv4TransportDescriptor>();
+            std::make_shared<eprosima::fastdds::rtps::UDPv4TransportDescriptor>();
 
     for (const types::IpType& ip : whitelist)
     {
@@ -464,7 +464,7 @@ CommonParticipant::create_descriptor_(
         {
             udp_transport->interfaceWhiteList.emplace_back(ip);
             logInfo(DDSPIPE_COMMON_PARTICIPANT,
-                "Adding " << ip << " to UDP whitelist interfaces.");
+                    "Adding " << ip << " to UDP whitelist interfaces.");
         }
         else
         {
@@ -483,7 +483,7 @@ CommonParticipant::create_descriptor_(
         std::set<types::IpType> whitelist)
 {
     std::shared_ptr<eprosima::fastdds::rtps::UDPv6TransportDescriptor> udp_transport =
-                    std::make_shared<eprosima::fastdds::rtps::UDPv6TransportDescriptor>();
+            std::make_shared<eprosima::fastdds::rtps::UDPv6TransportDescriptor>();
 
     for (const types::IpType& ip : whitelist)
     {
@@ -491,7 +491,7 @@ CommonParticipant::create_descriptor_(
         {
             udp_transport->interfaceWhiteList.emplace_back(ip);
             logInfo(DDSPIPE_COMMON_PARTICIPANT,
-                "Adding " << ip << " to UDP whitelist interfaces.");
+                    "Adding " << ip << " to UDP whitelist interfaces.");
         }
         else
         {
@@ -510,7 +510,7 @@ CommonParticipant::create_descriptor_(
         std::set<types::IpType> whitelist)
 {
     std::shared_ptr<eprosima::fastdds::rtps::TCPv4TransportDescriptor> tcp_transport =
-                    std::make_shared<eprosima::fastdds::rtps::TCPv4TransportDescriptor>();
+            std::make_shared<eprosima::fastdds::rtps::TCPv4TransportDescriptor>();
 
     for (const types::IpType& ip : whitelist)
     {
@@ -518,7 +518,7 @@ CommonParticipant::create_descriptor_(
         {
             tcp_transport->interfaceWhiteList.emplace_back(ip);
             logInfo(DDSPIPE_COMMON_PARTICIPANT,
-                "Adding " << ip << " to TCP whitelist interfaces.");
+                    "Adding " << ip << " to TCP whitelist interfaces.");
         }
         else
         {
@@ -537,7 +537,7 @@ CommonParticipant::create_descriptor_(
         std::set<types::IpType> whitelist)
 {
     std::shared_ptr<eprosima::fastdds::rtps::TCPv6TransportDescriptor> tcp_transport =
-                    std::make_shared<eprosima::fastdds::rtps::TCPv6TransportDescriptor>();
+            std::make_shared<eprosima::fastdds::rtps::TCPv6TransportDescriptor>();
 
     for (const types::IpType& ip : whitelist)
     {
@@ -545,7 +545,7 @@ CommonParticipant::create_descriptor_(
         {
             tcp_transport->interfaceWhiteList.emplace_back(ip);
             logInfo(DDSPIPE_COMMON_PARTICIPANT,
-                "Adding " << ip << " to TCP whitelist interfaces.");
+                    "Adding " << ip << " to TCP whitelist interfaces.");
         }
         else
         {

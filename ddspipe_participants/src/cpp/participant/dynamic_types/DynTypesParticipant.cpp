@@ -222,7 +222,7 @@ void DynTypesParticipant::initialize_internal_dds_participant_()
 
         std::shared_ptr<eprosima::fastdds::rtps::UDPv4TransportDescriptor> udp_transport =
                 create_descriptor_<eprosima::fastdds::rtps::UDPv4TransportDescriptor>(configuration->whitelist);
-            pqos.transport().user_transports.push_back(udp_transport);
+        pqos.transport().user_transports.push_back(udp_transport);
         pqos.transport().user_transports.push_back(udp_transport);
     }
 
@@ -230,16 +230,20 @@ void DynTypesParticipant::initialize_internal_dds_participant_()
     switch (configuration->ignore_participant_flags)
     {
         case core::types::IgnoreParticipantFlags::no_filter:
-            pqos.wire_protocol().builtin.discovery_config.ignoreParticipantFlags = eprosima::fastrtps::rtps::ParticipantFilteringFlags_t::NO_FILTER;
+            pqos.wire_protocol().builtin.discovery_config.ignoreParticipantFlags =
+                    eprosima::fastrtps::rtps::ParticipantFilteringFlags_t::NO_FILTER;
             break;
         case core::types::IgnoreParticipantFlags::filter_different_host:
-            pqos.wire_protocol().builtin.discovery_config.ignoreParticipantFlags = eprosima::fastrtps::rtps::ParticipantFilteringFlags_t::FILTER_DIFFERENT_HOST;
+            pqos.wire_protocol().builtin.discovery_config.ignoreParticipantFlags =
+                    eprosima::fastrtps::rtps::ParticipantFilteringFlags_t::FILTER_DIFFERENT_HOST;
             break;
         case core::types::IgnoreParticipantFlags::filter_different_process:
-            pqos.wire_protocol().builtin.discovery_config.ignoreParticipantFlags = eprosima::fastrtps::rtps::ParticipantFilteringFlags_t::FILTER_DIFFERENT_PROCESS;
+            pqos.wire_protocol().builtin.discovery_config.ignoreParticipantFlags =
+                    eprosima::fastrtps::rtps::ParticipantFilteringFlags_t::FILTER_DIFFERENT_PROCESS;
             break;
         case core::types::IgnoreParticipantFlags::filter_same_process:
-            pqos.wire_protocol().builtin.discovery_config.ignoreParticipantFlags = eprosima::fastrtps::rtps::ParticipantFilteringFlags_t::FILTER_SAME_PROCESS;
+            pqos.wire_protocol().builtin.discovery_config.ignoreParticipantFlags =
+                    eprosima::fastrtps::rtps::ParticipantFilteringFlags_t::FILTER_SAME_PROCESS;
             break;
         case core::types::IgnoreParticipantFlags::filter_different_and_same_process:
             pqos.wire_protocol().builtin.discovery_config.ignoreParticipantFlags =
