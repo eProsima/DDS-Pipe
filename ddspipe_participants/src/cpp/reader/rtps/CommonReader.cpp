@@ -454,35 +454,6 @@ void CommonReader::onReaderMatched(
     }
 }
 
-void CommonReader::on_writer_discovery(
-        fastrtps::rtps::RTPSReader*,
-        fastrtps::rtps::WriterDiscoveryInfo::DISCOVERY_STATUS reason,
-        const fastrtps::rtps::GUID_t& writer_guid,
-        const fastrtps::rtps::WriterProxyData* writer_info)
-{
-    std::string reason_str;
-    switch (reason)
-    {
-        case fastrtps::rtps::WriterDiscoveryInfo::DISCOVERY_STATUS::DISCOVERED_WRITER:
-            reason_str = "DISCOVERED_WRITER";
-            break;
-        case fastrtps::rtps::WriterDiscoveryInfo::DISCOVERY_STATUS::CHANGED_QOS_WRITER:
-            reason_str = "CHANGED_QOS_WRITER";
-            break;
-        case fastrtps::rtps::WriterDiscoveryInfo::DISCOVERY_STATUS::REMOVED_WRITER:
-            reason_str = "REMOVED_WRITER";
-            break;
-        default:
-            reason_str = "UNKNOWN";
-            break;
-    }
-
-    std::string topic_name = writer_info != nullptr ? writer_info->topicName().to_string() : "UNKNOWN";
-    logInfo(DDSPIPE_RTPS_COMMONREADER_LISTENER,
-            "Reader " << *this << " discovered a Writer (" << writer_guid << ") in topic "
-            << topic_name << ". Reason: " << reason_str);
-}
-
 void CommonReader::on_requested_incompatible_qos(
         fastrtps::rtps::RTPSReader*,
         eprosima::fastdds::dds::PolicyMask qos)

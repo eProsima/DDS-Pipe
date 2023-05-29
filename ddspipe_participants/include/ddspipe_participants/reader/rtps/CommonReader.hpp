@@ -113,20 +113,6 @@ public:
             fastrtps::rtps::MatchingInfo& info) noexcept override;
 
     /**
-     * @brief Method called when the discovery information of a writer regarding a reader changes.
-     *
-     * @param reason       The reason motivating this method to be called.
-     * @param writer_guid  The GUID of the writer for which the discovery information changed.
-     * @param writer_info  Discovery information about the writer. Will be @c nullptr for reason @c REMOVED_WRITER.
-     */
-    DDSPIPE_PARTICIPANTS_DllAPI
-    void on_writer_discovery(
-            fastrtps::rtps::RTPSReader*,
-            fastrtps::rtps::WriterDiscoveryInfo::DISCOVERY_STATUS reason,
-            const fastrtps::rtps::GUID_t& writer_guid,
-            const fastrtps::rtps::WriterProxyData* writer_info);
-
-    /**
      * This method is called when a new Writer is discovered, with a Topic that
      * matches that of a local reader, but with an offered QoS that is incompatible
      * with the one requested by the local reader
