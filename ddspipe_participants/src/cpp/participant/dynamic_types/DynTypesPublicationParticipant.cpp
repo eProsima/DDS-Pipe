@@ -218,6 +218,11 @@ DynTypesPublicationParticipant::default_empty_datawriter_qos_(
             fastdds::dds::ReliabilityQosPolicyKind::RELIABLE_RELIABILITY_QOS :
             fastdds::dds::ReliabilityQosPolicyKind::BEST_EFFORT_RELIABILITY_QOS
         );
+    qos.ownership().kind =
+        ( topic.topic_qos.has_ownership() ?
+            fastdds::dds::OwnershipQosPolicyKind::EXCLUSIVE_OWNERSHIP_QOS :
+            fastdds::dds::OwnershipQosPolicyKind::SHARED_OWNERSHIP_QOS
+        );
 
     return qos;
 }
