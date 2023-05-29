@@ -45,9 +45,7 @@ enum class IpVersion : int
 enum class TransportProtocol
 {
     udp,
-    tcp,
-    shm,
-    builtin
+    tcp
 };
 
 /**

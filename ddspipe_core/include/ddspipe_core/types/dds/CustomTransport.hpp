@@ -19,6 +19,15 @@ namespace ddspipe {
 namespace core {
 namespace types {
 
+//! Different options for transport configuration
+enum class TransportDescriptors
+{
+    builtin,
+    udp_only,
+    shm_only
+};
+
+//! Possible values for Ignore Participant Flags
 enum class IgnoreParticipantFlags
 {
     no_filter,

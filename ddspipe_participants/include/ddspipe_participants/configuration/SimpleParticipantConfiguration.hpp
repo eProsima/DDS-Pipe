@@ -14,11 +14,11 @@
 
 #pragma once
 
+#include <ddspipe_core/types/dds/CustomTransport.hpp>
+#include <ddspipe_core/types/dds/DomainId.hpp>
 #include <ddspipe_participants/configuration/ParticipantConfiguration.hpp>
 #include <ddspipe_participants/library/library_dll.h>
 #include <ddspipe_participants/types/address/Address.hpp>
-#include <ddspipe_core/types/dds/DomainId.hpp>
-#include <ddspipe_core/types/dds/Participant.hpp>
 
 namespace eprosima {
 namespace ddspipe {
@@ -49,11 +49,11 @@ public:
     // VARIABLES
     /////////////////////////
 
-    eprosima::ddspipe::core::types::DomainId domain {0u};
+    core::types::DomainId domain {0u};
 
     std::set<participants::types::IpType> whitelist {};
 
-    participants::types::TransportProtocol transport {participants::types::TransportProtocol::builtin};
+    core::types::TransportDescriptors transport {core::types::TransportDescriptors::builtin};
 
     core::types::IgnoreParticipantFlags ignore_participant_flags {core::types::IgnoreParticipantFlags::no_filter};
 };

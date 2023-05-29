@@ -48,7 +48,7 @@ SimpleParticipant::reckon_participant_attributes_(
     fastrtps::rtps::RTPSParticipantAttributes params = CommonParticipant::reckon_participant_attributes_(configuration);
 
     // Configure Participant transports
-    if (configuration->transport == participants::types::TransportProtocol::builtin)
+    if (configuration->transport == core::types::TransportDescriptors::builtin)
     {
         if (!configuration->whitelist.empty())
         {
@@ -59,11 +59,11 @@ SimpleParticipant::reckon_participant_attributes_(
             params.userTransports.push_back(shm_transport);
 
             std::shared_ptr<eprosima::fastdds::rtps::UDPv4TransportDescriptor> udp_transport =
-                    configure_upd_transport_(configuration->whitelist);
+                    create_descriptor_<eprosima::fastdds::rtps::UDPv4TransportDescriptor>(configuration->whitelist);
             params.userTransports.push_back(udp_transport);
         }
     }
-    else if (configuration->transport == participants::types::TransportProtocol::shm)
+    else if (configuration->transport == core::types::TransportDescriptors::shm_only)
     {
         params.useBuiltinTransports = false;
 
@@ -71,12 +71,12 @@ SimpleParticipant::reckon_participant_attributes_(
                 std::make_shared<eprosima::fastdds::rtps::SharedMemTransportDescriptor>();
         params.userTransports.push_back(shm_transport);
     }
-    else if (configuration->transport == participants::types::TransportProtocol::udp)
+    else if (configuration->transport == core::types::TransportDescriptors::udp_only)
     {
         params.useBuiltinTransports = false;
 
         std::shared_ptr<eprosima::fastdds::rtps::UDPv4TransportDescriptor> udp_transport =
-                configure_upd_transport_(configuration->whitelist);
+                create_descriptor_<eprosima::fastdds::rtps::UDPv4TransportDescriptor>(configuration->whitelist);
         params.userTransports.push_back(udp_transport);
     }
 
@@ -106,32 +106,6 @@ SimpleParticipant::reckon_participant_attributes_(
     }
 
     return params;
-}
-
-std::shared_ptr<eprosima::fastdds::rtps::UDPv4TransportDescriptor>
-SimpleParticipant::configure_upd_transport_(
-        std::set<participants::types::IpType> whitelist)
-{
-    std::shared_ptr<eprosima::fastdds::rtps::UDPv4TransportDescriptor> udp_transport =
-                    std::make_shared<eprosima::fastdds::rtps::UDPv4TransportDescriptor>();
-
-    for (const types::IpType& ip : whitelist)
-    {
-        if (types::Address::is_ipv4_correct(ip))
-        {
-            udp_transport->interfaceWhiteList.emplace_back(ip);
-            logInfo(DDSPIPE_SIMPLE_PARTICIPANT,
-                "Adding " << ip << " to whitelist interfaces.");
-        }
-        else
-        {
-            // Invalid address, continue with next one
-            logWarning(DDSPIPE_SIMPLE_PARTICIPANT,
-                    "Not valid IPv4. Discarding whitelist interface " << ip << ".");
-        }
-    }
-
-    return udp_transport;
 }
 
 } /* namespace rtps */
