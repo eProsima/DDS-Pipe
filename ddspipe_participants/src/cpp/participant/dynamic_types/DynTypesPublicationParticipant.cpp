@@ -64,7 +64,7 @@ DynTypesPublicationParticipant::DynTypesPublicationParticipant(
 
     discovery_database->add_endpoint(
         rtps::CommonParticipant::simulate_endpoint(type_object_topic(), this->id())
-    );
+        );
 }
 
 DynTypesPublicationParticipant::~DynTypesPublicationParticipant()
@@ -188,7 +188,7 @@ void DynTypesPublicationParticipant::create_empty_datawriter_nts_(
         topic.topic_name(),
         topic.type_name,
         default_topic_qos_(topic)
-    );
+        );
 
     // Create writer
     writers_[topic] =
@@ -204,32 +204,32 @@ void DynTypesPublicationParticipant::create_empty_datawriter_nts_(
 
 fastdds::dds::DataWriterQos
 DynTypesPublicationParticipant::default_empty_datawriter_qos_(
-    const core::types::DdsTopic& topic) noexcept
+        const core::types::DdsTopic& topic) noexcept
 {
     // TODO decide which qos to use. Using less restrictive
     auto qos = fastdds::dds::DataWriterQos();
     qos.durability().kind =
-        ( topic.topic_qos.is_transient_local() ?
+            ( topic.topic_qos.is_transient_local() ?
             fastdds::dds::DurabilityQosPolicyKind::TRANSIENT_LOCAL_DURABILITY_QOS :
             fastdds::dds::DurabilityQosPolicyKind::VOLATILE_DURABILITY_QOS
-        );
+            );
     qos.reliability().kind =
-        ( topic.topic_qos.is_reliable() ?
+            ( topic.topic_qos.is_reliable() ?
             fastdds::dds::ReliabilityQosPolicyKind::RELIABLE_RELIABILITY_QOS :
             fastdds::dds::ReliabilityQosPolicyKind::BEST_EFFORT_RELIABILITY_QOS
-        );
+            );
     qos.ownership().kind =
-        ( topic.topic_qos.has_ownership() ?
+            ( topic.topic_qos.has_ownership() ?
             fastdds::dds::OwnershipQosPolicyKind::EXCLUSIVE_OWNERSHIP_QOS :
             fastdds::dds::OwnershipQosPolicyKind::SHARED_OWNERSHIP_QOS
-        );
+            );
 
     return qos;
 }
 
 fastdds::dds::TopicQos
 DynTypesPublicationParticipant::default_topic_qos_(
-    const core::types::DdsTopic& topic) noexcept
+        const core::types::DdsTopic& topic) noexcept
 {
     // TODO decide which qos to use
     return fastdds::dds::TopicQos();

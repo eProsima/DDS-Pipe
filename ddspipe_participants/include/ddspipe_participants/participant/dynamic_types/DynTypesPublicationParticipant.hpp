@@ -71,19 +71,19 @@ protected:
 
     DDSPIPE_PARTICIPANTS_DllAPI
     void create_empty_datawriter_nts_(
-        const core::types::DdsTopic& topic);
+            const core::types::DdsTopic& topic);
 
     static
     DDSPIPE_PARTICIPANTS_DllAPI
     fastdds::dds::DataWriterQos
     default_empty_datawriter_qos_(
-        const core::types::DdsTopic& topic) noexcept;
+            const core::types::DdsTopic& topic) noexcept;
 
     static
     DDSPIPE_PARTICIPANTS_DllAPI
     fastdds::dds::TopicQos
     default_topic_qos_(
-        const core::types::DdsTopic& topic) noexcept;
+            const core::types::DdsTopic& topic) noexcept;
 
     std::map<
         core::types::DdsTopic,

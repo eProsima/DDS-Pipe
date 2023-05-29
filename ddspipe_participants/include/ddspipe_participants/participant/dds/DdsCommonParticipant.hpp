@@ -35,7 +35,7 @@ namespace dds {
 /**
  * TODO comment
  */
-class DdsCommonParticipant : public core::IParticipant , public eprosima::fastdds::dds::DomainParticipantListener
+class DdsCommonParticipant : public core::IParticipant, public eprosima::fastdds::dds::DomainParticipantListener
 {
 public:
 
@@ -60,7 +60,7 @@ protected:
     // TODO
     DDSPIPE_PARTICIPANTS_DllAPI
     DdsCommonParticipant(
-        const std::shared_ptr<SimpleParticipantConfiguration>& participant_configuration);
+            const std::shared_ptr<SimpleParticipantConfiguration>& participant_configuration);
 
     eprosima::fastdds::dds::DomainParticipant* dds_participant_;
     eprosima::fastdds::dds::Publisher* dds_publisher_;
