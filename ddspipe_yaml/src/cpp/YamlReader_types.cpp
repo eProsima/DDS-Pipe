@@ -58,9 +58,9 @@ TransportDescriptors YamlReader::get<TransportDescriptors>(
     return get_enumeration<TransportDescriptors>(
         yml,
                 {
-                    {ADDRESS_TRANSPORT_TCP_TAG, TransportDescriptors::builtin},
-                    {ADDRESS_TRANSPORT_TCP_TAG, TransportDescriptors::udp_only},
-                    {ADDRESS_TRANSPORT_UDP_TAG, TransportDescriptors::shm_only}
+                    {TRANSPORT_DESCRIPTORS_BUILTIN_TAG, TransportDescriptors::builtin},
+                    {TRANSPORT_DESCRIPTORS_UDP_TAG, TransportDescriptors::udp_only},
+                    {TRANSPORT_DESCRIPTORS_SHM_TAG, TransportDescriptors::shm_only}
                 });
 }
 
