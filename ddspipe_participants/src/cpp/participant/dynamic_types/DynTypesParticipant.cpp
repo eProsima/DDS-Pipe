@@ -193,7 +193,7 @@ void DynTypesParticipant::initialize_internal_dds_participant_()
     pqos.wire_protocol().builtin.typelookup_config.use_client = true;
 
     // Configure Participant transports
-    if (configuration->transport == participants::types::TransportProtocol::builtin)
+    if (configuration->transport == core::types::TransportDescriptors::builtin)
     {
         if (!configuration->whitelist.empty())
         {
@@ -204,11 +204,11 @@ void DynTypesParticipant::initialize_internal_dds_participant_()
             pqos.transport().user_transports.push_back(shm_transport);
 
             std::shared_ptr<eprosima::fastdds::rtps::UDPv4TransportDescriptor> udp_transport =
-                    SimpleParticipant::configure_upd_transport_(configuration->whitelist);
+                    create_descriptor_<eprosima::fastdds::rtps::UDPv4TransportDescriptor>(configuration->whitelist);
             pqos.transport().user_transports.push_back(udp_transport);
         }
     }
-    else if (configuration->transport == participants::types::TransportProtocol::shm)
+    else if (configuration->transport == core::types::TransportDescriptors::shm_only)
     {
         pqos.transport().use_builtin_transports = false;
 
@@ -216,12 +216,12 @@ void DynTypesParticipant::initialize_internal_dds_participant_()
                 std::make_shared<eprosima::fastdds::rtps::SharedMemTransportDescriptor>();
         pqos.transport().user_transports.push_back(shm_transport);
     }
-    else if (configuration->transport == participants::types::TransportProtocol::udp)
+    else if (configuration->transport == core::types::TransportDescriptors::udp_only)
     {
         pqos.transport().use_builtin_transports = false;
 
         std::shared_ptr<eprosima::fastdds::rtps::UDPv4TransportDescriptor> udp_transport =
-                SimpleParticipant::configure_upd_transport_(configuration->whitelist);
+                create_descriptor_<eprosima::fastdds::rtps::UDPv4TransportDescriptor>(configuration->whitelist);
             pqos.transport().user_transports.push_back(udp_transport);
         pqos.transport().user_transports.push_back(udp_transport);
     }

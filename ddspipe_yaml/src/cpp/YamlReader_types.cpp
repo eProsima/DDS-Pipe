@@ -21,9 +21,9 @@
 #include <cpp_utils/utils.hpp>
 #include <cpp_utils/memory/Heritable.hpp>
 
+#include <ddspipe_core/types/dds/CustomTransport.hpp>
 #include <ddspipe_core/types/dds/DomainId.hpp>
 #include <ddspipe_core/types/dds/GuidPrefix.hpp>
-#include <ddspipe_core/types/dds/Participant.hpp>
 #include <ddspipe_core/types/participant/ParticipantId.hpp>
 #include <ddspipe_core/types/topic/dds/DdsTopic.hpp>
 #include <ddspipe_core/types/topic/filter/WildcardDdsFilterTopic.hpp>
@@ -48,6 +48,21 @@ namespace yaml {
 
 using namespace eprosima::ddspipe::core::types;
 using namespace eprosima::ddspipe::participants::types;
+
+template <>
+DDSPIPE_YAML_DllAPI
+TransportDescriptors YamlReader::get<TransportDescriptors>(
+        const Yaml& yml,
+        const YamlReaderVersion /* version */)
+{
+    return get_enumeration<TransportDescriptors>(
+        yml,
+                {
+                    {ADDRESS_TRANSPORT_TCP_TAG, TransportDescriptors::builtin},
+                    {ADDRESS_TRANSPORT_TCP_TAG, TransportDescriptors::udp_only},
+                    {ADDRESS_TRANSPORT_UDP_TAG, TransportDescriptors::shm_only}
+                });
+}
 
 template <>
 DDSPIPE_YAML_DllAPI
@@ -91,9 +106,7 @@ TransportProtocol YamlReader::get<TransportProtocol>(
         yml,
                 {
                     {ADDRESS_TRANSPORT_TCP_TAG, TransportProtocol::tcp},
-                    {ADDRESS_TRANSPORT_UDP_TAG, TransportProtocol::udp},
-                    {ADDRESS_TRANSPORT_SHM_TAG, TransportProtocol::shm},
-                    {ADDRESS_TRANSPORT_BUILTIN_TAG, TransportProtocol::builtin}
+                    {ADDRESS_TRANSPORT_UDP_TAG, TransportProtocol::udp}
                 });
 }
 
