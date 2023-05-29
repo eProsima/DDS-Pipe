@@ -121,7 +121,7 @@ public:
     DDSPIPE_PARTICIPANTS_DllAPI
     void on_requested_incompatible_qos(
             fastrtps::rtps::RTPSReader*,
-            eprosima::fastdds::dds::PolicyMask qos);
+            eprosima::fastdds::dds::PolicyMask qos) noexcept override;
 
     /**
      * This method is called when the reader detects that one or more samples have been lost.
@@ -132,7 +132,7 @@ public:
     DDSPIPE_PARTICIPANTS_DllAPI
     void on_sample_lost(
             fastrtps::rtps::RTPSReader*,
-            int32_t sample_lost_since_last_update);
+            int32_t sample_lost_since_last_update) noexcept override;
 
     /**
      * This method is called when the reader rejects a samples.
@@ -145,7 +145,7 @@ public:
     void on_sample_rejected(
             fastrtps::rtps::RTPSReader*,
             eprosima::fastdds::dds::SampleRejectedStatusKind reason,
-            const fastrtps::rtps::CacheChange_t* const change);
+            const fastrtps::rtps::CacheChange_t* const change) noexcept override;
 
     /////////////////////////
     // RPC REQUIRED METHODS

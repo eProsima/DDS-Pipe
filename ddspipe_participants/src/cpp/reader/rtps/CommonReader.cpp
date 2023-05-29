@@ -456,15 +456,15 @@ void CommonReader::onReaderMatched(
 
 void CommonReader::on_requested_incompatible_qos(
         fastrtps::rtps::RTPSReader*,
-        eprosima::fastdds::dds::PolicyMask qos)
+        eprosima::fastdds::dds::PolicyMask qos) noexcept
 {
     logWarning(DDSPIPE_RTPS_COMMONREADER_LISTENER,
-            "Reader " << *this << " found a remote Topic with incompatible QoS: " << qos);
+            "Reader " << *this << " found a remote Writer with incompatible QoS: " << qos);
 }
 
 void CommonReader::on_sample_lost(
         fastrtps::rtps::RTPSReader*,
-        int32_t sample_lost_since_last_update)
+        int32_t sample_lost_since_last_update) noexcept
 {
     logWarning(DDSPIPE_RTPS_COMMONREADER_LISTENER,
             "On reader " << *this << " a data sample was lost and will not be received");
@@ -473,7 +473,7 @@ void CommonReader::on_sample_lost(
 void CommonReader::on_sample_rejected(
         fastrtps::rtps::RTPSReader*,
         eprosima::fastdds::dds::SampleRejectedStatusKind reason,
-        const fastrtps::rtps::CacheChange_t* const change)
+        const fastrtps::rtps::CacheChange_t* const change) noexcept
 {
     std::string reason_str;
     switch (reason)

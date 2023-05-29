@@ -123,6 +123,14 @@ void CommonWriter::onWriterMatched(
     }
 }
 
+void CommonWriter::on_offered_incompatible_qos(
+        fastrtps::rtps::RTPSWriter*,
+        eprosima::fastdds::dds::PolicyMask qos) noexcept
+{
+    logWarning(DDSPIPE_RTPS_COMMONWRITER_LISTENER,
+            "Writer " << *this << " found a remote Reader with incompatible QoS: " << qos);
+}
+
 bool CommonWriter::come_from_this_participant_(
         const fastrtps::rtps::GUID_t guid) const noexcept
 {
