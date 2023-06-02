@@ -38,10 +38,13 @@ CommonWriter::~CommonWriter()
 {
     // This variables should be set, otherwise the creation should have fail
     // Anyway, the if case is used for safety reasons
-    if (writer_)
+    if (dds_publisher_)
     {
-        writer_->set_listener(nullptr);
-        dds_publisher_->delete_datawriter(writer_);
+        if (writer_)
+        {
+            writer_->set_listener(nullptr);
+            dds_publisher_->delete_datawriter(writer_);
+        }
 
         dds_participant_->delete_publisher(dds_publisher_);
     }

@@ -37,8 +37,11 @@ CommonReader::~CommonReader()
     // Anyway, the if case is used for safety reasons
     if (dds_subscriber_)
     {
-        reader_->set_listener(nullptr);
-        dds_subscriber_->delete_datareader(reader_);
+        if (reader_)
+        {
+            reader_->set_listener(nullptr);
+            dds_subscriber_->delete_datareader(reader_);
+        }
 
         dds_participant_->delete_subscriber(dds_subscriber_);
     }

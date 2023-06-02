@@ -14,12 +14,16 @@
 
 #include <memory>
 
+#include <cpp_utils/exception/InitializationException.hpp>
+
 #include <fastdds/dds/domain/DomainParticipantFactory.hpp>
 
 #include <cpp_utils/Log.hpp>
 #include <cpp_utils/exception/ConfigurationException.hpp>
 
 #include <ddspipe_participants/participant/dds/XmlParticipant.hpp>
+#include <ddspipe_participants/writer/auxiliar/BlankWriter.hpp>
+#include <ddspipe_participants/reader/auxiliar/BlankReader.hpp>
 
 namespace eprosima {
 namespace ddspipe {
@@ -34,6 +38,40 @@ XmlParticipant::XmlParticipant(
     , specific_configuration_(*participant_configuration)
 {
     // Do nothing
+}
+
+std::shared_ptr<core::IWriter> XmlParticipant::create_writer(
+        const core::ITopic& topic)
+{
+    try
+    {
+        return CommonParticipant::create_writer(topic);
+    }
+    catch (const utils::InitializationException& e)
+    {
+        logWarning(
+            DDSPIPE_XMLPARTICIPANT,
+            e.what()
+            << ". Execution continue but this topic will not be published in Participant " << id() << ".");
+        return std::make_shared<BlankWriter>();
+    }
+}
+
+std::shared_ptr<core::IReader> XmlParticipant::create_reader(
+        const core::ITopic& topic)
+{
+    try
+    {
+        return CommonParticipant::create_reader(topic);
+    }
+    catch (const utils::InitializationException& e)
+    {
+        logWarning(
+            DDSPIPE_XMLPARTICIPANT,
+            e.what()
+            << ". Execution continue but this topic will not be published in Participant " << id() << ".");
+        return std::make_shared<BlankReader>();
+    }
 }
 
 fastdds::dds::DomainParticipantQos XmlParticipant::reckon_participant_qos_() const

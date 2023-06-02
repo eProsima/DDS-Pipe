@@ -42,6 +42,22 @@ public:
         const std::shared_ptr<core::PayloadPool>& payload_pool,
         const std::shared_ptr<core::DiscoveryDatabase>& discovery_database);
 
+    /**
+     * Specialized parent call so if it fails returns a blank one.
+     * This is because security may fail to create some endpoints because permissions, but show must go on.
+     */
+    DDSPIPE_PARTICIPANTS_DllAPI
+    std::shared_ptr<core::IWriter> create_writer(
+            const core::ITopic& topic) override;
+
+    /**
+     * Specialized parent call so if it fails returns a blank one.
+     * This is because security may fail to create some endpoints because permissions, but show must go on.
+     */
+    DDSPIPE_PARTICIPANTS_DllAPI
+    std::shared_ptr<core::IReader> create_reader(
+            const core::ITopic& topic) override;
+
 protected:
 
     /////////////////////////
