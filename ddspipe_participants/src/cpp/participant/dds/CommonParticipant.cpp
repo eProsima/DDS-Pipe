@@ -87,10 +87,13 @@ void CommonParticipant::init()
 
     if (dds_participant_ == nullptr)
     {
-        throw utils::InitializationException("Error creating DDS Participant.");
+        throw utils::InitializationException(STR_ENTRY << "Error creating DDS Participant " << id() << ".");
     }
 
-    dds_participant_->enable();
+    if (dds_participant_->enable() != utils::ReturnCode::RETCODE_OK)
+    {
+        throw utils::InitializationException(STR_ENTRY << "Error enabling DDS Participant " << id() << ".");
+    }
 }
 
 core::types::ParticipantId CommonParticipant::id() const noexcept
