@@ -92,6 +92,7 @@ struct RtpsPayloadData : public core::IRoutingData
  */
 const core::types::TopicInternalTypeDiscriminator INTERNAL_TOPIC_TYPE_RTPS = "payload::rtps::v0";
 
+DDSPIPE_CORE_DllAPI
 std::ostream& operator <<(
         std::ostream& os,
         const RtpsPayloadData& data);
