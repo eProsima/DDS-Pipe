@@ -26,7 +26,9 @@
 #include <fastrtps/types/DynamicType.h>
 #include <fastrtps/types/DynamicTypePtr.h>
 #include <fastrtps/types/TypeObjectFactory.h>
-
+#include <fastdds/rtps/transport/UDPv4TransportDescriptor.h>
+#include <fastdds/rtps/transport/shared_mem/SharedMemTransportDescriptor.h>
+#include <fastdds/rtps/attributes/RTPSParticipantAttributes.h>
 #include <ddspipe_core/types/dynamic_types/types.hpp>
 
 #include <ddspipe_participants/reader/auxiliar/BlankReader.hpp>
@@ -179,12 +181,79 @@ void DynTypesParticipant::internal_notify_type_object_(
 
 void DynTypesParticipant::initialize_internal_dds_participant_()
 {
+
+    std::shared_ptr<SimpleParticipantConfiguration> configuration =
+            std::dynamic_pointer_cast<SimpleParticipantConfiguration>(this->configuration_);
+
     eprosima::fastdds::dds::DomainParticipantQos pqos;
     pqos.name(this->id());
 
     // Set Type LookUp to ON
     pqos.wire_protocol().builtin.typelookup_config.use_server = false;
     pqos.wire_protocol().builtin.typelookup_config.use_client = true;
+
+    // Configure Participant transports
+    if (configuration->transport == core::types::TransportDescriptors::builtin)
+    {
+        if (!configuration->whitelist.empty())
+        {
+            pqos.transport().use_builtin_transports = false;
+
+            std::shared_ptr<eprosima::fastdds::rtps::SharedMemTransportDescriptor> shm_transport =
+                    std::make_shared<eprosima::fastdds::rtps::SharedMemTransportDescriptor>();
+            pqos.transport().user_transports.push_back(shm_transport);
+
+            std::shared_ptr<eprosima::fastdds::rtps::UDPv4TransportDescriptor> udp_transport =
+                    create_descriptor_<eprosima::fastdds::rtps::UDPv4TransportDescriptor>(configuration->whitelist);
+            pqos.transport().user_transports.push_back(udp_transport);
+        }
+    }
+    else if (configuration->transport == core::types::TransportDescriptors::shm_only)
+    {
+        pqos.transport().use_builtin_transports = false;
+
+        std::shared_ptr<eprosima::fastdds::rtps::SharedMemTransportDescriptor> shm_transport =
+                std::make_shared<eprosima::fastdds::rtps::SharedMemTransportDescriptor>();
+        pqos.transport().user_transports.push_back(shm_transport);
+    }
+    else if (configuration->transport == core::types::TransportDescriptors::udp_only)
+    {
+        pqos.transport().use_builtin_transports = false;
+
+        std::shared_ptr<eprosima::fastdds::rtps::UDPv4TransportDescriptor> udp_transport =
+                create_descriptor_<eprosima::fastdds::rtps::UDPv4TransportDescriptor>(configuration->whitelist);
+        pqos.transport().user_transports.push_back(udp_transport);
+        pqos.transport().user_transports.push_back(udp_transport);
+    }
+
+    // Participant discovery filter configuration
+    switch (configuration->ignore_participant_flags)
+    {
+        case core::types::IgnoreParticipantFlags::no_filter:
+            pqos.wire_protocol().builtin.discovery_config.ignoreParticipantFlags =
+                    eprosima::fastrtps::rtps::ParticipantFilteringFlags_t::NO_FILTER;
+            break;
+        case core::types::IgnoreParticipantFlags::filter_different_host:
+            pqos.wire_protocol().builtin.discovery_config.ignoreParticipantFlags =
+                    eprosima::fastrtps::rtps::ParticipantFilteringFlags_t::FILTER_DIFFERENT_HOST;
+            break;
+        case core::types::IgnoreParticipantFlags::filter_different_process:
+            pqos.wire_protocol().builtin.discovery_config.ignoreParticipantFlags =
+                    eprosima::fastrtps::rtps::ParticipantFilteringFlags_t::FILTER_DIFFERENT_PROCESS;
+            break;
+        case core::types::IgnoreParticipantFlags::filter_same_process:
+            pqos.wire_protocol().builtin.discovery_config.ignoreParticipantFlags =
+                    eprosima::fastrtps::rtps::ParticipantFilteringFlags_t::FILTER_SAME_PROCESS;
+            break;
+        case core::types::IgnoreParticipantFlags::filter_different_and_same_process:
+            pqos.wire_protocol().builtin.discovery_config.ignoreParticipantFlags =
+                    static_cast<eprosima::fastrtps::rtps::ParticipantFilteringFlags_t>(
+                eprosima::fastrtps::rtps::ParticipantFilteringFlags_t::FILTER_DIFFERENT_PROCESS |
+                eprosima::fastrtps::rtps::ParticipantFilteringFlags_t::FILTER_SAME_PROCESS);
+            break;
+        default:
+            break;
+    }
 
     // Force DDS entities to be created disabled
     // NOTE: this is very dangerous because we are modifying a global variable (and a not thread safe one) in a
@@ -200,7 +269,7 @@ void DynTypesParticipant::initialize_internal_dds_participant_()
 
     // CREATE THE PARTICIPANT
     dds_participant_ = eprosima::fastdds::dds::DomainParticipantFactory::get_instance()->create_participant(
-        std::dynamic_pointer_cast<SimpleParticipantConfiguration>(this->configuration_)->domain,
+        configuration->domain,
         pqos);
 
     dds_participant_->set_listener(this);

@@ -21,6 +21,7 @@
 #include <cpp_utils/utils.hpp>
 #include <cpp_utils/memory/Heritable.hpp>
 
+#include <ddspipe_core/types/dds/CustomTransport.hpp>
 #include <ddspipe_core/types/dds/DomainId.hpp>
 #include <ddspipe_core/types/dds/GuidPrefix.hpp>
 #include <ddspipe_core/types/participant/ParticipantId.hpp>
@@ -50,6 +51,39 @@ using namespace eprosima::ddspipe::participants::types;
 
 template <>
 DDSPIPE_YAML_DllAPI
+TransportDescriptors YamlReader::get<TransportDescriptors>(
+        const Yaml& yml,
+        const YamlReaderVersion /* version */)
+{
+    return get_enumeration<TransportDescriptors>(
+        yml,
+                {
+                    {TRANSPORT_DESCRIPTORS_BUILTIN_TAG, TransportDescriptors::builtin},
+                    {TRANSPORT_DESCRIPTORS_UDP_TAG, TransportDescriptors::udp_only},
+                    {TRANSPORT_DESCRIPTORS_SHM_TAG, TransportDescriptors::shm_only}
+                });
+}
+
+template <>
+DDSPIPE_YAML_DllAPI
+IgnoreParticipantFlags YamlReader::get<IgnoreParticipantFlags>(
+        const Yaml& yml,
+        const YamlReaderVersion /* version */)
+{
+    return get_enumeration<IgnoreParticipantFlags>(
+        yml,
+                {
+                    {IGNORE_PARTICIPANT_FLAGS_NO_FILTER_TAG, IgnoreParticipantFlags::no_filter},
+                    {IGNORE_PARTICIPANT_FLAGS_DIFFERENT_HOST_TAG, IgnoreParticipantFlags::filter_different_host},
+                    {IGNORE_PARTICIPANT_FLAGS_DIFFERENT_PROCESS_TAG, IgnoreParticipantFlags::filter_different_process},
+                    {IGNORE_PARTICIPANT_FLAGS_SAME_PROCESS_TAG, IgnoreParticipantFlags::filter_same_process},
+                    {IGNORE_PARTICIPANT_FLAGS_DIFFERENT_AND_SAME_PROCESS_TAG,
+                     IgnoreParticipantFlags::filter_different_and_same_process},
+                });
+}
+
+template <>
+DDSPIPE_YAML_DllAPI
 YamlReaderVersion YamlReader::get<YamlReaderVersion>(
         const Yaml& yml,
         const YamlReaderVersion /* version */)
@@ -73,7 +107,7 @@ TransportProtocol YamlReader::get<TransportProtocol>(
         yml,
                 {
                     {ADDRESS_TRANSPORT_TCP_TAG, TransportProtocol::tcp},
-                    {ADDRESS_TRANSPORT_UDP_TAG, TransportProtocol::udp},
+                    {ADDRESS_TRANSPORT_UDP_TAG, TransportProtocol::udp}
                 });
 }
 

@@ -15,6 +15,10 @@
 
 #include <memory>
 
+#include <fastdds/rtps/transport/TCPv4TransportDescriptor.h>
+#include <fastdds/rtps/transport/TCPv6TransportDescriptor.h>
+#include <fastdds/rtps/transport/UDPv4TransportDescriptor.h>
+#include <fastdds/rtps/transport/UDPv6TransportDescriptor.h>
 #include <fastrtps/rtps/participant/RTPSParticipant.h>
 #include <fastrtps/rtps/RTPSDomain.h>
 
@@ -274,6 +278,114 @@ core::types::Endpoint CommonParticipant::simulate_endpoint(
     endpoint.discoverer_participant_id = discoverer_id;
 
     return endpoint;
+}
+
+template<>
+std::shared_ptr<eprosima::fastdds::rtps::UDPv4TransportDescriptor>
+CommonParticipant::create_descriptor_(
+        std::set<types::IpType> whitelist)
+{
+    std::shared_ptr<eprosima::fastdds::rtps::UDPv4TransportDescriptor> udp_transport =
+            std::make_shared<eprosima::fastdds::rtps::UDPv4TransportDescriptor>();
+
+    for (const types::IpType& ip : whitelist)
+    {
+        if (types::Address::is_ipv4_correct(ip))
+        {
+            udp_transport->interfaceWhiteList.emplace_back(ip);
+            logInfo(DDSPIPE_COMMON_PARTICIPANT,
+                    "Adding " << ip << " to UDP whitelist interfaces.");
+        }
+        else
+        {
+            // Invalid address, continue with next one
+            logWarning(DDSPIPE_COMMON_PARTICIPANT,
+                    "Not valid IPv4. Discarding UDP whitelist interface " << ip << ".");
+        }
+    }
+
+    return udp_transport;
+}
+
+template<>
+std::shared_ptr<eprosima::fastdds::rtps::UDPv6TransportDescriptor>
+CommonParticipant::create_descriptor_(
+        std::set<types::IpType> whitelist)
+{
+    std::shared_ptr<eprosima::fastdds::rtps::UDPv6TransportDescriptor> udp_transport =
+            std::make_shared<eprosima::fastdds::rtps::UDPv6TransportDescriptor>();
+
+    for (const types::IpType& ip : whitelist)
+    {
+        if (types::Address::is_ipv6_correct(ip))
+        {
+            udp_transport->interfaceWhiteList.emplace_back(ip);
+            logInfo(DDSPIPE_COMMON_PARTICIPANT,
+                    "Adding " << ip << " to UDP whitelist interfaces.");
+        }
+        else
+        {
+            // Invalid address, continue with next one
+            logWarning(DDSPIPE_COMMON_PARTICIPANT,
+                    "Not valid IPv6. Discarding UDP whitelist interface " << ip << ".");
+        }
+    }
+
+    return udp_transport;
+}
+
+template<>
+std::shared_ptr<eprosima::fastdds::rtps::TCPv4TransportDescriptor>
+CommonParticipant::create_descriptor_(
+        std::set<types::IpType> whitelist)
+{
+    std::shared_ptr<eprosima::fastdds::rtps::TCPv4TransportDescriptor> tcp_transport =
+            std::make_shared<eprosima::fastdds::rtps::TCPv4TransportDescriptor>();
+
+    for (const types::IpType& ip : whitelist)
+    {
+        if (types::Address::is_ipv4_correct(ip))
+        {
+            tcp_transport->interfaceWhiteList.emplace_back(ip);
+            logInfo(DDSPIPE_COMMON_PARTICIPANT,
+                    "Adding " << ip << " to TCP whitelist interfaces.");
+        }
+        else
+        {
+            // Invalid address, continue with next one
+            logWarning(DDSPIPE_COMMON_PARTICIPANT,
+                    "Not valid IPv4. Discarding TCP whitelist interface " << ip << ".");
+        }
+    }
+
+    return tcp_transport;
+}
+
+template<>
+std::shared_ptr<eprosima::fastdds::rtps::TCPv6TransportDescriptor>
+CommonParticipant::create_descriptor_(
+        std::set<types::IpType> whitelist)
+{
+    std::shared_ptr<eprosima::fastdds::rtps::TCPv6TransportDescriptor> tcp_transport =
+            std::make_shared<eprosima::fastdds::rtps::TCPv6TransportDescriptor>();
+
+    for (const types::IpType& ip : whitelist)
+    {
+        if (types::Address::is_ipv6_correct(ip))
+        {
+            tcp_transport->interfaceWhiteList.emplace_back(ip);
+            logInfo(DDSPIPE_COMMON_PARTICIPANT,
+                    "Adding " << ip << " to TCP whitelist interfaces.");
+        }
+        else
+        {
+            // Invalid address, continue with next one
+            logWarning(DDSPIPE_COMMON_PARTICIPANT,
+                    "Not valid IPv6. Discarding TCP whitelist interface " << ip << ".");
+        }
+    }
+
+    return tcp_transport;
 }
 
 bool CommonParticipant::is_repeater() const noexcept
