@@ -22,7 +22,14 @@ namespace types {
 constexpr const DomainIdType DomainId::MAX_DOMAIN_ID;
 
 DomainId::DomainId (
-        bool discovery_server) noexcept
+        const DomainIdType& domain_id) noexcept
+    : domain_id(domain_id)
+{
+    // Do nothing
+}
+
+DomainId::DomainId (
+        const bool discovery_server) noexcept
     : domain_id(DEFAULT_DOMAIN_ID)
 {
     // Discovery Server case has a different default value
