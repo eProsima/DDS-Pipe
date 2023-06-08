@@ -24,7 +24,7 @@ namespace types {
 constexpr const DomainIdType DomainId::MAX_DOMAIN_ID;
 
 DomainId::DomainId (
-        const DomainIdType& domain_id) noexcept
+        const DomainIdType& domain_id)
     : domain_id(domain_id)
 {
     if (domain_id > MAX_DOMAIN_ID)
