@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#include <cpp_utils/exception/PreconditionNotMet.hpp>
+
 #include <ddspipe_core/types/dds/DomainId.hpp>
 
 namespace eprosima {
@@ -25,7 +27,10 @@ DomainId::DomainId (
         const DomainIdType& domain_id) noexcept
     : domain_id(domain_id)
 {
-    // Do nothing
+    if (domain_id > MAX_DOMAIN_ID)
+    {
+        throw utils::PreconditionNotMet(STR_ENTRY << "Domain id cannot be higher than " << MAX_DOMAIN_ID << ".");
+    }
 }
 
 DomainId::DomainId (
