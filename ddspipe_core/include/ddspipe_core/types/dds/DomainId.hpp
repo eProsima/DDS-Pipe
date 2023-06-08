@@ -38,7 +38,11 @@ struct DomainId : public IConfiguration
 
     DDSPIPE_CORE_DllAPI
     DomainId (
-            bool discovery_server) noexcept;
+            const DomainIdType& domain_id);
+
+    DDSPIPE_CORE_DllAPI
+    explicit DomainId (
+            const bool discovery_server) noexcept;
 
     DDSPIPE_CORE_DllAPI
     operator DomainIdType() const noexcept;
