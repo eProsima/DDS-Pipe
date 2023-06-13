@@ -158,6 +158,16 @@ public:
             const core::types::DdsTopic& topic,
             const core::types::ParticipantId& discoverer_id);
 
+    /**
+     * @brief Create a transport descriptor with given whitelist.
+     *
+     * This templated method is specialized for UPDv4, UDPv6, TCPv4 and TCPv6.
+     */
+    template<typename T>
+    DDSPIPE_PARTICIPANTS_DllAPI
+    static std::shared_ptr<T> create_descriptor(
+            std::set<types::IpType> whitelist = {});
+
 protected:
 
     /**
@@ -203,10 +213,6 @@ protected:
      */
     static fastrtps::rtps::RTPSParticipantAttributes reckon_participant_attributes_(
             const ParticipantConfiguration* participant_configuration);
-
-    template<typename T>
-    static std::shared_ptr<T> create_descriptor_(
-            std::set<types::IpType> whitelist = {});
 
     /////
     // VARIABLES

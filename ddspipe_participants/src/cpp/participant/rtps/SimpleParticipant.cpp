@@ -59,7 +59,7 @@ SimpleParticipant::reckon_participant_attributes_(
             params.userTransports.push_back(shm_transport);
 
             std::shared_ptr<eprosima::fastdds::rtps::UDPv4TransportDescriptor> udp_transport =
-                    create_descriptor_<eprosima::fastdds::rtps::UDPv4TransportDescriptor>(configuration->whitelist);
+                    create_descriptor<eprosima::fastdds::rtps::UDPv4TransportDescriptor>(configuration->whitelist);
             params.userTransports.push_back(udp_transport);
         }
     }
@@ -76,7 +76,7 @@ SimpleParticipant::reckon_participant_attributes_(
         params.useBuiltinTransports = false;
 
         std::shared_ptr<eprosima::fastdds::rtps::UDPv4TransportDescriptor> udp_transport =
-                create_descriptor_<eprosima::fastdds::rtps::UDPv4TransportDescriptor>(configuration->whitelist);
+                create_descriptor<eprosima::fastdds::rtps::UDPv4TransportDescriptor>(configuration->whitelist);
         params.userTransports.push_back(udp_transport);
     }
 
