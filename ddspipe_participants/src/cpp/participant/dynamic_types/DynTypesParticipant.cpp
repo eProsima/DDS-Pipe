@@ -223,7 +223,6 @@ void DynTypesParticipant::initialize_internal_dds_participant_()
         std::shared_ptr<eprosima::fastdds::rtps::UDPv4TransportDescriptor> udp_transport =
                 create_descriptor_<eprosima::fastdds::rtps::UDPv4TransportDescriptor>(configuration->whitelist);
         pqos.transport().user_transports.push_back(udp_transport);
-        pqos.transport().user_transports.push_back(udp_transport);
     }
 
     // Participant discovery filter configuration
