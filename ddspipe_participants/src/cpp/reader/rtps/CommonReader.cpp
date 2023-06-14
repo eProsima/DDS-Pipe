@@ -454,6 +454,51 @@ void CommonReader::onReaderMatched(
     }
 }
 
+void CommonReader::on_requested_incompatible_qos(
+        fastrtps::rtps::RTPSReader*,
+        eprosima::fastdds::dds::PolicyMask qos) noexcept
+{
+    logWarning(DDSPIPE_RTPS_COMMONREADER_LISTENER,
+            "Reader " << *this << " found a remote Writer with incompatible QoS: " << qos);
+}
+
+void CommonReader::on_sample_lost(
+        fastrtps::rtps::RTPSReader*,
+        int32_t sample_lost_since_last_update) noexcept
+{
+    logWarning(DDSPIPE_RTPS_COMMONREADER_LISTENER,
+            "On reader " << *this << " a data sample was lost and will not be received");
+}
+
+void CommonReader::on_sample_rejected(
+        fastrtps::rtps::RTPSReader*,
+        eprosima::fastdds::dds::SampleRejectedStatusKind reason,
+        const fastrtps::rtps::CacheChange_t* const change) noexcept
+{
+    std::string reason_str;
+    switch (reason)
+    {
+        case eprosima::fastdds::dds::SampleRejectedStatusKind::NOT_REJECTED:
+            reason_str = "NOT_REJECTED";
+            break;
+        case eprosima::fastdds::dds::SampleRejectedStatusKind::REJECTED_BY_INSTANCES_LIMIT:
+            reason_str = "REJECTED_BY_INSTANCES_LIMIT";
+            break;
+        case eprosima::fastdds::dds::SampleRejectedStatusKind::REJECTED_BY_SAMPLES_LIMIT:
+            reason_str = "REJECTED_BY_SAMPLES_LIMIT";
+            break;
+        case eprosima::fastdds::dds::SampleRejectedStatusKind::REJECTED_BY_SAMPLES_PER_INSTANCE_LIMIT:
+            reason_str = "REJECTED_BY_SAMPLES_PER_INSTANCE_LIMIT";
+            break;
+        default:
+            reason_str = "UNKNOWN";
+            break;
+    }
+    logInfo(DDSPIPE_RTPS_COMMONREADER_LISTENER,
+            "Reader " << *this << " rejected a sample from " << change->writerGUID
+                      << ". Reason: " << reason_str);
+}
+
 utils::ReturnCode CommonReader::is_data_correct_(
         const fastrtps::rtps::CacheChange_t* received_change) const noexcept
 {

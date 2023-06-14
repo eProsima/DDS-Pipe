@@ -112,6 +112,41 @@ public:
             fastrtps::rtps::RTPSReader*,
             fastrtps::rtps::MatchingInfo& info) noexcept override;
 
+    /**
+     * This method is called when a new Writer is discovered, with a Topic that
+     * matches that of a local reader, but with an offered QoS that is incompatible
+     * with the one requested by the local reader
+     * @param qos A mask with the bits of all incompatible Qos activated.
+     */
+    DDSPIPE_PARTICIPANTS_DllAPI
+    void on_requested_incompatible_qos(
+            fastrtps::rtps::RTPSReader*,
+            eprosima::fastdds::dds::PolicyMask qos) noexcept override;
+
+    /**
+     * This method is called when the reader detects that one or more samples have been lost.
+     *
+     * @param sample_lost_since_last_update  The number of samples that were lost since the last time this
+     *                                       method was called for the same reader.
+     */
+    DDSPIPE_PARTICIPANTS_DllAPI
+    void on_sample_lost(
+            fastrtps::rtps::RTPSReader*,
+            int32_t sample_lost_since_last_update) noexcept override;
+
+    /**
+     * This method is called when the reader rejects a samples.
+     *
+     * @param reason  Indicates reason for sample rejection.
+     * @param change  Pointer to the CacheChange_t. This is a const pointer to const data
+     *                to indicate that the user should not dispose of this data himself.
+     */
+    DDSPIPE_PARTICIPANTS_DllAPI
+    void on_sample_rejected(
+            fastrtps::rtps::RTPSReader*,
+            eprosima::fastdds::dds::SampleRejectedStatusKind reason,
+            const fastrtps::rtps::CacheChange_t* const change) noexcept override;
+
     /////////////////////////
     // RPC REQUIRED METHODS
     /////////////////////////
