@@ -59,21 +59,21 @@ constexpr const char* ECHO_VERBOSE_TAG("verbose");      //! Echo in verbose mode
 // RTPS related tags
 
 // Transport related tags
-constexpr const char* WHITELIST_INTERFACES_TAG("whitelist-interfaces"); //! TODO: add comment
+constexpr const char* WHITELIST_INTERFACES_TAG("whitelist-interfaces"); //! Whitelist interfaces
 
 // Custom transport descriptors tags
-constexpr const char* TRANSPORT_DESCRIPTORS_TRANSPORT_TAG("transport"); //! TODO: add comment
-constexpr const char* TRANSPORT_DESCRIPTORS_BUILTIN_TAG("builtin"); //! TODO: add comment
-constexpr const char* TRANSPORT_DESCRIPTORS_UDP_TAG("udp"); //! TODO: add comment
-constexpr const char* TRANSPORT_DESCRIPTORS_SHM_TAG("shm"); //! TODO: add comment
+constexpr const char* TRANSPORT_DESCRIPTORS_TRANSPORT_TAG("transport"); //! Custom transport descriptors
+constexpr const char* TRANSPORT_DESCRIPTORS_BUILTIN_TAG("builtin"); //! Builtin transport (UDP + SHM) (default)
+constexpr const char* TRANSPORT_DESCRIPTORS_UDP_TAG("udp"); //! UDP only
+constexpr const char* TRANSPORT_DESCRIPTORS_SHM_TAG("shm"); //! Shared Memory only
 
 // Participant discovery settings
-constexpr const char* IGNORE_PARTICIPANT_FLAGS_TAG("ignore-participant-flags"); //! TODO: add comment
-constexpr const char* IGNORE_PARTICIPANT_FLAGS_NO_FILTER_TAG("no_filter"); //! TODO: add comment
-constexpr const char* IGNORE_PARTICIPANT_FLAGS_DIFFERENT_HOST_TAG("filter_different_host"); //! TODO: add comment
-constexpr const char* IGNORE_PARTICIPANT_FLAGS_DIFFERENT_PROCESS_TAG("filter_different_process"); //! TODO: add comment
-constexpr const char* IGNORE_PARTICIPANT_FLAGS_SAME_PROCESS_TAG("filter_same_process"); //! TODO: add comment
-constexpr const char* IGNORE_PARTICIPANT_FLAGS_DIFFERENT_AND_SAME_PROCESS_TAG("filter_different_and_same_process"); //! TODO: add comment
+constexpr const char* IGNORE_PARTICIPANT_FLAGS_TAG("ignore-participant-flags"); //! Ignore Participant Flags
+constexpr const char* IGNORE_PARTICIPANT_FLAGS_NO_FILTER_TAG("no_filter"); //! No filter (default)
+constexpr const char* IGNORE_PARTICIPANT_FLAGS_DIFFERENT_HOST_TAG("filter_different_host"); //! Discovery traffic from another host is discarded
+constexpr const char* IGNORE_PARTICIPANT_FLAGS_DIFFERENT_PROCESS_TAG("filter_different_process"); //! Discovery traffic from another process on same host is discarded
+constexpr const char* IGNORE_PARTICIPANT_FLAGS_SAME_PROCESS_TAG("filter_same_process"); //! Discovery traffic from own process is discarded
+constexpr const char* IGNORE_PARTICIPANT_FLAGS_DIFFERENT_AND_SAME_PROCESS_TAG("filter_different_and_same_process"); //! Discovery traffic from own host is discarded
 
 // Simple RTPS related tags
 constexpr const char* DOMAIN_ID_TAG("domain"); //! Domain Id of the participant
