@@ -19,16 +19,18 @@
 #include <fastdds/rtps/rtps_fwd.h>
 #include <fastdds/rtps/writer/WriterDiscoveryInfo.h>
 #include <fastrtps/rtps/attributes/RTPSParticipantAttributes.h>
-#include <fastrtps/rtps/RTPSDomain.h>
 #include <fastrtps/rtps/participant/RTPSParticipantListener.h>
+#include <fastrtps/rtps/RTPSDomain.h>
 
-#include <ddspipe_core/interface/IParticipant.hpp>
-#include <ddspipe_core/types/dds/DomainId.hpp>
+
 #include <ddspipe_core/dynamic/DiscoveryDatabase.hpp>
 #include <ddspipe_core/efficiency/payload/PayloadPool.hpp>
+#include <ddspipe_core/interface/IParticipant.hpp>
+#include <ddspipe_core/types/dds/DomainId.hpp>
 
-#include <ddspipe_participants/library/library_dll.h>
 #include <ddspipe_participants/configuration/ParticipantConfiguration.hpp>
+#include <ddspipe_participants/library/library_dll.h>
+#include <ddspipe_participants/types/address/Address.hpp>
 
 namespace eprosima {
 namespace ddspipe {
@@ -155,6 +157,16 @@ public:
     static core::types::Endpoint simulate_endpoint(
             const core::types::DdsTopic& topic,
             const core::types::ParticipantId& discoverer_id);
+
+    /**
+     * @brief Create a transport descriptor with given whitelist.
+     *
+     * This templated method is specialized for UPDv4, UDPv6, TCPv4 and TCPv6.
+     */
+    template<typename T>
+    DDSPIPE_PARTICIPANTS_DllAPI
+    static std::shared_ptr<T> create_descriptor(
+            std::set<types::IpType> whitelist = {});
 
 protected:
 

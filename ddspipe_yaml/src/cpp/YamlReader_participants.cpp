@@ -132,6 +132,33 @@ void YamlReader::fill(
     {
         object.domain = get<DomainId>(yml, DOMAIN_ID_TAG, version);
     }
+
+    // Optional whitelist interfaces
+    if (YamlReader::is_tag_present(yml, WHITELIST_INTERFACES_TAG))
+    {
+        object.whitelist = YamlReader::get_set<participants::types::IpType>(yml, WHITELIST_INTERFACES_TAG, version);
+    }
+
+    // Optional get Transport descriptors
+    if (YamlReader::is_tag_present(yml, TRANSPORT_DESCRIPTORS_TRANSPORT_TAG))
+    {
+        object.transport = get<core::types::TransportDescriptors>(yml, TRANSPORT_DESCRIPTORS_TRANSPORT_TAG, version);
+    }
+    else
+    {
+        object.transport = core::types::TransportDescriptors::builtin;
+    }
+
+    // Optional get ignore participant flags
+    if (YamlReader::is_tag_present(yml, IGNORE_PARTICIPANT_FLAGS_TAG))
+    {
+        object.ignore_participant_flags = get<core::types::IgnoreParticipantFlags>(yml, IGNORE_PARTICIPANT_FLAGS_TAG,
+                        version);
+    }
+    else
+    {
+        object.ignore_participant_flags = core::types::IgnoreParticipantFlags::no_filter;
+    }
 }
 
 template <>
@@ -156,6 +183,12 @@ void YamlReader::fill(
 {
     // Parent class fill
     fill<participants::SimpleParticipantConfiguration>(object, yml, version);
+
+    // Optional whitelist interfaces
+    if (YamlReader::is_tag_present(yml, WHITELIST_INTERFACES_TAG))
+    {
+        object.whitelist = YamlReader::get_set<participants::types::IpType>(yml, WHITELIST_INTERFACES_TAG, version);
+    }
 
     // Optional listening addresses
     if (YamlReader::is_tag_present(yml, LISTENING_ADDRESSES_TAG))
@@ -218,6 +251,12 @@ void YamlReader::fill(
 {
     // Parent class fill
     fill<participants::SimpleParticipantConfiguration>(object, yml, version);
+
+    // Optional whitelist interfaces
+    if (YamlReader::is_tag_present(yml, WHITELIST_INTERFACES_TAG))
+    {
+        object.whitelist = YamlReader::get_set<participants::types::IpType>(yml, WHITELIST_INTERFACES_TAG, version);
+    }
 
     // Optional listening addresses
     if (YamlReader::is_tag_present(yml, LISTENING_ADDRESSES_TAG))

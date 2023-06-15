@@ -15,6 +15,7 @@
 #include <cpp_utils/Log.hpp>
 
 #include <ddspipe_participants/configuration/SimpleParticipantConfiguration.hpp>
+#include <ddspipe_participants/types/address/Address.hpp>
 
 namespace eprosima {
 namespace ddspipe {
@@ -32,6 +33,16 @@ bool SimpleParticipantConfiguration::is_valid(
     {
         error_msg << "Incorrect domain " << domain << ". ";
         return false;
+    }
+
+    // Check whitelist interfaces
+    for (types::IpType ip : whitelist)
+    {
+        if (!types::Address::is_ipv4_correct(ip))
+        {
+            error_msg << "Incorrect IPv4 address " << ip << " in whitelist interfaces. ";
+            return false;
+        }
     }
 
     return true;
