@@ -41,7 +41,7 @@ TEST(YamlGetEntityTransportTest, get_transport_builtin)
 
         // Get core::types::TransportDescriptors from Yaml
         core::types::TransportDescriptors result = YamlReader::get<core::types::TransportDescriptors>(yml,
-         TRANSPORT_DESCRIPTORS_TRANSPORT_TAG, LATEST);
+                        TRANSPORT_DESCRIPTORS_TRANSPORT_TAG, LATEST);
 
         // Check result
         ASSERT_EQ(core::types::TransportDescriptors::builtin, result);
@@ -63,7 +63,7 @@ TEST(YamlGetEntityTransportTest, get_transport_udp_only)
 
         // Get core::types::TransportDescriptors from Yaml
         core::types::TransportDescriptors result = YamlReader::get<core::types::TransportDescriptors>(yml,
-         TRANSPORT_DESCRIPTORS_TRANSPORT_TAG, LATEST);
+                        TRANSPORT_DESCRIPTORS_TRANSPORT_TAG, LATEST);
 
         // Check result
         ASSERT_EQ(core::types::TransportDescriptors::udp_only, result);
@@ -85,7 +85,7 @@ TEST(YamlGetEntityTransportTest, get_transport_shm_only)
 
         // Get core::types::TransportDescriptors from Yaml
         core::types::TransportDescriptors result = YamlReader::get<core::types::TransportDescriptors>(yml,
-         TRANSPORT_DESCRIPTORS_TRANSPORT_TAG, LATEST);
+                        TRANSPORT_DESCRIPTORS_TRANSPORT_TAG, LATEST);
 
         // Check result
         ASSERT_EQ(core::types::TransportDescriptors::shm_only, result);

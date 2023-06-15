@@ -41,7 +41,7 @@ TEST(YamlGetEntityIgnoreParticipantsTest, get_ignore_participnats_no_filter)
 
         // Get core::types::IgnoreParticipantFlags from Yaml
         core::types::IgnoreParticipantFlags result = YamlReader::get<core::types::IgnoreParticipantFlags>(yml,
-         IGNORE_PARTICIPANT_FLAGS_TAG, LATEST);
+                        IGNORE_PARTICIPANT_FLAGS_TAG, LATEST);
 
         // Check result
         ASSERT_EQ(core::types::IgnoreParticipantFlags::no_filter, result);
@@ -63,7 +63,7 @@ TEST(YamlGetEntityIgnoreParticipantsTest, get_ignore_participnats_filter_differe
 
         // Get core::types::IgnoreParticipantFlags from Yaml
         core::types::IgnoreParticipantFlags result = YamlReader::get<core::types::IgnoreParticipantFlags>(yml,
-         IGNORE_PARTICIPANT_FLAGS_TAG, LATEST);
+                        IGNORE_PARTICIPANT_FLAGS_TAG, LATEST);
 
         // Check result
         ASSERT_EQ(core::types::IgnoreParticipantFlags::filter_different_host, result);
@@ -85,7 +85,7 @@ TEST(YamlGetEntityAddressTest, get_ignore_participnats_filter_different_process)
 
         // Get core::types::IgnoreParticipantFlags from Yaml
         core::types::IgnoreParticipantFlags result = YamlReader::get<core::types::IgnoreParticipantFlags>(yml,
-         IGNORE_PARTICIPANT_FLAGS_TAG, LATEST);
+                        IGNORE_PARTICIPANT_FLAGS_TAG, LATEST);
 
         // Check result
         ASSERT_EQ(core::types::IgnoreParticipantFlags::filter_different_process, result);
@@ -107,7 +107,7 @@ TEST(YamlGetEntityIgnoreParticipantsTest, get_ignore_participnats_filter_same_pr
 
         // Get core::types::IgnoreParticipantFlags from Yaml
         core::types::IgnoreParticipantFlags result = YamlReader::get<core::types::IgnoreParticipantFlags>(yml,
-         IGNORE_PARTICIPANT_FLAGS_TAG, LATEST);
+                        IGNORE_PARTICIPANT_FLAGS_TAG, LATEST);
 
         // Check result
         ASSERT_EQ(core::types::IgnoreParticipantFlags::filter_same_process, result);
@@ -129,7 +129,7 @@ TEST(YamlGetEntityIgnoreParticipantsTest, get_ignore_participnats_filter_differe
 
         // Get core::types::IgnoreParticipantFlags from Yaml
         core::types::IgnoreParticipantFlags result = YamlReader::get<core::types::IgnoreParticipantFlags>(yml,
-         IGNORE_PARTICIPANT_FLAGS_TAG, LATEST);
+                        IGNORE_PARTICIPANT_FLAGS_TAG, LATEST);
 
         // Check result
         ASSERT_EQ(core::types::IgnoreParticipantFlags::filter_different_and_same_process, result);
