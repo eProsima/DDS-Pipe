@@ -27,7 +27,8 @@ using namespace eprosima::ddspipe::yaml;
 using namespace eprosima::ddspipe::yaml::testing;
 
 /**
- * TODO
+ * Test read core::types::TransportDescriptors from yaml
+ * has been parsed correctly with the tag set to builtin
  */
 TEST(YamlGetEntityTransportTest, get_transport_builtin)
 {
@@ -49,7 +50,8 @@ TEST(YamlGetEntityTransportTest, get_transport_builtin)
 }
 
 /**
- * TODO
+ * Test read core::types::TransportDescriptors from yaml
+ * has been parsed correctly with the tag set to udp_only
  */
 TEST(YamlGetEntityTransportTest, get_transport_udp_only)
 {
@@ -71,7 +73,8 @@ TEST(YamlGetEntityTransportTest, get_transport_udp_only)
 }
 
 /**
- * TODO
+ * Test read core::types::TransportDescriptors from yaml
+ * has been parsed correctly with the tag set to shm_only
  */
 TEST(YamlGetEntityTransportTest, get_transport_shm_only)
 {

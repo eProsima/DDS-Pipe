@@ -27,7 +27,8 @@ using namespace eprosima::ddspipe::yaml;
 using namespace eprosima::ddspipe::yaml::testing;
 
 /**
- * TODO
+ * Test read core::types::IgnoreParticipantFlags from yaml
+ * has been parsed correctly with the tag set to no_filter
  */
 TEST(YamlGetEntityIgnoreParticipantsTest, get_ignore_participnats_no_filter)
 {
@@ -49,7 +50,8 @@ TEST(YamlGetEntityIgnoreParticipantsTest, get_ignore_participnats_no_filter)
 }
 
 /**
- * TODO
+ * Test read core::types::IgnoreParticipantFlags from yaml
+ * has been parsed correctly with the tag set to filter_different_host
  */
 TEST(YamlGetEntityIgnoreParticipantsTest, get_ignore_participnats_filter_different_host)
 {
@@ -71,7 +73,8 @@ TEST(YamlGetEntityIgnoreParticipantsTest, get_ignore_participnats_filter_differe
 }
 
 /**
- * TODO
+ * Test read core::types::IgnoreParticipantFlags from yaml
+ * has been parsed correctly with the tag set to filter_different_process
  */
 TEST(YamlGetEntityAddressTest, get_ignore_participnats_filter_different_process)
 {
@@ -93,7 +96,8 @@ TEST(YamlGetEntityAddressTest, get_ignore_participnats_filter_different_process)
 }
 
 /**
- * TODO
+ * Test read core::types::IgnoreParticipantFlags from yaml
+ * has been parsed correctly with the tag set to filter_same_process
  */
 TEST(YamlGetEntityIgnoreParticipantsTest, get_ignore_participnats_filter_same_process)
 {
@@ -115,7 +119,9 @@ TEST(YamlGetEntityIgnoreParticipantsTest, get_ignore_participnats_filter_same_pr
 }
 
 /**
- * TODO
+ * Test read core::types::IgnoreParticipantFlags from yaml
+ * has been parsed correctly with the tag set to
+ * filter_different_and_same_process
  */
 TEST(YamlGetEntityIgnoreParticipantsTest, get_ignore_participnats_filter_different_and_same_process)
 {
