@@ -23,14 +23,15 @@
 #include <fastrtps/rtps/RTPSDomain.h>
 
 #include <cpp_utils/exception/InitializationException.hpp>
-#include <cpp_utils/utils.hpp>
 #include <cpp_utils/Log.hpp>
+#include <cpp_utils/utils.hpp>
 
-#include <ddspipe_core/types/dds/DomainId.hpp>
-#include <ddspipe_core/types/topic/rpc/RpcTopic.hpp>
 #include <ddspipe_core/types/data/RpcPayloadData.hpp>
 #include <ddspipe_core/types/data/RtpsPayloadData.hpp>
+#include <ddspipe_core/types/dds/DomainId.hpp>
+#include <ddspipe_core/types/topic/rpc/RpcTopic.hpp>
 
+#include <ddspipe_participants/library/library_dll.h>
 #include <ddspipe_participants/participant/rtps/CommonParticipant.hpp>
 #include <ddspipe_participants/reader/auxiliar/BlankReader.hpp>
 #include <ddspipe_participants/reader/rpc/SimpleReader.hpp>
@@ -39,8 +40,8 @@
 #include <ddspipe_participants/writer/auxiliar/BlankWriter.hpp>
 #include <ddspipe_participants/writer/rpc/SimpleWriter.hpp>
 #include <ddspipe_participants/writer/rtps/MultiWriter.hpp>
-#include <ddspipe_participants/writer/rtps/SimpleWriter.hpp>
 #include <ddspipe_participants/writer/rtps/QoSSpecificWriter.hpp>
+#include <ddspipe_participants/writer/rtps/SimpleWriter.hpp>
 
 namespace eprosima {
 namespace ddspipe {
@@ -281,6 +282,7 @@ core::types::Endpoint CommonParticipant::simulate_endpoint(
 }
 
 template<>
+DDSPIPE_PARTICIPANTS_DllAPI
 std::shared_ptr<eprosima::fastdds::rtps::UDPv4TransportDescriptor>
 CommonParticipant::create_descriptor(
         std::set<types::IpType> whitelist)
@@ -308,6 +310,7 @@ CommonParticipant::create_descriptor(
 }
 
 template<>
+DDSPIPE_PARTICIPANTS_DllAPI
 std::shared_ptr<eprosima::fastdds::rtps::UDPv6TransportDescriptor>
 CommonParticipant::create_descriptor(
         std::set<types::IpType> whitelist)
@@ -335,6 +338,7 @@ CommonParticipant::create_descriptor(
 }
 
 template<>
+DDSPIPE_PARTICIPANTS_DllAPI
 std::shared_ptr<eprosima::fastdds::rtps::TCPv4TransportDescriptor>
 CommonParticipant::create_descriptor(
         std::set<types::IpType> whitelist)
@@ -362,6 +366,7 @@ CommonParticipant::create_descriptor(
 }
 
 template<>
+DDSPIPE_PARTICIPANTS_DllAPI
 std::shared_ptr<eprosima::fastdds::rtps::TCPv6TransportDescriptor>
 CommonParticipant::create_descriptor(
         std::set<types::IpType> whitelist)
