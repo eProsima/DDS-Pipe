@@ -132,7 +132,7 @@ constexpr const char* WAIT_ALL_ACKED_TIMEOUT_TAG("wait-all-acked-timeout"); //! 
 
 // XML configuration tags
 constexpr const char* XML_TAG("xml"); //! Tag to read xml configuration
-constexpr const char* XML_RAw_TAG("raw"); //! Xml RAW as string
+constexpr const char* XML_RAW_TAG("raw"); //! Xml RAW as string
 constexpr const char* XML_FILES_TAG("files"); //! XML files
 constexpr const char* XML_PARTICIPANT_PROFILE_TAG("profile"); //! Xml profile to participant
 

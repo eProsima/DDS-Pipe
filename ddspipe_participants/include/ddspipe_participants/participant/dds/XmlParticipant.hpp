@@ -24,12 +24,8 @@ namespace participants {
 namespace dds {
 
 /**
- * Abstract generic class for a RTPS Participant wrapper.
- *
- * Concrete classes that inherit from this would only need to specialize specific methods related with the
- * qos and attributes.
- *
- * @warning This object is not RAII and must be initialized before used.
+ * Concrete class of a DDS Participant \c CommonParticipant in which the participant is created
+ * following a profile name loaded by XML configuration.
  */
 class XmlParticipant
     : public CommonParticipant
@@ -44,7 +40,7 @@ public:
 
     /**
      * Specialized parent call so if it fails returns a blank one.
-     * This is because security may fail to create some endpoints because permissions, but show must go on.
+     * This is because security may fail to create some endpoints due to insufficient permissions, but show must go on.
      */
     DDSPIPE_PARTICIPANTS_DllAPI
     std::shared_ptr<core::IWriter> create_writer(
@@ -52,7 +48,7 @@ public:
 
     /**
      * Specialized parent call so if it fails returns a blank one.
-     * This is because security may fail to create some endpoints because permissions, but show must go on.
+     * This is because security may fail to create some endpoints due to insufficient permissions, but show must go on.
      */
     DDSPIPE_PARTICIPANTS_DllAPI
     std::shared_ptr<core::IReader> create_reader(
@@ -77,7 +73,7 @@ protected:
     /////////////////////////
 
     //! Participant configuration
-    const XmlParticipantConfiguration& specific_configuration_;
+    const XmlParticipantConfiguration& xml_specific_configuration_;
 };
 
 } /* namespace dds */

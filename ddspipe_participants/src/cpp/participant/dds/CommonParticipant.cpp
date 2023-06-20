@@ -130,7 +130,7 @@ std::shared_ptr<core::IWriter> CommonParticipant::create_writer(
         return std::make_shared<BlankWriter>();
     }
 
-    // // Get the DDS Topic associated (create it if it does not exist)
+    // Get the DDS Topic associated (create it if it does not exist)
     fastdds::dds::Topic* fastdds_topic = topic_related_(dds_topic);
 
     if (dds_topic.topic_qos.has_partitions() || dds_topic.topic_qos.has_ownership())

@@ -24,10 +24,10 @@
 #include <fastdds/dds/publisher/qos/DataWriterQos.hpp>
 #include <fastdds/dds/subscriber/qos/DataReaderQos.hpp>
 
-#include <ddspipe_core/interface/IParticipant.hpp>
-#include <ddspipe_core/types/topic/dds/DdsTopic.hpp>
 #include <ddspipe_core/dynamic/DiscoveryDatabase.hpp>
 #include <ddspipe_core/efficiency/payload/PayloadPool.hpp>
+#include <ddspipe_core/interface/IParticipant.hpp>
+#include <ddspipe_core/types/topic/dds/DdsTopic.hpp>
 
 #include <ddspipe_participants/configuration/SimpleParticipantConfiguration.hpp>
 #include <ddspipe_participants/library/library_dll.h>
@@ -37,8 +37,21 @@ namespace ddspipe {
 namespace participants {
 namespace dds {
 
+
 /**
- * TODO comment
+ * Abstract generic class for a Fast DDS Participant wrapper.
+ *
+ * Concrete classes that inherit from this would only need to specialize specific methods related with qos:
+ * - \c reckon_participant_qos_()
+ * and the creation of entities:
+ * - \c create_writer()
+ * - \c create_reader()
+ * - \c create_dds_participant_() (only required for specific participant creation).
+ *
+ * @warning This object is not RAII and must be initialized before used using \c init .
+ *
+ * @warning This Participant class does not support RPC so far.
+ * @todo TODO
  */
 class CommonParticipant : public core::IParticipant , public fastdds::dds::DomainParticipantListener
 {
@@ -146,7 +159,8 @@ protected:
     /////////////////////////
 
     fastdds::dds::DomainParticipant* dds_participant_{nullptr};
-    // NOTE: the publisher and subscriber is inside each endpoint because partitions depends on them.
+
+    // NOTE: the publisher and subscriber are inside each endpoint because partitions depend on them.
 
     using TopicsMapType = utils::Atomicable<
         std::map<

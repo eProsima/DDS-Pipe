@@ -1,4 +1,4 @@
-// Copyright 2021 Proyectos y Sistemas de Mantenimiento SL (eProsima).
+// Copyright 2023 Proyectos y Sistemas de Mantenimiento SL (eProsima).
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -24,7 +24,7 @@ namespace participants {
 namespace dds {
 
 /**
- * Base RTPS Writer concrete class that implements abstract CommonWriter one.
+ * Base DDS DataWriter concrete class that implements abstract CommonWriter one.
  */
 class SimpleWriter : public CommonWriter
 {
@@ -33,7 +33,7 @@ public:
     /**
      * @brief Construct a new SimpleWriter object
      *
-     * Get the Attributes and TopicQoS and create the SimpleWriter History and the RTPS SimpleWriter.
+     * Get the Attributes and TopicQoS and create the SimpleWriter History and the DDS SimpleWriter.
      *
      * @note use protected constructor so this class is not called but from subclasses
      * (Basically make abstract class without a pure virtual function).
@@ -41,7 +41,8 @@ public:
      * @param participant_id    Router Id of the Participant that has created this SimpleWriter.
      * @param topic             Topic that this SimpleWriter subscribes to.
      * @param payload_pool      Shared Payload Pool to received data and take it.
-     * @param rtps_participant  RTPS Participant pointer (this is not stored).
+     * @param participant       DDS Participant pointer.
+     * @param topic_entity      DDS Topic pointer.
      *
      * @throw \c InitializationException in case any creation has failed
      */

@@ -180,7 +180,6 @@ TEST(ParticipantsCreationgTest, ddspipe_all_creation_builtin_topic)
         part_db->add_participant(conf->id, part);
     }
 
-    // TODO uncomment
     // Xml
     {
         std::shared_ptr<participants::XmlParticipantConfiguration> conf(

@@ -1,4 +1,4 @@
-// Copyright 2021 Proyectos y Sistemas de Mantenimiento SL (eProsima).
+// Copyright 2023 Proyectos y Sistemas de Mantenimiento SL (eProsima).
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -23,7 +23,7 @@ namespace participants {
 namespace dds {
 
 /**
- * Base RTPS Reader concrete class that implements abstract CommonReader one.
+ * Base DDS DataReader concrete class that implements abstract CommonReader one.
  */
 class SimpleReader : public CommonReader
 {

@@ -1,4 +1,4 @@
-// Copyright 2021 Proyectos y Sistemas de Mantenimiento SL (eProsima).
+// Copyright 2023 Proyectos y Sistemas de Mantenimiento SL (eProsima).
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -25,7 +25,7 @@ namespace participants {
 namespace dds {
 
 /**
- * RTPS Reader with specific QoS implements abstract CommonReader.
+ * DDS DataReader with specific QoS implements abstract CommonReader.
  *
  * This class fills the data receive information with the QoS of the Writer that has sent the data.
  * In order to access this QoS it has a reference to the DiscoveryDatabase.
@@ -37,7 +37,7 @@ public:
     /**
      * @brief Construct a new SpecificQoSReader object
      *
-     * Get the Attributes and TopicQoS and create the SpecificQoSReader History and the RTPS SpecificQoSReader.
+     * Get the Attributes and TopicQoS and create the SpecificQoSReader History and the DDS SpecificQoSReader.
      *
      * @param participant_id    Router Id of the Participant that has created this SpecificQoSReader.
      * @param topic             Topic that this SpecificQoSReader subscribes to.

@@ -1,4 +1,4 @@
-// Copyright 2021 Proyectos y Sistemas de Mantenimiento SL (eProsima).
+// Copyright 2023 Proyectos y Sistemas de Mantenimiento SL (eProsima).
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -36,9 +36,7 @@ namespace participants {
 namespace dds {
 
 /**
- * Abstract generic class for a RTPS Writer wrapper.
- *
- * It implements the WriterListener for itself with \c onWriterMatched callbacks.
+ * Abstract generic class for a DDS DataWriter wrapper.
  *
  * @warning This object is not RAII and must be initialized before used.
  */
@@ -55,7 +53,7 @@ public:
     /**
      * @brief Destroy the Writer object
      *
-     * Delete the RTPS Writer and Writer History in case they are set.
+     * Delete the DDS Writer and Publisher in case they are set.
      */
     DDSPIPE_PARTICIPANTS_DllAPI
     virtual ~CommonWriter();

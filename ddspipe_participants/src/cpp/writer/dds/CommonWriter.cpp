@@ -1,4 +1,4 @@
-// Copyright 2021 Proyectos y Sistemas de Mantenimiento SL (eProsima).
+// Copyright 2023 Proyectos y Sistemas de Mantenimiento SL (eProsima).
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -69,9 +69,6 @@ void CommonWriter::init()
                       participant_id_ << " in topic " << topic_ << ".");
     }
 
-    // Create CommonReader
-    // Listener must be set in creation as no callbacks should be missed
-    // It is safe to do so here as object is already created and callbacks do not require anything set in this method
     writer_ = dds_publisher_->create_datawriter(
         dds_topic_,
         reckon_writer_qos_(),
@@ -135,6 +132,7 @@ fastdds::dds::PublisherQos CommonWriter::reckon_publisher_qos_() const noexcept
 
     if (topic_.topic_qos.has_partitions())
     {
+        // NOTE: this should not happen as a topic with partitions should use QoSSpecificWriter
         qos.partition().push_back("*");
     }
 

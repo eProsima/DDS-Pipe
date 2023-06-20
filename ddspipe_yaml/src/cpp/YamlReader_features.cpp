@@ -36,9 +36,9 @@ void YamlReader::fill(
         const YamlReaderVersion version)
 {
     // Optional raw
-    if (is_tag_present(yml, XML_RAw_TAG))
+    if (is_tag_present(yml, XML_RAW_TAG))
     {
-        object.raw = get<std::string>(yml, XML_RAw_TAG, version);
+        object.raw = get<std::string>(yml, XML_RAW_TAG, version);
     }
 
     // Optional files

@@ -1,4 +1,4 @@
-// Copyright 2021 Proyectos y Sistemas de Mantenimiento SL (eProsima).
+// Copyright 2023 Proyectos y Sistemas de Mantenimiento SL (eProsima).
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -23,9 +23,9 @@ namespace participants {
 namespace dds {
 
 /**
- * RTPS Writer with specific QoS implements abstract CommonWriter.
+ * DDS DataWriter with specific QoS implements abstract CommonWriter.
  *
- * This class implements a RTPS Writer with specific QoS policies.
+ * This class implements a DDS DataWriter with specific QoS policies.
  */
 class QoSSpecificWriter : public CommonWriter
 {
@@ -39,7 +39,8 @@ public:
      * @param participant_id    Router Id of the Participant that has created this QoSSpecificWriter.
      * @param topic             Topic that this QoSSpecificWriter subscribes to.
      * @param payload_pool      Shared Payload Pool to received data and take it.
-     * @param rtps_participant  RTPS Participant pointer (this is not stored).
+     * @param participant       DDS Participant pointer.
+     * @param topic_entity      DDS Topic pointer.
      *
      * @throw \c InitializationException in case any creation has failed
      */

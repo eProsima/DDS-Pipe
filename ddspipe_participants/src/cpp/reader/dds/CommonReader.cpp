@@ -190,8 +190,9 @@ fastdds::dds::DataReaderQos CommonReader::reckon_reader_qos_() const
     // IMPORTANT
     // As we do not have access to TypeSupport, we do not know the size of the key
     // In order to be able to get correctly the key from a sample, it must be added in the InlineQoS
-    // There is a QoS in the reader that forces the writer to do so
-    // This is computational cost, so it is only done when
+    // There is a QoS in the reader that forces the writer to send such InlineQoS: expects_inline_qos
+    // Sending the key within the InlineQoS is not standard required, so it may not be compatible with other vendors
+    // This extra info has a computational cost, so it is only done when the topic is keyed
     if (topic_.topic_qos.keyed)
     {
         qos.expects_inline_qos(true);

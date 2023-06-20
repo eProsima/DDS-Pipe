@@ -82,7 +82,7 @@ enum YamlReaderVersion
      *
      * @version 0.5.0
      *
-     * - Add XML
+     * - Add XML load by file or raw
      * - Add xml participant
      */
     V_3_1,

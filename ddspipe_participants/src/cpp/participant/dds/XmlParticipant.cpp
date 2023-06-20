@@ -35,7 +35,7 @@ XmlParticipant::XmlParticipant(
         const std::shared_ptr<core::PayloadPool>& payload_pool,
         const std::shared_ptr<core::DiscoveryDatabase>& discovery_database)
     : CommonParticipant(participant_configuration, payload_pool, discovery_database)
-    , specific_configuration_(*participant_configuration)
+    , xml_specific_configuration_(*configuration_)
 {
     // Do nothing
 }
@@ -69,27 +69,29 @@ std::shared_ptr<core::IReader> XmlParticipant::create_reader(
         logWarning(
             DDSPIPE_XMLPARTICIPANT,
             e.what()
-            << ". Execution continue but this topic will not be published in Participant " << id() << ".");
+            << ". Execution continue but this topic will not be subscribed in Participant " << id() << ".");
         return std::make_shared<BlankReader>();
     }
 }
 
 fastdds::dds::DomainParticipantQos XmlParticipant::reckon_participant_qos_() const
 {
+    // NOTE: Due to the creation of the participant using overriden create_dds_participant_
+    // this method is never called. However we keep it for the possible future.
     fastdds::dds::DomainParticipantQos qos = CommonParticipant::reckon_participant_qos_();
 
     // If participant profile have been set, use it
-    if (specific_configuration_.participant_profile.is_set())
+    if (xml_specific_configuration_.participant_profile.is_set())
     {
         auto res = fastdds::dds::DomainParticipantFactory::get_instance()->get_participant_qos_from_profile(
-            specific_configuration_.participant_profile.get_value(),
+            xml_specific_configuration_.participant_profile.get_value(),
             qos
         );
 
         if (res != fastrtps::types::ReturnCode_t::ReturnCodeValue::RETCODE_OK)
         {
             throw utils::ConfigurationException(STR_ENTRY
-                << "Participant profile <" << specific_configuration_.participant_profile.get_value()
+                << "Participant profile <" << xml_specific_configuration_.participant_profile.get_value()
                 << "> does not exist.");
         }
     }
@@ -104,10 +106,10 @@ fastdds::dds::DomainParticipant* XmlParticipant::create_dds_participant_()
     mask << fastdds::dds::StatusMask::publication_matched();
     mask << fastdds::dds::StatusMask::subscription_matched();
 
-    if (specific_configuration_.participant_profile.is_set())
+    if (xml_specific_configuration_.participant_profile.is_set())
     {
         return eprosima::fastdds::dds::DomainParticipantFactory::get_instance()->create_participant_with_profile(
-            specific_configuration_.participant_profile.get_value(),
+            xml_specific_configuration_.participant_profile.get_value(),
             this,
             mask);
     }

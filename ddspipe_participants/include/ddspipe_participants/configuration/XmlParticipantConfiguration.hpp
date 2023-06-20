@@ -24,7 +24,7 @@ namespace ddspipe {
 namespace participants {
 
 /**
- * This data struct represents a configuration for a SimpleParticipant
+ * This data struct represents a configuration for a Participant loaded from an XML profile.
  */
 struct XmlParticipantConfiguration : public SimpleParticipantConfiguration
 {

@@ -21,14 +21,14 @@
 #include <fastdds/dds/domain/DomainParticipant.hpp>
 #include <fastdds/dds/subscriber/DataReader.hpp>
 #include <fastdds/dds/subscriber/DataReaderListener.hpp>
-#include <fastdds/dds/subscriber/Subscriber.hpp>
 #include <fastdds/dds/subscriber/qos/DataReaderQos.hpp>
+#include <fastdds/dds/subscriber/Subscriber.hpp>
 #include <fastdds/dds/topic/Topic.hpp>
 
-#include <ddspipe_core/types/dds/Guid.hpp>
-#include <ddspipe_core/types/topic/dds/DdsTopic.hpp>
-#include <ddspipe_core/types/participant/ParticipantId.hpp>
 #include <ddspipe_core/types/data/RtpsPayloadData.hpp>
+#include <ddspipe_core/types/dds/Guid.hpp>
+#include <ddspipe_core/types/participant/ParticipantId.hpp>
+#include <ddspipe_core/types/topic/dds/DdsTopic.hpp>
 
 #include <ddspipe_participants/library/library_dll.h>
 #include <ddspipe_participants/reader/auxiliar/BaseReader.hpp>
@@ -39,9 +39,9 @@ namespace participants {
 namespace dds {
 
 /**
- * Abstract generic class for a RTPS Reader wrapper.
+ * Abstract generic class for a DDS DataReader wrapper.
  *
- * It implements the ReaderListener for itself with \c onNewCacheChangeAdded and \c onReaderMatched callbacks.
+ * It implements the ReaderListener for itself with \c on_data_available callback.
  *
  * @warning This object is not RAII and must be initialized before used.
  */
@@ -58,7 +58,7 @@ public:
     /**
      * @brief Destroy the CommonReader object
      *
-     * Delete the RTPS CommonReader and CommonReader History in case they are set.
+     * Delete the DDS CommonReader and Subscriber in case they are set.
      */
     DDSPIPE_PARTICIPANTS_DllAPI
     virtual ~CommonReader();
