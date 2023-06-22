@@ -225,9 +225,12 @@ void Track::transmit_() noexcept
 
             if (!ret)
             {
-                logWarning(DDSPIPE_TRACK, "Error writting data in Track " << topic_->serialize() << ". Error code "
-                                                                          << ret <<
-                        ". Skipping data for this writer and continue.");
+                logWarning(
+                    DDSPIPE_TRACK,
+                    "Error writting data in Track " << topic_->serialize()
+                                                    << " for writer " << writer_it.second.get()
+                                                    << ". Error code " << ret
+                                                    << ". Skipping data for this writer and continue.");
                 continue;
             }
         }

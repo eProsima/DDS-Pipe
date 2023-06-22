@@ -26,6 +26,7 @@ constexpr const char* VERSION_TAG("version");       //! Version to parse the yam
 constexpr const char* VERSION_TAG_V_1_0("v1.0");    //! Version v1.0
 constexpr const char* VERSION_TAG_V_2_0("v2.0");    //! Version v2.0
 constexpr const char* VERSION_TAG_V_3_0("v3.0");    //! Version v3.0
+constexpr const char* VERSION_TAG_V_3_1("v3.1");    //! Version v3.1
 
 // Topics related tags
 constexpr const char* ALLOWLIST_TAG("allowlist");     //! List of allowed topics
@@ -128,6 +129,12 @@ constexpr const char* MAX_HISTORY_DEPTH_TAG("max-depth"); //! Maximum size (numb
 constexpr const char* DOWNSAMPLING_TAG("downsampling"); //! Keep 1 out of every *downsampling* samples received
 constexpr const char* MAX_RECEPTION_RATE_TAG("max-reception-rate"); //! Process up to *max_reception_rate* samples in a 1 second bin
 constexpr const char* WAIT_ALL_ACKED_TIMEOUT_TAG("wait-all-acked-timeout"); //! Wait for a maximum of *wait-all-acked-timeout* ms until all msgs sent by reliable writers are acknowledged by their matched readers
+
+// XML configuration tags
+constexpr const char* XML_TAG("xml"); //! Tag to read xml configuration
+constexpr const char* XML_RAW_TAG("raw"); //! Xml RAW as string
+constexpr const char* XML_FILES_TAG("files"); //! XML files
+constexpr const char* XML_PARTICIPANT_PROFILE_TAG("profile"); //! Xml profile to participant
 
 // Old versions tags
 constexpr const char* PARTICIPANT_KIND_TAG_V1("type"); //! Participant Kind

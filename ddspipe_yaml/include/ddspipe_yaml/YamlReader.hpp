@@ -68,7 +68,7 @@ enum YamlReaderVersion
     V_2_0,
 
     /**
-     * @brief  Latest version.
+     * @brief  Version 3.0
      *
      * @version 0.4.0
      *
@@ -76,6 +76,16 @@ enum YamlReaderVersion
      * - Add Specs
      */
     V_3_0,
+
+    /**
+     * @brief  Latest version.
+     *
+     * @version 0.5.0
+     *
+     * - Add XML load by file or raw
+     * - Add xml participant
+     */
+    V_3_1,
 
     /**
      * @brief  Main version.

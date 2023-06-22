@@ -30,6 +30,7 @@
 
 #include <ddspipe_participants/configuration/DiscoveryServerParticipantConfiguration.hpp>
 #include <ddspipe_participants/configuration/InitialPeersParticipantConfiguration.hpp>
+#include <ddspipe_participants/configuration/XmlParticipantConfiguration.hpp>
 #include <ddspipe_participants/configuration/ParticipantConfiguration.hpp>
 #include <ddspipe_participants/configuration/EchoParticipantConfiguration.hpp>
 #include <ddspipe_participants/configuration/SimpleParticipantConfiguration.hpp>
@@ -297,6 +298,33 @@ participants::InitialPeersParticipantConfiguration YamlReader::get(
 {
     participants::InitialPeersParticipantConfiguration object;
     fill<participants::InitialPeersParticipantConfiguration>(object, yml, version);
+    return object;
+}
+
+//////////////////////////////////
+// XmlParticipantConfiguration
+template <>
+DDSPIPE_YAML_DllAPI
+void YamlReader::fill(
+        participants::XmlParticipantConfiguration& object,
+        const Yaml& yml,
+        const YamlReaderVersion version)
+{
+    // Parent class fill
+    fill<participants::SimpleParticipantConfiguration>(object, yml, version);
+
+    // Mandatory participant profile
+    object.participant_profile = YamlReader::get<std::string>(yml, XML_PARTICIPANT_PROFILE_TAG, version);
+}
+
+template <>
+DDSPIPE_YAML_DllAPI
+participants::XmlParticipantConfiguration YamlReader::get(
+        const Yaml& yml,
+        const YamlReaderVersion version)
+{
+    participants::XmlParticipantConfiguration object;
+    fill<participants::XmlParticipantConfiguration>(object, yml, version);
     return object;
 }
 

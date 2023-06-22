@@ -94,6 +94,7 @@ YamlReaderVersion YamlReader::get<YamlReaderVersion>(
                     {VERSION_TAG_V_1_0, YamlReaderVersion::V_1_0},
                     {VERSION_TAG_V_2_0, YamlReaderVersion::V_2_0},
                     {VERSION_TAG_V_3_0, YamlReaderVersion::V_3_0},
+                    {VERSION_TAG_V_3_1, YamlReaderVersion::V_3_1},
                 });
 }
 
@@ -616,8 +617,12 @@ std::ostream& operator <<(
             break;
 
         case V_3_0:
-        case LATEST:
             os << VERSION_TAG_V_3_0;
+            break;
+
+        case V_3_1:
+        case LATEST:
+            os << VERSION_TAG_V_3_1;
             break;
 
         default:
