@@ -228,8 +228,13 @@ void CommonParticipant::on_subscriber_discovery(
         // TODO check logic because if an endpoint is lost by liveliness it may be inserted again when already in database
         this->discovery_database_->add_endpoint(info_reader);
     }
+    else if (info.status == fastrtps::rtps::ReaderDiscoveryInfo::DISCOVERY_STATUS::CHANGED_QOS_READER)
+    {
+        this->discovery_database_->update_endpoint(info_reader);
+    }
     else
     {
+        info_reader.active = false;
         this->discovery_database_->update_endpoint(info_reader);
     }
 }
@@ -274,7 +279,11 @@ CommonParticipant::CommonParticipant(
 
 fastdds::dds::DomainParticipantQos CommonParticipant::reckon_participant_qos_() const
 {
-    return fastdds::dds::DomainParticipantFactory::get_instance()->get_default_participant_qos();
+    auto qos = fastdds::dds::DomainParticipantFactory::get_instance()->get_default_participant_qos();
+    qos.properties().properties().emplace_back(
+        "fastdds.ignore_local_endpoints",
+        "true");
+    return qos;
 }
 
 fastdds::dds::DomainParticipant* CommonParticipant::create_dds_participant_()
