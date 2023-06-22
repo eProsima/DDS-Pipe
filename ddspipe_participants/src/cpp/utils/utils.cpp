@@ -124,14 +124,14 @@ core::types::SpecificEndpointQoS specific_qos_of_writer_(
 }
 
 bool come_from_same_participant_(
-            const fastrtps::rtps::GUID_t src_guid,
-            const fastrtps::rtps::GUID_t target_guid) noexcept
+        const fastrtps::rtps::GUID_t src_guid,
+        const fastrtps::rtps::GUID_t target_guid) noexcept
 {
     return src_guid.guidPrefix == target_guid.guidPrefix;
 }
 
 fastrtps::rtps::GUID_t guid_from_instance_handle(
-            const fastrtps::rtps::InstanceHandle_t& ihandle) noexcept
+        const fastrtps::rtps::InstanceHandle_t& ihandle) noexcept
 {
     return fastrtps::rtps::iHandle2GUID(ihandle);
 }

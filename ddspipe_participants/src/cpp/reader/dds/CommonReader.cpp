@@ -57,7 +57,7 @@ void CommonReader::init()
     // Create subscriber
     dds_subscriber_ = dds_participant_->create_subscriber(
         reckon_subscriber_qos_()
-    );
+        );
 
     if (!dds_subscriber_)
     {
@@ -145,8 +145,8 @@ utils::ReturnCode CommonReader::take_nts_(
 
         // Check if it comes from same participant. If so, discard and continue
         if (detail::come_from_same_participant_(
-            detail::guid_from_instance_handle(info.publication_handle),
-            this->dds_participant_->guid()))
+                    detail::guid_from_instance_handle(info.publication_handle),
+                    this->dds_participant_->guid()))
         {
             continue;
         }
@@ -199,17 +199,17 @@ fastdds::dds::DataReaderQos CommonReader::reckon_reader_qos_() const
     }
 
     qos.durability().kind =
-        (topic_.topic_qos.is_transient_local())
+            (topic_.topic_qos.is_transient_local())
             ? fastdds::dds::DurabilityQosPolicyKind::TRANSIENT_LOCAL_DURABILITY_QOS
             : fastdds::dds::DurabilityQosPolicyKind::VOLATILE_DURABILITY_QOS;
 
     qos.reliability().kind =
-        (topic_.topic_qos.is_reliable())
+            (topic_.topic_qos.is_reliable())
             ? fastdds::dds::ReliabilityQosPolicyKind::RELIABLE_RELIABILITY_QOS
             : fastdds::dds::ReliabilityQosPolicyKind::BEST_EFFORT_RELIABILITY_QOS;
 
     qos.ownership().kind =
-        (topic_.topic_qos.has_ownership())
+            (topic_.topic_qos.has_ownership())
             ? fastdds::dds::OwnershipQosPolicyKind::EXCLUSIVE_OWNERSHIP_QOS
             : fastdds::dds::OwnershipQosPolicyKind::SHARED_OWNERSHIP_QOS;
 
@@ -219,8 +219,8 @@ fastdds::dds::DataReaderQos CommonReader::reckon_reader_qos_() const
 }
 
 void CommonReader::fill_received_data_(
-            const fastdds::dds::SampleInfo& info,
-            core::types::RtpsPayloadData& data_to_fill) const noexcept
+        const fastdds::dds::SampleInfo& info,
+        core::types::RtpsPayloadData& data_to_fill) const noexcept
 {
     // Store the new data that has arrived in the Track data
     // Get the writer guid
@@ -240,17 +240,17 @@ void CommonReader::fill_received_data_(
         // Set change kind
         switch (info.instance_state)
         {
-        case fastdds::dds::InstanceStateKind::ALIVE_INSTANCE_STATE:
-            data_to_fill.kind = ChangeKind::ALIVE;
-            break;
+            case fastdds::dds::InstanceStateKind::ALIVE_INSTANCE_STATE:
+                data_to_fill.kind = ChangeKind::ALIVE;
+                break;
 
-        case fastdds::dds::InstanceStateKind::NOT_ALIVE_DISPOSED_INSTANCE_STATE:
-            data_to_fill.kind = ChangeKind::NOT_ALIVE_DISPOSED;
-            break;
+            case fastdds::dds::InstanceStateKind::NOT_ALIVE_DISPOSED_INSTANCE_STATE:
+                data_to_fill.kind = ChangeKind::NOT_ALIVE_DISPOSED;
+                break;
 
-        default:
-            data_to_fill.kind = ChangeKind::NOT_ALIVE_UNREGISTERED;
-            break;
+            default:
+                data_to_fill.kind = ChangeKind::NOT_ALIVE_UNREGISTERED;
+                break;
         }
     }
     else

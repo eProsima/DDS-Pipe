@@ -105,11 +105,11 @@ protected:
     /////////////////////////
 
     using WritersMapType =
-        utils::SharedAtomicable<
-            std::map<
-                core::types::SpecificEndpointQoS,
-                std::unique_ptr<
-                    QoSSpecificWriter>>>;
+            utils::SharedAtomicable<
+        std::map<
+            core::types::SpecificEndpointQoS,
+            std::unique_ptr<
+                QoSSpecificWriter>>>;
     //! Map of writer indexed by Specific QoS of each.
     WritersMapType writers_map_;
 

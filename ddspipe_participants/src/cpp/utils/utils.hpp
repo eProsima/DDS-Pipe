@@ -46,11 +46,11 @@ core::types::Endpoint create_endpoint_from_info_(
         const core::types::ParticipantId participant_discoverer_id);
 
 bool come_from_same_participant_(
-            const fastrtps::rtps::GUID_t src_guid,
-            const fastrtps::rtps::GUID_t target_guid) noexcept;
+        const fastrtps::rtps::GUID_t src_guid,
+        const fastrtps::rtps::GUID_t target_guid) noexcept;
 
 fastrtps::rtps::GUID_t guid_from_instance_handle(
-            const fastrtps::rtps::InstanceHandle_t& ihandle) noexcept;
+        const fastrtps::rtps::InstanceHandle_t& ihandle) noexcept;
 
 } /* namespace detail */
 } /* namespace participants */

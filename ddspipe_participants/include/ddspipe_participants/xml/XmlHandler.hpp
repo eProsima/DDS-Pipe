@@ -30,7 +30,8 @@ class XmlHandler
 {
 public:
 
-    static utils::ReturnCode load_xml(const XmlHandlerConfiguration& configuration);
+    static utils::ReturnCode load_xml(
+            const XmlHandlerConfiguration& configuration);
 
 };
 

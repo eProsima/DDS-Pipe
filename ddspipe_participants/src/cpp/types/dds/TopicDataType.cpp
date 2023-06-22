@@ -24,7 +24,7 @@ namespace ddspipe {
 namespace participants {
 namespace dds {
 
-using eprosima::ddspipe::core::types::operator<<;
+using eprosima::ddspipe::core::types::operator <<;
 
 TopicDataType::TopicDataType(
         const std::string& type_name,
@@ -91,9 +91,9 @@ std::function<uint32_t()> TopicDataType::getSerializedSizeProvider(
 }
 
 bool TopicDataType::getKey(
-        void* ,
-        eprosima::fastrtps::rtps::InstanceHandle_t* ,
-        bool  /* = false */)
+        void*,
+        eprosima::fastrtps::rtps::InstanceHandle_t*,
+        bool /* = false */)
 {
     if (m_isGetKeyDefined)
     {
@@ -102,7 +102,7 @@ bool TopicDataType::getKey(
         // inline_qos and this function should not be called
         // PD for reviewer: You shall remember this line, as it will bring hell on hearth in a possible future.
         logDevError(DDSPIPE_PARTICIPANTS_TYPESUPPORT,
-            "Generic TypeSupport does not know how to retrieve the key, this should not happen.");
+                "Generic TypeSupport does not know how to retrieve the key, this should not happen.");
     }
     return false;
 }

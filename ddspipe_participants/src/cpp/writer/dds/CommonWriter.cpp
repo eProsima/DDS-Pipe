@@ -60,7 +60,7 @@ void CommonWriter::init()
     // Create publisher
     dds_publisher_ = dds_participant_->create_publisher(
         reckon_publisher_qos_()
-    );
+        );
 
     if (!dds_publisher_)
     {
@@ -146,17 +146,17 @@ fastdds::dds::DataWriterQos CommonWriter::reckon_writer_qos_() const noexcept
     dds_publisher_->get_default_datawriter_qos();
 
     qos.durability().kind =
-        (topic_.topic_qos.is_transient_local())
+            (topic_.topic_qos.is_transient_local())
             ? fastdds::dds::DurabilityQosPolicyKind::TRANSIENT_LOCAL_DURABILITY_QOS
             : fastdds::dds::DurabilityQosPolicyKind::VOLATILE_DURABILITY_QOS;
 
     qos.reliability().kind =
-        (topic_.topic_qos.is_reliable())
+            (topic_.topic_qos.is_reliable())
             ? fastdds::dds::ReliabilityQosPolicyKind::RELIABLE_RELIABILITY_QOS
             : fastdds::dds::ReliabilityQosPolicyKind::BEST_EFFORT_RELIABILITY_QOS;
 
     qos.ownership().kind =
-        (topic_.topic_qos.has_ownership())
+            (topic_.topic_qos.has_ownership())
             ? fastdds::dds::OwnershipQosPolicyKind::EXCLUSIVE_OWNERSHIP_QOS
             : fastdds::dds::OwnershipQosPolicyKind::SHARED_OWNERSHIP_QOS;
 

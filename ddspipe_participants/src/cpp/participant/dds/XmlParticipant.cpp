@@ -52,7 +52,7 @@ std::shared_ptr<core::IWriter> XmlParticipant::create_writer(
         logWarning(
             DDSPIPE_XMLPARTICIPANT,
             e.what()
-            << ". Execution continue but this topic will not be published in Participant " << id() << ".");
+                << ". Execution continue but this topic will not be published in Participant " << id() << ".");
         return std::make_shared<BlankWriter>();
     }
 }
@@ -69,7 +69,7 @@ std::shared_ptr<core::IReader> XmlParticipant::create_reader(
         logWarning(
             DDSPIPE_XMLPARTICIPANT,
             e.what()
-            << ". Execution continue but this topic will not be subscribed in Participant " << id() << ".");
+                << ". Execution continue but this topic will not be subscribed in Participant " << id() << ".");
         return std::make_shared<BlankReader>();
     }
 }
@@ -86,13 +86,13 @@ fastdds::dds::DomainParticipantQos XmlParticipant::reckon_participant_qos_() con
         auto res = fastdds::dds::DomainParticipantFactory::get_instance()->get_participant_qos_from_profile(
             xml_specific_configuration_.participant_profile.get_value(),
             qos
-        );
+            );
 
         if (res != fastrtps::types::ReturnCode_t::ReturnCodeValue::RETCODE_OK)
         {
             throw utils::ConfigurationException(STR_ENTRY
-                << "Participant profile <" << xml_specific_configuration_.participant_profile.get_value()
-                << "> does not exist.");
+                          << "Participant profile <" << xml_specific_configuration_.participant_profile.get_value()
+                          << "> does not exist.");
         }
     }
 

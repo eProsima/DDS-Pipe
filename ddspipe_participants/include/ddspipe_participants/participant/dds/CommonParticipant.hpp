@@ -53,7 +53,7 @@ namespace dds {
  * @warning This Participant class does not support RPC so far.
  * @todo TODO
  */
-class CommonParticipant : public core::IParticipant , public fastdds::dds::DomainParticipantListener
+class CommonParticipant : public core::IParticipant, public fastdds::dds::DomainParticipantListener
 {
 public:
 
@@ -118,9 +118,9 @@ protected:
 
     DDSPIPE_PARTICIPANTS_DllAPI
     CommonParticipant(
-        const std::shared_ptr<SimpleParticipantConfiguration>& participant_configuration,
-        const std::shared_ptr<core::PayloadPool>& payload_pool,
-        const std::shared_ptr<core::DiscoveryDatabase>& discovery_database);
+            const std::shared_ptr<SimpleParticipantConfiguration>& participant_configuration,
+            const std::shared_ptr<core::PayloadPool>& payload_pool,
+            const std::shared_ptr<core::DiscoveryDatabase>& discovery_database);
 
     /////////////////////////
     // INTERNAL VIRTUAL METHODS
@@ -152,7 +152,8 @@ protected:
     core::types::Endpoint create_common_endpoint_from_info_(
             DiscoveryInfoKind& info);
 
-    fastdds::dds::Topic* topic_related_(const core::types::DdsTopic& topic);
+    fastdds::dds::Topic* topic_related_(
+            const core::types::DdsTopic& topic);
 
     /////////////////////////
     // INTERNAL VARIABLES

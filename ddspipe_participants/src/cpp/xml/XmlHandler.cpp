@@ -22,7 +22,8 @@ namespace eprosima {
 namespace ddspipe {
 namespace participants {
 
-utils::ReturnCode XmlHandler::load_xml(const XmlHandlerConfiguration& configuration)
+utils::ReturnCode XmlHandler::load_xml(
+        const XmlHandlerConfiguration& configuration)
 {
     // Load default xml profiles
     // Note: we assume this function cannot fail

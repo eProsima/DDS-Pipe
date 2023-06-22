@@ -34,9 +34,9 @@ public:
 
     DDSPIPE_PARTICIPANTS_DllAPI
     XmlParticipant(
-        const std::shared_ptr<XmlParticipantConfiguration>& participant_configuration,
-        const std::shared_ptr<core::PayloadPool>& payload_pool,
-        const std::shared_ptr<core::DiscoveryDatabase>& discovery_database);
+            const std::shared_ptr<XmlParticipantConfiguration>& participant_configuration,
+            const std::shared_ptr<core::PayloadPool>& payload_pool,
+            const std::shared_ptr<core::DiscoveryDatabase>& discovery_database);
 
     /**
      * Specialized parent call so if it fails returns a blank one.

@@ -208,7 +208,7 @@ std::shared_ptr<core::IReader> CommonParticipant::create_reader(
 }
 
 void CommonParticipant::on_subscriber_discovery(
-        fastdds::dds::DomainParticipant* ,
+        fastdds::dds::DomainParticipant*,
         fastrtps::rtps::ReaderDiscoveryInfo&& info)
 {
     // If reader is from other participant, store it in discovery database
@@ -220,7 +220,7 @@ void CommonParticipant::on_subscriber_discovery(
 
     // Calculate endpoint info
     core::types::Endpoint info_reader =
-        detail::create_endpoint_from_info_<fastrtps::rtps::ReaderDiscoveryInfo>(info, id());
+            detail::create_endpoint_from_info_<fastrtps::rtps::ReaderDiscoveryInfo>(info, id());
 
     // If new endpoint discovered
     if (info.status == fastrtps::rtps::ReaderDiscoveryInfo::DISCOVERY_STATUS::DISCOVERED_READER)
@@ -240,7 +240,7 @@ void CommonParticipant::on_subscriber_discovery(
 }
 
 void CommonParticipant::on_publisher_discovery(
-        fastdds::dds::DomainParticipant* ,
+        fastdds::dds::DomainParticipant*,
         fastrtps::rtps::WriterDiscoveryInfo&& info)
 {
     // If writer is from other participant, store it in discovery database
@@ -252,7 +252,7 @@ void CommonParticipant::on_publisher_discovery(
 
     // Calculate endpoint info
     core::types::Endpoint info_writer =
-        detail::create_endpoint_from_info_<fastrtps::rtps::WriterDiscoveryInfo>(info, id());
+            detail::create_endpoint_from_info_<fastrtps::rtps::WriterDiscoveryInfo>(info, id());
 
     // If new endpoint discovered
     if (info.status == fastrtps::rtps::WriterDiscoveryInfo::DISCOVERY_STATUS::DISCOVERED_WRITER)
@@ -300,7 +300,8 @@ fastdds::dds::DomainParticipant* CommonParticipant::create_dds_participant_()
         mask);
 }
 
-fastdds::dds::Topic* CommonParticipant::topic_related_(const core::types::DdsTopic& topic)
+fastdds::dds::Topic* CommonParticipant::topic_related_(
+        const core::types::DdsTopic& topic)
 {
     // Lock access to topics map
     std::lock_guard<TopicsMapType> _(dds_topics_);
@@ -316,8 +317,8 @@ fastdds::dds::Topic* CommonParticipant::topic_related_(const core::types::DdsTop
     if (type_names_registered_.find(topic.type_name) == type_names_registered_.end())
     {
         logDebug(DDSPIPE_DDS_PARTICIPANT, "Registering type "
-            << topic.type_name << " in dds participant "
-            << id() << ".");
+                << topic.type_name << " in dds participant "
+                << id() << ".");
 
         dds_participant_->register_type(
             eprosima::fastdds::dds::TypeSupport(
@@ -325,25 +326,25 @@ fastdds::dds::Topic* CommonParticipant::topic_related_(const core::types::DdsTop
                     topic.type_name,
                     topic.topic_qos.keyed,
                     payload_pool_))
-        );
+            );
     }
 
     logDebug(DDSPIPE_DDS_PARTICIPANT, "Creating topic "
-        << topic.m_topic_name << " and type "
-        << topic.type_name << " in dds participant "
-        << id() << ".");
+            << topic.m_topic_name << " and type "
+            << topic.type_name << " in dds participant "
+            << id() << ".");
 
     // Create the new topic
     fastdds::dds::Topic* dds_topic = dds_participant_->create_topic(
         topic.m_topic_name,
         topic.type_name,
         dds_participant_->get_default_topic_qos()
-    );
+        );
 
     if (dds_topic == nullptr)
     {
         throw utils::InitializationException(STR_ENTRY
-            << "Error creating DDS Topic " << topic << ".");
+                      << "Error creating DDS Topic " << topic << ".");
     }
 
     // Store topic in map

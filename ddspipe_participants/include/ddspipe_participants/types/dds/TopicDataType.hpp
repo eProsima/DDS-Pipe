@@ -36,9 +36,9 @@ public:
     //! Default constructor
     DDSPIPE_PARTICIPANTS_DllAPI
     TopicDataType(
-        const std::string& type_name,
-        const bool keyed,
-        const std::shared_ptr<core::PayloadPool>& payload_pool);
+            const std::string& type_name,
+            const bool keyed,
+            const std::shared_ptr<core::PayloadPool>& payload_pool);
 
     //! Default destructor
     DDSPIPE_PARTICIPANTS_DllAPI
