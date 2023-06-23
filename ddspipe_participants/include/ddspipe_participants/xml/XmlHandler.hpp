@@ -30,6 +30,7 @@ class XmlHandler
 {
 public:
 
+    DDSPIPE_PARTICIPANTS_DllAPI
     static utils::ReturnCode load_xml(
             const XmlHandlerConfiguration& configuration);
 
