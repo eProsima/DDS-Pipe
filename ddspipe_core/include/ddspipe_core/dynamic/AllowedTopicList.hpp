@@ -134,12 +134,14 @@ protected:
     mutable std::recursive_mutex mutex_;
 
     // Allow operator << to use private variables
+    DDSPIPE_CORE_DllAPI
     friend std::ostream& operator <<(
             std::ostream&,
             const AllowedTopicList&);
 };
 
 //! \c AllowedTopicList to stream serializator
+DDSPIPE_CORE_DllAPI
 std::ostream& operator <<(
         std::ostream& os,
         const AllowedTopicList& atl);
