@@ -138,20 +138,6 @@ protected:
     // INTERNAL METHODS
     /////////////////////////
 
-    /**
-     * @brief Create a endpoint from info object
-     *
-     * Specialized for \c WriterDiscoveryInfo and \c ReaderDiscoveryInfo .
-     */
-    template<class DiscoveryInfoKind>
-    core::types::Endpoint create_endpoint_from_info_(
-            DiscoveryInfoKind& info);
-
-    //! Create a endpoint from common info from method \c create_endpoint_from_info_ .
-    template<class DiscoveryInfoKind>
-    core::types::Endpoint create_common_endpoint_from_info_(
-            DiscoveryInfoKind& info);
-
     fastdds::dds::Topic* topic_related_(
             const core::types::DdsTopic& topic);
 
