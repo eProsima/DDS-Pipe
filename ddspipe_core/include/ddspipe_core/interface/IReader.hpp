@@ -110,29 +110,6 @@ public:
     virtual utils::ReturnCode take(
             std::unique_ptr<IRoutingData>& data) noexcept = 0;
 
-    /////////////////////////
-    // RPC REQUIRED METHODS
-    /////////////////////////
-    // TODO remove these methods once the double reference is solved
-
-    //! Get GUID of internal RTPS reader
-    DDSPIPE_CORE_DllAPI
-    virtual core::types::Guid guid() const = 0;
-
-    //! Get internal RTPS reader mutex
-    DDSPIPE_CORE_DllAPI
-    virtual fastrtps::RecursiveTimedMutex& get_rtps_mutex() const = 0;
-
-    //! Get number of unread cache changes in internal RTPS reader
-    DDSPIPE_CORE_DllAPI
-    virtual uint64_t get_unread_count() const = 0;
-
-    DDSPIPE_CORE_DllAPI
-    virtual types::DdsTopic topic() const = 0;
-
-    DDSPIPE_CORE_DllAPI
-    virtual types::ParticipantId participant_id() const = 0;
-    /////////////////////////
 };
 
 } /* namespace core */

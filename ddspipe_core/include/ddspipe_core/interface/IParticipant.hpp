@@ -17,7 +17,8 @@
 #include <ddspipe_core/interface/IReader.hpp>
 #include <ddspipe_core/interface/IWriter.hpp>
 #include <ddspipe_core/types/participant/ParticipantId.hpp>
-#include <ddspipe_core/types/topic/Topic.hpp>
+#include <ddspipe_core/interface/ITopic.hpp>
+#include <ddspipe_core/interface/IRpcTopic.hpp>
 
 namespace eprosima {
 namespace ddspipe {
@@ -50,10 +51,6 @@ public:
      */
     DDSPIPE_CORE_DllAPI
     virtual types::ParticipantId id() const noexcept = 0;
-
-    //! Whether this participant is RTPS
-    DDSPIPE_CORE_DllAPI
-    virtual bool is_rtps_kind() const noexcept = 0;
 
     /**
      * @brief Whether this Participant requires to connect ist own readers with its own writers.
@@ -92,6 +89,14 @@ public:
     DDSPIPE_CORE_DllAPI
     virtual std::shared_ptr<IReader> create_reader(
             const ITopic& topic) = 0;
+
+    DDSPIPE_CORE_DllAPI
+    virtual std::shared_ptr<IClient> create_client(
+            const IRpcTopic& topic) = 0;
+
+    DDSPIPE_CORE_DllAPI
+    virtual std::shared_ptr<IServer> create_server(
+            const IRpcTopic& topic) = 0;
 };
 
 } /* namespace core */
