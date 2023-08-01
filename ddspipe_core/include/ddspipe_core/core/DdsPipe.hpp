@@ -21,10 +21,13 @@
 
 #include <ddspipe_core/communication/dds/DdsBridge.hpp>
 #include <ddspipe_core/communication/rpc/RpcBridge.hpp>
-#include <ddspipe_core/dynamic/DiscoveryDatabase.hpp>
+#include <ddspipe_core/configuration/RoutesConfiguration.hpp>
+#include <ddspipe_core/configuration/TopicRoutesConfiguration.hpp>
 #include <ddspipe_core/dynamic/AllowedTopicList.hpp>
+#include <ddspipe_core/dynamic/DiscoveryDatabase.hpp>
 #include <ddspipe_core/dynamic/ParticipantsDatabase.hpp>
 #include <ddspipe_core/efficiency/payload/PayloadPool.hpp>
+
 #include <ddspipe_core/library/library_dll.h>
 
 namespace eprosima {
@@ -65,7 +68,9 @@ public:
             const std::shared_ptr<ParticipantsDatabase>& participants_database,
             const std::shared_ptr<utils::SlotThreadPool>& thread_pool,
             const std::set<utils::Heritable<types::DistributedTopic>>& builtin_topics = {},
-            bool start_enable = false);
+            bool start_enable = false,
+            const RoutesConfiguration& routes_config = {},
+            const TopicRoutesConfiguration& topic_routes_config = {});
 
     /**
      * @brief Destroy the DdsPipe object
@@ -315,6 +320,12 @@ protected:
      * If the value is true, it means this service is allowed.
      */
     std::map<types::RpcTopic, bool> current_services_;
+
+    //! Custom forwarding routes
+    RoutesConfiguration routes_config_;
+
+    //! Custom forwarding routes per topic
+    TopicRoutesConfiguration topic_routes_config_;
 
     /////
     // AUXILIAR VARIABLES

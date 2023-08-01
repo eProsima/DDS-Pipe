@@ -18,6 +18,7 @@
 
 #include <ddspipe_core/communication/Bridge.hpp>
 #include <ddspipe_core/communication/dds/Track.hpp>
+#include <ddspipe_core/configuration/RoutesConfiguration.hpp>
 #include <ddspipe_core/types/topic/dds/DistributedTopic.hpp>
 
 namespace eprosima {
@@ -55,7 +56,8 @@ public:
             const utils::Heritable<types::DistributedTopic>& topic,
             const std::shared_ptr<ParticipantsDatabase>& participants_database,
             const std::shared_ptr<PayloadPool>& payload_pool,
-            const std::shared_ptr<utils::SlotThreadPool>& thread_pool);
+            const std::shared_ptr<utils::SlotThreadPool>& thread_pool,
+            const RoutesConfiguration& routes_config);
 
     DDSPIPE_CORE_DllAPI
     ~DdsBridge();
