@@ -178,7 +178,8 @@ protected:
      * @param [in] topic : topic discovered
      */
     void discovered_topic_nts_(
-            const utils::Heritable<types::DistributedTopic>& topic) noexcept;
+            const utils::Heritable<types::DistributedTopic>& topic,
+            const types::ParticipantId& discoverer_participant_id) noexcept;
 
     /**
      * @brief Method called every time a new endpoint (corresponding to a server) has been discovered/updated
@@ -312,6 +313,7 @@ protected:
      * If the value is true, it means this topic is currently activated.
      */
     std::map<utils::Heritable<types::DistributedTopic>, bool> current_topics_;
+    std::map<utils::Heritable<types::DistributedTopic>, types::ParticipantId> current_topics_discoverers_;
 
     /**
      * @brief List of RPC topics discovered

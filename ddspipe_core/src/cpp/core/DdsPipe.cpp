@@ -230,7 +230,7 @@ void DdsPipe::discovered_endpoint_(
     {
         if (!RpcTopic::is_service_topic(endpoint.topic))
         {
-            discovered_topic_nts_(utils::Heritable<DdsTopic>::make_heritable(endpoint.topic));
+            discovered_topic_nts_(utils::Heritable<DdsTopic>::make_heritable(endpoint.topic), endpoint.discoverer_participant_id);
         }
         else if (endpoint.is_server_endpoint())
         {
@@ -265,15 +265,16 @@ void DdsPipe::init_bridges_nts_(
 {
     for (const auto& topic : builtin_topics)
     {
-        discovered_topic_nts_(topic);
+        discovered_topic_nts_(topic, "built-in");
         create_new_bridge_nts_(topic, false);
     }
 }
 
 void DdsPipe::discovered_topic_nts_(
-        const utils::Heritable<types::DistributedTopic>& topic) noexcept
+        const utils::Heritable<types::DistributedTopic>& topic,
+        const types::ParticipantId& discoverer_participant_id) noexcept
 {
-    logInfo(DDSPIPE, "Discovered topic: " << topic << ".");
+    logInfo(DDSPIPE, "Discovered topic: " << topic << ", by: " << discoverer_participant_id << ".");
 
     // Check if topic already exists
     auto find_it = current_topics_.find(topic);
@@ -285,6 +286,9 @@ void DdsPipe::discovered_topic_nts_(
 
     // Add topic to current_topics as non activated
     current_topics_.emplace(topic, false);
+
+    // Save the id of the participant who discovered the topic
+    current_topics_discoverers_.emplace(topic, discoverer_participant_id);
 
     // If Pipe is enabled and topic allowed, activate it
     if (enabled_ && allowed_topics_->is_topic_allowed(*topic))
@@ -351,16 +355,21 @@ void DdsPipe::create_new_bridge_nts_(
         RoutesConfiguration routes_config = topic_routes_config_().count(topic) !=
                 0 ? topic_routes_config_()[topic] : routes_config_;
 
+        auto discoverer_participant_id = current_topics_discoverers_[topic];
+
         // Create bridge instance
-        auto new_bridge = std::make_unique<DdsBridge>(topic,
+        auto new_bridge =  std::make_unique<DdsBridge>(topic,
                         participants_database_,
                         payload_pool_,
                         thread_pool_,
-                        routes_config);
+                        routes_config,
+                        discoverer_participant_id);
+
         if (enabled)
         {
             new_bridge->enable();
         }
+
         bridges_[topic] = std::move(new_bridge);
     }
     catch (const utils::InitializationException& e)
@@ -408,7 +417,7 @@ void DdsPipe::deactivate_topic_nts_(
 {
     logInfo(DDSPIPE, "Deactivating topic: " << topic << ".");
 
-    // Modify current_topics_ and set this topic as non active
+    // Modify current_topics_ and set this topic as not active
     current_topics_[topic] = false;
 
     // Disable bridge. In case it is already disabled nothing should happen
@@ -419,7 +428,7 @@ void DdsPipe::deactivate_topic_nts_(
         // The Bridge already exists
         it_bridge->second->disable();
     }
-    // If the Bridge does not exist, is not need to create it
+    // If the Bridge does not exist, there is no need to create it
 }
 
 void DdsPipe::activate_all_topics_nts_() noexcept
