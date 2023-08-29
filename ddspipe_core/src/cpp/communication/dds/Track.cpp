@@ -138,6 +138,11 @@ void Track::disable() noexcept
     }
 }
 
+void Track::add_writer(const types::ParticipantId& id, const std::shared_ptr<IWriter>& writer) noexcept
+{
+    writers_[id] = writer;
+}
+
 bool Track::should_transmit_() noexcept
 {
     return !exit_ && enabled_;

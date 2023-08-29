@@ -57,7 +57,8 @@ public:
             const std::shared_ptr<ParticipantsDatabase>& participants_database,
             const std::shared_ptr<PayloadPool>& payload_pool,
             const std::shared_ptr<utils::SlotThreadPool>& thread_pool,
-            const RoutesConfiguration& routes_config);
+            const RoutesConfiguration& routes_config,
+            const types::ParticipantId& discoverer_participant_id);
 
     DDSPIPE_CORE_DllAPI
     ~DdsBridge();
@@ -80,9 +81,19 @@ public:
     DDSPIPE_CORE_DllAPI
     void disable() noexcept override;
 
+    /**
+     * Build the DRs and DWs inside the bridge for the new participant,
+     * and add them to the tracks.
+     *
+     * THREAD SAFE?
+     */
+    utils::ReturnCode add_endpoint(const types::ParticipantId& discoverer_participant_id) noexcept;
+
 protected:
 
     utils::Heritable<types::DistributedTopic> topic_;
+
+    RoutesConfiguration routes_config_;
 
     /**
      * Inside \c Tracks

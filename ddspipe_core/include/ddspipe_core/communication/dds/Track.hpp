@@ -96,6 +96,9 @@ public:
     DDSPIPE_CORE_DllAPI
     void disable() noexcept;
 
+
+    void add_writer(const types::ParticipantId& id, const std::shared_ptr<IWriter>& writer) noexcept;
+
 protected:
 
     /*

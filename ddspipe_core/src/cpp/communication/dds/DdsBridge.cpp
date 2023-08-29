@@ -28,103 +28,15 @@ DdsBridge::DdsBridge(
         const std::shared_ptr<ParticipantsDatabase>& participants_database,
         const std::shared_ptr<PayloadPool>& payload_pool,
         const std::shared_ptr<utils::SlotThreadPool>& thread_pool,
-        const RoutesConfiguration& routes_config)
+        const RoutesConfiguration& routes_config,
+        const types::ParticipantId& discoverer_participant_id)
     : Bridge(participants_database, payload_pool, thread_pool)
     , topic_(topic)
+    , routes_config_(routes_config)
 {
     logDebug(DDSPIPE_DDSBRIDGE, "Creating DdsBridge " << *this << ".");
 
-    std::set<ParticipantId> ids = participants_->get_participants_ids();
-    auto routes = routes_config();
-
-    // Determine which endpoints need to be created
-    std::set<types::ParticipantId> writers_to_create;
-    std::set<types::ParticipantId> readers_to_create;
-    for (const ParticipantId& id: ids)
-    {
-        const auto& it = routes.find(id);
-        if (it != routes.end())
-        {
-            const auto& src_id = it->first;
-            const auto& dst_ids = it->second;
-            if (dst_ids.size() != 0) // Only create reader if there are any destination writers
-            {
-                readers_to_create.insert(src_id);
-                writers_to_create.insert(dst_ids.begin(), dst_ids.end());
-            }
-        }
-        else
-        {
-            // When no route is defined, forward to all other participants (+ itself if repeater)
-            auto dst_ids = ids;
-            if (!participants_->get_participant(id)->is_repeater())
-            {
-                // Do not add writer for this participant because it is not repeater
-                dst_ids.erase(id);
-            }
-            writers_to_create.insert(dst_ids.begin(), dst_ids.end());
-            readers_to_create.insert(id);
-        }
-    }
-
-    // Generate writers for each participant
-    std::map<types::ParticipantId, std::shared_ptr<IWriter>> writers;
-    for (const auto& id: writers_to_create)
-    {
-        std::shared_ptr<IParticipant> participant = participants_database->get_participant(id);
-        writers[id] = participant->create_writer(*topic);
-    }
-
-    // Generate readers for each participant
-    std::map<types::ParticipantId, std::shared_ptr<IReader>> readers;
-    for (const auto& id: readers_to_create)
-    {
-        std::shared_ptr<IParticipant> participant = participants_database->get_participant(id);
-        readers[id] = participant->create_reader(*topic);
-    }
-
-    // Generate tracks
-    for (const ParticipantId& id: ids)
-    {
-        std::map<ParticipantId, std::shared_ptr<IWriter>> dst_writers;
-        auto it = routes.find(id);
-        if (it != routes.end())
-        {
-            // Custom route available for this participant
-            for (const auto& writer_id : it->second)
-            {
-                dst_writers[writer_id] = writers[writer_id];
-            }
-
-            // Do not create track if no destination writers
-            if (dst_writers.size() == 0)
-            {
-                continue;
-            }
-        }
-        else
-        {
-            // Use default forwarding route (receiver participant to all others)
-            dst_writers = writers;
-
-            // Remove this Track source participant if not repeater
-            if (!participants_->get_participant(id)->is_repeater())
-            {
-                dst_writers.erase(id);
-            }
-        }
-
-        // This insert is required as there is no copy method for Track
-        // Tracks are always created disabled and then enabled with Bridge enable() method
-        tracks_[id] =
-                std::make_unique<Track>(
-            topic,
-            id,
-            std::move(readers[id]),
-            std::move(dst_writers),
-            payload_pool,
-            thread_pool);
-    }
+    add_endpoint(discoverer_participant_id);
 
     logDebug(DDSPIPE_DDSBRIDGE, "DdsBridge " << *this << " created.");
 }
@@ -173,6 +85,60 @@ void DdsBridge::disable() noexcept
 
         enabled_ = false;
     }
+}
+
+utils::ReturnCode DdsBridge::add_endpoint(const types::ParticipantId& discoverer_participant_id) noexcept
+{
+    std::map<types::ParticipantId, std::shared_ptr<IWriter>> id_to_writer;
+
+    auto routes = routes_config_();
+
+    for (const ParticipantId& id : participants_->get_participants_ids())
+    {
+        const auto& it = routes.find(id);
+
+        if (it != routes.end() && it->second.find(discoverer_participant_id) == it->second.end())
+        {
+            // The Participant has a route and the discoverer_participant_id is not in it.
+            // There can be no changes to the tracks.
+            continue;
+        }
+
+        if (id == discoverer_participant_id && !participants_->get_participant(id)->is_repeater())
+        {
+            // Don't connect a participant's reader and writer if the participant is not a repeater.
+            continue;
+        }
+
+        if (!id_to_writer.count(discoverer_participant_id))
+        {
+            // The writer doesn't exist. Create it.
+            std::shared_ptr<IParticipant> participant = participants_->get_participant(discoverer_participant_id);
+            id_to_writer[discoverer_participant_id] = participant->create_writer(*topic_);
+        }
+
+        if (tracks_.count(id))
+        {
+            // The track already exists. Add the writer.
+            tracks_[id]->add_writer(discoverer_participant_id, id_to_writer[discoverer_participant_id]);
+        }
+        else
+        {
+            // The track doesn't exist. Create it.
+            std::shared_ptr<IParticipant> participant = participants_->get_participant(id);
+            auto reader = participant->create_reader(*topic_);
+
+            tracks_[id] = std::make_unique<Track>(
+                topic_,
+                id,
+                reader,
+                std::move(id_to_writer), // SHOULD WE USE std::move HERE?
+                payload_pool_,
+                thread_pool_);
+        }
+    }
+
+    return utils::ReturnCode::RETCODE_OK;
 }
 
 std::ostream& operator <<(
