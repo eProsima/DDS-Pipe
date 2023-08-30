@@ -116,10 +116,14 @@ utils::ReturnCode DdsBridge::add_endpoint(const types::ParticipantId& subscriber
             id_to_writer[subscriber_id] = participant->create_writer(*topic_);
         }
 
+        // Create a copy of the writer
+        std::map<types::ParticipantId, std::shared_ptr<IWriter>> id_to_dst_writer;
+        id_to_dst_writer[subscriber_id] = id_to_writer[subscriber_id];
+
         if (tracks_.count(id))
         {
             // The track already exists. Add the writer.
-            tracks_[id]->add_writer(subscriber_id, id_to_writer[subscriber_id]);
+            tracks_[id]->add_writer(subscriber_id, id_to_dst_writer[subscriber_id]);
         }
         else
         {
@@ -131,10 +135,12 @@ utils::ReturnCode DdsBridge::add_endpoint(const types::ParticipantId& subscriber
                 topic_,
                 id,
                 reader,
-                std::move(id_to_writer), // SHOULD WE USE std::move HERE?
+                std::move(id_to_dst_writer), // SHOULD WE USE std::move HERE?
                 payload_pool_,
                 thread_pool_);
         }
+
+        tracks_[id]->enable();
     }
 
     return utils::ReturnCode::RETCODE_OK;
@@ -142,7 +148,6 @@ utils::ReturnCode DdsBridge::add_endpoint(const types::ParticipantId& subscriber
 
 utils::ReturnCode DdsBridge::remove_endpoint(const types::ParticipantId& subscriber_id) noexcept
 {
-
     for (const auto& id_to_track : tracks_)
     {
         const auto& id = id_to_track.first;
@@ -151,6 +156,11 @@ utils::ReturnCode DdsBridge::remove_endpoint(const types::ParticipantId& subscri
         if (track->has_writer(subscriber_id))
         {
             track->remove_writer(subscriber_id);
+
+            if (track->count_writers() <= 0)
+            {
+                tracks_.erase(id);
+            }
         }
     }
 

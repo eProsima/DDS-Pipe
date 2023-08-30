@@ -140,16 +140,14 @@ void Track::disable() noexcept
 
 void Track::add_writer(const types::ParticipantId& id, const std::shared_ptr<IWriter>& writer) noexcept
 {
-    disable();
+    std::lock_guard<std::mutex> lock(on_transmission_mutex_);
     writers_[id] = writer;
-    enable();
 }
 
 void Track::remove_writer(const types::ParticipantId& id) noexcept
 {
-    disable();
+    std::lock_guard<std::mutex> lock(on_transmission_mutex_);
     writers_.erase(id);
-    enable();
 }
 
 bool Track::has_writer(const types::ParticipantId& id) noexcept
