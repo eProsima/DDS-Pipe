@@ -343,34 +343,6 @@ void DdsPipe::discovered_topic_nts_(
     }
 }
 
-void DdsPipe::removed_topic_nts_(
-        const utils::Heritable<types::DistributedTopic>& topic,
-        const types::ParticipantId& discoverer_id) noexcept
-{
-    logInfo(DDSPIPE, "Removed topic: " << topic << ", by: " << discoverer_id << ".");
-
-    // Check if the bridge (and the topic) already exist.
-    auto it_bridge = bridges_.find(topic);
-
-    if (it_bridge != bridges_.end()) {
-        // The bridge already exists. Add the discoverer_id.
-        it_bridge->second->add_endpoint(discoverer_id);
-        return;
-    }
-
-    // Add topic to current_topics as non activated
-    current_topics_.emplace(topic, false);
-
-    // Save the id of the participant who discovered the topic
-    current_topics_discoverers_.emplace(topic, discoverer_id);
-
-    // If Pipe is enabled and topic allowed, activate it
-    if (enabled_ && allowed_topics_->is_topic_allowed(*topic))
-    {
-        activate_topic_nts_(topic);
-    }
-}
-
 void DdsPipe::discovered_service_nts_(
         const types::RpcTopic& topic,
         const ParticipantId& server_participant_id,
