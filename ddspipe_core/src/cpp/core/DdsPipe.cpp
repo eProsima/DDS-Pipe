@@ -272,15 +272,16 @@ void DdsPipe::init_bridges_nts_(
 
 void DdsPipe::discovered_topic_nts_(
         const utils::Heritable<types::DistributedTopic>& topic,
-        const types::ParticipantId& discoverer_participant_id) noexcept
+        const types::ParticipantId& subscriber_id) noexcept
 {
-    logInfo(DDSPIPE, "Discovered topic: " << topic << ", by: " << discoverer_participant_id << ".");
+    logInfo(DDSPIPE, "Discovered topic: " << topic << ", by: " << subscriber_id << ".");
 
-    // Check if topic already exists
-    auto find_it = current_topics_.find(topic);
-    if (find_it != current_topics_.end())
-    {
-        // If it already exists, do nothing
+    // Check if the bridge (and the topic) already exist.
+    auto it_bridge = bridges_.find(topic);
+
+    if (it_bridge != bridges_.end()) {
+        // The bridge already exists. Add the subscriber_id.
+        it_bridge->second->add_endpoint(subscriber_id);
         return;
     }
 
@@ -288,7 +289,7 @@ void DdsPipe::discovered_topic_nts_(
     current_topics_.emplace(topic, false);
 
     // Save the id of the participant who discovered the topic
-    current_topics_discoverers_.emplace(topic, discoverer_participant_id);
+    current_topics_discoverers_.emplace(topic, subscriber_id);
 
     // If Pipe is enabled and topic allowed, activate it
     if (enabled_ && allowed_topics_->is_topic_allowed(*topic))
@@ -355,7 +356,7 @@ void DdsPipe::create_new_bridge_nts_(
         RoutesConfiguration routes_config = topic_routes_config_().count(topic) !=
                 0 ? topic_routes_config_()[topic] : routes_config_;
 
-        auto discoverer_participant_id = current_topics_discoverers_[topic];
+        auto subscriber_id = current_topics_discoverers_[topic];
 
         // Create bridge instance
         auto new_bridge =  std::make_unique<DdsBridge>(topic,
@@ -363,7 +364,7 @@ void DdsPipe::create_new_bridge_nts_(
                         payload_pool_,
                         thread_pool_,
                         routes_config,
-                        discoverer_participant_id);
+                        subscriber_id);
 
         if (enabled)
         {
