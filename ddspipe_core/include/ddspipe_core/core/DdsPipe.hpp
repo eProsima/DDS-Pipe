@@ -179,7 +179,7 @@ protected:
      */
     void discovered_topic_nts_(
             const utils::Heritable<types::DistributedTopic>& topic,
-            const types::ParticipantId& discoverer_participant_id) noexcept;
+            const types::ParticipantId& subscriber_id) noexcept;
 
     /**
      * @brief Method called every time a new endpoint (corresponding to a server) has been discovered/updated

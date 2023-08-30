@@ -29,14 +29,15 @@ DdsBridge::DdsBridge(
         const std::shared_ptr<PayloadPool>& payload_pool,
         const std::shared_ptr<utils::SlotThreadPool>& thread_pool,
         const RoutesConfiguration& routes_config,
-        const types::ParticipantId& discoverer_participant_id)
+        const types::ParticipantId& subscriber_id)
     : Bridge(participants_database, payload_pool, thread_pool)
     , topic_(topic)
-    , routes_config_(routes_config)
 {
     logDebug(DDSPIPE_DDSBRIDGE, "Creating DdsBridge " << *this << ".");
 
-    add_endpoint(discoverer_participant_id);
+    routes_ = routes_config();
+
+    add_endpoint(subscriber_id);
 
     logDebug(DDSPIPE_DDSBRIDGE, "DdsBridge " << *this << " created.");
 }
@@ -87,40 +88,38 @@ void DdsBridge::disable() noexcept
     }
 }
 
-utils::ReturnCode DdsBridge::add_endpoint(const types::ParticipantId& discoverer_participant_id) noexcept
+utils::ReturnCode DdsBridge::add_endpoint(const types::ParticipantId& subscriber_id) noexcept
 {
     std::map<types::ParticipantId, std::shared_ptr<IWriter>> id_to_writer;
 
-    auto routes = routes_config_();
-
     for (const ParticipantId& id : participants_->get_participants_ids())
     {
-        const auto& it = routes.find(id);
+        const auto& it = routes_.find(id);
 
-        if (it != routes.end() && it->second.find(discoverer_participant_id) == it->second.end())
+        if (it != routes_.end() && it->second.find(subscriber_id) == it->second.end())
         {
-            // The Participant has a route and the discoverer_participant_id is not in it.
+            // The Participant has a route and the subscriber_id is not in it.
             // There can be no changes to the tracks.
             continue;
         }
 
-        if (id == discoverer_participant_id && !participants_->get_participant(id)->is_repeater())
+        if (id == subscriber_id && !participants_->get_participant(id)->is_repeater())
         {
             // Don't connect a participant's reader and writer if the participant is not a repeater.
             continue;
         }
 
-        if (!id_to_writer.count(discoverer_participant_id))
+        if (!id_to_writer.count(subscriber_id))
         {
             // The writer doesn't exist. Create it.
-            std::shared_ptr<IParticipant> participant = participants_->get_participant(discoverer_participant_id);
-            id_to_writer[discoverer_participant_id] = participant->create_writer(*topic_);
+            std::shared_ptr<IParticipant> participant = participants_->get_participant(subscriber_id);
+            id_to_writer[subscriber_id] = participant->create_writer(*topic_);
         }
 
         if (tracks_.count(id))
         {
             // The track already exists. Add the writer.
-            tracks_[id]->add_writer(discoverer_participant_id, id_to_writer[discoverer_participant_id]);
+            tracks_[id]->add_writer(subscriber_id, id_to_writer[subscriber_id]);
         }
         else
         {

@@ -58,7 +58,7 @@ public:
             const std::shared_ptr<PayloadPool>& payload_pool,
             const std::shared_ptr<utils::SlotThreadPool>& thread_pool,
             const RoutesConfiguration& routes_config,
-            const types::ParticipantId& discoverer_participant_id);
+            const types::ParticipantId& subscriber_id);
 
     DDSPIPE_CORE_DllAPI
     ~DdsBridge();
@@ -87,13 +87,13 @@ public:
      *
      * THREAD SAFE?
      */
-    utils::ReturnCode add_endpoint(const types::ParticipantId& discoverer_participant_id) noexcept;
+    utils::ReturnCode add_endpoint(const types::ParticipantId& subscriber_id) noexcept;
 
 protected:
 
     utils::Heritable<types::DistributedTopic> topic_;
 
-    RoutesConfiguration routes_config_;
+    RoutesConfiguration::RoutesMap routes_;
 
     /**
      * Inside \c Tracks
