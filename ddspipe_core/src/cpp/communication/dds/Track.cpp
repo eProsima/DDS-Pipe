@@ -145,6 +145,23 @@ void Track::add_writer(const types::ParticipantId& id, const std::shared_ptr<IWr
     enable();
 }
 
+void Track::remove_writer(const types::ParticipantId& id) noexcept
+{
+    disable();
+    writers_.erase(id);
+    enable();
+}
+
+bool Track::has_writer(const types::ParticipantId& id) noexcept
+{
+    return writers_.count(id) != 0;
+}
+
+int Track::count_writers() noexcept
+{
+    return writers_.size();
+}
+
 bool Track::should_transmit_() noexcept
 {
     return !exit_ && enabled_;

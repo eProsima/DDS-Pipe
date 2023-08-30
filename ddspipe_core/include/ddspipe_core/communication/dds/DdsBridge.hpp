@@ -83,11 +83,19 @@ public:
 
     /**
      * Build the DRs and DWs inside the bridge for the new participant,
-     * and add them to the tracks.
+     * and add them to the Tracks.
      *
      * THREAD SAFE?
      */
     utils::ReturnCode add_endpoint(const types::ParticipantId& subscriber_id) noexcept;
+
+    /**
+     * Remove the DW from all the Tracks in the bridge.
+     * Remove the DRs and Tracks that don't have any DWs.
+     *
+     * THREAD SAFE?
+     */
+    utils::ReturnCode remove_endpoint(const types::ParticipantId& subscriber_id) noexcept;
 
 protected:
 

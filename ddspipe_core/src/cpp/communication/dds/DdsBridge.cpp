@@ -140,6 +140,24 @@ utils::ReturnCode DdsBridge::add_endpoint(const types::ParticipantId& subscriber
     return utils::ReturnCode::RETCODE_OK;
 }
 
+utils::ReturnCode DdsBridge::remove_endpoint(const types::ParticipantId& subscriber_id) noexcept
+{
+
+    for (const auto& id_to_track : tracks_)
+    {
+        const auto& id = id_to_track.first;
+        const auto& track = id_to_track.second;
+
+        if (track->has_writer(subscriber_id))
+        {
+            track->remove_writer(subscriber_id);
+        }
+    }
+
+    return utils::ReturnCode::RETCODE_OK;
+}
+
+
 std::ostream& operator <<(
         std::ostream& os,
         const DdsBridge& bridge)
