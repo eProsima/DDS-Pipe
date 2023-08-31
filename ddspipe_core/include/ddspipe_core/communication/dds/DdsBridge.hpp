@@ -58,7 +58,7 @@ public:
             const std::shared_ptr<PayloadPool>& payload_pool,
             const std::shared_ptr<utils::SlotThreadPool>& thread_pool,
             const RoutesConfiguration& routes_config,
-            const types::ParticipantId& subscriber_id);
+            const types::ParticipantId& discoverer_id);
 
     DDSPIPE_CORE_DllAPI
     ~DdsBridge();
@@ -87,8 +87,8 @@ public:
      *
      * THREAD SAFE?
      */
-    utils::ReturnCode add_endpoint(
-            const types::ParticipantId& subscriber_id) noexcept;
+    utils::ReturnCode add_subscriber(
+            const types::ParticipantId& id) noexcept;
 
     /**
      * Remove the DW from all the Tracks in the bridge.
@@ -96,8 +96,8 @@ public:
      *
      * THREAD SAFE?
      */
-    utils::ReturnCode remove_endpoint(
-            const types::ParticipantId& subscriber_id) noexcept;
+    utils::ReturnCode remove_subscriber(
+            const types::ParticipantId& id) noexcept;
 
 protected:
 

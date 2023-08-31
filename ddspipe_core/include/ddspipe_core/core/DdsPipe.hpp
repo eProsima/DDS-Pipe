@@ -138,7 +138,7 @@ protected:
     /**
      * @brief Method called every time a new endpoint has been discovered
      *
-     * This method calls \c discovered_topic_ with the topic of \c endpoint as parameter.
+     * This method calls \c discovered_endpoint_nts_ with a lock on the mutex to make it thread safe.
      *
      * @param [in] endpoint : endpoint discovered
      */
@@ -148,6 +148,8 @@ protected:
     /**
      * @brief Method called every time a new endpoint has been updated
      *
+     * This method calls \c discovered_endpoint_nts_ or \c removed_endpoint_nts_ with a lock on the mutex to make it thread safe.
+     *
      * @param [in] endpoint : endpoint updated
      */
     void updated_endpoint_(
@@ -156,9 +158,29 @@ protected:
     /**
      * @brief Method called every time an endpoint has been removed/dropped
      *
+     * This method calls \c removed_endpoint_nts_ with a lock on the mutex to make it thread safe.
+     *
      * @param [in] endpoint : endpoint removed/dropped
      */
     void removed_endpoint_(
+            const types::Endpoint& endpoint) noexcept;
+
+    /**
+     * @brief Method called every time a new endpoint has been discovered
+     *
+     * This method calls \c discovered_topic_ with the topic of \c endpoint as parameter.
+     *
+     * @param [in] endpoint : endpoint discovered
+     */
+    void discovered_endpoint_nts_(
+            const types::Endpoint& endpoint) noexcept;
+
+    /**
+     * @brief Method called every time an endpoint has been removed/dropped
+     *
+     * @param [in] endpoint : endpoint removed/dropped
+     */
+    void removed_endpoint_nts_(
             const types::Endpoint& endpoint) noexcept;
 
     /////////////////////////
