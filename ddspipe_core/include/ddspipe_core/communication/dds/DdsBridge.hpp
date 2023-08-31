@@ -87,7 +87,8 @@ public:
      *
      * THREAD SAFE?
      */
-    utils::ReturnCode add_endpoint(const types::ParticipantId& subscriber_id) noexcept;
+    utils::ReturnCode add_endpoint(
+            const types::ParticipantId& subscriber_id) noexcept;
 
     /**
      * Remove the DW from all the Tracks in the bridge.
@@ -95,7 +96,8 @@ public:
      *
      * THREAD SAFE?
      */
-    utils::ReturnCode remove_endpoint(const types::ParticipantId& subscriber_id) noexcept;
+    utils::ReturnCode remove_endpoint(
+            const types::ParticipantId& subscriber_id) noexcept;
 
 protected:
 

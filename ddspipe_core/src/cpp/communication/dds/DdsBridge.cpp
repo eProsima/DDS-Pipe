@@ -88,7 +88,8 @@ void DdsBridge::disable() noexcept
     }
 }
 
-utils::ReturnCode DdsBridge::add_endpoint(const ParticipantId& subscriber_id) noexcept
+utils::ReturnCode DdsBridge::add_endpoint(
+        const ParticipantId& subscriber_id) noexcept
 {
     std::map<ParticipantId, std::shared_ptr<IWriter>> id_to_writer;
 
@@ -146,7 +147,8 @@ utils::ReturnCode DdsBridge::add_endpoint(const ParticipantId& subscriber_id) no
     return utils::ReturnCode::RETCODE_OK;
 }
 
-utils::ReturnCode DdsBridge::remove_endpoint(const ParticipantId& subscriber_id) noexcept
+utils::ReturnCode DdsBridge::remove_endpoint(
+        const ParticipantId& subscriber_id) noexcept
 {
     for (const auto& id_to_track : tracks_)
     {
@@ -168,7 +170,6 @@ utils::ReturnCode DdsBridge::remove_endpoint(const ParticipantId& subscriber_id)
 
     return utils::ReturnCode::RETCODE_OK;
 }
-
 
 std::ostream& operator <<(
         std::ostream& os,

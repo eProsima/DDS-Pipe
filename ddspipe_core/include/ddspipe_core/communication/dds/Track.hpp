@@ -103,7 +103,9 @@ public:
      * THREAD SAFE?
      */
     DDSPIPE_CORE_DllAPI
-    void add_writer(const types::ParticipantId& id, const std::shared_ptr<IWriter>& writer) noexcept;
+    void add_writer(
+            const types::ParticipantId& id,
+            const std::shared_ptr<IWriter>& writer) noexcept;
 
     /**
      * Remove a writer from the track.
@@ -112,7 +114,8 @@ public:
      * THREAD SAFE?
      */
     DDSPIPE_CORE_DllAPI
-    void remove_writer(const types::ParticipantId& id) noexcept;
+    void remove_writer(
+            const types::ParticipantId& id) noexcept;
 
     /**
      * Check if a writer is inside the track.
@@ -120,7 +123,8 @@ public:
      * THREAD SAFE?
      */
     DDSPIPE_CORE_DllAPI
-    bool has_writer(const types::ParticipantId& id) noexcept;
+    bool has_writer(
+            const types::ParticipantId& id) noexcept;
 
     /**
      * Count the number of writers inside the track.

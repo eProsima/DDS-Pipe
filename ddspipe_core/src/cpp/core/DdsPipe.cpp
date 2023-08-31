@@ -234,7 +234,8 @@ void DdsPipe::discovered_endpoint_(
     {
         if (!RpcTopic::is_service_topic(endpoint.topic))
         {
-            discovered_topic_nts_(utils::Heritable<DdsTopic>::make_heritable(endpoint.topic), endpoint.discoverer_participant_id);
+            discovered_topic_nts_(utils::Heritable<DdsTopic>::make_heritable(
+                        endpoint.topic), endpoint.discoverer_participant_id);
         }
         else if (endpoint.is_server_endpoint())
         {
@@ -280,7 +281,8 @@ void DdsPipe::removed_endpoint_(
 
     if (!RpcTopic::is_service_topic(endpoint.topic))
     {
-        if (endpoint.is_writer()) {
+        if (endpoint.is_writer())
+        {
             // An external writer has been removed.
             // The bridge and the tracks remain intact.
             return;
@@ -324,7 +326,8 @@ void DdsPipe::discovered_topic_nts_(
     // Check if the bridge (and the topic) already exist.
     auto it_bridge = bridges_.find(topic);
 
-    if (it_bridge != bridges_.end()) {
+    if (it_bridge != bridges_.end())
+    {
         // The bridge already exists. Add the discoverer_id.
         it_bridge->second->add_endpoint(discoverer_id);
         return;
@@ -397,10 +400,9 @@ void DdsPipe::create_new_bridge_nts_(
 
     try
     {
-        // Use topic specific forwarding routes if available
-        RoutesConfiguration routes_config = topic_routes_config_().count(topic) !=
+        auto routes_config__ = topic_routes_config_().count(topic) !=
                 0 ? topic_routes_config_()[topic] : routes_config_;
-
+                
         auto discoverer_id = current_topics_discoverers_[topic];
 
         // Create bridge instance
