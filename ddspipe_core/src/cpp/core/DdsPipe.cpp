@@ -225,7 +225,59 @@ void DdsPipe::discovered_endpoint_(
         const Endpoint& endpoint) noexcept
 {
     std::lock_guard<std::mutex> lock(mutex_);
+    discovered_endpoint_nts_(endpoint);
+}
 
+void DdsPipe::updated_endpoint_(
+        const Endpoint& endpoint) noexcept
+{
+    std::lock_guard<std::mutex> lock(mutex_);
+
+    logDebug(DDSPIPE, "Endpoint updated in DDS Pipe core: " << endpoint << ".");
+
+    // Set as discovered only if the endpoint is a Reader
+    // If non Readers in topics, it is considered as non discovered
+    if (endpoint.is_reader() && !RpcTopic::is_service_topic(endpoint.topic))
+    {
+        for (const auto& guid_to_entity : discovery_database_->get_endpoints())
+        {
+            const auto& guid = guid_to_entity.first;
+            const auto& entity = guid_to_entity.second;
+
+            if (guid != endpoint.guid &&
+                entity.active &&
+                entity.is_reader() &&
+                entity.topic == endpoint.topic &&
+                entity.discoverer_participant_id == endpoint.discoverer_participant_id)
+            {
+                // There is an active reader other than us.
+                // If we have been reactivated, there is nothing to do.
+                // If we have been disactivated, there is nothing to do.
+                return;
+            }
+        }
+
+        if (endpoint.active)
+        {
+            discovered_endpoint_nts_(endpoint);
+        }
+        else
+        {
+            removed_endpoint_nts_(endpoint);
+        }
+    }
+}
+
+void DdsPipe::removed_endpoint_(
+        const Endpoint& endpoint) noexcept
+{
+    std::lock_guard<std::mutex> lock(mutex_);
+    removed_endpoint_nts_(endpoint);
+}
+
+void DdsPipe::discovered_endpoint_nts_(
+        const Endpoint& endpoint) noexcept
+{
     logDebug(DDSPIPE, "Endpoint discovered in DDS Pipe core: " << endpoint << ".");
 
     // Set as discovered only if the endpoint is a Reader
@@ -246,35 +298,9 @@ void DdsPipe::discovered_endpoint_(
     }
 }
 
-void DdsPipe::updated_endpoint_(
+void DdsPipe::removed_endpoint_nts_(
         const Endpoint& endpoint) noexcept
 {
-    std::unique_lock<std::mutex> lock(mutex_);
-
-    logDebug(DDSPIPE, "Endpoint updated in DDS Pipe core: " << endpoint << ".");
-
-    // Set as discovered only if the endpoint is a Reader
-    // If non Readers in topics, it is considered as non discovered
-    if (endpoint.is_reader() && !RpcTopic::is_service_topic(endpoint.topic))
-    {
-        if (endpoint.active)
-        {
-            lock.unlock();
-            discovered_endpoint_(endpoint);
-        }
-        else
-        {
-            lock.unlock();
-            removed_endpoint_(endpoint);
-        }
-    }
-}
-
-void DdsPipe::removed_endpoint_(
-        const Endpoint& endpoint) noexcept
-{
-    std::lock_guard<std::mutex> lock(mutex_);
-
     logDebug(DDSPIPE, "Endpoint removed/dropped: " << endpoint << ".");
 
     const auto& topic = utils::Heritable<DdsTopic>::make_heritable(endpoint.topic);
@@ -297,7 +323,7 @@ void DdsPipe::removed_endpoint_(
         }
         else
         {
-            it_bridge->second->remove_endpoint(endpoint.discoverer_participant_id);
+            it_bridge->second->remove_subscriber(endpoint.discoverer_participant_id);
         }
     }
     else if (endpoint.is_server_endpoint())
@@ -329,7 +355,7 @@ void DdsPipe::discovered_topic_nts_(
     if (it_bridge != bridges_.end())
     {
         // The bridge already exists. Add the discoverer_id.
-        it_bridge->second->add_endpoint(discoverer_id);
+        it_bridge->second->add_subscriber(discoverer_id);
         return;
     }
 

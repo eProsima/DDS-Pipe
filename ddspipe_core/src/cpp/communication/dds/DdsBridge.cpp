@@ -29,7 +29,7 @@ DdsBridge::DdsBridge(
         const std::shared_ptr<PayloadPool>& payload_pool,
         const std::shared_ptr<utils::SlotThreadPool>& thread_pool,
         const RoutesConfiguration& routes_config,
-        const ParticipantId& subscriber_id)
+        const ParticipantId& discoverer_id)
     : Bridge(participants_database, payload_pool, thread_pool)
     , topic_(topic)
 {
@@ -37,7 +37,17 @@ DdsBridge::DdsBridge(
 
     routes_ = routes_config();
 
-    add_endpoint(subscriber_id);
+    if (discoverer_id == "built-in")
+    {
+        for (const ParticipantId& id : participants_->get_participants_ids())
+        {
+            add_subscriber(id);
+        }
+    }
+    else
+    {
+        add_subscriber(discoverer_id);
+    }
 
     logDebug(DDSPIPE_DDSBRIDGE, "DdsBridge " << *this << " created.");
 }
@@ -88,11 +98,30 @@ void DdsBridge::disable() noexcept
     }
 }
 
-utils::ReturnCode DdsBridge::add_endpoint(
+utils::ReturnCode DdsBridge::add_subscriber(
         const ParticipantId& subscriber_id) noexcept
 {
-    std::map<ParticipantId, std::shared_ptr<IWriter>> id_to_writer;
+    // A new subscriber has been discovered.
+    // Check if the writer for this participant already exists.
+    for (const auto& id_to_track : tracks_)
+    {
+        const auto& id = id_to_track.first;
+        const auto& track = id_to_track.second;
 
+        if (track->has_writer(subscriber_id))
+        {
+            // The writer already exists. There is nothing to do. Exit.
+            return utils::ReturnCode::RETCODE_OK;
+        }
+    }
+
+    // Create the writer.
+    std::shared_ptr<IParticipant> participant = participants_->get_participant(subscriber_id);
+
+    std::map<ParticipantId, std::shared_ptr<IWriter>> id_to_writer;
+    id_to_writer[subscriber_id] = participant->create_writer(*topic_);
+
+    // Create the necessary readers and tracks.
     for (const ParticipantId& id : participants_->get_participants_ids())
     {
         const auto& it = routes_.find(id);
@@ -108,13 +137,6 @@ utils::ReturnCode DdsBridge::add_endpoint(
         {
             // Don't connect a participant's reader and writer if the participant is not a repeater.
             continue;
-        }
-
-        if (!id_to_writer.count(subscriber_id))
-        {
-            // The writer doesn't exist. Create it.
-            std::shared_ptr<IParticipant> participant = participants_->get_participant(subscriber_id);
-            id_to_writer[subscriber_id] = participant->create_writer(*topic_);
         }
 
         // Create a copy of the writer
@@ -135,8 +157,8 @@ utils::ReturnCode DdsBridge::add_endpoint(
             tracks_[id] = std::make_unique<Track>(
                 topic_,
                 id,
-                reader,
-                std::move(id_to_dst_writer), // SHOULD WE USE std::move HERE?
+                std::move(reader), // SHOULD WE USE std::move HERE?
+                std::move(id_to_dst_writer),
                 payload_pool_,
                 thread_pool_);
         }
@@ -147,7 +169,7 @@ utils::ReturnCode DdsBridge::add_endpoint(
     return utils::ReturnCode::RETCODE_OK;
 }
 
-utils::ReturnCode DdsBridge::remove_endpoint(
+utils::ReturnCode DdsBridge::remove_subscriber(
         const ParticipantId& subscriber_id) noexcept
 {
     for (const auto& id_to_track : tracks_)

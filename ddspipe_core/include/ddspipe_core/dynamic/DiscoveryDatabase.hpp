@@ -150,6 +150,13 @@ public:
             const types::Guid& endpoint_guid) const;
 
     /**
+     * @brief Get the map of endpoints
+     *
+     * @return Map of endpoints
+     */
+    std::map<types::Guid, types::Endpoint> get_endpoints() const noexcept;
+
+    /**
      * @brief Add callback to be called when discovering an Endpoint
      *
      * @param [in] endpoint_discovered_callback: callback to add

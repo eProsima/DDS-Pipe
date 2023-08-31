@@ -244,6 +244,11 @@ Endpoint DiscoveryDatabase::get_endpoint(
     return it->second;
 }
 
+std::map<Guid, Endpoint> DiscoveryDatabase::get_endpoints() const noexcept
+{
+    return entities_;
+}
+
 void DiscoveryDatabase::add_endpoint_discovered_callback(
         std::function<void(Endpoint)> endpoint_discovered_callback) noexcept
 {

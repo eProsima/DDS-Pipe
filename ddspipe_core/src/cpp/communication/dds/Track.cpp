@@ -156,11 +156,13 @@ void Track::remove_writer(
 bool Track::has_writer(
         const ParticipantId& id) noexcept
 {
+    std::lock_guard<std::mutex> lock(on_transmission_mutex_);
     return writers_.count(id) != 0;
 }
 
 int Track::count_writers() noexcept
 {
+    std::lock_guard<std::mutex> lock(on_transmission_mutex_);
     return writers_.size();
 }
 
