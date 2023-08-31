@@ -191,20 +191,6 @@ protected:
             const types::ParticipantId& subscriber_id) noexcept;
 
     /**
-     * @brief Method called every time a new endpoint has been discovered/updated
-     *
-     * This method is called with the topic of a new/updated \c Endpoint discovered.
-     * If the DdsPipe is enabled, the new Bridge is created and enabled.
-     *
-     * @note This is the only method that adds topics to \c current_topics_
-     *
-     * @param [in] topic : topic discovered
-     */
-    void removed_topic_nts_(
-        const utils::Heritable<types::DistributedTopic>& topic,
-        const types::ParticipantId& subscriber_id) noexcept;
-
-    /**
      * @brief Method called every time a new endpoint (corresponding to a server) has been discovered/updated
      *
      * This method is called with the topic of a new/updated \c Endpoint discovered.

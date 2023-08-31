@@ -29,7 +29,7 @@ DdsBridge::DdsBridge(
         const std::shared_ptr<PayloadPool>& payload_pool,
         const std::shared_ptr<utils::SlotThreadPool>& thread_pool,
         const RoutesConfiguration& routes_config,
-        const types::ParticipantId& subscriber_id)
+        const ParticipantId& subscriber_id)
     : Bridge(participants_database, payload_pool, thread_pool)
     , topic_(topic)
 {
@@ -88,9 +88,9 @@ void DdsBridge::disable() noexcept
     }
 }
 
-utils::ReturnCode DdsBridge::add_endpoint(const types::ParticipantId& subscriber_id) noexcept
+utils::ReturnCode DdsBridge::add_endpoint(const ParticipantId& subscriber_id) noexcept
 {
-    std::map<types::ParticipantId, std::shared_ptr<IWriter>> id_to_writer;
+    std::map<ParticipantId, std::shared_ptr<IWriter>> id_to_writer;
 
     for (const ParticipantId& id : participants_->get_participants_ids())
     {
@@ -117,7 +117,7 @@ utils::ReturnCode DdsBridge::add_endpoint(const types::ParticipantId& subscriber
         }
 
         // Create a copy of the writer
-        std::map<types::ParticipantId, std::shared_ptr<IWriter>> id_to_dst_writer;
+        std::map<ParticipantId, std::shared_ptr<IWriter>> id_to_dst_writer;
         id_to_dst_writer[subscriber_id] = id_to_writer[subscriber_id];
 
         if (tracks_.count(id))
@@ -146,7 +146,7 @@ utils::ReturnCode DdsBridge::add_endpoint(const types::ParticipantId& subscriber
     return utils::ReturnCode::RETCODE_OK;
 }
 
-utils::ReturnCode DdsBridge::remove_endpoint(const types::ParticipantId& subscriber_id) noexcept
+utils::ReturnCode DdsBridge::remove_endpoint(const ParticipantId& subscriber_id) noexcept
 {
     for (const auto& id_to_track : tracks_)
     {
@@ -155,10 +155,12 @@ utils::ReturnCode DdsBridge::remove_endpoint(const types::ParticipantId& subscri
 
         if (track->has_writer(subscriber_id))
         {
+            // Remove the writer from the track.
             track->remove_writer(subscriber_id);
 
             if (track->count_writers() <= 0)
             {
+                // The track doesn't have any writers. Remove it.
                 tracks_.erase(id);
             }
         }

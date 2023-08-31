@@ -34,7 +34,7 @@ DdsPipe::DdsPipe(
         const std::shared_ptr<PayloadPool>& payload_pool,
         const std::shared_ptr<ParticipantsDatabase>& participants_database,
         const std::shared_ptr<utils::SlotThreadPool>& thread_pool,
-        const std::set<utils::Heritable<types::DistributedTopic>>& builtin_topics, /* = {} */
+        const std::set<utils::Heritable<DistributedTopic>>& builtin_topics, /* = {} */
         bool start_enable, /* = false */
         const RoutesConfiguration& routes_config, /* = {} */
         const TopicRoutesConfiguration& topic_routes_config /* = {} */)
@@ -239,7 +239,7 @@ void DdsPipe::discovered_endpoint_(
         else if (endpoint.is_server_endpoint())
         {
             // Service server discovered
-            discovered_service_nts_(types::RpcTopic(
+            discovered_service_nts_(RpcTopic(
                         endpoint.topic), endpoint.discoverer_participant_id, endpoint.guid.guid_prefix());
         }
     }
@@ -301,12 +301,12 @@ void DdsPipe::removed_endpoint_(
     else if (endpoint.is_server_endpoint())
     {
         // Service server removed/dropped
-        removed_service_nts_(types::RpcTopic(endpoint.topic), endpoint.discoverer_participant_id, endpoint.guid.guid_prefix());
+        removed_service_nts_(RpcTopic(endpoint.topic), endpoint.discoverer_participant_id, endpoint.guid.guid_prefix());
     }
 }
 
 void DdsPipe::init_bridges_nts_(
-        const std::set<utils::Heritable<types::DistributedTopic>>& builtin_topics)
+        const std::set<utils::Heritable<DistributedTopic>>& builtin_topics)
 {
     for (const auto& topic : builtin_topics)
     {
@@ -316,8 +316,8 @@ void DdsPipe::init_bridges_nts_(
 }
 
 void DdsPipe::discovered_topic_nts_(
-        const utils::Heritable<types::DistributedTopic>& topic,
-        const types::ParticipantId& discoverer_id) noexcept
+        const utils::Heritable<DistributedTopic>& topic,
+        const ParticipantId& discoverer_id) noexcept
 {
     logInfo(DDSPIPE, "Discovered topic: " << topic << ", by: " << discoverer_id << ".");
 
@@ -344,7 +344,7 @@ void DdsPipe::discovered_topic_nts_(
 }
 
 void DdsPipe::discovered_service_nts_(
-        const types::RpcTopic& topic,
+        const RpcTopic& topic,
         const ParticipantId& server_participant_id,
         const GuidPrefix& server_guid_prefix) noexcept
 {
@@ -375,7 +375,7 @@ void DdsPipe::discovered_service_nts_(
 }
 
 void DdsPipe::removed_service_nts_(
-        const types::RpcTopic& topic,
+        const RpcTopic& topic,
         const ParticipantId& server_participant_id,
         const GuidPrefix& server_guid_prefix) noexcept
 {
@@ -390,7 +390,7 @@ void DdsPipe::removed_service_nts_(
 }
 
 void DdsPipe::create_new_bridge_nts_(
-        const utils::Heritable<types::DistributedTopic>& topic,
+        const utils::Heritable<DistributedTopic>& topic,
         bool enabled /*= false*/) noexcept
 {
     logInfo(DDSPIPE, "Creating Bridge for topic: " << topic << ".");
@@ -427,7 +427,7 @@ void DdsPipe::create_new_bridge_nts_(
 }
 
 void DdsPipe::create_new_service_nts_(
-        const types::RpcTopic& topic) noexcept
+        const RpcTopic& topic) noexcept
 {
     logInfo(DDSPIPE, "Creating Service: " << topic << ".");
 
@@ -436,7 +436,7 @@ void DdsPipe::create_new_service_nts_(
 }
 
 void DdsPipe::activate_topic_nts_(
-        const utils::Heritable<types::DistributedTopic>& topic) noexcept
+        const utils::Heritable<DistributedTopic>& topic) noexcept
 {
     logInfo(DDSPIPE, "Activating topic: " << topic << ".");
 
@@ -459,7 +459,7 @@ void DdsPipe::activate_topic_nts_(
 }
 
 void DdsPipe::deactivate_topic_nts_(
-        const utils::Heritable<types::DistributedTopic>& topic) noexcept
+        const utils::Heritable<DistributedTopic>& topic) noexcept
 {
     logInfo(DDSPIPE, "Deactivating topic: " << topic << ".");
 
