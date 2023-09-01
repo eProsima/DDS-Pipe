@@ -245,10 +245,10 @@ void DdsPipe::updated_endpoint_(
             const auto& entity = guid_to_entity.second;
 
             if (guid != endpoint.guid &&
-                entity.active &&
-                entity.is_reader() &&
-                entity.topic == endpoint.topic &&
-                entity.discoverer_participant_id == endpoint.discoverer_participant_id)
+                    entity.active &&
+                    entity.is_reader() &&
+                    entity.topic == endpoint.topic &&
+                    entity.discoverer_participant_id == endpoint.discoverer_participant_id)
             {
                 // There is an active reader other than us.
                 // If we have been reactivated, there is nothing to do.
@@ -321,8 +321,8 @@ void DdsPipe::removed_endpoint_nts_(
         {
             // The bridge does not exist. Error.
             logError(DDSPIPE,
-                "Error finding Bridge for topic " << topic <<
-                ". The Bridge does not exist.");
+                    "Error finding Bridge for topic " << topic <<
+                    ". The Bridge does not exist.");
         }
         else
         {
