@@ -246,6 +246,7 @@ Endpoint DiscoveryDatabase::get_endpoint(
 
 std::map<Guid, Endpoint> DiscoveryDatabase::get_endpoints() const noexcept
 {
+    std::shared_lock<std::shared_timed_mutex> lock(mutex_);
     return entities_;
 }
 

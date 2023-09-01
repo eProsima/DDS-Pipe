@@ -29,7 +29,7 @@ DdsBridge::DdsBridge(
         const std::shared_ptr<PayloadPool>& payload_pool,
         const std::shared_ptr<utils::SlotThreadPool>& thread_pool,
         const RoutesConfiguration& routes_config,
-        const ParticipantId& discoverer_id)
+        const ParticipantId& discoverer_participant_id)
     : Bridge(participants_database, payload_pool, thread_pool)
     , topic_(topic)
 {
@@ -37,16 +37,16 @@ DdsBridge::DdsBridge(
 
     routes_ = routes_config();
 
-    if (discoverer_id == "built-in")
+    if (discoverer_participant_id == "builtin-participant")
     {
         for (const ParticipantId& id : participants_->get_participants_ids())
         {
-            add_subscriber(id);
+            add_to_tracks(id);
         }
     }
     else
     {
-        add_subscriber(discoverer_id);
+        add_to_tracks(discoverer_participant_id);
     }
 
     logDebug(DDSPIPE_DDSBRIDGE, "DdsBridge " << *this << " created.");
@@ -98,8 +98,8 @@ void DdsBridge::disable() noexcept
     }
 }
 
-utils::ReturnCode DdsBridge::add_subscriber(
-        const ParticipantId& subscriber_id) noexcept
+void DdsBridge::add_to_tracks(
+        const ParticipantId& discoverer_participant_id)
 {
     // A new subscriber has been discovered.
     // Check if the writer for this participant already exists.
@@ -108,32 +108,32 @@ utils::ReturnCode DdsBridge::add_subscriber(
         const auto& id = id_to_track.first;
         const auto& track = id_to_track.second;
 
-        if (track->has_writer(subscriber_id))
+        if (track->has_writer(discoverer_participant_id))
         {
             // The writer already exists. There is nothing to do. Exit.
-            return utils::ReturnCode::RETCODE_OK;
+            return;
         }
     }
 
     // Create the writer.
-    std::shared_ptr<IParticipant> participant = participants_->get_participant(subscriber_id);
+    std::shared_ptr<IParticipant> participant = participants_->get_participant(discoverer_participant_id);
 
     std::map<ParticipantId, std::shared_ptr<IWriter>> id_to_writer;
-    id_to_writer[subscriber_id] = participant->create_writer(*topic_);
+    id_to_writer[discoverer_participant_id] = participant->create_writer(*topic_);
 
     // Create the necessary readers and tracks.
     for (const ParticipantId& id : participants_->get_participants_ids())
     {
         const auto& it = routes_.find(id);
 
-        if (it != routes_.end() && it->second.find(subscriber_id) == it->second.end())
+        if (it != routes_.end() && it->second.find(discoverer_participant_id) == it->second.end())
         {
-            // The Participant has a route and the subscriber_id is not in it.
+            // The Participant has a route and the discoverer is not in it.
             // There can be no changes to the tracks.
             continue;
         }
 
-        if (id == subscriber_id && !participants_->get_participant(id)->is_repeater())
+        if (id == discoverer_participant_id && !participants_->get_participant(id)->is_repeater())
         {
             // Don't connect a participant's reader and writer if the participant is not a repeater.
             continue;
@@ -141,12 +141,12 @@ utils::ReturnCode DdsBridge::add_subscriber(
 
         // Create a copy of the writer
         std::map<ParticipantId, std::shared_ptr<IWriter>> id_to_dst_writer;
-        id_to_dst_writer[subscriber_id] = id_to_writer[subscriber_id];
+        id_to_dst_writer[discoverer_participant_id] = id_to_writer[discoverer_participant_id];
 
         if (tracks_.count(id))
         {
-            // The track already exists. Add the writer.
-            tracks_[id]->add_writer(subscriber_id, id_to_dst_writer[subscriber_id]);
+            // The track already exists. Add the writer to it.
+            tracks_[id]->add_writer(discoverer_participant_id, id_to_dst_writer[discoverer_participant_id]);
         }
         else
         {
@@ -157,7 +157,7 @@ utils::ReturnCode DdsBridge::add_subscriber(
             tracks_[id] = std::make_unique<Track>(
                 topic_,
                 id,
-                std::move(reader), // SHOULD WE USE std::move HERE?
+                std::move(reader),
                 std::move(id_to_dst_writer),
                 payload_pool_,
                 thread_pool_);
@@ -165,32 +165,25 @@ utils::ReturnCode DdsBridge::add_subscriber(
 
         tracks_[id]->enable();
     }
-
-    return utils::ReturnCode::RETCODE_OK;
 }
 
-utils::ReturnCode DdsBridge::remove_subscriber(
-        const ParticipantId& subscriber_id) noexcept
+void DdsBridge::remove_from_tracks(
+        const ParticipantId& discoverer_participant_id) noexcept
 {
     for (const auto& id_to_track : tracks_)
     {
         const auto& id = id_to_track.first;
         const auto& track = id_to_track.second;
 
-        if (track->has_writer(subscriber_id))
-        {
-            // Remove the writer from the track.
-            track->remove_writer(subscriber_id);
+        // If the writer is in the track, remove it.
+        track->remove_writer(discoverer_participant_id);
 
-            if (track->count_writers() <= 0)
-            {
-                // The track doesn't have any writers. Remove it.
-                tracks_.erase(id);
-            }
+        if (track->count_writers() <= 0)
+        {
+            // The track doesn't have any writers. Remove it.
+            tracks_.erase(id);
         }
     }
-
-    return utils::ReturnCode::RETCODE_OK;
 }
 
 std::ostream& operator <<(

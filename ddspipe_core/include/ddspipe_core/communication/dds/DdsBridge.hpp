@@ -58,7 +58,7 @@ public:
             const std::shared_ptr<PayloadPool>& payload_pool,
             const std::shared_ptr<utils::SlotThreadPool>& thread_pool,
             const RoutesConfiguration& routes_config,
-            const types::ParticipantId& discoverer_id);
+            const types::ParticipantId& discoverer_participant_id);
 
     DDSPIPE_CORE_DllAPI
     ~DdsBridge();
@@ -82,22 +82,32 @@ public:
     void disable() noexcept override;
 
     /**
-     * Build the DRs and DWs inside the bridge for the new participant,
+     * Build the DataReaders and DataWriters inside the bridge for the new participant,
      * and add them to the Tracks.
      *
-     * THREAD SAFE?
+     * Thread safe
+     *
+     * @param discoverer_participant_id: The id of the participant who has discovered that the subscriber has become inactive.
+     *
+     * @throw InitializationException in case \c IWriters or \c IReaders creation fails.
      */
-    utils::ReturnCode add_subscriber(
-            const types::ParticipantId& id) noexcept;
+    DDSPIPE_CORE_DllAPI
+    void add_to_tracks(
+            const types::ParticipantId& discoverer_participant_id);
 
     /**
-     * Remove the DW from all the Tracks in the bridge.
-     * Remove the DRs and Tracks that don't have any DWs.
+     * Remove the DatWriter from all the Tracks in the bridge.
+     * Remove the DataReaders and Tracks that don't have any DataWriters.
      *
-     * THREAD SAFE?
+     * Thread safe
+     *
+     * @param discoverer_participant_id: The id of the participant who has discovered that the subscriber has become inactive.
+     *
+     * @throw InitializationException in case \c IWriters or \c IReaders creation fails.
      */
-    utils::ReturnCode remove_subscriber(
-            const types::ParticipantId& id) noexcept;
+    DDSPIPE_CORE_DllAPI
+    void remove_from_tracks(
+            const types::ParticipantId& discoverer_participant_id) noexcept;
 
 protected:
 

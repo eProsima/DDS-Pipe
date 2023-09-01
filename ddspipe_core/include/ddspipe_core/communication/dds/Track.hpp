@@ -100,7 +100,7 @@ public:
      * Add a writer to the track.
      * It doesn't do anything if the writer is already in it.
      *
-     * THREAD SAFE?
+     * Tread safe
      */
     DDSPIPE_CORE_DllAPI
     void add_writer(
@@ -111,7 +111,7 @@ public:
      * Remove a writer from the track.
      * It doesn't do anything if the writer isn't in the track.
      *
-     * THREAD SAFE?
+     * Tread safe
      */
     DDSPIPE_CORE_DllAPI
     void remove_writer(
@@ -120,7 +120,7 @@ public:
     /**
      * Check if a writer is inside the track.
      *
-     * THREAD SAFE?
+     * Tread safe
      */
     DDSPIPE_CORE_DllAPI
     bool has_writer(
@@ -129,7 +129,7 @@ public:
     /**
      * Count the number of writers inside the track.
      *
-     * THREAD SAFE?
+     * Tread safe
      */
     DDSPIPE_CORE_DllAPI
     int count_writers() noexcept;

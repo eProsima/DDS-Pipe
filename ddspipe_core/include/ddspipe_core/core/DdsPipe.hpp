@@ -204,13 +204,14 @@ protected:
      * If the DdsPipe is enabled, the new Bridge is created and enabled.
      *
      * @note This is the only method that adds topics to \c current_topics_
+     * @note This is the only method that adds topics to \c current_topics_discoverers_
      *
      * @param [in] topic : topic discovered
-     * @param [in] subscriber_id : id of the subscriber who discovered the topic
+     * @param [in] discoverer_participant_id : id of the subscriber who discovered the topic
      */
     void discovered_topic_nts_(
             const utils::Heritable<types::DistributedTopic>& topic,
-            const types::ParticipantId& subscriber_id) noexcept;
+            const types::ParticipantId& discoverer_participant_id) noexcept;
 
     /**
      * @brief Method called every time a new endpoint (corresponding to a server) has been discovered/updated
@@ -344,6 +345,12 @@ protected:
      * If the value is true, it means this topic is currently activated.
      */
     std::map<utils::Heritable<types::DistributedTopic>, bool> current_topics_;
+
+    /**
+     * @brief List of the ids of the participants who discovered each topic.
+     *
+     * Every topic discovered is added to the map.
+     */
     std::map<utils::Heritable<types::DistributedTopic>, types::ParticipantId> current_topics_discoverers_;
 
     /**

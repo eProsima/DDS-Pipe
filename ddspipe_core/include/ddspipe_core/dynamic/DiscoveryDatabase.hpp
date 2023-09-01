@@ -154,6 +154,7 @@ public:
      *
      * @return Map of endpoints
      */
+    DDSPIPE_CORE_DllAPI
     std::map<types::Guid, types::Endpoint> get_endpoints() const noexcept;
 
     /**
