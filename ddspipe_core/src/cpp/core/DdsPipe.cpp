@@ -34,6 +34,7 @@ DdsPipe::DdsPipe(
         const std::shared_ptr<PayloadPool>& payload_pool,
         const std::shared_ptr<ParticipantsDatabase>& participants_database,
         const std::shared_ptr<utils::SlotThreadPool>& thread_pool,
+        const bool delete_unused_entities,
         const std::set<utils::Heritable<DistributedTopic>>& builtin_topics, /* = {} */
         bool start_enable, /* = false */
         const RoutesConfiguration& routes_config, /* = {} */
@@ -43,6 +44,7 @@ DdsPipe::DdsPipe(
     , payload_pool_(payload_pool)
     , participants_database_(participants_database)
     , thread_pool_(thread_pool)
+    , delete_unused_entities_(delete_unused_entities)
     , enabled_(false)
     , routes_config_(routes_config)
     , topic_routes_config_(topic_routes_config)
@@ -324,7 +326,7 @@ void DdsPipe::removed_endpoint_nts_(
                     "Error finding Bridge for topic " << topic <<
                     ". The Bridge does not exist.");
         }
-        else
+        else if (delete_unused_entities_)
         {
             it_bridge->second->remove_from_tracks(endpoint.discoverer_participant_id);
         }

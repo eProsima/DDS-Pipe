@@ -67,6 +67,7 @@ public:
             const std::shared_ptr<PayloadPool>& payload_pool,
             const std::shared_ptr<ParticipantsDatabase>& participants_database,
             const std::shared_ptr<utils::SlotThreadPool>& thread_pool,
+            const bool delete_unused_entities,
             const std::set<utils::Heritable<types::DistributedTopic>>& builtin_topics = {},
             bool start_enable = false,
             const RoutesConfiguration& routes_config = {},
@@ -361,9 +362,12 @@ protected:
      */
     std::map<types::RpcTopic, bool> current_services_;
 
-    /////////////////////////
+    /////
     // AUXILIAR VARIABLES
     /////////////////////////
+
+    //! Whether readers that aren't connected to any writers should be deleted
+    bool delete_unused_entities_;
 
     //! Whether the DdsPipe is currently communicating data or not
     bool enabled_;
