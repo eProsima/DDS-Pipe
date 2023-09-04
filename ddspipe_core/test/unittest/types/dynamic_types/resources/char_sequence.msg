@@ -1,1 +1,1 @@
-char[] chars
+int8[] chars
