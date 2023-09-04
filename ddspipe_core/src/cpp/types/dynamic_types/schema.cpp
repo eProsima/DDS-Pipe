@@ -144,7 +144,7 @@ std::string type_kind_to_str(
             return "bool";
 
         case fastrtps::types::TK_BYTE:
-            return "byte";
+            return "uint8";
 
         case fastrtps::types::TK_INT16:
             return "int16";
@@ -171,13 +171,10 @@ std::string type_kind_to_str(
             return "float64";
 
         case fastrtps::types::TK_CHAR8:
-            return "char";
+            return "int8";
 
         case fastrtps::types::TK_STRING8:
             return "string";
-
-        case fastrtps::types::TK_STRING16:
-            return "wstring";
 
         case fastrtps::types::TK_ARRAY:
             return container_kind_to_str(dyn_type);
@@ -190,6 +187,7 @@ std::string type_kind_to_str(
 
         case fastrtps::types::TK_FLOAT128:
         case fastrtps::types::TK_CHAR16:
+        case fastrtps::types::TK_STRING16:
         case fastrtps::types::TK_ENUM:
         case fastrtps::types::TK_BITSET:
         case fastrtps::types::TK_MAP:
