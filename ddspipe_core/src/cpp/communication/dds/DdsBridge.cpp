@@ -105,7 +105,6 @@ void DdsBridge::add_to_tracks(
     // Check if the writer for this participant already exists.
     for (const auto& id_to_track : tracks_)
     {
-        const auto& id = id_to_track.first;
         const auto& track = id_to_track.second;
 
         if (track->has_writer(discoverer_participant_id))
@@ -140,11 +139,13 @@ void DdsBridge::add_to_tracks(
         }
 
         // Create a copy of the writer
-        std::map<ParticipantId, std::shared_ptr<IWriter>> id_to_dst_writer;
-        id_to_dst_writer[discoverer_participant_id] = id_to_writer[discoverer_participant_id];
+        std::map<ParticipantId, std::shared_ptr<IWriter>> id_to_dst_writer(id_to_writer);
 
         if (tracks_.count(id))
         {
+            // Enable the writer before adding it to the track.
+            id_to_dst_writer[discoverer_participant_id]->enable();
+
             // The track already exists. Add the writer to it.
             tracks_[id]->add_writer(discoverer_participant_id, id_to_dst_writer[discoverer_participant_id]);
         }

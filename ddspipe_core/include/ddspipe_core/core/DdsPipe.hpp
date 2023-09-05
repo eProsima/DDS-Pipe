@@ -67,11 +67,11 @@ public:
             const std::shared_ptr<PayloadPool>& payload_pool,
             const std::shared_ptr<ParticipantsDatabase>& participants_database,
             const std::shared_ptr<utils::SlotThreadPool>& thread_pool,
-            const bool delete_unused_entities,
             const std::set<utils::Heritable<types::DistributedTopic>>& builtin_topics = {},
             bool start_enable = false,
             const RoutesConfiguration& routes_config = {},
-            const TopicRoutesConfiguration& topic_routes_config = {});
+            const TopicRoutesConfiguration& topic_routes_config = {},
+            const bool delete_unused_entities = false);
 
     /**
      * @brief Destroy the DdsPipe object

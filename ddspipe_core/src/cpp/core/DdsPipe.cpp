@@ -34,20 +34,20 @@ DdsPipe::DdsPipe(
         const std::shared_ptr<PayloadPool>& payload_pool,
         const std::shared_ptr<ParticipantsDatabase>& participants_database,
         const std::shared_ptr<utils::SlotThreadPool>& thread_pool,
-        const bool delete_unused_entities,
         const std::set<utils::Heritable<DistributedTopic>>& builtin_topics, /* = {} */
         bool start_enable, /* = false */
         const RoutesConfiguration& routes_config, /* = {} */
-        const TopicRoutesConfiguration& topic_routes_config /* = {} */)
+        const TopicRoutesConfiguration& topic_routes_config, /* = {} */
+        const bool delete_unused_entities /* = false */)
     : allowed_topics_(allowed_topics)
     , discovery_database_(discovery_database)
     , payload_pool_(payload_pool)
     , participants_database_(participants_database)
     , thread_pool_(thread_pool)
-    , delete_unused_entities_(delete_unused_entities)
     , enabled_(false)
     , routes_config_(routes_config)
     , topic_routes_config_(topic_routes_config)
+    , delete_unused_entities_(delete_unused_entities)
 {
     logDebug(DDSPIPE, "Creating DDS Pipe.");
 
