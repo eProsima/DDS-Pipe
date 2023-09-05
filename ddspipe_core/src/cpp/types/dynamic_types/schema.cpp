@@ -37,23 +37,26 @@ namespace core {
 namespace types {
 
 constexpr const char* TYPE_SEPARATOR =
-        "================================================================================\n";
+        "};\n\n";
 
 struct TreeNodeType
 {
     TreeNodeType(
             std::string member_name,
             std::string type_kind_name,
-            bool is_struct = false)
+            bool is_struct = false,
+            bool is_array = false)
         : member_name(member_name)
         , type_kind_name(type_kind_name)
         , is_struct(is_struct)
+        , is_array(is_array)
     {
     }
 
     std::string member_name;
     std::string type_kind_name;
     bool is_struct;
+    bool is_array;
 };
 
 // Forward declaration
@@ -66,7 +69,7 @@ fastrtps::types::DynamicType_ptr container_internal_type(
     return dyn_type->get_descriptor()->get_element_type();
 }
 
-std::vector<uint32_t> array_size(
+std::vector<uint32_t> container_size(
         const fastrtps::types::DynamicType_ptr& dyn_type,
         bool unidimensional = true)
 {
@@ -103,34 +106,40 @@ std::vector<std::pair<std::string, fastrtps::types::DynamicType_ptr>> get_member
     return result;
 }
 
-std::string container_kind_to_str(
-        const fastrtps::types::DynamicType_ptr& dyn_type,
-        bool allow_bounded = false)
+std::string array_kind_to_str(
+        const fastrtps::types::DynamicType_ptr& dyn_type)
 {
     auto internal_type = container_internal_type(dyn_type);
-    auto this_array_size = array_size(dyn_type);
+    auto this_array_size = container_size(dyn_type);
 
     std::stringstream ss;
     ss << type_kind_to_str(internal_type);
 
     for (const auto& bound : this_array_size)
     {
+        ss << "[" << bound << "]";
+    }
+
+    return ss.str();
+}
+
+std::string sequence_kind_to_str(
+        const fastrtps::types::DynamicType_ptr& dyn_type)
+{
+    auto internal_type = container_internal_type(dyn_type);
+    auto this_sequence_size = container_size(dyn_type);
+
+    std::stringstream ss;
+    ss << "sequence<" << type_kind_to_str(internal_type);
+
+    for (const auto& bound : this_sequence_size)
+    {
         if (bound != fastrtps::types::BOUND_UNLIMITED)
         {
-            if (allow_bounded)
-            {
-                ss << "[<=" << bound << "]";
-            }
-            else
-            {
-                ss << "[" << bound << "]";
-            }
-        }
-        else
-        {
-            ss << "[]";
+            ss << ", " << bound;
         }
     }
+    ss << ">";
 
     return ss.str();
 }
@@ -141,37 +150,43 @@ std::string type_kind_to_str(
     switch (dyn_type->get_kind())
     {
         case fastrtps::types::TK_BOOLEAN:
-            return "bool";
+            return "boolean";
 
         case fastrtps::types::TK_BYTE:
-            return "byte";
+            return "octet";
 
         case fastrtps::types::TK_INT16:
-            return "int16";
+            return "short";
 
         case fastrtps::types::TK_INT32:
-            return "int32";
+            return "long";
 
         case fastrtps::types::TK_INT64:
-            return "int64";
+            return "long long";
 
         case fastrtps::types::TK_UINT16:
-            return "uint16";
+            return "unsigned short";
 
         case fastrtps::types::TK_UINT32:
-            return "uint32";
+            return "unsigned long";
 
         case fastrtps::types::TK_UINT64:
-            return "uint64";
+            return "unsigned long long";
 
         case fastrtps::types::TK_FLOAT32:
-            return "float32";
+            return "float";
 
         case fastrtps::types::TK_FLOAT64:
-            return "float64";
+            return "double";
+
+        case fastrtps::types::TK_FLOAT128:
+            return "long double";
 
         case fastrtps::types::TK_CHAR8:
             return "char";
+
+        case fastrtps::types::TK_CHAR16:
+            return "wchar";
 
         case fastrtps::types::TK_STRING8:
             return "string";
@@ -180,20 +195,21 @@ std::string type_kind_to_str(
             return "wstring";
 
         case fastrtps::types::TK_ARRAY:
-            return container_kind_to_str(dyn_type);
+            return array_kind_to_str(dyn_type);
 
         case fastrtps::types::TK_SEQUENCE:
-            return container_kind_to_str(dyn_type, true);
+            return sequence_kind_to_str(dyn_type);
 
         case fastrtps::types::TK_STRUCTURE:
             return dyn_type->get_name();
 
-        case fastrtps::types::TK_FLOAT128:
-        case fastrtps::types::TK_CHAR16:
-        case fastrtps::types::TK_ENUM:
+        case fastrtps::types::TK_ENUM:  // TODO
+
+        case fastrtps::types::TK_MAP:  // TODO
+
+        case fastrtps::types::TK_UNION:  // TODO
+
         case fastrtps::types::TK_BITSET:
-        case fastrtps::types::TK_MAP:
-        case fastrtps::types::TK_UNION:
         case fastrtps::types::TK_NONE:
             throw utils::UnsupportedException(
                       STR_ENTRY << "Type " << dyn_type->get_name() << " is not supported in ROS2 msg.");
@@ -216,6 +232,12 @@ bool container_kind(
     return kind == fastrtps::types::TK_ARRAY || kind == fastrtps::types::TK_SEQUENCE;
 }
 
+bool array_kind(
+        const fastrtps::types::TypeKind& kind)
+{
+    return kind == fastrtps::types::TK_ARRAY;
+}
+
 utils::TreeNode<TreeNodeType> generate_dyn_type_tree(
         const fastrtps::types::DynamicType_ptr& type,
         const std::string& member_name = "PARENT")
@@ -230,7 +252,7 @@ utils::TreeNode<TreeNodeType> generate_dyn_type_tree(
         auto internal_type = container_internal_type(type);
 
         // Create this node
-        utils::TreeNode<TreeNodeType> container(member_name, type_kind_to_str(type));
+        utils::TreeNode<TreeNodeType> container(member_name, type_kind_to_str(type), false, array_kind(kind));
         // Add branch
         container.add_branch(generate_dyn_type_tree(internal_type, "CONTAINER_MEMBER"));
 
@@ -265,7 +287,21 @@ std::ostream& node_to_str(
         std::ostream& os,
         const TreeNodeType& node)
 {
-    os << node.type_kind_name << " " << node.member_name;
+    os << "    ";
+
+    if (node.is_array)
+    {
+        auto dim_pos = node.type_kind_name.find("[");
+        auto kind_name_str = node.type_kind_name.substr(0, dim_pos);
+        auto dim_str = node.type_kind_name.substr(dim_pos, std::string::npos);
+
+        os << kind_name_str << " " << node.member_name << dim_str;
+    }
+    else
+    {
+        os << node.type_kind_name << " " << node.member_name;
+    }
+
     return os;
 }
 
@@ -277,7 +313,7 @@ std::ostream& generate_schema_from_node(
     for (auto const& child : node.branches())
     {
         node_to_str(os, child.info);
-        os <<  "\n";
+        os <<  ";\n";
     }
     return os;
 }
@@ -289,9 +325,14 @@ std::string generate_dyn_type_schema_from_tree(
 
     std::stringstream ss;
 
+    ss << "struct " << parent_node.info.type_kind_name << " \n{ \n";
+
     // Write down main node
     generate_schema_from_node(ss, parent_node);
     types_written.insert(parent_node.info.type_kind_name);
+
+    // Add types separator
+    ss << TYPE_SEPARATOR;
 
     // For every Node, check if it is a struct.
     // If it is, check if it is not yet written
@@ -300,15 +341,15 @@ std::string generate_dyn_type_schema_from_tree(
     {
         if (node.info.is_struct && types_written.find(node.info.type_kind_name) == types_written.end())
         {
-            // Add types separator
-            ss << TYPE_SEPARATOR;
-
             // Add types name
-            ss << "MSG: fastdds/" << node.info.type_kind_name << "\n";
+            ss << "struct " << node.info.type_kind_name << " \n{ \n";
 
             // Add next type
             generate_schema_from_node(ss, node);
             types_written.insert(node.info.type_kind_name);
+
+            // Add types separator
+            ss << TYPE_SEPARATOR;
         }
     }
 
