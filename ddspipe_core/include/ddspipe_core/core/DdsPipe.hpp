@@ -71,7 +71,7 @@ public:
             bool start_enable = false,
             const RoutesConfiguration& routes_config = {},
             const TopicRoutesConfiguration& topic_routes_config = {},
-            const bool delete_unused_entities = false);
+            const bool dynamic_tracks = false);
 
     /**
      * @brief Destroy the DdsPipe object
@@ -367,7 +367,7 @@ protected:
     /////////////////////////
 
     //! Whether readers that aren't connected to any writers should be deleted
-    bool delete_unused_entities_;
+    bool dynamic_tracks_;
 
     //! Whether the DdsPipe is currently communicating data or not
     bool enabled_;

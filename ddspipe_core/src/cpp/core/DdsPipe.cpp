@@ -38,7 +38,7 @@ DdsPipe::DdsPipe(
         bool start_enable, /* = false */
         const RoutesConfiguration& routes_config, /* = {} */
         const TopicRoutesConfiguration& topic_routes_config, /* = {} */
-        const bool delete_unused_entities /* = false */)
+        const bool dynamic_tracks /* = false */)
     : allowed_topics_(allowed_topics)
     , discovery_database_(discovery_database)
     , payload_pool_(payload_pool)
@@ -47,7 +47,7 @@ DdsPipe::DdsPipe(
     , enabled_(false)
     , routes_config_(routes_config)
     , topic_routes_config_(topic_routes_config)
-    , delete_unused_entities_(delete_unused_entities)
+    , dynamic_tracks_(dynamic_tracks)
 {
     logDebug(DDSPIPE, "Creating DDS Pipe.");
 
@@ -326,7 +326,7 @@ void DdsPipe::removed_endpoint_nts_(
                     "Error finding Bridge for topic " << topic <<
                     ". The Bridge does not exist.");
         }
-        else if (delete_unused_entities_)
+        else if (dynamic_tracks_)
         {
             it_bridge->second->remove_from_tracks(endpoint.discoverer_participant_id);
         }
@@ -343,7 +343,7 @@ void DdsPipe::init_bridges_nts_(
 {
     for (const auto& topic : builtin_topics)
     {
-        discovered_topic_nts_(topic, "builtin-participant");
+        discovered_topic_nts_(topic, "");
         create_new_bridge_nts_(topic, false);
     }
 }
@@ -433,7 +433,7 @@ void DdsPipe::create_new_bridge_nts_(
     {
         auto routes_config__ = topic_routes_config_().count(topic) !=
                 0 ? topic_routes_config_()[topic] : routes_config_;
-                
+
         auto discoverer_participant_id = current_topics_discoverers_[topic];
 
         // Create bridge instance
@@ -442,6 +442,7 @@ void DdsPipe::create_new_bridge_nts_(
                         payload_pool_,
                         thread_pool_,
                         routes_config,
+                        dynamic_tracks_,
                         discoverer_participant_id);
 
         if (enabled)

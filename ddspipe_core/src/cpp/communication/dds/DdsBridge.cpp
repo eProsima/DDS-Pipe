@@ -29,7 +29,8 @@ DdsBridge::DdsBridge(
         const std::shared_ptr<PayloadPool>& payload_pool,
         const std::shared_ptr<utils::SlotThreadPool>& thread_pool,
         const RoutesConfiguration& routes_config,
-        const ParticipantId& discoverer_participant_id)
+        const bool dynamic_tracks,
+        const ParticipantId& discoverer_participant_id /* = "" */)
     : Bridge(participants_database, payload_pool, thread_pool)
     , topic_(topic)
 {
@@ -37,16 +38,14 @@ DdsBridge::DdsBridge(
 
     routes_ = routes_config();
 
-    if (discoverer_participant_id == "builtin-participant")
+    if (dynamic_tracks && discoverer_participant_id != "")
     {
-        for (const ParticipantId& id : participants_->get_participants_ids())
-        {
-            add_to_tracks(id);
-        }
+        // The builtin participants and some tests use an empty discoverer participant id
+        add_to_tracks(discoverer_participant_id);
     }
     else
     {
-        add_to_tracks(discoverer_participant_id);
+        create_all_tracks();
     }
 
     logDebug(DDSPIPE_DDSBRIDGE, "DdsBridge " << *this << " created.");
@@ -98,14 +97,59 @@ void DdsBridge::disable() noexcept
     }
 }
 
+void DdsBridge::create_all_tracks()
+{
+    const auto& ids = participants_->get_participants_ids();
+
+    // Figure out what writers need to be created
+    std::set<ParticipantId> writers_to_create;
+
+    for (const ParticipantId& id : ids)
+    {
+        const auto& routes_it = routes_.find(id);
+
+        if (routes_it != routes_.end())
+        {
+            // The reader has a route. Create only the writers in the route.
+            const auto& writers_ids = routes_it->second;
+            writers_to_create.insert(writers_ids.begin(), writers_ids.end());
+        }
+        else
+        {
+            // The reader doesn't have a route. Create every writer (+ itself if repeater)
+            auto writers_ids = ids;
+
+            if (!participants_->get_participant(id)->is_repeater())
+            {
+                // The participant is not a repeater. Do not add its writer.
+                writers_ids.erase(id);
+            }
+
+            writers_to_create.insert(writers_ids.begin(), writers_ids.end());
+        }
+    }
+
+    // Create the writers.
+    std::map<ParticipantId, std::shared_ptr<IWriter>> writers;
+
+    for (const auto& id : writers_to_create)
+    {
+        std::shared_ptr<IParticipant> participant = participants_->get_participant(id);
+        writers[id] = participant->create_writer(*topic_);
+    }
+
+    // Add the writers to the tracks they have routes for.
+    add_writers_to_tracks_(writers);
+}
+
 void DdsBridge::add_to_tracks(
         const ParticipantId& discoverer_participant_id)
 {
     // A new subscriber has been discovered.
     // Check if the writer for this participant already exists.
-    for (const auto& id_to_track : tracks_)
+    for (const auto& tracks_it : tracks_)
     {
-        const auto& track = id_to_track.second;
+        const auto& track = tracks_it.second;
 
         if (track->has_writer(discoverer_participant_id))
         {
@@ -114,58 +158,14 @@ void DdsBridge::add_to_tracks(
         }
     }
 
-    // Create the writer.
     std::shared_ptr<IParticipant> participant = participants_->get_participant(discoverer_participant_id);
 
-    std::map<ParticipantId, std::shared_ptr<IWriter>> id_to_writer;
-    id_to_writer[discoverer_participant_id] = participant->create_writer(*topic_);
+    // Create the writer.
+    std::map<ParticipantId, std::shared_ptr<IWriter>> writer;
+    writer[discoverer_participant_id] = participant->create_writer(*topic_);
 
-    // Create the necessary readers and tracks.
-    for (const ParticipantId& id : participants_->get_participants_ids())
-    {
-        const auto& it = routes_.find(id);
-
-        if (it != routes_.end() && it->second.find(discoverer_participant_id) == it->second.end())
-        {
-            // The Participant has a route and the discoverer is not in it.
-            // There can be no changes to the tracks.
-            continue;
-        }
-
-        if (id == discoverer_participant_id && !participants_->get_participant(id)->is_repeater())
-        {
-            // Don't connect a participant's reader and writer if the participant is not a repeater.
-            continue;
-        }
-
-        // Create a copy of the writer
-        std::map<ParticipantId, std::shared_ptr<IWriter>> id_to_dst_writer(id_to_writer);
-
-        if (tracks_.count(id))
-        {
-            // Enable the writer before adding it to the track.
-            id_to_dst_writer[discoverer_participant_id]->enable();
-
-            // The track already exists. Add the writer to it.
-            tracks_[id]->add_writer(discoverer_participant_id, id_to_dst_writer[discoverer_participant_id]);
-        }
-        else
-        {
-            // The track doesn't exist. Create it.
-            std::shared_ptr<IParticipant> participant = participants_->get_participant(id);
-            auto reader = participant->create_reader(*topic_);
-
-            tracks_[id] = std::make_unique<Track>(
-                topic_,
-                id,
-                std::move(reader),
-                std::move(id_to_dst_writer),
-                payload_pool_,
-                thread_pool_);
-        }
-
-        tracks_[id]->enable();
-    }
+    // Add the writer to the tracks it has routes for.
+    add_writers_to_tracks_(writer);
 }
 
 void DdsBridge::remove_from_tracks(
@@ -183,6 +183,82 @@ void DdsBridge::remove_from_tracks(
         {
             // The track doesn't have any writers. Remove it.
             tracks_.erase(id);
+        }
+    }
+}
+
+void DdsBridge::add_writers_to_tracks_(
+        std::map<ParticipantId, std::shared_ptr<IWriter>>& writers)
+{
+    // Add writers to the tracks of the readers in their route.
+    // If the readers in their route don't exist, create them with their tracks.
+    for (const ParticipantId& id : participants_->get_participants_ids())
+    {
+
+        // Select the necessary writers
+        std::map<ParticipantId, std::shared_ptr<IWriter>> writers_of_reader;
+
+        const auto& routes_it = routes_.find(id);
+
+        if (routes_it != routes_.end())
+        {
+            // The reader has a route. Add only the writers in the route.
+            const auto& writers_in_route_of_reader = routes_it->second;
+
+            for (const auto& writer_id : writers_in_route_of_reader)
+            {
+                writers_of_reader[id] = writers[writer_id];
+            }
+        }
+        else
+        {
+            // The reader doesn't have a route. Add every writer (+ itself if repeater)
+            writers_of_reader = writers;
+
+            if (!participants_->get_participant(id)->is_repeater())
+            {
+                // The participant is not a repeater. Do not add its writer.
+                writers_of_reader.erase(id);
+            }
+        }
+
+        if (writers_of_reader.size() == 0)
+        {
+            // There are no writers in the route. Don't create the reader or the track.
+            continue;
+        }
+
+        if (tracks_.count(id))
+        {
+            // The track already exists. Add the writers to it.
+            for (const auto& writers_of_reader_it : writers_of_reader)
+            {
+                const auto& writer_id = writers_of_reader_it.first;
+                const auto& writer = writers_of_reader_it.second;
+
+                if (!tracks_[id]->has_writer(writer_id))
+                {
+                    // Enable the writer before adding it to the track.
+                    writer->enable();
+
+                    // Add the writer to the track
+                    tracks_[id]->add_writer(writer_id, writer);
+                }
+            }
+        }
+        else
+        {
+            // The track doesn't exist. Create it.
+            std::shared_ptr<IParticipant> participant = participants_->get_participant(id);
+            auto reader = participant->create_reader(*topic_);
+
+            tracks_[id] = std::make_unique<Track>(
+                topic_,
+                id,
+                std::move(reader),
+                std::move(writers_of_reader),
+                payload_pool_,
+                thread_pool_);
         }
     }
 }
