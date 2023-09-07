@@ -321,10 +321,8 @@ void DdsPipe::removed_endpoint_nts_(
 
         if (it_bridge == bridges_.end())
         {
-            // The bridge does not exist. Error.
-            logError(DDSPIPE,
-                    "Error finding Bridge for topic " << topic <<
-                    ". The Bridge does not exist.");
+            // The bridge does not exist. We cannot remove the writer. Exit.
+            return;
         }
         else if (dynamic_tracks_)
         {

@@ -259,6 +259,11 @@ void DdsBridge::add_writers_to_tracks_(
                 std::move(writers_of_reader),
                 payload_pool_,
                 thread_pool_);
+
+            if (enabled_)
+            {
+                tracks_[id]->enable();
+            }
         }
     }
 }

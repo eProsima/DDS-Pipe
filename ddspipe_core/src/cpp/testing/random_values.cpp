@@ -91,11 +91,16 @@ Endpoint random_endpoint(
         unsigned int seed /* = 0 */)
 {
     Endpoint endpoint;
+
     endpoint.active = (seed % 2);
     endpoint.guid = random_guid(seed);
-    endpoint.discoverer_participant_id = random_participant_id(seed);
     endpoint.kind = random_endpoint_kind(seed);
     endpoint.topic = random_dds_topic(seed);
+
+    // The discoverer participant id cannot be random.
+    // It must belong to an actual participant or be an empty string.
+    endpoint.discoverer_participant_id = "";
+
     return endpoint;
 }
 
