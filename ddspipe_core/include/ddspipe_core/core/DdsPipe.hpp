@@ -321,14 +321,9 @@ protected:
      */
     std::map<types::RpcTopic, bool> current_services_;
 
-    //! Custom forwarding routes
-    RoutesConfiguration routes_config_;
-
-    //! Custom forwarding routes per topic
-    TopicRoutesConfiguration topic_routes_config_;
-
-    /////
+    /////////////////////////
     // AUXILIAR VARIABLES
+    /////////////////////////
 
     //! Whether the DdsPipe is currently communicating data or not
     bool enabled_;
@@ -337,6 +332,16 @@ protected:
      * @brief Internal mutex for concurrent calls
      */
     mutable std::mutex mutex_;
+
+    /////////////////////////
+    // CONFIGURATION VARIABLES
+    /////////////////////////
+
+    //! Custom forwarding routes
+    RoutesConfiguration routes_config_;
+
+    //! Custom forwarding routes per topic
+    TopicRoutesConfiguration topic_routes_config_;
 };
 
 } /* namespace core */
