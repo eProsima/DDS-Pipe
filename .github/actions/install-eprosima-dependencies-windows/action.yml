@@ -28,7 +28,7 @@ runs:
     - name: Install Fast CDR
       shell: pwsh
       run: >
-        git clone https://github.com/eProsima/Fast-CDR.git;
+        git clone https://github.com/eProsima/Fast-CDR.git --branch 1.1.x;
         cmake -DCMAKE_INSTALL_PREFIX=${{ github.workspace }}\eprosima\install `
           -DCMAKE_PREFIX_PATH=${{ github.workspace }}\eprosima\install `
           -Ax64 -T host=x64 -B build\fastcdr Fast-CDR;
