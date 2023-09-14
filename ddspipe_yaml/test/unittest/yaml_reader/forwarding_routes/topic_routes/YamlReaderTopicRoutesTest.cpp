@@ -137,8 +137,8 @@ TEST(YamlReaderTopicRoutesTest, throw_exception_when_repeat_name)
     Yaml yml = YAML::Load(yml_str);
 
     ASSERT_THROW(
-            YamlReader::get<core::TopicRoutesConfiguration>(yml, YamlReaderVersion::LATEST),
-            eprosima::utils::ConfigurationException);
+        YamlReader::get<core::TopicRoutesConfiguration>(yml, YamlReaderVersion::LATEST),
+        eprosima::utils::ConfigurationException);
 }
 
 /**
@@ -169,7 +169,8 @@ TEST(YamlReaderTopicRoutesTest, is_valid_conf_with_multi_participants)
 
     Yaml yml = YAML::Load(yml_str);
 
-    core::TopicRoutesConfiguration conf = YamlReader::get<core::TopicRoutesConfiguration>(yml, YamlReaderVersion::LATEST);
+    core::TopicRoutesConfiguration conf =
+            YamlReader::get<core::TopicRoutesConfiguration>(yml, YamlReaderVersion::LATEST);
 
     utils::Formatter error_msg;
     ASSERT_TRUE(conf.is_valid(error_msg));
