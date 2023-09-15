@@ -362,12 +362,9 @@ protected:
      */
     std::map<types::RpcTopic, bool> current_services_;
 
-    /////
+    /////////////////////
     // AUXILIAR VARIABLES
-    /////////////////////////
-
-    //! Whether readers that aren't connected to any writers should be deleted
-    bool dynamic_tracks_;
+    /////////////////////
 
     //! Whether the DdsPipe is currently communicating data or not
     bool enabled_;
@@ -377,15 +374,22 @@ protected:
      */
     mutable std::mutex mutex_;
 
-    /////////////////////////
+    //////////////////////////
     // CONFIGURATION VARIABLES
-    /////////////////////////
+    //////////////////////////
 
     //! Custom forwarding routes
     RoutesConfiguration routes_config_;
 
     //! Custom forwarding routes per topic
     TopicRoutesConfiguration topic_routes_config_;
+
+    /////////////////
+    // DYNAMIC TRACKS
+    /////////////////
+
+    //! Whether readers that aren't connected to any writers should be deleted
+    bool dynamic_tracks_;
 };
 
 } /* namespace core */
