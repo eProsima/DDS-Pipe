@@ -1,4 +1,4 @@
- # Main CI
+# Main CI
 # This is executed:
 #  - every PullRequest (new or update)
 #  - every merge in main
@@ -9,8 +9,13 @@
 #
 # JOBS:
 #
-#   - multiplatform-tests
-#     - [ ubuntu-22.04 | ubuntu-20.04 | windows-2019 | windows-2022 ]
+#   - windows-multiplatform-tests
+#     - [  windows-2019 | windows-2022 ]
+#     - [ Debug | Release ]
+#     - execute tests in different versions of windows with different build types
+#
+#   - ubuntu-multiplatform-tests
+#     - [ ubuntu-22.04 | ubuntu-20.04 ]
 #     - [ Debug | Release ]
 #     - execute tests in different versions of ubuntu with different build types
 #
@@ -75,8 +80,62 @@ jobs:
 
 #####################################################################
 # TEST
+  windows-multiplatform-tests:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        cmake_build_type:
+          - Release
+          - Debug
+        os:
+          - windows-2019
+          - windows-2022
 
-  multiplatform-tests:
+    steps:
+
+      - name: Sync repository
+        uses: eProsima/eProsima-CI/external/checkout@v0
+        with:
+          path: ${{ github.workspace }}/src
+
+      - name: Download dependencies and install requirements
+        uses: ./src/.github/actions/project_dependencies
+        with:
+          os: ${{ matrix.os }}
+          cmake_build_type: ${{ matrix.cmake_build_type }}
+          dependencies_artifact_postfix: ${{ github.event.inputs.dependencies_artifact_postfix || env.default_dependencies_artifact_postfix }}
+          secret_token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Compile with colcon
+        uses: eProsima/eProsima-CI/multiplatform/colcon_build@v0
+        with:
+          colcon_meta_file: ${{ github.workspace }}/src/.github/workflows/configurations/${{ runner.os }}/colcon.meta
+          colcon_build_args: '--packages-up-to ${{ env.code_packages_names }}'
+          cmake_args: ' -DBUILD_TESTS=ON -DCMAKE_BUILD_TYPE=${{ matrix.cmake_build_type }}'
+          workspace: '${{ github.workspace }}'
+          workspace_dependencies: ${{ github.workspace }}/install
+          cmake_build_type: ${{ matrix.cmake_build_type }}
+
+      - name: Run tests ddspipe_core
+        uses: ./src/.github/actions/run-test-windows
+        with:
+          package_name: ddspipe_core
+          cmake_build_type: ${{ matrix.cmake_build_type }}
+
+      - name: Run tests ddspipe_participants
+        uses: ./src/.github/actions/run-test-windows
+        with:
+          package_name: ddspipe_participants
+          cmake_build_type: ${{ matrix.cmake_build_type }}
+
+      - name: Run tests ddspipe_yaml
+        uses: ./src/.github/actions/run-test-windows
+        with:
+          package_name: ddspipe_yaml
+          cmake_build_type: ${{ matrix.cmake_build_type }}
+
+  ubuntu-multiplatform-tests:
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -87,8 +146,6 @@ jobs:
         os:
           - ubuntu-20.04
           - ubuntu-22.04
-          - windows-2019
-          - windows-2022
 
     steps:
 
