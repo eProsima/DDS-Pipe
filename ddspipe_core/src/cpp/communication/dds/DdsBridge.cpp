@@ -207,7 +207,7 @@ void DdsBridge::add_writers_to_tracks_(
 
             for (const auto& writer_id : writers_in_route_of_reader)
             {
-                //writers_of_reader[writer_id] = writers[writer_id];
+                writers_of_reader[writer_id] = writers[writer_id];
             }
         }
         else
