@@ -171,10 +171,11 @@ void DdsBridge::add_to_tracks(
 void DdsBridge::remove_from_tracks(
         const ParticipantId& discoverer_participant_id) noexcept
 {
-    for (const auto& id_to_track : tracks_)
+    for (auto it = tracks_.cbegin(), next_it = it; it != tracks_.cend(); it = next_it)
     {
-        const auto& id = id_to_track.first;
-        const auto& track = id_to_track.second;
+        ++next_it;
+
+        const auto& track = it->second;
 
         // If the writer is in the track, remove it.
         track->remove_writer(discoverer_participant_id);
@@ -182,7 +183,7 @@ void DdsBridge::remove_from_tracks(
         if (track->count_writers() <= 0)
         {
             // The track doesn't have any writers. Remove it.
-            tracks_.erase(id);
+            tracks_.erase(it);
         }
     }
 }
