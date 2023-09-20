@@ -71,7 +71,7 @@ public:
             bool start_enable = false,
             const RoutesConfiguration& routes_config = {},
             const TopicRoutesConfiguration& topic_routes_config = {},
-            const bool dynamic_tracks = false);
+            const bool remove_unused_entities = false);
 
     /**
      * @brief Destroy the DdsPipe object
@@ -384,12 +384,12 @@ protected:
     //! Custom forwarding routes per topic
     TopicRoutesConfiguration topic_routes_config_;
 
-    /////////////////
-    // DYNAMIC TRACKS
-    /////////////////
+    /////////////////////////
+    // REMOVE UNUSED ENTITIES
+    /////////////////////////
 
     //! Whether readers that aren't connected to any writers should be deleted
-    bool dynamic_tracks_;
+    bool remove_unused_entities_;
 };
 
 } /* namespace core */

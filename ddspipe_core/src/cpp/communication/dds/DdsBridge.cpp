@@ -29,7 +29,7 @@ DdsBridge::DdsBridge(
         const std::shared_ptr<PayloadPool>& payload_pool,
         const std::shared_ptr<utils::SlotThreadPool>& thread_pool,
         const RoutesConfiguration& routes_config,
-        const bool dynamic_tracks,
+        const bool remove_unused_entities,
         const ParticipantId& discoverer_participant_id /* = "" */)
     : Bridge(participants_database, payload_pool, thread_pool)
     , topic_(topic)
@@ -38,7 +38,7 @@ DdsBridge::DdsBridge(
 
     routes_ = routes_config();
 
-    if (dynamic_tracks && discoverer_participant_id != "")
+    if (remove_unused_entities && discoverer_participant_id != "")
     {
         // The builtin participants and some tests use an empty discoverer participant id
         add_to_tracks(discoverer_participant_id);

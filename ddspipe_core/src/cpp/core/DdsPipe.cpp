@@ -38,7 +38,7 @@ DdsPipe::DdsPipe(
         bool start_enable, /* = false */
         const RoutesConfiguration& routes_config, /* = {} */
         const TopicRoutesConfiguration& topic_routes_config, /* = {} */
-        const bool dynamic_tracks /* = false */)
+        const bool remove_unused_entities /* = false */)
     : allowed_topics_(allowed_topics)
     , discovery_database_(discovery_database)
     , payload_pool_(payload_pool)
@@ -47,7 +47,7 @@ DdsPipe::DdsPipe(
     , enabled_(false)
     , routes_config_(routes_config)
     , topic_routes_config_(topic_routes_config)
-    , dynamic_tracks_(dynamic_tracks)
+    , remove_unused_entities_(remove_unused_entities)
 {
     logDebug(DDSPIPE, "Creating DDS Pipe.");
 
@@ -324,7 +324,7 @@ void DdsPipe::removed_endpoint_nts_(
             // The bridge does not exist. We cannot remove the writer. Exit.
             return;
         }
-        else if (dynamic_tracks_)
+        else if (remove_unused_entities_)
         {
             it_bridge->second->remove_from_tracks(endpoint.discoverer_participant_id);
         }
@@ -440,7 +440,7 @@ void DdsPipe::create_new_bridge_nts_(
                         payload_pool_,
                         thread_pool_,
                         routes_config,
-                        dynamic_tracks_,
+                        remove_unused_entities_,
                         discoverer_participant_id);
 
         if (enabled)

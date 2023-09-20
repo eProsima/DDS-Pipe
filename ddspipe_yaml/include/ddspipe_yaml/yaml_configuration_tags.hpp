@@ -135,7 +135,7 @@ constexpr const char* MAX_HISTORY_DEPTH_TAG("max-depth"); //! Maximum size (numb
 constexpr const char* DOWNSAMPLING_TAG("downsampling"); //! Keep 1 out of every *downsampling* samples received
 constexpr const char* MAX_RECEPTION_RATE_TAG("max-reception-rate"); //! Process up to *max_reception_rate* samples in a 1 second bin
 constexpr const char* WAIT_ALL_ACKED_TIMEOUT_TAG("wait-all-acked-timeout"); //! Wait for a maximum of *wait-all-acked-timeout* ms until all msgs sent by reliable writers are acknowledged by their matched readers
-constexpr const char* DYNAMIC_TRACKS_TAG("dynamic-tracks"); //! Dynamically create and delete tracks.
+constexpr const char* REMOVE_UNUSED_ENTITIES_TAG("remove-unused-entities"); //! Dynamically create and delete entities and tracks.
 
 // XML configuration tags
 constexpr const char* XML_TAG("xml"); //! Tag to read xml configuration

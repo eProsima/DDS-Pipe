@@ -58,7 +58,7 @@ public:
             const std::shared_ptr<PayloadPool>& payload_pool,
             const std::shared_ptr<utils::SlotThreadPool>& thread_pool,
             const RoutesConfiguration& routes_config,
-            const bool dynamic_tracks,
+            const bool remove_unused_entities,
             const types::ParticipantId& discoverer_participant_id = "");
 
     DDSPIPE_CORE_DllAPI
