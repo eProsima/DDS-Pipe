@@ -72,7 +72,9 @@ void CommonWriter::init()
     writer_ = dds_publisher_->create_datawriter(
         dds_topic_,
         reckon_writer_qos_(),
-        nullptr);
+        nullptr,
+        eprosima::fastdds::dds::StatusMask::all(),
+        payload_pool_);
 
     if (!writer_)
     {

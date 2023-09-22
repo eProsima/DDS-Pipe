@@ -72,7 +72,9 @@ void CommonReader::init()
     reader_ = dds_subscriber_->create_datareader(
         dds_topic_,
         reckon_reader_qos_(),
-        nullptr);
+        nullptr,
+        eprosima::fastdds::dds::StatusMask::all(),
+        payload_pool_);
 
     if (!reader_)
     {
