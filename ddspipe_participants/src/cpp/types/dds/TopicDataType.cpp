@@ -91,19 +91,18 @@ std::function<uint32_t()> TopicDataType::getSerializedSizeProvider(
 }
 
 bool TopicDataType::getKey(
-        void*,
-        eprosima::fastrtps::rtps::InstanceHandle_t*,
+        void* data,
+        eprosima::fastrtps::rtps::InstanceHandle_t* handle,
         bool /* = false */)
 {
     if (m_isGetKeyDefined)
     {
-        // NOTE: this should not happen, if Fast asks for a key we are not able to give it
-        // This should not happen as using reader qos expects_inline_qos the instance handle should arrive in
-        // inline_qos and this function should not be called
-        // PD for reviewer: You shall remember this line, as it will bring hell on hearth in a possible future.
-        logDevError(DDSPIPE_PARTICIPANTS_TYPESUPPORT,
-                "Generic TypeSupport does not know how to retrieve the key, this should not happen.");
+        // Save the data's instanceHandle
+        auto p = static_cast<DataType*>(data);
+        *handle = p->instanceHandle;
+        return true;
     }
+
     return false;
 }
 
