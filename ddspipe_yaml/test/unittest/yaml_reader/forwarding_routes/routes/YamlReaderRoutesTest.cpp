@@ -32,7 +32,7 @@ using namespace eprosima::ddspipe::core::testing;
 using namespace eprosima::ddspipe::yaml::testing;
 
 /**
- * Check the get function for RouteConfiguration.
+ * Check the get function for RoutesConfiguration.
  *
  * CASES:
  *  Check that an exception is thrown when the route is not a list.
@@ -53,7 +53,7 @@ TEST(YamlReaderRoutesTest, throw_exception_when_not_list)
 }
 
 /**
- * Check the get function for RouteConfiguration.
+ * Check the get function for RoutesConfiguration.
  *
  * CASES:
  *  Check that an exception is thrown when there is a dst without a src.
@@ -75,7 +75,7 @@ TEST(YamlReaderRoutesTest, throw_exception_when_no_src)
 }
 
 /**
- * Check the get function for RouteConfiguration.
+ * Check the get function for RoutesConfiguration.
  *
  * CASES:
  *  Check that an exception is thrown when the src is set twice for the same participant.
@@ -100,7 +100,7 @@ TEST(YamlReaderRoutesTest, throw_exception_when_repeat_src_participant)
 }
 
 /**
- * Check the get function for RouteConfiguration.
+ * Check the get function for RoutesConfiguration.
  *
  * CASES:
  *  Check that a participant without a destination makes up a valid configuration.
@@ -121,7 +121,7 @@ TEST(YamlReaderRoutesTest, is_valid_conf_when_no_dst)
 }
 
 /**
- * Check the get function for RouteConfiguration.
+ * Check the get function for RoutesConfiguration.
  *
  * CASES:
  *  Check that two participants with multiples destinations make up a valid configuration.

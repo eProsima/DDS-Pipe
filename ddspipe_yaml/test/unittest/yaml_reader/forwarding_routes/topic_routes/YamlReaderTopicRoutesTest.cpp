@@ -32,7 +32,7 @@ using namespace eprosima::ddspipe::core::testing;
 using namespace eprosima::ddspipe::yaml::testing;
 
 /**
- * Check the get function for TopicRouteConfiguration.
+ * Check the get function for TopicRoutesConfiguration.
  *
  * CASES:
  *  Check that an exception is thrown when the topic route is not a list.
@@ -54,7 +54,7 @@ TEST(YamlReaderTopicRoutesTest, throw_exception_when_not_list)
 }
 
 /**
- * Check the get function for TopicRouteConfiguration.
+ * Check the get function for TopicRoutesConfiguration.
  *
  * CASES:
  *  Check that an exception is thrown when there is a route without a name.
@@ -115,7 +115,7 @@ TEST(YamlReaderTopicRoutesTest, throw_exception_when_missing_required_attrs)
 }
 
 /**
- * Check the get function for TopicRouteConfiguration.
+ * Check the get function for TopicRoutesConfiguration.
  *
  * CASES:
  *  Check that two participants with multiples destinations make up a valid configuration.
@@ -142,7 +142,7 @@ TEST(YamlReaderTopicRoutesTest, throw_exception_when_repeat_name)
 }
 
 /**
- * Check the get function for TopicRouteConfiguration.
+ * Check the get function for TopicRoutesConfiguration.
  *
  * CASES:
  *  Check that two participants with multiples destinations make up a valid configuration.
