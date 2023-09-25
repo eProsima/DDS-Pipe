@@ -30,10 +30,10 @@ namespace ddspipe {
 namespace core {
 
 // TODO
-struct TopicRoutesConfiguration : public ddspipe::core::IConfiguration
+struct TopicRoutesConfiguration : public IConfiguration
 {
 
-    using TopicRoutesMap = std::map<utils::Heritable<ddspipe::core::types::DistributedTopic>, RoutesConfiguration>;
+    using TopicRoutesMap = std::map<utils::Heritable<types::DistributedTopic>, RoutesConfiguration>;
 
     /////////////////////////
     // CONSTRUCTORS
@@ -50,7 +50,7 @@ struct TopicRoutesConfiguration : public ddspipe::core::IConfiguration
 
     DDSPIPE_CORE_DllAPI bool is_valid(
             utils::Formatter& error_msg,
-            std::map<ddspipe::core::types::ParticipantId, bool> participant_ids) const noexcept;
+            std::map<types::ParticipantId, bool> participant_ids) const noexcept;
 
     /////////////////////////
     // OPERATORS

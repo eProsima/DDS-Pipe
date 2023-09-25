@@ -347,13 +347,16 @@ void DdsPipe::create_new_bridge_nts_(
 
     try
     {
-        auto new_bridge = topic_routes_config_().count(topic) != 0 ? std::make_unique<DdsBridge>(topic,
+        // Use topic specific forwarding routes if available
+        RoutesConfiguration routes_config = topic_routes_config_().count(topic) !=
+                0 ? topic_routes_config_()[topic] : routes_config_;
+
+        // Create bridge instance
+        auto new_bridge = std::make_unique<DdsBridge>(topic,
                         participants_database_,
                         payload_pool_,
                         thread_pool_,
-                        topic_routes_config_()[topic]) : std::make_unique<DdsBridge>(topic, participants_database_,
-                        payload_pool_, thread_pool_,
-                        routes_config_);
+                        routes_config);
         if (enabled)
         {
             new_bridge->enable();

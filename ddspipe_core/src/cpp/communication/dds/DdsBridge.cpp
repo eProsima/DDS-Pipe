@@ -86,59 +86,44 @@ DdsBridge::DdsBridge(
     // Generate tracks
     for (const ParticipantId& id: ids)
     {
+        std::map<ParticipantId, std::shared_ptr<IWriter>> dst_writers;
         auto it = routes.find(id);
         if (it != routes.end())
         {
-            if (it->second.size() == 0)
-            {
-                // Do not create track if no destination writers
-                continue;
-            }
-
-            std::map<ParticipantId, std::shared_ptr<IWriter>> dst_writers;
+            // Custom route available for this participant
             for (const auto& writer_id : it->second)
             {
                 dst_writers[writer_id] = writers[writer_id];
             }
 
-            // This insert is required as there is no copy method for Track
-            // Tracks are always created disabled and then enabled with Bridge enable() method
-            tracks_[id] =
-                    std::make_unique<Track>(
-                topic,
-                id,
-                readers[id],
-                std::move(dst_writers),
-                payload_pool,
-                thread_pool);
+            // Do not create track if no destination writers
+            if (dst_writers.size() == 0)
+            {
+                continue;
+            }
         }
         else
         {
-            // List of all Participants
-            std::map<ParticipantId, std::shared_ptr<IWriter>> writers_except_one =
-                    writers; // Create a copy of the map
+            // Use default forwarding route (receiver participant to all others)
+            dst_writers = writers;
 
+            // Remove this Track source participant if not repeater
             if (!participants_->get_participant(id)->is_repeater())
             {
-                // Remove this Track source participant because it is not repeater
-                writers_except_one.erase(id);
-
-                logDebug(
-                    DDSPIPE_DDSBRIDGE,
-                    "Not adding own Writer to Track in " << *this << " in Participant " << id << ".");
+                dst_writers.erase(id);
             }
-
-            // This insert is required as there is no copy method for Track
-            // Tracks are always created disabled and then enabled with Bridge enable() method
-            tracks_[id] =
-                    std::make_unique<Track>(
-                topic,
-                id,
-                readers[id],
-                std::move(writers_except_one),
-                payload_pool,
-                thread_pool);
         }
+
+        // This insert is required as there is no copy method for Track
+        // Tracks are always created disabled and then enabled with Bridge enable() method
+        tracks_[id] =
+                std::make_unique<Track>(
+            topic,
+            id,
+            std::move(readers[id]),
+            std::move(dst_writers),
+            payload_pool,
+            thread_pool);
     }
 
     logDebug(DDSPIPE_DDSBRIDGE, "DdsBridge " << *this << " created.");

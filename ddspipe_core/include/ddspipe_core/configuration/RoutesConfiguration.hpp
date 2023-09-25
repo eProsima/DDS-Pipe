@@ -29,10 +29,10 @@ namespace ddspipe {
 namespace core {
 
 // TODO
-struct RoutesConfiguration : public ddspipe::core::IConfiguration
+struct RoutesConfiguration : public IConfiguration
 {
 
-    using RoutesMap = std::map<ddspipe::core::types::ParticipantId, std::set<ddspipe::core::types::ParticipantId>>;
+    using RoutesMap = std::map<types::ParticipantId, std::set<types::ParticipantId>>;
 
     /////////////////////////
     // CONSTRUCTORS
@@ -49,7 +49,7 @@ struct RoutesConfiguration : public ddspipe::core::IConfiguration
 
     DDSPIPE_CORE_DllAPI bool is_valid(
             utils::Formatter& error_msg,
-            std::map<ddspipe::core::types::ParticipantId, bool> participant_ids) const noexcept;
+            std::map<types::ParticipantId, bool> participant_ids) const noexcept;
 
     /////////////////////////
     // OPERATORS
