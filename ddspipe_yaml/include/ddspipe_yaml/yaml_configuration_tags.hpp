@@ -123,10 +123,10 @@ constexpr const char* TIMESTAMP_MICROSECONDS_TAG("microseconds"); //! TODO: add 
 constexpr const char* TIMESTAMP_NANOSECONDS_TAG("nanoseconds"); //! TODO: add comment
 
 // Custom routes related tags
-constexpr const char* ROUTES_TAG("routes"); //! TODO: add comment
-constexpr const char* ROUTES_SRC_TAG("src"); //! TODO: add comment
-constexpr const char* ROUTES_DST_TAG("dst"); //! TODO: add comment
-constexpr const char* TOPIC_ROUTES_TAG("topic-routes"); //! TODO: add comment
+constexpr const char* ROUTES_TAG("routes"); //! Forwarding routes
+constexpr const char* ROUTES_SRC_TAG("src"); //! Route source
+constexpr const char* ROUTES_DST_TAG("dst"); //! Route destinations
+constexpr const char* TOPIC_ROUTES_TAG("topic-routes"); // Topic specific forwarding routes
 
 // Advanced configuration
 constexpr const char* SPECS_TAG("specs"); //! Specs options for DDS Router configuration

@@ -28,7 +28,9 @@ namespace eprosima {
 namespace ddspipe {
 namespace core {
 
-// TODO
+/**
+ * Configuration structure encapsulating the forwarding routes of a \c DdsPipe instance.
+ */
 struct RoutesConfiguration : public IConfiguration
 {
 
