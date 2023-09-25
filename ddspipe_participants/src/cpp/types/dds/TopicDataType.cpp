@@ -97,7 +97,7 @@ bool TopicDataType::getKey(
 {
     if (m_isGetKeyDefined)
     {
-        // Save the data's instanceHandle
+        // Load the instanceHandle from data into handle
         auto p = static_cast<DataType*>(data);
         *handle = p->instanceHandle;
         return true;

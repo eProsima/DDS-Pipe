@@ -332,7 +332,7 @@ fastrtps::rtps::ReaderAttributes CommonReader::reckon_reader_attributes_(
     {
         att.endpoint.topicKind = eprosima::fastrtps::rtps::WITH_KEY;
 
-        // If the topic has a key, accept inline qos
+        // If the topic has a key, request inline qos (containing the instance handle)
         att.expectsInlineQos = true;
     }
     else
