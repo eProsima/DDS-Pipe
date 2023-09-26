@@ -429,7 +429,7 @@ void DdsPipe::create_new_bridge_nts_(
 
     try
     {
-        auto routes_config__ = topic_routes_config_().count(topic) !=
+        auto routes_config = topic_routes_config_().count(topic) !=
                 0 ? topic_routes_config_()[topic] : routes_config_;
 
         auto discoverer_participant_id = current_topics_discoverers_[topic];
