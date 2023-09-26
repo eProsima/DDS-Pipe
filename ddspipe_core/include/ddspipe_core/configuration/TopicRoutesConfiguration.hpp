@@ -10,52 +10,63 @@
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
-// limitations under the License\.
+// limitations under the License.
 
 #pragma once
 
 #include <set>
-#include <string>
 
-#include <cpp_utils/types/Fuzzy.hpp>
+#include <cpp_utils/Formatter.hpp>
+#include <cpp_utils/memory/Heritable.hpp>
 
 #include <ddspipe_core/configuration/IConfiguration.hpp>
+#include <ddspipe_core/configuration/RoutesConfiguration.hpp>
+#include <ddspipe_core/types/topic/dds/DistributedTopic.hpp>
 
-#include <ddspipe_participants/library/library_dll.h>
+#include <ddspipe_core/library/library_dll.h>
 
 namespace eprosima {
 namespace ddspipe {
-namespace participants {
+namespace core {
 
 /**
- * This data struct represents the configuration for an XML Handler
+ * Configuration structure encapsulating the forwarding routes of a \c DdsPipe instance for a set of topics.
  */
-struct XmlHandlerConfiguration : public core::IConfiguration
+struct TopicRoutesConfiguration : public IConfiguration
 {
-public:
+
+    using TopicRoutesMap = std::map<utils::Heritable<types::DistributedTopic>, RoutesConfiguration>;
 
     /////////////////////////
     // CONSTRUCTORS
     /////////////////////////
-    DDSPIPE_PARTICIPANTS_DllAPI
-    XmlHandlerConfiguration() = default;
+
+    DDSPIPE_CORE_DllAPI TopicRoutesConfiguration() = default;
 
     /////////////////////////
     // METHODS
     /////////////////////////
 
-    DDSPIPE_PARTICIPANTS_DllAPI
-    virtual bool is_valid(
+    DDSPIPE_CORE_DllAPI virtual bool is_valid(
             utils::Formatter& error_msg) const noexcept override;
+
+    DDSPIPE_CORE_DllAPI bool is_valid(
+            utils::Formatter& error_msg,
+            std::map<types::ParticipantId, bool> participant_ids) const noexcept;
+
+    /////////////////////////
+    // OPERATORS
+    /////////////////////////
+
+    DDSPIPE_CORE_DllAPI TopicRoutesMap operator () () const;
 
     /////////////////////////
     // VARIABLES
     /////////////////////////
 
-    utils::Fuzzy<std::string> raw {};
-    std::set<std::string> files {};
+    TopicRoutesMap topic_routes {};
 };
 
-} /* namespace participants */
+} /* namespace core */
 } /* namespace ddspipe */
 } /* namespace eprosima */

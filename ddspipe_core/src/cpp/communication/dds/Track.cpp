@@ -41,7 +41,7 @@ Track::Track(
         const std::shared_ptr<utils::SlotThreadPool>& thread_pool) noexcept
     : topic_(topic)
     , reader_participant_id_(reader_participant_id)
-    , reader_(reader)
+    , reader_(std::move(reader))
     , writers_(std::move(writers))
     , payload_pool_(payload_pool)
     , enabled_(false)

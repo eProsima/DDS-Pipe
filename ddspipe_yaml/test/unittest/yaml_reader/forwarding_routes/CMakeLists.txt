@@ -12,9 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-###################
-# YamlReader Test #
-###################
+#####################################
+# YamlReader Forwarding Routes Test #
+#####################################
 
-add_subdirectory(scalar)
-add_subdirectory(forwarding_routes)
+add_subdirectory(routes)
+add_subdirectory(topic_routes)

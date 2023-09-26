@@ -24,7 +24,7 @@ namespace ddspipe {
 namespace participants {
 
 /**
- * This data struct represents a configuration for a SimpleParticipant
+ * This class is used for loading XML profiles and in order to configure XML Participants
  */
 class XmlHandler
 {

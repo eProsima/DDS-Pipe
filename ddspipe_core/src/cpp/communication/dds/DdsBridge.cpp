@@ -27,41 +27,91 @@ DdsBridge::DdsBridge(
         const utils::Heritable<DistributedTopic>& topic,
         const std::shared_ptr<ParticipantsDatabase>& participants_database,
         const std::shared_ptr<PayloadPool>& payload_pool,
-        const std::shared_ptr<utils::SlotThreadPool>& thread_pool)
+        const std::shared_ptr<utils::SlotThreadPool>& thread_pool,
+        const RoutesConfiguration& routes_config)
     : Bridge(participants_database, payload_pool, thread_pool)
     , topic_(topic)
 {
     logDebug(DDSPIPE_DDSBRIDGE, "Creating DdsBridge " << *this << ".");
 
     std::set<ParticipantId> ids = participants_->get_participants_ids();
+    auto routes = routes_config();
 
+    // Determine which endpoints need to be created
+    std::set<types::ParticipantId> writers_to_create;
+    std::set<types::ParticipantId> readers_to_create;
+    for (const ParticipantId& id: ids)
+    {
+        const auto& it = routes.find(id);
+        if (it != routes.end())
+        {
+            const auto& src_id = it->first;
+            const auto& dst_ids = it->second;
+            if (dst_ids.size() != 0) // Only create reader if there are any destination writers
+            {
+                readers_to_create.insert(src_id);
+                writers_to_create.insert(dst_ids.begin(), dst_ids.end());
+            }
+        }
+        else
+        {
+            // When no route is defined, forward to all other participants (+ itself if repeater)
+            auto dst_ids = ids;
+            if (!participants_->get_participant(id)->is_repeater())
+            {
+                // Do not add writer for this participant because it is not repeater
+                dst_ids.erase(id);
+            }
+            writers_to_create.insert(dst_ids.begin(), dst_ids.end());
+            readers_to_create.insert(id);
+        }
+    }
+
+    // Generate writers for each participant
     std::map<types::ParticipantId, std::shared_ptr<IWriter>> writers;
-    std::map<types::ParticipantId, std::shared_ptr<IReader>> readers;
-
-    // Generate readers and writers for each participant
-    for (const auto& id: ids)
+    for (const auto& id: writers_to_create)
     {
         std::shared_ptr<IParticipant> participant = participants_database->get_participant(id);
-
         writers[id] = participant->create_writer(*topic);
+    }
+
+    // Generate readers for each participant
+    std::map<types::ParticipantId, std::shared_ptr<IReader>> readers;
+    for (const auto& id: readers_to_create)
+    {
+        std::shared_ptr<IParticipant> participant = participants_database->get_participant(id);
         readers[id] = participant->create_reader(*topic);
     }
 
     // Generate tracks
-    for (ParticipantId id: ids)
+    for (const ParticipantId& id: ids)
     {
-        // List of all Participants
-        std::map<ParticipantId, std::shared_ptr<IWriter>> writers_except_one =
-                writers; // Create a copy of the map
-
-        if (!participants_->get_participant(id)->is_repeater())
+        std::map<ParticipantId, std::shared_ptr<IWriter>> dst_writers;
+        auto it = routes.find(id);
+        if (it != routes.end())
         {
-            // Remove this Track source participant because it is not repeater
-            writers_except_one.erase(id);
+            // Custom route available for this participant
+            for (const auto& writer_id : it->second)
+            {
+                dst_writers[writer_id] = writers[writer_id];
+            }
 
-            logDebug(
-                DDSPIPE_DDSBRIDGE,
-                "Not adding own Writer to Track in " << *this << " in Participant " << id << ".");
+            // Do not create track if no destination writers
+            if (dst_writers.size() == 0)
+            {
+                continue;
+            }
+        }
+        else
+        {
+            // Use default forwarding route (receiver participant to all others)
+            dst_writers = writers;
+
+            // Remove this Track source participant if not repeater
+            if (!participants_->get_participant(id)->is_repeater())
+            {
+                dst_writers.erase(id);
+            }
         }
 
         // This insert is required as there is no copy method for Track
@@ -70,8 +120,8 @@ DdsBridge::DdsBridge(
                 std::make_unique<Track>(
             topic,
             id,
-            readers[id],
-            std::move(writers_except_one),
+            std::move(readers[id]),
+            std::move(dst_writers),
             payload_pool,
             thread_pool);
     }

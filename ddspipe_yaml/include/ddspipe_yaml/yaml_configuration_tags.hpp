@@ -122,6 +122,12 @@ constexpr const char* TIMESTAMP_MILLISECONDS_TAG("milliseconds"); //! TODO: add 
 constexpr const char* TIMESTAMP_MICROSECONDS_TAG("microseconds"); //! TODO: add comment
 constexpr const char* TIMESTAMP_NANOSECONDS_TAG("nanoseconds"); //! TODO: add comment
 
+// Custom routes related tags
+constexpr const char* ROUTES_TAG("routes"); //! Forwarding routes
+constexpr const char* ROUTES_SRC_TAG("src"); //! Route's source participant
+constexpr const char* ROUTES_DST_TAG("dst"); //! Route's destination participants
+constexpr const char* TOPIC_ROUTES_TAG("topic-routes"); // Topic specific forwarding routes
+
 // Advanced configuration
 constexpr const char* SPECS_TAG("specs"); //! Specs options for DDS Router configuration
 constexpr const char* NUMBER_THREADS_TAG("threads"); //! Number of threads to configure the thread pool
