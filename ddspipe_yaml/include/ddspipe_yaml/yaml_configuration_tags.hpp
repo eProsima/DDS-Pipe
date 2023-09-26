@@ -124,8 +124,8 @@ constexpr const char* TIMESTAMP_NANOSECONDS_TAG("nanoseconds"); //! TODO: add co
 
 // Custom routes related tags
 constexpr const char* ROUTES_TAG("routes"); //! Forwarding routes
-constexpr const char* ROUTES_SRC_TAG("src"); //! Route source
-constexpr const char* ROUTES_DST_TAG("dst"); //! Route destinations
+constexpr const char* ROUTES_SRC_TAG("src"); //! Route's source participant
+constexpr const char* ROUTES_DST_TAG("dst"); //! Route's destination participants
 constexpr const char* TOPIC_ROUTES_TAG("topic-routes"); // Topic specific forwarding routes
 
 // Advanced configuration
