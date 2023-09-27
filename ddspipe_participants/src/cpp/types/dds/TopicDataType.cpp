@@ -59,7 +59,13 @@ bool TopicDataType::serialize(
 
     // TODO: this could be done when we have access to Fast DDS PayloadPool
     // Copy each variable
-    target_payload->copy(&src_payload->payload);
+    // target_payload->copy(&src_payload->payload);
+
+    // Get data and store it in PayloadPool
+    eprosima::fastrtps::rtps::IPayloadPool* payload_owner =
+           static_cast<eprosima::fastrtps::rtps::IPayloadPool*>(src_payload->payload_owner);
+
+    payload_pool_->get_payload(src_payload->payload, payload_owner, *target_payload);
 
     return true;
 }
@@ -73,8 +79,11 @@ bool TopicDataType::deserialize(
     DataType* target_payload = static_cast<DataType*>(data);
 
     // Get data and store it in PayloadPool
-    eprosima::fastrtps::rtps::IPayloadPool* _ = nullptr;
-    payload_pool_->get_payload(*src_payload, _, target_payload->payload);
+    eprosima::fastrtps::rtps::IPayloadPool* payload_owner =
+           static_cast<eprosima::fastrtps::rtps::IPayloadPool*>(payload_pool_.get());
+
+    payload_pool_->get_payload(*src_payload, payload_owner, target_payload->payload);
+
     target_payload->payload_owner = payload_pool_.get();
 
     return true;
