@@ -160,7 +160,15 @@ fastdds::dds::DataWriterQos CommonWriter::reckon_writer_qos_() const noexcept
             ? fastdds::dds::OwnershipQosPolicyKind::EXCLUSIVE_OWNERSHIP_QOS
             : fastdds::dds::OwnershipQosPolicyKind::SHARED_OWNERSHIP_QOS;
 
-    qos.history().depth = topic_.topic_qos.history_depth;
+    if (topic_.topic_qos.history_depth == 0)
+    {
+        qos.history().kind = eprosima::fastdds::dds::HistoryQosPolicyKind::KEEP_ALL_HISTORY_QOS;
+    }
+    else
+    {
+        qos.history().kind = eprosima::fastdds::dds::HistoryQosPolicyKind::KEEP_LAST_HISTORY_QOS;
+        qos.history().depth = topic_.topic_qos.history_depth;
+    }
 
     // Set minimum deadline so it matches with everything
     qos.deadline().period = eprosima::fastrtps::Duration_t(0);

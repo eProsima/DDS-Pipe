@@ -213,7 +213,15 @@ fastdds::dds::DataReaderQos CommonReader::reckon_reader_qos_() const
             ? fastdds::dds::OwnershipQosPolicyKind::EXCLUSIVE_OWNERSHIP_QOS
             : fastdds::dds::OwnershipQosPolicyKind::SHARED_OWNERSHIP_QOS;
 
-    qos.history().depth = topic_.topic_qos.history_depth;
+    if (topic_.topic_qos.history_depth == 0)
+    {
+        qos.history().kind = eprosima::fastdds::dds::HistoryQosPolicyKind::KEEP_ALL_HISTORY_QOS;
+    }
+    else
+    {
+        qos.history().kind = eprosima::fastdds::dds::HistoryQosPolicyKind::KEEP_LAST_HISTORY_QOS;
+        qos.history().depth = topic_.topic_qos.history_depth;
+    }
 
     return qos;
 }
