@@ -148,18 +148,6 @@ void DdsBridge::create_all_tracks_()
 void DdsBridge::create_writer(
         const ParticipantId& participant_id)
 {
-    // // A new subscriber has been discovered.
-    // // Check if the writer for this participant already exists.
-    // for (const auto& tracks_it : tracks_)
-    // {
-    //     const auto& track = tracks_it.second;
-
-    //     if (track->has_writer(discoverer_participant_id))
-    //     {
-    //         // The writer already exists. There is nothing to do. Exit.
-    //         return;
-    //     }
-    // }
     std::lock_guard<std::mutex> lock(mutex_);
 
     // Create the writer.
