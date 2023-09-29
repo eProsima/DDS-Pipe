@@ -22,6 +22,7 @@
 #include <ddspipe_core/library/library_dll.h>
 #include <ddspipe_core/configuration/IConfiguration.hpp>
 #include <ddspipe_core/types/topic/TopicInternalTypeDiscriminator.hpp>
+#include <ddspipe_core/types/participant/ParticipantId.hpp>
 #include <ddspipe_core/interface/ITopic.hpp>
 
 namespace eprosima {
@@ -71,6 +72,10 @@ struct Topic : public ITopic, public IConfiguration
     DDSPIPE_CORE_DllAPI
     virtual TopicInternalTypeDiscriminator internal_type_discriminator() const noexcept override;
 
+    //! Id of the participant who discovered the ITopic
+    DDSPIPE_CORE_DllAPI
+    virtual ParticipantId topic_discoverer() const noexcept override;
+
     DDSPIPE_CORE_DllAPI
     virtual bool is_valid(
             utils::Formatter& error_msg) const noexcept override;
@@ -105,6 +110,11 @@ struct Topic : public ITopic, public IConfiguration
      * @note it is called with m_ because the name \c topic_name was already in used by parent.
      */
     TopicInternalTypeDiscriminator m_internal_type_discriminator{INTERNAL_TOPIC_TYPE_NONE};
+
+    /**
+     * @brief The id of the participant who discovered the topic.
+     */
+    ParticipantId m_topic_discoverer{};
 };
 
 /**

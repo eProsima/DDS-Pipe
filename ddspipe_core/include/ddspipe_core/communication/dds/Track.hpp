@@ -127,12 +127,12 @@ public:
             const types::ParticipantId& id) noexcept;
 
     /**
-     * Count the number of writers inside the track.
+     * Check if a track has at least one writer.
      *
      * Tread safe
      */
     DDSPIPE_CORE_DllAPI
-    int count_writers() noexcept;
+    bool has_writers() noexcept;
 
 protected:
 

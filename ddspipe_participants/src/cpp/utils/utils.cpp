@@ -66,6 +66,7 @@ core::types::Endpoint create_common_endpoint_from_info_(
     endpoint.topic.m_topic_name = std::string(info.info.topicName());
     endpoint.topic.type_name = std::string(info.info.typeName());
     endpoint.topic.m_internal_type_discriminator = core::types::INTERNAL_TOPIC_TYPE_RTPS;
+    endpoint.topic.m_topic_discoverer = participant_discoverer_id;
 
     // Parse specific QoS of the entity
     if (endpoint.topic.topic_qos.has_partitions())

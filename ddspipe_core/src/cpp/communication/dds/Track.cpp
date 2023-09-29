@@ -142,28 +142,36 @@ void Track::add_writer(
         const ParticipantId& id,
         const std::shared_ptr<IWriter>& writer) noexcept
 {
-    std::lock_guard<std::mutex> lock(on_transmission_mutex_);
+    std::lock_guard<std::mutex> transmission_lock(on_transmission_mutex_);
+    std::lock_guard<std::mutex> track_lock(track_mutex_);
+
+    if (enabled_)
+    {
+        writer->enable();
+    }
+
     writers_[id] = writer;
 }
 
 void Track::remove_writer(
         const ParticipantId& id) noexcept
 {
-    std::lock_guard<std::mutex> lock(on_transmission_mutex_);
+    std::lock_guard<std::mutex> transmission_lock(on_transmission_mutex_);
+    std::lock_guard<std::mutex> track_lock(track_mutex_);
     writers_.erase(id);
 }
 
 bool Track::has_writer(
         const ParticipantId& id) noexcept
 {
-    std::lock_guard<std::mutex> lock(on_transmission_mutex_);
+    std::lock_guard<std::mutex> lock(track_mutex_);
     return writers_.count(id) != 0;
 }
 
-int Track::count_writers() noexcept
+bool Track::has_writers() noexcept
 {
-    std::lock_guard<std::mutex> lock(on_transmission_mutex_);
-    return writers_.size();
+    std::lock_guard<std::mutex> lock(track_mutex_);
+    return writers_.size() > 0;
 }
 
 bool Track::should_transmit_() noexcept

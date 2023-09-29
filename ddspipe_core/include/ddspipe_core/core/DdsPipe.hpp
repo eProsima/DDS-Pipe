@@ -21,8 +21,7 @@
 
 #include <ddspipe_core/communication/dds/DdsBridge.hpp>
 #include <ddspipe_core/communication/rpc/RpcBridge.hpp>
-#include <ddspipe_core/configuration/RoutesConfiguration.hpp>
-#include <ddspipe_core/configuration/TopicRoutesConfiguration.hpp>
+#include <ddspipe_core/configuration/DdsPipeConfiguration.hpp>
 #include <ddspipe_core/dynamic/AllowedTopicList.hpp>
 #include <ddspipe_core/dynamic/DiscoveryDatabase.hpp>
 #include <ddspipe_core/dynamic/ParticipantsDatabase.hpp>
@@ -69,9 +68,7 @@ public:
             const std::shared_ptr<utils::SlotThreadPool>& thread_pool,
             const std::set<utils::Heritable<types::DistributedTopic>>& builtin_topics = {},
             bool start_enable = false,
-            const RoutesConfiguration& routes_config = {},
-            const TopicRoutesConfiguration& topic_routes_config = {},
-            const bool remove_unused_entities = false);
+            const DdsPipeConfiguration& ddspipe_config = {});
 
     /**
      * @brief Destroy the DdsPipe object
@@ -149,7 +146,7 @@ protected:
     /**
      * @brief Method called every time a new endpoint has been updated
      *
-     * This method calls \c discovered_endpoint_nts_ or \c removed_endpoint_nts_ with a lock on the mutex to make it thread safe.
+     * This method calls \c updated_endpoint_nts_ with a lock on the mutex to make it thread safe.
      *
      * @param [in] endpoint : endpoint updated
      */
@@ -184,6 +181,24 @@ protected:
     void removed_endpoint_nts_(
             const types::Endpoint& endpoint) noexcept;
 
+    /**
+     * @brief Method called every time a new endpoint has been updated
+     *
+     * This method calls \c discovered_endpoint_nts_ or \c removed_endpoint_nts_.
+     *
+     * @param [in] endpoint : endpoint updated
+     */
+    void updated_endpoint_nts_(
+            const types::Endpoint& endpoint) noexcept;
+
+    /**
+     * @brief Method called every time a new endpoint has been discovered, removed, or updated.
+     *
+     * @param [in] endpoint : endpoint discovered, removed, or updated.
+     */
+    bool is_endpoint_relevant_nts_(
+            const types::Endpoint& endpoint) noexcept;
+
     /////////////////////////
     // INTERNAL CTOR METHODS
     /////////////////////////
@@ -208,11 +223,10 @@ protected:
      * @note This is the only method that adds topics to \c current_topics_discoverers_
      *
      * @param [in] topic : topic discovered
-     * @param [in] discoverer_participant_id : id of the subscriber who discovered the topic
+     * @param [in] discoverer_participant_id : id of the participant who discovered the topic
      */
     void discovered_topic_nts_(
-            const utils::Heritable<types::DistributedTopic>& topic,
-            const types::ParticipantId& discoverer_participant_id) noexcept;
+            const utils::Heritable<types::DistributedTopic>& topic) noexcept;
 
     /**
      * @brief Method called every time a new endpoint (corresponding to a server) has been discovered/updated
@@ -348,13 +362,6 @@ protected:
     std::map<utils::Heritable<types::DistributedTopic>, bool> current_topics_;
 
     /**
-     * @brief List of the ids of the participants who discovered each topic.
-     *
-     * Every topic discovered is added to the map.
-     */
-    std::map<utils::Heritable<types::DistributedTopic>, types::ParticipantId> current_topics_discoverers_;
-
-    /**
      * @brief List of RPC topics discovered
      *
      * Every RPC topic discovered would is added to this map.
@@ -379,17 +386,7 @@ protected:
     //////////////////////////
 
     //! Custom forwarding routes
-    RoutesConfiguration routes_config_;
-
-    //! Custom forwarding routes per topic
-    TopicRoutesConfiguration topic_routes_config_;
-
-    /////////////////////////
-    // REMOVE UNUSED ENTITIES
-    /////////////////////////
-
-    //! Whether readers that aren't connected to any writers should be deleted
-    bool remove_unused_entities_;
+    DdsPipeConfiguration ddspipe_config_;
 };
 
 } /* namespace core */

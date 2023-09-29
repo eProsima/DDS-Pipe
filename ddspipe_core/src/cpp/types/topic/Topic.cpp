@@ -62,6 +62,11 @@ TopicInternalTypeDiscriminator Topic::internal_type_discriminator() const noexce
     return m_internal_type_discriminator;
 }
 
+ParticipantId Topic::topic_discoverer() const noexcept
+{
+    return m_topic_discoverer;
+}
+
 bool Topic::is_valid(
         utils::Formatter& error_msg) const noexcept
 {
