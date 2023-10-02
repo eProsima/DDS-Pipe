@@ -33,10 +33,12 @@ TopicQoS::TopicQoS()
 {
     // Set history by default
     history_depth = default_history_depth;
+
     // Set downsampling by default
-    downsampling = default_downsampling;
+    downsampling.set_value(default_downsampling, utils::FuzzyLevelValues::fuzzy_level_default);
+
     // Set max reception rate by default
-    max_reception_rate = default_max_reception_rate;
+    max_reception_rate.set_value(default_max_reception_rate, utils::FuzzyLevelValues::fuzzy_level_default);
 }
 
 bool TopicQoS::operator ==(

@@ -14,6 +14,8 @@
 
 #pragma once
 
+#include <cpp_utils/types/Fuzzy.hpp>
+
 #include <fastdds/dds/core/policy/QosPolicies.hpp>
 #include <fastdds/rtps/common/Types.h>
 
@@ -150,10 +152,10 @@ TopicQoS
     bool keyed = false;
 
     //! Downsampling factor: keep 1 out of every *downsampling* samples received (downsampling=1 <=> no downsampling)
-    unsigned int downsampling = 1;
+    utils::Fuzzy<unsigned int> downsampling;
 
     //! Discard msgs if less than 1/rate seconds elapsed since the last sample was processed [Hz]. Default: 0 (no limit)
-    float max_reception_rate = 0;
+    utils::Fuzzy<float> max_reception_rate;
 
     static constexpr HistoryDepthType HISTORY_DEPTH_DEFAULT = 5000;
 };

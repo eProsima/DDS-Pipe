@@ -14,6 +14,8 @@
 
 #pragma once
 
+#include <cpp_utils/types/Fuzzy.hpp>
+
 #include <ddspipe_core/types/participant/ParticipantId.hpp>
 
 #include <ddspipe_core/configuration/IConfiguration.hpp>
@@ -47,6 +49,12 @@ struct ParticipantConfiguration : public core::IConfiguration
 
     //! Whether this Participant should connect its readers with its writers.
     bool is_repeater {false};
+
+    //! Participant downsampling rate associated with this configuration.
+    utils::Fuzzy<unsigned int> downsampling{};
+
+    //! Participant max reception rate associated with this configuration.
+    utils::Fuzzy<float> max_reception_rate{};
 };
 
 } /* namespace participants */
