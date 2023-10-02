@@ -413,12 +413,28 @@ std::shared_ptr<core::IReader> CommonParticipant::create_reader(
 {
     // Can only create DDS Topics
     const core::types::DdsTopic* dds_topic_ptr = dynamic_cast<const core::types::DdsTopic*>(&topic);
+
     if (!dds_topic_ptr)
     {
         logDebug(DDSPIPE_RTPS_PARTICIPANT, "Not creating Reader for topic " << topic.topic_name());
         return std::make_shared<BlankReader>();
     }
-    const core::types::DdsTopic& dds_topic = *dds_topic_ptr;
+
+    core::types::DdsTopic dds_topic = *dds_topic_ptr;
+
+    if (!dds_topic.topic_qos.max_reception_rate.is_set() && configuration_->max_reception_rate.is_set())
+    {
+        // The hirearchy level for the max reception rate is:
+        // Topic > Participant > Specs > Default
+        dds_topic.topic_qos.max_reception_rate.set_value(configuration_->max_reception_rate.get_value());
+    }
+
+    if (!dds_topic.topic_qos.downsampling.is_set() && configuration_->downsampling.is_set())
+    {
+        // The hirearchy level for the downsampling value is:
+        // Topic > Participant > Specs > Default
+        dds_topic.topic_qos.downsampling.set_value(configuration_->downsampling.get_value());
+    }
 
     if (topic.internal_type_discriminator() == core::types::INTERNAL_TOPIC_TYPE_RPC)
     {

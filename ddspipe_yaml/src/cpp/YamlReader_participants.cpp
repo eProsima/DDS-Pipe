@@ -160,6 +160,18 @@ void YamlReader::fill(
     {
         object.ignore_participant_flags = core::types::IgnoreParticipantFlags::no_filter;
     }
+
+    // Optional downsampling
+    if (YamlReader::is_tag_present(yml, PARTICIPANT_DOWNSAMPLING_TAG))
+    {
+        object.downsampling.set_value(YamlReader::get<unsigned int>(yml, PARTICIPANT_DOWNSAMPLING_TAG, version));
+    }
+
+    // Optional max reception rate
+    if (YamlReader::is_tag_present(yml, PARTICIPANT_MAX_RECEPTION_RATE_TAG))
+    {
+        object.max_reception_rate.set_value(YamlReader::get<float>(yml, PARTICIPANT_MAX_RECEPTION_RATE_TAG, version));
+    }
 }
 
 template <>
