@@ -51,6 +51,8 @@ constexpr const char* PARTICIPANT_KIND_TAG("kind");   //! Participant Kind
 constexpr const char* PARTICIPANT_NAME_TAG("name");   //! Participant Name
 constexpr const char* COLLECTION_PARTICIPANTS_TAG("participants"); //! TODO: add comment
 constexpr const char* IS_REPEATER_TAG("repeater");   //! Is participant a repeater
+constexpr const char* PARTICIPANT_DOWNSAMPLING_TAG("downsampling");   //! Participant specific downsampling factor
+constexpr const char* PARTICIPANT_MAX_RECEPTION_RATE_TAG("max-reception-rate");   //! Participant specific max reception rate
 
 // Echo related tags
 constexpr const char* ECHO_DATA_TAG("data");            //! Echo Data received
