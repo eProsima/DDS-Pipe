@@ -91,7 +91,11 @@ void CommonReader::on_data_available(
         fastdds::dds::DataReader* /* reader */)
 {
     logInfo(DDSPIPE_DDS_READER, "On data available in reader in " << participant_id_ << " for topic " << topic_ << ".");
-    on_data_available_();
+
+    if (can_accept_sample_())
+    {
+        on_data_available_();
+    }
 }
 
 CommonReader::CommonReader(
@@ -100,7 +104,7 @@ CommonReader::CommonReader(
         const std::shared_ptr<core::PayloadPool>& payload_pool,
         fastdds::dds::DomainParticipant* participant,
         fastdds::dds::Topic* topic_entity)
-    : BaseReader(participant_id)
+    : BaseReader(participant_id, topic.topic_qos.max_reception_rate, topic.topic_qos.downsampling)
     , dds_participant_(participant)
     , dds_topic_(topic_entity)
     , payload_pool_(payload_pool)
@@ -167,7 +171,7 @@ void CommonReader::enable_nts_() noexcept
 {
     // If the topic is reliable, the reader will keep the samples received when it was disabled.
     // However, if the topic is best_effort, the reader will discard the samples received when it was disabled.
-    if (topic_.topic_qos.is_reliable())
+    if (topic_.topic_qos.is_reliable() && can_accept_sample_())
     {
         on_data_available_();
     }

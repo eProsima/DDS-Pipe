@@ -14,6 +14,7 @@
 
 #include <cpp_utils/exception/UnsupportedException.hpp>
 #include <cpp_utils/Log.hpp>
+#include <cpp_utils/math/math_extension.hpp>
 
 #include <ddspipe_participants/reader/auxiliar/BaseReader.hpp>
 #include <ddspipe_core/types/participant/ParticipantId.hpp>
@@ -29,13 +30,21 @@ const std::function<void()> BaseReader::DEFAULT_ON_DATA_AVAILABLE_CALLBACK =
         };
 
 BaseReader::BaseReader(
-        const core::types::ParticipantId& participant_id)
+        const core::types::ParticipantId& participant_id,
+        const float max_reception_rate /* = 0 */,
+        const unsigned int downsampling /* = 1 */)
     : participant_id_(participant_id)
+    , max_reception_rate_(max_reception_rate)
+    , downsampling_(downsampling)
     , on_data_available_lambda_(DEFAULT_ON_DATA_AVAILABLE_CALLBACK)
     , on_data_available_lambda_set_(false)
     , enabled_(false)
 {
     logDebug(DDSPIPE_BASEREADER, "Creating Reader " << *this << ".");
+
+    // Calculate min_intersample_period_ from topic's max_reception_rate only once to lighten hot path
+    assert(max_reception_rate_ >= 0);
+    min_intersample_period_ = std::chrono::nanoseconds((unsigned int)(1e9 / max_reception_rate_));
 }
 
 void BaseReader::enable() noexcept
@@ -115,6 +124,38 @@ utils::ReturnCode BaseReader::take(
 core::types::ParticipantId BaseReader::participant_id() const noexcept
 {
     return participant_id_;
+}
+
+bool BaseReader::can_accept_sample_() noexcept
+{
+    // Get reception timestamp
+    auto now = utils::now();
+
+    // Max Reception Rate
+    if (max_reception_rate_ > 0)
+    {
+        auto threshold = last_received_ts_ + min_intersample_period_;
+        if (now < threshold)
+        {
+            return false;
+        }
+    }
+
+    // Downsampling (keep 1 out of every \c downsampling samples)
+    // NOTE: Downsampling is applied to messages that already passed previous filters
+    auto prev_downsampling_idx = downsampling_idx_;
+
+    downsampling_idx_ = utils::fast_module(downsampling_idx_ + 1, downsampling_);
+
+    if (prev_downsampling_idx != 0)
+    {
+        return false;
+    }
+
+    // All filters passed -> Update last received timestamp with this sample's reception timestamp
+    last_received_ts_ = now;
+
+    return true;
 }
 
 void BaseReader::on_data_available_() const noexcept
