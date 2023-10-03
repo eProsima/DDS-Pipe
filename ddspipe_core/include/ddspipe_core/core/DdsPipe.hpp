@@ -220,10 +220,8 @@ protected:
      * If the DdsPipe is enabled, the new Bridge is created and enabled.
      *
      * @note This is the only method that adds topics to \c current_topics_
-     * @note This is the only method that adds topics to \c current_topics_discoverers_
      *
      * @param [in] topic : topic discovered
-     * @param [in] discoverer_participant_id : id of the participant who discovered the topic
      */
     void discovered_topic_nts_(
             const utils::Heritable<types::DistributedTopic>& topic) noexcept;

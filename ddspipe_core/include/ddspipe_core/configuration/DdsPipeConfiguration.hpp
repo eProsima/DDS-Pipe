@@ -20,12 +20,13 @@
 #include <cpp_utils/Formatter.hpp>
 
 #include <ddspipe_core/configuration/IConfiguration.hpp>
-#include <ddspipe_core/types/participant/ParticipantId.hpp>
-#include <ddspipe_core/types/topic/dds/DistributedTopic.hpp>
 #include <ddspipe_core/configuration/RoutesConfiguration.hpp>
 #include <ddspipe_core/configuration/TopicRoutesConfiguration.hpp>
 
 #include <ddspipe_core/library/library_dll.h>
+
+#include <ddspipe_core/types/participant/ParticipantId.hpp>
+#include <ddspipe_core/types/topic/dds/DistributedTopic.hpp>
 
 namespace eprosima {
 namespace ddspipe {
@@ -67,6 +68,7 @@ struct DdsPipeConfiguration : public IConfiguration
 
     TopicRoutesConfiguration topic_routes_config{};
 
+    //! Remove unused entities configuration. False by default.
     bool remove_unused_entities = false;
 };
 

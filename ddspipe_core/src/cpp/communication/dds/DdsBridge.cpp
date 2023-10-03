@@ -212,12 +212,7 @@ void DdsBridge::add_writers_to_tracks_nts_(
 
             for (const auto& writer_id : writers_in_route)
             {
-                if (writers.count(writer_id) == 0)
-                {
-                    logInfo(DDSPIPE_DDSBRIDGE,
-                        "There's a writer in the route of participant " << id << " that has not been created yet.");
-                }
-                else
+                if (writers.count(writer_id) >= 1)
                 {
                     writers_of_track[writer_id] = writers[writer_id];
                 }

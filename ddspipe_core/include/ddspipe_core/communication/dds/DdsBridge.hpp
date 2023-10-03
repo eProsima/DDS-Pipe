@@ -87,8 +87,7 @@ public:
      *
      * Thread safe
      *
-     * @param participant_id: The id of the participant who has discovered that the subscriber has become
-     * inactive.
+     * @param participant_id: The id of the participant who is creating the writer.
      *
      * @throw InitializationException in case \c IWriters or \c IReaders creation fails.
      */
@@ -102,8 +101,7 @@ public:
      *
      * Thread safe
      *
-     * @param participant_id: The id of the participant who has discovered that the subscriber has become
-     * inactive.
+     * @param participant_id: The id of the participant who is removing the writer.
      */
     DDSPIPE_CORE_DllAPI
     void remove_writer(

@@ -142,8 +142,8 @@ void Track::add_writer(
         const ParticipantId& id,
         const std::shared_ptr<IWriter>& writer) noexcept
 {
-    std::lock_guard<std::mutex> transmission_lock(on_transmission_mutex_);
     std::lock_guard<std::mutex> track_lock(track_mutex_);
+    std::lock_guard<std::mutex> transmission_lock(on_transmission_mutex_);
 
     if (enabled_)
     {
@@ -156,8 +156,8 @@ void Track::add_writer(
 void Track::remove_writer(
         const ParticipantId& id) noexcept
 {
-    std::lock_guard<std::mutex> transmission_lock(on_transmission_mutex_);
     std::lock_guard<std::mutex> track_lock(track_mutex_);
+    std::lock_guard<std::mutex> transmission_lock(on_transmission_mutex_);
     writers_.erase(id);
 }
 

@@ -245,11 +245,14 @@ void DdsPipe::discovered_endpoint_nts_(
 {
     logDebug(DDSPIPE, "Endpoint discovered in DDS Pipe core: " << endpoint << ".");
 
-    if (RpcTopic::is_service_topic(endpoint.topic) && endpoint.is_reader() && endpoint.is_server_endpoint())
+    if (RpcTopic::is_service_topic(endpoint.topic))
     {
-        // Service server discovered
-        discovered_service_nts_(RpcTopic(
+        if (endpoint.is_reader() && endpoint.is_server_endpoint())
+        {
+            // Service server discovered
+            discovered_service_nts_(RpcTopic(
                 endpoint.topic), endpoint.discoverer_participant_id, endpoint.guid.guid_prefix());
+        }
     }
     else if (is_endpoint_relevant_nts_(endpoint))
     {
@@ -264,10 +267,14 @@ void DdsPipe::removed_endpoint_nts_(
 
     const auto& topic = utils::Heritable<DdsTopic>::make_heritable(endpoint.topic);
 
-    if (RpcTopic::is_service_topic(endpoint.topic) && endpoint.is_server_endpoint())
+    if (RpcTopic::is_service_topic(endpoint.topic))
     {
-        // Service server removed/dropped
-        removed_service_nts_(RpcTopic(endpoint.topic), endpoint.discoverer_participant_id, endpoint.guid.guid_prefix());
+        if (endpoint.is_server_endpoint())
+        {
+            // Service server removed/dropped
+            removed_service_nts_(RpcTopic(endpoint.topic), endpoint.discoverer_participant_id, endpoint.guid.guid_prefix());
+        }
+
     }
     else if (ddspipe_config_.remove_unused_entities && is_endpoint_relevant_nts_(endpoint))
     {
