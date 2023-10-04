@@ -41,7 +41,7 @@ CommonReader::CommonReader(
         const fastrtps::rtps::ReaderAttributes& reader_attributes,
         const fastrtps::TopicAttributes& topic_attributes,
         const fastrtps::ReaderQos& reader_qos)
-    : BaseReader(participant_id, topic.topic_qos.max_reception_rate, topic.topic_qos.downsampling)
+    : BaseReader(participant_id, topic.topic_qos.max_rx_rate, topic.topic_qos.downsampling)
     , rtps_participant_(rtps_participant)
     , payload_pool_(payload_pool)
     , topic_(topic)

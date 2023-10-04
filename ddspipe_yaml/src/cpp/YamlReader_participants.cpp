@@ -168,9 +168,9 @@ void YamlReader::fill(
     }
 
     // Optional max reception rate
-    if (YamlReader::is_tag_present(yml, PARTICIPANT_MAX_RECEPTION_RATE_TAG))
+    if (YamlReader::is_tag_present(yml, PARTICIPANT_MAX_RX_RATE_TAG))
     {
-        object.max_reception_rate.set_value(YamlReader::get<float>(yml, PARTICIPANT_MAX_RECEPTION_RATE_TAG, version));
+        object.max_rx_rate.set_value(YamlReader::get<float>(yml, PARTICIPANT_MAX_RX_RATE_TAG, version));
     }
 }
 

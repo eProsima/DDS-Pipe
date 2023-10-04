@@ -163,7 +163,7 @@ protected:
      */
     BaseReader(
             const core::types::ParticipantId& participant_id,
-            const float max_reception_rate = 0,
+            const float max_rx_rate = 0,
             const unsigned int downsampling = 1);
 
     /////////////////////////
@@ -225,7 +225,7 @@ protected:
     mutable std::recursive_mutex mutex_;
 
     // Max reception rate
-    float max_reception_rate_;
+    float max_rx_rate_;
 
     //! Downsampling value
     unsigned int downsampling_;

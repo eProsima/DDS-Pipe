@@ -31,10 +31,10 @@ const std::function<void()> BaseReader::DEFAULT_ON_DATA_AVAILABLE_CALLBACK =
 
 BaseReader::BaseReader(
         const core::types::ParticipantId& participant_id,
-        const float max_reception_rate /* = 0 */,
+        const float max_rx_rate /* = 0 */,
         const unsigned int downsampling /* = 1 */)
     : participant_id_(participant_id)
-    , max_reception_rate_(max_reception_rate)
+    , max_rx_rate_(max_rx_rate)
     , downsampling_(downsampling)
     , on_data_available_lambda_(DEFAULT_ON_DATA_AVAILABLE_CALLBACK)
     , on_data_available_lambda_set_(false)
@@ -42,9 +42,9 @@ BaseReader::BaseReader(
 {
     logDebug(DDSPIPE_BASEREADER, "Creating Reader " << *this << ".");
 
-    // Calculate min_intersample_period_ from topic's max_reception_rate only once to lighten hot path
-    assert(max_reception_rate_ >= 0);
-    min_intersample_period_ = std::chrono::nanoseconds((unsigned int)(1e9 / max_reception_rate_));
+    // Calculate min_intersample_period_ from topic's max_rx_rate only once to lighten hot path
+    assert(max_rx_rate_ >= 0);
+    min_intersample_period_ = std::chrono::nanoseconds((unsigned int)(1e9 / max_rx_rate_));
 }
 
 void BaseReader::enable() noexcept
@@ -132,7 +132,7 @@ bool BaseReader::can_accept_sample_() noexcept
     auto now = utils::now();
 
     // Max Reception Rate
-    if (max_reception_rate_ > 0)
+    if (max_rx_rate_ > 0)
     {
         auto threshold = last_received_ts_ + min_intersample_period_;
         if (now < threshold)

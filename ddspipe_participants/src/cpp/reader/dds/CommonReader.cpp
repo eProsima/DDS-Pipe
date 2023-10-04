@@ -104,7 +104,7 @@ CommonReader::CommonReader(
         const std::shared_ptr<core::PayloadPool>& payload_pool,
         fastdds::dds::DomainParticipant* participant,
         fastdds::dds::Topic* topic_entity)
-    : BaseReader(participant_id, topic.topic_qos.max_reception_rate, topic.topic_qos.downsampling)
+    : BaseReader(participant_id, topic.topic_qos.max_rx_rate, topic.topic_qos.downsampling)
     , dds_participant_(participant)
     , dds_topic_(topic_entity)
     , payload_pool_(payload_pool)
