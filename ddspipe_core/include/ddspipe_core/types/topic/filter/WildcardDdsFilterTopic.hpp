@@ -20,6 +20,8 @@
 #include <cpp_utils/types/Fuzzy.hpp>
 
 #include <ddspipe_core/library/library_dll.h>
+#include <ddspipe_core/types/dds/TopicQoS.hpp>
+#include <ddspipe_core/types/participant/ParticipantId.hpp>
 #include <ddspipe_core/types/topic/filter/IFilterTopic.hpp>
 #include <ddspipe_core/types/topic/dds/DdsTopic.hpp>
 
@@ -74,6 +76,10 @@ struct WildcardDdsFilterTopic : public IFilterTopic
 
     //! Type name filter. If not set matches with all.
     utils::Fuzzy<std::string> type_name;
+
+    utils::Fuzzy<types::TopicQoS> topic_qos;
+
+    utils::Fuzzy<std::set<types::ParticipantId>> participants;
 
 protected:
 

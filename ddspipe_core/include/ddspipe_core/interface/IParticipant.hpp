@@ -14,9 +14,14 @@
 
 #pragma once
 
+#include <memory>
+
+#include <cpp_utils/memory/Heritable.hpp>
+
 #include <ddspipe_core/interface/IReader.hpp>
 #include <ddspipe_core/interface/IWriter.hpp>
 #include <ddspipe_core/types/participant/ParticipantId.hpp>
+#include <ddspipe_core/types/topic/filter/WildcardDdsFilterTopic.hpp>
 #include <ddspipe_core/types/topic/Topic.hpp>
 
 namespace eprosima {
@@ -56,7 +61,7 @@ public:
     virtual bool is_rtps_kind() const noexcept = 0;
 
     /**
-     * @brief Whether this Participant requires to connect ist own readers with its own writers.
+     * @brief Whether this Participant requires to connect its own readers with its own writers.
      */
     DDSPIPE_CORE_DllAPI
     virtual bool is_repeater() const noexcept = 0;
@@ -92,6 +97,15 @@ public:
     DDSPIPE_CORE_DllAPI
     virtual std::shared_ptr<IReader> create_reader(
             const ITopic& topic) = 0;
+
+    /////////////////////////
+    // VARIABLES
+    /////////////////////////
+
+    /**
+     * @brief TODO
+     */
+    std::set<utils::Heritable<core::types::WildcardDdsFilterTopic>> manual_topics;
 };
 
 } /* namespace core */

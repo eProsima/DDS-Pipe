@@ -18,6 +18,9 @@
 
 #include <cpp_utils/types/Atomicable.hpp>
 
+#include <cpp_utils/memory/Heritable.hpp>
+#include <ddspipe_core/types/topic/filter/WildcardDdsFilterTopic.hpp>
+
 #include <fastdds/dds/domain/DomainParticipant.hpp>
 #include <fastdds/dds/domain/DomainParticipantListener.hpp>
 #include <fastdds/dds/domain/qos/DomainParticipantQos.hpp>

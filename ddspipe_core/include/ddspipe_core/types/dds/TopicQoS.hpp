@@ -93,6 +93,10 @@ TopicQoS
     DDSPIPE_CORE_DllAPI
     bool has_partitions() const noexcept;
 
+    //! Whether the Topic has partitions, not empty partition
+    DDSPIPE_CORE_DllAPI
+    void set_qos(const TopicQoS& qos) noexcept;
+
     /////////////////////////
     // GLOBAL VARIABLES
     /////////////////////////
