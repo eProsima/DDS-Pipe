@@ -54,7 +54,7 @@ struct ParticipantConfiguration : public core::IConfiguration
     utils::Fuzzy<unsigned int> downsampling{};
 
     //! Participant max reception rate associated with this configuration.
-    utils::Fuzzy<float> max_reception_rate{};
+    utils::Fuzzy<float> max_rx_rate{};
 };
 
 } /* namespace participants */

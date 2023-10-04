@@ -119,10 +119,10 @@ TopicQoS
      * @brief Global value to store the default max reception rate in this execution.
      *
      * This value can change along the execution.
-     * Every new TopicQoS object will use this value as \c max_reception_rate default.
+     * Every new TopicQoS object will use this value as \c max_rx_rate default.
      */
     DDSPIPE_CORE_DllAPI
-    static std::atomic<float> default_max_reception_rate;
+    static std::atomic<float> default_max_rx_rate;
 
     /////////////////////////
     // VARIABLES
@@ -155,7 +155,7 @@ TopicQoS
     utils::Fuzzy<unsigned int> downsampling;
 
     //! Discard msgs if less than 1/rate seconds elapsed since the last sample was processed [Hz]. Default: 0 (no limit)
-    utils::Fuzzy<float> max_reception_rate;
+    utils::Fuzzy<float> max_rx_rate;
 
     static constexpr HistoryDepthType HISTORY_DEPTH_DEFAULT = 5000;
 };
