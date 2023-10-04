@@ -155,7 +155,8 @@ public:
      * @return Map of endpoints
      */
     DDSPIPE_CORE_DllAPI
-    std::map<types::Guid, types::Endpoint> get_endpoints() const noexcept;
+    std::map<types::Guid, types::Endpoint> get_endpoints(
+            std::function<bool(const types::Endpoint&)> is_valid_endpoint) const noexcept;
 
     /**
      * @brief Add callback to be called when discovering an Endpoint

@@ -196,7 +196,7 @@ protected:
      *
      * @param [in] endpoint : endpoint discovered, removed, or updated.
      */
-    bool is_endpoint_relevant_nts_(
+    bool is_endpoint_relevant_(
             const types::Endpoint& endpoint) noexcept;
 
     /////////////////////////

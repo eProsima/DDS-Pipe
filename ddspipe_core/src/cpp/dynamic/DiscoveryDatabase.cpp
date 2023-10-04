@@ -244,10 +244,25 @@ Endpoint DiscoveryDatabase::get_endpoint(
     return it->second;
 }
 
-std::map<Guid, Endpoint> DiscoveryDatabase::get_endpoints() const noexcept
+std::map<Guid, Endpoint> DiscoveryDatabase::get_endpoints(
+    std::function<bool(const Endpoint&)> is_valid_endpoint) const noexcept
 {
     std::shared_lock<std::shared_timed_mutex> lock(mutex_);
-    return entities_;
+
+    std::map<Guid, Endpoint> endpoints;
+
+    for (const auto& guid_to_entity : entities_)
+    {
+        const auto& guid = guid_to_entity.first;
+        const auto& entity = guid_to_entity.second;
+
+        if (is_valid_endpoint(entity))
+        {
+            endpoints[guid] = entity;
+        }
+    }
+
+    return endpoints;
 }
 
 void DiscoveryDatabase::add_endpoint_discovered_callback(

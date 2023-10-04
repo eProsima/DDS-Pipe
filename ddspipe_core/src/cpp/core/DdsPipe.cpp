@@ -254,7 +254,7 @@ void DdsPipe::discovered_endpoint_nts_(
                 endpoint.topic), endpoint.discoverer_participant_id, endpoint.guid.guid_prefix());
         }
     }
-    else if (is_endpoint_relevant_nts_(endpoint))
+    else if (is_endpoint_relevant_(endpoint))
     {
         discovered_topic_nts_(utils::Heritable<DdsTopic>::make_heritable(endpoint.topic));
     }
@@ -276,7 +276,7 @@ void DdsPipe::removed_endpoint_nts_(
         }
 
     }
-    else if (ddspipe_config_.remove_unused_entities && is_endpoint_relevant_nts_(endpoint))
+    else if (ddspipe_config_.remove_unused_entities && is_endpoint_relevant_(endpoint))
     {
         // Remove the subscriber from the topic.
         auto it_bridge = bridges_.find(topic);
@@ -314,33 +314,36 @@ void DdsPipe::updated_endpoint_nts_(
     }
 }
 
-bool DdsPipe::is_endpoint_relevant_nts_(
+bool DdsPipe::is_endpoint_relevant_(
         const Endpoint& endpoint) noexcept
 {
-    // We only set a topic as discovered when the discoverer is a reader.
-    if (endpoint.is_writer())
+    if (!endpoint.is_reader())
     {
         return false;
     }
 
-    for (const auto& guid_to_entity : discovery_database_->get_endpoints())
+    auto is_endpoint_relevant = [endpoint](const Endpoint& entity)
     {
-        const auto& guid = guid_to_entity.first;
-        const auto& entity = guid_to_entity.second;
-
-        if (guid != endpoint.guid &&
-                entity.active &&
+        return entity.active &&
                 entity.is_reader() &&
                 entity.topic == endpoint.topic &&
-                entity.discoverer_participant_id == endpoint.discoverer_participant_id)
-        {
-            // If there is an active reader, on the same topic, and with the same discoverer,
-            // the current endpoint is irrelevant.
-            return false;
-        }
-    }
+                entity.discoverer_participant_id == endpoint.discoverer_participant_id;
+    };
 
-    return true;
+    const auto& relevant_endpoints = discovery_database_->get_endpoints(is_endpoint_relevant);
+
+    if (endpoint.active)
+    {
+        // An active reader is relevant when it is the only active reader in a topic
+        // with a discoverer participant id.
+        return relevant_endpoints.size() == 1 && relevant_endpoints.count(endpoint.guid);
+    }
+    else
+    {
+        // An inactive reader is relevant when there aren't any active readers in a topic
+        // with a discoverer participant id.
+        return relevant_endpoints.size() == 0;
+    }
 }
 
 void DdsPipe::init_bridges_nts_(
