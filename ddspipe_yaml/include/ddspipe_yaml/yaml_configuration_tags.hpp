@@ -31,10 +31,14 @@ constexpr const char* VERSION_TAG_V_3_1("v3.1");    //! Version v3.1
 // Topics related tags
 constexpr const char* ALLOWLIST_TAG("allowlist");     //! List of allowed topics
 constexpr const char* BLOCKLIST_TAG("blocklist");     //! List of blocked topics
-constexpr const char* BUILTIN_TAG("builtin-topics");  //! List of builtin topics
-constexpr const char* TOPIC_NAME_TAG("name");         //! Name of a topic
-constexpr const char* TOPIC_TYPE_NAME_TAG("type");    //! Type name of a topic
-constexpr const char* TOPIC_QOS_TAG("qos");           //! QoS of a topic
+
+constexpr const char* BUILTIN_TAG("builtin-topics");          //! List of builtin topics
+
+constexpr const char* TOPICS_TAG("topics");                     //! List of manual topics to configure
+constexpr const char* TOPIC_NAME_TAG("name");                   //! Name of a topic
+constexpr const char* TOPIC_TYPE_NAME_TAG("type");              //! Type name of a topic
+constexpr const char* TOPIC_QOS_TAG("qos");                     //! QoS of a topic
+constexpr const char* TOPIC_PARTICIPANTS_TAG("participants");   //! List of participants of a topic
 
 // QoS related tags
 constexpr const char* QOS_RELIABLE_TAG("reliability"); //! The Endpoints of that topic will be configured as RELIABLE

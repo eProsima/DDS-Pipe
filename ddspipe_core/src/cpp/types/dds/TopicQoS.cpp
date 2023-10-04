@@ -75,6 +75,17 @@ bool TopicQoS::has_partitions() const noexcept
     return use_partitions;
 }
 
+void TopicQoS::set_qos(const TopicQoS& qos) noexcept
+{
+    if (qos.downsampling.is_set()) {
+        downsampling.set_value(qos.downsampling.get_value());
+    }
+
+    if (qos.max_rx_rate.is_set()) {
+        max_rx_rate.set_value(qos.max_rx_rate.get_value());
+    }
+}
+
 std::ostream& operator <<(
         std::ostream& os,
         const DurabilityKind& kind)

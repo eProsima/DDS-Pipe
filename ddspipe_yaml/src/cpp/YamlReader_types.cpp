@@ -473,7 +473,17 @@ void YamlReader::fill(
         object.type_name.set_value(get<std::string>(yml, TOPIC_TYPE_NAME_TAG, version));
     }
 
-    // TODO: decide whether we want to use QoS as filtering
+    // Optional QoS
+    if (is_tag_present(yml, TOPIC_QOS_TAG))
+    {
+        fill<TopicQoS>(object.topic_qos, get_value_in_tag(yml, TOPIC_QOS_TAG), version);
+    }
+
+    // Optional participants tag
+    if (is_tag_present(yml, TOPIC_PARTICIPANTS_TAG))
+    {
+        object.participants.set_value(get_set<ParticipantId>(yml, TOPIC_PARTICIPANTS_TAG, version));
+    }
 }
 
 template <>
