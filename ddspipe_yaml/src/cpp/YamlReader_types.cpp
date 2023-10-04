@@ -436,6 +436,9 @@ void YamlReader::fill(
     // Data Type required
     object.type_name = get<std::string>(yml, TOPIC_TYPE_NAME_TAG, version);
 
+    // Discoverer Participant Id
+    object.m_topic_discoverer = "builtin-participant";
+
     // Optional QoS
     if (is_tag_present(yml, TOPIC_QOS_TAG))
     {

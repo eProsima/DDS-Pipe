@@ -37,8 +37,11 @@ DdsBridge::DdsBridge(
 
     routes_ = routes_config();
 
-    if (remove_unused_entities && topic->topic_discoverer() != "")
+    if (remove_unused_entities)
     {
+        assert(topic->topic_discoverer() != "");
+        assert(topic->topic_discoverer() != "builtin-participant");
+
         // The builtin participants and some tests use an empty topic discoverer participant id
         create_writer(topic->topic_discoverer());
     }
