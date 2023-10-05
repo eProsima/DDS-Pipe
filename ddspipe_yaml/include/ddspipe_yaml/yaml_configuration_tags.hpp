@@ -49,6 +49,7 @@ constexpr const char* QOS_OWNERSHIP_TAG("ownership"); //! The Endpoints of that 
 constexpr const char* QOS_KEYED_TAG("keyed"); //! Kind of a topic (with or without key)
 constexpr const char* QOS_DOWNSAMPLING_TAG("downsampling"); //! Topic specific downsampling factor
 constexpr const char* QOS_MAX_RX_RATE_TAG("max-rx-rate"); //! Topic specific max reception rate
+constexpr const char* QOS_MAX_TX_RATE_TAG("max-tx-rate"); //! Topic specific max transmission rate
 
 // Participant related tags
 constexpr const char* PARTICIPANT_KIND_TAG("kind");   //! Participant Kind
@@ -57,6 +58,7 @@ constexpr const char* COLLECTION_PARTICIPANTS_TAG("participants"); //! TODO: add
 constexpr const char* IS_REPEATER_TAG("repeater");   //! Is participant a repeater
 constexpr const char* PARTICIPANT_DOWNSAMPLING_TAG("downsampling");   //! Participant specific downsampling factor
 constexpr const char* PARTICIPANT_MAX_RX_RATE_TAG("max-rx-rate");   //! Participant specific max reception rate
+constexpr const char* PARTICIPANT_MAX_TX_RATE_TAG("max-tx-rate");   //! Participant specific max transmission rate
 
 // Echo related tags
 constexpr const char* ECHO_DATA_TAG("data");            //! Echo Data received
@@ -140,6 +142,7 @@ constexpr const char* NUMBER_THREADS_TAG("threads"); //! Number of threads to co
 constexpr const char* MAX_HISTORY_DEPTH_TAG("max-depth"); //! Maximum size (number of stored cache changes) for RTPS History instances
 constexpr const char* DOWNSAMPLING_TAG("downsampling"); //! Keep 1 out of every *downsampling* samples received
 constexpr const char* MAX_RX_RATE_TAG("max-rx-rate"); //! Process up to *max_rx_rate* samples in a 1 second bin
+constexpr const char* MAX_TX_RATE_TAG("max-tx-rate"); //! Transmit up to *max_tx_rate* samples in a 1 second bin
 constexpr const char* WAIT_ALL_ACKED_TIMEOUT_TAG("wait-all-acked-timeout"); //! Wait for a maximum of *wait-all-acked-timeout* ms until all msgs sent by reliable writers are acknowledged by their matched readers
 constexpr const char* REMOVE_UNUSED_ENTITIES_TAG("remove-unused-entities"); //! Dynamically create and delete entities and tracks.
 

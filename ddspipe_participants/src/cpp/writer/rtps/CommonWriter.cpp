@@ -48,7 +48,7 @@ CommonWriter::CommonWriter(
         const fastrtps::TopicAttributes& topic_attributes,
         const fastrtps::WriterQos& writer_qos,
         const utils::PoolConfiguration& pool_configuration)
-    : BaseWriter(participant_id)
+    : BaseWriter(participant_id, topic.topic_qos.max_tx_rate)
     , rtps_participant_(rtps_participant)
     , repeater_(repeater)
     , topic_(topic)

@@ -128,6 +128,15 @@ TopicQoS
     DDSPIPE_CORE_DllAPI
     static std::atomic<float> default_max_rx_rate;
 
+    /**
+     * @brief Global value to store the default max transmission rate in this execution.
+     *
+     * This value can change along the execution.
+     * Every new TopicQoS object will use this value as \c max_tx_rate default.
+     */
+    DDSPIPE_CORE_DllAPI
+    static std::atomic<float> default_max_tx_rate;
+
     /////////////////////////
     // VARIABLES
     /////////////////////////
@@ -161,6 +170,9 @@ TopicQoS
     //! Discard msgs if less than 1/rate seconds elapsed since the last sample was processed [Hz]. Default: 0 (no limit)
     utils::Fuzzy<float> max_rx_rate;
 
+    //! Discard msgs if less than 1/rate seconds elapsed since the last sample was transmitted [Hz]. Default: 0 (no limit)
+    utils::Fuzzy<float> max_tx_rate;
+
 
     //! Durability kind (Default = VOLATILE)
     static constexpr DurabilityKind DURABILITY_QOS_DEFAULT = DurabilityKind::VOLATILE;
@@ -185,6 +197,9 @@ TopicQoS
 
     //! TODO
     static constexpr float MAX_RX_RATE_DEFAULT = 0;
+
+    //! TODO
+    static constexpr float MAX_TX_RATE_DEFAULT = 0;
 };
 
 /**

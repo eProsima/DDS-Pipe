@@ -217,7 +217,7 @@ fastdds::dds::DataReaderQos CommonReader::reckon_reader_qos_() const
             ? fastdds::dds::OwnershipQosPolicyKind::EXCLUSIVE_OWNERSHIP_QOS
             : fastdds::dds::OwnershipQosPolicyKind::SHARED_OWNERSHIP_QOS;
 
-    if (topic_.topic_qos.history_depth == 0)
+    if (topic_.topic_qos.history_depth == 0U)
     {
         qos.history().kind = eprosima::fastdds::dds::HistoryQosPolicyKind::KEEP_ALL_HISTORY_QOS;
     }
