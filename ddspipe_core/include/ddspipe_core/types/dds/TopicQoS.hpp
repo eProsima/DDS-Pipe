@@ -133,16 +133,16 @@ TopicQoS
     /////////////////////////
 
     //! Durability kind (Default = VOLATILE)
-    DurabilityKind durability_qos = DurabilityKind::VOLATILE;
+    utils::Fuzzy<DurabilityKind> durability_qos;
 
     //! Reliability kind (Default = BEST_EFFORT)
-    ReliabilityKind reliability_qos = ReliabilityKind::BEST_EFFORT;
+    utils::Fuzzy<ReliabilityKind> reliability_qos;
 
     //! Ownership kind of the topic
-    OwnershipQosPolicyKind ownership_qos = OwnershipQosPolicyKind::SHARED_OWNERSHIP_QOS;
+    utils::Fuzzy<OwnershipQosPolicyKind> ownership_qos;
 
     //! Whether the topics uses partitions
-    bool use_partitions = false;
+    utils::Fuzzy<bool> use_partitions;
 
     /**
      * @brief History Qos
@@ -150,10 +150,10 @@ TopicQoS
      * @note Default value would be taken from \c default_history_depth in object creation.
      * @note It only stores the depth because in pipe it will always be keep last, as RTPS has not resource limits.
      */
-    HistoryDepthType history_depth = HISTORY_DEPTH_DEFAULT;
+    utils::Fuzzy<HistoryDepthType> history_depth;
 
     //! Whether the topic has key or not
-    bool keyed = false;
+    utils::Fuzzy<bool> keyed;
 
     //! Downsampling factor: keep 1 out of every *downsampling* samples received (downsampling=1 <=> no downsampling)
     utils::Fuzzy<unsigned int> downsampling;
@@ -161,7 +161,30 @@ TopicQoS
     //! Discard msgs if less than 1/rate seconds elapsed since the last sample was processed [Hz]. Default: 0 (no limit)
     utils::Fuzzy<float> max_rx_rate;
 
+
+    //! Durability kind (Default = VOLATILE)
+    static constexpr DurabilityKind DURABILITY_QOS_DEFAULT = DurabilityKind::VOLATILE;
+
+    //! Reliability kind (Default = BEST_EFFORT)
+    static constexpr ReliabilityKind RELIABILITY_QOS_DEFAULT = ReliabilityKind::BEST_EFFORT;
+
+    //! Ownership kind of the topic
+    static constexpr OwnershipQosPolicyKind OWNERSHIP_QOS_DEFAULT = OwnershipQosPolicyKind::SHARED_OWNERSHIP_QOS;
+
+    //! Whether the topics uses partitions
+    static constexpr bool USE_PARTITIONS_DEFAULT = false;
+
+    //! TODO
     static constexpr HistoryDepthType HISTORY_DEPTH_DEFAULT = 5000;
+
+    //! TODO
+    static constexpr bool KEYED_DEFAULT = false;
+
+    //! TODO
+    static constexpr unsigned int DOWNSAMPLING_DEFAULT = 1;
+
+    //! TODO
+    static constexpr float MAX_RX_RATE_DEFAULT = 0;
 };
 
 /**
