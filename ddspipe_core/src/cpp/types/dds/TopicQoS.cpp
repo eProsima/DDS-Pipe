@@ -26,13 +26,28 @@ namespace core {
 namespace types {
 
 std::atomic<HistoryDepthType> TopicQoS::default_history_depth{HISTORY_DEPTH_DEFAULT};
-std::atomic<unsigned int> TopicQoS::default_downsampling{1};
-std::atomic<float> TopicQoS::default_max_rx_rate{0};
+std::atomic<unsigned int> TopicQoS::default_downsampling{DOWNSAMPLING_DEFAULT};
+std::atomic<float> TopicQoS::default_max_rx_rate{MAX_RX_RATE_DEFAULT};
 
 TopicQoS::TopicQoS()
 {
-    // Set history by default
-    history_depth = default_history_depth;
+    // TODO
+    durability_qos.set_value(DURABILITY_QOS_DEFAULT, utils::FuzzyLevelValues::fuzzy_level_default);
+
+    // TODO
+    reliability_qos.set_value(RELIABILITY_QOS_DEFAULT, utils::FuzzyLevelValues::fuzzy_level_default);
+
+    // TODO
+    ownership_qos.set_value(OWNERSHIP_QOS_DEFAULT, utils::FuzzyLevelValues::fuzzy_level_default);
+
+    // TODO
+    use_partitions.set_value(USE_PARTITIONS_DEFAULT, utils::FuzzyLevelValues::fuzzy_level_default);
+
+    // TODO
+    keyed.set_value(KEYED_DEFAULT, utils::FuzzyLevelValues::fuzzy_level_default);
+
+    // TODO
+    history_depth.set_value(default_history_depth, utils::FuzzyLevelValues::fuzzy_level_default);
 
     // Set downsampling by default
     downsampling.set_value(default_downsampling, utils::FuzzyLevelValues::fuzzy_level_default);
@@ -45,11 +60,11 @@ bool TopicQoS::operator ==(
         const TopicQoS& other) const noexcept
 {
     return
-        this->reliability_qos == other.reliability_qos &&
         this->durability_qos == other.durability_qos &&
-        this->history_depth == other.history_depth &&
+        this->reliability_qos == other.reliability_qos &&
         this->ownership_qos == other.ownership_qos &&
         this->use_partitions == other.use_partitions &&
+        this->history_depth == other.history_depth &&
         this->keyed == other.keyed &&
         this->downsampling == other.downsampling &&
         this->max_rx_rate == other.max_rx_rate;
@@ -77,6 +92,30 @@ bool TopicQoS::has_partitions() const noexcept
 
 void TopicQoS::set_qos(const TopicQoS& qos) noexcept
 {
+    if (qos.durability_qos.is_set()) {
+        durability_qos.set_value(qos.durability_qos.get_value());
+    }
+
+    if (qos.reliability_qos.is_set()) {
+        reliability_qos.set_value(qos.reliability_qos.get_value());
+    }
+
+    if (qos.ownership_qos.is_set()) {
+        ownership_qos.set_value(qos.ownership_qos.get_value());
+    }
+
+    if (qos.use_partitions.is_set()) {
+        use_partitions.set_value(qos.use_partitions.get_value());
+    }
+
+    if (qos.history_depth.is_set()) {
+        history_depth.set_value(qos.history_depth.get_value());
+    }
+
+    if (qos.keyed.is_set()) {
+        keyed.set_value(qos.keyed.get_value());
+    }
+
     if (qos.downsampling.is_set()) {
         downsampling.set_value(qos.downsampling.get_value());
     }
