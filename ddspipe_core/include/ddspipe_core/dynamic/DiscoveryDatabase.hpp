@@ -150,7 +150,7 @@ public:
             const types::Guid& endpoint_guid) const;
 
     /**
-     * @brief Apply a filter to the endpoints
+     * @brief Get the endpoints that pass the given filter
      *
      * @return A map with the endpoints that pass the filter
      */

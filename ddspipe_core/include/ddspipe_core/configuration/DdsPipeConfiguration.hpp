@@ -77,17 +77,13 @@ struct DdsPipeConfiguration : public IConfiguration
     // VARIABLES
     /////////////////////////
 
-    //! Configuration of the generic routes
-    RoutesConfiguration routes_config{};
+    //! Configuration of the generic routes.
+    RoutesConfiguration routes{};
 
-    //! Configuration of the routes specific to a topic
-    TopicRoutesConfiguration topic_routes_config{};
+    //! Configuration of the routes specific to a topic.
+    TopicRoutesConfiguration topic_routes{};
 
-    /**
-     * @brief Whether entities should be removed when they have no writers connected to them.
-     *
-     * @note False by default.
-     */
+    //! Whether entities should be removed when they have no writers connected to them.
     bool remove_unused_entities = false;
 };
 

@@ -29,7 +29,7 @@ namespace core {
 bool DdsPipeConfiguration::is_valid(
         utils::Formatter& error_msg) const noexcept
 {
-    return routes_config.is_valid(error_msg) && topic_routes_config.is_valid(error_msg);
+    return routes.is_valid(error_msg) && topic_routes.is_valid(error_msg);
 }
 
 bool DdsPipeConfiguration::is_valid(
@@ -41,21 +41,21 @@ bool DdsPipeConfiguration::is_valid(
         return false;
     }
 
-    return routes_config.is_valid(error_msg, participant_ids) && \
-           topic_routes_config.is_valid(error_msg, participant_ids);
+    return routes.is_valid(error_msg, participant_ids) &&
+           topic_routes.is_valid(error_msg, participant_ids);
 }
 
 RoutesConfiguration DdsPipeConfiguration::get_routes_config(
         const utils::Heritable<types::DistributedTopic> &topic) const noexcept
 {
-    if (topic_routes_config().count(topic) != 0)
+    if (topic_routes().count(topic) != 0)
     {
         // There is a topic route configuration. Use it, and ignore the generic one.
-        return topic_routes_config()[topic];
+        return topic_routes()[topic];
     }
     else{
         // There isn't a topic route configuration. Use the generic one.
-        return routes_config;
+        return routes;
     }
 }
 
