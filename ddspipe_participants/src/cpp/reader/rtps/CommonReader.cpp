@@ -17,7 +17,6 @@
 
 #include <cpp_utils/exception/InitializationException.hpp>
 #include <cpp_utils/Log.hpp>
-#include <cpp_utils/math/math_extension.hpp>
 
 #include <ddspipe_core/interface/IRoutingData.hpp>
 #include <ddspipe_core/types/data/RtpsPayloadData.hpp>
@@ -253,7 +252,7 @@ void CommonReader::enable_nts_() noexcept
     }
 }
 
-bool CommonReader::can_accept_change_(
+bool CommonReader::should_accept_change_(
         const fastrtps::rtps::CacheChange_t* change) noexcept
 {
     // Get reception timestamp
@@ -265,7 +264,7 @@ bool CommonReader::can_accept_change_(
         return false;
     }
 
-    return can_accept_sample_();
+    return should_accept_sample_();
 }
 
 bool CommonReader::come_from_this_participant_(
@@ -380,7 +379,7 @@ void CommonReader::onNewCacheChangeAdded(
         fastrtps::rtps::RTPSReader* reader,
         const fastrtps::rtps::CacheChange_t* const change) noexcept
 {
-    if (can_accept_change_(change))
+    if (should_accept_change_(change))
     {
         // Do not remove previous received changes so they can be read when the reader is enabled
         if (enabled_)

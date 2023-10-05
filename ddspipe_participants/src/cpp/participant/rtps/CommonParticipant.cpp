@@ -360,21 +360,11 @@ std::shared_ptr<core::IWriter> CommonParticipant::create_writer(
         logDebug(DDSPIPE_RTPS_PARTICIPANT, "Not creating Writer for topic " << topic.topic_name());
         return std::make_shared<BlankWriter>();
     }
-    
+
+    // Make a copy to modify the Topic QoS
     core::types::DdsTopic dds_topic = *dds_topic_ptr;
 
-    for (const auto& manual_topic : manual_topics)
-    {
-        if (manual_topic->matches(dds_topic))
-        {
-            dds_topic.topic_qos.set_qos(manual_topic->topic_qos);
-        }
-    }
-
-    if (!dds_topic.topic_qos.max_tx_rate.is_set() && configuration_->max_tx_rate.is_set())
-    {
-        dds_topic.topic_qos.max_tx_rate.set_value(configuration_->max_tx_rate.get_value());
-    }
+    set_topic_qos_(dds_topic);
 
     if (topic.internal_type_discriminator() == core::types::INTERNAL_TOPIC_TYPE_RPC)
     {
@@ -434,25 +424,10 @@ std::shared_ptr<core::IReader> CommonParticipant::create_reader(
         return std::make_shared<BlankReader>();
     }
 
+    // Make a copy to modify the Topic QoS
     core::types::DdsTopic dds_topic = *dds_topic_ptr;
 
-    for (const auto& manual_topic : manual_topics)
-    {
-        if (manual_topic->matches(dds_topic))
-        {
-            dds_topic.topic_qos.set_qos(manual_topic->topic_qos);
-        }
-    }
-
-    if (!dds_topic.topic_qos.max_rx_rate.is_set() && configuration_->max_rx_rate.is_set())
-    {
-        dds_topic.topic_qos.max_rx_rate.set_value(configuration_->max_rx_rate.get_value());
-    }
-
-    if (!dds_topic.topic_qos.downsampling.is_set() && configuration_->downsampling.is_set())
-    {
-        dds_topic.topic_qos.downsampling.set_value(configuration_->downsampling.get_value());
-    }
+    set_topic_qos_(dds_topic);
 
     if (topic.internal_type_discriminator() == core::types::INTERNAL_TOPIC_TYPE_RPC)
     {
@@ -498,6 +473,32 @@ std::shared_ptr<core::IReader> CommonParticipant::create_reader(
     {
         logDevError(DDSPIPE_RTPS_PARTICIPANT, "Incorrect dds Topic in Reader creation.");
         return std::make_shared<BlankReader>();
+    }
+}
+
+void CommonParticipant::set_topic_qos_(core::types::DdsTopic& dds_topic) noexcept
+{
+    for (const auto& manual_topic : manual_topics)
+    {
+        if (manual_topic->matches(dds_topic))
+        {
+            dds_topic.topic_qos.set_qos(manual_topic->topic_qos);
+        }
+    }
+
+    if (!dds_topic.topic_qos.max_rx_rate.is_set() && configuration_->max_rx_rate.is_set())
+    {
+        dds_topic.topic_qos.max_rx_rate.set_value(configuration_->max_rx_rate.get_value());
+    }
+
+    if (!dds_topic.topic_qos.max_tx_rate.is_set() && configuration_->max_tx_rate.is_set())
+    {
+        dds_topic.topic_qos.max_tx_rate.set_value(configuration_->max_tx_rate.get_value());
+    }
+
+    if (!dds_topic.topic_qos.downsampling.is_set() && configuration_->downsampling.is_set())
+    {
+        dds_topic.topic_qos.downsampling.set_value(configuration_->downsampling.get_value());
     }
 }
 

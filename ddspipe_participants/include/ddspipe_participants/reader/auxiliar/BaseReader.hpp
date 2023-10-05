@@ -201,9 +201,12 @@ protected:
     virtual utils::ReturnCode take_nts_(
             std::unique_ptr<core::IRoutingData>& data) noexcept = 0;
 
-    //! Whether a sample received should be processed
-    DDSPIPE_PARTICIPANTS_DllAPI
-    virtual bool can_accept_sample_() noexcept;
+    /**
+     * @brief Check the \c max_rx_rate and the \c downsampling to decide whether a sample should be processed.
+     *
+     * Implement this method in every inherited Reader class with take functionality.
+     */
+    virtual bool should_accept_sample_() noexcept;
 
     /////////////////////////
     // INTERNAL VARIABLES

@@ -415,13 +415,13 @@ void YamlReader::fill(
     // Max Reception Rate optional
     if (is_tag_present(yml, QOS_MAX_RX_RATE_TAG))
     {
-        object.max_rx_rate = get<unsigned int>(yml, QOS_MAX_RX_RATE_TAG, version);
+        object.max_rx_rate = get<float>(yml, QOS_MAX_RX_RATE_TAG, version);
     }
 
     // Max Transmission Rate optional
     if (is_tag_present(yml, QOS_MAX_TX_RATE_TAG))
     {
-        object.max_tx_rate = get<unsigned int>(yml, QOS_MAX_TX_RATE_TAG, version);
+        object.max_tx_rate = get<float>(yml, QOS_MAX_TX_RATE_TAG, version);
     }
 }
 

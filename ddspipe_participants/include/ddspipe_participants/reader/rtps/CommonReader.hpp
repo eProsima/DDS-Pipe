@@ -272,7 +272,7 @@ protected:
 
     //! Whether a change received should be processed
     DDSPIPE_PARTICIPANTS_DllAPI
-    virtual bool can_accept_change_(
+    virtual bool should_accept_change_(
             const fastrtps::rtps::CacheChange_t* change) noexcept;
 
     //! Whether a change received is from this Participant (to avoid auto-feedback)

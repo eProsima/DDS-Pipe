@@ -102,9 +102,7 @@ public:
     // VARIABLES
     /////////////////////////
 
-    /**
-     * @brief TODO
-     */
+    //! Topics that explicitally set a QoS attribute for this participant.
     std::set<utils::Heritable<core::types::WildcardDdsFilterTopic>> manual_topics;
 };
 

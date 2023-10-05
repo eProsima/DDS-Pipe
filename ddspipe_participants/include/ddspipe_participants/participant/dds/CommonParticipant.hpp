@@ -17,9 +17,7 @@
 #include <mutex>
 
 #include <cpp_utils/types/Atomicable.hpp>
-
 #include <cpp_utils/memory/Heritable.hpp>
-#include <ddspipe_core/types/topic/filter/WildcardDdsFilterTopic.hpp>
 
 #include <fastdds/dds/domain/DomainParticipant.hpp>
 #include <fastdds/dds/domain/DomainParticipantListener.hpp>
@@ -31,6 +29,7 @@
 #include <ddspipe_core/efficiency/payload/PayloadPool.hpp>
 #include <ddspipe_core/interface/IParticipant.hpp>
 #include <ddspipe_core/types/topic/dds/DdsTopic.hpp>
+#include <ddspipe_core/types/topic/filter/WildcardDdsFilterTopic.hpp>
 
 #include <ddspipe_participants/configuration/SimpleParticipantConfiguration.hpp>
 #include <ddspipe_participants/library/library_dll.h>

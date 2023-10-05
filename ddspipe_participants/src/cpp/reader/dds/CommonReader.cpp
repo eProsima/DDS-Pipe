@@ -92,7 +92,7 @@ void CommonReader::on_data_available(
 {
     logInfo(DDSPIPE_DDS_READER, "On data available in reader in " << participant_id_ << " for topic " << topic_ << ".");
 
-    if (can_accept_sample_())
+    if (should_accept_sample_())
     {
         on_data_available_();
     }
@@ -171,7 +171,7 @@ void CommonReader::enable_nts_() noexcept
 {
     // If the topic is reliable, the reader will keep the samples received when it was disabled.
     // However, if the topic is best_effort, the reader will discard the samples received when it was disabled.
-    if (topic_.topic_qos.is_reliable() && can_accept_sample_())
+    if (topic_.topic_qos.is_reliable() && should_accept_sample_())
     {
         on_data_available_();
     }

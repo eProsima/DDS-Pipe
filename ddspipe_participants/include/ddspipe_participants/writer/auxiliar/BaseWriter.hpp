@@ -133,8 +133,9 @@ protected:
     virtual utils::ReturnCode write_nts_(
             core::IRoutingData& data) noexcept  = 0;
 
-    //! Whether enough time has passed to send a sample
-    DDSPIPE_PARTICIPANTS_DllAPI
+    /**
+     * @brief Check the \c max_rx_rate to decide whether a sample should be sent.
+     */
     bool can_send_sample_() noexcept;
 
     /////////////////////////

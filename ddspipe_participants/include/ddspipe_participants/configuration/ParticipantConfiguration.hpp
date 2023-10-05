@@ -56,7 +56,7 @@ struct ParticipantConfiguration : public core::IConfiguration
     //! Participant max reception rate associated with this configuration.
     utils::Fuzzy<float> max_rx_rate{};
 
-    //! Participant max reception rate associated with this configuration.
+    //! Participant max transmission rate associated with this configuration.
     utils::Fuzzy<float> max_tx_rate{};
 };
 
