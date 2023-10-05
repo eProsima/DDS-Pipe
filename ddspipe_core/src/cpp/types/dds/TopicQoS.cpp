@@ -28,6 +28,7 @@ namespace types {
 std::atomic<HistoryDepthType> TopicQoS::default_history_depth{HISTORY_DEPTH_DEFAULT};
 std::atomic<unsigned int> TopicQoS::default_downsampling{DOWNSAMPLING_DEFAULT};
 std::atomic<float> TopicQoS::default_max_rx_rate{MAX_RX_RATE_DEFAULT};
+std::atomic<float> TopicQoS::default_max_tx_rate{MAX_TX_RATE_DEFAULT};
 
 TopicQoS::TopicQoS()
 {
@@ -54,6 +55,9 @@ TopicQoS::TopicQoS()
 
     // Set max reception rate by default
     max_rx_rate.set_value(default_max_rx_rate, utils::FuzzyLevelValues::fuzzy_level_default);
+
+    // Set max reception rate by default
+    max_tx_rate.set_value(default_max_tx_rate, utils::FuzzyLevelValues::fuzzy_level_default);
 }
 
 bool TopicQoS::operator ==(
@@ -67,7 +71,8 @@ bool TopicQoS::operator ==(
         this->history_depth == other.history_depth &&
         this->keyed == other.keyed &&
         this->downsampling == other.downsampling &&
-        this->max_rx_rate == other.max_rx_rate;
+        this->max_rx_rate == other.max_rx_rate &&
+        this->max_tx_rate == other.max_tx_rate;
 }
 
 bool TopicQoS::is_reliable() const noexcept
@@ -122,6 +127,10 @@ void TopicQoS::set_qos(const TopicQoS& qos) noexcept
 
     if (qos.max_rx_rate.is_set()) {
         max_rx_rate.set_value(qos.max_rx_rate.get_value());
+    }
+
+    if (qos.max_tx_rate.is_set()) {
+        max_tx_rate.set_value(qos.max_tx_rate.get_value());
     }
 }
 
@@ -212,6 +221,7 @@ std::ostream& operator <<(
         ";depth(" << qos.history_depth << ")" <<
         ";downsampling(" << qos.downsampling << ")" <<
         ";max_rx_rate(" << qos.max_rx_rate << ")" <<
+        ";max_tx_rate(" << qos.max_tx_rate << ")" <<
         "}";
 
     return os;

@@ -360,7 +360,21 @@ std::shared_ptr<core::IWriter> CommonParticipant::create_writer(
         logDebug(DDSPIPE_RTPS_PARTICIPANT, "Not creating Writer for topic " << topic.topic_name());
         return std::make_shared<BlankWriter>();
     }
-    const core::types::DdsTopic& dds_topic = *dds_topic_ptr;
+    
+    core::types::DdsTopic dds_topic = *dds_topic_ptr;
+
+    for (const auto& manual_topic : manual_topics)
+    {
+        if (manual_topic->matches(dds_topic))
+        {
+            dds_topic.topic_qos.set_qos(manual_topic->topic_qos);
+        }
+    }
+
+    if (!dds_topic.topic_qos.max_tx_rate.is_set() && configuration_->max_tx_rate.is_set())
+    {
+        dds_topic.topic_qos.max_tx_rate.set_value(configuration_->max_tx_rate.get_value());
+    }
 
     if (topic.internal_type_discriminator() == core::types::INTERNAL_TOPIC_TYPE_RPC)
     {
@@ -427,21 +441,16 @@ std::shared_ptr<core::IReader> CommonParticipant::create_reader(
         if (manual_topic->matches(dds_topic))
         {
             dds_topic.topic_qos.set_qos(manual_topic->topic_qos);
-            // dds_topic.topic_qos.max_rx_rate.set_value(manual_topic->max_rx_rate);
         }
     }
 
     if (!dds_topic.topic_qos.max_rx_rate.is_set() && configuration_->max_rx_rate.is_set())
     {
-        // The hirearchy level for the max reception rate is:
-        // Topic > Participant > Specs > Default
         dds_topic.topic_qos.max_rx_rate.set_value(configuration_->max_rx_rate.get_value());
     }
 
     if (!dds_topic.topic_qos.downsampling.is_set() && configuration_->downsampling.is_set())
     {
-        // The hirearchy level for the downsampling value is:
-        // Topic > Participant > Specs > Default
         dds_topic.topic_qos.downsampling.set_value(configuration_->downsampling.get_value());
     }
 

@@ -125,10 +125,6 @@ public:
     DDSPIPE_PARTICIPANTS_DllAPI
     core::types::ParticipantId participant_id() const noexcept override;
 
-    //! Whether a sample received should be processed
-    DDSPIPE_PARTICIPANTS_DllAPI
-    virtual bool can_accept_sample_() noexcept;
-
     /////////////////////////
     // RPC REQUIRED METHODS
     /////////////////////////
@@ -204,6 +200,10 @@ protected:
      */
     virtual utils::ReturnCode take_nts_(
             std::unique_ptr<core::IRoutingData>& data) noexcept = 0;
+
+    //! Whether a sample received should be processed
+    DDSPIPE_PARTICIPANTS_DllAPI
+    virtual bool can_accept_sample_() noexcept;
 
     /////////////////////////
     // INTERNAL VARIABLES
