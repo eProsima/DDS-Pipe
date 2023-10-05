@@ -251,7 +251,7 @@ void DdsPipe::discovered_endpoint_nts_(
         {
             // Service server discovered
             discovered_service_nts_(RpcTopic(
-                endpoint.topic), endpoint.discoverer_participant_id, endpoint.guid.guid_prefix());
+                        endpoint.topic), endpoint.discoverer_participant_id, endpoint.guid.guid_prefix());
         }
     }
     else if (is_endpoint_relevant_(endpoint))
@@ -272,7 +272,8 @@ void DdsPipe::removed_endpoint_nts_(
         if (endpoint.is_server_endpoint())
         {
             // Service server removed/dropped
-            removed_service_nts_(RpcTopic(endpoint.topic), endpoint.discoverer_participant_id, endpoint.guid.guid_prefix());
+            removed_service_nts_(RpcTopic(endpoint.topic), endpoint.discoverer_participant_id,
+                    endpoint.guid.guid_prefix());
         }
 
     }
@@ -323,12 +324,12 @@ bool DdsPipe::is_endpoint_relevant_(
     }
 
     auto is_endpoint_relevant = [endpoint](const Endpoint& entity)
-    {
-        return entity.active &&
-                entity.is_reader() &&
-                entity.topic == endpoint.topic &&
-                entity.discoverer_participant_id == endpoint.discoverer_participant_id;
-    };
+            {
+                return entity.active &&
+                       entity.is_reader() &&
+                       entity.topic == endpoint.topic &&
+                       entity.discoverer_participant_id == endpoint.discoverer_participant_id;
+            };
 
     const auto& relevant_endpoints = discovery_database_->get_endpoints(is_endpoint_relevant);
 

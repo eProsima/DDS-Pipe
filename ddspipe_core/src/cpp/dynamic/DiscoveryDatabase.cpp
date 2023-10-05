@@ -245,7 +245,7 @@ Endpoint DiscoveryDatabase::get_endpoint(
 }
 
 std::map<Guid, Endpoint> DiscoveryDatabase::get_endpoints(
-    std::function<bool(const Endpoint&)> is_valid_endpoint) const noexcept
+        std::function<bool(const Endpoint&)> is_valid_endpoint) const noexcept
 {
     std::shared_lock<std::shared_timed_mutex> lock(mutex_);
 

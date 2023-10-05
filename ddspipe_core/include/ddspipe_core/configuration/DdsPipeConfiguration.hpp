@@ -71,7 +71,7 @@ struct DdsPipeConfiguration : public IConfiguration
      */
     DDSPIPE_CORE_DllAPI
     RoutesConfiguration get_routes_config(
-            const utils::Heritable<types::DistributedTopic> &topic) const noexcept;
+            const utils::Heritable<types::DistributedTopic>& topic) const noexcept;
 
     /////////////////////////
     // VARIABLES

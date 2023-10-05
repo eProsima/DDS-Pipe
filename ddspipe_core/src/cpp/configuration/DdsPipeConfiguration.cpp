@@ -46,14 +46,15 @@ bool DdsPipeConfiguration::is_valid(
 }
 
 RoutesConfiguration DdsPipeConfiguration::get_routes_config(
-        const utils::Heritable<types::DistributedTopic> &topic) const noexcept
+        const utils::Heritable<types::DistributedTopic>& topic) const noexcept
 {
     if (topic_routes().count(topic) != 0)
     {
         // There is a topic route configuration. Use it, and ignore the generic one.
         return topic_routes()[topic];
     }
-    else{
+    else
+    {
         // There isn't a topic route configuration. Use the generic one.
         return routes;
     }
