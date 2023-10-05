@@ -22,11 +22,10 @@
 #include <ddspipe_core/configuration/IConfiguration.hpp>
 #include <ddspipe_core/configuration/RoutesConfiguration.hpp>
 #include <ddspipe_core/configuration/TopicRoutesConfiguration.hpp>
-
-#include <ddspipe_core/library/library_dll.h>
-
 #include <ddspipe_core/types/participant/ParticipantId.hpp>
 #include <ddspipe_core/types/topic/dds/DistributedTopic.hpp>
+
+#include <ddspipe_core/library/library_dll.h>
 
 namespace eprosima {
 namespace ddspipe {
@@ -47,15 +46,29 @@ struct DdsPipeConfiguration : public IConfiguration
     // METHODS
     /////////////////////////
 
+    /**
+     * @brief Override \c is_valid method.
+     */
     DDSPIPE_CORE_DllAPI
     virtual bool is_valid(
             utils::Formatter& error_msg) const noexcept override;
 
+    /**
+     * @brief Check if a configuration is valid given a list of participants.
+     *
+     * It calls its own \c is_valid method plus the \c is_valid
+     * in \c RoutesConfiguration and \c TopicRoutesConfiguratoin
+     */
     DDSPIPE_CORE_DllAPI
     bool is_valid(
             utils::Formatter& error_msg,
             std::map<types::ParticipantId, bool> participant_ids) const noexcept;
 
+    /**
+     * @brief Select the \c RoutesConfiguration for a topic.
+     *
+     * @return The route configuration for a specific topic.
+     */
     DDSPIPE_CORE_DllAPI
     RoutesConfiguration get_routes_config(
             const utils::Heritable<types::DistributedTopic> &topic) const noexcept;
@@ -64,11 +77,17 @@ struct DdsPipeConfiguration : public IConfiguration
     // VARIABLES
     /////////////////////////
 
+    //! Configuration of the generic routes
     RoutesConfiguration routes_config{};
 
+    //! Configuration of the routes specific to a topic
     TopicRoutesConfiguration topic_routes_config{};
 
-    //! Remove unused entities configuration. False by default.
+    /**
+     * @brief Whether entities should be removed when they have no writers connected to them.
+     *
+     * @note False by default.
+     */
     bool remove_unused_entities = false;
 };
 

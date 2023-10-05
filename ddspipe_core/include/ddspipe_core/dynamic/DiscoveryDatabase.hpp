@@ -150,9 +150,9 @@ public:
             const types::Guid& endpoint_guid) const;
 
     /**
-     * @brief Get the map of endpoints
+     * @brief Apply a filter to the endpoints
      *
-     * @return Map of endpoints
+     * @return A map with the endpoints that pass the filter
      */
     DDSPIPE_CORE_DllAPI
     std::map<types::Guid, types::Endpoint> get_endpoints(

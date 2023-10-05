@@ -114,7 +114,7 @@ struct Topic : public ITopic, public IConfiguration
     /**
      * @brief The id of the participant who discovered the topic.
      */
-    ParticipantId m_topic_discoverer{};
+    ParticipantId m_topic_discoverer {DEFAULT_PARTICIPANT_ID};
 };
 
 /**

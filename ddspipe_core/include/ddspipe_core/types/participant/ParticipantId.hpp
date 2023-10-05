@@ -30,6 +30,9 @@ namespace types {
  */
 using ParticipantId = std::string;
 
+//! Default Participant Id
+constexpr const char* DEFAULT_PARTICIPANT_ID("Undefined");
+
 } /* namespace types */
 } /* namespace core */
 } /* namespace ddspipe */

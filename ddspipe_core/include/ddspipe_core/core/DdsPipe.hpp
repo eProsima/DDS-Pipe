@@ -383,7 +383,7 @@ protected:
     // CONFIGURATION VARIABLES
     //////////////////////////
 
-    //! Custom forwarding routes
+    //! Configuration of the DDS Pipe
     DdsPipeConfiguration ddspipe_config_;
 };
 

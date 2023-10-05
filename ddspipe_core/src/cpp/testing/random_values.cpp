@@ -96,10 +96,7 @@ Endpoint random_endpoint(
     endpoint.guid = random_guid(seed);
     endpoint.kind = random_endpoint_kind(seed);
     endpoint.topic = random_dds_topic(seed);
-
-    // The discoverer participant id cannot be random.
-    // It must belong to an actual participant or be an empty string.
-    endpoint.discoverer_participant_id = "";
+    endpoint.discoverer_participant_id = random_participant_id(seed);
 
     return endpoint;
 }

@@ -146,8 +146,6 @@ TopicQoS
      */
     HistoryDepthType history_depth = HISTORY_DEPTH_DEFAULT;
 
-    static constexpr HistoryDepthType HISTORY_DEPTH_DEFAULT = 5000;
-
     //! Whether the topic has key or not
     bool keyed = false;
 
@@ -156,6 +154,8 @@ TopicQoS
 
     //! Discard msgs if less than 1/rate seconds elapsed since the last sample was processed [Hz]. Default: 0 (no limit)
     float max_reception_rate = 0;
+
+    static constexpr HistoryDepthType HISTORY_DEPTH_DEFAULT = 5000;
 };
 
 /**

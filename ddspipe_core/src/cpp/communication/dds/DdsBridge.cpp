@@ -39,9 +39,6 @@ DdsBridge::DdsBridge(
 
     if (remove_unused_entities)
     {
-        assert(topic->topic_discoverer() != "");
-        assert(topic->topic_discoverer() != "builtin-participant");
-
         // The builtin participants and some tests use an empty topic discoverer participant id
         create_writer(topic->topic_discoverer());
     }
@@ -151,6 +148,8 @@ void DdsBridge::create_all_tracks_()
 void DdsBridge::create_writer(
         const ParticipantId& participant_id)
 {
+    assert(participant_id != DEFAULT_PARTICIPANT_ID);
+
     std::lock_guard<std::mutex> lock(mutex_);
 
     // Create the writer.
@@ -164,6 +163,8 @@ void DdsBridge::create_writer(
 void DdsBridge::remove_writer(
         const ParticipantId& participant_id) noexcept
 {
+    assert(participant_id != DEFAULT_PARTICIPANT_ID);
+
     std::lock_guard<std::mutex> lock(mutex_);
 
     for (auto it = tracks_.cbegin(), next_it = it; it != tracks_.cend(); it = next_it)
