@@ -99,7 +99,7 @@ void BaseWriter::disable_() noexcept
 
 bool BaseWriter::can_send_sample_() noexcept
 {
-    // Get reception timestamp
+    // Get transmission timestamp
     auto now = utils::now();
 
     // Max Transmission Rate
@@ -112,7 +112,7 @@ bool BaseWriter::can_send_sample_() noexcept
         }
     }
 
-    // All filters passed -> Update last received timestamp with this sample's reception timestamp
+    // All filters passed -> Update last sent timestamp with this sample's transmission timestamp
     last_sent_ts_ = now;
 
     return true;

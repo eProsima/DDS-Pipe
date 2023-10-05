@@ -15,7 +15,6 @@
 #pragma once
 
 #include <cpp_utils/memory/Heritable.hpp>
-#include <ddspipe_core/types/topic/filter/WildcardDdsFilterTopic.hpp>
 
 #include <fastdds/rtps/participant/ParticipantDiscoveryInfo.h>
 #include <fastdds/rtps/reader/ReaderDiscoveryInfo.h>
@@ -29,6 +28,7 @@
 #include <ddspipe_core/efficiency/payload/PayloadPool.hpp>
 #include <ddspipe_core/interface/IParticipant.hpp>
 #include <ddspipe_core/types/dds/DomainId.hpp>
+#include <ddspipe_core/types/topic/filter/WildcardDdsFilterTopic.hpp>
 
 #include <ddspipe_participants/configuration/ParticipantConfiguration.hpp>
 #include <ddspipe_participants/library/library_dll.h>
@@ -190,6 +190,11 @@ protected:
     void create_participant_(
             const core::types::DomainId& domain,
             const fastrtps::rtps::RTPSParticipantAttributes& participant_attributes);
+
+    /**
+     * @brief Auxiliary method to set a set of Topic QoS.
+     */
+    void set_topic_qos_(core::types::DdsTopic& dds_topic) noexcept;
 
     /////
     // RTPS specific methods

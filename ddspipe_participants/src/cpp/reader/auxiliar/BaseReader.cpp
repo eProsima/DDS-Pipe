@@ -126,7 +126,7 @@ core::types::ParticipantId BaseReader::participant_id() const noexcept
     return participant_id_;
 }
 
-bool BaseReader::can_accept_sample_() noexcept
+bool BaseReader::should_accept_sample_() noexcept
 {
     // Get reception timestamp
     auto now = utils::now();

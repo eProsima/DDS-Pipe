@@ -71,14 +71,16 @@ struct WildcardDdsFilterTopic : public IFilterTopic
     // VARIABLES
     /////////////////////////
 
-    //! Topic name filter
+    //! Topic name filter.
     utils::Fuzzy<std::string> topic_name;
 
     //! Type name filter. If not set matches with all.
     utils::Fuzzy<std::string> type_name;
 
+    //! The subset of fixed Topic QoS.
     utils::Fuzzy<types::TopicQoS> topic_qos;
 
+    //! The participants to which the fixed Topic QoS apply.
     utils::Fuzzy<std::set<types::ParticipantId>> participants;
 
 protected:

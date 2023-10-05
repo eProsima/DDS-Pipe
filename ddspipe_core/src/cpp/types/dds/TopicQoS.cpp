@@ -32,31 +32,31 @@ std::atomic<float> TopicQoS::default_max_tx_rate{MAX_TX_RATE_DEFAULT};
 
 TopicQoS::TopicQoS()
 {
-    // TODO
+    // Set the default durability
     durability_qos.set_value(DURABILITY_QOS_DEFAULT, utils::FuzzyLevelValues::fuzzy_level_default);
 
-    // TODO
+    // Set the default reliabitliy
     reliability_qos.set_value(RELIABILITY_QOS_DEFAULT, utils::FuzzyLevelValues::fuzzy_level_default);
 
-    // TODO
+    // Set the default ownership
     ownership_qos.set_value(OWNERSHIP_QOS_DEFAULT, utils::FuzzyLevelValues::fuzzy_level_default);
 
-    // TODO
+    // Set whether by default the Topic should use partitions
     use_partitions.set_value(USE_PARTITIONS_DEFAULT, utils::FuzzyLevelValues::fuzzy_level_default);
 
-    // TODO
+    // Set whether by default the Topic has a key
     keyed.set_value(KEYED_DEFAULT, utils::FuzzyLevelValues::fuzzy_level_default);
 
-    // TODO
+    // Set the default history depth
     history_depth.set_value(default_history_depth, utils::FuzzyLevelValues::fuzzy_level_default);
 
-    // Set downsampling by default
+    // Set the default downsampling
     downsampling.set_value(default_downsampling, utils::FuzzyLevelValues::fuzzy_level_default);
 
-    // Set max reception rate by default
+    // Set the default max reception rate
     max_rx_rate.set_value(default_max_rx_rate, utils::FuzzyLevelValues::fuzzy_level_default);
 
-    // Set max reception rate by default
+    // Set the default max transmision rate
     max_tx_rate.set_value(default_max_tx_rate, utils::FuzzyLevelValues::fuzzy_level_default);
 }
 
