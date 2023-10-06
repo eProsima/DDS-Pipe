@@ -79,6 +79,14 @@ public:
     DDSPIPE_CORE_DllAPI
     const std::map<types::ParticipantId, std::shared_ptr<IParticipant>>& get_participants_map() const noexcept;
 
+    /**
+     * @brief Get whether each participant is a repeater
+     *
+     * @return map of is_repeater tags indexed by ids
+     */
+    DDSPIPE_CORE_DllAPI
+    std::map<types::ParticipantId, bool> get_participants_repeater_map() const noexcept;
+
     //! Whether the database is empty
     DDSPIPE_CORE_DllAPI
     bool empty() const noexcept;

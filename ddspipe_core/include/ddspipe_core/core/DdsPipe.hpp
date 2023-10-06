@@ -68,7 +68,7 @@ public:
             const std::shared_ptr<utils::SlotThreadPool>& thread_pool,
             const std::set<utils::Heritable<types::DistributedTopic>>& builtin_topics = {},
             bool start_enable = false,
-            const DdsPipeConfiguration& ddspipe_config = {});
+            const DdsPipeConfiguration& configuration = {});
 
     /**
      * @brief Destroy the DdsPipe object
@@ -384,7 +384,7 @@ protected:
     //////////////////////////
 
     //! Configuration of the DDS Pipe
-    DdsPipeConfiguration ddspipe_config_;
+    DdsPipeConfiguration configuration_;
 };
 
 } /* namespace core */

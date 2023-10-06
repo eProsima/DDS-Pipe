@@ -51,7 +51,7 @@ struct RoutesConfiguration : public IConfiguration
 
     DDSPIPE_CORE_DllAPI bool is_valid(
             utils::Formatter& error_msg,
-            std::map<types::ParticipantId, bool> participant_ids) const noexcept;
+            const std::map<types::ParticipantId, bool>& participants) const noexcept;
 
     /////////////////////////
     // OPERATORS

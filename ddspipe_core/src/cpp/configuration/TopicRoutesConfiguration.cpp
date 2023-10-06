@@ -44,7 +44,7 @@ bool TopicRoutesConfiguration::is_valid(
 
 bool TopicRoutesConfiguration::is_valid(
         utils::Formatter& error_msg,
-        std::map<ddspipe::core::types::ParticipantId, bool> participant_ids) const noexcept
+        const std::map<types::ParticipantId, bool>& participant_ids) const noexcept
 {
     if (!is_valid(error_msg))
     {

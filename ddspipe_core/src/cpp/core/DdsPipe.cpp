@@ -36,16 +36,25 @@ DdsPipe::DdsPipe(
         const std::shared_ptr<utils::SlotThreadPool>& thread_pool,
         const std::set<utils::Heritable<DistributedTopic>>& builtin_topics, /* = {} */
         bool start_enable, /* = false */
-        const DdsPipeConfiguration& ddspipe_config /* = {} */)
+        const DdsPipeConfiguration& configuration /* = {} */)
     : allowed_topics_(allowed_topics)
     , discovery_database_(discovery_database)
     , payload_pool_(payload_pool)
     , participants_database_(participants_database)
     , thread_pool_(thread_pool)
     , enabled_(false)
-    , ddspipe_config_(ddspipe_config)
+    , configuration_(configuration)
 {
     logDebug(DDSPIPE, "Creating DDS Pipe.");
+
+    // Check that the configuration is correct
+    utils::Formatter error_msg;
+    if (!configuration_.is_valid(error_msg, participants_database_->get_participants_repeater_map()))
+    {
+        throw utils::ConfigurationException(
+                  utils::Formatter() <<
+                      "Configuration for DDS Pipe is invalid: " << error_msg);
+    }
 
     // Add callback to be called by the discovery database when an Endpoint is discovered
     discovery_database_->add_endpoint_discovered_callback(std::bind(&DdsPipe::discovered_endpoint_, this,
@@ -277,7 +286,7 @@ void DdsPipe::removed_endpoint_nts_(
         }
 
     }
-    else if (ddspipe_config_.remove_unused_entities && is_endpoint_relevant_(endpoint))
+    else if (configuration_.remove_unused_entities && is_endpoint_relevant_(endpoint))
     {
         // Remove the subscriber from the topic.
         auto it_bridge = bridges_.find(topic);
@@ -437,7 +446,7 @@ void DdsPipe::create_new_bridge_nts_(
     try
     {
 
-        auto routes_config = ddspipe_config_.get_routes_config(topic);
+        auto routes_config = configuration_.get_routes_config(topic);
 
         // Create bridge instance
         auto new_bridge = std::make_unique<DdsBridge>(topic,
@@ -445,7 +454,7 @@ void DdsPipe::create_new_bridge_nts_(
                         payload_pool_,
                         thread_pool_,
                         routes_config,
-                        ddspipe_config_.remove_unused_entities);
+                        configuration_.remove_unused_entities);
 
         if (enabled)
         {

@@ -77,6 +77,22 @@ const std::map<types::ParticipantId,
     return participants_;
 }
 
+std::map<types::ParticipantId, bool> ParticipantsDatabase::get_participants_repeater_map() const noexcept
+{
+    std::shared_lock<std::shared_timed_mutex> lock(mutex_);
+
+    std::map<types::ParticipantId, bool> participants_repeater_map;
+
+    for (auto it : participants_)
+    {
+        const auto& id = it.first;
+        const auto& participant = it.second;
+        participants_repeater_map[id] = participant->is_repeater();
+    }
+
+    return participants_repeater_map;
+}
+
 bool ParticipantsDatabase::empty() const noexcept
 {
     return participants_.empty();

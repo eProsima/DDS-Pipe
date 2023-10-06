@@ -34,15 +34,15 @@ bool DdsPipeConfiguration::is_valid(
 
 bool DdsPipeConfiguration::is_valid(
         utils::Formatter& error_msg,
-        std::map<ddspipe::core::types::ParticipantId, bool> participant_ids) const noexcept
+        const std::map<types::ParticipantId, bool>& participant_ids) const noexcept
 {
     if (!is_valid(error_msg))
     {
         return false;
     }
 
-    return routes.is_valid(error_msg, participant_ids) &&
-           topic_routes.is_valid(error_msg, participant_ids);
+    return routes.is_valid(error_msg, participants) &&
+           topic_routes.is_valid(error_msg, participants);
 }
 
 RoutesConfiguration DdsPipeConfiguration::get_routes_config(
