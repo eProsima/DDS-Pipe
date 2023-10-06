@@ -103,7 +103,7 @@ public:
     /////////////////////////
 
     //! Topics that explicitally set a QoS attribute for this participant.
-    std::set<utils::Heritable<core::types::WildcardDdsFilterTopic>> manual_topics;
+    std::vector<utils::Heritable<core::types::WildcardDdsFilterTopic>> manual_topics;
 };
 
 } /* namespace core */

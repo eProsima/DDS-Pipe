@@ -24,6 +24,7 @@
 #include <ddspipe_core/configuration/TopicRoutesConfiguration.hpp>
 #include <ddspipe_core/types/participant/ParticipantId.hpp>
 #include <ddspipe_core/types/topic/dds/DistributedTopic.hpp>
+#include <ddspipe_core/types/topic/filter/WildcardDdsFilterTopic.hpp>
 
 #include <ddspipe_core/library/library_dll.h>
 
@@ -76,6 +77,9 @@ struct DdsPipeConfiguration : public IConfiguration
     /////////////////////////
     // VARIABLES
     /////////////////////////
+
+    //! Set of fixed topics' QoS
+    std::vector<utils::Heritable<ddspipe::core::types::WildcardDdsFilterTopic>> manual_topics {};
 
     //! Configuration of the generic routes.
     RoutesConfiguration routes{};

@@ -478,6 +478,10 @@ std::shared_ptr<core::IReader> CommonParticipant::create_reader(
 
 void CommonParticipant::set_topic_qos_(core::types::DdsTopic& dds_topic) noexcept
 {
+    // The Topic QoS are now set to the values in Specs on the level DEFAULT.
+    // They will remain as configured in specs unless they are overriden.
+
+    // 1. Manual Topic QoS.
     for (const auto& manual_topic : manual_topics)
     {
         if (manual_topic->matches(dds_topic))
@@ -486,20 +490,8 @@ void CommonParticipant::set_topic_qos_(core::types::DdsTopic& dds_topic) noexcep
         }
     }
 
-    if (!dds_topic.topic_qos.max_rx_rate.is_set() && configuration_->max_rx_rate.is_set())
-    {
-        dds_topic.topic_qos.max_rx_rate.set_value(configuration_->max_rx_rate.get_value());
-    }
-
-    if (!dds_topic.topic_qos.max_tx_rate.is_set() && configuration_->max_tx_rate.is_set())
-    {
-        dds_topic.topic_qos.max_tx_rate.set_value(configuration_->max_tx_rate.get_value());
-    }
-
-    if (!dds_topic.topic_qos.downsampling.is_set() && configuration_->downsampling.is_set())
-    {
-        dds_topic.topic_qos.downsampling.set_value(configuration_->downsampling.get_value());
-    }
+    // 2. Participant Topic QoS.
+    dds_topic.topic_qos.set_qos(configuration_->topic_qos);
 }
 
 fastrtps::rtps::RTPSParticipantAttributes
