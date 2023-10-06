@@ -349,19 +349,6 @@ void YamlReader::fill(
         const Yaml& yml,
         const YamlReaderVersion version)
 {
-    // Reliability optional
-    if (is_tag_present(yml, QOS_RELIABLE_TAG))
-    {
-        if (get<bool>(yml, QOS_RELIABLE_TAG, version))
-        {
-            object.reliability_qos = eprosima::ddspipe::core::types::ReliabilityKind::RELIABLE;
-        }
-        else
-        {
-            object.reliability_qos = eprosima::ddspipe::core::types::ReliabilityKind::BEST_EFFORT;
-        }
-    }
-
     // Durability optional
     if (is_tag_present(yml, QOS_TRANSIENT_TAG))
     {
@@ -375,22 +362,17 @@ void YamlReader::fill(
         }
     }
 
-    // History depth optional
-    if (is_tag_present(yml, QOS_HISTORY_DEPTH_TAG))
+    // Optional Reliability Tag
+    if (is_tag_present(yml, QOS_RELIABLE_TAG))
     {
-        object.history_depth = get<HistoryDepthType>(yml, QOS_HISTORY_DEPTH_TAG, version);
-    }
-
-    // Durability optional
-    if (is_tag_present(yml, QOS_PARTITION_TAG))
-    {
-        object.use_partitions = get<bool>(yml, QOS_PARTITION_TAG, version);
-    }
-
-    // Optional keyed
-    if (is_tag_present(yml, QOS_KEYED_TAG))
-    {
-        object.keyed = get<bool>(yml, QOS_KEYED_TAG, version);
+        if (get<bool>(yml, QOS_RELIABLE_TAG, version))
+        {
+            object.reliability_qos = eprosima::ddspipe::core::types::ReliabilityKind::RELIABLE;
+        }
+        else
+        {
+            object.reliability_qos = eprosima::ddspipe::core::types::ReliabilityKind::BEST_EFFORT;
+        }
     }
 
     // Ownership optional
@@ -406,10 +388,28 @@ void YamlReader::fill(
         }
     }
 
-    // Downsampling optional
-    if (is_tag_present(yml, QOS_DOWNSAMPLING_TAG))
+    // Use partitions optional
+    if (is_tag_present(yml, QOS_PARTITION_TAG))
     {
-        object.downsampling = get_positive_int(yml, QOS_DOWNSAMPLING_TAG);
+        object.use_partitions = get<bool>(yml, QOS_PARTITION_TAG, version);
+    }
+
+    // History depth optional
+    if (is_tag_present(yml, QOS_HISTORY_DEPTH_TAG))
+    {
+        object.history_depth = get<HistoryDepthType>(yml, QOS_HISTORY_DEPTH_TAG, version);
+    }
+
+    // Keyed optional
+    if (is_tag_present(yml, QOS_KEYED_TAG))
+    {
+        object.keyed = get<bool>(yml, QOS_KEYED_TAG, version);
+    }
+
+    // Max Transmission Rate optional
+    if (is_tag_present(yml, QOS_MAX_TX_RATE_TAG))
+    {
+        object.max_tx_rate = get<float>(yml, QOS_MAX_TX_RATE_TAG, version);
     }
 
     // Max Reception Rate optional
@@ -418,10 +418,10 @@ void YamlReader::fill(
         object.max_rx_rate = get<float>(yml, QOS_MAX_RX_RATE_TAG, version);
     }
 
-    // Max Transmission Rate optional
-    if (is_tag_present(yml, QOS_MAX_TX_RATE_TAG))
+    // Downsampling optional
+    if (is_tag_present(yml, QOS_DOWNSAMPLING_TAG))
     {
-        object.max_tx_rate = get<float>(yml, QOS_MAX_TX_RATE_TAG, version);
+        object.downsampling = get_positive_int(yml, QOS_DOWNSAMPLING_TAG);
     }
 }
 
@@ -467,11 +467,8 @@ void YamlReader::fill(
         const Yaml& yml,
         const YamlReaderVersion version)
 {
-    // Optional name
-    if (is_tag_present(yml, TOPIC_NAME_TAG))
-    {
-        object.topic_name.set_value(get<std::string>(yml, TOPIC_NAME_TAG, version));
-    }
+    // Name required
+    object.topic_name = get<std::string>(yml, TOPIC_NAME_TAG, version);
 
     // Optional data type
     if (is_tag_present(yml, TOPIC_TYPE_NAME_TAG))

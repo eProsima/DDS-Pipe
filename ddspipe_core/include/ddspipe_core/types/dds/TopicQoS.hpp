@@ -111,13 +111,13 @@ TopicQoS
     static std::atomic<HistoryDepthType> default_history_depth;
 
     /**
-     * @brief Global value to store the default downsampling factor in this execution.
+     * @brief Global value to store the default max transmission rate in this execution.
      *
      * This value can change along the execution.
-     * Every new TopicQoS object will use this value as \c downsampling default.
+     * Every new TopicQoS object will use this value as \c max_tx_rate default.
      */
     DDSPIPE_CORE_DllAPI
-    static std::atomic<unsigned int> default_downsampling;
+    static std::atomic<float> default_max_tx_rate;
 
     /**
      * @brief Global value to store the default max reception rate in this execution.
@@ -129,13 +129,13 @@ TopicQoS
     static std::atomic<float> default_max_rx_rate;
 
     /**
-     * @brief Global value to store the default max transmission rate in this execution.
+     * @brief Global value to store the default downsampling factor in this execution.
      *
      * This value can change along the execution.
-     * Every new TopicQoS object will use this value as \c max_tx_rate default.
+     * Every new TopicQoS object will use this value as \c downsampling default.
      */
     DDSPIPE_CORE_DllAPI
-    static std::atomic<float> default_max_tx_rate;
+    static std::atomic<unsigned int> default_downsampling;
 
     /////////////////////////
     // VARIABLES
@@ -164,14 +164,14 @@ TopicQoS
     //! Whether the topic has key or not
     utils::Fuzzy<bool> keyed;
 
-    //! Downsampling factor: keep 1 out of every *downsampling* samples received (downsampling=1 <=> no downsampling)
-    utils::Fuzzy<unsigned int> downsampling;
+    //! Discard msgs if less than 1/rate seconds elapsed since the last sample was transmitted [Hz]. Default: 0 (no limit)
+    utils::Fuzzy<float> max_tx_rate;
 
     //! Discard msgs if less than 1/rate seconds elapsed since the last sample was processed [Hz]. Default: 0 (no limit)
     utils::Fuzzy<float> max_rx_rate;
 
-    //! Discard msgs if less than 1/rate seconds elapsed since the last sample was transmitted [Hz]. Default: 0 (no limit)
-    utils::Fuzzy<float> max_tx_rate;
+    //! Downsampling factor: keep 1 out of every *downsampling* samples received (downsampling=1 <=> no downsampling)
+    utils::Fuzzy<unsigned int> downsampling;
 
 
     //! Durability kind (Default = VOLATILE)
@@ -180,26 +180,26 @@ TopicQoS
     //! Reliability kind (Default = BEST_EFFORT)
     static constexpr ReliabilityKind RELIABILITY_QOS_DEFAULT = ReliabilityKind::BEST_EFFORT;
 
-    //! Ownership kind of the topic
+    //! Ownership kind (Default = SHARED_OWNERSHIP)
     static constexpr OwnershipQosPolicyKind OWNERSHIP_QOS_DEFAULT = OwnershipQosPolicyKind::SHARED_OWNERSHIP_QOS;
 
-    //! Whether the topics uses partitions
+    //! Whether the topic uses partitions (Default = False)
     static constexpr bool USE_PARTITIONS_DEFAULT = false;
 
-    //! TODO
+    //! History depth (Default = 5000)
     static constexpr HistoryDepthType HISTORY_DEPTH_DEFAULT = 5000;
 
-    //! TODO
+    //! Whether the topic has a key (Default = False)
     static constexpr bool KEYED_DEFAULT = false;
 
-    //! TODO
-    static constexpr unsigned int DOWNSAMPLING_DEFAULT = 1;
+    //! Max Tx Rate (Default = 0)
+    static constexpr float MAX_TX_RATE_DEFAULT = 0;
 
-    //! TODO
+    //! Max Rx Rate (Default = 0)
     static constexpr float MAX_RX_RATE_DEFAULT = 0;
 
-    //! TODO
-    static constexpr float MAX_TX_RATE_DEFAULT = 0;
+    //! Downsampling (Default = 1)
+    static constexpr unsigned int DOWNSAMPLING_DEFAULT = 1;
 };
 
 /**

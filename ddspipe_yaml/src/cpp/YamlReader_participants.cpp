@@ -162,21 +162,9 @@ void YamlReader::fill(
     }
 
     // Optional downsampling
-    if (YamlReader::is_tag_present(yml, PARTICIPANT_DOWNSAMPLING_TAG))
+    if (YamlReader::is_tag_present(yml, TOPIC_QOS_TAG))
     {
-        object.downsampling.set_value(YamlReader::get<unsigned int>(yml, PARTICIPANT_DOWNSAMPLING_TAG, version));
-    }
-
-    // Optional max reception rate
-    if (YamlReader::is_tag_present(yml, PARTICIPANT_MAX_RX_RATE_TAG))
-    {
-        object.max_rx_rate.set_value(YamlReader::get<float>(yml, PARTICIPANT_MAX_RX_RATE_TAG, version));
-    }
-
-    // Optional max transmission rate
-    if (YamlReader::is_tag_present(yml, PARTICIPANT_MAX_TX_RATE_TAG))
-    {
-        object.max_tx_rate.set_value(YamlReader::get<float>(yml, PARTICIPANT_MAX_TX_RATE_TAG, version));
+        fill<TopicQoS>(object.topic_qos, get_value_in_tag(yml, TOPIC_QOS_TAG), version);
     }
 }
 

@@ -56,6 +56,8 @@ DdsPipe::DdsPipe(
                       "Configuration for DDS Pipe is invalid: " << error_msg);
     }
 
+    load_manual_topics_into_participants_();
+
     // Add callback to be called by the discovery database when an Endpoint is discovered
     discovery_database_->add_endpoint_discovered_callback(std::bind(&DdsPipe::discovered_endpoint_, this,
             std::placeholders::_1));
@@ -225,6 +227,18 @@ utils::ReturnCode DdsPipe::disable() noexcept
     {
         logInfo(DDSPIPE, "Trying to disable a disabled DDS Pipe.");
         return utils::ReturnCode::RETCODE_PRECONDITION_NOT_MET;
+    }
+}
+
+void DdsPipe::load_manual_topics_into_participants_() noexcept
+{
+    for (const auto& manual_topic : ddspipe_config_.manual_topics)
+    {
+        for (const auto& participant_id : manual_topic->participants.get_value())
+        {
+            // The participant exists since the configuration is valid.
+            participants_database_->get_participant(participant_id)->manual_topics.push_back(manual_topic);
+        }
     }
 }
 
