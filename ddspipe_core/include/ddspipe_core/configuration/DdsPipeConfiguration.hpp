@@ -56,8 +56,8 @@ struct DdsPipeConfiguration : public IConfiguration
     /**
      * @brief Check if a configuration is valid given a list of participants.
      *
-     * It calls its own \c is_valid method plus the \c is_valid
-     * in \c RoutesConfiguration and \c TopicRoutesConfiguratoin
+     * It calls its own \c is_valid method plus the \c is_valid method of the
+     * encapsulated configurations.
      */
     DDSPIPE_CORE_DllAPI
     bool is_valid(
