@@ -5,11 +5,15 @@ inputs:
     description: 'Specifies the build type on single-configuration generators'
     required: true
     default: 'Release'
+  fastcdr_branch:
+    description: 'Branch or tag of eProsima/Fast-CDR repository (https://github.com/eProsima/Fast-CDR)'
+    required: true
+    default: '1.1.x'
 runs:
   using: composite
   steps:
   - run: >
-      git clone https://github.com/eProsima/Fast-CDR.git --branch 1.1.x;
+      git clone https://github.com/eProsima/Fast-CDR.git --branch ${{ inputs.fastcdr_branch }};
       cmake -Ax64 -T host=x64 -B build\fastcdr Fast-CDR;
       cmake --build build\fastcdr --config ${{ inputs.cmake_build_type }} --target install
     shell: pwsh

@@ -5,6 +5,14 @@ inputs:
     description: 'Specifies the build type on single-configuration generators'
     required: true
     default: 'Release'
+  foonathan_memory_vendor_branch:
+    description: 'Branch or tag of eProsima/foonathan_memory_vendor repository (https://github.com/eProsima/foonathan_memory_vendor)'
+    required: true
+    default: 'master'
+  fastcdr_branch:
+    description: 'Branch or tag of eProsima/Fast-CDR repository (https://github.com/eProsima/Fast-CDR)'
+    required: true
+    default: 'master'
   fastdds_branch:
     description: 'Branch or tag of Fast DDS repository (https://github.com/eProsima/Fast-DDS)'
     required: true
@@ -28,7 +36,7 @@ runs:
     - name: Install Fast CDR
       shell: pwsh
       run: >
-        git clone https://github.com/eProsima/Fast-CDR.git --branch 1.1.x;
+        git clone https://github.com/eProsima/Fast-CDR.git --branch ${{ inputs.fastcdr_branch }};
         cmake -DCMAKE_INSTALL_PREFIX=${{ github.workspace }}\eprosima\install `
           -DCMAKE_PREFIX_PATH=${{ github.workspace }}\eprosima\install `
           -Ax64 -T host=x64 -B build\fastcdr Fast-CDR;

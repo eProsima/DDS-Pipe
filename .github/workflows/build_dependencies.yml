@@ -13,11 +13,11 @@ on:
       fastcdr_branch:
         description: 'Branch or tag of eProsima/Fast-CDR repository (https://github.com/eProsima/Fast-CDR)'
         required: true
-        default: 'master'
+        default: '1.1.x'
       fastdds_branch:
         description: 'Branch or tag of eProsima/Fast-DDS repository (https://github.com/eProsima/Fast-DDS)'
         required: true
-        default: 'master'
+        default: '2.11.x'
       utils_branch:
         description: 'Branch or tag of eProsima/dev-utils repository (https://github.com/eProsima/dev-utils)'
         required: true
@@ -54,10 +54,12 @@ jobs:
       - name: Install eProsima dependencies
         uses: ./DDS-Pipe/.github/actions/install-eprosima-dependencies-windows
         env:
-          DEFAULT_FASTDDS_BRANCH: 'master'
+          DEFAULT_FASTCDR_BRANCH: '1.1.x'
+          DEFAULT_FASTDDS_BRANCH: '2.11.x'
           DEFAULT_UTILS_BRANCH: 'main'
         with:
           cmake_build_type: ${{ matrix.cmake-config }}
+          fastcdr_branch: ${{ github.event.inputs.fastcdr_branch || env.DEFAULT_FASTCDR_BRANCH }}
           fastdds_branch: ${{ github.event.inputs.fastdds_branch || env.DEFAULT_FASTDDS_BRANCH }}
           utils_branch: ${{ github.event.inputs.utils_branch || env.DEFAULT_UTILS_BRANCH }}
 
