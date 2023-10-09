@@ -141,6 +141,7 @@ constexpr const char* SPECS_QOS_TAG("qos"); //! Global Topic QoS
 constexpr const char* NUMBER_THREADS_TAG("threads"); //! Number of threads to configure the thread pool
 constexpr const char* WAIT_ALL_ACKED_TIMEOUT_TAG("wait-all-acked-timeout"); //! Wait for a maximum of *wait-all-acked-timeout* ms until all msgs sent by reliable writers are acknowledged by their matched readers
 constexpr const char* REMOVE_UNUSED_ENTITIES_TAG("remove-unused-entities"); //! Dynamically create and delete entities and tracks.
+constexpr const char* ENTITY_CREATION_TRIGGER_TAG("entity-creation-trigger"); //! Dynamically create entities when the trigger is set off.
 
 // XML configuration tags
 constexpr const char* XML_TAG("xml"); //! Tag to read xml configuration

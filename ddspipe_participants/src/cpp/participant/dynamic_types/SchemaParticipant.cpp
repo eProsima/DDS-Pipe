@@ -51,21 +51,6 @@ SchemaParticipant::SchemaParticipant(
     discovery_database_->add_endpoint(
         rtps::CommonParticipant::simulate_endpoint(type_object_topic(), this->id())
         );
-
-    // Force for every topic found to create track by creating simulated readers
-    // NOTE: this could change for: in DDS Pipe change that only readers create track
-    discovery_database_->add_endpoint_discovered_callback(
-        [this](Endpoint endpoint_discovered)
-        {
-            if (endpoint_discovered.is_writer() && endpoint_discovered.discoverer_participant_id != this->id())
-            {
-                discovery_database_->add_endpoint(
-                    rtps::CommonParticipant::simulate_endpoint(endpoint_discovered.topic,
-                    endpoint_discovered.discoverer_participant_id)
-                    );
-            }
-        }
-        );
 }
 
 ParticipantId SchemaParticipant::id() const noexcept

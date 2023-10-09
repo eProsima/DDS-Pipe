@@ -32,6 +32,13 @@ namespace eprosima {
 namespace ddspipe {
 namespace core {
 
+enum EntityCreationTrigger
+{
+    ANY = 0,        //! The discovery of both readers and writers triggers the creation of entities.
+    READER = 1,     //! The discovery of readers triggers the creation of entities.
+    WRITER = 2      //! The discovery of writers triggers the creation of entities.
+};
+
 /**
  * Configuration structure encapsulating the configuration of a \c DdsPipe instance.
  */
@@ -108,6 +115,9 @@ struct DdsPipeConfiguration : public IConfiguration
 
     //! Whether the DDS Pipe should be initialized enabled.
     bool init_enabled = false;
+    
+    //! The entity type whose discovery should trigger the creation of entities.
+    EntityCreationTrigger entity_creation_trigger = EntityCreationTrigger::READER;
 };
 
 } /* namespace core */

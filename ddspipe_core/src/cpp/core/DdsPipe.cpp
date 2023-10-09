@@ -350,18 +350,35 @@ void DdsPipe::updated_endpoint_nts_(
 bool DdsPipe::is_endpoint_relevant_(
         const Endpoint& endpoint) noexcept
 {
-    if (!endpoint.is_reader())
-    {
-        return false;
-    }
+    const auto entity_creation_trigger = ddspipe_config_.entity_creation_trigger;
 
-    auto is_endpoint_relevant = [endpoint](const Endpoint& entity)
+    auto is_endpoint_type_relevant = [entity_creation_trigger](const Endpoint& endpoint)
+            {
+                switch (entity_creation_trigger)
+                {
+                    case EntityCreationTrigger::READER:
+                        return endpoint.is_reader();
+                    case EntityCreationTrigger::WRITER:
+                        return endpoint.is_writer();
+                    case EntityCreationTrigger::ANY:
+                        return true;
+                    default:
+                        return false;
+                }
+            };
+
+    auto is_endpoint_relevant = [endpoint, is_endpoint_type_relevant](const Endpoint& entity)
             {
                 return entity.active &&
-                       entity.is_reader() &&
+                       is_endpoint_type_relevant(entity) &&
                        entity.topic == endpoint.topic &&
                        entity.discoverer_participant_id == endpoint.discoverer_participant_id;
             };
+
+    if (!is_endpoint_type_relevant(endpoint))
+    {
+        return false;
+    }
 
     const auto& relevant_endpoints = discovery_database_->get_endpoints(is_endpoint_relevant);
 
