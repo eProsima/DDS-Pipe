@@ -6,12 +6,20 @@ name: build_dependencies
 on:
   workflow_dispatch:
     inputs:
-      fastdds_branch:
-        description: 'Branch or tag of Fast DDS repository (https://github.com/eProsima/Fast-DDS)'
+      foonathan_memory_vendor_branch:
+        description: 'Branch or tag of eProsima/foonathan_memory_vendor repository (https://github.com/eProsima/foonathan_memory_vendor)'
         required: true
         default: 'master'
+      fastcdr_branch:
+        description: 'Branch or tag of eProsima/Fast-CDR repository (https://github.com/eProsima/Fast-CDR)'
+        required: true
+        default: '1.1.x'
+      fastdds_branch:
+        description: 'Branch or tag of eProsima/Fast-DDS repository (https://github.com/eProsima/Fast-DDS)'
+        required: true
+        default: '2.11.x'
       utils_branch:
-        description: 'Branch or tag of Dev Utils repository (https://github.com/eProsima/dev-utils)'
+        description: 'Branch or tag of eProsima/dev-utils repository (https://github.com/eProsima/dev-utils)'
         required: true
         default: 'main'
   schedule:
@@ -46,10 +54,12 @@ jobs:
       - name: Install eProsima dependencies
         uses: ./DDS-Pipe/.github/actions/install-eprosima-dependencies-windows
         env:
-          DEFAULT_FASTDDS_BRANCH: 'master'
+          DEFAULT_FASTCDR_BRANCH: '1.1.x'
+          DEFAULT_FASTDDS_BRANCH: '2.11.x'
           DEFAULT_UTILS_BRANCH: 'main'
         with:
           cmake_build_type: ${{ matrix.cmake-config }}
+          fastcdr_branch: ${{ github.event.inputs.fastcdr_branch || env.DEFAULT_FASTCDR_BRANCH }}
           fastdds_branch: ${{ github.event.inputs.fastdds_branch || env.DEFAULT_FASTDDS_BRANCH }}
           utils_branch: ${{ github.event.inputs.utils_branch || env.DEFAULT_UTILS_BRANCH }}
 
@@ -87,7 +97,9 @@ jobs:
       - name: Fetch repositories
         run: |
           vcs import src <  src/DDS-Pipe/.github/workflows/ci.repos
-          cd src/fastrtps && git checkout ${{ inputs.fastdds_branch }} && cd ../..
+          cd src/foonathan_memory_vendor && git checkout ${{ inputs.foonathan_memory_vendor_branch }} && cd ../..
+          cd src/fastcdr && git checkout ${{ inputs.fastcdr_branch }} && cd ../..
+          cd src/fastdds && git checkout ${{ inputs.fastdds_branch }} && cd ../..
           cd src/dev-utils && git checkout ${{ inputs.utils_branch }} && cd ../..
 
       - name: Build workspace
