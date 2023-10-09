@@ -41,8 +41,8 @@ bool DdsPipeConfiguration::is_valid(
         return false;
     }
 
-    return routes.is_valid(error_msg, participants) &&
-           topic_routes.is_valid(error_msg, participants);
+    return routes.is_valid(error_msg, participant_ids) &&
+           topic_routes.is_valid(error_msg, participant_ids);
 }
 
 RoutesConfiguration DdsPipeConfiguration::get_routes_config(
