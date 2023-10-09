@@ -232,7 +232,7 @@ utils::ReturnCode DdsPipe::disable() noexcept
 
 void DdsPipe::load_manual_topics_into_participants_() noexcept
 {
-    for (const auto& manual_topic : ddspipe_config_.manual_topics)
+    for (const auto& manual_topic : configuration_.manual_topics)
     {
         for (const auto& participant_id : manual_topic->participants.get_value())
         {
