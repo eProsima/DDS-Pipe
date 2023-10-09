@@ -91,7 +91,7 @@ struct Endpoint
     bool active {true};
 
     //! Id of participant who discovered this endpoint
-    ParticipantId discoverer_participant_id {};
+    ParticipantId discoverer_participant_id {DEFAULT_PARTICIPANT_ID};
 };
 
 /**

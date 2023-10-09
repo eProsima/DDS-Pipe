@@ -34,23 +34,34 @@ DdsPipe::DdsPipe(
         const std::shared_ptr<PayloadPool>& payload_pool,
         const std::shared_ptr<ParticipantsDatabase>& participants_database,
         const std::shared_ptr<utils::SlotThreadPool>& thread_pool,
-        const std::set<utils::Heritable<types::DistributedTopic>>& builtin_topics, /* = {} */
+        const std::set<utils::Heritable<DistributedTopic>>& builtin_topics, /* = {} */
         bool start_enable, /* = false */
-        const RoutesConfiguration& routes_config, /* = {} */
-        const TopicRoutesConfiguration& topic_routes_config /* = {} */)
+        const DdsPipeConfiguration& configuration /* = {} */)
     : allowed_topics_(allowed_topics)
     , discovery_database_(discovery_database)
     , payload_pool_(payload_pool)
     , participants_database_(participants_database)
     , thread_pool_(thread_pool)
     , enabled_(false)
-    , routes_config_(routes_config)
-    , topic_routes_config_(topic_routes_config)
+    , configuration_(configuration)
 {
     logDebug(DDSPIPE, "Creating DDS Pipe.");
 
+    // Check that the configuration is correct
+    utils::Formatter error_msg;
+    if (!configuration_.is_valid(error_msg, participants_database_->get_participants_repeater_map()))
+    {
+        throw utils::ConfigurationException(
+                  utils::Formatter() <<
+                      "Configuration for DDS Pipe is invalid: " << error_msg);
+    }
+
     // Add callback to be called by the discovery database when an Endpoint is discovered
     discovery_database_->add_endpoint_discovered_callback(std::bind(&DdsPipe::discovered_endpoint_, this,
+            std::placeholders::_1));
+
+    // Add callback to be called by the discovery database when an Endpoint is updated
+    discovery_database_->add_endpoint_updated_callback(std::bind(&DdsPipe::updated_endpoint_, this,
             std::placeholders::_1));
 
     // Add callback to be called by the discovery database when an Endpoint is removed/dropped
@@ -221,47 +232,132 @@ void DdsPipe::discovered_endpoint_(
         const Endpoint& endpoint) noexcept
 {
     std::lock_guard<std::mutex> lock(mutex_);
+    discovered_endpoint_nts_(endpoint);
+}
 
-    logDebug(DDSPIPE, "Endpoint discovered in DDS Pipe core: " << endpoint << ".");
-
-    // Set as discovered only if the endpoint is a Reader
-    // If non Readers in topics, it is considered as non discovered
-    if (endpoint.is_reader())
-    {
-        if (!RpcTopic::is_service_topic(endpoint.topic))
-        {
-            discovered_topic_nts_(utils::Heritable<DdsTopic>::make_heritable(endpoint.topic));
-        }
-        else if (endpoint.is_server_endpoint())
-        {
-            // Service server discovered
-            discovered_service_nts_(types::RpcTopic(
-                        endpoint.topic), endpoint.discoverer_participant_id, endpoint.guid.guid_prefix());
-        }
-    }
+void DdsPipe::updated_endpoint_(
+        const Endpoint& endpoint) noexcept
+{
+    std::lock_guard<std::mutex> lock(mutex_);
+    updated_endpoint_nts_(endpoint);
 }
 
 void DdsPipe::removed_endpoint_(
         const Endpoint& endpoint) noexcept
 {
     std::lock_guard<std::mutex> lock(mutex_);
+    removed_endpoint_nts_(endpoint);
+}
 
+void DdsPipe::discovered_endpoint_nts_(
+        const Endpoint& endpoint) noexcept
+{
+    logDebug(DDSPIPE, "Endpoint discovered in DDS Pipe core: " << endpoint << ".");
+
+    if (RpcTopic::is_service_topic(endpoint.topic))
+    {
+        if (endpoint.is_reader() && endpoint.is_server_endpoint())
+        {
+            // Service server discovered
+            discovered_service_nts_(RpcTopic(
+                        endpoint.topic), endpoint.discoverer_participant_id, endpoint.guid.guid_prefix());
+        }
+    }
+    else if (is_endpoint_relevant_(endpoint))
+    {
+        discovered_topic_nts_(utils::Heritable<DdsTopic>::make_heritable(endpoint.topic));
+    }
+}
+
+void DdsPipe::removed_endpoint_nts_(
+        const Endpoint& endpoint) noexcept
+{
     logDebug(DDSPIPE, "Endpoint removed/dropped: " << endpoint << ".");
 
-    const DdsTopic& topic = endpoint.topic;
-    if (RpcTopic::is_service_topic(topic))
+    const auto& topic = utils::Heritable<DdsTopic>::make_heritable(endpoint.topic);
+
+    if (RpcTopic::is_service_topic(endpoint.topic))
     {
         if (endpoint.is_server_endpoint())
         {
             // Service server removed/dropped
-            removed_service_nts_(types::RpcTopic(topic), endpoint.discoverer_participant_id,
+            removed_service_nts_(RpcTopic(endpoint.topic), endpoint.discoverer_participant_id,
                     endpoint.guid.guid_prefix());
+        }
+
+    }
+    else if (configuration_.remove_unused_entities && is_endpoint_relevant_(endpoint))
+    {
+        // Remove the subscriber from the topic.
+        auto it_bridge = bridges_.find(topic);
+
+        if (it_bridge == bridges_.end())
+        {
+            // The bridge does not exist. We cannot remove the writer. Exit.
+            return;
+        }
+        else
+        {
+            it_bridge->second->remove_writer(endpoint.discoverer_participant_id);
         }
     }
 }
 
+void DdsPipe::updated_endpoint_nts_(
+        const Endpoint& endpoint) noexcept
+{
+    logDebug(DDSPIPE, "Endpoint updated in DDS Pipe core: " << endpoint << ".");
+
+    // Don't send updated information to service topics.
+    if (RpcTopic::is_service_topic(endpoint.topic))
+    {
+        return;
+    }
+
+    if (endpoint.active)
+    {
+        discovered_endpoint_nts_(endpoint);
+    }
+    else
+    {
+        removed_endpoint_nts_(endpoint);
+    }
+}
+
+bool DdsPipe::is_endpoint_relevant_(
+        const Endpoint& endpoint) noexcept
+{
+    if (!endpoint.is_reader())
+    {
+        return false;
+    }
+
+    auto is_endpoint_relevant = [endpoint](const Endpoint& entity)
+            {
+                return entity.active &&
+                       entity.is_reader() &&
+                       entity.topic == endpoint.topic &&
+                       entity.discoverer_participant_id == endpoint.discoverer_participant_id;
+            };
+
+    const auto& relevant_endpoints = discovery_database_->get_endpoints(is_endpoint_relevant);
+
+    if (endpoint.active)
+    {
+        // An active reader is relevant when it is the only active reader in a topic
+        // with a discoverer participant id.
+        return relevant_endpoints.size() == 1 && relevant_endpoints.count(endpoint.guid);
+    }
+    else
+    {
+        // An inactive reader is relevant when there aren't any active readers in a topic
+        // with a discoverer participant id.
+        return relevant_endpoints.size() == 0;
+    }
+}
+
 void DdsPipe::init_bridges_nts_(
-        const std::set<utils::Heritable<types::DistributedTopic>>& builtin_topics)
+        const std::set<utils::Heritable<DistributedTopic>>& builtin_topics)
 {
     for (const auto& topic : builtin_topics)
     {
@@ -271,15 +367,17 @@ void DdsPipe::init_bridges_nts_(
 }
 
 void DdsPipe::discovered_topic_nts_(
-        const utils::Heritable<types::DistributedTopic>& topic) noexcept
+        const utils::Heritable<DistributedTopic>& topic) noexcept
 {
-    logInfo(DDSPIPE, "Discovered topic: " << topic << ".");
+    logInfo(DDSPIPE, "Discovered topic: " << topic << " by: " << topic->topic_discoverer() << ".");
 
-    // Check if topic already exists
-    auto find_it = current_topics_.find(topic);
-    if (find_it != current_topics_.end())
+    // Check if the bridge (and the topic) already exist.
+    auto it_bridge = bridges_.find(topic);
+
+    if (it_bridge != bridges_.end())
     {
-        // If it already exists, do nothing
+        // The bridge already exists. Create a writer in the participant who discovered it.
+        it_bridge->second->create_writer(topic->topic_discoverer());
         return;
     }
 
@@ -294,7 +392,7 @@ void DdsPipe::discovered_topic_nts_(
 }
 
 void DdsPipe::discovered_service_nts_(
-        const types::RpcTopic& topic,
+        const RpcTopic& topic,
         const ParticipantId& server_participant_id,
         const GuidPrefix& server_guid_prefix) noexcept
 {
@@ -325,7 +423,7 @@ void DdsPipe::discovered_service_nts_(
 }
 
 void DdsPipe::removed_service_nts_(
-        const types::RpcTopic& topic,
+        const RpcTopic& topic,
         const ParticipantId& server_participant_id,
         const GuidPrefix& server_guid_prefix) noexcept
 {
@@ -340,27 +438,29 @@ void DdsPipe::removed_service_nts_(
 }
 
 void DdsPipe::create_new_bridge_nts_(
-        const utils::Heritable<types::DistributedTopic>& topic,
+        const utils::Heritable<DistributedTopic>& topic,
         bool enabled /*= false*/) noexcept
 {
     logInfo(DDSPIPE, "Creating Bridge for topic: " << topic << ".");
 
     try
     {
-        // Use topic specific forwarding routes if available
-        RoutesConfiguration routes_config = topic_routes_config_().count(topic) !=
-                0 ? topic_routes_config_()[topic] : routes_config_;
+
+        auto routes_config = configuration_.get_routes_config(topic);
 
         // Create bridge instance
         auto new_bridge = std::make_unique<DdsBridge>(topic,
                         participants_database_,
                         payload_pool_,
                         thread_pool_,
-                        routes_config);
+                        routes_config,
+                        configuration_.remove_unused_entities);
+
         if (enabled)
         {
             new_bridge->enable();
         }
+
         bridges_[topic] = std::move(new_bridge);
     }
     catch (const utils::InitializationException& e)
@@ -372,7 +472,7 @@ void DdsPipe::create_new_bridge_nts_(
 }
 
 void DdsPipe::create_new_service_nts_(
-        const types::RpcTopic& topic) noexcept
+        const RpcTopic& topic) noexcept
 {
     logInfo(DDSPIPE, "Creating Service: " << topic << ".");
 
@@ -381,7 +481,7 @@ void DdsPipe::create_new_service_nts_(
 }
 
 void DdsPipe::activate_topic_nts_(
-        const utils::Heritable<types::DistributedTopic>& topic) noexcept
+        const utils::Heritable<DistributedTopic>& topic) noexcept
 {
     logInfo(DDSPIPE, "Activating topic: " << topic << ".");
 
@@ -404,11 +504,11 @@ void DdsPipe::activate_topic_nts_(
 }
 
 void DdsPipe::deactivate_topic_nts_(
-        const utils::Heritable<types::DistributedTopic>& topic) noexcept
+        const utils::Heritable<DistributedTopic>& topic) noexcept
 {
     logInfo(DDSPIPE, "Deactivating topic: " << topic << ".");
 
-    // Modify current_topics_ and set this topic as non active
+    // Modify current_topics_ and set this topic as not active
     current_topics_[topic] = false;
 
     // Disable bridge. In case it is already disabled nothing should happen
@@ -419,7 +519,7 @@ void DdsPipe::deactivate_topic_nts_(
         // The Bridge already exists
         it_bridge->second->disable();
     }
-    // If the Bridge does not exist, is not need to create it
+    // If the Bridge does not exist, there is no need to create it
 }
 
 void DdsPipe::activate_all_topics_nts_() noexcept

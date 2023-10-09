@@ -40,7 +40,7 @@ bool RoutesConfiguration::is_valid(
 
 bool RoutesConfiguration::is_valid(
         utils::Formatter& error_msg,
-        std::map<ddspipe::core::types::ParticipantId, bool> participant_ids) const noexcept
+        const std::map<ddspipe::core::types::ParticipantId, bool>& participant_ids) const noexcept
 {
     if (!is_valid(error_msg))
     {
@@ -61,7 +61,8 @@ bool RoutesConfiguration::is_valid(
         }
 
         bool src_in_dst = false;
-        bool is_repeater = participant_ids[src_id];
+        bool is_repeater = participant_ids.at(src_id);
+
         for (const auto& dst_id : dst_ids)
         {
             // Check participant with this id exists

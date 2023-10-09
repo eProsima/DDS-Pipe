@@ -14,13 +14,15 @@
 
 #pragma once
 
+#include <map>
 #include <set>
 
 #include <cpp_utils/Formatter.hpp>
-#include <cpp_utils/memory/Heritable.hpp>
 
 #include <ddspipe_core/configuration/IConfiguration.hpp>
 #include <ddspipe_core/configuration/RoutesConfiguration.hpp>
+#include <ddspipe_core/configuration/TopicRoutesConfiguration.hpp>
+#include <ddspipe_core/types/participant/ParticipantId.hpp>
 #include <ddspipe_core/types/topic/dds/DistributedTopic.hpp>
 
 #include <ddspipe_core/library/library_dll.h>
@@ -30,41 +32,59 @@ namespace ddspipe {
 namespace core {
 
 /**
- * Configuration structure encapsulating the forwarding routes of a \c DdsPipe instance for a set of topics.
+ * Configuration structure encapsulating the configuration of a \c DdsPipe instance.
  */
-struct TopicRoutesConfiguration : public IConfiguration
+struct DdsPipeConfiguration : public IConfiguration
 {
-
-    using TopicRoutesMap = std::map<utils::Heritable<types::DistributedTopic>, RoutesConfiguration>;
-
     /////////////////////////
     // CONSTRUCTORS
     /////////////////////////
 
-    DDSPIPE_CORE_DllAPI TopicRoutesConfiguration() = default;
+    DDSPIPE_CORE_DllAPI DdsPipeConfiguration() = default;
 
     /////////////////////////
     // METHODS
     /////////////////////////
 
-    DDSPIPE_CORE_DllAPI virtual bool is_valid(
+    /**
+     * @brief Override \c is_valid method.
+     */
+    DDSPIPE_CORE_DllAPI
+    virtual bool is_valid(
             utils::Formatter& error_msg) const noexcept override;
 
-    DDSPIPE_CORE_DllAPI bool is_valid(
+    /**
+     * @brief Check if a configuration is valid given a list of participants.
+     *
+     * It calls its own \c is_valid method plus the \c is_valid method of the
+     * encapsulated configurations.
+     */
+    DDSPIPE_CORE_DllAPI
+    bool is_valid(
             utils::Formatter& error_msg,
-            const std::map<types::ParticipantId, bool>& participant_ids) const noexcept;
+            const std::map<types::ParticipantId, bool>& participants) const noexcept;
 
-    /////////////////////////
-    // OPERATORS
-    /////////////////////////
-
-    DDSPIPE_CORE_DllAPI TopicRoutesMap operator () () const;
+    /**
+     * @brief Select the \c RoutesConfiguration for a topic.
+     *
+     * @return The route configuration for a specific topic.
+     */
+    DDSPIPE_CORE_DllAPI
+    RoutesConfiguration get_routes_config(
+            const utils::Heritable<types::DistributedTopic>& topic) const noexcept;
 
     /////////////////////////
     // VARIABLES
     /////////////////////////
 
-    TopicRoutesMap topic_routes {};
+    //! Configuration of the generic routes.
+    RoutesConfiguration routes{};
+
+    //! Configuration of the routes specific to a topic.
+    TopicRoutesConfiguration topic_routes{};
+
+    //! Whether entities should be removed when they have no writers connected to them.
+    bool remove_unused_entities = false;
 };
 
 } /* namespace core */

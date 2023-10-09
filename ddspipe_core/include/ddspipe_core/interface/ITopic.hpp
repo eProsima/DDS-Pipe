@@ -21,6 +21,7 @@
 
 #include <ddspipe_core/library/library_dll.h>
 #include <ddspipe_core/types/topic/TopicInternalTypeDiscriminator.hpp>
+#include <ddspipe_core/types/participant/ParticipantId.hpp>
 
 namespace eprosima {
 namespace ddspipe {
@@ -65,6 +66,10 @@ public:
      */
     DDSPIPE_CORE_DllAPI
     virtual types::TopicInternalTypeDiscriminator internal_type_discriminator() const noexcept = 0;
+
+    //! ITopic discoverer participant id
+    DDSPIPE_CORE_DllAPI
+    virtual types::ParticipantId topic_discoverer() const noexcept = 0;
 };
 
 } /* namespace core */

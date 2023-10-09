@@ -21,8 +21,7 @@
 
 #include <ddspipe_core/communication/dds/DdsBridge.hpp>
 #include <ddspipe_core/communication/rpc/RpcBridge.hpp>
-#include <ddspipe_core/configuration/RoutesConfiguration.hpp>
-#include <ddspipe_core/configuration/TopicRoutesConfiguration.hpp>
+#include <ddspipe_core/configuration/DdsPipeConfiguration.hpp>
 #include <ddspipe_core/dynamic/AllowedTopicList.hpp>
 #include <ddspipe_core/dynamic/DiscoveryDatabase.hpp>
 #include <ddspipe_core/dynamic/ParticipantsDatabase.hpp>
@@ -69,8 +68,7 @@ public:
             const std::shared_ptr<utils::SlotThreadPool>& thread_pool,
             const std::set<utils::Heritable<types::DistributedTopic>>& builtin_topics = {},
             bool start_enable = false,
-            const RoutesConfiguration& routes_config = {},
-            const TopicRoutesConfiguration& topic_routes_config = {});
+            const DdsPipeConfiguration& configuration = {});
 
     /**
      * @brief Destroy the DdsPipe object
@@ -136,9 +134,9 @@ protected:
     /////////////////////////
 
     /**
-     * @brief Method called every time a new endpoint has been discovered/updated
+     * @brief Method called every time a new endpoint has been discovered
      *
-     * This method calls \c discovered_topic_ with the topic of \c endpoint as parameter.
+     * This method calls \c discovered_endpoint_nts_ with a lock on the mutex to make it thread safe.
      *
      * @param [in] endpoint : endpoint discovered
      */
@@ -146,11 +144,59 @@ protected:
             const types::Endpoint& endpoint) noexcept;
 
     /**
+     * @brief Method called every time a new endpoint has been updated
+     *
+     * This method calls \c updated_endpoint_nts_ with a lock on the mutex to make it thread safe.
+     *
+     * @param [in] endpoint : endpoint updated
+     */
+    void updated_endpoint_(
+            const types::Endpoint& endpoint) noexcept;
+
+    /**
      * @brief Method called every time an endpoint has been removed/dropped
+     *
+     * This method calls \c removed_endpoint_nts_ with a lock on the mutex to make it thread safe.
      *
      * @param [in] endpoint : endpoint removed/dropped
      */
     void removed_endpoint_(
+            const types::Endpoint& endpoint) noexcept;
+
+    /**
+     * @brief Method called every time a new endpoint has been discovered
+     *
+     * This method calls \c discovered_topic_ with the topic of \c endpoint as parameter.
+     *
+     * @param [in] endpoint : endpoint discovered
+     */
+    void discovered_endpoint_nts_(
+            const types::Endpoint& endpoint) noexcept;
+
+    /**
+     * @brief Method called every time an endpoint has been removed/dropped
+     *
+     * @param [in] endpoint : endpoint removed/dropped
+     */
+    void removed_endpoint_nts_(
+            const types::Endpoint& endpoint) noexcept;
+
+    /**
+     * @brief Method called every time a new endpoint has been updated
+     *
+     * This method calls \c discovered_endpoint_nts_ or \c removed_endpoint_nts_.
+     *
+     * @param [in] endpoint : endpoint updated
+     */
+    void updated_endpoint_nts_(
+            const types::Endpoint& endpoint) noexcept;
+
+    /**
+     * @brief Method called every time a new endpoint has been discovered, removed, or updated.
+     *
+     * @param [in] endpoint : endpoint discovered, removed, or updated.
+     */
+    bool is_endpoint_relevant_(
             const types::Endpoint& endpoint) noexcept;
 
     /////////////////////////
@@ -321,9 +367,9 @@ protected:
      */
     std::map<types::RpcTopic, bool> current_services_;
 
-    /////////////////////////
+    /////////////////////
     // AUXILIAR VARIABLES
-    /////////////////////////
+    /////////////////////
 
     //! Whether the DdsPipe is currently communicating data or not
     bool enabled_;
@@ -333,15 +379,12 @@ protected:
      */
     mutable std::mutex mutex_;
 
-    /////////////////////////
+    //////////////////////////
     // CONFIGURATION VARIABLES
-    /////////////////////////
+    //////////////////////////
 
-    //! Custom forwarding routes
-    RoutesConfiguration routes_config_;
-
-    //! Custom forwarding routes per topic
-    TopicRoutesConfiguration topic_routes_config_;
+    //! Configuration of the DDS Pipe
+    DdsPipeConfiguration configuration_;
 };
 
 } /* namespace core */

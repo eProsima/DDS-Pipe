@@ -33,10 +33,10 @@ using namespace eprosima::ddspipe::core::types;
 const unsigned int Track::MAX_MESSAGES_TRANSMIT_LOOP_ = 100;
 
 Track::Track(
-        const utils::Heritable<types::DistributedTopic>& topic,
-        const types::ParticipantId& reader_participant_id,
+        const utils::Heritable<DistributedTopic>& topic,
+        const ParticipantId& reader_participant_id,
         const std::shared_ptr<IReader>& reader,
-        std::map<types::ParticipantId, std::shared_ptr<IWriter>>&& writers,
+        std::map<ParticipantId, std::shared_ptr<IWriter>>&& writers,
         const std::shared_ptr<PayloadPool>& payload_pool,
         const std::shared_ptr<utils::SlotThreadPool>& thread_pool) noexcept
     : topic_(topic)
@@ -136,6 +136,42 @@ void Track::disable() noexcept
             writer_it.second->disable();
         }
     }
+}
+
+void Track::add_writer(
+        const ParticipantId& id,
+        const std::shared_ptr<IWriter>& writer) noexcept
+{
+    std::lock_guard<std::mutex> track_lock(track_mutex_);
+    std::lock_guard<std::mutex> transmission_lock(on_transmission_mutex_);
+
+    if (enabled_)
+    {
+        writer->enable();
+    }
+
+    writers_[id] = writer;
+}
+
+void Track::remove_writer(
+        const ParticipantId& id) noexcept
+{
+    std::lock_guard<std::mutex> track_lock(track_mutex_);
+    std::lock_guard<std::mutex> transmission_lock(on_transmission_mutex_);
+    writers_.erase(id);
+}
+
+bool Track::has_writer(
+        const ParticipantId& id) noexcept
+{
+    std::lock_guard<std::mutex> lock(track_mutex_);
+    return writers_.count(id) != 0;
+}
+
+bool Track::has_writers() noexcept
+{
+    std::lock_guard<std::mutex> lock(track_mutex_);
+    return writers_.size() > 0;
 }
 
 bool Track::should_transmit_() noexcept

@@ -150,6 +150,15 @@ public:
             const types::Guid& endpoint_guid) const;
 
     /**
+     * @brief Get the endpoints that pass the given filter
+     *
+     * @return A map with the endpoints that pass the filter
+     */
+    DDSPIPE_CORE_DllAPI
+    std::map<types::Guid, types::Endpoint> get_endpoints(
+            std::function<bool(const types::Endpoint&)> is_valid_endpoint) const noexcept;
+
+    /**
      * @brief Add callback to be called when discovering an Endpoint
      *
      * @param [in] endpoint_discovered_callback: callback to add

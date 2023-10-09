@@ -13,36 +13,26 @@
 // limitations under the License.
 
 /**
- * @file TopicRoutesConfiguration.cpp
+ * @file DdsPipeConfiguration.cpp
  *
  */
 
 #include <cpp_utils/Formatter.hpp>
 #include <cpp_utils/Log.hpp>
 
-#include <ddspipe_core/configuration/TopicRoutesConfiguration.hpp>
+#include <ddspipe_core/configuration/DdsPipeConfiguration.hpp>
 
 namespace eprosima {
 namespace ddspipe {
 namespace core {
 
-bool TopicRoutesConfiguration::is_valid(
+bool DdsPipeConfiguration::is_valid(
         utils::Formatter& error_msg) const noexcept
 {
-    // NOTE: No duplicated topic routes guaranteed due to nature of data structure (map).
-
-    for (const auto& routes : topic_routes)
-    {
-        if (!routes.second.is_valid(error_msg))
-        {
-            return false;
-        }
-    }
-
-    return true;
+    return routes.is_valid(error_msg) && topic_routes.is_valid(error_msg);
 }
 
-bool TopicRoutesConfiguration::is_valid(
+bool DdsPipeConfiguration::is_valid(
         utils::Formatter& error_msg,
         const std::map<types::ParticipantId, bool>& participant_ids) const noexcept
 {
@@ -51,20 +41,23 @@ bool TopicRoutesConfiguration::is_valid(
         return false;
     }
 
-    // Additional checks with participants information
-    for (const auto& routes : topic_routes)
-    {
-        if (!routes.second.is_valid(error_msg, participant_ids))
-        {
-            return false;
-        }
-    }
-    return true;
+    return routes.is_valid(error_msg, participant_ids) &&
+           topic_routes.is_valid(error_msg, participant_ids);
 }
 
-TopicRoutesConfiguration::TopicRoutesMap TopicRoutesConfiguration::operator ()() const
+RoutesConfiguration DdsPipeConfiguration::get_routes_config(
+        const utils::Heritable<types::DistributedTopic>& topic) const noexcept
 {
-    return topic_routes;
+    if (topic_routes().count(topic) != 0)
+    {
+        // There is a topic route configuration. Use it, and ignore the generic one.
+        return topic_routes()[topic];
+    }
+    else
+    {
+        // There isn't a topic route configuration. Use the generic one.
+        return routes;
+    }
 }
 
 } /* namespace core */
