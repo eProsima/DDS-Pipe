@@ -198,7 +198,7 @@ std::string type_kind_to_str(
             return "long double";
 
         case fastrtps::types::TK_CHAR8:
-            return "int8";
+            return "char";
 
         case fastrtps::types::TK_CHAR16:
             return "wchar";
