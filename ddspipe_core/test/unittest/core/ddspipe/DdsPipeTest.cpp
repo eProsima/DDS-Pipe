@@ -104,13 +104,12 @@ struct DdsPipe : public eprosima::ddspipe::core::DdsPipe
  */
 TEST(DdsPipeTest, default_initialization)
 {
-    DdsPipeConfiguration ddspipe_configuration;
-
     // default
     {
+        DdsPipeConfiguration ddspipe_configuration;
+
         test::DdsPipe ddspipe(
             ddspipe_configuration,
-            std::make_shared<AllowedTopicList>(),
             std::make_shared<DiscoveryDatabase>(),
             std::make_shared<FastPayloadPool>(),
             std::make_shared<ParticipantsDatabase>(),
@@ -122,15 +121,15 @@ TEST(DdsPipeTest, default_initialization)
 
     // enable
     {
+        DdsPipeConfiguration ddspipe_configuration;
+        ddspipe_configuration.init_enabled = true;
+
         test::DdsPipe ddspipe(
             ddspipe_configuration,
-            std::make_shared<AllowedTopicList>(),
             std::make_shared<DiscoveryDatabase>(),
             std::make_shared<FastPayloadPool>(),
             std::make_shared<ParticipantsDatabase>(),
-            std::make_shared<eprosima::utils::SlotThreadPool>(test::N_THREADS),
-            {},
-            true
+            std::make_shared<eprosima::utils::SlotThreadPool>(test::N_THREADS)
             );
 
         ASSERT_TRUE(ddspipe.is_enabled());
@@ -144,16 +143,15 @@ TEST(DdsPipeTest, default_initialization)
         eprosima::utils::Heritable<types::DistributedTopic> htopic_1 =
                 eprosima::utils::Heritable<types::DdsTopic>::make_heritable(topic_1);
 
+        DdsPipeConfiguration ddspipe_configuration;
+        ddspipe_configuration.builtin_topics.insert(htopic_1);
+
         test::DdsPipe ddspipe(
             ddspipe_configuration,
-            std::make_shared<AllowedTopicList>(),
             std::make_shared<DiscoveryDatabase>(),
             std::make_shared<FastPayloadPool>(),
             std::make_shared<ParticipantsDatabase>(),
-            std::make_shared<eprosima::utils::SlotThreadPool>(test::N_THREADS),
-        {
-            htopic_1
-        }
+            std::make_shared<eprosima::utils::SlotThreadPool>(test::N_THREADS)
             );
 
         ASSERT_FALSE(ddspipe.is_enabled());
@@ -171,17 +169,16 @@ TEST(DdsPipeTest, default_initialization)
         eprosima::utils::Heritable<types::DistributedTopic> htopic_1 =
                 eprosima::utils::Heritable<types::DdsTopic>::make_heritable(topic_1);
 
+        DdsPipeConfiguration ddspipe_configuration;
+        ddspipe_configuration.builtin_topics.insert(htopic_1);
+        ddspipe_configuration.init_enabled = true;
+
         test::DdsPipe ddspipe(
             ddspipe_configuration,
-            std::make_shared<AllowedTopicList>(),
             std::make_shared<DiscoveryDatabase>(),
             std::make_shared<FastPayloadPool>(),
             std::make_shared<ParticipantsDatabase>(),
-            std::make_shared<eprosima::utils::SlotThreadPool>(test::N_THREADS),
-        {
-            htopic_1
-        },
-            true
+            std::make_shared<eprosima::utils::SlotThreadPool>(test::N_THREADS)
             );
 
         ASSERT_TRUE(ddspipe.is_enabled());
@@ -201,15 +198,14 @@ TEST(DdsPipeTest, default_initialization)
  */
 TEST(DdsPipeTest, enable_disable)
 {
-    DdsPipeConfiguration ddspipe_configuration;
-
     // enable discovered topic
     {
+        DdsPipeConfiguration ddspipe_configuration;
+
         auto discovery_database = std::make_shared<DiscoveryDatabase>();
 
         test::DdsPipe ddspipe(
             ddspipe_configuration,
-            std::make_shared<AllowedTopicList>(),
             discovery_database,
             std::make_shared<FastPayloadPool>(),
             std::make_shared<ParticipantsDatabase>(),
@@ -260,14 +256,15 @@ TEST(DdsPipeTest, enable_disable)
         eprosima::utils::Heritable<types::DistributedTopic> htopic_1 =
                 eprosima::utils::Heritable<types::DdsTopic>::make_heritable(topic_1);
 
+        DdsPipeConfiguration ddspipe_configuration;
+        ddspipe_configuration.builtin_topics.insert(htopic_1);
+
         test::DdsPipe ddspipe(
             ddspipe_configuration,
-            std::make_shared<AllowedTopicList>(),
             std::make_shared<DiscoveryDatabase>(),
             std::make_shared<FastPayloadPool>(),
             std::make_shared<ParticipantsDatabase>(),
-            std::make_shared<eprosima::utils::SlotThreadPool>(test::N_THREADS),
-            {htopic_1}
+            std::make_shared<eprosima::utils::SlotThreadPool>(test::N_THREADS)
             );
 
         ASSERT_TRUE(ddspipe.is_topic_discovered(htopic_1));

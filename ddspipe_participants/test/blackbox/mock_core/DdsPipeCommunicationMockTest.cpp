@@ -71,16 +71,15 @@ TEST(DdsPipeCommunicationMockTest, mock_communication_trivial)
 
     // Create DDS Pipe
     core::DdsPipeConfiguration ddspipe_configuration;
+    ddspipe_configuration.builtin_topics.insert(htopic_1);
+    ddspipe_configuration.init_enabled = true;
 
     core::DdsPipe ddspipe(
         ddspipe_configuration,
-        std::make_shared<core::AllowedTopicList>(),
         std::make_shared<core::DiscoveryDatabase>(),
         std::make_shared<core::FastPayloadPool>(),
         part_db,
-        std::make_shared<eprosima::utils::SlotThreadPool>(test::N_THREADS),
-        {htopic_1},
-        true
+        std::make_shared<eprosima::utils::SlotThreadPool>(test::N_THREADS)
         );
 
     // Look for the reader in participant 1 and writer in participant 2
@@ -142,15 +141,14 @@ TEST(DdsPipeCommunicationMockTest, mock_communication_before_enabling)
 
     // Create DDS Pipe
     core::DdsPipeConfiguration ddspipe_configuration;
+    ddspipe_configuration.builtin_topics.insert(htopic_1);
 
     core::DdsPipe ddspipe(
         ddspipe_configuration,
-        std::make_shared<core::AllowedTopicList>(),
         std::make_shared<core::DiscoveryDatabase>(),
         std::make_shared<core::FastPayloadPool>(),
         part_db,
-        std::make_shared<eprosima::utils::SlotThreadPool>(test::N_THREADS),
-        {htopic_1}
+        std::make_shared<eprosima::utils::SlotThreadPool>(test::N_THREADS)
         );
 
     // Look for the reader in participant 1 and writer in participant 2
@@ -247,7 +245,6 @@ TEST(DdsPipeCommunicationMockTest, mock_communication_topic_discovery)
 
     core::DdsPipe ddspipe(
         ddspipe_configuration,
-        std::make_shared<core::AllowedTopicList>(),
         disc_db,
         std::make_shared<core::FastPayloadPool>(),
         part_db,
@@ -327,25 +324,19 @@ TEST(DdsPipeCommunicationMockTest, mock_communication_topic_allow)
     // Blocks all topics
     utils::Heritable<core::types::IFilterTopic> filter_topic =
             utils::Heritable<participants::testing::MockFilterAllTopic>::make_heritable();
-    std::shared_ptr<core::AllowedTopicList> atl(new core::AllowedTopicList({}, {filter_topic}));
-    // TODO for education sake, check whit this not compile
-    // auto atl = std::make_shared<core::AllowedTopicList>(
-    //     {},
-    //     {filter_topic}
-    // );
 
     // Create DDS Pipe
     core::DdsPipeConfiguration ddspipe_configuration;
+    ddspipe_configuration.blocklist.insert(filter_topic);
+    ddspipe_configuration.builtin_topics.insert(htopic_1);
+    ddspipe_configuration.init_enabled = true;
 
     core::DdsPipe ddspipe(
         ddspipe_configuration,
-        atl,
         std::make_shared<core::DiscoveryDatabase>(),
         std::make_shared<core::FastPayloadPool>(),
         part_db,
-        std::make_shared<eprosima::utils::SlotThreadPool>(test::N_THREADS),
-        {htopic_1},
-        true
+        std::make_shared<eprosima::utils::SlotThreadPool>(test::N_THREADS)
         );
 
     // Look for the reader in participant 1 and writer in participant 2
@@ -365,7 +356,11 @@ TEST(DdsPipeCommunicationMockTest, mock_communication_topic_allow)
     ASSERT_EQ(writer_2->n_to_send_data(), 0u);
 
     // Allow topic (empty allowed list allows everything)
-    ddspipe.reload_allowed_topics(std::make_shared<core::AllowedTopicList>());
+    core::DdsPipeConfiguration new_ddspipe_configuration;
+    new_ddspipe_configuration.allowlist.clear();
+    new_ddspipe_configuration.blocklist.clear();
+
+    ddspipe.reload_configuration(new_ddspipe_configuration);
 
     // Wait for all messages
     for (unsigned int i = 0; i < test::N_MESSAGES; i++)
@@ -375,7 +370,9 @@ TEST(DdsPipeCommunicationMockTest, mock_communication_topic_allow)
     }
 
     // Block topic
-    ddspipe.reload_allowed_topics(atl);
+    new_ddspipe_configuration.blocklist.insert(filter_topic);
+
+    ddspipe.reload_configuration(new_ddspipe_configuration);
 
     // Simulate N messages
     for (unsigned int i = 0; i < test::N_MESSAGES; i++)
@@ -420,16 +417,15 @@ TEST(DdsPipeCommunicationMockTest, mock_communication_multiple_participant_topic
 
     // Create DDS Pipe
     core::DdsPipeConfiguration ddspipe_configuration;
+    ddspipe_configuration.builtin_topics = builtin;
+    ddspipe_configuration.init_enabled = true;
 
     core::DdsPipe ddspipe(
         ddspipe_configuration,
-        std::make_shared<core::AllowedTopicList>(),
         std::make_shared<core::DiscoveryDatabase>(),
         std::make_shared<core::FastPayloadPool>(),
         part_db,
-        std::make_shared<eprosima::utils::SlotThreadPool>(test::N_THREADS),
-        builtin,
-        true
+        std::make_shared<eprosima::utils::SlotThreadPool>(test::N_THREADS)
         );
 
     // For every reader in every participant, send N data

@@ -66,6 +66,13 @@ struct DdsPipeConfiguration : public IConfiguration
             const std::map<types::ParticipantId, bool>& participants) const noexcept;
 
     /**
+     * @brief Set internal values with the values reloaded.
+     */
+    DDSPIPE_CORE_DllAPI
+    void reload(
+            const DdsPipeConfiguration& new_configuration);
+
+    /**
      * @brief Select the \c RoutesConfiguration for a topic.
      *
      * @return The route configuration for a specific topic.
@@ -78,6 +85,13 @@ struct DdsPipeConfiguration : public IConfiguration
     // VARIABLES
     /////////////////////////
 
+    //! Topic lists to build the AllowedTopics
+    std::set<utils::Heritable<ddspipe::core::types::IFilterTopic>> allowlist{};
+    std::set<utils::Heritable<ddspipe::core::types::IFilterTopic>> blocklist{};
+
+    //! Builtin topics to create at the beggining of the execution
+    std::set<utils::Heritable<ddspipe::core::types::DistributedTopic>> builtin_topics{};
+
     //! Set of fixed topics' QoS
     std::vector<utils::Heritable<ddspipe::core::types::WildcardDdsFilterTopic>> manual_topics {};
 
@@ -89,6 +103,9 @@ struct DdsPipeConfiguration : public IConfiguration
 
     //! Whether entities should be removed when they have no writers connected to them.
     bool remove_unused_entities = false;
+
+    //! Whether the DDS Pipe should be initialized enabled.
+    bool init_enabled = false;
 };
 
 } /* namespace core */
