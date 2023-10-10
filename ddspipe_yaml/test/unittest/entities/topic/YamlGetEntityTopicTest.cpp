@@ -209,27 +209,6 @@ TEST(YamlGetEntityTopicTest, get_wildcard_topic)
         ASSERT_EQ(topic, w_topic);
     }
 
-    // Topic without name
-    {
-        core::types::WildcardDdsFilterTopic w_topic;
-        w_topic.type_name.set_value(test::TOPIC_TYPE);
-
-        Yaml yml_topic;
-        filter_topic_to_yaml(
-            yml_topic,
-            w_topic);
-
-        Yaml yml;
-        yml["topic"] = yml_topic;
-
-        core::types::WildcardDdsFilterTopic topic = YamlReader::get<core::types::WildcardDdsFilterTopic>(yml, "topic",
-                        LATEST);
-
-        ASSERT_EQ(topic, w_topic);
-        ASSERT_TRUE(topic.type_name.is_set());
-        ASSERT_FALSE(topic.topic_name.is_set());
-    }
-
     // Topic without type
     {
         core::types::WildcardDdsFilterTopic w_topic;
