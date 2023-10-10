@@ -30,7 +30,7 @@ using namespace eprosima;
 
 namespace test {
 
-std::string read_msg_from_file_(
+std::string read_idl_from_file_(
         const std::string& file_name)
 {
     return utils::file_to_string(file_name.c_str());
@@ -39,7 +39,7 @@ std::string read_msg_from_file_(
 std::string file_name_by_type(
         SupportedType type)
 {
-    return std::string("resources/") + to_string(type) + ".msg";
+    return std::string("types/idls/") + to_string(type) + ".idl";
 }
 
 void compare_schemas(
@@ -52,17 +52,17 @@ void compare_schemas(
 void execute_test_by_type(
         SupportedType type)
 {
-    // Get msg file in string with the value expected to be generated in the schema
-    std::string msg_file = read_msg_from_file_(file_name_by_type(type));
+    // Get IDL file in string with the value expected to be generated in the schema
+    std::string idl_file = read_idl_from_file_(file_name_by_type(type));
 
     // Get Dynamic type
     fastrtps::types::DynamicType_ptr dyn_type = get_dynamic_type(type);
 
     // Get schema generated
-    std::string schema = ddspipe::core::types::generate_ros2_schema(dyn_type);
+    std::string schema = ddspipe::core::types::generate_idl_schema(dyn_type);
 
     // Compare schemas
-    compare_schemas(msg_file, schema);
+    compare_schemas(idl_file, schema);
 }
 
 } // namespace test

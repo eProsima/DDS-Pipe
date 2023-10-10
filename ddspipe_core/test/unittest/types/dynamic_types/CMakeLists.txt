@@ -38,7 +38,7 @@ file(
         RESULT_SOURCES_MSG
     RELATIVE
         "${CMAKE_CURRENT_SOURCE_DIR}"
-    "resources/*.msg")
+    "types/idls/*.idl")
 
 set(TEST_NEEDED_SOURCES
         ${RESULT_SOURCES_MSG}

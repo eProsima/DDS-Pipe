@@ -1,7 +1,7 @@
 struct TheOtherObjectInArray
 {
     long some_num;
-    bool positive;
+    boolean positive;
 };
 
 struct basic_array_struct
