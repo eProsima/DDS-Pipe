@@ -17,6 +17,7 @@
 
 #include <cpp_utils/time/time_utils.hpp>
 
+#include <ddspipe_core/configuration/DdsPipeConfiguration.hpp>
 #include <ddspipe_core/core/DdsPipe.hpp>
 #include <ddspipe_core/efficiency/payload/FastPayloadPool.hpp>
 
@@ -103,9 +104,12 @@ struct DdsPipe : public eprosima::ddspipe::core::DdsPipe
  */
 TEST(DdsPipeTest, default_initialization)
 {
+    DdsPipeConfiguration ddspipe_configuration;
+
     // default
     {
         test::DdsPipe ddspipe(
+            ddspipe_configuration,
             std::make_shared<AllowedTopicList>(),
             std::make_shared<DiscoveryDatabase>(),
             std::make_shared<FastPayloadPool>(),
@@ -119,6 +123,7 @@ TEST(DdsPipeTest, default_initialization)
     // enable
     {
         test::DdsPipe ddspipe(
+            ddspipe_configuration,
             std::make_shared<AllowedTopicList>(),
             std::make_shared<DiscoveryDatabase>(),
             std::make_shared<FastPayloadPool>(),
@@ -140,6 +145,7 @@ TEST(DdsPipeTest, default_initialization)
                 eprosima::utils::Heritable<types::DdsTopic>::make_heritable(topic_1);
 
         test::DdsPipe ddspipe(
+            ddspipe_configuration,
             std::make_shared<AllowedTopicList>(),
             std::make_shared<DiscoveryDatabase>(),
             std::make_shared<FastPayloadPool>(),
@@ -166,6 +172,7 @@ TEST(DdsPipeTest, default_initialization)
                 eprosima::utils::Heritable<types::DdsTopic>::make_heritable(topic_1);
 
         test::DdsPipe ddspipe(
+            ddspipe_configuration,
             std::make_shared<AllowedTopicList>(),
             std::make_shared<DiscoveryDatabase>(),
             std::make_shared<FastPayloadPool>(),
@@ -194,10 +201,14 @@ TEST(DdsPipeTest, default_initialization)
  */
 TEST(DdsPipeTest, enable_disable)
 {
+    DdsPipeConfiguration ddspipe_configuration;
+
     // enable discovered topic
     {
         auto discovery_database = std::make_shared<DiscoveryDatabase>();
+
         test::DdsPipe ddspipe(
+            ddspipe_configuration,
             std::make_shared<AllowedTopicList>(),
             discovery_database,
             std::make_shared<FastPayloadPool>(),
@@ -249,8 +260,8 @@ TEST(DdsPipeTest, enable_disable)
         eprosima::utils::Heritable<types::DistributedTopic> htopic_1 =
                 eprosima::utils::Heritable<types::DdsTopic>::make_heritable(topic_1);
 
-        auto discovery_database = std::make_shared<DiscoveryDatabase>();
         test::DdsPipe ddspipe(
+            ddspipe_configuration,
             std::make_shared<AllowedTopicList>(),
             std::make_shared<DiscoveryDatabase>(),
             std::make_shared<FastPayloadPool>(),

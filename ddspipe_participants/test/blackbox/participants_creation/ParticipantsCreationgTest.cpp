@@ -17,6 +17,7 @@
 
 #include <cpp_utils/time/time_utils.hpp>
 
+#include <ddspipe_core/configuration/DdsPipeConfiguration.hpp>
 #include <ddspipe_core/core/DdsPipe.hpp>
 #include <ddspipe_core/efficiency/payload/FastPayloadPool.hpp>
 
@@ -210,7 +211,10 @@ TEST(ParticipantsCreationgTest, ddspipe_all_creation_builtin_topic)
             eprosima::utils::Heritable<core::types::DdsTopic>::make_heritable(topic_2);
 
     // Create DDS Pipe
+    core::DdsPipeConfiguration ddspipe_configuration;
+
     core::DdsPipe ddspipe(
+        ddspipe_configuration,
         atl,
         discovery_database,
         payload_pool,

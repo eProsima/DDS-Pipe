@@ -61,14 +61,14 @@ public:
      */
     DDSPIPE_CORE_DllAPI
     DdsPipe(
+            const DdsPipeConfiguration& configuration,
             const std::shared_ptr<AllowedTopicList>& allowed_topics,
             const std::shared_ptr<DiscoveryDatabase>& discovery_database,
             const std::shared_ptr<PayloadPool>& payload_pool,
             const std::shared_ptr<ParticipantsDatabase>& participants_database,
             const std::shared_ptr<utils::SlotThreadPool>& thread_pool,
             const std::set<utils::Heritable<types::DistributedTopic>>& builtin_topics = {},
-            bool start_enable = false,
-            const DdsPipeConfiguration& configuration = {});
+            bool start_enable = false);
 
     /**
      * @brief Destroy the DdsPipe object
