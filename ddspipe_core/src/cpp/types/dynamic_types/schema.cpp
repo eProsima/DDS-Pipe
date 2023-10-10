@@ -40,7 +40,7 @@ constexpr const char* TYPE_OPENING =
         "\n{\n";
 
 constexpr const char* TYPE_CLOSURE =
-        "};\n\n";
+        "};\n";
 
 constexpr const char* TAB_SEPARATOR =
         "    ";
@@ -398,9 +398,6 @@ std::string generate_dyn_type_schema_from_tree(
 
     std::stringstream ss;
 
-    struct_to_str(ss, parent_node);
-    types_written.insert(parent_node.info.type_kind_name);
-
     // For every Node, check if it is of a "writable" type (i.e. struct, enum or union).
     // If it is, check if it is not yet written
     // If it is not, write it down
@@ -426,9 +423,14 @@ std::string generate_dyn_type_schema_from_tree(
                 default:
                     continue;
             }
+            ss << "\n"; // Introduce blank line between type definitions
             types_written.insert(node.info.type_kind_name);
         }
     }
+
+    // Write struct parent node at last, after all its dependencies
+    // NOTE: not a requirement for Foxglove IDL Parser, dependencies can be placed after parent
+    struct_to_str(ss, parent_node);
 
     return ss.str();
 }
