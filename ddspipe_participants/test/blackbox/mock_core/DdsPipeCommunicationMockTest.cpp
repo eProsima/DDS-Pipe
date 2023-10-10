@@ -17,6 +17,7 @@
 
 #include <cpp_utils/time/time_utils.hpp>
 
+#include <ddspipe_core/configuration/DdsPipeConfiguration.hpp>
 #include <ddspipe_core/core/DdsPipe.hpp>
 #include <ddspipe_core/dynamic/AllowedTopicList.hpp>
 #include <ddspipe_core/types/topic/filter/WildcardDdsFilterTopic.hpp>
@@ -69,7 +70,10 @@ TEST(DdsPipeCommunicationMockTest, mock_communication_trivial)
     part_db->add_participant(part_2_id, part_2);
 
     // Create DDS Pipe
+    core::DdsPipeConfiguration ddspipe_configuration;
+
     core::DdsPipe ddspipe(
+        ddspipe_configuration,
         std::make_shared<core::AllowedTopicList>(),
         std::make_shared<core::DiscoveryDatabase>(),
         std::make_shared<core::FastPayloadPool>(),
@@ -137,7 +141,10 @@ TEST(DdsPipeCommunicationMockTest, mock_communication_before_enabling)
     part_db->add_participant(part_2_id, part_2);
 
     // Create DDS Pipe
+    core::DdsPipeConfiguration ddspipe_configuration;
+
     core::DdsPipe ddspipe(
+        ddspipe_configuration,
         std::make_shared<core::AllowedTopicList>(),
         std::make_shared<core::DiscoveryDatabase>(),
         std::make_shared<core::FastPayloadPool>(),
@@ -236,7 +243,10 @@ TEST(DdsPipeCommunicationMockTest, mock_communication_topic_discovery)
     part_db->add_participant(part_2_id, part_2);
 
     // Create DDS Pipe
+    core::DdsPipeConfiguration ddspipe_configuration;
+
     core::DdsPipe ddspipe(
+        ddspipe_configuration,
         std::make_shared<core::AllowedTopicList>(),
         disc_db,
         std::make_shared<core::FastPayloadPool>(),
@@ -325,7 +335,10 @@ TEST(DdsPipeCommunicationMockTest, mock_communication_topic_allow)
     // );
 
     // Create DDS Pipe
+    core::DdsPipeConfiguration ddspipe_configuration;
+
     core::DdsPipe ddspipe(
+        ddspipe_configuration,
         atl,
         std::make_shared<core::DiscoveryDatabase>(),
         std::make_shared<core::FastPayloadPool>(),
@@ -406,7 +419,10 @@ TEST(DdsPipeCommunicationMockTest, mock_communication_multiple_participant_topic
     }
 
     // Create DDS Pipe
+    core::DdsPipeConfiguration ddspipe_configuration;
+
     core::DdsPipe ddspipe(
+        ddspipe_configuration,
         std::make_shared<core::AllowedTopicList>(),
         std::make_shared<core::DiscoveryDatabase>(),
         std::make_shared<core::FastPayloadPool>(),

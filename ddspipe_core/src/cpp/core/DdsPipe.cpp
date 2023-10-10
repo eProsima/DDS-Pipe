@@ -29,21 +29,21 @@ namespace core {
 using namespace eprosima::ddspipe::core::types;
 
 DdsPipe::DdsPipe(
+        const DdsPipeConfiguration& configuration,
         const std::shared_ptr<AllowedTopicList>& allowed_topics,
         const std::shared_ptr<DiscoveryDatabase>& discovery_database,
         const std::shared_ptr<PayloadPool>& payload_pool,
         const std::shared_ptr<ParticipantsDatabase>& participants_database,
         const std::shared_ptr<utils::SlotThreadPool>& thread_pool,
         const std::set<utils::Heritable<DistributedTopic>>& builtin_topics, /* = {} */
-        bool start_enable, /* = false */
-        const DdsPipeConfiguration& configuration /* = {} */)
-    : allowed_topics_(allowed_topics)
+        bool start_enable /* = false */)
+    : configuration_(configuration)
+    , allowed_topics_(allowed_topics)
     , discovery_database_(discovery_database)
     , payload_pool_(payload_pool)
     , participants_database_(participants_database)
     , thread_pool_(thread_pool)
     , enabled_(false)
-    , configuration_(configuration)
 {
     logDebug(DDSPIPE, "Creating DDS Pipe.");
 
@@ -110,7 +110,8 @@ DdsPipe::~DdsPipe()
     // Destroy RpcBridges, so Writers and Readers are destroyed before the Databases
     rpc_bridges_.clear();
 
-    // There is no need to destroy shared ptrs as they will delete itslefs with 0 references
+    // There is no need to destroy shared pointers.
+    // They self-destruct when they have 0 references.
 
     logDebug(DDSPIPE, "DDS Pipe destroyed.");
 }
