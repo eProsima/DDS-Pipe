@@ -45,6 +45,13 @@ bool DdsPipeConfiguration::is_valid(
            topic_routes.is_valid(error_msg, participant_ids);
 }
 
+void DdsPipeConfiguration::reload(
+        const DdsPipeConfiguration& new_configuration)
+{
+    this->allowlist = new_configuration.allowlist;
+    this->blocklist = new_configuration.blocklist;
+}
+
 RoutesConfiguration DdsPipeConfiguration::get_routes_config(
         const utils::Heritable<types::DistributedTopic>& topic) const noexcept
 {

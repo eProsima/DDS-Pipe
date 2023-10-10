@@ -121,7 +121,6 @@ TEST(ParticipantsCreationgTest, creation_trivial)
 TEST(ParticipantsCreationgTest, ddspipe_all_creation_builtin_topic)
 {
     // Auxiliar objects
-    std::shared_ptr<core::AllowedTopicList> atl(new core::AllowedTopicList());
     std::shared_ptr<core::DiscoveryDatabase> discovery_database(new core::DiscoveryDatabase());
     std::shared_ptr<core::PayloadPool> payload_pool(new core::FastPayloadPool());
     std::shared_ptr<core::ParticipantsDatabase> part_db(new core::ParticipantsDatabase());
@@ -212,19 +211,19 @@ TEST(ParticipantsCreationgTest, ddspipe_all_creation_builtin_topic)
 
     // Create DDS Pipe
     core::DdsPipeConfiguration ddspipe_configuration;
+    ddspipe_configuration.builtin_topics.insert(htopic_1);
+    ddspipe_configuration.builtin_topics.insert(htopic_2);
+    ddspipe_configuration.init_enabled = true;
 
     core::DdsPipe ddspipe(
         ddspipe_configuration,
-        atl,
         discovery_database,
         payload_pool,
         part_db,
-        thread_pool,
-        {htopic_1, htopic_2},
-        true
+        thread_pool
         );
 
-    // Let everything destroy by itself
+    // Let everything destroy itself
 }
 
 int main(

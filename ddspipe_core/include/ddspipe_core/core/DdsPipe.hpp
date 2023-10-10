@@ -62,13 +62,10 @@ public:
     DDSPIPE_CORE_DllAPI
     DdsPipe(
             const DdsPipeConfiguration& configuration,
-            const std::shared_ptr<AllowedTopicList>& allowed_topics,
             const std::shared_ptr<DiscoveryDatabase>& discovery_database,
             const std::shared_ptr<PayloadPool>& payload_pool,
             const std::shared_ptr<ParticipantsDatabase>& participants_database,
-            const std::shared_ptr<utils::SlotThreadPool>& thread_pool,
-            const std::set<utils::Heritable<types::DistributedTopic>>& builtin_topics = {},
-            bool start_enable = false);
+            const std::shared_ptr<utils::SlotThreadPool>& thread_pool);
 
     /**
      * @brief Destroy the DdsPipe object
@@ -96,8 +93,8 @@ public:
      * @throw \c ConfigurationException in case the new yaml is not well-formed
      */
     DDSPIPE_CORE_DllAPI
-    utils::ReturnCode reload_allowed_topics(
-            const std::shared_ptr<AllowedTopicList>& allowed_topics);
+    utils::ReturnCode reload_configuration(
+            const DdsPipeConfiguration& new_configuration);
 
     /////////////////////////
     // ENABLING METHODS
@@ -128,6 +125,29 @@ public:
     utils::ReturnCode disable() noexcept;
 
 protected:
+
+    /////////////////////////
+    // INTERACTION METHODS
+    /////////////////////////
+    /**
+     * @brief Load allowed topics from configuration
+     *
+     * @throw \c ConfigurationException in case the yaml inside allowlist is not well-formed
+     */
+    void init_allowed_topics_();
+
+    /**
+     * @brief Reload the allowed topic configuration
+     *
+     * @param [in] configuration : new configuration
+     *
+     * @return \c RETCODE_OK if configuration has been updated correctly
+     * @return \c RETCODE_NO_DATA if new configuration has not changed
+     * @return \c RETCODE_ERROR if any other error has occurred
+     *
+     * @throw \c ConfigurationException in case the new yaml is not well-formed
+     */
+    utils::ReturnCode reload_allowed_topics_(const std::shared_ptr<AllowedTopicList>& allowed_topics);
 
     /////////////////////////
     // CALLBACK METHODS
