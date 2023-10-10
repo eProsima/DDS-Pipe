@@ -235,7 +235,14 @@ void DdsPipe::load_manual_topics_into_participants_() noexcept
 {
     for (const auto& manual_topic : configuration_.manual_topics)
     {
-        for (const auto& participant_id : manual_topic->participants.get_value())
+        std::set<types::ParticipantId> participants_ids = manual_topic->participants.get_value();
+
+        if (participants_ids.empty())
+        {
+            participants_ids = participants_database_->get_participants_ids();
+        }
+
+        for (const auto& participant_id : participants_ids)
         {
             // The participant exists since the configuration is valid.
             participants_database_->get_participant(participant_id)->manual_topics.push_back(manual_topic);
