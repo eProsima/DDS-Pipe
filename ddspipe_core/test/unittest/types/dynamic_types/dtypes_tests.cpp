@@ -95,7 +95,10 @@ INSTANTIATE_TEST_SUITE_P(dtypes_tests, ParametrizedTests, ::testing::Values(
             test::SupportedType::basic_array_struct,
             test::SupportedType::float_bounded_sequence,
             test::SupportedType::arrays_and_sequences,
-            test::SupportedType::complex_nested_arrays
+            test::SupportedType::complex_nested_arrays,
+            test::SupportedType::enum_struct,
+            test::SupportedType::union_struct,
+            test::SupportedType::map_struct
             ));
 
 int main(

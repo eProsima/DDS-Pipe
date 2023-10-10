@@ -40,6 +40,9 @@
 #include "type_objects/float_bounded_sequenceTypeObject.h"
 #include "type_objects/arrays_and_sequencesTypeObject.h"
 #include "type_objects/complex_nested_arraysTypeObject.h"
+#include "type_objects/enum_structTypeObject.h"
+#include "type_objects/union_structTypeObject.h"
+#include "type_objects/map_structTypeObject.h"
 
 namespace test {
 
@@ -52,7 +55,10 @@ ENUMERATION_BUILDER(
     basic_array_struct,
     float_bounded_sequence,
     arrays_and_sequences,
-    complex_nested_arrays
+    complex_nested_arrays,
+    enum_struct,
+    union_struct,  // NOTE: default case currently not supported in dynamic types
+    map_struct
     );
 
 eprosima::fastrtps::types::DynamicType_ptr get_dynamic_type(
@@ -66,6 +72,9 @@ eprosima::fastrtps::types::DynamicType_ptr get_dynamic_type(
     registerfloat_bounded_sequenceTypes();
     registerarrays_and_sequencesTypes();
     registercomplex_nested_arraysTypes();
+    registerenum_structTypes();
+    registerunion_structTypes();
+    registermap_structTypes();
 
     auto type_name = to_string(type);
 
