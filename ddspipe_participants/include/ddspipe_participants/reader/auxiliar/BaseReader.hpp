@@ -215,6 +215,12 @@ protected:
     //! Participant parent ID
     const core::types::ParticipantId participant_id_;
 
+    // Max reception rate
+    float max_rx_rate_;
+
+    //! Downsampling value
+    unsigned int downsampling_;
+
     //! Lambda to call the callback whenever a new data arrives
     std::function<void()> on_data_available_lambda_;
 
@@ -226,12 +232,6 @@ protected:
 
     //! Mutex that guards every access to the Reader
     mutable std::recursive_mutex mutex_;
-
-    // Max reception rate
-    float max_rx_rate_;
-
-    //! Downsampling value
-    unsigned int downsampling_;
 
     //! Counter used to keep only 1 sample of every N received, with N being the topic's downsampling factor.
     unsigned int downsampling_idx_ = 0;

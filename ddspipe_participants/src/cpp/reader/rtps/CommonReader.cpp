@@ -255,9 +255,6 @@ void CommonReader::enable_nts_() noexcept
 bool CommonReader::should_accept_change_(
         const fastrtps::rtps::CacheChange_t* change) noexcept
 {
-    // Get reception timestamp
-    auto now = utils::now();
-
     // Reject samples sent by a Writer from the same Participant this Reader belongs to
     if (come_from_this_participant_(change))
     {

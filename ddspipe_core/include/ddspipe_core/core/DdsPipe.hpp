@@ -333,6 +333,13 @@ protected:
      */
     void deactivate_all_topics_nts_() noexcept;
 
+    //////////////////////////
+    // CONFIGURATION VARIABLES
+    //////////////////////////
+
+    //! Configuration of the DDS Pipe
+    DdsPipeConfiguration configuration_;
+
     /////////////////////////
     // SHARED DATA STORAGE
     /////////////////////////
@@ -403,13 +410,6 @@ protected:
      * @brief Internal mutex for concurrent calls
      */
     mutable std::mutex mutex_;
-
-    //////////////////////////
-    // CONFIGURATION VARIABLES
-    //////////////////////////
-
-    //! Configuration of the DDS Pipe
-    DdsPipeConfiguration configuration_;
 };
 
 } /* namespace core */
