@@ -28,7 +28,7 @@ namespace core {
 namespace types {
 
 DDSPIPE_CORE_DllAPI
-std::string generate_ros2_schema(
+std::string generate_idl_schema(
         const fastrtps::types::DynamicType_ptr& dynamic_type);
 
 } /* namespace types */
