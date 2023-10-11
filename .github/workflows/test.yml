@@ -91,6 +91,8 @@ jobs:
         os:
           - windows-2019
           - windows-2022
+    env:
+      workspace_dependencies: '${{ github.workspace }}/install'
 
     steps:
 
@@ -104,6 +106,7 @@ jobs:
         with:
           os: ${{ matrix.os }}
           cmake_build_type: ${{ matrix.cmake_build_type }}
+          target_workspace: ${{ env.workspace_dependencies }}
           dependencies_artifact_postfix: ${{ github.event.inputs.dependencies_artifact_postfix || env.default_dependencies_artifact_postfix }}
           secret_token: ${{ secrets.GITHUB_TOKEN }}
 
@@ -114,7 +117,7 @@ jobs:
           colcon_build_args: '--packages-up-to ${{ env.code_packages_names }}'
           cmake_args: ' -DBUILD_TESTS=ON -DCMAKE_BUILD_TYPE=${{ matrix.cmake_build_type }}'
           workspace: '${{ github.workspace }}'
-          workspace_dependencies: ${{ github.workspace }}/install
+          workspace_dependencies: ${{ env.workspace_dependencies }}
           cmake_build_type: ${{ matrix.cmake_build_type }}
 
       - name: Run tests ddspipe_core
@@ -123,6 +126,7 @@ jobs:
         with:
           package_name: ddspipe_core
           cmake_build_type: ${{ matrix.cmake_build_type }}
+          workspace_dependencies: ${{ env.workspace_dependencies }}
 
       - name: Run tests ddspipe_participants
         uses: ./src/.github/actions/run-test-windows
@@ -130,6 +134,7 @@ jobs:
         with:
           package_name: ddspipe_participants
           cmake_build_type: ${{ matrix.cmake_build_type }}
+          workspace_dependencies: ${{ env.workspace_dependencies }}
 
       - name: Run tests ddspipe_yaml
         uses: ./src/.github/actions/run-test-windows
@@ -137,6 +142,7 @@ jobs:
         with:
           package_name: ddspipe_yaml
           cmake_build_type: ${{ matrix.cmake_build_type }}
+          workspace_dependencies: ${{ env.workspace_dependencies }}
 
   ubuntu-multiplatform-tests:
     runs-on: ${{ matrix.os }}
