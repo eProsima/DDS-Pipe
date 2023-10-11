@@ -145,14 +145,14 @@ protected:
     //! Participant parent ID
     const core::types::ParticipantId participant_id_;
 
+    // Max transmission rate
+    float max_tx_rate_;
+
     //! Whether the Writer is currently enabled
     std::atomic<bool> enabled_;
 
     //! Mutex that guards every access to the Writer
     mutable std::recursive_mutex mutex_;
-
-    // Max transmission rate
-    float max_tx_rate_;
 
     //! Timestamp of the last sent message.
     utils::Timestamp last_sent_ts_ = utils::the_beginning_of_time();
