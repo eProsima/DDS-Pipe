@@ -119,18 +119,21 @@ jobs:
 
       - name: Run tests ddspipe_core
         uses: ./src/.github/actions/run-test-windows
+        if: always()
         with:
           package_name: ddspipe_core
           cmake_build_type: ${{ matrix.cmake_build_type }}
 
       - name: Run tests ddspipe_participants
         uses: ./src/.github/actions/run-test-windows
+        if: always()
         with:
           package_name: ddspipe_participants
           cmake_build_type: ${{ matrix.cmake_build_type }}
 
       - name: Run tests ddspipe_yaml
         uses: ./src/.github/actions/run-test-windows
+        if: always()
         with:
           package_name: ddspipe_yaml
           cmake_build_type: ${{ matrix.cmake_build_type }}
