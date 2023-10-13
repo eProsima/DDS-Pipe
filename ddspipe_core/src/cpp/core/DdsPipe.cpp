@@ -350,7 +350,7 @@ void DdsPipe::updated_endpoint_nts_(
 bool DdsPipe::is_endpoint_relevant_(
         const Endpoint& endpoint) noexcept
 {
-    const auto entity_creation_trigger = ddspipe_config_.entity_creation_trigger;
+    const auto entity_creation_trigger = configuration_.entity_creation_trigger;
 
     auto is_endpoint_type_relevant = [entity_creation_trigger](const Endpoint& endpoint)
             {
