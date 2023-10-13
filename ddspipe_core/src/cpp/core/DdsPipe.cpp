@@ -362,6 +362,8 @@ bool DdsPipe::is_endpoint_relevant_(
                         return endpoint.is_writer();
                     case EntityCreationTrigger::ANY:
                         return true;
+                    case EntityCreationTrigger::NONE:
+                        return false;
                     default:
                         return false;
                 }

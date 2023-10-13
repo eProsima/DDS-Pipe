@@ -34,9 +34,10 @@ namespace core {
 
 enum EntityCreationTrigger
 {
-    ANY = 0,        //! The discovery of both readers and writers triggers the creation of entities.
-    READER = 1,     //! The discovery of readers triggers the creation of entities.
-    WRITER = 2      //! The discovery of writers triggers the creation of entities.
+    READER = 0,     //! The discovery of readers triggers the creation of entities.
+    WRITER = 1,     //! The discovery of writers triggers the creation of entities.
+    NONE = 2,       //! The discovery of either readers and writers doesn't trigger the creation of entities.
+    ANY = 3         //! The discovery of both readers and writers triggers the creation of entities.
 };
 
 /**
@@ -115,7 +116,7 @@ struct DdsPipeConfiguration : public IConfiguration
 
     //! Whether the DDS Pipe should be initialized enabled.
     bool init_enabled = false;
-    
+
     //! The entity type whose discovery should trigger the creation of entities.
     EntityCreationTrigger entity_creation_trigger = EntityCreationTrigger::READER;
 };
