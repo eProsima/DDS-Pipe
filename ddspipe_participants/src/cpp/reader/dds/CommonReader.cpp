@@ -92,10 +92,7 @@ void CommonReader::on_data_available(
 {
     logInfo(DDSPIPE_DDS_READER, "On data available in reader in " << participant_id_ << " for topic " << topic_ << ".");
 
-    if (should_accept_sample_())
-    {
-        on_data_available_();
-    }
+    on_data_available_();
 }
 
 CommonReader::CommonReader(
@@ -147,14 +144,8 @@ utils::ReturnCode CommonReader::take_nts_(
             return ret;
         }
 
-        // Check if it comes from same participant. If so, discard and continue
-        if (detail::come_from_same_participant_(
-                    detail::guid_from_instance_handle(info.publication_handle),
-                    this->dds_participant_->guid()))
-        {
-            continue;
-        }
-        else
+        // Check if the change is acceptable
+        if (should_accept_change_(info))
         {
             break;
         }
@@ -171,10 +162,23 @@ void CommonReader::enable_nts_() noexcept
 {
     // If the topic is reliable, the reader will keep the samples received when it was disabled.
     // However, if the topic is best_effort, the reader will discard the samples received when it was disabled.
-    if (topic_.topic_qos.is_reliable() && should_accept_sample_())
+    if (topic_.topic_qos.is_reliable())
     {
         on_data_available_();
     }
+}
+
+bool CommonReader::should_accept_change_(const fastdds::dds::SampleInfo& info) noexcept
+{
+    // Reject samples sent by a Writer from the same Participant this Reader belongs to
+    if (detail::come_from_same_participant_(
+                detail::guid_from_instance_handle(info.publication_handle),
+                this->dds_participant_->guid()))
+    {
+        return false;
+    }
+
+    return should_accept_sample_();
 }
 
 fastdds::dds::SubscriberQos CommonReader::reckon_subscriber_qos_() const
