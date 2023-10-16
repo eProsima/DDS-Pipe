@@ -271,7 +271,6 @@ protected:
     // CommonReader specific methods
 
     //! Whether a change received should be processed
-    DDSPIPE_PARTICIPANTS_DllAPI
     virtual bool should_accept_change_(
             const fastrtps::rtps::CacheChange_t* change) noexcept;
 

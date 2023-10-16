@@ -405,7 +405,11 @@ void CommonReader::onNewCacheChangeAdded(
             "Rejected received data in reader " << *this << ".");
 
         // Change rejected, do not send it forward and remove it
-        // TODO: do this more elegant
+        // TODO: do this more elegantly
+
+        // WARNING: Removing an unacceptable change here is valid given that Fast-DDS internal reader's mutex is locked.
+        // If the mutex wasn't locked, the track's transmit thread could take an unacceptable sample before it gets
+        // deleted here.
         reader->getHistory()->remove_change((fastrtps::rtps::CacheChange_t*)change);
     }
 }
