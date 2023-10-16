@@ -47,10 +47,6 @@ SchemaParticipant::SchemaParticipant(
     , discovery_database_(discovery_database)
     , schema_handler_(schema_handler)
 {
-    // Simulate that there is a reader of type object to force this track creation
-    discovery_database_->add_endpoint(
-        rtps::CommonParticipant::simulate_endpoint(type_object_topic(), this->id())
-        );
 }
 
 ParticipantId SchemaParticipant::id() const noexcept
