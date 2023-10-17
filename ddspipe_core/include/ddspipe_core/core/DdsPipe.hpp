@@ -147,7 +147,8 @@ protected:
      *
      * @throw \c ConfigurationException in case the new yaml is not well-formed
      */
-    utils::ReturnCode reload_allowed_topics_(const std::shared_ptr<AllowedTopicList>& allowed_topics);
+    utils::ReturnCode reload_allowed_topics_(
+            const std::shared_ptr<AllowedTopicList>& allowed_topics);
 
     /////////////////////////
     // CALLBACK METHODS

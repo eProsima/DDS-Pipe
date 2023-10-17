@@ -95,41 +95,51 @@ bool TopicQoS::has_partitions() const noexcept
     return use_partitions;
 }
 
-void TopicQoS::set_qos(const TopicQoS& qos) noexcept
+void TopicQoS::set_qos(
+        const TopicQoS& qos) noexcept
 {
-    if (!durability_qos.is_set() && qos.durability_qos.is_set()) {
+    if (!durability_qos.is_set() && qos.durability_qos.is_set())
+    {
         durability_qos.set_value(qos.durability_qos.get_value());
     }
 
-    if (!reliability_qos.is_set() && qos.reliability_qos.is_set()) {
+    if (!reliability_qos.is_set() && qos.reliability_qos.is_set())
+    {
         reliability_qos.set_value(qos.reliability_qos.get_value());
     }
 
-    if (!ownership_qos.is_set() && qos.ownership_qos.is_set()) {
+    if (!ownership_qos.is_set() && qos.ownership_qos.is_set())
+    {
         ownership_qos.set_value(qos.ownership_qos.get_value());
     }
 
-    if (!use_partitions.is_set() && qos.use_partitions.is_set()) {
+    if (!use_partitions.is_set() && qos.use_partitions.is_set())
+    {
         use_partitions.set_value(qos.use_partitions.get_value());
     }
 
-    if (!history_depth.is_set() && qos.history_depth.is_set()) {
+    if (!history_depth.is_set() && qos.history_depth.is_set())
+    {
         history_depth.set_value(qos.history_depth.get_value());
     }
 
-    if (!keyed.is_set() && qos.keyed.is_set()) {
+    if (!keyed.is_set() && qos.keyed.is_set())
+    {
         keyed.set_value(qos.keyed.get_value());
     }
 
-    if (!max_tx_rate.is_set() && qos.max_tx_rate.is_set()) {
+    if (!max_tx_rate.is_set() && qos.max_tx_rate.is_set())
+    {
         max_tx_rate.set_value(qos.max_tx_rate.get_value());
     }
 
-    if (!max_rx_rate.is_set() && qos.max_rx_rate.is_set()) {
+    if (!max_rx_rate.is_set() && qos.max_rx_rate.is_set())
+    {
         max_rx_rate.set_value(qos.max_rx_rate.get_value());
     }
 
-    if (!downsampling.is_set() && qos.downsampling.is_set()) {
+    if (!downsampling.is_set() && qos.downsampling.is_set())
+    {
         downsampling.set_value(qos.downsampling.get_value());
     }
 }
