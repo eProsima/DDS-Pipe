@@ -281,7 +281,8 @@ void DdsBridge::add_writers_to_tracks_nts_(
     }
 }
 
-DistributedTopic DdsBridge::create_topic_for_participant_(const std::shared_ptr<IParticipant>& participant)
+DistributedTopic DdsBridge::create_topic_for_participant_(
+        const std::shared_ptr<IParticipant>& participant)
 {
     DistributedTopic topic = *topic_;
 
