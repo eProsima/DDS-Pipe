@@ -103,7 +103,52 @@ TopicQoS
     /////////////////////////
 
     /**
-     * @brief Global value to store the default history depth in this execution.
+     * @brief Global value to store the default durability qos in this execution.
+     *
+     * This value can change along the execution.
+     * Every new TopicQoS object will use this value as \c durability_qos default.
+     */
+    DDSPIPE_CORE_DllAPI
+    static std::atomic<DurabilityKind> default_durability_qos;
+
+    /**
+     * @brief Global value to store the default reliability qos in this execution.
+     *
+     * This value can change along the execution.
+     * Every new TopicQoS object will use this value as \c reliability_qos default.
+     */
+    DDSPIPE_CORE_DllAPI
+    static std::atomic<ReliabilityKind> default_reliability_qos;
+
+    /**
+     * @brief Global value to store the default ownership qos in this execution.
+     *
+     * This value can change along the execution.
+     * Every new TopicQoS object will use this value as \c ownership_qos default.
+     */
+    DDSPIPE_CORE_DllAPI
+    static std::atomic<OwnershipQosPolicyKind> default_ownership_qos;
+
+    /**
+     * @brief Global value to store the default use_partitions in this execution.
+     *
+     * This value can change along the execution.
+     * Every new TopicQoS object will use this value as \c use_partitions default.
+     */
+    DDSPIPE_CORE_DllAPI
+    static std::atomic<bool> default_use_partitions;
+
+    /**
+     * @brief Global value to store the default keyed in this execution.
+     *
+     * This value can change along the execution.
+     * Every new TopicQoS object will use this value as \c keyed default.
+     */
+    DDSPIPE_CORE_DllAPI
+    static std::atomic<bool> default_keyed;
+
+    /**
+     * @brief Global value to store the default  in this execution.
      *
      * This value can change along the execution.
      * Every new TopicQoS object will use this value as \c history_depth default.
@@ -142,10 +187,10 @@ TopicQoS
     // VARIABLES
     /////////////////////////
 
-    //! Durability kind (Default = VOLATILE)
+    //! Durability kind
     utils::Fuzzy<DurabilityKind> durability_qos;
 
-    //! Reliability kind (Default = BEST_EFFORT)
+    //! Reliability kind
     utils::Fuzzy<ReliabilityKind> reliability_qos;
 
     //! Ownership kind of the topic
@@ -154,16 +199,11 @@ TopicQoS
     //! Whether the topics uses partitions
     utils::Fuzzy<bool> use_partitions;
 
-    /**
-     * @brief History Qos
-     *
-     * @note Default value would be taken from \c default_history_depth in object creation.
-     * @note It only stores the depth because in pipe it will always be keep last, as RTPS has not resource limits.
-     */
-    utils::Fuzzy<HistoryDepthType> history_depth;
-
     //! Whether the topic has key or not
     utils::Fuzzy<bool> keyed;
+
+    //! Depth of the history
+    utils::Fuzzy<HistoryDepthType> history_depth;
 
     //! Discard msgs if less than 1/rate seconds elapsed since the last sample was transmitted [Hz]. Default: 0 (no limit)
     utils::Fuzzy<float> max_tx_rate;
@@ -174,33 +214,45 @@ TopicQoS
     //! Downsampling factor: keep 1 out of every *downsampling* samples received (downsampling=1 <=> no downsampling)
     utils::Fuzzy<unsigned int> downsampling;
 
+    //////////////////////////////////////////
+    // GLOBAL VARIABLES' DEFAULT VALUES
+    //////////////////////////////////////////
 
     //! Durability kind (Default = VOLATILE)
-    static constexpr DurabilityKind DURABILITY_QOS_DEFAULT = DurabilityKind::VOLATILE;
+    DDSPIPE_CORE_DllAPI
+    static constexpr const DurabilityKind DEFAULT_DURABILITY_QOS = DurabilityKind::VOLATILE;
 
     //! Reliability kind (Default = BEST_EFFORT)
-    static constexpr ReliabilityKind RELIABILITY_QOS_DEFAULT = ReliabilityKind::BEST_EFFORT;
+    DDSPIPE_CORE_DllAPI
+    static constexpr const ReliabilityKind DEFAULT_RELIABILITY_QOS = ReliabilityKind::BEST_EFFORT;
 
     //! Ownership kind (Default = SHARED_OWNERSHIP)
-    static constexpr OwnershipQosPolicyKind OWNERSHIP_QOS_DEFAULT = OwnershipQosPolicyKind::SHARED_OWNERSHIP_QOS;
+    DDSPIPE_CORE_DllAPI
+    static constexpr const OwnershipQosPolicyKind DEFAULT_OWNERSHIP_QOS = OwnershipQosPolicyKind::SHARED_OWNERSHIP_QOS;
 
     //! Whether the topic uses partitions (Default = False)
-    static constexpr bool USE_PARTITIONS_DEFAULT = false;
+    DDSPIPE_CORE_DllAPI
+    static constexpr const bool DEFAULT_USE_PARTITIONS = false;
 
     //! History depth (Default = 5000)
-    static constexpr HistoryDepthType HISTORY_DEPTH_DEFAULT = 5000;
+    DDSPIPE_CORE_DllAPI
+    static constexpr const HistoryDepthType DEFAULT_HISTORY_DEPTH = 5000;
 
     //! Whether the topic has a key (Default = False)
-    static constexpr bool KEYED_DEFAULT = false;
+    DDSPIPE_CORE_DllAPI
+    static constexpr const bool DEFAULT_KEYED = false;
 
     //! Max Tx Rate (Default = 0)
-    static constexpr float MAX_TX_RATE_DEFAULT = 0;
+    DDSPIPE_CORE_DllAPI
+    static constexpr const float DEFAULT_MAX_TX_RATE = 0;
 
     //! Max Rx Rate (Default = 0)
-    static constexpr float MAX_RX_RATE_DEFAULT = 0;
+    DDSPIPE_CORE_DllAPI
+    static constexpr const float DEFAULT_MAX_RX_RATE = 0;
 
     //! Downsampling (Default = 1)
-    static constexpr unsigned int DOWNSAMPLING_DEFAULT = 1;
+    DDSPIPE_CORE_DllAPI
+    static constexpr const unsigned int DEFAULT_DOWNSAMPLING = 1;
 };
 
 /**
