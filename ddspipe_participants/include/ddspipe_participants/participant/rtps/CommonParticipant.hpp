@@ -194,7 +194,8 @@ protected:
     /**
      * @brief Auxiliary method to set a set of Topic QoS.
      */
-    void set_topic_qos_(core::types::DdsTopic& dds_topic) noexcept;
+    void set_topic_qos_(
+            core::types::DdsTopic& dds_topic) noexcept;
 
     /////
     // RTPS specific methods

@@ -168,7 +168,8 @@ void CommonReader::enable_nts_() noexcept
     }
 }
 
-bool CommonReader::should_accept_change_(const fastdds::dds::SampleInfo& info) noexcept
+bool CommonReader::should_accept_change_(
+        const fastdds::dds::SampleInfo& info) noexcept
 {
     // Reject samples sent by a Writer from the same Participant this Reader belongs to
     if (detail::come_from_same_participant_(

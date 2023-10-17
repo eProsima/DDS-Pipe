@@ -196,7 +196,8 @@ void DdsPipe::init_allowed_topics_()
     logInfo(DDSROUTER, "DDS Router configured with allowed topics: " << *allowed_topics_);
 }
 
-utils::ReturnCode DdsPipe::reload_allowed_topics_(const std::shared_ptr<AllowedTopicList>& allowed_topics)
+utils::ReturnCode DdsPipe::reload_allowed_topics_(
+        const std::shared_ptr<AllowedTopicList>& allowed_topics)
 {
     std::lock_guard<std::mutex> lock(mutex_);
 

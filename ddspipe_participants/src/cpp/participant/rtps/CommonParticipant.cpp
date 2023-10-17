@@ -476,7 +476,8 @@ std::shared_ptr<core::IReader> CommonParticipant::create_reader(
     }
 }
 
-void CommonParticipant::set_topic_qos_(core::types::DdsTopic& dds_topic) noexcept
+void CommonParticipant::set_topic_qos_(
+        core::types::DdsTopic& dds_topic) noexcept
 {
     // The Topic QoS are now set to the values in Specs on the level DEFAULT.
     // They will remain as configured in specs unless they are overriden.
