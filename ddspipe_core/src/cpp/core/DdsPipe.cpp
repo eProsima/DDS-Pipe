@@ -55,9 +55,6 @@ DdsPipe::DdsPipe(
     // Init topic allowed
     init_allowed_topics_();
 
-    // For each participant, save their manual topics
-    load_manual_topics_into_participants_();
-
     // Add callback to be called by the discovery database when an Endpoint is discovered
     discovery_database_->add_endpoint_discovered_callback(std::bind(&DdsPipe::discovered_endpoint_, this,
             std::placeholders::_1));
@@ -257,25 +254,6 @@ utils::ReturnCode DdsPipe::reload_allowed_topics_(
     }
 
     return utils::ReturnCode::RETCODE_OK;
-}
-
-void DdsPipe::load_manual_topics_into_participants_() noexcept
-{
-    for (const auto& manual_topic : configuration_.manual_topics)
-    {
-        std::set<types::ParticipantId> participants_ids = manual_topic->participants.get_value();
-
-        if (participants_ids.empty())
-        {
-            participants_ids = participants_database_->get_participants_ids();
-        }
-
-        for (const auto& participant_id : participants_ids)
-        {
-            // The participant exists since the configuration is valid.
-            participants_database_->get_participant(participant_id)->manual_topics.push_back(manual_topic);
-        }
-    }
 }
 
 void DdsPipe::discovered_endpoint_(
@@ -495,8 +473,8 @@ void DdsPipe::create_new_bridge_nts_(
 
     try
     {
-
         auto routes_config = configuration_.get_routes_config(topic);
+        auto manual_topics = configuration_.get_manual_topics(dynamic_cast<const core::ITopic&>(*topic));
 
         // Create bridge instance
         auto new_bridge = std::make_unique<DdsBridge>(topic,
@@ -504,7 +482,8 @@ void DdsPipe::create_new_bridge_nts_(
                         payload_pool_,
                         thread_pool_,
                         routes_config,
-                        configuration_.remove_unused_entities);
+                        configuration_.remove_unused_entities,
+                        manual_topics);
 
         if (enabled)
         {

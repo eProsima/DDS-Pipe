@@ -42,6 +42,12 @@ bool BlankParticipant::is_rtps_kind() const noexcept
     return false;
 }
 
+core::types::TopicQoS BlankParticipant::topic_qos() const noexcept
+{
+    core::types::TopicQoS m_topic_qos;
+    return m_topic_qos;
+}
+
 std::shared_ptr<core::IWriter> BlankParticipant::create_writer(
         const core::ITopic& topic)
 {

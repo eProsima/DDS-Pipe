@@ -20,6 +20,7 @@
 
 #include <ddspipe_core/interface/IReader.hpp>
 #include <ddspipe_core/interface/IWriter.hpp>
+#include <ddspipe_core/types/dds/TopicQoS.hpp>
 #include <ddspipe_core/types/participant/ParticipantId.hpp>
 #include <ddspipe_core/types/topic/filter/WildcardDdsFilterTopic.hpp>
 #include <ddspipe_core/types/topic/Topic.hpp>
@@ -67,6 +68,12 @@ public:
     virtual bool is_repeater() const noexcept = 0;
 
     /**
+     * @brief TODO
+     */
+    DDSPIPE_CORE_DllAPI
+    virtual types::TopicQoS topic_qos() const noexcept = 0;
+
+    /**
      * @brief Return a new Writer
      *
      * Each writer is associated with a \c Bridge with the topic \c topic .
@@ -97,13 +104,6 @@ public:
     DDSPIPE_CORE_DllAPI
     virtual std::shared_ptr<IReader> create_reader(
             const ITopic& topic) = 0;
-
-    /////////////////////////
-    // VARIABLES
-    /////////////////////////
-
-    //! Topics that explicitally set a QoS attribute for this participant.
-    std::vector<utils::Heritable<core::types::WildcardDdsFilterTopic>> manual_topics;
 };
 
 } /* namespace core */

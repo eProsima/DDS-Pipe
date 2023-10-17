@@ -15,6 +15,7 @@
 #pragma once
 
 #include <ddspipe_core/interface/IParticipant.hpp>
+#include <ddspipe_core/types/dds/TopicQoS.hpp>
 
 #include <ddspipe_participants/library/library_dll.h>
 
@@ -49,6 +50,10 @@ public:
     //! Override is_rtps_kind() IParticipant method
     DDSPIPE_PARTICIPANTS_DllAPI
     bool is_rtps_kind() const noexcept override;
+
+    //! TODO
+    DDSPIPE_PARTICIPANTS_DllAPI
+    core::types::TopicQoS topic_qos() const noexcept override;
 
     //! Override create_writer() IParticipant method
     DDSPIPE_PARTICIPANTS_DllAPI

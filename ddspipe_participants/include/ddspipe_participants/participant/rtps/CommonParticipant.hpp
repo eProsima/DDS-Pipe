@@ -28,6 +28,7 @@
 #include <ddspipe_core/efficiency/payload/PayloadPool.hpp>
 #include <ddspipe_core/interface/IParticipant.hpp>
 #include <ddspipe_core/types/dds/DomainId.hpp>
+#include <ddspipe_core/types/dds/TopicQoS.hpp>
 #include <ddspipe_core/types/topic/filter/WildcardDdsFilterTopic.hpp>
 
 #include <ddspipe_participants/configuration/ParticipantConfiguration.hpp>
@@ -93,6 +94,10 @@ public:
     //! Implement parent method \c is_rtps_kind .
     DDSPIPE_PARTICIPANTS_DllAPI
     virtual bool is_rtps_kind() const noexcept override;
+
+    //! TODO
+    DDSPIPE_PARTICIPANTS_DllAPI
+    core::types::TopicQoS topic_qos() const noexcept override;
 
     /**
      * @brief Create a writer object
