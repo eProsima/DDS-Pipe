@@ -155,7 +155,8 @@ protected:
      * TODO
      */
     DDSPIPE_CORE_DllAPI
-    types::DistributedTopic create_topic_for_participant_(const std::shared_ptr<IParticipant>& participant);
+    types::DistributedTopic create_topic_for_participant_(
+            const std::shared_ptr<IParticipant>& participant);
 
     /////////////////////////
     // VARIABLES

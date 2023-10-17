@@ -324,7 +324,8 @@ bool CommonParticipant::is_rtps_kind() const noexcept
     return true;
 }
 
-core::types::TopicQoS CommonParticipant::topic_qos() const noexcept {
+core::types::TopicQoS CommonParticipant::topic_qos() const noexcept
+{
     return configuration_->topic_qos;
 }
 

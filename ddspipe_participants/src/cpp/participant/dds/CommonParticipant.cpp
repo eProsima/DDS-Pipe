@@ -111,7 +111,8 @@ bool CommonParticipant::is_repeater() const noexcept
     return false;
 }
 
-core::types::TopicQoS CommonParticipant::topic_qos() const noexcept {
+core::types::TopicQoS CommonParticipant::topic_qos() const noexcept
+{
     return configuration_->topic_qos;
 }
 
