@@ -118,12 +118,11 @@ struct Topic : public ITopic, public IConfiguration
     ParticipantId m_topic_discoverer {DEFAULT_PARTICIPANT_ID};
 
     /**
-     * @brief Topic QoS
+     * @brief The Topic QoS for the Topic.
      *
-     * DOES THIS MAKE SENSE?
-     *
-     * @todo this makes few sense here as the qos does not depend on the QoS itself but in the discovery of it.
-     * This Topic class is a proxy, not an actual Topic Entity of DDS, so it should not have QoS.
+     * If the Topic is built-in, they take their default value.
+     * If the Topic isn't built-in, they take their value by discovery.
+     * If the Topic has manually configured Topic QoSs, the Topic QoSs that are manually configured get overriden.
      */
     types::TopicQoS topic_qos{};
 };

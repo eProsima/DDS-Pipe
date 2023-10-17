@@ -155,11 +155,6 @@ protected:
     /////////////////////////
 
     /**
-     * @brief In each participant, reference each manual-topic the participant is listed in.
-     */
-    void load_manual_topics_into_participants_() noexcept;
-
-    /**
      * @brief Method called every time a new endpoint has been discovered
      *
      * This method calls \c discovered_endpoint_nts_ with a lock on the mutex to make it thread safe.

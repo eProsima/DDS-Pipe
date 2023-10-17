@@ -45,13 +45,6 @@ bool DdsPipeConfiguration::is_valid(
            topic_routes.is_valid(error_msg, participant_ids);
 }
 
-void DdsPipeConfiguration::reload(
-        const DdsPipeConfiguration& new_configuration)
-{
-    this->allowlist = new_configuration.allowlist;
-    this->blocklist = new_configuration.blocklist;
-}
-
 RoutesConfiguration DdsPipeConfiguration::get_routes_config(
         const utils::Heritable<types::DistributedTopic>& topic) const noexcept
 {
@@ -70,17 +63,18 @@ RoutesConfiguration DdsPipeConfiguration::get_routes_config(
 std::vector<utils::Heritable<core::types::WildcardDdsFilterTopic>> DdsPipeConfiguration::get_manual_topics(
         const core::ITopic& topic) const noexcept
 {
-    std::vector<utils::Heritable<core::types::WildcardDdsFilterTopic>> manual_topics{};
+    // Filter the manual topics to only return the ones that match with the given topic.
+    std::vector<utils::Heritable<core::types::WildcardDdsFilterTopic>> matching_manual_topics{};
 
     for (const auto& manual_topic : manual_topics)
     {
         if (manual_topic->matches(topic))
         {
-            manual_topics.push_back(manual_topic);
+            matching_manual_topics.push_back(manual_topic);
         }
     }
 
-    return manual_topics;
+    return matching_manual_topics;
 }
 
 } /* namespace core */

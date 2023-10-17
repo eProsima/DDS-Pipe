@@ -20,6 +20,7 @@
 #include <ddspipe_core/communication/dds/Track.hpp>
 #include <ddspipe_core/configuration/RoutesConfiguration.hpp>
 #include <ddspipe_core/types/topic/dds/DistributedTopic.hpp>
+#include <ddspipe_core/types/topic/filter/WildcardDdsFilterTopic.hpp>
 
 namespace eprosima {
 namespace ddspipe {
@@ -162,14 +163,14 @@ protected:
     // VARIABLES
     /////////////////////////
 
-    //! TODO
+    //! Topic associated to the DdsBridge.
     utils::Heritable<types::DistributedTopic> topic_;
+
+    //! Routes associted to the Topic.
+    RoutesConfiguration::RoutesMap routes_;
 
     //! Topics that explicitally set a QoS attribute for this participant.
     std::vector<utils::Heritable<core::types::WildcardDdsFilterTopic>> manual_topics_;
-
-    //! TODO
-    RoutesConfiguration::RoutesMap routes_;
 
     /**
      * Inside \c Tracks

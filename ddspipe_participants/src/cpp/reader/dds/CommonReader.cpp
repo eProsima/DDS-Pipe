@@ -168,20 +168,6 @@ void CommonReader::enable_nts_() noexcept
     }
 }
 
-bool CommonReader::should_accept_change_(
-        const fastdds::dds::SampleInfo& info) noexcept
-{
-    // Reject samples sent by a Writer from the same Participant this Reader belongs to
-    if (detail::come_from_same_participant_(
-                detail::guid_from_instance_handle(info.publication_handle),
-                this->dds_participant_->guid()))
-    {
-        return false;
-    }
-
-    return should_accept_sample_();
-}
-
 fastdds::dds::SubscriberQos CommonReader::reckon_subscriber_qos_() const
 {
     fastdds::dds::SubscriberQos qos = dds_participant_->get_default_subscriber_qos();
@@ -233,6 +219,20 @@ fastdds::dds::DataReaderQos CommonReader::reckon_reader_qos_() const
     }
 
     return qos;
+}
+
+bool CommonReader::should_accept_change_(
+        const fastdds::dds::SampleInfo& info) noexcept
+{
+    // Reject samples sent by a Writer from the same Participant this Reader belongs to
+    if (detail::come_from_same_participant_(
+                detail::guid_from_instance_handle(info.publication_handle),
+                this->dds_participant_->guid()))
+    {
+        return false;
+    }
+
+    return should_accept_sample_();
 }
 
 void CommonReader::fill_received_data_(

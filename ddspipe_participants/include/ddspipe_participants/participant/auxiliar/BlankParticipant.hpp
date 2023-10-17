@@ -51,7 +51,7 @@ public:
     DDSPIPE_PARTICIPANTS_DllAPI
     bool is_rtps_kind() const noexcept override;
 
-    //! TODO
+    //! Override topic_qos() IParticipant method
     DDSPIPE_PARTICIPANTS_DllAPI
     core::types::TopicQoS topic_qos() const noexcept override;
 

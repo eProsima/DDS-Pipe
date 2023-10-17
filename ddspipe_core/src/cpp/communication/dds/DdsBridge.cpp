@@ -284,8 +284,12 @@ void DdsBridge::add_writers_to_tracks_nts_(
 DistributedTopic DdsBridge::create_topic_for_participant_(
         const std::shared_ptr<IParticipant>& participant)
 {
+    // Make a copy of the original topic to be able to modify the Topic QoS for each participant.
     DistributedTopic topic = *topic_;
 
+    // Impose the Topic QoSs that have been pre-configured on the topic.
+
+    // 1. Manually Configured Topic QoSs.
     for (const auto& manual_topic : manual_topics_)
     {
         const auto& participant_ids = manual_topic->participants.get_value();
@@ -296,6 +300,7 @@ DistributedTopic DdsBridge::create_topic_for_participant_(
         }
     }
 
+    // 2. Participant Topic QoSs.
     topic.topic_qos.set_qos(participant->topic_qos());
 
     return topic;

@@ -161,7 +161,7 @@ void YamlReader::fill(
         object.ignore_participant_flags = core::types::IgnoreParticipantFlags::no_filter;
     }
 
-    // Optional downsampling
+    // Optional Topic QoS
     if (YamlReader::is_tag_present(yml, TOPIC_QOS_TAG))
     {
         fill<TopicQoS>(object.topic_qos, get_value_in_tag(yml, TOPIC_QOS_TAG), version);
