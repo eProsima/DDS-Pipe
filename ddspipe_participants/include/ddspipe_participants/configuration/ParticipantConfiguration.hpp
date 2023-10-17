@@ -45,13 +45,13 @@ struct ParticipantConfiguration : public core::IConfiguration
     virtual bool is_valid(
             utils::Formatter& error_msg) const noexcept override;
 
-    //! Participant Id associated with this configuration
+    //! Participant Id associated with this configuration.
     core::types::ParticipantId id {};
 
     //! Whether this Participant should connect its readers with its writers.
     bool is_repeater {false};
 
-    //! Subset of fixed Topic QoS associated to the Participant
+    //! The Topic QoS that have been manually configured for the Participant.
     core::types::TopicQoS topic_qos{};
 };
 

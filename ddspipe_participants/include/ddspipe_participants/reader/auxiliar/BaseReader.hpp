@@ -215,7 +215,7 @@ protected:
     //! Participant parent ID
     const core::types::ParticipantId participant_id_;
 
-    // Max reception rate
+    //! Max reception rate
     float max_rx_rate_;
 
     //! Downsampling value

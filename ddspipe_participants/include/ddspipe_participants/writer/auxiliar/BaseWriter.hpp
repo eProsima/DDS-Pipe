@@ -134,9 +134,9 @@ protected:
             core::IRoutingData& data) noexcept  = 0;
 
     /**
-     * @brief Check the \c max_rx_rate to decide whether a sample should be sent.
+     * @brief Check the \c max_tx_rate to decide whether a sample should be sent.
      */
-    bool can_send_sample_() noexcept;
+    bool should_send_sample_() noexcept;
 
     /////////////////////////
     // INTERNAL VARIABLES

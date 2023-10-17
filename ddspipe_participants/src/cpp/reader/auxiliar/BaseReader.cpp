@@ -44,7 +44,11 @@ BaseReader::BaseReader(
 
     // Calculate min_intersample_period_ from topic's max_rx_rate only once to lighten hot path
     assert(max_rx_rate_ >= 0);
-    min_intersample_period_ = std::chrono::nanoseconds((unsigned int)(1e9 / max_rx_rate_));
+
+    if (max_rx_rate_ > 0)
+    {
+        min_intersample_period_ = std::chrono::nanoseconds((unsigned int)(1e9 / max_rx_rate_));
+    }
 }
 
 void BaseReader::enable() noexcept

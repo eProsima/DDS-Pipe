@@ -95,7 +95,7 @@ public:
     DDSPIPE_PARTICIPANTS_DllAPI
     virtual bool is_rtps_kind() const noexcept override;
 
-    //! TODO
+    //! Implement parent method \c topic_qos .
     DDSPIPE_PARTICIPANTS_DllAPI
     core::types::TopicQoS topic_qos() const noexcept override;
 
@@ -195,12 +195,6 @@ protected:
     void create_participant_(
             const core::types::DomainId& domain,
             const fastrtps::rtps::RTPSParticipantAttributes& participant_attributes);
-
-    /**
-     * @brief Auxiliary method to set a set of Topic QoS.
-     */
-    void set_topic_qos_(
-            core::types::DdsTopic& dds_topic) noexcept;
 
     /////
     // RTPS specific methods

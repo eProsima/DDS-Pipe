@@ -66,13 +66,6 @@ struct DdsPipeConfiguration : public IConfiguration
             const std::map<types::ParticipantId, bool>& participants) const noexcept;
 
     /**
-     * @brief Set internal values with the values reloaded.
-     */
-    DDSPIPE_CORE_DllAPI
-    void reload(
-            const DdsPipeConfiguration& new_configuration);
-
-    /**
      * @brief Select the \c RoutesConfiguration for a topic.
      *
      * @return The route configuration for a specific topic.

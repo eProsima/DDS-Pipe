@@ -52,7 +52,7 @@ DdsPipe::DdsPipe(
                       "Configuration for DDS Pipe is invalid: " << error_msg);
     }
 
-    // Init topic allowed
+    // Initialize the allowed topics
     init_allowed_topics_();
 
     // Add callback to be called by the discovery database when an Endpoint is discovered
