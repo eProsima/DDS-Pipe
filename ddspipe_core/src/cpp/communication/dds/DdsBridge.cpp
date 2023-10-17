@@ -29,9 +29,11 @@ DdsBridge::DdsBridge(
         const std::shared_ptr<PayloadPool>& payload_pool,
         const std::shared_ptr<utils::SlotThreadPool>& thread_pool,
         const RoutesConfiguration& routes_config,
-        const bool remove_unused_entities)
+        const bool remove_unused_entities,
+        const std::vector<utils::Heritable<core::types::WildcardDdsFilterTopic>>& manual_topics)
     : Bridge(participants_database, payload_pool, thread_pool)
     , topic_(topic)
+    , manual_topics_(manual_topics)
 {
     logDebug(DDSPIPE_DDSBRIDGE, "Creating DdsBridge " << *this << ".");
 
@@ -138,6 +140,7 @@ void DdsBridge::create_all_tracks_()
     for (const auto& id : writers_to_create)
     {
         std::shared_ptr<IParticipant> participant = participants_->get_participant(id);
+        const auto& topic = create_topic_for_participant_(participant);
         writers[id] = participant->create_writer(*topic_);
     }
 
@@ -154,6 +157,7 @@ void DdsBridge::create_writer(
 
     // Create the writer.
     std::shared_ptr<IParticipant> participant = participants_->get_participant(participant_id);
+    const auto& topic = create_topic_for_participant_(participant);
     std::shared_ptr<IWriter> writer = participant->create_writer(*topic_);
 
     // Add the writer to the tracks it has routes for.
@@ -275,6 +279,25 @@ void DdsBridge::add_writers_to_tracks_nts_(
             }
         }
     }
+}
+
+DistributedTopic DdsBridge::create_topic_for_participant_(const std::shared_ptr<IParticipant>& participant)
+{
+    DistributedTopic topic = *topic_;
+
+    for (const auto& manual_topic : manual_topics_)
+    {
+        const auto& participant_ids = manual_topic->participants.get_value();
+
+        if (participant_ids.empty() || participant_ids.count(participant->id()))
+        {
+            topic.topic_qos.set_qos(manual_topic->topic_qos);
+        }
+    }
+
+    topic.topic_qos.set_qos(participant->topic_qos());
+
+    return topic;
 }
 
 std::ostream& operator <<(

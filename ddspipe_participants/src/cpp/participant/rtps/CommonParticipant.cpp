@@ -324,6 +324,10 @@ bool CommonParticipant::is_rtps_kind() const noexcept
     return true;
 }
 
+core::types::TopicQoS CommonParticipant::topic_qos() const noexcept {
+    return configuration_->topic_qos;
+}
+
 void CommonParticipant::create_participant_(
         const core::types::DomainId& domain,
         const fastrtps::rtps::RTPSParticipantAttributes& participant_attributes)
@@ -361,10 +365,7 @@ std::shared_ptr<core::IWriter> CommonParticipant::create_writer(
         return std::make_shared<BlankWriter>();
     }
 
-    // Make a copy to modify the Topic QoS
-    core::types::DdsTopic dds_topic = *dds_topic_ptr;
-
-    set_topic_qos_(dds_topic);
+    const core::types::DdsTopic& dds_topic = *dds_topic_ptr;
 
     if (topic.internal_type_discriminator() == core::types::INTERNAL_TOPIC_TYPE_RPC)
     {
@@ -424,10 +425,7 @@ std::shared_ptr<core::IReader> CommonParticipant::create_reader(
         return std::make_shared<BlankReader>();
     }
 
-    // Make a copy to modify the Topic QoS
-    core::types::DdsTopic dds_topic = *dds_topic_ptr;
-
-    set_topic_qos_(dds_topic);
+    const core::types::DdsTopic& dds_topic = *dds_topic_ptr;
 
     if (topic.internal_type_discriminator() == core::types::INTERNAL_TOPIC_TYPE_RPC)
     {
@@ -474,25 +472,6 @@ std::shared_ptr<core::IReader> CommonParticipant::create_reader(
         logDevError(DDSPIPE_RTPS_PARTICIPANT, "Incorrect dds Topic in Reader creation.");
         return std::make_shared<BlankReader>();
     }
-}
-
-void CommonParticipant::set_topic_qos_(
-        core::types::DdsTopic& dds_topic) noexcept
-{
-    // The Topic QoS are now set to the values in Specs on the level DEFAULT.
-    // They will remain as configured in specs unless they are overriden.
-
-    // 1. Manual Topic QoS.
-    for (const auto& manual_topic : manual_topics)
-    {
-        if (manual_topic->matches(dds_topic))
-        {
-            dds_topic.topic_qos.set_qos(manual_topic->topic_qos);
-        }
-    }
-
-    // 2. Participant Topic QoS.
-    dds_topic.topic_qos.set_qos(configuration_->topic_qos);
 }
 
 fastrtps::rtps::RTPSParticipantAttributes

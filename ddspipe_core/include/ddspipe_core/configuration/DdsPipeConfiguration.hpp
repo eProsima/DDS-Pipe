@@ -81,6 +81,14 @@ struct DdsPipeConfiguration : public IConfiguration
     RoutesConfiguration get_routes_config(
             const utils::Heritable<types::DistributedTopic>& topic) const noexcept;
 
+    /**
+     * @brief Select the \c manual_topics for a topic.
+     *
+     * @return The manual topics for a specific topic.
+     */
+    std::vector<utils::Heritable<core::types::WildcardDdsFilterTopic>> get_manual_topics(
+            const core::ITopic& topic) const noexcept;
+
     /////////////////////////
     // VARIABLES
     /////////////////////////
@@ -93,7 +101,7 @@ struct DdsPipeConfiguration : public IConfiguration
     std::set<utils::Heritable<ddspipe::core::types::DistributedTopic>> builtin_topics{};
 
     //! Set of fixed topics' QoS
-    std::vector<utils::Heritable<ddspipe::core::types::WildcardDdsFilterTopic>> manual_topics {};
+    std::vector<utils::Heritable<ddspipe::core::types::WildcardDdsFilterTopic>> manual_topics{};
 
     //! Configuration of the generic routes.
     RoutesConfiguration routes{};

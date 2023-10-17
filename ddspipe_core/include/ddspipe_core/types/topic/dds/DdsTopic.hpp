@@ -20,7 +20,6 @@
 #include <cpp_utils/types/Fuzzy.hpp>
 
 #include <ddspipe_core/library/library_dll.h>
-#include <ddspipe_core/types/dds/TopicQoS.hpp>
 #include <ddspipe_core/types/topic/dds/DistributedTopic.hpp>
 
 namespace eprosima {
@@ -73,14 +72,6 @@ struct DdsTopic : public DistributedTopic
 
     //! Topic Type name
     std::string type_name{};
-
-    /**
-     * @brief Topic QoS
-     *
-     * @todo this makes few sense here as the qos does not depend on the QoS itself but in the discovery of it.
-     * This Topic class is a proxy, not an actual Topic Entity of DDS, so it should not have QoS.
-     */
-    types::TopicQoS topic_qos{};
 };
 
 } /* namespace types */

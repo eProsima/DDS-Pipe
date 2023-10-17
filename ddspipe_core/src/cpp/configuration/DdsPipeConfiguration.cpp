@@ -67,6 +67,22 @@ RoutesConfiguration DdsPipeConfiguration::get_routes_config(
     }
 }
 
+std::vector<utils::Heritable<core::types::WildcardDdsFilterTopic>> DdsPipeConfiguration::get_manual_topics(
+        const core::ITopic& topic) const noexcept
+{
+    std::vector<utils::Heritable<core::types::WildcardDdsFilterTopic>> manual_topics{};
+
+    for (const auto& manual_topic : manual_topics)
+    {
+        if (manual_topic->matches(topic))
+        {
+            manual_topics.push_back(manual_topic);
+        }
+    }
+
+    return manual_topics;
+}
+
 } /* namespace core */
 } /* namespace ddspipe */
 } /* namespace eprosima */

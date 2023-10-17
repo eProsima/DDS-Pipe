@@ -58,7 +58,8 @@ public:
             const std::shared_ptr<PayloadPool>& payload_pool,
             const std::shared_ptr<utils::SlotThreadPool>& thread_pool,
             const RoutesConfiguration& routes_config,
-            const bool remove_unused_entities);
+            const bool remove_unused_entities,
+            const std::vector<utils::Heritable<core::types::WildcardDdsFilterTopic>>& manual_topics);
 
     DDSPIPE_CORE_DllAPI
     ~DdsBridge();
@@ -150,8 +151,23 @@ protected:
     void add_writers_to_tracks_nts_(
             std::map<types::ParticipantId, std::shared_ptr<IWriter>>& writers);
 
+    /*
+     * TODO
+     */
+    DDSPIPE_CORE_DllAPI
+    types::DistributedTopic create_topic_for_participant_(const std::shared_ptr<IParticipant>& participant);
+
+    /////////////////////////
+    // VARIABLES
+    /////////////////////////
+
+    //! TODO
     utils::Heritable<types::DistributedTopic> topic_;
 
+    //! Topics that explicitally set a QoS attribute for this participant.
+    std::vector<utils::Heritable<core::types::WildcardDdsFilterTopic>> manual_topics_;
+
+    //! TODO
     RoutesConfiguration::RoutesMap routes_;
 
     /**

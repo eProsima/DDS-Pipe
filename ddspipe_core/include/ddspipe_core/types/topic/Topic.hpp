@@ -19,11 +19,12 @@
 
 #include <cpp_utils/Formatter.hpp>
 
-#include <ddspipe_core/library/library_dll.h>
 #include <ddspipe_core/configuration/IConfiguration.hpp>
+#include <ddspipe_core/interface/ITopic.hpp>
+#include <ddspipe_core/library/library_dll.h>
+#include <ddspipe_core/types/dds/TopicQoS.hpp>
 #include <ddspipe_core/types/topic/TopicInternalTypeDiscriminator.hpp>
 #include <ddspipe_core/types/participant/ParticipantId.hpp>
-#include <ddspipe_core/interface/ITopic.hpp>
 
 namespace eprosima {
 namespace ddspipe {
@@ -115,6 +116,16 @@ struct Topic : public ITopic, public IConfiguration
      * @brief The id of the participant who discovered the topic.
      */
     ParticipantId m_topic_discoverer {DEFAULT_PARTICIPANT_ID};
+
+    /**
+     * @brief Topic QoS
+     *
+     * DOES THIS MAKE SENSE?
+     *
+     * @todo this makes few sense here as the qos does not depend on the QoS itself but in the discovery of it.
+     * This Topic class is a proxy, not an actual Topic Entity of DDS, so it should not have QoS.
+     */
+    types::TopicQoS topic_qos{};
 };
 
 /**
