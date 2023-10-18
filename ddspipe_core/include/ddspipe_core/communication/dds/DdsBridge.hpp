@@ -152,12 +152,15 @@ protected:
     void add_writers_to_tracks_nts_(
             std::map<types::ParticipantId, std::shared_ptr<IWriter>>& writers);
 
-    /*
-     * TODO
+    /**
+     * @brief Impose the Topic QoSs that have been pre-configured for a participant.
+     *
+     * First, it imposes the Topic QoSs configured at \c manual_topics and then the ones configured at \c participants.
      */
     DDSPIPE_CORE_DllAPI
-    types::DistributedTopic create_topic_for_participant_(
-            const std::shared_ptr<IParticipant>& participant);
+    void customize_topic_for_participant_nts_(
+            types::DdsTopic& topic,
+            const std::shared_ptr<IParticipant>& participant) noexcept;
 
     /////////////////////////
     // VARIABLES
