@@ -14,8 +14,6 @@
 
 #pragma once
 
-#include <cpp_utils/types/Fuzzy.hpp>
-
 #include <ddspipe_core/configuration/IConfiguration.hpp>
 #include <ddspipe_core/types/dds/TopicQoS.hpp>
 #include <ddspipe_core/types/participant/ParticipantId.hpp>

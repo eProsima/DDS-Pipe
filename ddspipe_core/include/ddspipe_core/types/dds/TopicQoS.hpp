@@ -41,15 +41,8 @@ using OwnershipQosPolicyKind = eprosima::fastdds::dds::OwnershipQosPolicyKind;
 /**
  * Collection of QoS related with a Topic.
  *
- * The QoS associated with Topic are:
- * - Reliability
- * - Durability
- * - Ownership
- * - Partitions
- * - History Depth (history kind is always KEEP_LAST)
- *
- * @warning partitions are considered as a QoS, thus a Topic can only have partitions, or not have any, but cannot
- * support empty partition and partitions.
+ * @warning partitions are considered a Topic QoS. A Topic can then only either have partitions or not have them, but it
+ * cannot support empty partitions.
  *
  * @todo add keys to Topic QoS
  */
@@ -93,7 +86,11 @@ TopicQoS
     DDSPIPE_CORE_DllAPI
     bool has_partitions() const noexcept;
 
-    //! Whether the Topic has partitions, not empty partition
+    /**
+     * @brief Set the Topic QoSs that have not been set and are set in \c qos .
+     *
+     * @note A Topic QoS is considered as set when it has a FuzzyLevel higher than DEFAULT.
+     */
     DDSPIPE_CORE_DllAPI
     void set_qos(
             const TopicQoS& qos) noexcept;

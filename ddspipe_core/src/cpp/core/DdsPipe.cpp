@@ -118,7 +118,7 @@ utils::ReturnCode DdsPipe::reload_configuration(
 {
     // Check that the configuration is correct
     utils::Formatter error_msg;
-    if (!new_configuration.is_valid(error_msg))
+    if (!new_configuration.is_valid(error_msg, participants_database_->get_participants_repeater_map()))
     {
         throw utils::ConfigurationException(
                   utils::Formatter() <<

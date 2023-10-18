@@ -82,15 +82,17 @@ public:
     /////////////////////////
 
     /**
-     * @brief Reload the allowed topic configuration
+     * @brief Reload the DdsPipe configuration.
      *
-     * @param [in] configuration : new configuration
+     * @param [in] configuration : new configuration.
      *
-     * @return \c RETCODE_OK if configuration has been updated correctly
-     * @return \c RETCODE_NO_DATA if new configuration has not changed
-     * @return \c RETCODE_ERROR if any other error has occurred
+     * @return \c RETCODE_OK if the configuration has been updated correctly.
+     * @return \c RETCODE_NO_DATA if the new configuration has not changed.
+     * @return \c RETCODE_ERROR if any other error has occurred.
      *
-     * @throw \c ConfigurationException in case the new yaml is not well-formed
+     * @note This method checks that the new configuration file is valid and calls \c reload_allowed_topics_
+     *
+     * @throw \c ConfigurationException in case the new yaml is not well-formed.
      */
     DDSPIPE_CORE_DllAPI
     utils::ReturnCode reload_configuration(
@@ -137,15 +139,13 @@ protected:
     void init_allowed_topics_();
 
     /**
-     * @brief Reload the allowed topic configuration
+     * @brief Reload the allowed topics configuration.
      *
-     * @param [in] configuration : new configuration
+     * @param [in] allowed_topics : new allowed topics.
      *
-     * @return \c RETCODE_OK if configuration has been updated correctly
-     * @return \c RETCODE_NO_DATA if new configuration has not changed
-     * @return \c RETCODE_ERROR if any other error has occurred
-     *
-     * @throw \c ConfigurationException in case the new yaml is not well-formed
+     * @return \c RETCODE_OK if the allowed topics have been updated correctly.
+     * @return \c RETCODE_NO_DATA if the new allowed topics have not changed.
+     * @return \c RETCODE_ERROR if any other error has occurred.
      */
     utils::ReturnCode reload_allowed_topics_(
             const std::shared_ptr<AllowedTopicList>& allowed_topics);
