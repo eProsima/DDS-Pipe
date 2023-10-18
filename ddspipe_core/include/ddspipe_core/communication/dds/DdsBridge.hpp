@@ -126,8 +126,6 @@ protected:
      * If the Participant's IReader doesn't exist, create it.
      * If the Participant's Track doesn't exist, create it.
      *
-     * Thread safe
-     *
      * @param writers: The map of ids to writers that are required for the tracks.
      *
      * @throw InitializationException in case \c IReaders creation fails.
@@ -141,8 +139,6 @@ protected:
      * Add each Participant's IWriters to its Track.
      * If the Participant's IReader doesn't exist, create it.
      * If the Participant's Track doesn't exist, create it.
-     *
-     * Thread safe
      *
      * @param writers: The map of ids to writers that are required for the tracks.
      *
