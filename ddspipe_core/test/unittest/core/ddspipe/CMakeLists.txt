@@ -22,6 +22,7 @@ all_library_sources("${TEST_SOURCES}")
 set(TEST_LIST
         default_initialization
         enable_disable
+        allowed_blocked_topics
     )
 
 set(TEST_EXTRA_LIBRARIES
