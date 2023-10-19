@@ -63,7 +63,8 @@ std::string DdsTopic::serialize() const noexcept
 
 utils::Heritable<ITopic> DdsTopic::copy() const noexcept
 {
-    return utils::Heritable<DdsTopic>::make_heritable(*this);
+    DdsTopic topic = *this;
+    return utils::Heritable<DdsTopic>::make_heritable(topic);
 }
 
 /////////////////////////
@@ -119,7 +120,7 @@ DdsTopic& DdsTopic::operator = (
 {
     Topic::operator=(other);
 
-    this->type_name = type_name;
+    this->type_name = other.type_name;
 
     return *this;
 }

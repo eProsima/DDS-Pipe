@@ -86,7 +86,8 @@ bool Topic::is_valid(
 
 utils::Heritable<ITopic> Topic::copy() const noexcept
 {
-    return utils::Heritable<Topic>::make_heritable(*this);
+    Topic topic = *this;
+    return utils::Heritable<Topic>::make_heritable(topic);
 }
 
 /////////////////////////
@@ -118,10 +119,10 @@ std::ostream& operator <<(
 Topic& Topic::operator = (
         const Topic& other) noexcept
 {
-    this->m_topic_name = m_topic_name;
-    this->m_internal_type_discriminator = m_internal_type_discriminator;
-    this->m_topic_discoverer = m_topic_discoverer;
-    this->topic_qos = topic_qos;
+    this->m_topic_name = other.m_topic_name;
+    this->m_internal_type_discriminator = other.m_internal_type_discriminator;
+    this->m_topic_discoverer = other.m_topic_discoverer;
+    this->topic_qos = other.topic_qos;
 
     return *this;
 }

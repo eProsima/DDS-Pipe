@@ -17,8 +17,9 @@
 #include <mutex>
 #include <queue>
 
-#include <cpp_utils/wait/CounterWaitHandler.hpp>
+#include <cpp_utils/memory/Heritable.hpp>
 #include <cpp_utils/types/Atomicable.hpp>
+#include <cpp_utils/wait/CounterWaitHandler.hpp>
 
 #include <ddspipe_core/interface/IReader.hpp>
 #include <ddspipe_core/interface/IWriter.hpp>
@@ -152,6 +153,9 @@ public:
 
     DDSPIPE_PARTICIPANTS_DllAPI
     core::types::TopicInternalTypeDiscriminator internal_type_discriminator() const noexcept override;
+
+    DDSPIPE_PARTICIPANTS_DllAPI
+    virtual utils::Heritable<core::ITopic> copy() const noexcept override;
 };
 
 class MockFilterAllTopic : public core::types::IFilterTopic

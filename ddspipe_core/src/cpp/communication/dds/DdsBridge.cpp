@@ -140,7 +140,7 @@ void DdsBridge::create_all_tracks_()
     for (const auto& id : writers_to_create)
     {
         std::shared_ptr<IParticipant> participant = participants_->get_participant(id);
-        const auto& topic = create_topic_for_participant_nts_(participant);
+        const auto topic = create_topic_for_participant_nts_(participant);
         writers[id] = participant->create_writer(*topic);
     }
 
@@ -157,7 +157,7 @@ void DdsBridge::create_writer(
 
     // Create the writer.
     std::shared_ptr<IParticipant> participant = participants_->get_participant(participant_id);
-    const auto& topic = create_topic_for_participant_nts_(participant);
+    const auto topic = create_topic_for_participant_nts_(participant);
     auto writer = participant->create_writer(*topic);
 
     // Add the writer to the tracks it has routes for.
@@ -263,7 +263,7 @@ void DdsBridge::add_writers_to_tracks_nts_(
         {
             // The track doesn't exist. Create it.
             std::shared_ptr<IParticipant> participant = participants_->get_participant(id);
-            const auto& topic = create_topic_for_participant_nts_(participant);
+            const auto topic = create_topic_for_participant_nts_(participant);
             auto reader = participant->create_reader(*topic);
 
             tracks_[id] = std::make_unique<Track>(
