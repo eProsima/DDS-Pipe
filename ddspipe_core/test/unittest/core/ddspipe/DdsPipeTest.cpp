@@ -293,14 +293,6 @@ TEST(DdsPipeTest, allowed_blocked_topics)
     // TODO
 }
 
-/**
- * TODO
- */
-TEST(DdsPipeTest, reload)
-{
-    // TODO
-}
-
 int main(
         int argc,
         char** argv)
