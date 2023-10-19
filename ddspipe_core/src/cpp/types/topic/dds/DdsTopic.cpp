@@ -118,7 +118,7 @@ bool DdsTopic::is_valid_dds_topic(
 DdsTopic& DdsTopic::operator = (
         const DdsTopic& other) noexcept
 {
-    Topic::operator=(other);
+    Topic::operator =(other);
 
     this->type_name = other.type_name;
 
