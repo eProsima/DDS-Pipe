@@ -161,10 +161,10 @@ void YamlReader::fill(
         object.ignore_participant_flags = core::types::IgnoreParticipantFlags::no_filter;
     }
 
-    // Optional Topic QoS
-    if (YamlReader::is_tag_present(yml, TOPIC_QOS_TAG))
+    // Optional Praticipant Topic QoSs
+    if (YamlReader::is_tag_present(yml, PARTICIPANT_QOS_TAG))
     {
-        fill<TopicQoS>(object.topic_qos, get_value_in_tag(yml, TOPIC_QOS_TAG), version);
+        fill<TopicQoS>(object.topic_qos, get_value_in_tag(yml, PARTICIPANT_QOS_TAG), version);
     }
 }
 
