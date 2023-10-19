@@ -207,6 +207,12 @@ core::types::TopicInternalTypeDiscriminator MockTopic::internal_type_discriminat
     return INTERNAL_TOPIC_TYPE_MOCK_TEST;
 }
 
+utils::Heritable<core::ITopic> MockTopic::copy() const noexcept
+{
+    MockTopic topic = *this;
+    return utils::Heritable<MockTopic>::make_heritable(topic);
+}
+
 core::types::TopicInternalTypeDiscriminator MockRoutingData::internal_type_discriminator() const noexcept
 {
     return INTERNAL_TOPIC_TYPE_MOCK_TEST;
