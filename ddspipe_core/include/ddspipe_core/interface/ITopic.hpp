@@ -18,6 +18,7 @@
 #include <string>
 
 #include <cpp_utils/Formatter.hpp>
+#include <cpp_utils/memory/Heritable.hpp>
 
 #include <ddspipe_core/library/library_dll.h>
 #include <ddspipe_core/types/topic/TopicInternalTypeDiscriminator.hpp>
@@ -59,6 +60,10 @@ public:
     //! ITopic serialization to string
     DDSPIPE_CORE_DllAPI
     virtual std::string serialize() const noexcept = 0;
+
+    //! Make a copy of the ITopic
+    DDSPIPE_CORE_DllAPI
+    virtual utils::Heritable<ITopic> copy() const noexcept = 0;
 
     /**
      * This refers to an internal used identifier that declares which kind of data type is going to be

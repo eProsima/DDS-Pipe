@@ -154,8 +154,7 @@ protected:
      * First, it imposes the Topic QoSs configured at \c manual_topics and then the ones configured at \c participants.
      */
     DDSPIPE_CORE_DllAPI
-    void customize_topic_for_participant_nts_(
-            types::DdsTopic& topic,
+    utils::Heritable<types::Topic> create_topic_for_participant_nts_(
             const std::shared_ptr<IParticipant>& participant) noexcept;
 
     /////////////////////////

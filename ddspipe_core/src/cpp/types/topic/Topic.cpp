@@ -84,6 +84,11 @@ bool Topic::is_valid(
     return true;
 }
 
+utils::Heritable<ITopic> Topic::copy() const noexcept
+{
+    return utils::Heritable<Topic>::make_heritable(*this);
+}
+
 /////////////////////////
 // METHODS TO OVERRIDE
 /////////////////////////
@@ -104,6 +109,21 @@ std::ostream& operator <<(
 {
     os << t.serialize();
     return os;
+}
+
+/////////////////////////
+// OPERATORS
+/////////////////////////
+
+Topic& Topic::operator = (
+        const Topic& other) noexcept
+{
+    this->m_topic_name = m_topic_name;
+    this->m_internal_type_discriminator = m_internal_type_discriminator;
+    this->m_topic_discoverer = m_topic_discoverer;
+    this->topic_qos = topic_qos;
+
+    return *this;
 }
 
 } /* namespace types */

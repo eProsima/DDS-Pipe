@@ -61,6 +61,11 @@ std::string DdsTopic::serialize() const noexcept
     return ss.str();
 }
 
+utils::Heritable<ITopic> DdsTopic::copy() const noexcept
+{
+    return utils::Heritable<DdsTopic>::make_heritable(*this);
+}
+
 /////////////////////////
 // STATIC METHODS
 /////////////////////////
@@ -103,6 +108,20 @@ bool DdsTopic::is_valid_dds_topic(
     }
 
     return true;
+}
+
+/////////////////////////
+// OPERATORS
+/////////////////////////
+
+DdsTopic& DdsTopic::operator = (
+        const DdsTopic& other) noexcept
+{
+    Topic::operator=(other);
+
+    this->type_name = type_name;
+
+    return *this;
 }
 
 } /* namespace types */

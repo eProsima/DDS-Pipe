@@ -140,14 +140,8 @@ void DdsBridge::create_all_tracks_()
     for (const auto& id : writers_to_create)
     {
         std::shared_ptr<IParticipant> participant = participants_->get_participant(id);
-
-        // Make a copy of the Topic to customize it according to the Partipant's configured QoS.
-        // The Topic must be casted to a DdsTopic so the type_name tag doesn't get lost.
-        DdsTopic topic = dynamic_cast<DdsTopic&>(topic_.get_reference());
-
-        customize_topic_for_participant_nts_(topic, participant);
-
-        writers[id] = participant->create_writer(topic);
+        const auto& topic = create_topic_for_participant_nts_(participant);
+        writers[id] = participant->create_writer(*topic);
     }
 
     // Add the writers to the tracks they have routes for.
@@ -163,14 +157,8 @@ void DdsBridge::create_writer(
 
     // Create the writer.
     std::shared_ptr<IParticipant> participant = participants_->get_participant(participant_id);
-
-    // Make a copy of the Topic to customize it according to the Partipant's configured QoS.
-    // The Topic must be casted to a DdsTopic so the type_name tag doesn't get lost.
-    DdsTopic topic = dynamic_cast<DdsTopic&>(topic_.get_reference());
-
-    customize_topic_for_participant_nts_(topic, participant);
-
-    auto writer = participant->create_writer(topic);
+    const auto& topic = create_topic_for_participant_nts_(participant);
+    auto writer = participant->create_writer(*topic);
 
     // Add the writer to the tracks it has routes for.
     add_writer_to_tracks_nts_(participant_id, writer);
@@ -275,14 +263,8 @@ void DdsBridge::add_writers_to_tracks_nts_(
         {
             // The track doesn't exist. Create it.
             std::shared_ptr<IParticipant> participant = participants_->get_participant(id);
-
-            // Make a copy of the Topic to customize it according to the Partipant's configured QoS.
-            // The Topic must be casted to a DdsTopic so the type_name tag doesn't get lost.
-            DdsTopic topic = dynamic_cast<DdsTopic&>(topic_.get_reference());
-
-            customize_topic_for_participant_nts_(topic, participant);
-
-            auto reader = participant->create_reader(topic);
+            const auto& topic = create_topic_for_participant_nts_(participant);
+            auto reader = participant->create_reader(*topic);
 
             tracks_[id] = std::make_unique<Track>(
                 topic_,
@@ -300,10 +282,13 @@ void DdsBridge::add_writers_to_tracks_nts_(
     }
 }
 
-void DdsBridge::customize_topic_for_participant_nts_(
-        DdsTopic& topic,
+utils::Heritable<Topic> DdsBridge::create_topic_for_participant_nts_(
         const std::shared_ptr<IParticipant>& participant) noexcept
 {
+    // Make a copy of the Topic to customize it according to the Participant's configured QoS.
+    // The Topic must be casted to a DdsTopic so the type_name tag doesn't get lost.
+    utils::Heritable<Topic> topic = topic_->copy();
+
     // Impose the Topic QoSs that have been pre-configured on the topic.
 
     // 1. Manually Configured Topic QoSs.
@@ -313,12 +298,14 @@ void DdsBridge::customize_topic_for_participant_nts_(
 
         if (participant_ids.empty() || participant_ids.count(participant->id()))
         {
-            topic.topic_qos.set_qos(manual_topic->topic_qos);
+            topic->topic_qos.set_qos(manual_topic->topic_qos);
         }
     }
 
     // 2. Participant Topic QoSs.
-    topic.topic_qos.set_qos(participant->topic_qos());
+    topic->topic_qos.set_qos(participant->topic_qos());
+
+    return topic;
 }
 
 std::ostream& operator <<(
