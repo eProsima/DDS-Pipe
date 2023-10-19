@@ -64,7 +64,7 @@ struct Topic : public ITopic, public IConfiguration
             const ITopic& other) const noexcept override;
 
     DDSPIPE_CORE_DllAPI
-    virtual Topic& operator = (
+    virtual Topic& operator =(
             const Topic& other) noexcept;
 
     /////////////////////////

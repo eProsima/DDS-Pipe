@@ -46,8 +46,9 @@ struct DdsTopic : public DistributedTopic
     // OPERATORS
     /////////////////////////
 
-    virtual DdsTopic& operator = (
-        const DdsTopic& other) noexcept;
+    DDSPIPE_CORE_DllAPI
+    virtual DdsTopic& operator =(
+            const DdsTopic& other) noexcept;
 
     /////////////////////////
     // METHODS
