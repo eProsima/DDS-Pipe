@@ -18,6 +18,7 @@
 #include <string>
 
 #include <cpp_utils/Formatter.hpp>
+#include <cpp_utils/memory/Heritable.hpp>
 
 #include <ddspipe_core/configuration/IConfiguration.hpp>
 #include <ddspipe_core/interface/ITopic.hpp>
@@ -62,6 +63,10 @@ struct Topic : public ITopic, public IConfiguration
     virtual bool operator <(
             const ITopic& other) const noexcept override;
 
+    DDSPIPE_CORE_DllAPI
+    virtual Topic& operator = (
+            const Topic& other) noexcept;
+
     /////////////////////////
     // METHODS
     /////////////////////////
@@ -80,6 +85,10 @@ struct Topic : public ITopic, public IConfiguration
     DDSPIPE_CORE_DllAPI
     virtual bool is_valid(
             utils::Formatter& error_msg) const noexcept override;
+
+    //! Make a copy of the Topic
+    DDSPIPE_CORE_DllAPI
+    virtual utils::Heritable<ITopic> copy() const noexcept override;
 
     /////////////////////////
     // METHODS TO OVERRIDE

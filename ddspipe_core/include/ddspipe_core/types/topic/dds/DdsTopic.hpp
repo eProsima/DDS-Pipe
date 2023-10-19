@@ -17,6 +17,7 @@
 #include <iostream>
 #include <string>
 
+#include <cpp_utils/memory/Heritable.hpp>
 #include <cpp_utils/types/Fuzzy.hpp>
 
 #include <ddspipe_core/library/library_dll.h>
@@ -42,6 +43,13 @@ struct DdsTopic : public DistributedTopic
     DdsTopic();
 
     /////////////////////////
+    // OPERATORS
+    /////////////////////////
+
+    virtual DdsTopic& operator = (
+        const DdsTopic& other) noexcept;
+
+    /////////////////////////
     // METHODS
     /////////////////////////
 
@@ -54,6 +62,10 @@ struct DdsTopic : public DistributedTopic
 
     DDSPIPE_CORE_DllAPI
     virtual std::string serialize() const noexcept override;
+
+    //! Make a copy of the Topic
+    DDSPIPE_CORE_DllAPI
+    virtual utils::Heritable<ITopic> copy() const noexcept override;
 
     /////////////////////////
     // STATIC METHODS
