@@ -47,9 +47,6 @@ public:
             const std::shared_ptr<core::PayloadPool>& payload_pool,
             const std::shared_ptr<core::DiscoveryDatabase>& discovery_database);
 
-    static std::shared_ptr<eprosima::fastdds::rtps::UDPv4TransportDescriptor> configure_upd_transport_(
-        std::set<participants::types::IpType> whitelist = {});
-
 protected:
 
     /**

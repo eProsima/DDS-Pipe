@@ -82,7 +82,7 @@ public:
     virtual bool is_repeater() const noexcept override;
 
     DDSPIPE_PARTICIPANTS_DllAPI
-    core::types::TopicQoS topic_qos() const noexcept override;
+    virtual core::types::TopicQoS topic_qos() const noexcept override;
 
     /**
      * @brief Create a writer object

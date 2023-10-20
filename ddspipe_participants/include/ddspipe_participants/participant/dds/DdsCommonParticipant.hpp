@@ -52,6 +52,10 @@ public:
     DDSPIPE_PARTICIPANTS_DllAPI
     virtual bool is_repeater() const noexcept override;
 
+    //! Implement parent method \c topic_qos .
+    DDSPIPE_PARTICIPANTS_DllAPI
+    virtual core::types::TopicQoS topic_qos() const noexcept override;
+
     DDSPIPE_PARTICIPANTS_DllAPI
     virtual void init();
 
