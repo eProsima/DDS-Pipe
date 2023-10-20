@@ -25,44 +25,12 @@ namespace ddspipe {
 namespace core {
 namespace types {
 
-std::atomic<DurabilityKind> TopicQoS::default_durability_qos{DEFAULT_DURABILITY_QOS};
-std::atomic<ReliabilityKind> TopicQoS::default_reliability_qos{DEFAULT_RELIABILITY_QOS};
-std::atomic<OwnershipQosPolicyKind> TopicQoS::default_ownership_qos{DEFAULT_OWNERSHIP_QOS};
-std::atomic<bool> TopicQoS::default_use_partitions{DEFAULT_USE_PARTITIONS};
-std::atomic<bool> TopicQoS::default_keyed{DEFAULT_KEYED};
-std::atomic<HistoryDepthType> TopicQoS::default_history_depth{DEFAULT_HISTORY_DEPTH};
-std::atomic<float> TopicQoS::default_max_tx_rate{DEFAULT_MAX_TX_RATE};
-std::atomic<float> TopicQoS::default_max_rx_rate{DEFAULT_MAX_RX_RATE};
-std::atomic<unsigned int> TopicQoS::default_downsampling{DEFAULT_DOWNSAMPLING};
+std::atomic<TopicQoS> default_topic_qos{};
 
 TopicQoS::TopicQoS()
 {
-    // Set the default durability
-    durability_qos.set_value(default_durability_qos, utils::FuzzyLevelValues::fuzzy_level_default);
-
-    // Set the default reliabitliy
-    reliability_qos.set_value(default_reliability_qos, utils::FuzzyLevelValues::fuzzy_level_default);
-
-    // Set the default ownership
-    ownership_qos.set_value(default_ownership_qos, utils::FuzzyLevelValues::fuzzy_level_default);
-
-    // Set whether by default the Topic should use partitions
-    use_partitions.set_value(default_use_partitions, utils::FuzzyLevelValues::fuzzy_level_default);
-
-    // Set whether by default the Topic has a key
-    keyed.set_value(default_keyed, utils::FuzzyLevelValues::fuzzy_level_default);
-
-    // Set the default history depth
-    history_depth.set_value(default_history_depth, utils::FuzzyLevelValues::fuzzy_level_default);
-
-    // Set the default max transmision rate
-    max_tx_rate.set_value(default_max_tx_rate, utils::FuzzyLevelValues::fuzzy_level_default);
-
-    // Set the default max reception rate
-    max_rx_rate.set_value(default_max_rx_rate, utils::FuzzyLevelValues::fuzzy_level_default);
-
-    // Set the default downsampling
-    downsampling.set_value(default_downsampling, utils::FuzzyLevelValues::fuzzy_level_default);
+    // Set the default Topic QoS.
+    set_qos(default_topic_qos, utils::FuzzyLevelValues::fuzzy_level_default);
 }
 
 bool TopicQoS::operator ==(
@@ -101,51 +69,52 @@ bool TopicQoS::has_partitions() const noexcept
 }
 
 void TopicQoS::set_qos(
-        const TopicQoS& qos) noexcept
+        const TopicQoS& qos,
+        const utils::FuzzyLevelValues& fuzzy_level /*= utils::FuzzyLevelValues::fuzzy_level_fuzzy*/) noexcept
 {
     if (!durability_qos.is_set() && qos.durability_qos.is_set())
     {
-        durability_qos.set_value(qos.durability_qos.get_value());
+        durability_qos.set_value(qos.durability_qos.get_value(), fuzzy_level);
     }
 
     if (!reliability_qos.is_set() && qos.reliability_qos.is_set())
     {
-        reliability_qos.set_value(qos.reliability_qos.get_value());
+        reliability_qos.set_value(qos.reliability_qos.get_value(), fuzzy_level);
     }
 
     if (!ownership_qos.is_set() && qos.ownership_qos.is_set())
     {
-        ownership_qos.set_value(qos.ownership_qos.get_value());
+        ownership_qos.set_value(qos.ownership_qos.get_value(), fuzzy_level);
     }
 
     if (!use_partitions.is_set() && qos.use_partitions.is_set())
     {
-        use_partitions.set_value(qos.use_partitions.get_value());
+        use_partitions.set_value(qos.use_partitions.get_value(), fuzzy_level);
     }
 
     if (!history_depth.is_set() && qos.history_depth.is_set())
     {
-        history_depth.set_value(qos.history_depth.get_value());
+        history_depth.set_value(qos.history_depth.get_value(), fuzzy_level);
     }
 
     if (!keyed.is_set() && qos.keyed.is_set())
     {
-        keyed.set_value(qos.keyed.get_value());
+        keyed.set_value(qos.keyed.get_value(), fuzzy_level);
     }
 
     if (!max_tx_rate.is_set() && qos.max_tx_rate.is_set())
     {
-        max_tx_rate.set_value(qos.max_tx_rate.get_value());
+        max_tx_rate.set_value(qos.max_tx_rate.get_value(), fuzzy_level);
     }
 
     if (!max_rx_rate.is_set() && qos.max_rx_rate.is_set())
     {
-        max_rx_rate.set_value(qos.max_rx_rate.get_value());
+        max_rx_rate.set_value(qos.max_rx_rate.get_value(), fuzzy_level);
     }
 
     if (!downsampling.is_set() && qos.downsampling.is_set())
     {
-        downsampling.set_value(qos.downsampling.get_value());
+        downsampling.set_value(qos.downsampling.get_value(), fuzzy_level);
     }
 }
 

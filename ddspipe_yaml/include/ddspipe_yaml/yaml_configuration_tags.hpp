@@ -138,11 +138,9 @@ constexpr const char* TOPIC_ROUTES_TAG("topic-routes"); // Topic specific forwar
 constexpr const char* SPECS_TAG("specs"); //! Specs options for DDS Router configuration
 constexpr const char* NUMBER_THREADS_TAG("threads"); //! Number of threads to configure the thread pool
 constexpr const char* MAX_HISTORY_DEPTH_TAG("max-depth"); //! Maximum size (number of stored cache changes) for RTPS History instances
-constexpr const char* MAX_TX_RATE_TAG("max-tx-rate"); //! Transmit up to *max_tx_rate* samples in a 1 second bin
-constexpr const char* MAX_RX_RATE_TAG("max-rx-rate"); //! Process up to *max_rx_rate* samples in a 1 second bin
-constexpr const char* DOWNSAMPLING_TAG("downsampling"); //! Keep 1 out of every *downsampling* samples received
 constexpr const char* WAIT_ALL_ACKED_TIMEOUT_TAG("wait-all-acked-timeout"); //! Wait for a maximum of *wait-all-acked-timeout* ms until all msgs sent by reliable writers are acknowledged by their matched readers
 constexpr const char* REMOVE_UNUSED_ENTITIES_TAG("remove-unused-entities"); //! Dynamically create and delete entities and tracks.
+constexpr const char* SPECS_QOS_TAG("qos"); //! Global Topic QoSs
 
 // XML configuration tags
 constexpr const char* XML_TAG("xml"); //! Tag to read xml configuration

@@ -93,92 +93,16 @@ TopicQoS
      */
     DDSPIPE_CORE_DllAPI
     void set_qos(
-            const TopicQoS& qos) noexcept;
+            const TopicQoS& qos,
+            const utils::FuzzyLevelValues& fuzzy_level = utils::FuzzyLevelValues::fuzzy_level_fuzzy) noexcept;
 
     /////////////////////////
     // GLOBAL VARIABLES
     /////////////////////////
 
-    /**
-     * @brief Global value to store the default durability qos in this execution.
-     *
-     * This value can change along the execution.
-     * Every new TopicQoS object will use this value as \c durability_qos default.
-     */
+    //! Global value to store the default Topic QoS in this execution.
     DDSPIPE_CORE_DllAPI
-    static std::atomic<DurabilityKind> default_durability_qos;
-
-    /**
-     * @brief Global value to store the default reliability qos in this execution.
-     *
-     * This value can change along the execution.
-     * Every new TopicQoS object will use this value as \c reliability_qos default.
-     */
-    DDSPIPE_CORE_DllAPI
-    static std::atomic<ReliabilityKind> default_reliability_qos;
-
-    /**
-     * @brief Global value to store the default ownership qos in this execution.
-     *
-     * This value can change along the execution.
-     * Every new TopicQoS object will use this value as \c ownership_qos default.
-     */
-    DDSPIPE_CORE_DllAPI
-    static std::atomic<OwnershipQosPolicyKind> default_ownership_qos;
-
-    /**
-     * @brief Global value to store the default use_partitions in this execution.
-     *
-     * This value can change along the execution.
-     * Every new TopicQoS object will use this value as \c use_partitions default.
-     */
-    DDSPIPE_CORE_DllAPI
-    static std::atomic<bool> default_use_partitions;
-
-    /**
-     * @brief Global value to store the default keyed in this execution.
-     *
-     * This value can change along the execution.
-     * Every new TopicQoS object will use this value as \c keyed default.
-     */
-    DDSPIPE_CORE_DllAPI
-    static std::atomic<bool> default_keyed;
-
-    /**
-     * @brief Global value to store the default  in this execution.
-     *
-     * This value can change along the execution.
-     * Every new TopicQoS object will use this value as \c history_depth default.
-     */
-    DDSPIPE_CORE_DllAPI
-    static std::atomic<HistoryDepthType> default_history_depth;
-
-    /**
-     * @brief Global value to store the default max transmission rate in this execution.
-     *
-     * This value can change along the execution.
-     * Every new TopicQoS object will use this value as \c max_tx_rate default.
-     */
-    DDSPIPE_CORE_DllAPI
-    static std::atomic<float> default_max_tx_rate;
-
-    /**
-     * @brief Global value to store the default max reception rate in this execution.
-     *
-     * This value can change along the execution.
-     * Every new TopicQoS object will use this value as \c max_rx_rate default.
-     */
-    DDSPIPE_CORE_DllAPI
-    static std::atomic<float> default_max_rx_rate;
-
-    /**
-     * @brief Global value to store the default downsampling factor in this execution.
-     *
-     * This value can change along the execution.
-     * Every new TopicQoS object will use this value as \c downsampling default.
-     */
-    DDSPIPE_CORE_DllAPI
-    static std::atomic<unsigned int> default_downsampling;
+    static std::atomic<TopicQoS> default_topic_qos;
 
     /////////////////////////
     // VARIABLES
