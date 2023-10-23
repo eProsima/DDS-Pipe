@@ -27,8 +27,33 @@ namespace types {
 
 utils::Fuzzy<TopicQoS> TopicQoS::default_topic_qos{};
 
-TopicQoS::TopicQoS()
+TopicQoS::TopicQoS(
+        DurabilityKind durability_qos /*= DEFAULT_DURABILITY_QOS */,
+        ReliabilityKind reliability_qos /*= DEFAULT_RELIABILITY_QOS */,
+        OwnershipQosPolicyKind ownership_qos /*= DEFAULT_OWNERSHIP_QOS */,
+        bool use_partitions /*= DEFAULT_USE_PARTITIONS */,
+        bool keyed /*= DEFAULT_KEYED */,
+        HistoryDepthType history_depth /*= DEFAULT_HISTORY_DEPTH */,
+        float max_tx_rate /*= DEFAULT_MAX_TX_RATE */,
+        float max_rx_rate /*= DEFAULT_MAX_RX_RATE */,
+        unsigned int downsampling /*= DEFAULT_DOWNSAMPLING */)
 {
+    /**
+     * @note The default values must be set here. Otherwise, Ubuntu 20.04 Debug does not compile.
+     */
+    this->durability_qos.set_value(durability_qos, utils::FuzzyLevelValues::fuzzy_level_default);
+    this->reliability_qos.set_value(reliability_qos, utils::FuzzyLevelValues::fuzzy_level_default);
+    this->ownership_qos.set_value(ownership_qos, utils::FuzzyLevelValues::fuzzy_level_default);
+    this->use_partitions.set_value(use_partitions, utils::FuzzyLevelValues::fuzzy_level_default);
+    this->history_depth.set_value(history_depth, utils::FuzzyLevelValues::fuzzy_level_default);
+    this->keyed.set_value(keyed, utils::FuzzyLevelValues::fuzzy_level_default);
+    this->max_tx_rate.set_value(max_tx_rate, utils::FuzzyLevelValues::fuzzy_level_default);
+    this->max_rx_rate.set_value(max_rx_rate, utils::FuzzyLevelValues::fuzzy_level_default);
+    this->downsampling.set_value(downsampling, utils::FuzzyLevelValues::fuzzy_level_default);
+
+    /**
+     * @note This check must be done. If not, the constructor of the default Topic QoS would enter into a loop.
+     */
     if (default_topic_qos.is_set())
     {
         set_qos(default_topic_qos, utils::FuzzyLevelValues::fuzzy_level_default);

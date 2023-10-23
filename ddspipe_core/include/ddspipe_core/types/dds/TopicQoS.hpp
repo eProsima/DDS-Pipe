@@ -55,7 +55,16 @@ TopicQoS
 
     //! Default TopicQoS with reader less restrictive parameters
     DDSPIPE_CORE_DllAPI
-    TopicQoS();
+    TopicQoS(
+            DurabilityKind durability_qos = DEFAULT_DURABILITY_QOS,
+            ReliabilityKind reliability_qos = DEFAULT_RELIABILITY_QOS,
+            OwnershipQosPolicyKind ownership_qos = DEFAULT_OWNERSHIP_QOS,
+            bool use_partitions = DEFAULT_USE_PARTITIONS,
+            bool keyed = DEFAULT_KEYED,
+            HistoryDepthType history_depth = DEFAULT_HISTORY_DEPTH,
+            float max_tx_rate = DEFAULT_MAX_TX_RATE,
+            float max_rx_rate = DEFAULT_MAX_RX_RATE,
+            unsigned int downsampling = DEFAULT_DOWNSAMPLING);
 
     /////////////////////////
     // OPERATORS
@@ -101,33 +110,31 @@ TopicQoS
     /////////////////////////
 
     //! Durability kind
-    utils::Fuzzy<DurabilityKind> durability_qos{DEFAULT_DURABILITY_QOS, utils::FuzzyLevelValues::fuzzy_level_default};
+    utils::Fuzzy<DurabilityKind> durability_qos;
 
     //! Reliability kind
-    utils::Fuzzy<ReliabilityKind> reliability_qos{DEFAULT_RELIABILITY_QOS,
-                                                  utils::FuzzyLevelValues::fuzzy_level_default};
+    utils::Fuzzy<ReliabilityKind> reliability_qos;
 
     //! Ownership kind of the topic
-    utils::Fuzzy<OwnershipQosPolicyKind> ownership_qos{DEFAULT_OWNERSHIP_QOS,
-                                                       utils::FuzzyLevelValues::fuzzy_level_default};
+    utils::Fuzzy<OwnershipQosPolicyKind> ownership_qos;
 
     //! Whether the topics uses partitions
-    utils::Fuzzy<bool> use_partitions{DEFAULT_USE_PARTITIONS, utils::FuzzyLevelValues::fuzzy_level_default};
+    utils::Fuzzy<bool> use_partitions;
 
     //! Whether the topic has key or not
-    utils::Fuzzy<bool> keyed{DEFAULT_KEYED, utils::FuzzyLevelValues::fuzzy_level_default};
+    utils::Fuzzy<bool> keyed;
 
     //! Depth of the history
-    utils::Fuzzy<HistoryDepthType> history_depth{DEFAULT_HISTORY_DEPTH, utils::FuzzyLevelValues::fuzzy_level_default};
+    utils::Fuzzy<HistoryDepthType> history_depth;
 
     //! Discard msgs if less than 1/rate seconds elapsed since the last sample was transmitted [Hz]. Default: 0 (no limit)
-    utils::Fuzzy<float> max_tx_rate{DEFAULT_MAX_TX_RATE, utils::FuzzyLevelValues::fuzzy_level_default};
+    utils::Fuzzy<float> max_tx_rate;
 
     //! Discard msgs if less than 1/rate seconds elapsed since the last sample was processed [Hz]. Default: 0 (no limit)
-    utils::Fuzzy<float> max_rx_rate{DEFAULT_MAX_RX_RATE, utils::FuzzyLevelValues::fuzzy_level_default};
+    utils::Fuzzy<float> max_rx_rate;
 
     //! Downsampling factor: keep 1 out of every *downsampling* samples received (downsampling=1 <=> no downsampling)
-    utils::Fuzzy<unsigned int> downsampling{DEFAULT_DOWNSAMPLING, utils::FuzzyLevelValues::fuzzy_level_default};
+    utils::Fuzzy<unsigned int> downsampling;
 
     /////////////////////////
     // GLOBAL VARIABLES
