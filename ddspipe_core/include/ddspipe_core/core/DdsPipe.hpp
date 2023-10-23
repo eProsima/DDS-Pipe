@@ -84,7 +84,7 @@ public:
     /**
      * @brief Reload the DdsPipe configuration.
      *
-     * @param [in] configuration : new configuration.
+     * @param [in] new_configuration : new configuration.
      *
      * @return \c RETCODE_OK if the configuration has been updated correctly.
      * @return \c RETCODE_NO_DATA if the new configuration has not changed.

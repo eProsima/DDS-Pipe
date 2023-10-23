@@ -354,11 +354,11 @@ void YamlReader::fill(
     {
         if (get<bool>(yml, QOS_TRANSIENT_TAG, version))
         {
-            object.durability_qos = eprosima::ddspipe::core::types::DurabilityKind::TRANSIENT_LOCAL;
+            object.durability_qos.set_value(eprosima::ddspipe::core::types::DurabilityKind::TRANSIENT_LOCAL);
         }
         else
         {
-            object.durability_qos = eprosima::ddspipe::core::types::DurabilityKind::VOLATILE;
+            object.durability_qos.set_value(eprosima::ddspipe::core::types::DurabilityKind::VOLATILE);
         }
     }
 
@@ -367,11 +367,11 @@ void YamlReader::fill(
     {
         if (get<bool>(yml, QOS_RELIABLE_TAG, version))
         {
-            object.reliability_qos = eprosima::ddspipe::core::types::ReliabilityKind::RELIABLE;
+            object.reliability_qos.set_value(eprosima::ddspipe::core::types::ReliabilityKind::RELIABLE);
         }
         else
         {
-            object.reliability_qos = eprosima::ddspipe::core::types::ReliabilityKind::BEST_EFFORT;
+            object.reliability_qos.set_value(eprosima::ddspipe::core::types::ReliabilityKind::BEST_EFFORT);
         }
     }
 
@@ -380,48 +380,48 @@ void YamlReader::fill(
     {
         if (get<bool>(yml, QOS_OWNERSHIP_TAG, version))
         {
-            object.ownership_qos = eprosima::ddspipe::core::types::OwnershipQosPolicyKind::EXCLUSIVE_OWNERSHIP_QOS;
+            object.ownership_qos.set_value(eprosima::ddspipe::core::types::OwnershipQosPolicyKind::EXCLUSIVE_OWNERSHIP_QOS);
         }
         else
         {
-            object.ownership_qos = eprosima::ddspipe::core::types::OwnershipQosPolicyKind::SHARED_OWNERSHIP_QOS;
+            object.ownership_qos.set_value(eprosima::ddspipe::core::types::OwnershipQosPolicyKind::SHARED_OWNERSHIP_QOS);
         }
     }
 
     // Use partitions optional
     if (is_tag_present(yml, QOS_PARTITION_TAG))
     {
-        object.use_partitions = get<bool>(yml, QOS_PARTITION_TAG, version);
+        object.use_partitions.set_value(get<bool>(yml, QOS_PARTITION_TAG, version));
     }
 
     // History depth optional
     if (is_tag_present(yml, QOS_HISTORY_DEPTH_TAG))
     {
-        object.history_depth = get<HistoryDepthType>(yml, QOS_HISTORY_DEPTH_TAG, version);
+        object.history_depth.set_value(get<HistoryDepthType>(yml, QOS_HISTORY_DEPTH_TAG, version));
     }
 
     // Keyed optional
     if (is_tag_present(yml, QOS_KEYED_TAG))
     {
-        object.keyed = get<bool>(yml, QOS_KEYED_TAG, version);
+        object.keyed.set_value(get<bool>(yml, QOS_KEYED_TAG, version));
     }
 
     // Max Transmission Rate optional
     if (is_tag_present(yml, QOS_MAX_TX_RATE_TAG))
     {
-        object.max_tx_rate = get<float>(yml, QOS_MAX_TX_RATE_TAG, version);
+        object.max_tx_rate.set_value(get<float>(yml, QOS_MAX_TX_RATE_TAG, version));
     }
 
     // Max Reception Rate optional
     if (is_tag_present(yml, QOS_MAX_RX_RATE_TAG))
     {
-        object.max_rx_rate = get<float>(yml, QOS_MAX_RX_RATE_TAG, version);
+        object.max_rx_rate.set_value(get<float>(yml, QOS_MAX_RX_RATE_TAG, version));
     }
 
     // Downsampling optional
     if (is_tag_present(yml, QOS_DOWNSAMPLING_TAG))
     {
-        object.downsampling = get_positive_int(yml, QOS_DOWNSAMPLING_TAG);
+        object.downsampling.set_value(get_positive_int(yml, QOS_DOWNSAMPLING_TAG));
     }
 }
 

@@ -282,12 +282,11 @@ void DdsBridge::add_writers_to_tracks_nts_(
     }
 }
 
-utils::Heritable<Topic> DdsBridge::create_topic_for_participant_nts_(
+utils::Heritable<DistributedTopic> DdsBridge::create_topic_for_participant_nts_(
         const std::shared_ptr<IParticipant>& participant) noexcept
 {
     // Make a copy of the Topic to customize it according to the Participant's configured QoS.
-    // The Topic must be casted to a DdsTopic so the type_name tag doesn't get lost.
-    utils::Heritable<Topic> topic = topic_->copy();
+    utils::Heritable<DistributedTopic> topic = topic_->copy();
 
     // Impose the Topic QoSs that have been pre-configured on the topic.
 
