@@ -43,7 +43,7 @@ constexpr const char* TOPIC_PARTICIPANTS_TAG("participants");   //! List of part
 // QoS related tags
 constexpr const char* QOS_RELIABLE_TAG("reliability"); //! The Endpoints of that topic will be configured as RELIABLE
 constexpr const char* QOS_TRANSIENT_TAG("durability"); //! The Endpoints of that topic will be configured as TRANSIENT_LOCAL
-constexpr const char* QOS_HISTORY_DEPTH_TAG("depth"); //! The Endpoints of that topic will be configured as this History Depth
+constexpr const char* QOS_HISTORY_DEPTH_TAG("history-depth"); //! The Endpoints of that topic will be configured as this History Depth
 constexpr const char* QOS_PARTITION_TAG("partitions"); //! The Endpoints of that topic will be configured with partitions
 constexpr const char* QOS_OWNERSHIP_TAG("ownership"); //! The Endpoints of that topic will be configured with partitions
 constexpr const char* QOS_KEYED_TAG("keyed"); //! Kind of a topic (with or without key)
@@ -137,7 +137,6 @@ constexpr const char* TOPIC_ROUTES_TAG("topic-routes"); // Topic specific forwar
 // Advanced configuration
 constexpr const char* SPECS_TAG("specs"); //! Specs options for DDS Router configuration
 constexpr const char* NUMBER_THREADS_TAG("threads"); //! Number of threads to configure the thread pool
-constexpr const char* MAX_HISTORY_DEPTH_TAG("max-depth"); //! Maximum size (number of stored cache changes) for RTPS History instances
 constexpr const char* WAIT_ALL_ACKED_TIMEOUT_TAG("wait-all-acked-timeout"); //! Wait for a maximum of *wait-all-acked-timeout* ms until all msgs sent by reliable writers are acknowledged by their matched readers
 constexpr const char* REMOVE_UNUSED_ENTITIES_TAG("remove-unused-entities"); //! Dynamically create and delete entities and tracks.
 constexpr const char* SPECS_QOS_TAG("qos"); //! Global Topic QoSs

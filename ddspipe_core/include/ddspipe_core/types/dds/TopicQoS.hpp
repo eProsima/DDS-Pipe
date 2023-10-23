@@ -118,7 +118,7 @@ TopicQoS
     utils::Fuzzy<bool> keyed{DEFAULT_KEYED, utils::FuzzyLevelValues::fuzzy_level_default};
 
     //! Depth of the history
-    utils::Fuzzy<HistoryDepthType> history_depth{DEFAULT_KEYED, utils::FuzzyLevelValues::fuzzy_level_default};
+    utils::Fuzzy<HistoryDepthType> history_depth{DEFAULT_HISTORY_DEPTH, utils::FuzzyLevelValues::fuzzy_level_default};
 
     //! Discard msgs if less than 1/rate seconds elapsed since the last sample was transmitted [Hz]. Default: 0 (no limit)
     utils::Fuzzy<float> max_tx_rate{DEFAULT_MAX_TX_RATE, utils::FuzzyLevelValues::fuzzy_level_default};
