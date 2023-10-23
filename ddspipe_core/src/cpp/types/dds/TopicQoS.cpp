@@ -25,12 +25,14 @@ namespace ddspipe {
 namespace core {
 namespace types {
 
-std::atomic<TopicQoS> default_topic_qos{};
+utils::Fuzzy<TopicQoS> TopicQoS::default_topic_qos{};
 
 TopicQoS::TopicQoS()
 {
-    // Set the default Topic QoS.
-    set_qos(default_topic_qos, utils::FuzzyLevelValues::fuzzy_level_default);
+    if (default_topic_qos.is_set())
+    {
+        set_qos(default_topic_qos, utils::FuzzyLevelValues::fuzzy_level_default);
+    }
 }
 
 bool TopicQoS::operator ==(
