@@ -380,7 +380,8 @@ void YamlReader::fill(
     {
         if (get<bool>(yml, QOS_OWNERSHIP_TAG, version))
         {
-            object.ownership_qos.set_value(eprosima::ddspipe::core::types::OwnershipQosPolicyKind::EXCLUSIVE_OWNERSHIP_QOS);
+            object.ownership_qos.set_value(
+                eprosima::ddspipe::core::types::OwnershipQosPolicyKind::EXCLUSIVE_OWNERSHIP_QOS);
         }
         else
         {
@@ -441,12 +442,6 @@ void YamlReader::fill(
 
     // Data Type required
     object.type_name = get<std::string>(yml, TOPIC_TYPE_NAME_TAG, version);
-
-    // Optional QoS
-    if (is_tag_present(yml, TOPIC_QOS_TAG))
-    {
-        fill<TopicQoS>(object.topic_qos, get_value_in_tag(yml, TOPIC_QOS_TAG), version);
-    }
 }
 
 template <>
