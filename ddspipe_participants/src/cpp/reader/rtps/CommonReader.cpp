@@ -447,12 +447,14 @@ void CommonReader::onReaderMatched(
         if (info.status == fastrtps::rtps::MatchingStatus::MATCHED_MATCHING)
         {
             logInfo(DDSPIPE_RTPS_COMMONREADER_LISTENER,
-                    "Reader " << *this << " matched with a new Writer with guid " << info.remoteEndpointGuid);
+                    "Reader " << *this << " in topic " << topic_.serialize() << " matched with a new Writer with guid " <<
+                    info.remoteEndpointGuid);
         }
         else
         {
             logInfo(DDSPIPE_RTPS_COMMONREADER_LISTENER,
-                    "Reader " << *this << " unmatched with Writer " << info.remoteEndpointGuid);
+                    "Reader " << *this << " in topic " << topic_.serialize() << " unmatched with Writer " <<
+                    info.remoteEndpointGuid);
         }
     }
 }
