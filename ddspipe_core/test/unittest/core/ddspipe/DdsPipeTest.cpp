@@ -321,6 +321,18 @@ TEST(DdsPipeTest, allowed_blocked_topics)
         ASSERT_FALSE(ddspipe.is_topic_active(htopic_1));
         ASSERT_FALSE(ddspipe.is_bridge_created(htopic_1));
 
+        // Create a wildcard topic
+        types::WildcardDdsFilterTopic topic_2;
+        topic_2.topic_name.set_value("t*");
+
+        eprosima::utils::Heritable<types::IFilterTopic> htopic_2 =
+                eprosima::utils::Heritable<types::WildcardDdsFilterTopic>::make_heritable(topic_2);
+
+        // Add the Topic to the blocklist
+        DdsPipeConfiguration new_ddspipe_configuration;
+        new_ddspipe_configuration.blocklist.insert(htopic_2);
+        ddspipe.reload_configuration(new_ddspipe_configuration);
+
         types::Endpoint endpoint_1;
         endpoint_1.kind = types::EndpointKind::reader;
         endpoint_1.topic = topic_1;
@@ -331,25 +343,32 @@ TEST(DdsPipeTest, allowed_blocked_topics)
         eprosima::utils::sleep_for(10u);
 
         ASSERT_TRUE(ddspipe.is_topic_discovered(htopic_1));
+        ASSERT_FALSE(ddspipe.is_topic_active(htopic_1));
+        ASSERT_FALSE(ddspipe.is_bridge_created(htopic_1));
+
+        // Remove the Topic from the blocklist
+        new_ddspipe_configuration.blocklist.erase(htopic_2);
+        ddspipe.reload_configuration(new_ddspipe_configuration);
+
+        ASSERT_TRUE(ddspipe.is_topic_discovered(htopic_1));
         ASSERT_TRUE(ddspipe.is_topic_active(htopic_1));
         ASSERT_TRUE(ddspipe.is_bridge_created(htopic_1));
 
         // Create two Wildcard Topics
-        types::WildcardDdsFilterTopic topic_2;
-        topic_2.topic_name.set_value("topic*");
-
-        eprosima::utils::Heritable<types::IFilterTopic> htopic_2 =
-                eprosima::utils::Heritable<types::WildcardDdsFilterTopic>::make_heritable(topic_2);
-
         types::WildcardDdsFilterTopic topic_3;
-        topic_3.topic_name.set_value("top*");
+        topic_3.topic_name.set_value("topic*");
 
         eprosima::utils::Heritable<types::IFilterTopic> htopic_3 =
                 eprosima::utils::Heritable<types::WildcardDdsFilterTopic>::make_heritable(topic_3);
 
+        types::WildcardDdsFilterTopic topic_4;
+        topic_4.topic_name.set_value("top*");
+
+        eprosima::utils::Heritable<types::IFilterTopic> htopic_4 =
+                eprosima::utils::Heritable<types::WildcardDdsFilterTopic>::make_heritable(topic_4);
+
         // Add the Topic to the allowlist
-        DdsPipeConfiguration new_ddspipe_configuration;
-        new_ddspipe_configuration.allowlist.insert(htopic_2);
+        new_ddspipe_configuration.allowlist.insert(htopic_3);
         ddspipe.reload_configuration(new_ddspipe_configuration);
 
         ASSERT_TRUE(ddspipe.is_topic_discovered(htopic_1));
@@ -357,7 +376,7 @@ TEST(DdsPipeTest, allowed_blocked_topics)
         ASSERT_TRUE(ddspipe.is_bridge_created(htopic_1));
 
         // Add the Topic to the blocklist
-        new_ddspipe_configuration.blocklist.insert(htopic_3);
+        new_ddspipe_configuration.blocklist.insert(htopic_4);
         ddspipe.reload_configuration(new_ddspipe_configuration);
 
         ASSERT_TRUE(ddspipe.is_topic_discovered(htopic_1));
@@ -365,7 +384,7 @@ TEST(DdsPipeTest, allowed_blocked_topics)
         ASSERT_TRUE(ddspipe.is_bridge_created(htopic_1));
 
         // Remove the Topic from the blocklist
-        new_ddspipe_configuration.blocklist.erase(htopic_3);
+        new_ddspipe_configuration.blocklist.erase(htopic_4);
         ddspipe.reload_configuration(new_ddspipe_configuration);
 
         ASSERT_TRUE(ddspipe.is_topic_discovered(htopic_1));

@@ -409,7 +409,7 @@ void DdsPipe::discovered_topic_nts_(
         return;
     }
 
-    // Add topic to current_topics as non activated
+    // Add topic to current_topics as not activated
     current_topics_.emplace(topic, false);
 
     // If Pipe is enabled and topic allowed, activate it
