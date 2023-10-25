@@ -57,15 +57,7 @@ bool TopicDataType::serialize(
 
     logDebug(DDSPIPE_DDS_TYPESUPPORT, "Serializing data " << *src_payload << ".");
 
-    // TODO: this could be done when we have access to Fast DDS PayloadPool
-    // Copy each variable
-    // target_payload->copy(&src_payload->payload);
-
-    // Get data and store it in PayloadPool
-    eprosima::fastrtps::rtps::IPayloadPool* payload_owner =
-           static_cast<eprosima::fastrtps::rtps::IPayloadPool*>(src_payload->payload_owner);
-
-    payload_pool_->get_payload(src_payload->payload, payload_owner, *target_payload);
+    target_payload->data = src_payload->payload.data;
 
     return true;
 }
@@ -83,8 +75,6 @@ bool TopicDataType::deserialize(
            static_cast<eprosima::fastrtps::rtps::IPayloadPool*>(payload_pool_.get());
 
     payload_pool_->get_payload(*src_payload, payload_owner, target_payload->payload);
-
-    target_payload->payload_owner = payload_pool_.get();
 
     return true;
 }

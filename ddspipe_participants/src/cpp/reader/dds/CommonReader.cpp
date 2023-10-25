@@ -249,7 +249,7 @@ void CommonReader::fill_received_data_(
     // Get Participant receiver
     data_to_fill.participant_receiver = participant_id_;
 
-    // TODO modify when access to payload pool
+    data_to_fill.payload_owner = payload_pool_.get();
 
     // Set Instance Handle to data_to_fill
     if (topic_.topic_qos.keyed)

@@ -109,6 +109,9 @@ utils::ReturnCode CommonWriter::write_nts_(
 
     auto& rtps_data = dynamic_cast<core::types::RtpsPayloadData&>(data);
 
+    payload_pool_->set_target(
+        rtps_data.payload);
+
     if (topic_.topic_qos.keyed)
     {
         // TODO check if in case of dispose it must be done something differently

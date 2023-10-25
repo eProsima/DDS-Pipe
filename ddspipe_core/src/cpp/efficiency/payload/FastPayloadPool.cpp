@@ -33,6 +33,24 @@ bool FastPayloadPool::get_payload(
         uint32_t size,
         Payload& payload)
 {
+    if (target_set_)
+    {
+        target_set_ = false;
+
+        eprosima::fastrtps::rtps::IPayloadPool* payload_owner =
+           static_cast<eprosima::fastrtps::rtps::IPayloadPool*>(this);
+
+        auto ret = get_payload(
+            target_payload_,
+            payload_owner,
+            payload
+        );
+
+        target_payload_.data = nullptr;
+
+        return ret;
+    }
+
     // Reserve new payload
     if (!reserve_(size, payload))
     {
