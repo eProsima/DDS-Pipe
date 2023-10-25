@@ -38,15 +38,15 @@ core::types::Endpoint create_common_endpoint_from_info_(
 
     // Parse TopicQoS
     // Durability
-    endpoint.topic.topic_qos.durability_qos = info.info.m_qos.m_durability.durabilityKind();
+    endpoint.topic.topic_qos.durability_qos.set_value(info.info.m_qos.m_durability.durabilityKind());
     // Reliability
     if (info.info.m_qos.m_reliability.kind == fastdds::dds::BEST_EFFORT_RELIABILITY_QOS)
     {
-        endpoint.topic.topic_qos.reliability_qos = fastrtps::rtps::BEST_EFFORT;
+        endpoint.topic.topic_qos.reliability_qos.set_value(fastrtps::rtps::BEST_EFFORT);
     }
     else if (info.info.m_qos.m_reliability.kind == fastdds::dds::RELIABLE_RELIABILITY_QOS)
     {
-        endpoint.topic.topic_qos.reliability_qos = fastrtps::rtps::RELIABLE;
+        endpoint.topic.topic_qos.reliability_qos.set_value(fastrtps::rtps::RELIABLE);
     }
     else
     {
@@ -55,11 +55,11 @@ core::types::Endpoint create_common_endpoint_from_info_(
                 "Invalid ReliabilityQoS value found while parsing DiscoveryInfo for Endpoint creation.");
     }
     // Set Topic with Partitions
-    endpoint.topic.topic_qos.use_partitions = !info.info.m_qos.m_partition.empty();
+    endpoint.topic.topic_qos.use_partitions.set_value(!info.info.m_qos.m_partition.empty());
     // Set Topic with ownership
-    endpoint.topic.topic_qos.ownership_qos = info.info.m_qos.m_ownership.kind;
+    endpoint.topic.topic_qos.ownership_qos.set_value(info.info.m_qos.m_ownership.kind);
     // Set Topic key
-    endpoint.topic.topic_qos.keyed = info.info.topicKind() == eprosima::fastrtps::rtps::TopicKind_t::WITH_KEY;
+    endpoint.topic.topic_qos.keyed.set_value(info.info.topicKind() == eprosima::fastrtps::rtps::TopicKind_t::WITH_KEY);
 
     // Parse Topic
     core::types::DdsTopic info_topic;

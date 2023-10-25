@@ -297,12 +297,12 @@ utils::Heritable<DistributedTopic> DdsBridge::create_topic_for_participant_nts_(
 
         if (participant_ids.empty() || participant_ids.count(participant->id()))
         {
-            topic->topic_qos.set_qos(manual_topic->topic_qos);
+            topic->topic_qos.set_qos(manual_topic->topic_qos, utils::FuzzyLevelValues::fuzzy_level_hard);
         }
     }
 
     // 2. Participant Topic QoSs.
-    topic->topic_qos.set_qos(participant->topic_qos());
+    topic->topic_qos.set_qos(participant->topic_qos(), utils::FuzzyLevelValues::fuzzy_level_hard);
 
     return topic;
 }

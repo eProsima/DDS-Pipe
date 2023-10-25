@@ -55,16 +55,7 @@ TopicQoS
 
     //! Default TopicQoS with reader less restrictive parameters
     DDSPIPE_CORE_DllAPI
-    TopicQoS(
-            DurabilityKind durability_qos = DEFAULT_DURABILITY_QOS,
-            ReliabilityKind reliability_qos = DEFAULT_RELIABILITY_QOS,
-            OwnershipQosPolicyKind ownership_qos = DEFAULT_OWNERSHIP_QOS,
-            bool use_partitions = DEFAULT_USE_PARTITIONS,
-            bool keyed = DEFAULT_KEYED,
-            HistoryDepthType history_depth = DEFAULT_HISTORY_DEPTH,
-            float max_tx_rate = DEFAULT_MAX_TX_RATE,
-            float max_rx_rate = DEFAULT_MAX_RX_RATE,
-            unsigned int downsampling = DEFAULT_DOWNSAMPLING);
+    TopicQoS();
 
     /////////////////////////
     // OPERATORS
@@ -104,6 +95,21 @@ TopicQoS
     void set_qos(
             const TopicQoS& qos,
             const utils::FuzzyLevelValues& fuzzy_level = utils::FuzzyLevelValues::fuzzy_level_fuzzy) noexcept;
+
+    /**
+     * @brief Set the default Topic QoSs.
+     */
+    DDSPIPE_CORE_DllAPI
+    void set_default_qos(
+            DurabilityKind durability_qos = DEFAULT_DURABILITY_QOS,
+            ReliabilityKind reliability_qos = DEFAULT_RELIABILITY_QOS,
+            OwnershipQosPolicyKind ownership_qos = DEFAULT_OWNERSHIP_QOS,
+            bool use_partitions = DEFAULT_USE_PARTITIONS,
+            bool keyed = DEFAULT_KEYED,
+            HistoryDepthType history_depth = DEFAULT_HISTORY_DEPTH,
+            float max_tx_rate = DEFAULT_MAX_TX_RATE,
+            float max_rx_rate = DEFAULT_MAX_RX_RATE,
+            unsigned int downsampling = DEFAULT_DOWNSAMPLING) noexcept;
 
     /////////////////////////
     // VARIABLES

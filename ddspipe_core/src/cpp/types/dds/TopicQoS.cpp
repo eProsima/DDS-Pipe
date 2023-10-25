@@ -27,36 +27,15 @@ namespace types {
 
 utils::Fuzzy<TopicQoS> TopicQoS::default_topic_qos{};
 
-TopicQoS::TopicQoS(
-        DurabilityKind durability_qos /*= DEFAULT_DURABILITY_QOS */,
-        ReliabilityKind reliability_qos /*= DEFAULT_RELIABILITY_QOS */,
-        OwnershipQosPolicyKind ownership_qos /*= DEFAULT_OWNERSHIP_QOS */,
-        bool use_partitions /*= DEFAULT_USE_PARTITIONS */,
-        bool keyed /*= DEFAULT_KEYED */,
-        HistoryDepthType history_depth /*= DEFAULT_HISTORY_DEPTH */,
-        float max_tx_rate /*= DEFAULT_MAX_TX_RATE */,
-        float max_rx_rate /*= DEFAULT_MAX_RX_RATE */,
-        unsigned int downsampling /*= DEFAULT_DOWNSAMPLING */)
+TopicQoS::TopicQoS()
 {
-    /**
-     * @note The default values must be set here. Otherwise, Ubuntu 20.04 Debug does not compile.
-     */
-    this->durability_qos.set_value(durability_qos, utils::FuzzyLevelValues::fuzzy_level_default);
-    this->reliability_qos.set_value(reliability_qos, utils::FuzzyLevelValues::fuzzy_level_default);
-    this->ownership_qos.set_value(ownership_qos, utils::FuzzyLevelValues::fuzzy_level_default);
-    this->use_partitions.set_value(use_partitions, utils::FuzzyLevelValues::fuzzy_level_default);
-    this->history_depth.set_value(history_depth, utils::FuzzyLevelValues::fuzzy_level_default);
-    this->keyed.set_value(keyed, utils::FuzzyLevelValues::fuzzy_level_default);
-    this->max_tx_rate.set_value(max_tx_rate, utils::FuzzyLevelValues::fuzzy_level_default);
-    this->max_rx_rate.set_value(max_rx_rate, utils::FuzzyLevelValues::fuzzy_level_default);
-    this->downsampling.set_value(downsampling, utils::FuzzyLevelValues::fuzzy_level_default);
+    set_default_qos();
 
-    /**
-     * @note This check must be done. If not, the constructor of the default Topic QoS would enter into a loop.
-     */
+    // This check must be done. If not, the constructor of the default Topic QoS would enter into a loop.
     if (default_topic_qos.is_set())
     {
-        set_qos(default_topic_qos, utils::FuzzyLevelValues::fuzzy_level_default);
+        // The FuzzyLevel must be set so that specs overwrites the discovery values.
+        set_qos(default_topic_qos, utils::FuzzyLevelValues::fuzzy_level_set);
     }
 }
 
@@ -99,50 +78,73 @@ void TopicQoS::set_qos(
         const TopicQoS& qos,
         const utils::FuzzyLevelValues& fuzzy_level /*= utils::FuzzyLevelValues::fuzzy_level_fuzzy*/) noexcept
 {
-    if (!durability_qos.is_set() && qos.durability_qos.is_set())
+    if (durability_qos.get_level() < fuzzy_level && qos.durability_qos.is_set())
     {
         durability_qos.set_value(qos.durability_qos.get_value(), fuzzy_level);
     }
 
-    if (!reliability_qos.is_set() && qos.reliability_qos.is_set())
+    if (reliability_qos.get_level() < fuzzy_level && qos.reliability_qos.is_set())
     {
         reliability_qos.set_value(qos.reliability_qos.get_value(), fuzzy_level);
     }
 
-    if (!ownership_qos.is_set() && qos.ownership_qos.is_set())
+    if (ownership_qos.get_level() < fuzzy_level && qos.ownership_qos.is_set())
     {
         ownership_qos.set_value(qos.ownership_qos.get_value(), fuzzy_level);
     }
 
-    if (!use_partitions.is_set() && qos.use_partitions.is_set())
+    if (use_partitions.get_level() < fuzzy_level && qos.use_partitions.is_set())
     {
         use_partitions.set_value(qos.use_partitions.get_value(), fuzzy_level);
     }
 
-    if (!history_depth.is_set() && qos.history_depth.is_set())
+    if (history_depth.get_level() < fuzzy_level && qos.history_depth.is_set())
     {
         history_depth.set_value(qos.history_depth.get_value(), fuzzy_level);
     }
 
-    if (!keyed.is_set() && qos.keyed.is_set())
+    if (keyed.get_level() < fuzzy_level && qos.keyed.is_set())
     {
         keyed.set_value(qos.keyed.get_value(), fuzzy_level);
     }
 
-    if (!max_tx_rate.is_set() && qos.max_tx_rate.is_set())
+    if (max_tx_rate.get_level() < fuzzy_level && qos.max_tx_rate.is_set())
     {
         max_tx_rate.set_value(qos.max_tx_rate.get_value(), fuzzy_level);
     }
 
-    if (!max_rx_rate.is_set() && qos.max_rx_rate.is_set())
+    if (max_rx_rate.get_level() < fuzzy_level && qos.max_rx_rate.is_set())
     {
         max_rx_rate.set_value(qos.max_rx_rate.get_value(), fuzzy_level);
     }
 
-    if (!downsampling.is_set() && qos.downsampling.is_set())
+    if (downsampling.get_level() < fuzzy_level && qos.downsampling.is_set())
     {
         downsampling.set_value(qos.downsampling.get_value(), fuzzy_level);
     }
+}
+
+void TopicQoS::set_default_qos(
+        DurabilityKind durability_qos /*= DEFAULT_DURABILITY_QOS */,
+        ReliabilityKind reliability_qos /*= DEFAULT_RELIABILITY_QOS */,
+        OwnershipQosPolicyKind ownership_qos /*= DEFAULT_OWNERSHIP_QOS */,
+        bool use_partitions /*= DEFAULT_USE_PARTITIONS */,
+        bool keyed /*= DEFAULT_KEYED */,
+        HistoryDepthType history_depth /*= DEFAULT_HISTORY_DEPTH */,
+        float max_tx_rate /*= DEFAULT_MAX_TX_RATE */,
+        float max_rx_rate /*= DEFAULT_MAX_RX_RATE */,
+        unsigned int downsampling /*= DEFAULT_DOWNSAMPLING */) noexcept
+{
+    // The default values must be received as arguments. Otherwise, Ubuntu 20.04 Debug does not compile.
+    this->durability_qos.set_value(durability_qos, utils::FuzzyLevelValues::fuzzy_level_default);
+    this->reliability_qos.set_value(reliability_qos, utils::FuzzyLevelValues::fuzzy_level_default);
+    this->ownership_qos.set_value(ownership_qos, utils::FuzzyLevelValues::fuzzy_level_default);
+    this->use_partitions.set_value(use_partitions, utils::FuzzyLevelValues::fuzzy_level_default);
+    this->history_depth.set_value(history_depth, utils::FuzzyLevelValues::fuzzy_level_default);
+    this->keyed.set_value(keyed, utils::FuzzyLevelValues::fuzzy_level_default);
+    this->max_tx_rate.set_value(max_tx_rate, utils::FuzzyLevelValues::fuzzy_level_default);
+    this->max_rx_rate.set_value(max_rx_rate, utils::FuzzyLevelValues::fuzzy_level_default);
+    this->downsampling.set_value(downsampling, utils::FuzzyLevelValues::fuzzy_level_default);
 }
 
 std::ostream& operator <<(
