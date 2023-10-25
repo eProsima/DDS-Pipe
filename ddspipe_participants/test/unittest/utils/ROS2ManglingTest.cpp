@@ -15,14 +15,20 @@
 #include <cpp_utils/testing/gtest_aux.hpp>
 #include <gtest/gtest.h>
 
-#include <ddspipe_participants/utils/demangle.hpp>
+#include <ddspipe_participants/utils/ros2_mangling.hpp>
 
 using namespace eprosima::ddspipe::utils;
 
 /**
- * @todo
+ * Test remove_prefix() method
+ *
+ * CASES:
+ * - Name: "hello" Prefix: "world"   Return: ""
+ * - Name: "hello/rt" Prefix: "rt"   Return: ""
+ * - Name: "rt/hello" Prefix: "rt/"  Return: ""
+ * - Name: "rt/hello" Prefix: "rt"   Return: "/hello"
  */
-TEST(DemangleTest, remove_prefix)
+TEST(ROS2ManglingTest, remove_prefix)
 {
     EXPECT_EQ("", remove_prefix("hello", "world"));
     EXPECT_EQ("", remove_prefix("hello/rt", "rt"));
@@ -31,9 +37,21 @@ TEST(DemangleTest, remove_prefix)
 }
 
 /**
- * @todo
+ * Test get_ros_prefix_if_exists() method
+ *
+ * CASES:
+ * - ROS 2 Topic Name: "hello"      Return: ""
+ * - ROS 2 Topic Name: "hello/rt"   Return: ""
+ * - ROS 2 Topic Name: "rt/hello"   Return: "rt"
+ * - ROS 2 Topic Name: "/rt/hello"  Return: ""
+ * - ROS 2 Topic Name: "hello/rq"   Return: ""
+ * - ROS 2 Topic Name: "rq/hello"   Return: "rq"
+ * - ROS 2 Topic Name: "/rq/hello"  Return: ""
+ * - ROS 2 Topic Name: "hello/rr"   Return: ""
+ * - ROS 2 Topic Name: "rr/hello"   Return: "rr"
+ * - ROS 2 Topic Name: "/rr/hello"  Return: ""
  */
-TEST(DemangleTest, get_ros_prefix_if_exists)
+TEST(ROS2ManglingTest, get_ros_prefix_if_exists)
 {
     EXPECT_EQ("", get_ros_prefix_if_exists("hello"));
 
@@ -54,9 +72,21 @@ TEST(DemangleTest, get_ros_prefix_if_exists)
 }
 
 /**
- * @todo
+ * Test remove_ros_prefix_if_exists() method
+ *
+ * CASES:
+ * - ROS 2 Topic Name: "hello"      Return: ""
+ * - ROS 2 Topic Name: "hello/rt"   Return: "hello/rt"
+ * - ROS 2 Topic Name: "rt/hello"   Return: "/hello"
+ * - ROS 2 Topic Name: "/rt/hello"  Return: "/rt/hello"
+ * - ROS 2 Topic Name: "hello/rq"   Return: "hello/rq"
+ * - ROS 2 Topic Name: "rq/hello"   Return: "/hello"
+ * - ROS 2 Topic Name: "/rq/hello"  Return: "/rq/hello"
+ * - ROS 2 Topic Name: "hello/rr"   Return: "hello/rr"
+ * - ROS 2 Topic Name: "rr/hello"   Return: "/hello"
+ * - ROS 2 Topic Name: "/rr/hello"  Return: "/rr/hello"
  */
-TEST(DemangleTest, remove_ros_prefix_if_exists)
+TEST(ROS2ManglingTest, remove_ros_prefix_if_exists)
 {
     EXPECT_EQ("hello", remove_ros_prefix_if_exists("hello"));
 
@@ -77,18 +107,30 @@ TEST(DemangleTest, remove_ros_prefix_if_exists)
 }
 
 /**
- * @todo
+ * Test get_all_ros_prefixes() method
  */
-TEST(DemangleTest, get_all_ros_prefixes)
+TEST(ROS2ManglingTest, get_all_ros_prefixes)
 {
     const std::vector<std::string> ros_prefixes = {"rt", "rq", "rr"};
     EXPECT_EQ(ros_prefixes, get_all_ros_prefixes());
 }
 
 /**
- * @todo
+ * Test demangle_if_ros_topic() method
+ *
+ * CASES:
+ * - Topic Name: "hello"      Return: "hello"
+ * - Topic Name: "hello/rt"   Return: "hello/rt"
+ * - Topic Name: "rt/hello"   Return: "/hello"
+ * - Topic Name: "/rt/hello"  Return: "/rt/hello"
+ * - Topic Name: "hello/rq"   Return: "hello/rq"
+ * - Topic Name: "rq/hello"   Return: "/hello"
+ * - Topic Name: "/rq/hello"  Return: "/rq/hello"
+ * - Topic Name: "hello/rr"   Return: "hello/rr"
+ * - Topic Name: "rr/hello"   Return: "/hello"
+ * - Topic Name: "/rr/hello"  Return: "/rr/hello"
  */
-TEST(DemangleTest, demangle_if_ros_topic)
+TEST(ROS2ManglingTest, demangle_if_ros_topic)
 {
     EXPECT_EQ("hello", demangle_if_ros_topic("hello"));
 
@@ -109,9 +151,15 @@ TEST(DemangleTest, demangle_if_ros_topic)
 }
 
 /**
- * @todo
+ * Test demangle_if_ros_type() method
+ *
+ * CASES:
+ * - Type Name: "hello"              Return: "hello"
+ * - Type Name: "rt::hello"          Return: "rt::hello"
+ * - Type Name: "rt::dds_::hello"    Return: "rt::dds_::hello"
+ * - Type Name: "rt::dds_::hello_"   Return: "rt/hello"
  */
-TEST(DemangleTest, demangle_if_ros_type)
+TEST(ROS2ManglingTest, demangle_if_ros_type)
 {
     // not a ROS type
     EXPECT_EQ("hello", demangle_if_ros_type("hello"));
@@ -123,9 +171,18 @@ TEST(DemangleTest, demangle_if_ros_type)
 }
 
 /**
- * @todo
+ * Test demangle_ros_topic_from_topic() method
+ *
+ * CASES:
+ * - Topic Name: "hello"      Return: ""
+ * - Topic Name: "hello/rt"   Return: ""
+ * - Topic Name: "rt/hello"   Return: "/hello"
+ * - Topic Name: "hello/rq"   Return: ""
+ * - Topic Name: "rq/hello"   Return: ""
+ * - Topic Name: "hello/rr"   Return: ""
+ * - Topic Name: "rr/hello"   Return: ""
  */
-TEST(DemangleTest, demangle_ros_topic_from_topic)
+TEST(ROS2ManglingTest, demangle_ros_topic_from_topic)
 {
     EXPECT_EQ("", demangle_ros_topic_from_topic("hello"));
     EXPECT_EQ("", demangle_ros_topic_from_topic("hello/rt"));
@@ -139,9 +196,18 @@ TEST(DemangleTest, demangle_ros_topic_from_topic)
 }
 
 /**
- * @todo
+ * Test demangle_ros_topic_from_topic() method
+ *
+ * CASES:
+ * - Service Name: "hello"                  Return: ""
+ * - Service Name: "rq/hello"               Return: ""
+ * - Service Name: "rr/hello"               Return: ""
+ * - Service Name: "rq/hello/worldRequest"  Return: "/hello/world"
+ * - Service Name: "rr/hello/worldReply"    Return: "/hello/world"
+ * - Service Name: "Request/hello/worldrq"  Return: ""
+ * - Service Name: "Reply/hello/worldrr"    Return: ""
  */
-TEST(DemangleTest, demangle_service_from_topic)
+TEST(ROS2ManglingTest, demangle_service_from_topic)
 {
     EXPECT_EQ("", demangle_service_from_topic("hello"));
 
@@ -156,9 +222,18 @@ TEST(DemangleTest, demangle_service_from_topic)
 }
 
 /**
- * @todo
+ * Test demangle_service_request_from_topic() method
+ *
+ * CASES:
+ * - Service Request Name: "hello"                  Return: ""
+ * - Service Request Name: "rq/hello"               Return: ""
+ * - Service Request Name: "rr/hello"               Return: ""
+ * - Service Request Name: "rq/hello/worldRequest"  Return: "/hello/world"
+ * - Service Request Name: "rr/hello/worldReply"    Return: ""
+ * - Service Request Name: "Request/hello/worldrq"  Return: ""
+ * - Service Request Name: "Reply/hello/worldrr"    Return: ""
  */
-TEST(DemangleTest, demangle_service_request_from_topic)
+TEST(ROS2ManglingTest, demangle_service_request_from_topic)
 {
     EXPECT_EQ("", demangle_service_request_from_topic("hello"));
 
@@ -173,9 +248,18 @@ TEST(DemangleTest, demangle_service_request_from_topic)
 }
 
 /**
- * @todo
+ * Test demangle_service_reply_from_topic() method
+ *
+ * CASES:
+ * - Service Reply Name: "hello"                  Return: ""
+ * - Service Reply Name: "rq/hello"               Return: ""
+ * - Service Reply Name: "rr/hello"               Return: ""
+ * - Service Reply Name: "rq/hello/worldRequest"  Return: ""
+ * - Service Reply Name: "rr/hello/worldReply"    Return: "/hello/world"
+ * - Service Reply Name: "Request/hello/worldrq"  Return: ""
+ * - Service Reply Name: "Reply/hello/worldrr"    Return: ""
  */
-TEST(DemangleTest, demangle_service_reply_from_topic)
+TEST(ROS2ManglingTest, demangle_service_reply_from_topic)
 {
     EXPECT_EQ("", demangle_service_reply_from_topic("hello"));
 
@@ -190,9 +274,20 @@ TEST(DemangleTest, demangle_service_reply_from_topic)
 }
 
 /**
- * @todo
+ * Test demangle_service_type_only() method
+ *
+ * CASES:
+ * - DDS Service Name: "hello"                      Return: ""
+ * - DDS Service Name: "rq/hello"                   Return: ""
+ * - DDS Service Name: "rr/hello"                   Return: ""
+ * - DDS Service Name: "rt/hello"                   Return: ""
+ * - DDS Service Name: "rq::dds_::hello"            Return: ""
+ * - DDS Service Name: "rr::dds_::hello"            Return: ""
+ * - DDS Service Name: "rt::dds_::hello"            Return: ""
+ * - DDS Service Name: "rq::dds_::hello_Request_"   Return: "rq/hello"
+ * - DDS Service Name: "rr::dds_::hello_Request_"   Return: "rr/hello"
  */
-TEST(DemangleTest, demangle_service_type_only)
+TEST(ROS2ManglingTest, demangle_service_type_only)
 {
     // not a ROS service type
     EXPECT_EQ("", demangle_service_type_only("hello"));
@@ -200,13 +295,11 @@ TEST(DemangleTest, demangle_service_type_only)
     EXPECT_EQ("", demangle_service_type_only("rr/hello"));
     EXPECT_EQ("", demangle_service_type_only("rt/hello"));
 
-    EXPECT_EQ("", demangle_service_type_only("hello"));
     EXPECT_EQ("", demangle_service_type_only("rq::dds_::hello"));
     EXPECT_EQ("", demangle_service_type_only("rr::dds_::hello"));
     EXPECT_EQ("", demangle_service_type_only("rt::dds_::hello"));
 
     // ROS service type
-    EXPECT_EQ("", demangle_service_type_only("hello"));
     EXPECT_EQ("rq/hello", demangle_service_type_only("rq::dds_::hello_Request_"));
     EXPECT_EQ("rr/hello", demangle_service_type_only("rr::dds_::hello_Response_"));
 }

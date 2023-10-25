@@ -16,11 +16,11 @@
 # Demangle Test #
 #################
 
-set(TEST_NAME DemangleTest)
+set(TEST_NAME ROS2ManglingTest)
 
 set(TEST_SOURCES
-        DemangleTest.cpp
-        ${PROJECT_SOURCE_DIR}/src/cpp/utils/demangle.cpp
+        ROS2ManglingTest.cpp
+        ${PROJECT_SOURCE_DIR}/src/cpp/utils/ros2_mangling.cpp
     )
 
 set(TEST_LIST

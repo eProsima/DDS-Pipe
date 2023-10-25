@@ -19,7 +19,7 @@
 #include <cpp_utils/Log.hpp>
 #include <cpp_utils/utils.hpp>
 
-#include <utils/demangle.hpp>
+#include <utils/ros2_mangling.hpp>
 
 namespace eprosima {
 namespace ddspipe {
@@ -130,16 +130,16 @@ std::string demangle_service_from_topic(
         if (service_name.length() - suffix_position - suffix.length() != 0)
         {
             logWarning(DDSPIPE_DEMANGLE,
-                "service topic has service prefix and a suffix, but not at the end"
-                ", report this: " << topic_name.c_str());
+                    "service topic has service prefix and a suffix, but not at the end"
+                    ", report this: " << topic_name.c_str());
             return "";
         }
     }
     else
     {
         logWarning(DDSPIPE_DEMANGLE,
-            "service topic has prefix but no suffix"
-            ", report this: " << topic_name.c_str());
+                "service topic has prefix but no suffix"
+                ", report this: " << topic_name.c_str());
         return "";
     }
     return service_name.substr(0, suffix_position);
@@ -192,8 +192,8 @@ std::string demangle_service_type_only(
             if (dds_type_name.length() - suffix_position - suffix.length() != 0)
             {
                 logWarning(DDSPIPE_DEMANGLE,
-                    "service type contains 'dds_::' and a suffix, but not at the end"
-                    ", report this: " << dds_type_name.c_str());
+                        "service type contains 'dds_::' and a suffix, but not at the end"
+                        ", report this: " << dds_type_name.c_str());
                 continue;
             }
             found_suffix = suffix;
@@ -203,8 +203,8 @@ std::string demangle_service_type_only(
     if (std::string::npos == suffix_position)
     {
         logWarning(DDSPIPE_DEMANGLE,
-           "service type contains 'dds_::' but does not have a suffix"
-            ", report this: " << dds_type_name.c_str());
+                "service type contains 'dds_::' but does not have a suffix"
+                ", report this: " << dds_type_name.c_str());
         return "";
     }
     // everything checks out, reformat it from '[type_namespace::]dds_::<type><suffix>'
