@@ -43,6 +43,20 @@ std::string remove_prefix(
     return "";
 }
 
+std::string add_prefix(
+        const std::string& name,
+        const std::string& prefix)
+{
+    return prefix + name;
+}
+
+std::string add_suffix(
+        const std::string& name,
+        const std::string& suffix)
+{
+    return name + suffix;
+}
+
 std::string get_ros_prefix_if_exists(
         const std::string& topic_name)
 {
@@ -69,6 +83,25 @@ std::string remove_ros_prefix_if_exists(
     return topic_name;
 }
 
+std::string add_ros_topic_prefix(
+        const std::string& topic_name)
+{
+    return add_prefix(topic_name, ros_topic_prefix);
+}
+
+std::string add_ros_service_requester_prefix(
+        const std::string& topic_name)
+{
+    return add_prefix(topic_name, ros_service_requester_prefix);
+
+}
+
+std::string add_ros_service_response_prefix(
+        const std::string& topic_name)
+{
+    return add_prefix(topic_name, ros_service_response_prefix);
+}
+
 const std::vector<std::string>& get_all_ros_prefixes()
 {
     return ros_prefixes_;
@@ -78,6 +111,16 @@ std::string demangle_if_ros_topic(
         const std::string& topic_name)
 {
     return remove_ros_prefix_if_exists(topic_name);
+}
+
+std::string mangle_if_ros_topic(
+        const std::string& topic_name)
+{
+    if (topic_name.rfind("/", 0) == 0)
+    {
+        return add_ros_topic_prefix(topic_name);
+    }
+    return topic_name;
 }
 
 std::string demangle_if_ros_type(
@@ -107,13 +150,39 @@ std::string demangle_if_ros_type(
     return type_namespace + type_name;
 }
 
-std::string demangle_ros_topic_from_topic(
+std::string mangle_if_ros_type(
+        const std::string& ros2_type_string)
+{
+    std::string dds_type_string = ros2_type_string;
+
+    size_t substring_position = dds_type_string.find("_msgs/msg/");
+    if (substring_position == std::string::npos)
+    {
+        return dds_type_string;
+    }
+
+    std::string substring = "dds_::";
+
+    std::string type_namespace = dds_type_string.substr(0, substring_position + 10);
+    std::string type_name = dds_type_string.substr(substring_position + 10, dds_type_string.length() - 1);
+
+    if (type_name.length() == 0)
+    {
+        return dds_type_string;
+    }
+
+    eprosima::utils::replace_all(type_namespace, "/", "::");
+
+    return type_namespace + "dds_::" + type_name + "_";
+}
+
+std::string demangle_ros_topic_prefix_from_topic(
         const std::string& topic_name)
 {
     return remove_prefix(topic_name, ros_topic_prefix);
 }
 
-std::string demangle_service_from_topic(
+std::string demangle_ros_service_prefix_from_topic(
         const std::string& prefix,
         const std::string& topic_name,
         std::string suffix)
@@ -145,27 +214,56 @@ std::string demangle_service_from_topic(
     return service_name.substr(0, suffix_position);
 }
 
-std::string demangle_service_from_topic(
+std::string mangle_ros_service_in_topic(
+        const std::string& prefix,
+        const std::string& topic_name,
+        const std::string suffix)
+{
+    size_t suffix_position = topic_name.rfind("/");
+    if (suffix_position != 0)
+    {
+        return "";
+    }
+
+    std::string service_name = add_prefix(topic_name, prefix);
+    service_name = add_suffix(service_name, suffix);
+
+    return service_name;
+}
+
+std::string demangle_ros_service_prefix_from_topic(
         const std::string& topic_name)
 {
-    const std::string demangled_topic = demangle_service_reply_from_topic(topic_name);
+    const std::string demangled_topic = demangle_ros_service_reply_prefix_from_topic(topic_name);
     if ("" != demangled_topic)
     {
         return demangled_topic;
     }
-    return demangle_service_request_from_topic(topic_name);
+    return demangle_ros_service_request_prefix_from_topic(topic_name);
 }
 
-std::string demangle_service_request_from_topic(
+std::string demangle_ros_service_request_prefix_from_topic(
         const std::string& topic_name)
 {
-    return demangle_service_from_topic(ros_service_requester_prefix, topic_name, "Request");
+    return demangle_ros_service_prefix_from_topic(ros_service_requester_prefix, topic_name, "Request");
 }
 
-std::string demangle_service_reply_from_topic(
+std::string mangle_ros_service_request_prefix_in_topic(
         const std::string& topic_name)
 {
-    return demangle_service_from_topic(ros_service_response_prefix, topic_name, "Reply");
+    return mangle_ros_service_in_topic(ros_service_requester_prefix, topic_name, "Request");
+}
+
+std::string demangle_ros_service_reply_prefix_from_topic(
+        const std::string& topic_name)
+{
+    return demangle_ros_service_prefix_from_topic(ros_service_response_prefix, topic_name, "Reply");
+}
+
+std::string mangle_ros_service_reply_prefix_in_topic(
+        const std::string& topic_name)
+{
+    return mangle_ros_service_in_topic(ros_service_response_prefix, topic_name, "Reply");
 }
 
 std::string demangle_service_type_only(
@@ -214,6 +312,39 @@ std::string demangle_service_type_only(
     size_t start = ns_substring_position + ns_substring.length();
     std::string type_name = dds_type_name.substr(start, suffix_position - start);
     return type_namespace + type_name;
+}
+
+std::string mangle_service_type_only(
+        const std::string& ros2_type_name)
+{
+    size_t ns_substring_srv_position = ros2_type_name.find("/srv/");
+    if (std::string::npos == ns_substring_srv_position)
+    {
+        return "";
+    }
+
+    std::string dds_type_name = ros2_type_name.substr(0, ns_substring_srv_position + 5) + "dds_::";
+    dds_type_name = dds_type_name + ros2_type_name.substr(ns_substring_srv_position + 5, ros2_type_name.length() - 1);
+
+    size_t ns_substring_rq_position = ros2_type_name.find("rq/");
+    size_t ns_substring_rr_position = ros2_type_name.find("rr/");
+
+    if (std::string::npos != ns_substring_rq_position)
+    {
+        dds_type_name = dds_type_name + "_Request_";
+    }
+    else if (std::string::npos != ns_substring_rr_position)
+    {
+        dds_type_name = dds_type_name + "_Response_";
+    }
+    else
+    {
+        return "";
+    }
+
+    eprosima::utils::replace_all(dds_type_name, "/", "::");
+
+    return dds_type_name;
 }
 
 } /* namespace utils */

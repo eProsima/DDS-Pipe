@@ -25,16 +25,26 @@ set(TEST_SOURCES
 
 set(TEST_LIST
         remove_prefix
+        add_prefix
+        add_suffix
         get_ros_prefix_if_exists
         remove_ros_prefix_if_exists
+        add_ros_topic_prefix
+        add_ros_service_requester_prefix
+        add_ros_service_response_prefix
         get_all_ros_prefixes
         demangle_if_ros_topic
+        mangle_if_ros_topic
         demangle_if_ros_type
-        demangle_ros_topic_from_topic
-        demangle_service_from_topic
-        demangle_service_request_from_topic
-        demangle_service_reply_from_topic
+        mangle_if_ros_type
+        demangle_ros_topic_prefix_from_topic
+        demangle_ros_service_prefix_from_topic
+        demangle_ros_service_request_prefix_from_topic
+        mangle_ros_service_request_prefix_in_topic
+        demangle_ros_service_reply_prefix_from_topic
+        mangle_ros_service_reply_prefix_in_topic
         demangle_service_type_only
+        mangle_service_type_only
     )
 
 set(TEST_EXTRA_LIBRARIES
