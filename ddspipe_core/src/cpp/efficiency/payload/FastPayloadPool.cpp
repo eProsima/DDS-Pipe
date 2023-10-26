@@ -35,8 +35,6 @@ bool FastPayloadPool::get_payload(
 {
     if (target_set_)
     {
-        target_set_ = false;
-
         eprosima::fastrtps::rtps::IPayloadPool* payload_owner =
            static_cast<eprosima::fastrtps::rtps::IPayloadPool*>(this);
 
@@ -46,7 +44,8 @@ bool FastPayloadPool::get_payload(
             payload
         );
 
-        target_payload_.data = nullptr;
+        target_payload_ = Payload();
+        target_set_ = false;
 
         return ret;
     }
@@ -137,7 +136,6 @@ bool FastPayloadPool::reserve_(
                 "Trying to reserve a data block of 0 bytes.");
         return false;
     }
-
 
     // Allocate memory + 4 bytes for reference
     void* memory_allocated = std::malloc(size + sizeof(MetaInfoType));

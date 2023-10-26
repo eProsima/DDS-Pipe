@@ -140,6 +140,9 @@ utils::ReturnCode CommonReader::take_nts_(
     {
         auto ret = reader_->take_next_sample(rtps_data, &info);
 
+        // TODO
+        rtps_data->payload_owner = payload_pool_.get();
+
         // If error reading data
         if (!ret)
         {
@@ -249,7 +252,8 @@ void CommonReader::fill_received_data_(
     // Get Participant receiver
     data_to_fill.participant_receiver = participant_id_;
 
-    data_to_fill.payload_owner = payload_pool_.get();
+    // TODO
+    // data_to_fill.payload_owner = payload_pool_.get();
 
     // Set Instance Handle to data_to_fill
     if (topic_.topic_qos.keyed)
