@@ -28,6 +28,7 @@
 #include <cpp_utils/exception/UnsupportedException.hpp>
 #include <cpp_utils/types/Tree.hpp>
 #include <cpp_utils/utils.hpp>
+#include <cpp_utils/ros2_mangling.hpp>
 
 #include <ddspipe_core/types/dynamic_types/schema.hpp>
 
@@ -35,6 +36,7 @@ namespace eprosima {
 namespace ddspipe {
 namespace core {
 namespace types {
+namespace idl {
 
 constexpr const char* TYPE_OPENING =
         "\n{\n";
@@ -102,9 +104,10 @@ std::vector<std::pair<std::string, fastrtps::types::DynamicType_ptr>> get_member
     for (const auto& member : members)
     {
         result.emplace_back(
-            std::make_pair<std::string, fastrtps::types::DynamicType_ptr>(
-                member.second->get_name(),
-                member.second->get_descriptor()->get_type()));
+                std::make_pair<std::string, fastrtps::types::DynamicType_ptr>(
+                    member.second->get_name(),
+                    member.second->get_descriptor()->get_type()));
+
     }
     return result;
 }
@@ -227,11 +230,12 @@ std::string type_kind_to_str(
         case fastrtps::types::TK_BITMASK:
         case fastrtps::types::TK_NONE:
             throw utils::UnsupportedException(
-                      STR_ENTRY << "Type " << dyn_type->get_name() << " is not supported.");
+                STR_ENTRY << "Type " << dyn_type->get_name() << " is not supported.");
 
         default:
             throw utils::InconsistencyException(
-                      STR_ENTRY << "Type " << dyn_type->get_name() << " has not correct kind.");
+                STR_ENTRY << "Type " << dyn_type->get_name() << " has not correct kind.");
+
     }
 }
 
@@ -247,6 +251,7 @@ utils::TreeNode<TreeNodeType> generate_dyn_type_tree(
         case fastrtps::types::TK_STRUCTURE:
         {
             // If is struct, the call is recursive.
+
             // Create new tree node
             utils::TreeNode<TreeNodeType> parent(member_name, type->get_name(), type);
 
@@ -296,6 +301,10 @@ std::ostream& node_to_str(
     {
         auto dim_pos = node.info.type_kind_name.find("[");
         auto kind_name_str = node.info.type_kind_name.substr(0, dim_pos);
+
+        //
+        // std::string type_name = ros2_types ? utils::demangle_if_ros_type(kind_name_str) : kind_name_str;
+
         auto dim_str = node.info.type_kind_name.substr(dim_pos, std::string::npos);
 
         os << kind_name_str << " " << node.info.member_name << dim_str;
@@ -381,8 +390,11 @@ std::ostream& union_to_str(
 
             os << "case " << std::to_string(label) << ":";
         }
+
         os << "\n" << TAB_SEPARATOR << TAB_SEPARATOR << type_kind_to_str(member.second->get_descriptor()->get_type()) <<
             " " << member.second->get_name() << ";\n";
+
+
     }
 
     // Close definition
@@ -445,6 +457,7 @@ std::string generate_idl_schema(
     return generate_dyn_type_schema_from_tree(parent_type);
 }
 
+} /* namespace idl */
 } /* namespace types */
 } /* namespace core */
 } /* namespace ddspipe */

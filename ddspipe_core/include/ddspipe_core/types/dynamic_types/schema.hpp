@@ -27,9 +27,21 @@ namespace ddspipe {
 namespace core {
 namespace types {
 
+namespace idl {
+
 DDSPIPE_CORE_DllAPI
 std::string generate_idl_schema(
         const fastrtps::types::DynamicType_ptr& dynamic_type);
+
+} /* namespace idl */
+
+namespace msg {
+
+DDSPIPE_CORE_DllAPI
+std::string generate_ros2_schema(
+        const fastrtps::types::DynamicType_ptr& dynamic_type);
+
+} /* namespace msg */
 
 } /* namespace types */
 } /* namespace core */

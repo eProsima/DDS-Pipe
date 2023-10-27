@@ -12,13 +12,61 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-set(TEST_NAME dtypes_tests)
+####################
+# dtypes_idl_tests #
+####################
+
+set(TEST_NAME dtypes_idl_tests)
 
 # Add to test sources every FastDDSGen file generated
 file(GLOB DATATYPE_SOURCES_CXX "types/**/*.cxx")
 set(TEST_SOURCES
-        dtypes_tests.cpp
-        ${PROJECT_SOURCE_DIR}/src/cpp/types/dynamic_types/schema.cpp
+        dtypes_idl_tests.cpp
+        ${PROJECT_SOURCE_DIR}/src/cpp/types/dynamic_types/schema_idl.cpp
+        ${DATATYPE_SOURCES_CXX}
+    )
+
+set(TEST_LIST
+    )
+
+set(TEST_EXTRA_LIBRARIES
+        fastcdr
+        fastrtps
+        cpp_utils
+        $<$<BOOL:${WIN32}>:iphlpapi$<SEMICOLON>Shlwapi>
+    )
+
+# Add to needed sources every .idl file
+file(
+    GLOB
+        RESULT_SOURCES_IDL
+    RELATIVE
+        "${CMAKE_CURRENT_SOURCE_DIR}"
+    "types/idls/*.idl")
+
+set(TEST_NEEDED_SOURCES
+        ${RESULT_SOURCES_IDL}
+    )
+
+add_unittest_executable(
+        "${TEST_NAME}"
+        "${TEST_SOURCES}"
+        "${TEST_LIST}"
+        "${TEST_EXTRA_LIBRARIES}"
+        "${TEST_NEEDED_SOURCES}"
+    )
+
+####################
+# dtypes_msg_tests #
+####################
+
+set(TEST_NAME dtypes_msg_tests)
+
+# Add to test sources every FastDDSGen file generated
+file(GLOB DATATYPE_SOURCES_CXX "types/**/*.cxx")
+set(TEST_SOURCES
+        dtypes_msg_tests.cpp
+        ${PROJECT_SOURCE_DIR}/src/cpp/types/dynamic_types/schema_msg.cpp
         ${DATATYPE_SOURCES_CXX}
     )
 
@@ -38,7 +86,7 @@ file(
         RESULT_SOURCES_MSG
     RELATIVE
         "${CMAKE_CURRENT_SOURCE_DIR}"
-    "types/idls/*.idl")
+    "types/msgs/*.msg")
 
 set(TEST_NEEDED_SOURCES
         ${RESULT_SOURCES_MSG}
