@@ -5,7 +5,7 @@ The *Forthcoming* section includes those features added in `main` branch that ar
 
 ## Forthcoming
 
-* Add ROS 2 mangling methods.
+* Store schemas in OMG IDL and ROS 2 msg format.
 
 ## Version 0.2.0
 
