@@ -55,13 +55,6 @@ PayloadPool::~PayloadPool()
 /////
 // FAST DDS PART
 
-void PayloadPool::set_target(
-        Payload& payload)
-{
-    target_payload_ = payload;
-    target_set_ = true;
-}
-
 bool PayloadPool::get_payload(
         uint32_t size,
         eprosima::fastrtps::rtps::CacheChange_t& cache_change)

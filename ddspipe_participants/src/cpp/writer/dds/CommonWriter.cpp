@@ -69,12 +69,16 @@ void CommonWriter::init()
                       participant_id_ << " in topic " << topic_ << ".");
     }
 
+    // TODO
+    std::shared_ptr<fastrtps::rtps::IPayloadPool> ipayload_pool{
+            dynamic_cast<fastrtps::rtps::IPayloadPool*>(payload_pool_)};
+
     writer_ = dds_publisher_->create_datawriter(
         dds_topic_,
         reckon_writer_qos_(),
         nullptr,
         eprosima::fastdds::dds::StatusMask::all(),
-        payload_pool_);
+        ipayload_pool);
 
     if (!writer_)
     {
@@ -93,7 +97,7 @@ CommonWriter::CommonWriter(
     : BaseWriter(participant_id, topic.topic_qos.max_tx_rate)
     , dds_participant_(participant)
     , dds_topic_(topic_entity)
-    , payload_pool_(payload_pool)
+    , payload_pool_(new core::PayloadPoolMediator(payload_pool))
     , topic_(topic)
     , dds_publisher_(nullptr)
     , writer_(nullptr)
@@ -109,17 +113,14 @@ utils::ReturnCode CommonWriter::write_nts_(
 
     auto& rtps_data = dynamic_cast<core::types::RtpsPayloadData&>(data);
 
-    payload_pool_->set_target(
-        rtps_data.payload);
-
     if (topic_.topic_qos.keyed)
     {
         // TODO check if in case of dispose it must be done something differently
-        return writer_->write(&rtps_data, rtps_data.instanceHandle);
+        return payload_pool_->write(writer_, &rtps_data, rtps_data.instanceHandle);
     }
     else
     {
-        if (writer_->write(&rtps_data))
+        if (payload_pool_->write(writer_, &rtps_data))
         {
             return utils::ReturnCode::RETCODE_OK;
         }

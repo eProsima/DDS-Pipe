@@ -57,6 +57,7 @@ bool TopicDataType::serialize(
 
     logDebug(DDSPIPE_DDS_TYPESUPPORT, "Serializing data " << *src_payload << ".");
 
+    // TODO
     target_payload->data = src_payload->payload.data;
 
     return true;

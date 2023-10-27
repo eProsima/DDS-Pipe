@@ -201,10 +201,6 @@ public:
     DDSPIPE_CORE_DllAPI
     virtual bool is_clean() const noexcept;
 
-    DDSPIPE_CORE_DllAPI
-    void set_target(
-            types::Payload& payload);
-
 protected:
 
     /**
@@ -251,10 +247,6 @@ protected:
     std::atomic<uint64_t> reserve_count_;
     //! Count the number of released data from this pool
     std::atomic<uint64_t> release_count_;
-
-    types::Payload target_payload_;
-
-    bool target_set_ = false;
 };
 
 } /* namespace core */
