@@ -128,8 +128,7 @@ utils::ReturnCode CommonReader::take_nts_(
         return utils::ReturnCode::RETCODE_NO_DATA;
     }
 
-    RtpsPayloadData* rtps_data = new core::types::RtpsPayloadData();
-    data.reset(rtps_data);
+    RtpsPayloadData* rtps_data;
     fastdds::dds::SampleInfo info;
 
     // Loop for read messages until we receive one that does not come from same participant
@@ -138,6 +137,10 @@ utils::ReturnCode CommonReader::take_nts_(
     // 2. ignore_local_endpoints would be override by xml configuration
     while (true)
     {
+        // Ensure that the previous Payload gets destroyed to avoid memory leaks.
+        rtps_data = new core::types::RtpsPayloadData();
+        data.reset(rtps_data);
+
         auto ret = reader_->take_next_sample(rtps_data, &info);
 
         // TODO
@@ -251,7 +254,6 @@ void CommonReader::fill_received_data_(
     data_to_fill.source_timestamp = info.source_timestamp;
     // Get Participant receiver
     data_to_fill.participant_receiver = participant_id_;
-
 
     // Set Instance Handle to data_to_fill
     if (topic_.topic_qos.keyed)
