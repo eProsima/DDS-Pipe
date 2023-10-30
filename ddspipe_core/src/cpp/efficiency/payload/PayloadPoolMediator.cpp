@@ -83,6 +83,9 @@ bool PayloadPoolMediator::get_payload(
 
     if (get_payload(data_->payload, payload_owner, cache_change))
     {
+        // Replace the pointer to destroy the data.
+        data_ = nullptr;
+
         cache_change.payload_owner(payload_pool_.get());
         return true;
     }
@@ -140,7 +143,12 @@ bool PayloadPoolMediator::get_payload(
     fastrtps::rtps::IPayloadPool* payload_owner =
             dynamic_cast<IPayloadPool*>(payload_pool_.get());
 
-    return get_payload(data_->payload, payload_owner, payload);
+    const bool got_payload_successfully = get_payload(data_->payload, payload_owner, payload);
+
+    // Replace the pointer to destroy the data.
+    data_ = nullptr;
+
+    return got_payload_successfully;
 }
 
 bool PayloadPoolMediator::get_payload(
