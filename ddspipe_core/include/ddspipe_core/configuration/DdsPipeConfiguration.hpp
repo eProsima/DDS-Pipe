@@ -24,7 +24,7 @@
 #include <ddspipe_core/configuration/TopicRoutesConfiguration.hpp>
 #include <ddspipe_core/types/participant/ParticipantId.hpp>
 #include <ddspipe_core/types/topic/dds/DistributedTopic.hpp>
-#include <ddspipe_core/types/topic/filter/WildcardDdsFilterTopic.hpp>
+#include <ddspipe_core/types/topic/filter/ManualTopic.hpp>
 
 #include <ddspipe_core/library/library_dll.h>
 
@@ -79,7 +79,7 @@ struct DdsPipeConfiguration : public IConfiguration
      *
      * @return The manual topics for a specific topic.
      */
-    std::vector<utils::Heritable<core::types::WildcardDdsFilterTopic>> get_manual_topics(
+    std::vector<core::types::ManualTopic> get_manual_topics(
             const core::ITopic& topic) const noexcept;
 
     /////////////////////////
@@ -93,8 +93,8 @@ struct DdsPipeConfiguration : public IConfiguration
     //! Builtin topics to create at the beggining of the execution
     std::set<utils::Heritable<ddspipe::core::types::DistributedTopic>> builtin_topics{};
 
-    //! Set of fixed topics' QoS
-    std::vector<utils::Heritable<ddspipe::core::types::WildcardDdsFilterTopic>> manual_topics{};
+    //! Set of manually configured Topic QoS
+    std::vector<ddspipe::core::types::ManualTopic> manual_topics{};
 
     //! Configuration of the generic routes.
     RoutesConfiguration routes{};

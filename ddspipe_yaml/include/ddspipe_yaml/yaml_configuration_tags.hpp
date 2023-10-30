@@ -56,7 +56,7 @@ constexpr const char* PARTICIPANT_KIND_TAG("kind");   //! Participant Kind
 constexpr const char* PARTICIPANT_NAME_TAG("name");   //! Participant Name
 constexpr const char* COLLECTION_PARTICIPANTS_TAG("participants"); //! TODO: add comment
 constexpr const char* IS_REPEATER_TAG("repeater");   //! Is participant a repeater
-constexpr const char* PARTICIPANT_QOS_TAG("qos");    //! Participant Topic QoSs
+constexpr const char* PARTICIPANT_QOS_TAG("qos");    //! Participant Topic QoS
 
 // Echo related tags
 constexpr const char* ECHO_DATA_TAG("data");            //! Echo Data received
@@ -139,7 +139,7 @@ constexpr const char* SPECS_TAG("specs"); //! Specs options for DDS Router confi
 constexpr const char* NUMBER_THREADS_TAG("threads"); //! Number of threads to configure the thread pool
 constexpr const char* WAIT_ALL_ACKED_TIMEOUT_TAG("wait-all-acked-timeout"); //! Wait for a maximum of *wait-all-acked-timeout* ms until all msgs sent by reliable writers are acknowledged by their matched readers
 constexpr const char* REMOVE_UNUSED_ENTITIES_TAG("remove-unused-entities"); //! Dynamically create and delete entities and tracks.
-constexpr const char* SPECS_QOS_TAG("qos"); //! Global Topic QoSs
+constexpr const char* SPECS_QOS_TAG("qos"); //! Global Topic QoS
 
 // XML configuration tags
 constexpr const char* XML_TAG("xml"); //! Tag to read xml configuration

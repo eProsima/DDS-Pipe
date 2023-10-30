@@ -87,7 +87,7 @@ TopicQoS
     bool has_partitions() const noexcept;
 
     /**
-     * @brief Set the Topic QoSs that have not been set and are set in \c qos .
+     * @brief Set the Topic QoS that have not been set and are set in \c qos .
      *
      * @note A Topic QoS is considered as set when it has a FuzzyLevel higher than DEFAULT.
      */
@@ -97,7 +97,7 @@ TopicQoS
             const utils::FuzzyLevelValues& fuzzy_level = utils::FuzzyLevelValues::fuzzy_level_fuzzy) noexcept;
 
     /**
-     * @brief Set the default Topic QoSs.
+     * @brief Set the default Topic QoS.
      */
     DDSPIPE_CORE_DllAPI
     void set_default_qos(

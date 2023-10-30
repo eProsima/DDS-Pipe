@@ -30,7 +30,7 @@ DdsBridge::DdsBridge(
         const std::shared_ptr<utils::SlotThreadPool>& thread_pool,
         const RoutesConfiguration& routes_config,
         const bool remove_unused_entities,
-        const std::vector<utils::Heritable<core::types::WildcardDdsFilterTopic>>& manual_topics)
+        const std::vector<core::types::ManualTopic>& manual_topics)
     : Bridge(participants_database, payload_pool, thread_pool)
     , topic_(topic)
     , manual_topics_(manual_topics)
@@ -288,20 +288,23 @@ utils::Heritable<DistributedTopic> DdsBridge::create_topic_for_participant_nts_(
     // Make a copy of the Topic to customize it according to the Participant's configured QoS.
     utils::Heritable<DistributedTopic> topic = topic_->copy();
 
-    // Impose the Topic QoSs that have been pre-configured on the topic.
+    // Impose the Topic QoS that have been pre-configured for the Bridge's topic.
+    // set_qos only overwrites the Topic QoS that have been set with a lower FuzzyLevel.
+    // A Topic QoS set with fuzzy_level_hard (the highest FuzzyLevel) cannot be overwritten.
+    // Thus, the order matters. In this case, manual_topics[0] > manual_topics[1] > participant.
 
-    // 1. Manually Configured Topic QoSs.
+    // 1. Manually Configured Topic QoS.
     for (const auto& manual_topic : manual_topics_)
     {
-        const auto& participant_ids = manual_topic->participants.get_value();
+        const auto& participant_ids = manual_topic.second;
 
         if (participant_ids.empty() || participant_ids.count(participant->id()))
         {
-            topic->topic_qos.set_qos(manual_topic->topic_qos, utils::FuzzyLevelValues::fuzzy_level_hard);
+            topic->topic_qos.set_qos(manual_topic.first->topic_qos, utils::FuzzyLevelValues::fuzzy_level_hard);
         }
     }
 
-    // 2. Participant Topic QoSs.
+    // 2. Participant Topic QoS.
     topic->topic_qos.set_qos(participant->topic_qos(), utils::FuzzyLevelValues::fuzzy_level_hard);
 
     return topic;

@@ -122,7 +122,7 @@ utils::ReturnCode DdsPipe::reload_configuration(
     {
         throw utils::ConfigurationException(
                   utils::Formatter() <<
-                      "Configuration for Reload DDS Router is invalid: " << error_msg);
+                      "Configuration for Reload DDS Pipe is invalid: " << error_msg);
     }
 
     auto allowed_topics = std::make_shared<ddspipe::core::AllowedTopicList>(

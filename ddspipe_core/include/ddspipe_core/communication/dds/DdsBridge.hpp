@@ -21,6 +21,7 @@
 #include <ddspipe_core/configuration/RoutesConfiguration.hpp>
 #include <ddspipe_core/types/topic/dds/DistributedTopic.hpp>
 #include <ddspipe_core/types/topic/filter/WildcardDdsFilterTopic.hpp>
+#include <ddspipe_core/types/topic/filter/ManualTopic.hpp>
 
 namespace eprosima {
 namespace ddspipe {
@@ -60,7 +61,7 @@ public:
             const std::shared_ptr<utils::SlotThreadPool>& thread_pool,
             const RoutesConfiguration& routes_config,
             const bool remove_unused_entities,
-            const std::vector<utils::Heritable<core::types::WildcardDdsFilterTopic>>& manual_topics);
+            const std::vector<core::types::ManualTopic>& manual_topics);
 
     DDSPIPE_CORE_DllAPI
     ~DdsBridge();
@@ -149,9 +150,9 @@ protected:
             std::map<types::ParticipantId, std::shared_ptr<IWriter>>& writers);
 
     /**
-     * @brief Impose the Topic QoSs that have been pre-configured for a participant.
+     * @brief Impose the Topic QoS that have been pre-configured for a participant.
      *
-     * First, it imposes the Topic QoSs configured at \c manual_topics and then the ones configured at \c participants.
+     * First, it imposes the Topic QoS configured at \c manual_topics and then the ones configured at \c participants.
      */
     DDSPIPE_CORE_DllAPI
     utils::Heritable<types::DistributedTopic> create_topic_for_participant_nts_(
@@ -164,11 +165,11 @@ protected:
     //! Topic associated to the DdsBridge.
     utils::Heritable<types::DistributedTopic> topic_;
 
-    //! Routes associted to the Topic.
+    //! Routes associated to the Topic.
     RoutesConfiguration::RoutesMap routes_;
 
     //! Topics that explicitally set a QoS attribute for this participant.
-    std::vector<utils::Heritable<core::types::WildcardDdsFilterTopic>> manual_topics_;
+    std::vector<types::ManualTopic> manual_topics_;
 
     /**
      * Inside \c Tracks

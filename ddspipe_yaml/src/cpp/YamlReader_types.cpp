@@ -27,6 +27,7 @@
 #include <ddspipe_core/types/participant/ParticipantId.hpp>
 #include <ddspipe_core/types/topic/dds/DdsTopic.hpp>
 #include <ddspipe_core/types/topic/filter/WildcardDdsFilterTopic.hpp>
+#include <ddspipe_core/types/topic/filter/ManualTopic.hpp>
 
 #include <ddspipe_participants/types/address/Address.hpp>
 #include <ddspipe_participants/types/address/DiscoveryServerConnectionAddress.hpp>
@@ -476,12 +477,6 @@ void YamlReader::fill(
     {
         fill<TopicQoS>(object.topic_qos, get_value_in_tag(yml, TOPIC_QOS_TAG), version);
     }
-
-    // Optional participants tag
-    if (is_tag_present(yml, TOPIC_PARTICIPANTS_TAG))
-    {
-        object.participants.set_value(get_set<ParticipantId>(yml, TOPIC_PARTICIPANTS_TAG, version));
-    }
 }
 
 template <>
@@ -492,6 +487,36 @@ WildcardDdsFilterTopic YamlReader::get(
 {
     WildcardDdsFilterTopic object;
     fill<WildcardDdsFilterTopic>(object, yml, version);
+    return object;
+}
+
+template <>
+DDSPIPE_YAML_DllAPI
+void YamlReader::fill(
+        ManualTopic& object,
+        const Yaml& yml,
+        const YamlReaderVersion version)
+{
+    auto manual_topic = YamlReader::get<WildcardDdsFilterTopic>(yml, version);
+    object.first = utils::Heritable<WildcardDdsFilterTopic>::make_heritable(manual_topic);
+
+    // Optional participants tag
+    if (is_tag_present(yml, TOPIC_PARTICIPANTS_TAG))
+    {
+        object.second = get_set<ParticipantId>(yml, TOPIC_PARTICIPANTS_TAG, version);
+    }
+}
+
+template <>
+DDSPIPE_YAML_DllAPI
+ManualTopic YamlReader::get(
+        const Yaml& yml,
+        const YamlReaderVersion version)
+{
+    auto topic = utils::Heritable<WildcardDdsFilterTopic>::make_heritable();
+    std::set<ParticipantId> participants;
+    ManualTopic object = std::make_pair(topic, participants);
+    fill<ManualTopic>(object, yml, version);
     return object;
 }
 

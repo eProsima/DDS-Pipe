@@ -131,7 +131,7 @@ struct Topic : public ITopic, public IConfiguration
      *
      * If the Topic is built-in, they take their default value.
      * If the Topic isn't built-in, they take their value by discovery.
-     * If the Topic has manually configured Topic QoSs, the Topic QoSs that are manually configured get overriden.
+     * If the Topic has manually configured Topic QoS, the Topic QoS that are manually configured get overriden.
      */
     types::TopicQoS topic_qos{};
 };
