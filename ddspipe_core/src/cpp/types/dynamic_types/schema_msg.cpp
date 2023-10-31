@@ -13,7 +13,7 @@
 // limitations under the License.
 
 /**
- * @file schema.cpp
+ * @file schema_msg.cpp
  */
 
 #include <ostream>

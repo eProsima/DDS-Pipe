@@ -13,7 +13,7 @@
 // limitations under the License.
 
 /**
- * @file schema.cpp
+ * @file schema_idl.cpp
  */
 
 #include <ostream>
@@ -28,7 +28,6 @@
 #include <cpp_utils/exception/UnsupportedException.hpp>
 #include <cpp_utils/types/Tree.hpp>
 #include <cpp_utils/utils.hpp>
-#include <cpp_utils/ros2_mangling.hpp>
 
 #include <ddspipe_core/types/dynamic_types/schema.hpp>
 
@@ -107,7 +106,6 @@ std::vector<std::pair<std::string, fastrtps::types::DynamicType_ptr>> get_member
                 std::make_pair<std::string, fastrtps::types::DynamicType_ptr>(
                     member.second->get_name(),
                     member.second->get_descriptor()->get_type()));
-
     }
     return result;
 }
@@ -251,7 +249,6 @@ utils::TreeNode<TreeNodeType> generate_dyn_type_tree(
         case fastrtps::types::TK_STRUCTURE:
         {
             // If is struct, the call is recursive.
-
             // Create new tree node
             utils::TreeNode<TreeNodeType> parent(member_name, type->get_name(), type);
 
@@ -301,10 +298,6 @@ std::ostream& node_to_str(
     {
         auto dim_pos = node.info.type_kind_name.find("[");
         auto kind_name_str = node.info.type_kind_name.substr(0, dim_pos);
-
-        //
-        // std::string type_name = ros2_types ? utils::demangle_if_ros_type(kind_name_str) : kind_name_str;
-
         auto dim_str = node.info.type_kind_name.substr(dim_pos, std::string::npos);
 
         os << kind_name_str << " " << node.info.member_name << dim_str;
