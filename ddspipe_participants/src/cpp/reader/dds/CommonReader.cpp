@@ -144,8 +144,8 @@ utils::ReturnCode CommonReader::take_nts_(
             return ret;
         }
 
-        // Check if the change is acceptable
-        if (should_accept_change_(info))
+        // Check if the sample is acceptable
+        if (should_accept_sample_(info))
         {
             break;
         }
@@ -221,7 +221,7 @@ fastdds::dds::DataReaderQos CommonReader::reckon_reader_qos_() const
     return qos;
 }
 
-bool CommonReader::should_accept_change_(
+bool CommonReader::should_accept_sample_(
         const fastdds::dds::SampleInfo& info) noexcept
 {
     // Reject samples sent by a Writer from the same Participant this Reader belongs to
@@ -232,7 +232,7 @@ bool CommonReader::should_accept_change_(
         return false;
     }
 
-    return should_accept_sample_();
+    return BaseReader::should_accept_sample_();
 }
 
 void CommonReader::fill_received_data_(

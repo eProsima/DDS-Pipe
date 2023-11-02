@@ -137,7 +137,7 @@ protected:
     reckon_reader_qos_() const;
 
     //! Whether a change received should be processed
-    virtual bool should_accept_change_(
+    virtual bool should_accept_sample_(
             const fastdds::dds::SampleInfo& info) noexcept;
 
     virtual void fill_received_data_(

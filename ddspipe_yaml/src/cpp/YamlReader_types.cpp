@@ -96,6 +96,7 @@ YamlReaderVersion YamlReader::get<YamlReaderVersion>(
                     {VERSION_TAG_V_2_0, YamlReaderVersion::V_2_0},
                     {VERSION_TAG_V_3_0, YamlReaderVersion::V_3_0},
                     {VERSION_TAG_V_3_1, YamlReaderVersion::V_3_1},
+                    {VERSION_TAG_V_4_0, YamlReaderVersion::V_4_0},
                 });
 }
 
@@ -411,13 +412,13 @@ void YamlReader::fill(
     // Max Transmission Rate optional
     if (is_tag_present(yml, QOS_MAX_TX_RATE_TAG))
     {
-        object.max_tx_rate.set_value(get<float>(yml, QOS_MAX_TX_RATE_TAG, version));
+        object.max_tx_rate.set_value(get_nonnegative_float(yml, QOS_MAX_TX_RATE_TAG));
     }
 
     // Max Reception Rate optional
     if (is_tag_present(yml, QOS_MAX_RX_RATE_TAG))
     {
-        object.max_rx_rate.set_value(get<float>(yml, QOS_MAX_RX_RATE_TAG, version));
+        object.max_rx_rate.set_value(get_nonnegative_float(yml, QOS_MAX_RX_RATE_TAG));
     }
 
     // Downsampling optional

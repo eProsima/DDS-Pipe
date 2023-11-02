@@ -39,12 +39,23 @@ using HistoryDepthType = unsigned int;
 using OwnershipQosPolicyKind = eprosima::fastdds::dds::OwnershipQosPolicyKind;
 
 /**
- * Collection of QoS related with a Topic.
+ * The collection of QoS related to a Topic.
+ *
+ * The Topic QoS are:
+ *  - Durability
+ *  - Reliability
+ *  - Ownership
+ *  - Partitions
+ *  - Keyed
+ *  - History Depth
+ *  - Max Transmission Rate
+ *  - Max Reception Rate
+ *  - Downsampling
  *
  * @warning partitions are considered a Topic QoS. A Topic can then only either have partitions or not have them, but it
  * cannot support empty partitions.
  *
- * @todo add keys to Topic QoS
+ * @todo create a child of TopicQoS called DdsTopicQoS that contains the QoS specific to DDS.
  */
 struct
 TopicQoS

@@ -20,8 +20,8 @@
 #include <ddspipe_core/communication/dds/Track.hpp>
 #include <ddspipe_core/configuration/RoutesConfiguration.hpp>
 #include <ddspipe_core/types/topic/dds/DistributedTopic.hpp>
-#include <ddspipe_core/types/topic/filter/WildcardDdsFilterTopic.hpp>
 #include <ddspipe_core/types/topic/filter/ManualTopic.hpp>
+#include <ddspipe_core/types/topic/filter/WildcardDdsFilterTopic.hpp>
 
 namespace eprosima {
 namespace ddspipe {
