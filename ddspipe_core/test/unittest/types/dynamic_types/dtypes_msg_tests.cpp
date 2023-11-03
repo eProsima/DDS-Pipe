@@ -1,4 +1,4 @@
-// Copyright 2021 Proyectos y Sistemas de Mantenimiento SL (eProsima).
+// Copyright 2023 Proyectos y Sistemas de Mantenimiento SL (eProsima).
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -13,24 +13,19 @@
 // limitations under the License.
 
 #include <algorithm>
-
 #include <cpp_utils/testing/gtest_aux.hpp>
 #include <gtest/gtest.h>
-
 #include <cpp_utils/macros/custom_enumeration.hpp>
 #include <cpp_utils/file/file_utils.hpp>
-
 #include <fastrtps/types/DynamicTypePtr.h>
-
 #include <ddspipe_core/types/dynamic_types/schema.hpp>
-
 #include "types/all_types.hpp"
 
 using namespace eprosima;
 
 namespace test {
 
-std::string read_idl_from_file_(
+std::string read_msg_from_file_(
         const std::string& file_name)
 {
     return utils::file_to_string(file_name.c_str());
@@ -39,7 +34,7 @@ std::string read_idl_from_file_(
 std::string file_name_by_type(
         SupportedType type)
 {
-    return std::string("types/idls/") + to_string(type) + ".idl";
+    return std::string("types/msgs/") + to_string(type) + ".msg";
 }
 
 void compare_schemas(
@@ -52,17 +47,17 @@ void compare_schemas(
 void execute_test_by_type(
         SupportedType type)
 {
-    // Get IDL file in string with the value expected to be generated in the schema
-    std::string idl_file = read_idl_from_file_(file_name_by_type(type));
+    // Get msg file in string with the value expected to be generated in the schema
+    std::string msg_file = read_msg_from_file_(file_name_by_type(type));
 
     // Get Dynamic type
     fastrtps::types::DynamicType_ptr dyn_type = get_dynamic_type(type);
 
     // Get schema generated
-    std::string schema = ddspipe::core::types::generate_idl_schema(dyn_type);
+    std::string schema = ddspipe::core::types::msg::generate_ros2_schema(dyn_type);
 
     // Compare schemas
-    compare_schemas(idl_file, schema);
+    compare_schemas(msg_file, schema);
 }
 
 } // namespace test
@@ -87,7 +82,7 @@ TEST_P(ParametrizedTests, msg_schema_generation)
     test::execute_test_by_type(type_);
 }
 
-INSTANTIATE_TEST_SUITE_P(dtypes_tests, ParametrizedTests, ::testing::Values(
+INSTANTIATE_TEST_SUITE_P(dtypes_msg_tests, ParametrizedTests, ::testing::Values(
             test::SupportedType::hello_world,
             test::SupportedType::numeric_array,
             test::SupportedType::char_sequence,
@@ -95,10 +90,7 @@ INSTANTIATE_TEST_SUITE_P(dtypes_tests, ParametrizedTests, ::testing::Values(
             test::SupportedType::basic_array_struct,
             test::SupportedType::float_bounded_sequence,
             test::SupportedType::arrays_and_sequences,
-            test::SupportedType::complex_nested_arrays,
-            test::SupportedType::enum_struct,
-            test::SupportedType::union_struct,
-            test::SupportedType::map_struct
+            test::SupportedType::complex_nested_arrays
             ));
 
 int main(

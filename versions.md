@@ -3,6 +3,10 @@
 This file includes the released versions of **DDS-Pipe** project along with their contributions to the project.
 The *Forthcoming* section includes those features added in `main` branch that are not yet in a stable release.
 
+## Forthcoming
+
+* Store schemas in OMG IDL and ROS 2 msg format.
+
 ## Version 0.2.0
 
 * Add missing DLLs.
