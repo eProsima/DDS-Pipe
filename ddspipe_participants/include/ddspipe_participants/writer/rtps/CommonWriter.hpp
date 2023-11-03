@@ -98,7 +98,7 @@ public:
     /**
      * @brief CommonWriter Listener callback when a new Reader is matched or unmatched
      *
-     * This method is call every time a new Reader is matched or unmatched from this CommonWriter.
+     * This method is called every time a new Reader is matched or unmatched from this CommonWriter.
      * It only creates a log for matching and unmatching (in case it is not a reader from this same Participant)
      *
      * @param [in] info information about the matched Reader
@@ -107,6 +107,18 @@ public:
     void onWriterMatched(
             fastrtps::rtps::RTPSWriter*,
             fastrtps::rtps::MatchingInfo& info) noexcept override;
+
+    /**
+     * @brief CommonWriter Listener callback when all the Readers have received a change.
+     *
+     * This method is called when all the Readers subscribed to a Topic acknowledge that they have received a change.
+     * It removes the change from the Writer's history if the Writer is volatile.
+     *
+     * @param [in] ch the change that has been acknowledged by all the Readers.
+     */
+    void onWriterChangeReceivedByAll(
+        fastrtps::rtps::RTPSWriter*,
+        fastrtps::rtps::CacheChange_t* change) override;
 
     /**
      * This method is called when a new Reader is discovered, with a Topic that

@@ -125,6 +125,24 @@ void CommonWriter::onWriterMatched(
     }
 }
 
+void CommonWriter::onWriterChangeReceivedByAll(
+        fastrtps::rtps::RTPSWriter* /*writer*/,
+        fastrtps::rtps::CacheChange_t* change)
+{
+    if (topic_.topic_qos.keyed &&
+            (fastrtps::rtps::NOT_ALIVE_UNREGISTERED == change->kind ||
+             fastrtps::rtps::NOT_ALIVE_DISPOSED_UNREGISTERED == change->kind))
+    {
+        // In Fast-DDS the DataWriterHistory keeps track of all the keyed changes and, when removing a keyed change, it
+        // removes it from the list of keyed changes as well.
+        rtps_history_->remove_change_g(change);
+    }
+    else if (writer_qos_.m_durability.kind == fastdds::dds::VOLATILE_DURABILITY_QOS)
+    {
+        rtps_history_->remove_change_g(change);
+    }
+}
+
 void CommonWriter::on_offered_incompatible_qos(
         fastrtps::rtps::RTPSWriter*,
         eprosima::fastdds::dds::PolicyMask qos) noexcept
@@ -147,12 +165,12 @@ utils::ReturnCode CommonWriter::write_nts_(
 
     // Take new Change from history
     fastrtps::rtps::CacheChange_t* new_change;
+
     if (topic_.topic_qos.keyed)
     {
-        new_change =
-                rtps_writer_->new_change(
-            rtps_data.kind,
-            rtps_data.instanceHandle);
+        new_change = rtps_writer_->new_change(
+                rtps_data.kind,
+                rtps_data.instanceHandle);
     }
     else
     {
@@ -186,15 +204,15 @@ utils::ReturnCode CommonWriter::write_nts_(
     // At this point, write params is now the output of adding change
     fill_sent_data_(write_params, rtps_data);
 
-    // Remove change could be done here in non reliable as it is synchronous because change has already been sent
-    // and does not require to be resent under any circumstance.
+    // TODO: check if we are async
     if (!topic_.topic_qos.is_reliable())
     {
+        // Remove the change since it will never be resent.
         rtps_history_->remove_change(new_change);
     }
     else if (rtps_history_->isFull())
     {
-        // When max history size is reached, remove oldest cache change
+        // Remove the oldest cache change when the max history size is reached.
         rtps_history_->remove_min_change();
     }
 
