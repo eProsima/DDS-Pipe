@@ -28,7 +28,7 @@ namespace ddspipe {
 namespace core {
 
 PayloadPoolMediator::PayloadPoolMediator(
-    const std::shared_ptr<PayloadPool>& payload_pool)
+        const std::shared_ptr<PayloadPool>& payload_pool)
     : payload_pool_(payload_pool)
 {
 }

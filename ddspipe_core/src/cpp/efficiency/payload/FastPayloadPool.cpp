@@ -59,7 +59,8 @@ bool FastPayloadPool::get_payload(
     }
     else
     {
-        logDebug(DDSPIPE_PAYLOADPOOL_FAST, "Referencing payload with ptr: " << static_cast<void*>(src_payload.data) << ".");
+        logDebug(DDSPIPE_PAYLOADPOOL_FAST,
+                "Referencing payload with ptr: " << static_cast<void*>(src_payload.data) << ".");
 
         // IMPORTANT: If payload has been reserved from this object, it must have the +4 bytes before data
         // We get this value and add a +1 to set that is referencing from one more payload

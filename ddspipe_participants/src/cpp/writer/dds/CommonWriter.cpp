@@ -71,7 +71,7 @@ void CommonWriter::init()
 
     // TODO
     std::shared_ptr<fastrtps::rtps::IPayloadPool> ipayload_pool{
-            dynamic_cast<fastrtps::rtps::IPayloadPool*>(payload_pool_)};
+        dynamic_cast<fastrtps::rtps::IPayloadPool*>(payload_pool_)};
 
     writer_ = dds_publisher_->create_datawriter(
         dds_topic_,

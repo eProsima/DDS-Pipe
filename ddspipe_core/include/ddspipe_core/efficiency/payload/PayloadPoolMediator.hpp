@@ -39,6 +39,7 @@ namespace core {
 class PayloadPoolMediator : public fastrtps::rtps::IPayloadPool
 {
 public:
+
     /**
      * TODO
      */
@@ -49,24 +50,24 @@ public:
      * TODO
      */
     bool write(
-        fastdds::dds::DataWriter* writer,
-        types::RtpsPayloadData* data);
+            fastdds::dds::DataWriter* writer,
+            types::RtpsPayloadData* data);
 
     /**
      * TODO
      */
     bool write(
-        fastdds::dds::DataWriter* writer,
-        types::RtpsPayloadData* data,
-        fastrtps::rtps::WriteParams& params);
+            fastdds::dds::DataWriter* writer,
+            types::RtpsPayloadData* data,
+            fastrtps::rtps::WriteParams& params);
 
     /**
      * TODO
      */
     utils::ReturnCode write(
-        fastdds::dds::DataWriter* writer,
-        types::RtpsPayloadData* data,
-        const fastrtps::rtps::InstanceHandle_t& handle);
+            fastdds::dds::DataWriter* writer,
+            types::RtpsPayloadData* data,
+            const fastrtps::rtps::InstanceHandle_t& handle);
 
     /**
      * TODO
@@ -124,6 +125,7 @@ public:
             types::Payload& payload);
 
 protected:
+
     //! Mutex to prevent simultaneous calls to write
     std::mutex mutex_;
 

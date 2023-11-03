@@ -215,7 +215,7 @@ void CommonReader::fill_received_data_(
     {
         eprosima::fastrtps::rtps::IPayloadPool* payload_owner =
                 const_cast<eprosima::fastrtps::rtps::IPayloadPool*>(received_change.payload_owner());
-                
+
         payload_pool_->get_payload(
             received_change.serializedPayload,
             payload_owner,
