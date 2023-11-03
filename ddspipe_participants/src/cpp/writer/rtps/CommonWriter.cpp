@@ -198,6 +198,12 @@ utils::ReturnCode CommonWriter::write_nts_(
         return ret;
     }
 
+    if (rtps_history_->isFull())
+    {
+        // Remove the oldest cache change when the max history size is reached.
+        rtps_history_->remove_min_change();
+    }
+
     // Send data by adding it to CommonWriter History
     rtps_history_->add_change(new_change, write_params);
 
@@ -209,11 +215,6 @@ utils::ReturnCode CommonWriter::write_nts_(
     {
         // Remove the change since it will never be resent.
         rtps_history_->remove_change(new_change);
-    }
-    else if (rtps_history_->isFull())
-    {
-        // Remove the oldest cache change when the max history size is reached.
-        rtps_history_->remove_min_change();
     }
 
     return utils::ReturnCode::RETCODE_OK;
