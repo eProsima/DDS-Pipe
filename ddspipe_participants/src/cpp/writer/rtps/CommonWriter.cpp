@@ -131,7 +131,7 @@ void CommonWriter::onWriterChangeReceivedByAll(
 {
     if (topic_.topic_qos.keyed &&
             (fastrtps::rtps::NOT_ALIVE_UNREGISTERED == change->kind ||
-             fastrtps::rtps::NOT_ALIVE_DISPOSED_UNREGISTERED == change->kind))
+            fastrtps::rtps::NOT_ALIVE_DISPOSED_UNREGISTERED == change->kind))
     {
         // In Fast-DDS the DataWriterHistory keeps track of all the keyed changes and, when removing a keyed change, it
         // removes it from the list of keyed changes as well.
@@ -169,8 +169,8 @@ utils::ReturnCode CommonWriter::write_nts_(
     if (topic_.topic_qos.keyed)
     {
         new_change = rtps_writer_->new_change(
-                rtps_data.kind,
-                rtps_data.instanceHandle);
+            rtps_data.kind,
+            rtps_data.instanceHandle);
     }
     else
     {

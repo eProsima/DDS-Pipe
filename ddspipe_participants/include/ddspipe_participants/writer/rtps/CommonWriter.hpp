@@ -116,9 +116,10 @@ public:
      *
      * @param [in] ch the change that has been acknowledged by all the Readers.
      */
+    DDSPIPE_PARTICIPANTS_DllAPI
     void onWriterChangeReceivedByAll(
-        fastrtps::rtps::RTPSWriter*,
-        fastrtps::rtps::CacheChange_t* change) override;
+            fastrtps::rtps::RTPSWriter*,
+            fastrtps::rtps::CacheChange_t* change) override;
 
     /**
      * This method is called when a new Reader is discovered, with a Topic that
