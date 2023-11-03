@@ -196,11 +196,13 @@ std::string type_kind_to_str(
         case fastrtps::types::TK_UNION:
         case fastrtps::types::TK_NONE:
             throw utils::UnsupportedException(
-                      STR_ENTRY << "Type " << utils::demangle_if_ros_type(dyn_type->get_name()) << " is not supported in ROS2 msg.");
+                      STR_ENTRY << "Type " << utils::demangle_if_ros_type(
+                          dyn_type->get_name()) << " is not supported in ROS2 msg.");
 
         default:
             throw utils::InconsistencyException(
-                      STR_ENTRY << "Type " << utils::demangle_if_ros_type(dyn_type->get_name()) << " has not correct kind.");
+                      STR_ENTRY << "Type " << utils::demangle_if_ros_type(
+                          dyn_type->get_name()) << " has not correct kind.");
     }
 }
 

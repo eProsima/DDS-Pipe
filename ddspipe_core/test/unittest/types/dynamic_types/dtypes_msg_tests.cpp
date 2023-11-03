@@ -30,6 +30,7 @@ std::string read_msg_from_file_(
 {
     return utils::file_to_string(file_name.c_str());
 }
+
 std::string file_name_by_type(
         SupportedType type)
 {
@@ -42,6 +43,7 @@ void compare_schemas(
 {
     ASSERT_EQ(schema1, schema2);
 }
+
 void execute_test_by_type(
         SupportedType type)
 {
@@ -63,10 +65,12 @@ void execute_test_by_type(
 class ParametrizedTests : public ::testing::TestWithParam<test::SupportedType>
 {
 public:
+
     void SetUp()
     {
         type_ = GetParam();
     }
+
     test::SupportedType type_;
 };
 

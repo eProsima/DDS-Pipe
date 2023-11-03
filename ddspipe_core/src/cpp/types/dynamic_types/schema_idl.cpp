@@ -103,9 +103,9 @@ std::vector<std::pair<std::string, fastrtps::types::DynamicType_ptr>> get_member
     for (const auto& member : members)
     {
         result.emplace_back(
-                std::make_pair<std::string, fastrtps::types::DynamicType_ptr>(
-                    member.second->get_name(),
-                    member.second->get_descriptor()->get_type()));
+            std::make_pair<std::string, fastrtps::types::DynamicType_ptr>(
+                member.second->get_name(),
+                member.second->get_descriptor()->get_type()));
     }
     return result;
 }
@@ -228,11 +228,11 @@ std::string type_kind_to_str(
         case fastrtps::types::TK_BITMASK:
         case fastrtps::types::TK_NONE:
             throw utils::UnsupportedException(
-                STR_ENTRY << "Type " << dyn_type->get_name() << " is not supported.");
+                      STR_ENTRY << "Type " << dyn_type->get_name() << " is not supported.");
 
         default:
             throw utils::InconsistencyException(
-                STR_ENTRY << "Type " << dyn_type->get_name() << " has not correct kind.");
+                      STR_ENTRY << "Type " << dyn_type->get_name() << " has not correct kind.");
 
     }
 }
