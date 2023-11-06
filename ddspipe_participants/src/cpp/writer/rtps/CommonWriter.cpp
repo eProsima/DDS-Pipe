@@ -129,15 +129,7 @@ void CommonWriter::onWriterChangeReceivedByAll(
         fastrtps::rtps::RTPSWriter* /*writer*/,
         fastrtps::rtps::CacheChange_t* change)
 {
-    if (topic_.topic_qos.keyed &&
-            (fastrtps::rtps::NOT_ALIVE_UNREGISTERED == change->kind ||
-            fastrtps::rtps::NOT_ALIVE_DISPOSED_UNREGISTERED == change->kind))
-    {
-        // In Fast-DDS the DataWriterHistory keeps track of all the keyed changes and, when removing a keyed change, it
-        // removes it from the list of keyed changes as well.
-        rtps_history_->remove_change_g(change);
-    }
-    else if (writer_qos_.m_durability.kind == fastdds::dds::VOLATILE_DURABILITY_QOS)
+    if (writer_qos_.m_durability.kind == fastdds::dds::VOLATILE_DURABILITY_QOS)
     {
         rtps_history_->remove_change_g(change);
     }
@@ -207,15 +199,10 @@ utils::ReturnCode CommonWriter::write_nts_(
     // Send data by adding it to CommonWriter History
     rtps_history_->add_change(new_change, write_params);
 
+    // In the case of BEST_EFFORT, add_change calls onWriterChangeReceivedByAll (which removes the change).
+
     // At this point, write params is now the output of adding change
     fill_sent_data_(write_params, rtps_data);
-
-    // TODO: check if we are async
-    if (!topic_.topic_qos.is_reliable())
-    {
-        // Remove the change since it will never be resent.
-        rtps_history_->remove_change(new_change);
-    }
 
     return utils::ReturnCode::RETCODE_OK;
 }
@@ -266,9 +253,7 @@ void CommonWriter::fill_sent_data_(
         const eprosima::fastrtps::rtps::WriteParams& params,
         core::types::RtpsPayloadData& data_to_fill) const noexcept
 {
-    // Set data output parameters
-    // TODO move to RPC
-    // data_to_fill->sent_sequence_number = params.sample_identity().sequence_number();
+    // Do nothing
 }
 
 void CommonWriter::internal_entities_creation_(
