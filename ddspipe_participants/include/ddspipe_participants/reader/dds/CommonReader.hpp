@@ -136,7 +136,7 @@ protected:
     fastdds::dds::DataReaderQos
     reckon_reader_qos_() const;
 
-    //! Whether a change received should be processed
+    //! Whether a sample received should be processed
     virtual bool should_accept_sample_(
             const fastdds::dds::SampleInfo& info) noexcept;
 
