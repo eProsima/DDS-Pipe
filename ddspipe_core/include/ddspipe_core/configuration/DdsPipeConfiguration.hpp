@@ -79,6 +79,7 @@ struct DdsPipeConfiguration : public IConfiguration
      *
      * @return The manual topics for a specific topic.
      */
+    DDSPIPE_CORE_DllAPI
     std::vector<core::types::ManualTopic> get_manual_topics(
             const core::ITopic& topic) const noexcept;
 
