@@ -112,7 +112,7 @@ public:
      * @brief CommonWriter Listener callback when all the Readers have received a change.
      *
      * This method is called when all the Readers subscribed to a Topic acknowledge that they have received a change.
-     * It removes the change from the Writer's history if the Writer is volatile.
+     * It removes the change from the Writer's history if the Writer is best-effort or volatile.
      *
      * @param [in] ch the change that has been acknowledged by all the Readers.
      */

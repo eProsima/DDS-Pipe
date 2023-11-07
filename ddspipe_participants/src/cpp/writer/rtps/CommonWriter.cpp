@@ -129,7 +129,8 @@ void CommonWriter::onWriterChangeReceivedByAll(
         fastrtps::rtps::RTPSWriter* /*writer*/,
         fastrtps::rtps::CacheChange_t* change)
 {
-    if (writer_qos_.m_durability.kind == fastdds::dds::VOLATILE_DURABILITY_QOS)
+    if (writer_qos_.m_reliability.kind == fastdds::dds::BEST_EFFORT_RELIABILITY_QOS ||
+            writer_qos_.m_durability.kind == fastdds::dds::VOLATILE_DURABILITY_QOS)
     {
         rtps_history_->remove_change_g(change);
     }
