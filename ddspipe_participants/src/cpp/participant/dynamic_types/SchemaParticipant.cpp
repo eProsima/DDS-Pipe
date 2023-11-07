@@ -41,7 +41,8 @@ SchemaParticipant::SchemaParticipant(
         std::shared_ptr<PayloadPool> payload_pool,
         std::shared_ptr<DiscoveryDatabase> discovery_database,
         std::shared_ptr<ISchemaHandler> schema_handler)
-    : id_(participant_configuration->id)
+    : configuration_(participant_configuration)
+    , id_(participant_configuration->id)
     , payload_pool_(payload_pool)
     , discovery_database_(discovery_database)
     , schema_handler_(schema_handler)
@@ -80,6 +81,11 @@ bool SchemaParticipant::is_repeater() const noexcept
 bool SchemaParticipant::is_rtps_kind() const noexcept
 {
     return false;
+}
+
+core::types::TopicQoS SchemaParticipant::topic_qos() const noexcept
+{
+    return configuration_->topic_qos;
 }
 
 std::shared_ptr<IWriter> SchemaParticipant::create_writer(

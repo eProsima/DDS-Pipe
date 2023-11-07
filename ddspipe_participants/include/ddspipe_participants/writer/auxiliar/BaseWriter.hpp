@@ -17,6 +17,8 @@
 #include <atomic>
 #include <mutex>
 
+#include <cpp_utils/time/time_utils.hpp>
+
 #include <ddspipe_core/interface/IWriter.hpp>
 #include <ddspipe_core/interface/IRoutingData.hpp>
 #include <ddspipe_core/interface/ITopic.hpp>
@@ -100,7 +102,8 @@ protected:
      */
     DDSPIPE_PARTICIPANTS_DllAPI
     BaseWriter(
-            const core::types::ParticipantId& participant_id);
+            const core::types::ParticipantId& participant_id,
+            const float max_tx_rate = 0);
 
     /////////////////////////
     // METHODS TO IMPLEMENT BY SUBCLASSES
@@ -130,6 +133,11 @@ protected:
     virtual utils::ReturnCode write_nts_(
             core::IRoutingData& data) noexcept  = 0;
 
+    /**
+     * @brief Check the \c max_tx_rate to decide whether a sample should be sent.
+     */
+    bool should_send_sample_() noexcept;
+
     /////////////////////////
     // INTERNAL VARIABLES
     /////////////////////////
@@ -137,11 +145,20 @@ protected:
     //! Participant parent ID
     const core::types::ParticipantId participant_id_;
 
+    // Max transmission rate
+    float max_tx_rate_;
+
     //! Whether the Writer is currently enabled
     std::atomic<bool> enabled_;
 
     //! Mutex that guards every access to the Writer
     mutable std::recursive_mutex mutex_;
+
+    //! Timestamp of the last sent message.
+    utils::Timestamp last_sent_ts_ = utils::the_beginning_of_time();
+
+    //! Minimum time [ns] between sent samples required to be processed (0 <=> no restriction).
+    std::chrono::nanoseconds min_intersample_period_ = std::chrono::nanoseconds(0);
 
     // Allow operator << to use private variables
     friend std::ostream& operator <<(

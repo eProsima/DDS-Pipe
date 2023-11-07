@@ -16,6 +16,7 @@
 
 #include <ddspipe_core/interface/IReader.hpp>
 #include <ddspipe_core/interface/IWriter.hpp>
+#include <ddspipe_core/types/dds/TopicQoS.hpp>
 #include <ddspipe_core/types/participant/ParticipantId.hpp>
 #include <ddspipe_core/types/topic/Topic.hpp>
 
@@ -43,23 +44,21 @@ public:
     DDSPIPE_CORE_DllAPI
     virtual ~IParticipant() = default;
 
-    /**
-     * @brief Return the unique identifier of this Participant.
-     *
-     * @return This Participant id
-     */
+    //! The Participant's unique identifier.
     DDSPIPE_CORE_DllAPI
     virtual types::ParticipantId id() const noexcept = 0;
 
-    //! Whether this participant is RTPS
+    //! Whether the Participant is RTPS.
     DDSPIPE_CORE_DllAPI
     virtual bool is_rtps_kind() const noexcept = 0;
 
-    /**
-     * @brief Whether this Participant requires to connect ist own readers with its own writers.
-     */
+    //! Whether the Participant requires to connect its own readers with its own writers.
     DDSPIPE_CORE_DllAPI
     virtual bool is_repeater() const noexcept = 0;
+
+    //! The Participant's Topic QoS.
+    DDSPIPE_CORE_DllAPI
+    virtual types::TopicQoS topic_qos() const noexcept = 0;
 
     /**
      * @brief Return a new Writer

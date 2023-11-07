@@ -17,6 +17,8 @@
 #include <atomic>
 #include <mutex>
 
+#include <cpp_utils/time/time_utils.hpp>
+
 #include <ddspipe_core/types/participant/ParticipantId.hpp>
 #include <ddspipe_core/interface/IReader.hpp>
 #include <ddspipe_core/interface/ITopic.hpp>
@@ -156,7 +158,9 @@ protected:
      * @param participant_id parent participant id
      */
     BaseReader(
-            const core::types::ParticipantId& participant_id);
+            const core::types::ParticipantId& participant_id,
+            const float max_rx_rate = 0,
+            const unsigned int downsampling = 1);
 
     /////////////////////////
     // PROTECTED METHODS
@@ -197,12 +201,25 @@ protected:
     virtual utils::ReturnCode take_nts_(
             std::unique_ptr<core::IRoutingData>& data) noexcept = 0;
 
+    /**
+     * @brief Check the \c max_rx_rate and the \c downsampling to decide whether a sample should be processed.
+     *
+     * Implement this method in every inherited Reader class with take functionality.
+     */
+    virtual bool should_accept_sample_() noexcept;
+
     /////////////////////////
     // INTERNAL VARIABLES
     /////////////////////////
 
     //! Participant parent ID
     const core::types::ParticipantId participant_id_;
+
+    //! Max reception rate
+    float max_rx_rate_;
+
+    //! Downsampling value
+    unsigned int downsampling_;
 
     //! Lambda to call the callback whenever a new data arrives
     std::function<void()> on_data_available_lambda_;
@@ -215,6 +232,15 @@ protected:
 
     //! Mutex that guards every access to the Reader
     mutable std::recursive_mutex mutex_;
+
+    //! Counter used to keep only 1 sample of every N received, with N being the topic's downsampling factor.
+    unsigned int downsampling_idx_ = 0;
+
+    //! Reception timestamp of the last received (and processed) message, upon which max reception rate can be applied.
+    utils::Timestamp last_received_ts_ = utils::the_beginning_of_time();
+
+    //! Minimum time [ns] between received samples required to be processed (0 <=> no restriction).
+    std::chrono::nanoseconds min_intersample_period_ = std::chrono::nanoseconds(0);
 
     //! Default callback. It shows a warning that callback is not set
     static const std::function<void()> DEFAULT_ON_DATA_AVAILABLE_CALLBACK;

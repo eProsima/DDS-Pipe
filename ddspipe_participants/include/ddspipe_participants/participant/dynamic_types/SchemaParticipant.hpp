@@ -52,6 +52,10 @@ public:
     DDSPIPE_PARTICIPANTS_DllAPI
     bool is_rtps_kind() const noexcept override;
 
+    //! Override topic_qos() IParticipant method
+    DDSPIPE_PARTICIPANTS_DllAPI
+    core::types::TopicQoS topic_qos() const noexcept override;
+
     //! Override create_writer_() IParticipant method
     DDSPIPE_PARTICIPANTS_DllAPI
     std::shared_ptr<core::IWriter> create_writer(
@@ -63,6 +67,9 @@ public:
             const core::ITopic& topic) override;
 
 protected:
+
+    //! Participant Configuration
+    std::shared_ptr<ParticipantConfiguration> configuration_;
 
     //! Participant Id
     core::types::ParticipantId id_;

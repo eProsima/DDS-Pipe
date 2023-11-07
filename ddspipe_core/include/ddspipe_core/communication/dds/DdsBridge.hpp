@@ -20,6 +20,8 @@
 #include <ddspipe_core/communication/dds/Track.hpp>
 #include <ddspipe_core/configuration/RoutesConfiguration.hpp>
 #include <ddspipe_core/types/topic/dds/DistributedTopic.hpp>
+#include <ddspipe_core/types/topic/filter/ManualTopic.hpp>
+#include <ddspipe_core/types/topic/filter/WildcardDdsFilterTopic.hpp>
 
 namespace eprosima {
 namespace ddspipe {
@@ -58,7 +60,8 @@ public:
             const std::shared_ptr<PayloadPool>& payload_pool,
             const std::shared_ptr<utils::SlotThreadPool>& thread_pool,
             const RoutesConfiguration& routes_config,
-            const bool remove_unused_entities);
+            const bool remove_unused_entities,
+            const std::vector<core::types::ManualTopic>& manual_topics);
 
     DDSPIPE_CORE_DllAPI
     ~DdsBridge();
@@ -124,8 +127,6 @@ protected:
      * If the Participant's IReader doesn't exist, create it.
      * If the Participant's Track doesn't exist, create it.
      *
-     * Thread safe
-     *
      * @param writers: The map of ids to writers that are required for the tracks.
      *
      * @throw InitializationException in case \c IReaders creation fails.
@@ -140,8 +141,6 @@ protected:
      * If the Participant's IReader doesn't exist, create it.
      * If the Participant's Track doesn't exist, create it.
      *
-     * Thread safe
-     *
      * @param writers: The map of ids to writers that are required for the tracks.
      *
      * @throw InitializationException in case \c IReaders creation fails.
@@ -150,9 +149,27 @@ protected:
     void add_writers_to_tracks_nts_(
             std::map<types::ParticipantId, std::shared_ptr<IWriter>>& writers);
 
+    /**
+     * @brief Impose the Topic QoS that have been pre-configured for a participant.
+     *
+     * First, it imposes the Topic QoS configured at \c manual_topics and then the ones configured at \c participants.
+     */
+    DDSPIPE_CORE_DllAPI
+    utils::Heritable<types::DistributedTopic> create_topic_for_participant_nts_(
+            const std::shared_ptr<IParticipant>& participant) noexcept;
+
+    /////////////////////////
+    // VARIABLES
+    /////////////////////////
+
+    //! Topic associated to the DdsBridge.
     utils::Heritable<types::DistributedTopic> topic_;
 
+    //! Routes associated to the Topic.
     RoutesConfiguration::RoutesMap routes_;
+
+    //! Topics that explicitally set a QoS attribute for this participant.
+    std::vector<types::ManualTopic> manual_topics_;
 
     /**
      * Inside \c Tracks

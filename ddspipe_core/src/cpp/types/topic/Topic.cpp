@@ -31,8 +31,7 @@ namespace types {
 bool Topic::operator ==(
         const ITopic& other) const noexcept
 {
-    return
-        topic_unique_name() == other.topic_unique_name();
+    return topic_unique_name() == other.topic_unique_name();
 }
 
 bool Topic::operator <(
@@ -85,6 +84,12 @@ bool Topic::is_valid(
     return true;
 }
 
+utils::Heritable<ITopic> Topic::copy() const noexcept
+{
+    Topic topic = *this;
+    return utils::Heritable<Topic>::make_heritable(topic);
+}
+
 /////////////////////////
 // METHODS TO OVERRIDE
 /////////////////////////
@@ -105,6 +110,21 @@ std::ostream& operator <<(
 {
     os << t.serialize();
     return os;
+}
+
+/////////////////////////
+// OPERATORS
+/////////////////////////
+
+Topic& Topic::operator = (
+        const Topic& other) noexcept
+{
+    this->m_topic_name = other.m_topic_name;
+    this->m_internal_type_discriminator = other.m_internal_type_discriminator;
+    this->m_topic_discoverer = other.m_topic_discoverer;
+    this->topic_qos = other.topic_qos;
+
+    return *this;
 }
 
 } /* namespace types */

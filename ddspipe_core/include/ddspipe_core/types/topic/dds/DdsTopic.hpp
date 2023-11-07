@@ -17,10 +17,10 @@
 #include <iostream>
 #include <string>
 
+#include <cpp_utils/memory/Heritable.hpp>
 #include <cpp_utils/types/Fuzzy.hpp>
 
 #include <ddspipe_core/library/library_dll.h>
-#include <ddspipe_core/types/dds/TopicQoS.hpp>
 #include <ddspipe_core/types/topic/dds/DistributedTopic.hpp>
 
 namespace eprosima {
@@ -43,6 +43,14 @@ struct DdsTopic : public DistributedTopic
     DdsTopic();
 
     /////////////////////////
+    // OPERATORS
+    /////////////////////////
+
+    DDSPIPE_CORE_DllAPI
+    virtual DdsTopic& operator =(
+            const DdsTopic& other) noexcept;
+
+    /////////////////////////
     // METHODS
     /////////////////////////
 
@@ -55,6 +63,10 @@ struct DdsTopic : public DistributedTopic
 
     DDSPIPE_CORE_DllAPI
     virtual std::string serialize() const noexcept override;
+
+    //! Make a copy of the Topic
+    DDSPIPE_CORE_DllAPI
+    virtual utils::Heritable<ITopic> copy() const noexcept override;
 
     /////////////////////////
     // STATIC METHODS
@@ -73,14 +85,6 @@ struct DdsTopic : public DistributedTopic
 
     //! Topic Type name
     std::string type_name{};
-
-    /**
-     * @brief Topic QoS
-     *
-     * @todo this makes few sense here as the qos does not depend on the QoS itself but in the discovery of it.
-     * This Topic class is a proxy, not an actual Topic Entity of DDS, so it should not have QoS.
-     */
-    types::TopicQoS topic_qos{};
 };
 
 } /* namespace types */

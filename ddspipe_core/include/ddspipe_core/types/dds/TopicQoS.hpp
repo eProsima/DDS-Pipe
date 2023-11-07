@@ -14,6 +14,8 @@
 
 #pragma once
 
+#include <cpp_utils/types/Fuzzy.hpp>
+
 #include <fastdds/dds/core/policy/QosPolicies.hpp>
 #include <fastdds/rtps/common/Types.h>
 
@@ -37,19 +39,23 @@ using HistoryDepthType = unsigned int;
 using OwnershipQosPolicyKind = eprosima::fastdds::dds::OwnershipQosPolicyKind;
 
 /**
- * Collection of QoS related with a Topic.
+ * The collection of QoS related to a Topic.
  *
- * The QoS associated with Topic are:
- * - Reliability
- * - Durability
- * - Ownership
- * - Partitions
- * - History Depth (history kind is always KEEP_LAST)
+ * The Topic QoS are:
+ *  - Durability
+ *  - Reliability
+ *  - Ownership
+ *  - Partitions
+ *  - Keyed
+ *  - History Depth
+ *  - Max Transmission Rate
+ *  - Max Reception Rate
+ *  - Downsampling
  *
- * @warning partitions are considered as a QoS, thus a Topic can only have partitions, or not have any, but cannot
- * support empty partition and partitions.
+ * @warning partitions are considered a Topic QoS. A Topic can then only either have partitions or not have them, but it
+ * cannot support empty partitions.
  *
- * @todo add keys to Topic QoS
+ * @todo create a child of TopicQoS called DdsTopicQoS that contains the QoS specific to DDS.
  */
 struct
 TopicQoS
@@ -91,71 +97,109 @@ TopicQoS
     DDSPIPE_CORE_DllAPI
     bool has_partitions() const noexcept;
 
-    /////////////////////////
-    // GLOBAL VARIABLES
-    /////////////////////////
-
     /**
-     * @brief Global value to store the default history depth in this execution.
+     * @brief Set the Topic QoS that have not been set and are set in \c qos .
      *
-     * This value can change along the execution.
-     * Every new TopicQoS object will use this value as \c history_depth default.
+     * @note A Topic QoS is considered as set when it has a FuzzyLevel higher than DEFAULT.
      */
     DDSPIPE_CORE_DllAPI
-    static std::atomic<HistoryDepthType> default_history_depth;
+    void set_qos(
+            const TopicQoS& qos,
+            const utils::FuzzyLevelValues& fuzzy_level = utils::FuzzyLevelValues::fuzzy_level_fuzzy) noexcept;
 
     /**
-     * @brief Global value to store the default downsampling factor in this execution.
-     *
-     * This value can change along the execution.
-     * Every new TopicQoS object will use this value as \c downsampling default.
+     * @brief Set the default Topic QoS.
      */
     DDSPIPE_CORE_DllAPI
-    static std::atomic<unsigned int> default_downsampling;
-
-    /**
-     * @brief Global value to store the default max reception rate in this execution.
-     *
-     * This value can change along the execution.
-     * Every new TopicQoS object will use this value as \c max_reception_rate default.
-     */
-    DDSPIPE_CORE_DllAPI
-    static std::atomic<float> default_max_reception_rate;
+    void set_default_qos(
+            DurabilityKind durability_qos = DEFAULT_DURABILITY_QOS,
+            ReliabilityKind reliability_qos = DEFAULT_RELIABILITY_QOS,
+            OwnershipQosPolicyKind ownership_qos = DEFAULT_OWNERSHIP_QOS,
+            bool use_partitions = DEFAULT_USE_PARTITIONS,
+            bool keyed = DEFAULT_KEYED,
+            HistoryDepthType history_depth = DEFAULT_HISTORY_DEPTH,
+            float max_tx_rate = DEFAULT_MAX_TX_RATE,
+            float max_rx_rate = DEFAULT_MAX_RX_RATE,
+            unsigned int downsampling = DEFAULT_DOWNSAMPLING) noexcept;
 
     /////////////////////////
     // VARIABLES
     /////////////////////////
 
-    //! Durability kind (Default = VOLATILE)
-    DurabilityKind durability_qos = DurabilityKind::VOLATILE;
+    //! Durability kind
+    utils::Fuzzy<DurabilityKind> durability_qos;
 
-    //! Reliability kind (Default = BEST_EFFORT)
-    ReliabilityKind reliability_qos = ReliabilityKind::BEST_EFFORT;
+    //! Reliability kind
+    utils::Fuzzy<ReliabilityKind> reliability_qos;
 
     //! Ownership kind of the topic
-    OwnershipQosPolicyKind ownership_qos = OwnershipQosPolicyKind::SHARED_OWNERSHIP_QOS;
+    utils::Fuzzy<OwnershipQosPolicyKind> ownership_qos;
 
     //! Whether the topics uses partitions
-    bool use_partitions = false;
-
-    /**
-     * @brief History Qos
-     *
-     * @note Default value would be taken from \c default_history_depth in object creation.
-     * @note It only stores the depth because in pipe it will always be keep last, as RTPS has not resource limits.
-     */
-    HistoryDepthType history_depth = HISTORY_DEPTH_DEFAULT;
+    utils::Fuzzy<bool> use_partitions;
 
     //! Whether the topic has key or not
-    bool keyed = false;
+    utils::Fuzzy<bool> keyed;
 
-    //! Downsampling factor: keep 1 out of every *downsampling* samples received (downsampling=1 <=> no downsampling)
-    unsigned int downsampling = 1;
+    //! Depth of the history
+    utils::Fuzzy<HistoryDepthType> history_depth;
+
+    //! Discard msgs if less than 1/rate seconds elapsed since the last sample was transmitted [Hz]. Default: 0 (no limit)
+    utils::Fuzzy<float> max_tx_rate;
 
     //! Discard msgs if less than 1/rate seconds elapsed since the last sample was processed [Hz]. Default: 0 (no limit)
-    float max_reception_rate = 0;
+    utils::Fuzzy<float> max_rx_rate;
 
-    static constexpr HistoryDepthType HISTORY_DEPTH_DEFAULT = 5000;
+    //! Downsampling factor: keep 1 out of every *downsampling* samples received (downsampling=1 <=> no downsampling)
+    utils::Fuzzy<unsigned int> downsampling;
+
+    /////////////////////////
+    // GLOBAL VARIABLES
+    /////////////////////////
+
+    //! Global value to store the default Topic QoS in this execution.
+    DDSPIPE_CORE_DllAPI
+    static utils::Fuzzy<TopicQoS> default_topic_qos;
+
+    /////////////////////////
+    // DEFAULT VALUES
+    /////////////////////////
+
+    //! Durability kind (Default = VOLATILE)
+    DDSPIPE_CORE_DllAPI
+    static constexpr const DurabilityKind DEFAULT_DURABILITY_QOS = DurabilityKind::VOLATILE;
+
+    //! Reliability kind (Default = BEST_EFFORT)
+    DDSPIPE_CORE_DllAPI
+    static constexpr const ReliabilityKind DEFAULT_RELIABILITY_QOS = ReliabilityKind::BEST_EFFORT;
+
+    //! Ownership kind (Default = SHARED_OWNERSHIP)
+    DDSPIPE_CORE_DllAPI
+    static constexpr const OwnershipQosPolicyKind DEFAULT_OWNERSHIP_QOS = OwnershipQosPolicyKind::SHARED_OWNERSHIP_QOS;
+
+    //! Whether the topic uses partitions (Default = False)
+    DDSPIPE_CORE_DllAPI
+    static constexpr const bool DEFAULT_USE_PARTITIONS = false;
+
+    //! History depth (Default = 5000)
+    DDSPIPE_CORE_DllAPI
+    static constexpr const HistoryDepthType DEFAULT_HISTORY_DEPTH = 5000;
+
+    //! Whether the topic has a key (Default = False)
+    DDSPIPE_CORE_DllAPI
+    static constexpr const bool DEFAULT_KEYED = false;
+
+    //! Max Tx Rate (Default = 0)
+    DDSPIPE_CORE_DllAPI
+    static constexpr const float DEFAULT_MAX_TX_RATE = 0;
+
+    //! Max Rx Rate (Default = 0)
+    DDSPIPE_CORE_DllAPI
+    static constexpr const float DEFAULT_MAX_RX_RATE = 0;
+
+    //! Downsampling (Default = 1)
+    DDSPIPE_CORE_DllAPI
+    static constexpr const unsigned int DEFAULT_DOWNSAMPLING = 1;
 };
 
 /**

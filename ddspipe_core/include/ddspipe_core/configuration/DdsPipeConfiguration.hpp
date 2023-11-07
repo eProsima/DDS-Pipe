@@ -24,6 +24,7 @@
 #include <ddspipe_core/configuration/TopicRoutesConfiguration.hpp>
 #include <ddspipe_core/types/participant/ParticipantId.hpp>
 #include <ddspipe_core/types/topic/dds/DistributedTopic.hpp>
+#include <ddspipe_core/types/topic/filter/ManualTopic.hpp>
 
 #include <ddspipe_core/library/library_dll.h>
 
@@ -73,9 +74,28 @@ struct DdsPipeConfiguration : public IConfiguration
     RoutesConfiguration get_routes_config(
             const utils::Heritable<types::DistributedTopic>& topic) const noexcept;
 
+    /**
+     * @brief Select the \c manual_topics for a topic.
+     *
+     * @return The manual topics for a specific topic.
+     */
+    DDSPIPE_CORE_DllAPI
+    std::vector<core::types::ManualTopic> get_manual_topics(
+            const core::ITopic& topic) const noexcept;
+
     /////////////////////////
     // VARIABLES
     /////////////////////////
+
+    //! Topic lists to build the AllowedTopics
+    std::set<utils::Heritable<ddspipe::core::types::IFilterTopic>> allowlist{};
+    std::set<utils::Heritable<ddspipe::core::types::IFilterTopic>> blocklist{};
+
+    //! Builtin topics to create at the beggining of the execution
+    std::set<utils::Heritable<ddspipe::core::types::DistributedTopic>> builtin_topics{};
+
+    //! Set of manually configured Topic QoS
+    std::vector<ddspipe::core::types::ManualTopic> manual_topics{};
 
     //! Configuration of the generic routes.
     RoutesConfiguration routes{};
@@ -85,6 +105,9 @@ struct DdsPipeConfiguration : public IConfiguration
 
     //! Whether entities should be removed when they have no writers connected to them.
     bool remove_unused_entities = false;
+
+    //! Whether the DDS Pipe should be initialized enabled.
+    bool init_enabled = false;
 };
 
 } /* namespace core */

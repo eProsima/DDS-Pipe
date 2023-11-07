@@ -136,6 +136,10 @@ protected:
     fastdds::dds::DataReaderQos
     reckon_reader_qos_() const;
 
+    //! Whether a sample received should be processed
+    virtual bool should_accept_sample_(
+            const fastdds::dds::SampleInfo& info) noexcept;
+
     virtual void fill_received_data_(
             const fastdds::dds::SampleInfo& info,
             core::types::RtpsPayloadData& data_to_fill) const noexcept;

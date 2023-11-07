@@ -324,6 +324,11 @@ bool CommonParticipant::is_rtps_kind() const noexcept
     return true;
 }
 
+core::types::TopicQoS CommonParticipant::topic_qos() const noexcept
+{
+    return configuration_->topic_qos;
+}
+
 void CommonParticipant::create_participant_(
         const core::types::DomainId& domain,
         const fastrtps::rtps::RTPSParticipantAttributes& participant_attributes)
@@ -360,6 +365,7 @@ std::shared_ptr<core::IWriter> CommonParticipant::create_writer(
         logDebug(DDSPIPE_RTPS_PARTICIPANT, "Not creating Writer for topic " << topic.topic_name());
         return std::make_shared<BlankWriter>();
     }
+
     const core::types::DdsTopic& dds_topic = *dds_topic_ptr;
 
     if (topic.internal_type_discriminator() == core::types::INTERNAL_TOPIC_TYPE_RPC)
@@ -413,11 +419,13 @@ std::shared_ptr<core::IReader> CommonParticipant::create_reader(
 {
     // Can only create DDS Topics
     const core::types::DdsTopic* dds_topic_ptr = dynamic_cast<const core::types::DdsTopic*>(&topic);
+
     if (!dds_topic_ptr)
     {
         logDebug(DDSPIPE_RTPS_PARTICIPANT, "Not creating Reader for topic " << topic.topic_name());
         return std::make_shared<BlankReader>();
     }
+
     const core::types::DdsTopic& dds_topic = *dds_topic_ptr;
 
     if (topic.internal_type_discriminator() == core::types::INTERNAL_TOPIC_TYPE_RPC)

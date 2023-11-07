@@ -27,30 +27,37 @@ constexpr const char* VERSION_TAG_V_1_0("v1.0");    //! Version v1.0
 constexpr const char* VERSION_TAG_V_2_0("v2.0");    //! Version v2.0
 constexpr const char* VERSION_TAG_V_3_0("v3.0");    //! Version v3.0
 constexpr const char* VERSION_TAG_V_3_1("v3.1");    //! Version v3.1
+constexpr const char* VERSION_TAG_V_4_0("v4.0");    //! Version v4.0
 
 // Topics related tags
 constexpr const char* ALLOWLIST_TAG("allowlist");     //! List of allowed topics
 constexpr const char* BLOCKLIST_TAG("blocklist");     //! List of blocked topics
-constexpr const char* BUILTIN_TAG("builtin-topics");  //! List of builtin topics
-constexpr const char* TOPIC_NAME_TAG("name");         //! Name of a topic
-constexpr const char* TOPIC_TYPE_NAME_TAG("type");    //! Type name of a topic
-constexpr const char* TOPIC_QOS_TAG("qos");           //! QoS of a topic
+
+constexpr const char* BUILTIN_TAG("builtin-topics");          //! List of builtin topics
+
+constexpr const char* TOPICS_TAG("topics");                     //! List of manual topics to configure
+constexpr const char* TOPIC_NAME_TAG("name");                   //! Name of a topic
+constexpr const char* TOPIC_TYPE_NAME_TAG("type");              //! Type name of a topic
+constexpr const char* TOPIC_QOS_TAG("qos");                     //! QoS of a topic
+constexpr const char* TOPIC_PARTICIPANTS_TAG("participants");   //! List of participants of a topic
 
 // QoS related tags
 constexpr const char* QOS_RELIABLE_TAG("reliability"); //! The Endpoints of that topic will be configured as RELIABLE
 constexpr const char* QOS_TRANSIENT_TAG("durability"); //! The Endpoints of that topic will be configured as TRANSIENT_LOCAL
-constexpr const char* QOS_HISTORY_DEPTH_TAG("depth"); //! The Endpoints of that topic will be configured as this History Depth
+constexpr const char* QOS_HISTORY_DEPTH_TAG("history-depth"); //! The Endpoints of that topic will be configured as this History Depth
 constexpr const char* QOS_PARTITION_TAG("partitions"); //! The Endpoints of that topic will be configured with partitions
 constexpr const char* QOS_OWNERSHIP_TAG("ownership"); //! The Endpoints of that topic will be configured with partitions
 constexpr const char* QOS_KEYED_TAG("keyed"); //! Kind of a topic (with or without key)
+constexpr const char* QOS_MAX_TX_RATE_TAG("max-tx-rate"); //! Topic specific max transmission rate
+constexpr const char* QOS_MAX_RX_RATE_TAG("max-rx-rate"); //! Topic specific max reception rate
 constexpr const char* QOS_DOWNSAMPLING_TAG("downsampling"); //! Topic specific downsampling factor
-constexpr const char* QOS_MAX_RECEPTION_RATE_TAG("max-reception-rate"); //! Topic specific max reception rate
 
 // Participant related tags
 constexpr const char* PARTICIPANT_KIND_TAG("kind");   //! Participant Kind
 constexpr const char* PARTICIPANT_NAME_TAG("name");   //! Participant Name
 constexpr const char* COLLECTION_PARTICIPANTS_TAG("participants"); //! TODO: add comment
 constexpr const char* IS_REPEATER_TAG("repeater");   //! Is participant a repeater
+constexpr const char* PARTICIPANT_QOS_TAG("qos");    //! Participant Topic QoS
 
 // Echo related tags
 constexpr const char* ECHO_DATA_TAG("data");            //! Echo Data received
@@ -130,10 +137,8 @@ constexpr const char* TOPIC_ROUTES_TAG("topic-routes"); // Topic specific forwar
 
 // Advanced configuration
 constexpr const char* SPECS_TAG("specs"); //! Specs options for DDS Router configuration
+constexpr const char* SPECS_QOS_TAG("qos"); //! Global Topic QoS
 constexpr const char* NUMBER_THREADS_TAG("threads"); //! Number of threads to configure the thread pool
-constexpr const char* MAX_HISTORY_DEPTH_TAG("max-depth"); //! Maximum size (number of stored cache changes) for RTPS History instances
-constexpr const char* DOWNSAMPLING_TAG("downsampling"); //! Keep 1 out of every *downsampling* samples received
-constexpr const char* MAX_RECEPTION_RATE_TAG("max-reception-rate"); //! Process up to *max_reception_rate* samples in a 1 second bin
 constexpr const char* WAIT_ALL_ACKED_TIMEOUT_TAG("wait-all-acked-timeout"); //! Wait for a maximum of *wait-all-acked-timeout* ms until all msgs sent by reliable writers are acknowledged by their matched readers
 constexpr const char* REMOVE_UNUSED_ENTITIES_TAG("remove-unused-entities"); //! Dynamically create and delete entities and tracks.
 

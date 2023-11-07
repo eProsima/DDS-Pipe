@@ -109,30 +109,6 @@ TEST(YamlGetEntityTopicTest, get_real_topic)
 
         ASSERT_EQ(topic, real_topic);
     }
-
-    // Checks that a topic yaml object has been parsed correctly with the topic reliable tag set to true.
-    // A topic configured as reliable creates RELIABLE-TRANSIENT_LOCAL RTPS Readers in order to ensure
-    // that no data is lost in the information relay.
-    // TODO: extend for other QoS
-    {
-        core::types::DdsTopic real_topic;
-        real_topic.m_topic_name = test::TOPIC_NAME;
-        real_topic.type_name = test::TOPIC_TYPE;
-        real_topic.topic_qos.reliability_qos = core::types::ReliabilityKind::RELIABLE;
-
-        Yaml yml_topic;
-        real_topic_to_yaml(
-            yml_topic,
-            real_topic);
-
-        Yaml yml;
-        yml["topic"] = yml_topic;
-
-        core::types::DdsTopic topic = YamlReader::get<core::types::DdsTopic>(yml, "topic", LATEST);
-
-        ASSERT_EQ(topic, real_topic);
-        ASSERT_TRUE(topic.topic_qos.is_reliable());
-    }
 }
 
 /**
@@ -207,27 +183,6 @@ TEST(YamlGetEntityTopicTest, get_wildcard_topic)
                         LATEST);
 
         ASSERT_EQ(topic, w_topic);
-    }
-
-    // Topic without name
-    {
-        core::types::WildcardDdsFilterTopic w_topic;
-        w_topic.type_name.set_value(test::TOPIC_TYPE);
-
-        Yaml yml_topic;
-        filter_topic_to_yaml(
-            yml_topic,
-            w_topic);
-
-        Yaml yml;
-        yml["topic"] = yml_topic;
-
-        core::types::WildcardDdsFilterTopic topic = YamlReader::get<core::types::WildcardDdsFilterTopic>(yml, "topic",
-                        LATEST);
-
-        ASSERT_EQ(topic, w_topic);
-        ASSERT_TRUE(topic.type_name.is_set());
-        ASSERT_FALSE(topic.topic_name.is_set());
     }
 
     // Topic without type

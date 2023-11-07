@@ -17,7 +17,6 @@
 
 #include <cpp_utils/exception/InitializationException.hpp>
 #include <cpp_utils/Log.hpp>
-#include <cpp_utils/math/math_extension.hpp>
 
 #include <ddspipe_core/interface/IRoutingData.hpp>
 #include <ddspipe_core/types/data/RtpsPayloadData.hpp>
@@ -41,7 +40,7 @@ CommonReader::CommonReader(
         const fastrtps::rtps::ReaderAttributes& reader_attributes,
         const fastrtps::TopicAttributes& topic_attributes,
         const fastrtps::ReaderQos& reader_qos)
-    : BaseReader(participant_id)
+    : BaseReader(participant_id, topic.topic_qos.max_rx_rate, topic.topic_qos.downsampling)
     , rtps_participant_(rtps_participant)
     , payload_pool_(payload_pool)
     , topic_(topic)
@@ -52,9 +51,7 @@ CommonReader::CommonReader(
     , topic_attributes_(topic_attributes)
     , reader_qos_(reader_qos)
 {
-    // Calculate min_intersample_period_ from topic's max_reception_rate only once to lighten hot path
-    assert(topic_.topic_qos.max_reception_rate >= 0);
-    min_intersample_period_ = std::chrono::nanoseconds((unsigned int)(1e9 / topic_.topic_qos.max_reception_rate));
+    // Do nothing.
 }
 
 CommonReader::~CommonReader()
@@ -255,41 +252,16 @@ void CommonReader::enable_nts_() noexcept
     }
 }
 
-bool CommonReader::accept_change_(
+bool CommonReader::should_accept_change_(
         const fastrtps::rtps::CacheChange_t* change) noexcept
 {
-    // Get reception timestamp
-    auto now = utils::now();
-
     // Reject samples sent by a Writer from the same Participant this Reader belongs to
     if (come_from_this_participant_(change))
     {
         return false;
     }
 
-    // Max Reception Rate
-    if (topic_.topic_qos.max_reception_rate > 0)
-    {
-        auto threshold = last_received_ts_ + min_intersample_period_;
-        if (now < threshold)
-        {
-            return false;
-        }
-    }
-
-    // Downsampling (keep 1 out of every \c downsampling samples)
-    // NOTE: Downsampling is applied to messages that already passed previous filters
-    auto prev_downsampling_idx = downsampling_idx_;
-    downsampling_idx_ = utils::fast_module(downsampling_idx_ + 1, topic_.topic_qos.downsampling);
-    if (prev_downsampling_idx != 0)
-    {
-        return false;
-    }
-
-    // All filters passed -> Update last received timestamp with this sample's reception timestamp
-    last_received_ts_ = now;
-
-    return true;
+    return should_accept_sample_();
 }
 
 bool CommonReader::come_from_this_participant_(
@@ -404,7 +376,7 @@ void CommonReader::onNewCacheChangeAdded(
         fastrtps::rtps::RTPSReader* reader,
         const fastrtps::rtps::CacheChange_t* const change) noexcept
 {
-    if (accept_change_(change))
+    if (should_accept_change_(change))
     {
         // Do not remove previous received changes so they can be read when the reader is enabled
         if (enabled_)
@@ -433,7 +405,11 @@ void CommonReader::onNewCacheChangeAdded(
             "Rejected received data in reader " << *this << ".");
 
         // Change rejected, do not send it forward and remove it
-        // TODO: do this more elegant
+        // TODO: do this more elegantly
+
+        // WARNING: Removing an unacceptable change here is valid given that Fast-DDS internal reader's mutex is locked.
+        // If the mutex wasn't locked, the track's transmit thread could take an unacceptable sample before it gets
+        // deleted here.
         reader->getHistory()->remove_change((fastrtps::rtps::CacheChange_t*)change);
     }
 }

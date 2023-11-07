@@ -27,6 +27,7 @@
 #include <ddspipe_core/dynamic/DiscoveryDatabase.hpp>
 #include <ddspipe_core/efficiency/payload/PayloadPool.hpp>
 #include <ddspipe_core/interface/IParticipant.hpp>
+#include <ddspipe_core/types/dds/TopicQoS.hpp>
 #include <ddspipe_core/types/topic/dds/DdsTopic.hpp>
 
 #include <ddspipe_participants/configuration/SimpleParticipantConfiguration.hpp>
@@ -79,6 +80,9 @@ public:
 
     DDSPIPE_PARTICIPANTS_DllAPI
     virtual bool is_repeater() const noexcept override;
+
+    DDSPIPE_PARTICIPANTS_DllAPI
+    core::types::TopicQoS topic_qos() const noexcept override;
 
     /**
      * @brief Create a writer object

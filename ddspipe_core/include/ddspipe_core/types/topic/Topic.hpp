@@ -18,12 +18,14 @@
 #include <string>
 
 #include <cpp_utils/Formatter.hpp>
+#include <cpp_utils/memory/Heritable.hpp>
 
-#include <ddspipe_core/library/library_dll.h>
 #include <ddspipe_core/configuration/IConfiguration.hpp>
+#include <ddspipe_core/interface/ITopic.hpp>
+#include <ddspipe_core/library/library_dll.h>
+#include <ddspipe_core/types/dds/TopicQoS.hpp>
 #include <ddspipe_core/types/topic/TopicInternalTypeDiscriminator.hpp>
 #include <ddspipe_core/types/participant/ParticipantId.hpp>
-#include <ddspipe_core/interface/ITopic.hpp>
 
 namespace eprosima {
 namespace ddspipe {
@@ -61,6 +63,10 @@ struct Topic : public ITopic, public IConfiguration
     virtual bool operator <(
             const ITopic& other) const noexcept override;
 
+    DDSPIPE_CORE_DllAPI
+    virtual Topic& operator =(
+            const Topic& other) noexcept;
+
     /////////////////////////
     // METHODS
     /////////////////////////
@@ -79,6 +85,10 @@ struct Topic : public ITopic, public IConfiguration
     DDSPIPE_CORE_DllAPI
     virtual bool is_valid(
             utils::Formatter& error_msg) const noexcept override;
+
+    //! Make a copy of the Topic
+    DDSPIPE_CORE_DllAPI
+    virtual utils::Heritable<ITopic> copy() const noexcept override;
 
     /////////////////////////
     // METHODS TO OVERRIDE
@@ -115,6 +125,15 @@ struct Topic : public ITopic, public IConfiguration
      * @brief The id of the participant who discovered the topic.
      */
     ParticipantId m_topic_discoverer {DEFAULT_PARTICIPANT_ID};
+
+    /**
+     * @brief The Topic QoS for the Topic.
+     *
+     * If the Topic is built-in, they take their default value.
+     * If the Topic isn't built-in, they take their value by discovery.
+     * If the Topic has manually configured Topic QoS, the Topic QoS that are manually configured get overriden.
+     */
+    types::TopicQoS topic_qos{};
 };
 
 /**

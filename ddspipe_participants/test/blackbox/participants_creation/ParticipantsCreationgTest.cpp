@@ -17,6 +17,7 @@
 
 #include <cpp_utils/time/time_utils.hpp>
 
+#include <ddspipe_core/configuration/DdsPipeConfiguration.hpp>
 #include <ddspipe_core/core/DdsPipe.hpp>
 #include <ddspipe_core/efficiency/payload/FastPayloadPool.hpp>
 
@@ -120,7 +121,6 @@ TEST(ParticipantsCreationgTest, creation_trivial)
 TEST(ParticipantsCreationgTest, ddspipe_all_creation_builtin_topic)
 {
     // Auxiliar objects
-    std::shared_ptr<core::AllowedTopicList> atl(new core::AllowedTopicList());
     std::shared_ptr<core::DiscoveryDatabase> discovery_database(new core::DiscoveryDatabase());
     std::shared_ptr<core::PayloadPool> payload_pool(new core::FastPayloadPool());
     std::shared_ptr<core::ParticipantsDatabase> part_db(new core::ParticipantsDatabase());
@@ -210,17 +210,20 @@ TEST(ParticipantsCreationgTest, ddspipe_all_creation_builtin_topic)
             eprosima::utils::Heritable<core::types::DdsTopic>::make_heritable(topic_2);
 
     // Create DDS Pipe
+    core::DdsPipeConfiguration ddspipe_configuration;
+    ddspipe_configuration.builtin_topics.insert(htopic_1);
+    ddspipe_configuration.builtin_topics.insert(htopic_2);
+    ddspipe_configuration.init_enabled = true;
+
     core::DdsPipe ddspipe(
-        atl,
+        ddspipe_configuration,
         discovery_database,
         payload_pool,
         part_db,
-        thread_pool,
-        {htopic_1, htopic_2},
-        true
+        thread_pool
         );
 
-    // Let everything destroy by itself
+    // Let everything destroy itself
 }
 
 int main(

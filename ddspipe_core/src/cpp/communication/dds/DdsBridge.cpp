@@ -29,9 +29,11 @@ DdsBridge::DdsBridge(
         const std::shared_ptr<PayloadPool>& payload_pool,
         const std::shared_ptr<utils::SlotThreadPool>& thread_pool,
         const RoutesConfiguration& routes_config,
-        const bool remove_unused_entities)
+        const bool remove_unused_entities,
+        const std::vector<core::types::ManualTopic>& manual_topics)
     : Bridge(participants_database, payload_pool, thread_pool)
     , topic_(topic)
+    , manual_topics_(manual_topics)
 {
     logDebug(DDSPIPE_DDSBRIDGE, "Creating DdsBridge " << *this << ".");
 
@@ -138,7 +140,8 @@ void DdsBridge::create_all_tracks_()
     for (const auto& id : writers_to_create)
     {
         std::shared_ptr<IParticipant> participant = participants_->get_participant(id);
-        writers[id] = participant->create_writer(*topic_);
+        const auto topic = create_topic_for_participant_nts_(participant);
+        writers[id] = participant->create_writer(*topic);
     }
 
     // Add the writers to the tracks they have routes for.
@@ -154,7 +157,8 @@ void DdsBridge::create_writer(
 
     // Create the writer.
     std::shared_ptr<IParticipant> participant = participants_->get_participant(participant_id);
-    std::shared_ptr<IWriter> writer = participant->create_writer(*topic_);
+    const auto topic = create_topic_for_participant_nts_(participant);
+    auto writer = participant->create_writer(*topic);
 
     // Add the writer to the tracks it has routes for.
     add_writer_to_tracks_nts_(participant_id, writer);
@@ -259,7 +263,8 @@ void DdsBridge::add_writers_to_tracks_nts_(
         {
             // The track doesn't exist. Create it.
             std::shared_ptr<IParticipant> participant = participants_->get_participant(id);
-            auto reader = participant->create_reader(*topic_);
+            const auto topic = create_topic_for_participant_nts_(participant);
+            auto reader = participant->create_reader(*topic);
 
             tracks_[id] = std::make_unique<Track>(
                 topic_,
@@ -275,6 +280,34 @@ void DdsBridge::add_writers_to_tracks_nts_(
             }
         }
     }
+}
+
+utils::Heritable<DistributedTopic> DdsBridge::create_topic_for_participant_nts_(
+        const std::shared_ptr<IParticipant>& participant) noexcept
+{
+    // Make a copy of the Topic to customize it according to the Participant's configured QoS.
+    utils::Heritable<DistributedTopic> topic = topic_->copy();
+
+    // Impose the Topic QoS that have been pre-configured for the Bridge's topic.
+    // set_qos only overwrites the Topic QoS that have been set with a lower FuzzyLevel.
+    // A Topic QoS set with fuzzy_level_hard (the highest FuzzyLevel) cannot be overwritten.
+    // Thus, the order matters. In this case, manual_topics[0] > manual_topics[1] > participant.
+
+    // 1. Manually Configured Topic QoS.
+    for (const auto& manual_topic : manual_topics_)
+    {
+        const auto& participant_ids = manual_topic.second;
+
+        if (participant_ids.empty() || participant_ids.count(participant->id()))
+        {
+            topic->topic_qos.set_qos(manual_topic.first->topic_qos, utils::FuzzyLevelValues::fuzzy_level_hard);
+        }
+    }
+
+    // 2. Participant Topic QoS.
+    topic->topic_qos.set_qos(participant->topic_qos(), utils::FuzzyLevelValues::fuzzy_level_hard);
+
+    return topic;
 }
 
 std::ostream& operator <<(

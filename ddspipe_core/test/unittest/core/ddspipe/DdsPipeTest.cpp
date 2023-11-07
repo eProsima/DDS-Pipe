@@ -17,8 +17,10 @@
 
 #include <cpp_utils/time/time_utils.hpp>
 
+#include <ddspipe_core/configuration/DdsPipeConfiguration.hpp>
 #include <ddspipe_core/core/DdsPipe.hpp>
 #include <ddspipe_core/efficiency/payload/FastPayloadPool.hpp>
+#include <ddspipe_core/types/topic/filter/WildcardDdsFilterTopic.hpp>
 
 using namespace eprosima::ddspipe::core;
 
@@ -105,8 +107,10 @@ TEST(DdsPipeTest, default_initialization)
 {
     // default
     {
+        DdsPipeConfiguration ddspipe_configuration;
+
         test::DdsPipe ddspipe(
-            std::make_shared<AllowedTopicList>(),
+            ddspipe_configuration,
             std::make_shared<DiscoveryDatabase>(),
             std::make_shared<FastPayloadPool>(),
             std::make_shared<ParticipantsDatabase>(),
@@ -118,14 +122,15 @@ TEST(DdsPipeTest, default_initialization)
 
     // enable
     {
+        DdsPipeConfiguration ddspipe_configuration;
+        ddspipe_configuration.init_enabled = true;
+
         test::DdsPipe ddspipe(
-            std::make_shared<AllowedTopicList>(),
+            ddspipe_configuration,
             std::make_shared<DiscoveryDatabase>(),
             std::make_shared<FastPayloadPool>(),
             std::make_shared<ParticipantsDatabase>(),
-            std::make_shared<eprosima::utils::SlotThreadPool>(test::N_THREADS),
-            {},
-            true
+            std::make_shared<eprosima::utils::SlotThreadPool>(test::N_THREADS)
             );
 
         ASSERT_TRUE(ddspipe.is_enabled());
@@ -139,15 +144,15 @@ TEST(DdsPipeTest, default_initialization)
         eprosima::utils::Heritable<types::DistributedTopic> htopic_1 =
                 eprosima::utils::Heritable<types::DdsTopic>::make_heritable(topic_1);
 
+        DdsPipeConfiguration ddspipe_configuration;
+        ddspipe_configuration.builtin_topics.insert(htopic_1);
+
         test::DdsPipe ddspipe(
-            std::make_shared<AllowedTopicList>(),
+            ddspipe_configuration,
             std::make_shared<DiscoveryDatabase>(),
             std::make_shared<FastPayloadPool>(),
             std::make_shared<ParticipantsDatabase>(),
-            std::make_shared<eprosima::utils::SlotThreadPool>(test::N_THREADS),
-        {
-            htopic_1
-        }
+            std::make_shared<eprosima::utils::SlotThreadPool>(test::N_THREADS)
             );
 
         ASSERT_FALSE(ddspipe.is_enabled());
@@ -165,16 +170,16 @@ TEST(DdsPipeTest, default_initialization)
         eprosima::utils::Heritable<types::DistributedTopic> htopic_1 =
                 eprosima::utils::Heritable<types::DdsTopic>::make_heritable(topic_1);
 
+        DdsPipeConfiguration ddspipe_configuration;
+        ddspipe_configuration.builtin_topics.insert(htopic_1);
+        ddspipe_configuration.init_enabled = true;
+
         test::DdsPipe ddspipe(
-            std::make_shared<AllowedTopicList>(),
+            ddspipe_configuration,
             std::make_shared<DiscoveryDatabase>(),
             std::make_shared<FastPayloadPool>(),
             std::make_shared<ParticipantsDatabase>(),
-            std::make_shared<eprosima::utils::SlotThreadPool>(test::N_THREADS),
-        {
-            htopic_1
-        },
-            true
+            std::make_shared<eprosima::utils::SlotThreadPool>(test::N_THREADS)
             );
 
         ASSERT_TRUE(ddspipe.is_enabled());
@@ -196,9 +201,12 @@ TEST(DdsPipeTest, enable_disable)
 {
     // enable discovered topic
     {
+        DdsPipeConfiguration ddspipe_configuration;
+
         auto discovery_database = std::make_shared<DiscoveryDatabase>();
+
         test::DdsPipe ddspipe(
-            std::make_shared<AllowedTopicList>(),
+            ddspipe_configuration,
             discovery_database,
             std::make_shared<FastPayloadPool>(),
             std::make_shared<ParticipantsDatabase>(),
@@ -249,14 +257,15 @@ TEST(DdsPipeTest, enable_disable)
         eprosima::utils::Heritable<types::DistributedTopic> htopic_1 =
                 eprosima::utils::Heritable<types::DdsTopic>::make_heritable(topic_1);
 
-        auto discovery_database = std::make_shared<DiscoveryDatabase>();
+        DdsPipeConfiguration ddspipe_configuration;
+        ddspipe_configuration.builtin_topics.insert(htopic_1);
+
         test::DdsPipe ddspipe(
-            std::make_shared<AllowedTopicList>(),
+            ddspipe_configuration,
             std::make_shared<DiscoveryDatabase>(),
             std::make_shared<FastPayloadPool>(),
             std::make_shared<ParticipantsDatabase>(),
-            std::make_shared<eprosima::utils::SlotThreadPool>(test::N_THREADS),
-            {htopic_1}
+            std::make_shared<eprosima::utils::SlotThreadPool>(test::N_THREADS)
             );
 
         ASSERT_TRUE(ddspipe.is_topic_discovered(htopic_1));
@@ -278,19 +287,110 @@ TEST(DdsPipeTest, enable_disable)
 }
 
 /**
- * TODO
+ * Test the DDS Pipe's allowlist and blocklist
+ *
+ * CASES:
+ * - check that a topic is allowed when the allowed topics are empty.
+ * - check that a topic is allowed when its in the allowlist.
+ * - check that a topic is blocked when its in the blocklist.
+ * - check that a topic is allowed when it gets removed from the blocklist.
  */
 TEST(DdsPipeTest, allowed_blocked_topics)
 {
-    // TODO
-}
+    {
+        DdsPipeConfiguration ddspipe_configuration;
+        ddspipe_configuration.init_enabled = true;
 
-/**
- * TODO
- */
-TEST(DdsPipeTest, reload)
-{
-    // TODO
+        auto discovery_database = std::make_shared<DiscoveryDatabase>();
+
+        test::DdsPipe ddspipe(
+            ddspipe_configuration,
+            discovery_database,
+            std::make_shared<FastPayloadPool>(),
+            std::make_shared<ParticipantsDatabase>(),
+            std::make_shared<eprosima::utils::SlotThreadPool>(test::N_THREADS)
+            );
+
+        types::DdsTopic topic_1;
+        topic_1.m_topic_name = "topic1";
+        topic_1.type_name = "type1";
+        eprosima::utils::Heritable<types::DistributedTopic> htopic_1 =
+                eprosima::utils::Heritable<types::DdsTopic>::make_heritable(topic_1);
+
+        ASSERT_FALSE(ddspipe.is_topic_discovered(htopic_1));
+        ASSERT_FALSE(ddspipe.is_topic_active(htopic_1));
+        ASSERT_FALSE(ddspipe.is_bridge_created(htopic_1));
+
+        // Create a wildcard topic
+        types::WildcardDdsFilterTopic topic_2;
+        topic_2.topic_name.set_value("t*");
+
+        eprosima::utils::Heritable<types::IFilterTopic> htopic_2 =
+                eprosima::utils::Heritable<types::WildcardDdsFilterTopic>::make_heritable(topic_2);
+
+        // Add the Topic to the blocklist
+        DdsPipeConfiguration new_ddspipe_configuration;
+        new_ddspipe_configuration.blocklist.insert(htopic_2);
+        ddspipe.reload_configuration(new_ddspipe_configuration);
+
+        types::Endpoint endpoint_1;
+        endpoint_1.kind = types::EndpointKind::reader;
+        endpoint_1.topic = topic_1;
+
+        discovery_database->add_endpoint(endpoint_1);
+
+        // Wait a bit for callback to arrive
+        eprosima::utils::sleep_for(10u);
+
+        ASSERT_TRUE(ddspipe.is_topic_discovered(htopic_1));
+        ASSERT_FALSE(ddspipe.is_topic_active(htopic_1));
+        ASSERT_FALSE(ddspipe.is_bridge_created(htopic_1));
+
+        // Remove the Topic from the blocklist
+        new_ddspipe_configuration.blocklist.erase(htopic_2);
+        ddspipe.reload_configuration(new_ddspipe_configuration);
+
+        ASSERT_TRUE(ddspipe.is_topic_discovered(htopic_1));
+        ASSERT_TRUE(ddspipe.is_topic_active(htopic_1));
+        ASSERT_TRUE(ddspipe.is_bridge_created(htopic_1));
+
+        // Create two Wildcard Topics
+        types::WildcardDdsFilterTopic topic_3;
+        topic_3.topic_name.set_value("topic*");
+
+        eprosima::utils::Heritable<types::IFilterTopic> htopic_3 =
+                eprosima::utils::Heritable<types::WildcardDdsFilterTopic>::make_heritable(topic_3);
+
+        types::WildcardDdsFilterTopic topic_4;
+        topic_4.topic_name.set_value("top*");
+
+        eprosima::utils::Heritable<types::IFilterTopic> htopic_4 =
+                eprosima::utils::Heritable<types::WildcardDdsFilterTopic>::make_heritable(topic_4);
+
+        // Add the Topic to the allowlist
+        new_ddspipe_configuration.allowlist.insert(htopic_3);
+        ddspipe.reload_configuration(new_ddspipe_configuration);
+
+        ASSERT_TRUE(ddspipe.is_topic_discovered(htopic_1));
+        ASSERT_TRUE(ddspipe.is_topic_active(htopic_1));
+        ASSERT_TRUE(ddspipe.is_bridge_created(htopic_1));
+
+        // Add the Topic to the blocklist
+        new_ddspipe_configuration.blocklist.insert(htopic_4);
+        ddspipe.reload_configuration(new_ddspipe_configuration);
+
+        ASSERT_TRUE(ddspipe.is_topic_discovered(htopic_1));
+        ASSERT_FALSE(ddspipe.is_topic_active(htopic_1));
+        ASSERT_TRUE(ddspipe.is_bridge_created(htopic_1));
+
+        // Remove the Topic from the blocklist
+        new_ddspipe_configuration.blocklist.erase(htopic_4);
+        ddspipe.reload_configuration(new_ddspipe_configuration);
+
+        ASSERT_TRUE(ddspipe.is_topic_discovered(htopic_1));
+        ASSERT_TRUE(ddspipe.is_topic_active(htopic_1));
+        ASSERT_TRUE(ddspipe.is_bridge_created(htopic_1));
+    }
 }
 
 int main(

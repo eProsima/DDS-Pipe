@@ -91,6 +91,7 @@ void CommonReader::on_data_available(
         fastdds::dds::DataReader* /* reader */)
 {
     logInfo(DDSPIPE_DDS_READER, "On data available in reader in " << participant_id_ << " for topic " << topic_ << ".");
+
     on_data_available_();
 }
 
@@ -100,7 +101,7 @@ CommonReader::CommonReader(
         const std::shared_ptr<core::PayloadPool>& payload_pool,
         fastdds::dds::DomainParticipant* participant,
         fastdds::dds::Topic* topic_entity)
-    : BaseReader(participant_id)
+    : BaseReader(participant_id, topic.topic_qos.max_rx_rate, topic.topic_qos.downsampling)
     , dds_participant_(participant)
     , dds_topic_(topic_entity)
     , payload_pool_(payload_pool)
@@ -143,14 +144,8 @@ utils::ReturnCode CommonReader::take_nts_(
             return ret;
         }
 
-        // Check if it comes from same participant. If so, discard and continue
-        if (detail::come_from_same_participant_(
-                    detail::guid_from_instance_handle(info.publication_handle),
-                    this->dds_participant_->guid()))
-        {
-            continue;
-        }
-        else
+        // Check if the sample is acceptable
+        if (should_accept_sample_(info))
         {
             break;
         }
@@ -213,7 +208,7 @@ fastdds::dds::DataReaderQos CommonReader::reckon_reader_qos_() const
             ? fastdds::dds::OwnershipQosPolicyKind::EXCLUSIVE_OWNERSHIP_QOS
             : fastdds::dds::OwnershipQosPolicyKind::SHARED_OWNERSHIP_QOS;
 
-    if (topic_.topic_qos.history_depth == 0)
+    if (topic_.topic_qos.history_depth == 0U)
     {
         qos.history().kind = eprosima::fastdds::dds::HistoryQosPolicyKind::KEEP_ALL_HISTORY_QOS;
     }
@@ -224,6 +219,20 @@ fastdds::dds::DataReaderQos CommonReader::reckon_reader_qos_() const
     }
 
     return qos;
+}
+
+bool CommonReader::should_accept_sample_(
+        const fastdds::dds::SampleInfo& info) noexcept
+{
+    // Reject samples sent by a Writer from the same Participant this Reader belongs to
+    if (detail::come_from_same_participant_(
+                detail::guid_from_instance_handle(info.publication_handle),
+                this->dds_participant_->guid()))
+    {
+        return false;
+    }
+
+    return BaseReader::should_accept_sample_();
 }
 
 void CommonReader::fill_received_data_(

@@ -14,6 +14,8 @@
 
 #pragma once
 
+#include <cpp_utils/memory/Heritable.hpp>
+
 #include <fastdds/rtps/participant/ParticipantDiscoveryInfo.h>
 #include <fastdds/rtps/reader/ReaderDiscoveryInfo.h>
 #include <fastdds/rtps/rtps_fwd.h>
@@ -22,11 +24,12 @@
 #include <fastrtps/rtps/participant/RTPSParticipantListener.h>
 #include <fastrtps/rtps/RTPSDomain.h>
 
-
 #include <ddspipe_core/dynamic/DiscoveryDatabase.hpp>
 #include <ddspipe_core/efficiency/payload/PayloadPool.hpp>
 #include <ddspipe_core/interface/IParticipant.hpp>
 #include <ddspipe_core/types/dds/DomainId.hpp>
+#include <ddspipe_core/types/dds/TopicQoS.hpp>
+#include <ddspipe_core/types/topic/filter/WildcardDdsFilterTopic.hpp>
 
 #include <ddspipe_participants/configuration/ParticipantConfiguration.hpp>
 #include <ddspipe_participants/library/library_dll.h>
@@ -91,6 +94,10 @@ public:
     //! Implement parent method \c is_rtps_kind .
     DDSPIPE_PARTICIPANTS_DllAPI
     virtual bool is_rtps_kind() const noexcept override;
+
+    //! Implement parent method \c topic_qos .
+    DDSPIPE_PARTICIPANTS_DllAPI
+    core::types::TopicQoS topic_qos() const noexcept override;
 
     /**
      * @brief Create a writer object

@@ -111,6 +111,11 @@ bool CommonParticipant::is_repeater() const noexcept
     return false;
 }
 
+core::types::TopicQoS CommonParticipant::topic_qos() const noexcept
+{
+    return configuration_->topic_qos;
+}
+
 std::shared_ptr<core::IWriter> CommonParticipant::create_writer(
         const core::ITopic& topic)
 {
@@ -162,11 +167,13 @@ std::shared_ptr<core::IReader> CommonParticipant::create_reader(
 {
     // Can only create DDS Topics
     const core::types::DdsTopic* topic_ptr = dynamic_cast<const core::types::DdsTopic*>(&topic);
+
     if (!topic_ptr)
     {
         logDebug(DDSPIPE_DDS_PARTICIPANT, "Not creating Reader for topic " << topic.topic_name());
         return std::make_shared<BlankReader>();
     }
+
     const core::types::DdsTopic& dds_topic = *topic_ptr;
 
     // Check that it is RTPS topic

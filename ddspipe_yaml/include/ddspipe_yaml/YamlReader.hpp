@@ -56,7 +56,7 @@ enum YamlReaderVersion
     V_1_0,
 
     /**
-     * @brief  Version 2.0
+     * @brief Version 2.0
      *
      * @version 0.3.0
      *
@@ -68,7 +68,7 @@ enum YamlReaderVersion
     V_2_0,
 
     /**
-     * @brief  Version 3.0
+     * @brief Version 3.0
      *
      * @version 0.4.0
      *
@@ -78,7 +78,7 @@ enum YamlReaderVersion
     V_3_0,
 
     /**
-     * @brief  Latest version.
+     * @brief Version 3.1.
      *
      * @version 0.5.0
      *
@@ -86,6 +86,21 @@ enum YamlReaderVersion
      * - Add xml participant
      */
     V_3_1,
+
+    /**
+     * @brief Latest version.
+     *
+     * @version 0.6.0
+     *
+     * - Forwarding Routes.
+     * - Remove Unused Entities.
+     * - Manual Topics.
+     * - Max Transmission Rate.
+     * - Max Reception Rate.
+     * - Downsampling.
+     * - Rename the `max-depth` under the `specs` tag to `history-depth`.
+     */
+    V_4_0,
 
     /**
      * @brief  Main version.

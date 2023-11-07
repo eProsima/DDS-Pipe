@@ -88,7 +88,7 @@ CommonWriter::CommonWriter(
         const std::shared_ptr<core::PayloadPool>& payload_pool,
         fastdds::dds::DomainParticipant* participant,
         fastdds::dds::Topic* topic_entity)
-    : BaseWriter(participant_id)
+    : BaseWriter(participant_id, topic.topic_qos.max_tx_rate)
     , dds_participant_(participant)
     , dds_topic_(topic_entity)
     , payload_pool_(payload_pool)
@@ -160,7 +160,7 @@ fastdds::dds::DataWriterQos CommonWriter::reckon_writer_qos_() const noexcept
             ? fastdds::dds::OwnershipQosPolicyKind::EXCLUSIVE_OWNERSHIP_QOS
             : fastdds::dds::OwnershipQosPolicyKind::SHARED_OWNERSHIP_QOS;
 
-    if (topic_.topic_qos.history_depth == 0)
+    if (topic_.topic_qos.history_depth == 0U)
     {
         qos.history().kind = eprosima::fastdds::dds::HistoryQosPolicyKind::KEEP_ALL_HISTORY_QOS;
     }

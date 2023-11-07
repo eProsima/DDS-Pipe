@@ -27,6 +27,7 @@
 #include <ddspipe_core/types/participant/ParticipantId.hpp>
 #include <ddspipe_core/types/topic/dds/DdsTopic.hpp>
 #include <ddspipe_core/types/topic/filter/WildcardDdsFilterTopic.hpp>
+#include <ddspipe_core/types/topic/filter/ManualTopic.hpp>
 
 #include <ddspipe_participants/types/address/Address.hpp>
 #include <ddspipe_participants/types/address/DiscoveryServerConnectionAddress.hpp>
@@ -95,6 +96,7 @@ YamlReaderVersion YamlReader::get<YamlReaderVersion>(
                     {VERSION_TAG_V_2_0, YamlReaderVersion::V_2_0},
                     {VERSION_TAG_V_3_0, YamlReaderVersion::V_3_0},
                     {VERSION_TAG_V_3_1, YamlReaderVersion::V_3_1},
+                    {VERSION_TAG_V_4_0, YamlReaderVersion::V_4_0},
                 });
 }
 
@@ -349,48 +351,30 @@ void YamlReader::fill(
         const Yaml& yml,
         const YamlReaderVersion version)
 {
-    // Reliability optional
-    if (is_tag_present(yml, QOS_RELIABLE_TAG))
-    {
-        if (get<bool>(yml, QOS_RELIABLE_TAG, version))
-        {
-            object.reliability_qos = eprosima::ddspipe::core::types::ReliabilityKind::RELIABLE;
-        }
-        else
-        {
-            object.reliability_qos = eprosima::ddspipe::core::types::ReliabilityKind::BEST_EFFORT;
-        }
-    }
-
     // Durability optional
     if (is_tag_present(yml, QOS_TRANSIENT_TAG))
     {
         if (get<bool>(yml, QOS_TRANSIENT_TAG, version))
         {
-            object.durability_qos = eprosima::ddspipe::core::types::DurabilityKind::TRANSIENT_LOCAL;
+            object.durability_qos.set_value(eprosima::ddspipe::core::types::DurabilityKind::TRANSIENT_LOCAL);
         }
         else
         {
-            object.durability_qos = eprosima::ddspipe::core::types::DurabilityKind::VOLATILE;
+            object.durability_qos.set_value(eprosima::ddspipe::core::types::DurabilityKind::VOLATILE);
         }
     }
 
-    // History depth optional
-    if (is_tag_present(yml, QOS_HISTORY_DEPTH_TAG))
+    // Optional Reliability Tag
+    if (is_tag_present(yml, QOS_RELIABLE_TAG))
     {
-        object.history_depth = get<HistoryDepthType>(yml, QOS_HISTORY_DEPTH_TAG, version);
-    }
-
-    // Durability optional
-    if (is_tag_present(yml, QOS_PARTITION_TAG))
-    {
-        object.use_partitions = get<bool>(yml, QOS_PARTITION_TAG, version);
-    }
-
-    // Optional keyed
-    if (is_tag_present(yml, QOS_KEYED_TAG))
-    {
-        object.keyed = get<bool>(yml, QOS_KEYED_TAG, version);
+        if (get<bool>(yml, QOS_RELIABLE_TAG, version))
+        {
+            object.reliability_qos.set_value(eprosima::ddspipe::core::types::ReliabilityKind::RELIABLE);
+        }
+        else
+        {
+            object.reliability_qos.set_value(eprosima::ddspipe::core::types::ReliabilityKind::BEST_EFFORT);
+        }
     }
 
     // Ownership optional
@@ -398,24 +382,49 @@ void YamlReader::fill(
     {
         if (get<bool>(yml, QOS_OWNERSHIP_TAG, version))
         {
-            object.ownership_qos = eprosima::ddspipe::core::types::OwnershipQosPolicyKind::EXCLUSIVE_OWNERSHIP_QOS;
+            object.ownership_qos.set_value(
+                eprosima::ddspipe::core::types::OwnershipQosPolicyKind::EXCLUSIVE_OWNERSHIP_QOS);
         }
         else
         {
-            object.ownership_qos = eprosima::ddspipe::core::types::OwnershipQosPolicyKind::SHARED_OWNERSHIP_QOS;
+            object.ownership_qos.set_value(eprosima::ddspipe::core::types::OwnershipQosPolicyKind::SHARED_OWNERSHIP_QOS);
         }
+    }
+
+    // Use partitions optional
+    if (is_tag_present(yml, QOS_PARTITION_TAG))
+    {
+        object.use_partitions.set_value(get<bool>(yml, QOS_PARTITION_TAG, version));
+    }
+
+    // History depth optional
+    if (is_tag_present(yml, QOS_HISTORY_DEPTH_TAG))
+    {
+        object.history_depth.set_value(get<HistoryDepthType>(yml, QOS_HISTORY_DEPTH_TAG, version));
+    }
+
+    // Keyed optional
+    if (is_tag_present(yml, QOS_KEYED_TAG))
+    {
+        object.keyed.set_value(get<bool>(yml, QOS_KEYED_TAG, version));
+    }
+
+    // Max Transmission Rate optional
+    if (is_tag_present(yml, QOS_MAX_TX_RATE_TAG))
+    {
+        object.max_tx_rate.set_value(get_nonnegative_float(yml, QOS_MAX_TX_RATE_TAG));
+    }
+
+    // Max Reception Rate optional
+    if (is_tag_present(yml, QOS_MAX_RX_RATE_TAG))
+    {
+        object.max_rx_rate.set_value(get_nonnegative_float(yml, QOS_MAX_RX_RATE_TAG));
     }
 
     // Downsampling optional
     if (is_tag_present(yml, QOS_DOWNSAMPLING_TAG))
     {
-        object.downsampling = get_positive_int(yml, QOS_DOWNSAMPLING_TAG);
-    }
-
-    // Max Reception Rate optional
-    if (is_tag_present(yml, QOS_MAX_RECEPTION_RATE_TAG))
-    {
-        object.max_reception_rate = get<unsigned int>(yml, QOS_MAX_RECEPTION_RATE_TAG, version);
+        object.downsampling.set_value(get_positive_int(yml, QOS_DOWNSAMPLING_TAG));
     }
 }
 
@@ -435,12 +444,6 @@ void YamlReader::fill(
 
     // Data Type required
     object.type_name = get<std::string>(yml, TOPIC_TYPE_NAME_TAG, version);
-
-    // Optional QoS
-    if (is_tag_present(yml, TOPIC_QOS_TAG))
-    {
-        fill<TopicQoS>(object.topic_qos, get_value_in_tag(yml, TOPIC_QOS_TAG), version);
-    }
 }
 
 template <>
@@ -461,11 +464,8 @@ void YamlReader::fill(
         const Yaml& yml,
         const YamlReaderVersion version)
 {
-    // Optional name
-    if (is_tag_present(yml, TOPIC_NAME_TAG))
-    {
-        object.topic_name.set_value(get<std::string>(yml, TOPIC_NAME_TAG, version));
-    }
+    // Name required
+    object.topic_name = get<std::string>(yml, TOPIC_NAME_TAG, version);
 
     // Optional data type
     if (is_tag_present(yml, TOPIC_TYPE_NAME_TAG))
@@ -473,7 +473,11 @@ void YamlReader::fill(
         object.type_name.set_value(get<std::string>(yml, TOPIC_TYPE_NAME_TAG, version));
     }
 
-    // TODO: decide whether we want to use QoS as filtering
+    // Optional QoS
+    if (is_tag_present(yml, TOPIC_QOS_TAG))
+    {
+        fill<TopicQoS>(object.topic_qos, get_value_in_tag(yml, TOPIC_QOS_TAG), version);
+    }
 }
 
 template <>
@@ -484,6 +488,36 @@ WildcardDdsFilterTopic YamlReader::get(
 {
     WildcardDdsFilterTopic object;
     fill<WildcardDdsFilterTopic>(object, yml, version);
+    return object;
+}
+
+template <>
+DDSPIPE_YAML_DllAPI
+void YamlReader::fill(
+        ManualTopic& object,
+        const Yaml& yml,
+        const YamlReaderVersion version)
+{
+    auto manual_topic = YamlReader::get<WildcardDdsFilterTopic>(yml, version);
+    object.first = utils::Heritable<WildcardDdsFilterTopic>::make_heritable(manual_topic);
+
+    // Optional participants tag
+    if (is_tag_present(yml, TOPIC_PARTICIPANTS_TAG))
+    {
+        object.second = get_set<ParticipantId>(yml, TOPIC_PARTICIPANTS_TAG, version);
+    }
+}
+
+template <>
+DDSPIPE_YAML_DllAPI
+ManualTopic YamlReader::get(
+        const Yaml& yml,
+        const YamlReaderVersion version)
+{
+    auto topic = utils::Heritable<WildcardDdsFilterTopic>::make_heritable();
+    std::set<ParticipantId> participants;
+    ManualTopic object = std::make_pair(topic, participants);
+    fill<ManualTopic>(object, yml, version);
     return object;
 }
 
@@ -621,8 +655,12 @@ std::ostream& operator <<(
             break;
 
         case V_3_1:
-        case LATEST:
             os << VERSION_TAG_V_3_1;
+            break;
+
+        case V_4_0:
+        case LATEST:
+            os << VERSION_TAG_V_4_0;
             break;
 
         default:

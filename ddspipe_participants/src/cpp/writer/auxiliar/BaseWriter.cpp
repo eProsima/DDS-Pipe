@@ -21,11 +21,21 @@ namespace ddspipe {
 namespace participants {
 
 BaseWriter::BaseWriter(
-        const core::types::ParticipantId& participant_id)
+        const core::types::ParticipantId& participant_id,
+        const float max_tx_rate /* = 0 */)
     : participant_id_(participant_id)
+    , max_tx_rate_(max_tx_rate)
     , enabled_(false)
 {
     logDebug(DDSPIPE_BASEWRITER, "Creating Writer " << *this << ".");
+
+    // Calculate min_intersample_period_ from topic's max_tx_rate only once to lighten hot path
+    assert(max_tx_rate_ >= 0);
+
+    if (max_tx_rate_ > 0)
+    {
+        min_intersample_period_ = std::chrono::nanoseconds((unsigned int)(1e9 / max_tx_rate_));
+    }
 }
 
 void BaseWriter::enable() noexcept
@@ -63,7 +73,15 @@ utils::ReturnCode BaseWriter::write(
 
     if (enabled_.load())
     {
-        return write_nts_(data);
+        if (!should_send_sample_())
+        {
+            return utils::ReturnCode::RETCODE_OK;
+        }
+        else
+        {
+            return write_nts_(data);
+        }
+
     }
     else
     {
@@ -81,6 +99,27 @@ void BaseWriter::enable_() noexcept
 void BaseWriter::disable_() noexcept
 {
     // It does nothing. Override this method so it has functionality.
+}
+
+bool BaseWriter::should_send_sample_() noexcept
+{
+    // Get transmission timestamp
+    auto now = utils::now();
+
+    // Max Transmission Rate
+    if (max_tx_rate_ > 0)
+    {
+        auto threshold = last_sent_ts_ + min_intersample_period_;
+        if (now < threshold)
+        {
+            return false;
+        }
+    }
+
+    // All filters passed -> Update last sent timestamp with this sample's transmission timestamp
+    last_sent_ts_ = now;
+
+    return true;
 }
 
 std::ostream& operator <<(

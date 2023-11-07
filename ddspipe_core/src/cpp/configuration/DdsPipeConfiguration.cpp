@@ -60,6 +60,23 @@ RoutesConfiguration DdsPipeConfiguration::get_routes_config(
     }
 }
 
+std::vector<core::types::ManualTopic> DdsPipeConfiguration::get_manual_topics(
+        const core::ITopic& topic) const noexcept
+{
+    // Filter the manual topics to only return the ones that match with the given topic.
+    std::vector<core::types::ManualTopic> matching_manual_topics{};
+
+    for (const auto& manual_topic : manual_topics)
+    {
+        if (manual_topic.first->matches(topic))
+        {
+            matching_manual_topics.push_back(manual_topic);
+        }
+    }
+
+    return matching_manual_topics;
+}
+
 } /* namespace core */
 } /* namespace ddspipe */
 } /* namespace eprosima */

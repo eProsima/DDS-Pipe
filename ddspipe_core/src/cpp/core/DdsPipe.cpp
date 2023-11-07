@@ -29,21 +29,17 @@ namespace core {
 using namespace eprosima::ddspipe::core::types;
 
 DdsPipe::DdsPipe(
-        const std::shared_ptr<AllowedTopicList>& allowed_topics,
+        const DdsPipeConfiguration& configuration,
         const std::shared_ptr<DiscoveryDatabase>& discovery_database,
         const std::shared_ptr<PayloadPool>& payload_pool,
         const std::shared_ptr<ParticipantsDatabase>& participants_database,
-        const std::shared_ptr<utils::SlotThreadPool>& thread_pool,
-        const std::set<utils::Heritable<DistributedTopic>>& builtin_topics, /* = {} */
-        bool start_enable, /* = false */
-        const DdsPipeConfiguration& configuration /* = {} */)
-    : allowed_topics_(allowed_topics)
+        const std::shared_ptr<utils::SlotThreadPool>& thread_pool)
+    : configuration_(configuration)
     , discovery_database_(discovery_database)
     , payload_pool_(payload_pool)
     , participants_database_(participants_database)
     , thread_pool_(thread_pool)
     , enabled_(false)
-    , configuration_(configuration)
 {
     logDebug(DDSPIPE, "Creating DDS Pipe.");
 
@@ -55,6 +51,9 @@ DdsPipe::DdsPipe(
                   utils::Formatter() <<
                       "Configuration for DDS Pipe is invalid: " << error_msg);
     }
+
+    // Initialize the allowed topics
+    init_allowed_topics_();
 
     // Add callback to be called by the discovery database when an Endpoint is discovered
     discovery_database_->add_endpoint_discovered_callback(std::bind(&DdsPipe::discovered_endpoint_, this,
@@ -69,13 +68,13 @@ DdsPipe::DdsPipe(
             std::placeholders::_1));
 
     // Create Bridges for builtin topics
-    init_bridges_nts_(builtin_topics);
+    init_bridges_nts_(configuration_.builtin_topics);
 
     // Enable thread pool
     thread_pool_->enable();
 
     // Enable if set
-    if (start_enable)
+    if (configuration_.init_enabled)
     {
         enable();
     }
@@ -108,12 +107,93 @@ DdsPipe::~DdsPipe()
     // Destroy RpcBridges, so Writers and Readers are destroyed before the Databases
     rpc_bridges_.clear();
 
-    // There is no need to destroy shared ptrs as they will delete itslefs with 0 references
+    // There is no need to destroy shared pointers.
+    // They self-destruct when they have 0 references.
 
     logDebug(DDSPIPE, "DDS Pipe destroyed.");
 }
 
-utils::ReturnCode DdsPipe::reload_allowed_topics(
+utils::ReturnCode DdsPipe::reload_configuration(
+        const DdsPipeConfiguration& new_configuration)
+{
+    // Check that the configuration is correct
+    utils::Formatter error_msg;
+    if (!new_configuration.is_valid(error_msg, participants_database_->get_participants_repeater_map()))
+    {
+        throw utils::ConfigurationException(
+                  utils::Formatter() <<
+                      "Configuration for Reload DDS Pipe is invalid: " << error_msg);
+    }
+
+    auto allowed_topics = std::make_shared<ddspipe::core::AllowedTopicList>(
+        new_configuration.allowlist,
+        new_configuration.blocklist);
+
+    return reload_allowed_topics_(allowed_topics);
+}
+
+utils::ReturnCode DdsPipe::enable() noexcept
+{
+    std::lock_guard<std::mutex> lock(mutex_);
+
+    if (!enabled_)
+    {
+        enabled_ = true;
+
+        logInfo(DDSPIPE, "Enabling DDS Pipe.");
+
+        activate_all_topics_nts_();
+
+        // Enable services discovered while pipe disabled
+        for (auto it : current_services_)
+        {
+            // Enable only allowed services
+            if (it.second)
+            {
+                rpc_bridges_[it.first]->enable();
+            }
+        }
+
+        return utils::ReturnCode::RETCODE_OK;
+    }
+    else
+    {
+        logInfo(DDSPIPE, "Trying to enable an already enabled DDS Pipe.");
+        return utils::ReturnCode::RETCODE_PRECONDITION_NOT_MET;
+    }
+}
+
+utils::ReturnCode DdsPipe::disable() noexcept
+{
+    std::lock_guard<std::mutex> lock(mutex_);
+
+    if (enabled_)
+    {
+        enabled_ = false;
+
+        logInfo(DDSPIPE, "Disabling DDS Pipe.");
+
+        deactivate_all_topics_nts_();
+
+        return utils::ReturnCode::RETCODE_OK;
+    }
+    else
+    {
+        logInfo(DDSPIPE, "Trying to disable a disabled DDS Pipe.");
+        return utils::ReturnCode::RETCODE_PRECONDITION_NOT_MET;
+    }
+}
+
+void DdsPipe::init_allowed_topics_()
+{
+    allowed_topics_ = std::make_shared<ddspipe::core::AllowedTopicList>(
+        configuration_.allowlist,
+        configuration_.blocklist);
+
+    logInfo(DDSROUTER, "DDS Router configured with allowed topics: " << *allowed_topics_);
+}
+
+utils::ReturnCode DdsPipe::reload_allowed_topics_(
         const std::shared_ptr<AllowedTopicList>& allowed_topics)
 {
     std::lock_guard<std::mutex> lock(mutex_);
@@ -174,58 +254,6 @@ utils::ReturnCode DdsPipe::reload_allowed_topics(
     }
 
     return utils::ReturnCode::RETCODE_OK;
-}
-
-utils::ReturnCode DdsPipe::enable() noexcept
-{
-    std::lock_guard<std::mutex> lock(mutex_);
-
-    if (!enabled_)
-    {
-        enabled_ = true;
-
-        logInfo(DDSPIPE, "Enabling DDS Pipe.");
-
-        activate_all_topics_nts_();
-
-        // Enable services discovered while pipe disabled
-        for (auto it : current_services_)
-        {
-            // Enable only allowed services
-            if (it.second)
-            {
-                rpc_bridges_[it.first]->enable();
-            }
-        }
-
-        return utils::ReturnCode::RETCODE_OK;
-    }
-    else
-    {
-        logInfo(DDSPIPE, "Trying to enable an already enabled DDS Pipe.");
-        return utils::ReturnCode::RETCODE_PRECONDITION_NOT_MET;
-    }
-}
-
-utils::ReturnCode DdsPipe::disable() noexcept
-{
-    std::lock_guard<std::mutex> lock(mutex_);
-
-    if (enabled_)
-    {
-        enabled_ = false;
-
-        logInfo(DDSPIPE, "Disabling DDS Pipe.");
-
-        deactivate_all_topics_nts_();
-
-        return utils::ReturnCode::RETCODE_OK;
-    }
-    else
-    {
-        logInfo(DDSPIPE, "Trying to disable a disabled DDS Pipe.");
-        return utils::ReturnCode::RETCODE_PRECONDITION_NOT_MET;
-    }
 }
 
 void DdsPipe::discovered_endpoint_(
@@ -381,7 +409,7 @@ void DdsPipe::discovered_topic_nts_(
         return;
     }
 
-    // Add topic to current_topics as non activated
+    // Add topic to current_topics as not activated
     current_topics_.emplace(topic, false);
 
     // If Pipe is enabled and topic allowed, activate it
@@ -445,8 +473,8 @@ void DdsPipe::create_new_bridge_nts_(
 
     try
     {
-
         auto routes_config = configuration_.get_routes_config(topic);
+        auto manual_topics = configuration_.get_manual_topics(dynamic_cast<const core::ITopic&>(*topic));
 
         // Create bridge instance
         auto new_bridge = std::make_unique<DdsBridge>(topic,
@@ -454,7 +482,8 @@ void DdsPipe::create_new_bridge_nts_(
                         payload_pool_,
                         thread_pool_,
                         routes_config,
-                        configuration_.remove_unused_entities);
+                        configuration_.remove_unused_entities,
+                        manual_topics);
 
         if (enabled)
         {
