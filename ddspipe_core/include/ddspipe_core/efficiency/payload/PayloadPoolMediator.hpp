@@ -70,7 +70,14 @@ public:
             const fastrtps::rtps::InstanceHandle_t& handle);
 
     /**
-     * TODO
+     * Instead of reserving a new payload, since we know the payload and its owner,
+     * we redirect it to the other FastPayloadPool function.
+     *
+     * @param size size of the new chunk of data
+     * @param payload object to store the new data
+     *
+     * @return true if everything OK
+     * @return false if something went wrong
      */
     DDSPIPE_CORE_DllAPI
     virtual bool get_payload(
@@ -93,44 +100,13 @@ public:
     virtual bool release_payload(
             fastrtps::rtps::CacheChange_t& cache_change) override;
 
-    /**
-     * Instead of reserving a new payload, since we know the payload and its owner,
-     * we redirect it to the other FastPayloadPool function.
-     *
-     * @param size size of the new chunk of data
-     * @param payload object to store the new data
-     *
-     * @return true if everything OK
-     * @return false if something went wrong
-     */
-    DDSPIPE_CORE_DllAPI
-    virtual bool get_payload(
-            uint32_t size,
-            types::Payload& payload);
-
-    /**
-     * TODO
-     */
-    DDSPIPE_CORE_DllAPI
-    virtual bool get_payload(
-            const types::Payload& src_payload,
-            fastrtps::rtps::IPayloadPool*& data_owner,
-            types::Payload& dst_payload);
-
-    /**
-     * TODO
-     */
-    DDSPIPE_CORE_DllAPI
-    virtual bool release_payload(
-            types::Payload& payload);
-
 protected:
 
     //! Mutex to prevent simultaneous calls to write
     std::mutex mutex_;
 
-    //! A pointer to the data_ we are trying to write with the write operation.
-    types::RtpsPayloadData* data_;
+    //! A pointer to the payload_ we want to write down in the PayloadPool.
+    types::Payload* payload_;
 
     //! TODO
     const std::shared_ptr<PayloadPool>& payload_pool_;

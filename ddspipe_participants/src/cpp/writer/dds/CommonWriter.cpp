@@ -69,16 +69,12 @@ void CommonWriter::init()
                       participant_id_ << " in topic " << topic_ << ".");
     }
 
-    // TODO
-    std::shared_ptr<fastrtps::rtps::IPayloadPool> ipayload_pool{
-        dynamic_cast<fastrtps::rtps::IPayloadPool*>(payload_pool_)};
-
     writer_ = dds_publisher_->create_datawriter(
         dds_topic_,
         reckon_writer_qos_(),
         nullptr,
         eprosima::fastdds::dds::StatusMask::all(),
-        ipayload_pool);
+        payload_pool_);
 
     if (!writer_)
     {

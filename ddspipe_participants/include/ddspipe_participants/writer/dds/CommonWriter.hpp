@@ -147,7 +147,7 @@ protected:
     // INTERNAL VARIABLES
     /////////////////////////
 
-    core::PayloadPoolMediator* payload_pool_;
+    std::shared_ptr<core::PayloadPoolMediator> payload_pool_;
 
     core::types::DdsTopic topic_;
 
