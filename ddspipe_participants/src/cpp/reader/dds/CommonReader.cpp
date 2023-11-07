@@ -143,7 +143,7 @@ utils::ReturnCode CommonReader::take_nts_(
 
         auto ret = reader_->take_next_sample(rtps_data, &info);
 
-        // TODO
+        // Save the payload owner so that the memory is freed correctly.
         rtps_data->payload_owner = payload_pool_.get();
 
         // If error reading data

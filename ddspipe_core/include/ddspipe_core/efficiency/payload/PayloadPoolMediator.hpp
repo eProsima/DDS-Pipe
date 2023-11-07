@@ -41,40 +41,92 @@ class PayloadPoolMediator : public fastrtps::rtps::IPayloadPool
 public:
 
     /**
-     * TODO
+     * @brief construct a \c PayloadPoolMediator to mediate for a \c PayloadPool.
+     *
+     * @param payload_pool the \c PayloadPool to mediate for.
      */
+    DDSPIPE_CORE_DllAPI
     PayloadPoolMediator(
             const std::shared_ptr<PayloadPool>& payload_pool);
 
     /**
-     * TODO
+     * @brief write \c data with a \c writer but avoiding copying the \c data from and to the same \c PayloadPool.
+     *
+     * Save the \c data and call the \c write in the \c writer with \c data as an argument.
+     * The \c write in the \c writer will call \c get_payload which, instead of saving a new chunk of memory for data it
+     * already contains, will return the \c data it had saved at the time of writing.
+     *
+     * @warning This method locks the \c mutex to avoid retrieving the \c data saved in another call to \c write.
+     *
+     * Thread safe.
+     *
+     * @param writer the writer who has to write the \c data.
+     * @param data the data to be written by the \c writer.
+     *
+     * @return true if everything OK
+     * @return false if something went wrong
      */
+    DDSPIPE_CORE_DllAPI
     bool write(
             fastdds::dds::DataWriter* writer,
             types::RtpsPayloadData* data);
 
     /**
-     * TODO
+     * @brief write \c data with a \c writer with \c params but avoiding copying the \c data from and to the same
+     * \c PayloadPool.
+     *
+     * Save the \c data and call the \c write in the \c writer with \c data  and \c params as arguments.
+     * The \c write in the \c writer will call \c get_payload which, instead of saving a new chunk of memory for data it
+     * already contains, will return the \c data it had saved at the time of writing.
+     *
+     * @warning This method locks the \c mutex to avoid retrieving the \c data saved in another call to \c write.
+     *
+     * Thread safe.
+     *
+     * @param writer the writer who has to write the \c data.
+     * @param data the data to be written by the \c writer.
+     * @param params the data to be written by the \c writer.
+     *
+     * @return true if everything OK
+     * @return false if something went wrong
      */
+    DDSPIPE_CORE_DllAPI
     bool write(
             fastdds::dds::DataWriter* writer,
             types::RtpsPayloadData* data,
             fastrtps::rtps::WriteParams& params);
 
     /**
-     * TODO
+     * @brief write \c data with a \c writer with a \c handle but avoiding copying the \c data from and to the same
+     * \c PayloadPool.
+     *
+     * Save the \c data and call the \c write in the \c writer with \c data  and \c params as arguments.
+     * The \c write in the \c writer will call \c get_payload which, instead of saving a new chunk of memory for data it
+     * already contains, will return the \c data it had saved at the time of writing.
+     *
+     * @warning This method locks the \c mutex to avoid retrieving the \c data saved in another call to \c write.
+     *
+     * Thread safe.
+     *
+     * @param writer the writer who has to write the \c data.
+     * @param data the data to be written by the \c writer.
+     * @param handle the data to be used by the \c writer.
+     *
+     * @return true if everything OK
+     * @return false if something went wrong
      */
+    DDSPIPE_CORE_DllAPI
     utils::ReturnCode write(
             fastdds::dds::DataWriter* writer,
             types::RtpsPayloadData* data,
             const fastrtps::rtps::InstanceHandle_t& handle);
 
     /**
-     * Instead of reserving a new payload, since we know the payload and its owner,
-     * we redirect it to the other FastPayloadPool function.
+     * Instead of reserving a block of memory of \c size in the \c payload_pool, we can redirect the call to
+     * \c get_payload providing the \c payload (that we saved in the call to \c write) and the \c payload_pool.
      *
-     * @param size size of the new chunk of data
-     * @param payload object to store the new data
+     * @param size size of the new chunk of data to allocate in the \c payload_pool.
+     * @param cache_change object to store the new data in.
      *
      * @return true if everything OK
      * @return false if something went wrong
@@ -85,7 +137,14 @@ public:
             fastrtps::rtps::CacheChange_t& cache_change) override;
 
     /**
-     * TODO
+     * @brief redirect the call to the \c release_payload in the \c payload_pool.
+     *
+     * @param data the data to get from the \c PayloadPool.
+     * @param data_owner the \c PayloadPool to get the \c data from.
+     * @param cache_change object to store the \c data in.
+     *
+     * @return true if everything OK
+     * @return false if something went wrong
      */
     DDSPIPE_CORE_DllAPI
     virtual bool get_payload(
@@ -94,7 +153,11 @@ public:
             fastrtps::rtps::CacheChange_t& cache_change) override;
 
     /**
-     * TODO
+     * @brief redirect the call to the \c release_payload in the \c payload_pool.
+     * @param cache_change object to release.
+     *
+     * @return true if everything OK
+     * @return false if something went wrong
      */
     DDSPIPE_CORE_DllAPI
     virtual bool release_payload(
@@ -108,7 +171,7 @@ protected:
     //! A pointer to the payload_ we want to write down in the PayloadPool.
     types::Payload* payload_;
 
-    //! TODO
+    //! The \c PayloadPool the \c PayloadPoolMediator is mediating for.
     const std::shared_ptr<PayloadPool>& payload_pool_;
 };
 
