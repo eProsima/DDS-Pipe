@@ -484,6 +484,11 @@ CommonParticipant::reckon_participant_attributes_(
     // Add Participant name
     params.setName(participant_configuration->id.c_str());
 
+    // Ignore the local endpoints so that the reader and writer of the same participant don't match.
+    params.properties.properties().emplace_back(
+        "fastdds.ignore_local_endpoints",
+        "true");
+
     return params;
 }
 

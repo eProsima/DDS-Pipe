@@ -125,6 +125,17 @@ void CommonWriter::onWriterMatched(
     }
 }
 
+void CommonWriter::onWriterChangeReceivedByAll(
+        fastrtps::rtps::RTPSWriter* /*writer*/,
+        fastrtps::rtps::CacheChange_t* change)
+{
+    if (writer_qos_.m_reliability.kind == fastdds::dds::BEST_EFFORT_RELIABILITY_QOS ||
+            writer_qos_.m_durability.kind == fastdds::dds::VOLATILE_DURABILITY_QOS)
+    {
+        rtps_history_->remove_change_g(change);
+    }
+}
+
 void CommonWriter::on_offered_incompatible_qos(
         fastrtps::rtps::RTPSWriter*,
         eprosima::fastdds::dds::PolicyMask qos) noexcept
@@ -147,10 +158,10 @@ utils::ReturnCode CommonWriter::write_nts_(
 
     // Take new Change from history
     fastrtps::rtps::CacheChange_t* new_change;
+
     if (topic_.topic_qos.keyed)
     {
-        new_change =
-                rtps_writer_->new_change(
+        new_change = rtps_writer_->new_change(
             rtps_data.kind,
             rtps_data.instanceHandle);
     }
@@ -180,23 +191,19 @@ utils::ReturnCode CommonWriter::write_nts_(
         return ret;
     }
 
+    if (rtps_history_->isFull())
+    {
+        // Remove the oldest cache change when the max history size is reached.
+        rtps_history_->remove_min_change();
+    }
+
     // Send data by adding it to CommonWriter History
     rtps_history_->add_change(new_change, write_params);
 
+    // In the case of BEST_EFFORT, add_change calls onWriterChangeReceivedByAll (which removes the change).
+
     // At this point, write params is now the output of adding change
     fill_sent_data_(write_params, rtps_data);
-
-    // Remove change could be done here in non reliable as it is synchronous because change has already been sent
-    // and does not require to be resent under any circumstance.
-    if (!topic_.topic_qos.is_reliable())
-    {
-        rtps_history_->remove_change(new_change);
-    }
-    else if (rtps_history_->isFull())
-    {
-        // When max history size is reached, remove oldest cache change
-        rtps_history_->remove_min_change();
-    }
 
     return utils::ReturnCode::RETCODE_OK;
 }
@@ -247,9 +254,7 @@ void CommonWriter::fill_sent_data_(
         const eprosima::fastrtps::rtps::WriteParams& params,
         core::types::RtpsPayloadData& data_to_fill) const noexcept
 {
-    // Set data output parameters
-    // TODO move to RPC
-    // data_to_fill->sent_sequence_number = params.sample_identity().sequence_number();
+    // Do nothing
 }
 
 void CommonWriter::internal_entities_creation_(
