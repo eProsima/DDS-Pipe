@@ -30,6 +30,7 @@
 
 #include <ddspipe_core/types/dynamic_types/types.hpp>
 
+#include <ddspipe_participants/participant/rtps/CommonParticipant.hpp>
 #include <ddspipe_participants/participant/rtps/SimpleParticipant.hpp>
 #include <ddspipe_participants/participant/dds/DdsCommonParticipant.hpp>
 
@@ -74,6 +75,11 @@ bool DdsCommonParticipant::is_repeater() const noexcept
     return false;
 }
 
+core::types::TopicQoS DdsCommonParticipant::topic_qos() const noexcept
+{
+    return participant_configuration_->topic_qos;
+}
+
 void DdsCommonParticipant::init()
 {
     eprosima::fastdds::dds::DomainParticipantQos pqos;
@@ -85,7 +91,7 @@ void DdsCommonParticipant::init()
     pqos.wire_protocol().builtin.typelookup_config.use_client = true;
 
     // Configure Participant transports
-    if (participant_configuration_->transport == participants::types::TransportProtocol::builtin)
+    if (participant_configuration_->transport == TransportDescriptors::builtin)
     {
         if (!participant_configuration_->whitelist.empty())
         {
@@ -96,11 +102,12 @@ void DdsCommonParticipant::init()
             pqos.transport().user_transports.push_back(shm_transport);
 
             std::shared_ptr<eprosima::fastdds::rtps::UDPv4TransportDescriptor> udp_transport =
-                    rtps::SimpleParticipant::configure_upd_transport_(participant_configuration_->whitelist);
+                    rtps::CommonParticipant::create_descriptor<eprosima::fastdds::rtps::UDPv4TransportDescriptor>(
+                participant_configuration_->whitelist);
             pqos.transport().user_transports.push_back(udp_transport);
         }
     }
-    else if (participant_configuration_->transport == participants::types::TransportProtocol::shm)
+    else if (participant_configuration_->transport == TransportDescriptors::shm_only)
     {
         pqos.transport().use_builtin_transports = false;
 
@@ -108,13 +115,13 @@ void DdsCommonParticipant::init()
                 std::make_shared<eprosima::fastdds::rtps::SharedMemTransportDescriptor>();
         pqos.transport().user_transports.push_back(shm_transport);
     }
-    else if (participant_configuration_->transport == participants::types::TransportProtocol::udp)
+    else if (participant_configuration_->transport == TransportDescriptors::udp_only)
     {
         pqos.transport().use_builtin_transports = false;
 
         std::shared_ptr<eprosima::fastdds::rtps::UDPv4TransportDescriptor> udp_transport =
-                rtps::SimpleParticipant::configure_upd_transport_(participant_configuration_->whitelist);
-            pqos.transport().user_transports.push_back(udp_transport);
+                rtps::CommonParticipant::create_descriptor<eprosima::fastdds::rtps::UDPv4TransportDescriptor>(
+            participant_configuration_->whitelist);
         pqos.transport().user_transports.push_back(udp_transport);
     }
 
@@ -122,16 +129,20 @@ void DdsCommonParticipant::init()
     switch (participant_configuration_->ignore_participant_flags)
     {
         case core::types::IgnoreParticipantFlags::no_filter:
-            pqos.wire_protocol().builtin.discovery_config.ignoreParticipantFlags = eprosima::fastrtps::rtps::ParticipantFilteringFlags_t::NO_FILTER;
+            pqos.wire_protocol().builtin.discovery_config.ignoreParticipantFlags =
+                    eprosima::fastrtps::rtps::ParticipantFilteringFlags_t::NO_FILTER;
             break;
         case core::types::IgnoreParticipantFlags::filter_different_host:
-            pqos.wire_protocol().builtin.discovery_config.ignoreParticipantFlags = eprosima::fastrtps::rtps::ParticipantFilteringFlags_t::FILTER_DIFFERENT_HOST;
+            pqos.wire_protocol().builtin.discovery_config.ignoreParticipantFlags =
+                    eprosima::fastrtps::rtps::ParticipantFilteringFlags_t::FILTER_DIFFERENT_HOST;
             break;
         case core::types::IgnoreParticipantFlags::filter_different_process:
-            pqos.wire_protocol().builtin.discovery_config.ignoreParticipantFlags = eprosima::fastrtps::rtps::ParticipantFilteringFlags_t::FILTER_DIFFERENT_PROCESS;
+            pqos.wire_protocol().builtin.discovery_config.ignoreParticipantFlags =
+                    eprosima::fastrtps::rtps::ParticipantFilteringFlags_t::FILTER_DIFFERENT_PROCESS;
             break;
         case core::types::IgnoreParticipantFlags::filter_same_process:
-            pqos.wire_protocol().builtin.discovery_config.ignoreParticipantFlags = eprosima::fastrtps::rtps::ParticipantFilteringFlags_t::FILTER_SAME_PROCESS;
+            pqos.wire_protocol().builtin.discovery_config.ignoreParticipantFlags =
+                    eprosima::fastrtps::rtps::ParticipantFilteringFlags_t::FILTER_SAME_PROCESS;
             break;
         case core::types::IgnoreParticipantFlags::filter_different_and_same_process:
             pqos.wire_protocol().builtin.discovery_config.ignoreParticipantFlags =
