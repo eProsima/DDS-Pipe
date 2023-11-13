@@ -66,6 +66,8 @@ bool TopicDataType::serialize(
     }
     else
     {
+        logWarning(DDSPIPE_DDS_TYPESUPPORT, "Copying the payload between two different payload pools.");
+
         // The src and dst Payload Pools are different. The payload must be copied.
         target_payload->copy(&src_payload->payload);
     }

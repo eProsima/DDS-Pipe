@@ -33,8 +33,8 @@ namespace ddspipe {
 namespace core {
 
 /**
- * DataWriters always allocate memory for a the payload when writing it to the \c PayloadPool. In the DdsPipe, however,
- * the \c payload is already in the \c PayloadPool (saved by the DataReader), so we can reuse it to avoid an extra copy.
+ * DataWriters always allocate memory for a payload when writing it to the \c PayloadPool. In the DdsPipe, however, the
+ * \c payload is already in the \c PayloadPool (saved by the Reader), so we can reuse it to avoid an extra copy.
  *
  * This class works as a mediator between the \c FastPayloadPool and the DataWriter's write functions, to avoid making
  * the extra copy.
