@@ -211,6 +211,15 @@ std::ostream& operator <<(
         const DurabilityKind& kind);
 
 /**
+ * @brief The operator << must be overloaded for Fuzzy so that the \c DurabilityKind overloaded operator << gets
+ * called.
+ */
+DDSPIPE_CORE_DllAPI
+std::ostream& operator <<(
+        std::ostream& os,
+        const utils::Fuzzy<DurabilityKind>& qos);
+
+/**
  * @brief \c ReliabilityKind to stream serialization
  */
 DDSPIPE_CORE_DllAPI
@@ -219,12 +228,30 @@ std::ostream& operator <<(
         const ReliabilityKind& kind);
 
 /**
+ * @brief The operator << must be overloaded for Fuzzy so that the \c ReliabilityKind overloaded operator << gets
+ * called.
+ */
+DDSPIPE_CORE_DllAPI
+std::ostream& operator <<(
+        std::ostream& os,
+        const utils::Fuzzy<ReliabilityKind>& qos);
+
+/**
  * @brief \c OwnershipQosPolicyKind to stream serialization
  */
 DDSPIPE_CORE_DllAPI
 std::ostream& operator <<(
         std::ostream& os,
         const OwnershipQosPolicyKind& qos);
+
+/**
+ * @brief The operator << must be overloaded for Fuzzy so that the \c OwnershipQosPolicyKind overloaded operator << gets
+ * called.
+ */
+DDSPIPE_CORE_DllAPI
+std::ostream& operator <<(
+        std::ostream& os,
+        const utils::Fuzzy<OwnershipQosPolicyKind>& qos);
 
 /**
  * @brief \c TopicQoS to stream serialization
