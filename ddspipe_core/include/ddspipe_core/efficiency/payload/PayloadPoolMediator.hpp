@@ -33,8 +33,11 @@ namespace ddspipe {
 namespace core {
 
 /**
- * This class works as a mediator between the FastPayloadPool, the TopicDataType, and the DDS DataWriter write
- * function. Its purpose is to save a copy between the DataWriter and the FastPayloadPool.
+ * DataWriters always allocate memory for a the payload when writing it to the \c PayloadPool. In the DdsPipe, however,
+ * the \c payload is already in the \c PayloadPool (saved by the DataReader), so we can reuse it to avoid an extra copy.
+ *
+ * This class works as a mediator between the \c FastPayloadPool and the DataWriter's write functions, to avoid making
+ * the extra copy.
  */
 class PayloadPoolMediator : public fastrtps::rtps::IPayloadPool
 {

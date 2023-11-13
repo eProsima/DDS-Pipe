@@ -57,8 +57,18 @@ bool TopicDataType::serialize(
 
     logDebug(DDSPIPE_DDS_TYPESUPPORT, "Serializing data " << *src_payload << ".");
 
-    // TODO
-    target_payload->data = src_payload->payload.data;
+    if (src_payload->payload_owner == payload_pool_.get())
+    {
+        // The src and dst Payload Pools are the same. The payload can be referenced.
+        // We do not call get_payload since Fast-DDS doesn't call release_payload internally.
+        // If we did, there would be leaks.
+        target_payload->data = src_payload->payload.data;
+    }
+    else
+    {
+        // The src and dst Payload Pools are different. The payload must be copied.
+        target_payload->copy(&src_payload->payload);
+    }
 
     return true;
 }
