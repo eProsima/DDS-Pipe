@@ -23,6 +23,7 @@
 #include <ddspipe_core/interface/IParticipant.hpp>
 #include <ddspipe_core/interface/IReader.hpp>
 #include <ddspipe_core/interface/IWriter.hpp>
+#include <ddspipe_core/types/configuration/Verbosity.hpp>
 #include <ddspipe_core/types/topic/dds/DistributedTopic.hpp>
 #include <ddspipe_core/efficiency/payload/PayloadPool.hpp>
 
@@ -54,7 +55,8 @@ public:
             const std::shared_ptr<IReader>& reader,
             std::map<types::ParticipantId, std::shared_ptr<IWriter>>&& writers,
             const std::shared_ptr<PayloadPool>& payload_pool,
-            const std::shared_ptr<utils::SlotThreadPool>& thread_pool) noexcept;
+            const std::shared_ptr<utils::SlotThreadPool>& thread_pool,
+            const types::VerbosityLevelType& verbosity) noexcept;
 
     /**
      * @brief Destructor
@@ -205,6 +207,9 @@ protected:
 
     //! Whether the Track is currently enabled
     std::atomic<bool> enabled_;
+
+    //! TODO
+    types::VerbosityLevelType verbosity_;
 
     /**
      * Mutex to prevent simultaneous calls to \c enable and/or \c disable .

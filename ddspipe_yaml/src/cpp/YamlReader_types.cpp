@@ -21,6 +21,7 @@
 #include <cpp_utils/utils.hpp>
 #include <cpp_utils/memory/Heritable.hpp>
 
+#include <ddspipe_core/types/configuration/Verbosity.hpp>
 #include <ddspipe_core/types/dds/CustomTransport.hpp>
 #include <ddspipe_core/types/dds/DomainId.hpp>
 #include <ddspipe_core/types/dds/GuidPrefix.hpp>
@@ -337,6 +338,37 @@ DiscoveryServerConnectionAddress YamlReader::get<DiscoveryServerConnectionAddres
 
         default:
             return _get_discovery_server_connection_address_latest(yml, version);
+    }
+}
+
+template <>
+DDSPIPE_YAML_DllAPI
+VerbosityLevelType YamlReader::get<VerbosityLevelType>(
+        const Yaml& yml,
+        const YamlReaderVersion version)
+{
+    const auto& verbosity = YamlReader::get<std::string>(yml, SPECS_VERBOSITY_TAG, version);
+
+    if (verbosity == "quiet")
+    {
+        return core::types::VerbosityLevelValues::QUIET;
+    }
+    else if (verbosity == "discovery")
+    {
+        return core::types::VerbosityLevelValues::DISCOVERY;
+    }
+    else if (verbosity == "activity")
+    {
+        return core::types::VerbosityLevelValues::ACTIVITY;
+    }
+    else if (verbosity == "noisy")
+    {
+        return core::types::VerbosityLevelValues::NOISY;
+    }
+    else
+    {
+        throw eprosima::utils::ConfigurationException(
+            utils::Formatter() << "The verbosity " << verbosity << " is not valid.");
     }
 }
 

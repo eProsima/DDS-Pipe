@@ -280,7 +280,14 @@ void DdsPipe::removed_endpoint_(
 void DdsPipe::discovered_endpoint_nts_(
         const Endpoint& endpoint) noexcept
 {
-    logDebug(DDSPIPE, "Endpoint discovered in DDS Pipe core: " << endpoint << ".");
+    if (configuration_.verbosity == VerbosityLevelValues::QUIET)
+    {
+        logDebug(DDSPIPE, "Endpoint discovered in DDS Pipe core: " << endpoint << ".");
+    }
+    else
+    {
+        logUser(DDSPIPE_ECHO_DISCOVERY, "New endpoint discovered: " << endpoint << ".");
+    }
 
     if (RpcTopic::is_service_topic(endpoint.topic))
     {
@@ -483,7 +490,8 @@ void DdsPipe::create_new_bridge_nts_(
                         thread_pool_,
                         routes_config,
                         configuration_.remove_unused_entities,
-                        manual_topics);
+                        manual_topics,
+                        configuration_.verbosity);
 
         if (enabled)
         {

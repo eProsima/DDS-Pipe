@@ -138,6 +138,7 @@ constexpr const char* TOPIC_ROUTES_TAG("topic-routes"); // Topic specific forwar
 // Advanced configuration
 constexpr const char* SPECS_TAG("specs"); //! Specs options for DDS Router configuration
 constexpr const char* SPECS_QOS_TAG("qos"); //! Global Topic QoS
+constexpr const char* SPECS_VERBOSITY_TAG("verbosity"); //! Global verbosity tag
 constexpr const char* NUMBER_THREADS_TAG("threads"); //! Number of threads to configure the thread pool
 constexpr const char* WAIT_ALL_ACKED_TIMEOUT_TAG("wait-all-acked-timeout"); //! Wait for a maximum of *wait-all-acked-timeout* ms until all msgs sent by reliable writers are acknowledged by their matched readers
 constexpr const char* REMOVE_UNUSED_ENTITIES_TAG("remove-unused-entities"); //! Dynamically create and delete entities and tracks.

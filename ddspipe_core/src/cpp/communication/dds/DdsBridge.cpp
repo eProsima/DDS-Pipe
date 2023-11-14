@@ -30,10 +30,12 @@ DdsBridge::DdsBridge(
         const std::shared_ptr<utils::SlotThreadPool>& thread_pool,
         const RoutesConfiguration& routes_config,
         const bool remove_unused_entities,
-        const std::vector<core::types::ManualTopic>& manual_topics)
+        const std::vector<core::types::ManualTopic>& manual_topics,
+        const VerbosityLevelType& verbosity)
     : Bridge(participants_database, payload_pool, thread_pool)
     , topic_(topic)
     , manual_topics_(manual_topics)
+    , verbosity_(verbosity)
 {
     logDebug(DDSPIPE_DDSBRIDGE, "Creating DdsBridge " << *this << ".");
 
@@ -41,7 +43,6 @@ DdsBridge::DdsBridge(
 
     if (remove_unused_entities)
     {
-        // The builtin participants and some tests use an empty topic discoverer participant id
         create_writer(topic->topic_discoverer());
     }
     else
@@ -272,7 +273,8 @@ void DdsBridge::add_writers_to_tracks_nts_(
                 std::move(reader),
                 std::move(writers_of_track),
                 payload_pool_,
-                thread_pool_);
+                thread_pool_,
+                verbosity_);
 
             if (enabled_)
             {

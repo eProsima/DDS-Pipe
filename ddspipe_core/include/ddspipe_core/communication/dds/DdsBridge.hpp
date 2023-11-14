@@ -19,6 +19,7 @@
 #include <ddspipe_core/communication/Bridge.hpp>
 #include <ddspipe_core/communication/dds/Track.hpp>
 #include <ddspipe_core/configuration/RoutesConfiguration.hpp>
+#include <ddspipe_core/types/configuration/Verbosity.hpp>
 #include <ddspipe_core/types/topic/dds/DistributedTopic.hpp>
 #include <ddspipe_core/types/topic/filter/ManualTopic.hpp>
 #include <ddspipe_core/types/topic/filter/WildcardDdsFilterTopic.hpp>
@@ -61,7 +62,8 @@ public:
             const std::shared_ptr<utils::SlotThreadPool>& thread_pool,
             const RoutesConfiguration& routes_config,
             const bool remove_unused_entities,
-            const std::vector<core::types::ManualTopic>& manual_topics);
+            const std::vector<types::ManualTopic>& manual_topics,
+            const types::VerbosityLevelType& verbosity);
 
     DDSPIPE_CORE_DllAPI
     ~DdsBridge();
@@ -176,6 +178,9 @@ protected:
      * They are indexed by the Id of the participant that is source
      */
     std::map<types::ParticipantId, std::unique_ptr<Track>> tracks_;
+
+    //! TODO
+    types::VerbosityLevelType verbosity_;
 
     //! Mutex to prevent simultaneous calls to enable and/or disable
     std::mutex mutex_;

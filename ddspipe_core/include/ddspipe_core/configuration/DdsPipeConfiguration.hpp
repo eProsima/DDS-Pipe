@@ -22,6 +22,7 @@
 #include <ddspipe_core/configuration/IConfiguration.hpp>
 #include <ddspipe_core/configuration/RoutesConfiguration.hpp>
 #include <ddspipe_core/configuration/TopicRoutesConfiguration.hpp>
+#include <ddspipe_core/types/configuration/Verbosity.hpp>
 #include <ddspipe_core/types/participant/ParticipantId.hpp>
 #include <ddspipe_core/types/topic/dds/DistributedTopic.hpp>
 #include <ddspipe_core/types/topic/filter/ManualTopic.hpp>
@@ -108,6 +109,9 @@ struct DdsPipeConfiguration : public IConfiguration
 
     //! Whether the DDS Pipe should be initialized enabled.
     bool init_enabled = false;
+
+    //! TODO
+    types::VerbosityLevelType verbosity = types::VerbosityLevelValues::QUIET;
 };
 
 } /* namespace core */

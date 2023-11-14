@@ -23,6 +23,7 @@
 #include <cpp_utils/thread_pool/task/TaskId.hpp>
 
 #include <ddspipe_core/communication/dds/Track.hpp>
+#include <ddspipe_core/types/data/RtpsPayloadData.hpp>
 
 namespace eprosima {
 namespace ddspipe {
@@ -38,7 +39,8 @@ Track::Track(
         const std::shared_ptr<IReader>& reader,
         std::map<ParticipantId, std::shared_ptr<IWriter>>&& writers,
         const std::shared_ptr<PayloadPool>& payload_pool,
-        const std::shared_ptr<utils::SlotThreadPool>& thread_pool) noexcept
+        const std::shared_ptr<utils::SlotThreadPool>& thread_pool,
+        const VerbosityLevelType& verbosity) noexcept
     : topic_(topic)
     , reader_participant_id_(reader_participant_id)
     , reader_(std::move(reader))
@@ -49,6 +51,7 @@ Track::Track(
     , data_available_status_(DataAvailableStatus::no_more_data)
     , transmit_task_id_(utils::new_unique_task_id())
     , thread_pool_(thread_pool)
+    , verbosity_(verbosity)
 {
     logDebug(DDSPIPE_TRACK, "Creating Track " << *this << ".");
 
@@ -246,9 +249,38 @@ void Track::transmit_() noexcept
             continue;
         }
 
-        logDebug(DDSPIPE_TRACK,
-                "Track " << reader_participant_id_ << " for topic " << topic_->serialize() <<
-                " transmitting data from remote endpoint.");
+        switch (verbosity_)
+        {
+            case VerbosityLevelValues::ACTIVITY:
+                logUser(
+                    DDSPIPE_ECHO_DATA,
+                    "Received data in Participant: " << reader_participant_id_ <<
+                        " in topic: " << topic_->topic_name() <<
+                        ".");
+                break;
+
+            case VerbosityLevelValues::NOISY:
+                {
+                const types::RtpsPayloadData* rtps_data = dynamic_cast<types::RtpsPayloadData*>(data.get());
+
+                logUser(
+                    DDSPIPE_ECHO_DATA,
+                    "In Endpoint: " << rtps_data->source_guid <<
+                        " from Participant: " << reader_participant_id_ <<
+                        " in topic: " << topic_->serialize() <<
+                        " payload received: " << rtps_data->payload <<
+                        " with specific qos: " << rtps_data->writer_qos <<
+                        ".");
+                }
+
+                break;
+
+            default:
+                logDebug(DDSPIPE_TRACK,
+                    "Track " << reader_participant_id_ << " for topic " << topic_->serialize() <<
+                    " transmitting data from remote endpoint.");
+                break;
+        }
 
         // Send data through writers
         for (auto& writer_it : writers_)
