@@ -350,16 +350,14 @@ void DdsPipe::updated_endpoint_nts_(
 bool DdsPipe::is_endpoint_relevant_(
         const Endpoint& endpoint) noexcept
 {
-    const auto discovery_trigger = configuration_.discovery_trigger;
-
-    auto is_endpoint_type_relevant = [discovery_trigger](const Endpoint& endpoint)
+    auto is_endpoint_type_relevant = [&](const Endpoint& entity)
             {
-                switch (discovery_trigger)
+                switch (configuration_.discovery_trigger)
                 {
                     case DiscoveryTrigger::READER:
-                        return endpoint.is_reader();
+                        return entity.is_reader();
                     case DiscoveryTrigger::WRITER:
-                        return endpoint.is_writer();
+                        return entity.is_writer();
                     case DiscoveryTrigger::ANY:
                         return true;
                     case DiscoveryTrigger::NONE:
