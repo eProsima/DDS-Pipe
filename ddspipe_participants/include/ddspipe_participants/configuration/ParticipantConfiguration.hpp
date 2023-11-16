@@ -46,6 +46,10 @@ struct ParticipantConfiguration : public core::IConfiguration
     //! Participant Id associated with this configuration.
     core::types::ParticipantId id {};
 
+    //! Participant app properties.
+    std::string app_id = "UNKNOWN_APP";
+    std::string app_metadata = "";
+
     //! Whether this Participant should connect its readers with its writers.
     bool is_repeater {false};
 

@@ -489,6 +489,16 @@ CommonParticipant::reckon_participant_attributes_(
         "fastdds.ignore_local_endpoints",
         "true");
 
+    // Set app properties
+    params.properties.properties().emplace_back(
+        "fastdds.application.id",
+        participant_configuration->app_id,
+        "true");
+    params.properties.properties().emplace_back(
+        "fastdds.application.metadata",
+        participant_configuration->app_metadata,
+        "true");
+
     return params;
 }
 

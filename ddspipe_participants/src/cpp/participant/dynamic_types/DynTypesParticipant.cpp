@@ -188,6 +188,16 @@ void DynTypesParticipant::initialize_internal_dds_participant_()
     eprosima::fastdds::dds::DomainParticipantQos pqos;
     pqos.name(this->id());
 
+    // Set app properties
+    pqos.properties().properties().emplace_back(
+        "fastdds.application.id",
+        configuration->app_id,
+        "true");
+    pqos.properties().properties().emplace_back(
+        "fastdds.application.metadata",
+        configuration->app_metadata,
+        "true");
+
     // Set Type LookUp to ON
     pqos.wire_protocol().builtin.typelookup_config.use_server = false;
     pqos.wire_protocol().builtin.typelookup_config.use_client = true;
