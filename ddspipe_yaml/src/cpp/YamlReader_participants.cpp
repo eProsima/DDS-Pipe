@@ -137,7 +137,7 @@ void YamlReader::fill(
     // Optional whitelist interfaces
     if (YamlReader::is_tag_present(yml, WHITELIST_INTERFACES_TAG))
     {
-        object.whitelist = YamlReader::get_set<participants::types::IpType>(yml, WHITELIST_INTERFACES_TAG, version);
+        object.whitelist = YamlReader::get_set<participants::types::WhitelistType>(yml, WHITELIST_INTERFACES_TAG, version);
     }
 
     // Optional get Transport descriptors
@@ -194,7 +194,7 @@ void YamlReader::fill(
     // Optional whitelist interfaces
     if (YamlReader::is_tag_present(yml, WHITELIST_INTERFACES_TAG))
     {
-        object.whitelist = YamlReader::get_set<participants::types::IpType>(yml, WHITELIST_INTERFACES_TAG, version);
+        object.whitelist = YamlReader::get_set<participants::types::WhitelistType>(yml, WHITELIST_INTERFACES_TAG, version);
     }
 
     // Optional listening addresses
@@ -262,7 +262,7 @@ void YamlReader::fill(
     // Optional whitelist interfaces
     if (YamlReader::is_tag_present(yml, WHITELIST_INTERFACES_TAG))
     {
-        object.whitelist = YamlReader::get_set<participants::types::IpType>(yml, WHITELIST_INTERFACES_TAG, version);
+        object.whitelist = YamlReader::get_set<participants::types::WhitelistType>(yml, WHITELIST_INTERFACES_TAG, version);
     }
 
     // Optional listening addresses
