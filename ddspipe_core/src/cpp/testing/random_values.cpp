@@ -97,6 +97,7 @@ Endpoint random_endpoint(
     endpoint.kind = random_endpoint_kind(seed);
     endpoint.topic = random_dds_topic(seed);
     endpoint.discoverer_participant_id = random_participant_id(seed);
+    endpoint.topic.m_topic_discoverer = endpoint.discoverer_participant_id;
 
     return endpoint;
 }
