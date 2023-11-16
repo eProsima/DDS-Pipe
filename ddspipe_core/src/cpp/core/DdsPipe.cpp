@@ -302,8 +302,6 @@ void DdsPipe::removed_endpoint_nts_(
 {
     logDebug(DDSPIPE, "Endpoint removed/dropped: " << endpoint << ".");
 
-    const auto& topic = utils::Heritable<DdsTopic>::make_heritable(endpoint.topic);
-
     if (RpcTopic::is_service_topic(endpoint.topic))
     {
         if (endpoint.is_server_endpoint())
@@ -316,15 +314,12 @@ void DdsPipe::removed_endpoint_nts_(
     }
     else if (configuration_.remove_unused_entities && is_endpoint_relevant_(endpoint))
     {
+        const auto& topic = utils::Heritable<DdsTopic>::make_heritable(endpoint.topic);
+
         // Remove the subscriber from the topic.
         auto it_bridge = bridges_.find(topic);
 
-        if (it_bridge == bridges_.end())
-        {
-            // The bridge does not exist. We cannot remove the writer. Exit.
-            return;
-        }
-        else
+        if (it_bridge != bridges_.end())
         {
             it_bridge->second->remove_writer(endpoint.discoverer_participant_id);
         }
@@ -402,20 +397,21 @@ void DdsPipe::discovered_topic_nts_(
     // Check if the bridge (and the topic) already exist.
     auto it_bridge = bridges_.find(topic);
 
-    if (it_bridge != bridges_.end())
+    if (it_bridge == bridges_.end())
+    {
+        // Add topic to current_topics as not activated
+        current_topics_.emplace(topic, false);
+
+        // If Pipe is enabled and topic allowed, activate it
+        if (enabled_ && allowed_topics_->is_topic_allowed(*topic))
+        {
+            activate_topic_nts_(topic);
+        }
+    }
+    else if (configuration_.remove_unused_entities)
     {
         // The bridge already exists. Create a writer in the participant who discovered it.
         it_bridge->second->create_writer(topic->topic_discoverer());
-        return;
-    }
-
-    // Add topic to current_topics as not activated
-    current_topics_.emplace(topic, false);
-
-    // If Pipe is enabled and topic allowed, activate it
-    if (enabled_ && allowed_topics_->is_topic_allowed(*topic))
-    {
-        activate_topic_nts_(topic);
     }
 }
 
