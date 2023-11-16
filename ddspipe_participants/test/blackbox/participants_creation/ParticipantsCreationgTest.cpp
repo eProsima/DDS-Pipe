@@ -25,6 +25,7 @@
 #include <ddspipe_participants/participant/auxiliar/EchoParticipant.hpp>
 #include <ddspipe_participants/participant/rtps/DiscoveryServerParticipant.hpp>
 #include <ddspipe_participants/participant/rtps/SimpleParticipant.hpp>
+#include <ddspipe_participants/participant/rtps/CommonParticipant.hpp>
 #include <ddspipe_participants/participant/rtps/InitialPeersParticipant.hpp>
 #include <ddspipe_participants/participant/dds/XmlParticipant.hpp>
 #include <ddspipe_participants/testing/entities/mock_entities.hpp>
@@ -38,6 +39,21 @@ namespace test {
 constexpr const unsigned int N_THREADS = 2;
 
 } // test
+
+/**
+ * Test to check default participant configuration values.
+ */
+TEST(ParticipantsCreationgTest, default_configuration)
+{
+    // Common configuration
+    {
+        participants::ParticipantConfiguration conf;
+        EXPECT_EQ(conf.app_id, "UNKNOWN_APP");
+        EXPECT_EQ(conf.app_metadata, "");
+        EXPECT_TRUE(conf.id.empty());
+        EXPECT_FALSE(conf.is_repeater);
+    }
+}
 
 /**
  * Test to create a participant of each kind and check it does not fail.

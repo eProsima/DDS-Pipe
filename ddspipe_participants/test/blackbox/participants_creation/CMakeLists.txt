@@ -19,6 +19,7 @@ set(TEST_SOURCES
     )
 
 set(TEST_LIST
+        default_configuration
         creation_trivial
         ddspipe_all_creation_builtin_topic
     )
