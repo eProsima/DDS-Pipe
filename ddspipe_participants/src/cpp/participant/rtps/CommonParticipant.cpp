@@ -193,6 +193,7 @@ core::types::Endpoint CommonParticipant::simulate_endpoint(
     endpoint.guid = core::types::Guid::new_unique_guid();
     endpoint.topic = topic;
     endpoint.discoverer_participant_id = discoverer_id;
+    endpoint.topic.m_topic_discoverer = discoverer_id;
 
     return endpoint;
 }
