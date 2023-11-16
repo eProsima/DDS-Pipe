@@ -291,7 +291,7 @@ fastdds::dds::DomainParticipantQos CommonParticipant::reckon_participant_qos_() 
     qos.properties().properties().emplace_back(
         "fastdds.ignore_local_endpoints",
         "true");
-    
+
     // Set app properties
     qos.properties().properties().emplace_back(
         "fastdds.application.id",
@@ -301,7 +301,7 @@ fastdds::dds::DomainParticipantQos CommonParticipant::reckon_participant_qos_() 
         "fastdds.application.metadata",
         configuration_->app_metadata,
         "true");
-        
+
     return qos;
 }
 
