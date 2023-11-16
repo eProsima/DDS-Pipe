@@ -207,7 +207,6 @@ void DdsBridge::add_writers_to_tracks_nts_(
     // If the readers in their route don't exist, create them with their tracks.
     for (const ParticipantId& id : participants_->get_participants_ids())
     {
-
         // Select the necessary writers
         std::map<ParticipantId, std::shared_ptr<IWriter>> writers_of_track;
 
