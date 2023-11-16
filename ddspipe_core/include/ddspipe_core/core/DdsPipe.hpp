@@ -217,6 +217,14 @@ protected:
      *
      * @param [in] endpoint : endpoint discovered, removed, or updated.
      */
+    bool is_endpoint_type_relevant_(
+            const types::Endpoint& endpoint) noexcept;
+
+    /**
+     * @brief Method called every time a new endpoint has been discovered, removed, or updated.
+     *
+     * @param [in] endpoint : endpoint discovered, removed, or updated.
+     */
     bool is_endpoint_relevant_(
             const types::Endpoint& endpoint) noexcept;
 
