@@ -282,7 +282,7 @@ void DdsPipe::discovered_endpoint_nts_(
 
     if (RpcTopic::is_service_topic(endpoint.topic))
     {
-        if (is_endpoint_type_relevant_(endpoint) && endpoint.is_server_endpoint())
+        if (is_endpoint_kind_relevant_(endpoint) && endpoint.is_server_endpoint())
         {
             // Service server discovered
             discovered_service_nts_(RpcTopic(
@@ -345,7 +345,7 @@ void DdsPipe::updated_endpoint_nts_(
     }
 }
 
-bool DdsPipe::is_endpoint_type_relevant_(
+bool DdsPipe::is_endpoint_kind_relevant_(
         const Endpoint& endpoint) noexcept
 {
     switch (configuration_.discovery_trigger)
@@ -371,7 +371,7 @@ bool DdsPipe::is_endpoint_type_relevant_(
 bool DdsPipe::is_endpoint_relevant_(
         const Endpoint& endpoint) noexcept
 {
-    if (!is_endpoint_type_relevant_(endpoint))
+    if (!is_endpoint_kind_relevant_(endpoint))
     {
         return false;
     }
@@ -379,7 +379,7 @@ bool DdsPipe::is_endpoint_relevant_(
     auto is_endpoint_relevant = [&, endpoint](const Endpoint& entity)
             {
                 return entity.active &&
-                       is_endpoint_type_relevant_(entity) &&
+                       is_endpoint_kind_relevant_(entity) &&
                        entity.topic == endpoint.topic &&
                        entity.discoverer_participant_id == endpoint.discoverer_participant_id;
             };

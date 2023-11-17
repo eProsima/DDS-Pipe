@@ -216,14 +216,18 @@ protected:
      * @brief Method called every time a new endpoint has been discovered, removed, or updated.
      *
      * @param [in] endpoint : endpoint discovered, removed, or updated.
+     *
+     * @return Whether the endpoint's kind matches the discovery trigger.
      */
-    bool is_endpoint_type_relevant_(
+    bool is_endpoint_kind_relevant_(
             const types::Endpoint& endpoint) noexcept;
 
     /**
      * @brief Method called every time a new endpoint has been discovered, removed, or updated.
      *
      * @param [in] endpoint : endpoint discovered, removed, or updated.
+     *
+     * @return Whether the DdsPipe's discovery callbacks need to process the endpoint.
      */
     bool is_endpoint_relevant_(
             const types::Endpoint& endpoint) noexcept;
