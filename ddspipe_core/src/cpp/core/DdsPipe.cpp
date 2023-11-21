@@ -376,7 +376,7 @@ bool DdsPipe::is_endpoint_relevant_(
         return false;
     }
 
-    auto is_endpoint_relevant = [&, endpoint](const Endpoint& entity)
+    auto is_endpoint_relevant = [&](const Endpoint& entity)
             {
                 return entity.active &&
                        is_endpoint_kind_relevant_(entity) &&
