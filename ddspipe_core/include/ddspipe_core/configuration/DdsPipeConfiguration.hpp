@@ -18,6 +18,7 @@
 #include <set>
 
 #include <cpp_utils/Formatter.hpp>
+#include <cpp_utils/macros/custom_enumeration.hpp>
 
 #include <ddspipe_core/configuration/IConfiguration.hpp>
 #include <ddspipe_core/configuration/RoutesConfiguration.hpp>
@@ -31,6 +32,15 @@
 namespace eprosima {
 namespace ddspipe {
 namespace core {
+
+//! Possible kinds of discovery triggers
+ENUMERATION_BUILDER(
+    DiscoveryTrigger,
+    READER,     //! The discovery callbacks get triggered by the discovery of a reader.
+    WRITER,     //! The discovery callbacks get triggered by the discovery of a writer.
+    NONE,       //! The discovery callbacks don't get triggered by the discovery of readers or writers.
+    ANY         //! The discovery callbacks get triggered by the discovery of either a reader or a writer.
+    );
 
 /**
  * Configuration structure encapsulating the configuration of a \c DdsPipe instance.
@@ -108,6 +118,9 @@ struct DdsPipeConfiguration : public IConfiguration
 
     //! Whether the DDS Pipe should be initialized enabled.
     bool init_enabled = false;
+
+    //! The type of the entity whose discovery should trigger the discovery callbacks.
+    DiscoveryTrigger discovery_trigger = DiscoveryTrigger::READER;
 };
 
 } /* namespace core */

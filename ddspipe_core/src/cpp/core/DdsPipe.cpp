@@ -19,6 +19,7 @@
 #include <cpp_utils/exception/InitializationException.hpp>
 #include <cpp_utils/exception/InconsistencyException.hpp>
 #include <cpp_utils/Log.hpp>
+#include <cpp_utils/utils.hpp>
 
 #include <ddspipe_core/core/DdsPipe.hpp>
 
@@ -80,9 +81,6 @@ DdsPipe::DdsPipe(
     }
 
     // Init discovery database
-    // The entities should not be added to the Discovery Database until the builtin topics have been created.
-    // This is due to the fact that the Participants endpoints start discovering topics with different configuration
-    // than the one specified in the yaml configuration file.
     discovery_database_->start();
 
     logDebug(DDSPIPE, "DDS Pipe created.");
@@ -284,7 +282,7 @@ void DdsPipe::discovered_endpoint_nts_(
 
     if (RpcTopic::is_service_topic(endpoint.topic))
     {
-        if (endpoint.is_reader() && endpoint.is_server_endpoint())
+        if (is_endpoint_kind_relevant_(endpoint) && endpoint.is_server_endpoint())
         {
             // Service server discovered
             discovered_service_nts_(RpcTopic(
@@ -347,18 +345,41 @@ void DdsPipe::updated_endpoint_nts_(
     }
 }
 
+bool DdsPipe::is_endpoint_kind_relevant_(
+        const Endpoint& endpoint) noexcept
+{
+    switch (configuration_.discovery_trigger)
+    {
+        case DiscoveryTrigger::READER:
+            return endpoint.is_reader();
+
+        case DiscoveryTrigger::WRITER:
+            return endpoint.is_writer();
+
+        case DiscoveryTrigger::ANY:
+            return true;
+
+        case DiscoveryTrigger::NONE:
+            return false;
+
+        default:
+            utils::tsnh(utils::Formatter() << "Invalid Discovery Trigger.");
+            return false;
+    }
+}
+
 bool DdsPipe::is_endpoint_relevant_(
         const Endpoint& endpoint) noexcept
 {
-    if (!endpoint.is_reader())
+    if (!is_endpoint_kind_relevant_(endpoint))
     {
         return false;
     }
 
-    auto is_endpoint_relevant = [endpoint](const Endpoint& entity)
+    auto is_endpoint_relevant = [&](const Endpoint& entity)
             {
                 return entity.active &&
-                       entity.is_reader() &&
+                       is_endpoint_kind_relevant_(entity) &&
                        entity.topic == endpoint.topic &&
                        entity.discoverer_participant_id == endpoint.discoverer_participant_id;
             };
