@@ -31,7 +31,7 @@ bool DdsPipeConfiguration::is_valid(
 {
     if (remove_unused_entities && discovery_trigger != DiscoveryTrigger::READER)
     {
-        error_msg << "A discovery-trigger different to reader is incompatible with remove-unused-entities.";
+        error_msg << "A discovery-trigger different from reader is incompatible with remove-unused-entities.";
         return false;
     }
 
