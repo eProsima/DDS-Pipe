@@ -213,7 +213,9 @@ protected:
             const types::Endpoint& endpoint) noexcept;
 
     /**
-     * @brief Method called every time a new endpoint has been discovered, removed, or updated.
+     * @brief Check whether the kind of an endpoint matches the discovery trigger kind.
+     *
+     * Method called every time a new endpoint has been discovered, removed, or updated.
      *
      * @param [in] endpoint : endpoint discovered, removed, or updated.
      *
@@ -223,7 +225,10 @@ protected:
             const types::Endpoint& endpoint) noexcept;
 
     /**
-     * @brief Method called every time a new endpoint has been discovered, removed, or updated.
+     * @brief Check whether an endpoint is the first endpoint discovered or the last removed.
+     *
+     * Method called every time a new endpoint has been discovered, removed, or updated.
+     * This method calls \c is_endpoint_kind_relevant_
      *
      * @param [in] endpoint : endpoint discovered, removed, or updated.
      *

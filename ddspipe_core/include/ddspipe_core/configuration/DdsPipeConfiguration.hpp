@@ -33,7 +33,7 @@ namespace eprosima {
 namespace ddspipe {
 namespace core {
 
-//! Possible kinds of the endpoint
+//! Possible kinds of discovery triggers
 ENUMERATION_BUILDER(
     DiscoveryTrigger,
     READER,     //! The discovery callbacks get triggered by the discovery of a reader.
