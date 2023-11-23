@@ -54,9 +54,6 @@ DynTypesSubscriptionParticipant::DynTypesSubscriptionParticipant(
     , type_object_reader_(std::make_shared<InternalReader>(
         participant_configuration->id))
 {
-    discovery_database->add_endpoint(
-        rtps::CommonParticipant::simulate_endpoint(type_object_topic(), this->id())
-    );
 }
 
 std::shared_ptr<IWriter> DynTypesSubscriptionParticipant::create_writer(

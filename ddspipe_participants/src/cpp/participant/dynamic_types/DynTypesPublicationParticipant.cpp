@@ -61,10 +61,6 @@ DynTypesPublicationParticipant::DynTypesPublicationParticipant(
     type_object_writer_ = std::make_shared<InternalWriter>(
         participant_configuration->id,
         participant_callback);
-
-    discovery_database->add_endpoint(
-        rtps::CommonParticipant::simulate_endpoint(type_object_topic(), this->id())
-    );
 }
 
 DynTypesPublicationParticipant::~DynTypesPublicationParticipant()
