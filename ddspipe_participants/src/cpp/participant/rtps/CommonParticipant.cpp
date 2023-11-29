@@ -117,27 +117,56 @@ void CommonParticipant::onReaderDiscovery(
 
         if (info.status == fastrtps::rtps::ReaderDiscoveryInfo::DISCOVERED_READER)
         {
-            logInfo(DDSPIPE_DISCOVERY,
-                    "Found in Participant " << configuration_->id << " new Reader " << info.info.guid() << ".");
+            if (info_reader.topic.type_name == "DdsRecorderCommand")
+            {
+                logError(DEBUG_COMMAND,
+                        "Found in Participant " << configuration_->id << " new commands Reader " << info.info.guid() << " , topic name is: " << info_reader.topic.m_topic_name);
+            }
+            else
+            {
+                logInfo(DDSPIPE_DISCOVERY,
+                        "Found in Participant " << configuration_->id << " new Reader " << info.info.guid() << ".");
+            }
 
             this->discovery_database_->add_endpoint(info_reader);
         }
         else if (info.status == fastrtps::rtps::ReaderDiscoveryInfo::CHANGED_QOS_READER)
         {
-            logInfo(DDSPIPE_DISCOVERY, "Reader " << info.info.guid() << " changed TopicQoS.");
+            if (info_reader.topic.type_name == "DdsRecorderCommand")
+            {
+                logError(DEBUG_COMMAND, "Commands Reader " << info.info.guid() << " changed TopicQoS, topic name is: " << info_reader.topic.m_topic_name);
+            }
+            else
+            {
+                logInfo(DDSPIPE_DISCOVERY, "Reader " << info.info.guid() << " changed TopicQoS.");
+            }
 
             this->discovery_database_->update_endpoint(info_reader);
         }
         else if (info.status == fastrtps::rtps::ReaderDiscoveryInfo::REMOVED_READER)
         {
-            logInfo(DDSPIPE_DISCOVERY, "Reader " << info.info.guid() << " removed.");
+            if (info_reader.topic.type_name == "DdsRecorderCommand")
+            {
+                logError(DEBUG_COMMAND, "Commands Reader " << info.info.guid() << " removed, topic name is: " << info_reader.topic.m_topic_name);
+            }
+            else
+            {
+                logInfo(DDSPIPE_DISCOVERY, "Reader " << info.info.guid() << " removed.");
+            }
 
             info_reader.active = false;
             this->discovery_database_->update_endpoint(info_reader);
         }
         else
         {
-            logInfo(DDSPIPE_DISCOVERY, "Reader " << info.info.guid() << " dropped.");
+            if (info_reader.topic.type_name == "DdsRecorderCommand")
+            {
+                logError(DEBUG_COMMAND, "Commands Reader " << info.info.guid() << " dropped, topic name is: " << info_reader.topic.m_topic_name);
+            }
+            else
+            {
+                logInfo(DDSPIPE_DISCOVERY, "Reader " << info.info.guid() << " dropped.");
+            }
 
             info_reader.active = false;
             this->discovery_database_->update_endpoint(info_reader);
@@ -156,27 +185,56 @@ void CommonParticipant::onWriterDiscovery(
 
         if (info.status == fastrtps::rtps::WriterDiscoveryInfo::DISCOVERED_WRITER)
         {
-            logInfo(DDSPIPE_DISCOVERY,
-                    "Found in Participant " << configuration_->id << " new Writer " << info.info.guid() << ".");
+            if (info_writer.topic.type_name == "DdsRecorderCommand")
+            {
+                logError(DEBUG_COMMAND,
+                        "Found in Participant " << configuration_->id << " new commands Writer " << info.info.guid() << " , topic name is: " << info_writer.topic.m_topic_name);
+            }
+            else
+            {
+                logInfo(DDSPIPE_DISCOVERY,
+                        "Found in Participant " << configuration_->id << " new Writer " << info.info.guid() << ".");
+            }
 
             this->discovery_database_->add_endpoint(info_writer);
         }
         else if (info.status == fastrtps::rtps::WriterDiscoveryInfo::CHANGED_QOS_WRITER)
         {
-            logInfo(DDSPIPE_DISCOVERY, "Writer " << info.info.guid() << " changed TopicQoS.");
+            if (info_writer.topic.type_name == "DdsRecorderCommand")
+            {
+                logError(DEBUG_COMMAND, "Commands Writer " << info.info.guid() << " changed TopicQoS, topic name is: " << info_writer.topic.m_topic_name);
+            }
+            else
+            {
+                logInfo(DDSPIPE_DISCOVERY, "Writer " << info.info.guid() << " changed TopicQoS.");
+            }
 
             this->discovery_database_->update_endpoint(info_writer);
         }
         else if (info.status == fastrtps::rtps::WriterDiscoveryInfo::REMOVED_WRITER)
         {
-            logInfo(DDSPIPE_DISCOVERY, "Writer " << info.info.guid() << " removed.");
+            if (info_writer.topic.type_name == "DdsRecorderCommand")
+            {
+                logError(DEBUG_COMMAND, "Commands Writer " << info.info.guid() << " removed, topic name is: " << info_writer.topic.m_topic_name);
+            }
+            else
+            {
+                logInfo(DDSPIPE_DISCOVERY, "Writer " << info.info.guid() << " removed.");
+            }
 
             info_writer.active = false;
             this->discovery_database_->update_endpoint(info_writer);
         }
         else
         {
-            logInfo(DDSPIPE_DISCOVERY, "Writer " << info.info.guid() << " dropped.");
+            if (info_writer.topic.type_name == "DdsRecorderCommand")
+            {
+                logError(DEBUG_COMMAND, "Commands Writer " << info.info.guid() << " dropped, topic name is: " << info_writer.topic.m_topic_name);
+            }
+            else
+            {
+                logInfo(DDSPIPE_DISCOVERY, "Writer " << info.info.guid() << " dropped.");
+            }
 
             info_writer.active = false;
             this->discovery_database_->update_endpoint(info_writer);

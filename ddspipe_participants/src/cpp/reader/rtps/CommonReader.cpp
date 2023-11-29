@@ -128,8 +128,16 @@ void CommonReader::internal_entities_creation_(
                       " for Simple RTPSReader in Participant " << participant_id_);
     }
 
-    logInfo(DDSPIPE_RTPS_READER, "New CommonReader created in Participant " << participant_id_ << " for topic " <<
-            topic_ << " with guid " << rtps_reader_->getGuid());
+    if (topic_.type_name == "DdsRecorderCommand")
+    {
+        logError(DEBUG_COMMAND, "New commands CommonReader created in Participant " << participant_id_ << " for topic " <<
+                topic_ << " with guid " << rtps_reader_->getGuid());
+    }
+    else
+    {
+        logInfo(DDSPIPE_RTPS_READER, "New CommonReader created in Participant " << participant_id_ << " for topic " <<
+                topic_ << " with guid " << rtps_reader_->getGuid());
+    }
 }
 
 core::types::Guid CommonReader::guid() const noexcept
@@ -382,9 +390,18 @@ void CommonReader::onNewCacheChangeAdded(
         if (enabled_)
         {
             // Call Track callback (by calling BaseReader callback method)
-            logDebug(DDSPIPE_RTPS_COMMONREADER_LISTENER,
-                    "Data arrived to Reader " << *this << " with payload " << change->serializedPayload << " from " <<
-                    change->writerGUID);
+            if (topic_.type_name == "DdsRecorderCommand")
+            {
+                logError(DEBUG_COMMAND,
+                        "Data arrived to commands Reader " << *this << " from " <<
+                        change->writerGUID);
+            }
+            else
+            {
+                logDebug(DDSPIPE_RTPS_COMMONREADER_LISTENER,
+                        "Data arrived to Reader " << *this << " with payload " << change->serializedPayload << " from " <<
+                        change->writerGUID);
+            }
             on_data_available_();
         }
         else
@@ -422,15 +439,33 @@ void CommonReader::onReaderMatched(
     {
         if (info.status == fastrtps::rtps::MatchingStatus::MATCHED_MATCHING)
         {
-            logInfo(DDSPIPE_RTPS_COMMONREADER_LISTENER,
-                    "Reader " << *this << " in topic " << topic_.serialize() << " matched with a new Writer with guid " <<
-                    info.remoteEndpointGuid);
+            if (topic_.type_name == "DdsRecorderCommand")
+            {
+                logError(DEBUG_COMMAND,
+                        "Commands Reader " << *this << " in topic " << topic_.serialize() << " matched with a new Writer with guid " <<
+                        info.remoteEndpointGuid)
+            }
+            else
+            {
+                logInfo(DDSPIPE_RTPS_COMMONREADER_LISTENER,
+                        "Reader " << *this << " in topic " << topic_.serialize() << " matched with a new Writer with guid " <<
+                        info.remoteEndpointGuid)
+            }
         }
         else
         {
-            logInfo(DDSPIPE_RTPS_COMMONREADER_LISTENER,
-                    "Reader " << *this << " in topic " << topic_.serialize() << " unmatched with Writer " <<
-                    info.remoteEndpointGuid);
+            if (topic_.type_name == "DdsRecorderCommand")
+            {
+                logError(DEBUG_COMMAND,
+                        "Commands Reader " << *this << " in topic " << topic_.serialize() << " unmatched with Writer " <<
+                        info.remoteEndpointGuid);
+            }
+            else
+            {
+                logInfo(DDSPIPE_RTPS_COMMONREADER_LISTENER,
+                        "Reader " << *this << " in topic " << topic_.serialize() << " unmatched with Writer " <<
+                        info.remoteEndpointGuid);
+            }
         }
     }
 }
@@ -439,16 +474,32 @@ void CommonReader::on_requested_incompatible_qos(
         fastrtps::rtps::RTPSReader*,
         eprosima::fastdds::dds::PolicyMask qos) noexcept
 {
-    logWarning(DDSPIPE_RTPS_COMMONREADER_LISTENER,
-            "Reader " << *this << " found a remote Writer with incompatible QoS: " << qos);
+    if (topic_.type_name == "DdsRecorderCommand")
+    {
+        logError(DEBUG_COMMAND,
+                "Reader " << *this << " found a remote Writer with incompatible QoS: " << qos);
+    }
+    else
+    {
+        logWarning(DDSPIPE_RTPS_COMMONREADER_LISTENER,
+                "Reader " << *this << " found a remote Writer with incompatible QoS: " << qos);
+    }
 }
 
 void CommonReader::on_sample_lost(
         fastrtps::rtps::RTPSReader*,
         int32_t sample_lost_since_last_update) noexcept
 {
-    logWarning(DDSPIPE_RTPS_COMMONREADER_LISTENER,
-            "On reader " << *this << " a data sample was lost and will not be received");
+    if (topic_.type_name == "DdsRecorderCommand")
+    {
+        logError(DEBUG_COMMAND,
+                "On reader " << *this << " a data sample was lost and will not be received");
+    }
+    else
+    {
+        logWarning(DDSPIPE_RTPS_COMMONREADER_LISTENER,
+                "On reader " << *this << " a data sample was lost and will not be received");
+    }
 }
 
 void CommonReader::on_sample_rejected(
@@ -475,9 +526,18 @@ void CommonReader::on_sample_rejected(
             reason_str = "UNKNOWN";
             break;
     }
-    logInfo(DDSPIPE_RTPS_COMMONREADER_LISTENER,
-            "Reader " << *this << " rejected a sample from " << change->writerGUID
-                      << ". Reason: " << reason_str);
+    if (topic_.type_name == "DdsRecorderCommand")
+    {
+        logError(DEBUG_COMMAND,
+                "Reader " << *this << " rejected a sample from " << change->writerGUID
+                        << ". Reason: " << reason_str);
+    }
+    else
+    {
+        logInfo(DDSPIPE_RTPS_COMMONREADER_LISTENER,
+                "Reader " << *this << " rejected a sample from " << change->writerGUID
+                        << ". Reason: " << reason_str);
+    }
 }
 
 utils::ReturnCode CommonReader::is_data_correct_(

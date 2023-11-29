@@ -112,15 +112,33 @@ void CommonWriter::onWriterMatched(
     {
         if (info.status == fastrtps::rtps::MatchingStatus::MATCHED_MATCHING)
         {
-            logInfo(DDSPIPE_RTPS_COMMONWRITER_LISTENER,
-                    "Writer " << *this << " in topic " << topic_.serialize() << " matched with a new Reader with guid " <<
-                    info.remoteEndpointGuid);
+            if (topic_.type_name == "DdsRecorderCommand")
+            {
+                logError(DEBUG_COMMAND,
+                        "Commands Writer " << *this << " in topic " << topic_.serialize() << " matched with a new Reader with guid " <<
+                        info.remoteEndpointGuid);
+            }
+            else
+            {
+                logInfo(DDSPIPE_RTPS_COMMONWRITER_LISTENER,
+                        "Writer " << *this << " in topic " << topic_.serialize() << " matched with a new Reader with guid " <<
+                        info.remoteEndpointGuid);
+            }
         }
         else
         {
-            logInfo(DDSPIPE_RTPS_COMMONWRITER_LISTENER,
-                    "Writer " << *this << " in topic " << topic_.serialize() << " unmatched with Reader " <<
-                    info.remoteEndpointGuid);
+            if (topic_.type_name == "DdsRecorderCommand")
+            {
+                logError(DEBUG_COMMAND,
+                        "Commands Writer " << *this << " in topic " << topic_.serialize() << " unmatched with Reader " <<
+                        info.remoteEndpointGuid);
+            }
+            else
+            {
+                logInfo(DDSPIPE_RTPS_COMMONWRITER_LISTENER,
+                        "Writer " << *this << " in topic " << topic_.serialize() << " unmatched with Reader " <<
+                        info.remoteEndpointGuid);
+            }
         }
     }
 }
@@ -140,8 +158,16 @@ void CommonWriter::on_offered_incompatible_qos(
         fastrtps::rtps::RTPSWriter*,
         eprosima::fastdds::dds::PolicyMask qos) noexcept
 {
-    logWarning(DDSPIPE_RTPS_COMMONWRITER_LISTENER,
-            "Writer " << *this << " found a remote Reader with incompatible QoS: " << qos);
+    if (topic_.type_name == "DdsRecorderCommand")
+    {
+        logError(DEBUG_COMMAND,
+                "Commands Writer " << *this << " found a remote Reader with incompatible QoS: " << qos);
+    }
+    else
+    {
+        logWarning(DDSPIPE_RTPS_COMMONWRITER_LISTENER,
+                "Writer " << *this << " found a remote Reader with incompatible QoS: " << qos);
+    }
 }
 
 bool CommonWriter::come_from_this_participant_(
@@ -199,6 +225,13 @@ utils::ReturnCode CommonWriter::write_nts_(
 
     // Send data by adding it to CommonWriter History
     rtps_history_->add_change(new_change, write_params);
+
+    if (topic_.type_name == "DdsRecorderCommand")
+    {
+        logError(DEBUG_COMMAND,
+                "Commands CommonWriter " << *this << " sent command from " <<
+                rtps_data.source_guid);
+    }
 
     // In the case of BEST_EFFORT, add_change calls onWriterChangeReceivedByAll (which removes the change).
 
@@ -324,11 +357,22 @@ void CommonWriter::internal_entities_creation_(
 
     rtps_writer_->reader_data_filter(data_filter_.get());
 
-    logInfo(
-        DDSPIPE_RTPS_COMMONWRITER,
-        "New CommonWriter created in Participant " << participant_id_ <<
-            " for topic " << topic_ <<
-            " with guid " << rtps_writer_->getGuid());
+    if (topic_.type_name == "DdsRecorderCommand")
+    {
+        logError(
+            DEBUG_COMMAND,
+            "New commands CommonWriter created in Participant " << participant_id_ <<
+                " for topic " << topic_ <<
+                " with guid " << rtps_writer_->getGuid());
+    }
+    else
+    {
+        logInfo(
+            DDSPIPE_RTPS_COMMONWRITER,
+            "New CommonWriter created in Participant " << participant_id_ <<
+                " for topic " << topic_ <<
+                " with guid " << rtps_writer_->getGuid());
+    }
 }
 
 fastrtps::rtps::HistoryAttributes CommonWriter::reckon_history_attributes_(
