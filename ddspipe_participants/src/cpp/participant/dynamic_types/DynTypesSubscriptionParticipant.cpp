@@ -85,6 +85,11 @@ void DynTypesSubscriptionParticipant::on_type_discovery(
 {
     if (nullptr != dyn_type)
     {
+        if (dyn_type->get_name() == "DdsRecorderCommand")
+        {
+            logError(DEBUG_COMMAND,
+                "Participant " << this->id() << " received type " << dyn_type->get_name());
+        }
         // Register type obj in singleton factory
         TypeObjectFactory::get_instance()->add_type_object(
             dyn_type->get_name(), identifier, object);
@@ -102,6 +107,12 @@ void DynTypesSubscriptionParticipant::on_type_information_received(
     const TypeIdentifier* type_identifier = nullptr;
     const TypeObject* type_object = nullptr;
     DynamicType_ptr dynamic_type(nullptr);
+
+    if (type_name_ == "DdsRecorderCommand")
+    {
+        logError(DEBUG_COMMAND,
+            "Participant " << this->id() << " received type information for " << type_name_);
+    }
 
     // Check if complete identifier already present in factory
     type_identifier = TypeObjectFactory::get_instance()->get_type_identifier(type_name_, true);
@@ -150,8 +161,16 @@ void DynTypesSubscriptionParticipant::on_type_information_received(
 void DynTypesSubscriptionParticipant::internal_notify_type_object_(
         eprosima::fastrtps::types::DynamicType_ptr dynamic_type)
 {
-    logInfo(DDSPIPE_DYNTYPES_PARTICIPANT,
-            "Participant " << this->id() << " discovered type object " << dynamic_type->get_name());
+    if (dynamic_type->get_name() == "DdsRecorderCommand")
+    {
+        logError(DEBUG_COMMAND,
+                "Participant " << this->id() << " discovered type object " << dynamic_type->get_name());
+    }
+    else
+    {
+        logInfo(DDSPIPE_DYNTYPES_PARTICIPANT,
+                "Participant " << this->id() << " discovered type object " << dynamic_type->get_name());
+    }
 
     // Create data containing Dynamic Type
     auto data = std::make_unique<DynamicTypeData>();
