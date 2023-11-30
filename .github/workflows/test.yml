@@ -286,7 +286,7 @@ jobs:
             head -n 1)
           echo "fastdds_job_id=${JOB_ID}" >> $GITHUB_ENV
 
-      - name: Download eProsima dependenciespackages
+      - name: Download eProsima dependencies
         uses: dawidd6/action-download-artifact@v2
         with:
           workflow: build_dependencies.yml
