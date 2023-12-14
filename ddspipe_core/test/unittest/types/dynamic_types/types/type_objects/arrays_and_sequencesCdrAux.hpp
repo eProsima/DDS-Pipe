@@ -24,7 +24,7 @@
 
 #include "arrays_and_sequences.h"
 
-constexpr uint32_t arrays_and_sequences_max_cdr_typesize {1461UL};
+constexpr uint32_t arrays_and_sequences_max_cdr_typesize {261UL};
 constexpr uint32_t arrays_and_sequences_max_key_cdr_typesize {0UL};
 
 constexpr uint32_t AnInternalObject_max_cdr_typesize {9UL};

@@ -24,7 +24,7 @@
 
 #include "complex_nested_arrays.h"
 
-constexpr uint32_t FirstLevelElement_max_cdr_typesize {5896UL};
+constexpr uint32_t FirstLevelElement_max_cdr_typesize {296UL};
 constexpr uint32_t FirstLevelElement_max_key_cdr_typesize {0UL};
 
 constexpr uint32_t ThirdLevelElement_max_cdr_typesize {24UL};
@@ -33,7 +33,7 @@ constexpr uint32_t ThirdLevelElement_max_key_cdr_typesize {0UL};
 constexpr uint32_t SecondLevelElement_max_cdr_typesize {56UL};
 constexpr uint32_t SecondLevelElement_max_key_cdr_typesize {0UL};
 
-constexpr uint32_t complex_nested_arrays_max_cdr_typesize {17696UL};
+constexpr uint32_t complex_nested_arrays_max_cdr_typesize {896UL};
 constexpr uint32_t complex_nested_arrays_max_key_cdr_typesize {0UL};
 
 

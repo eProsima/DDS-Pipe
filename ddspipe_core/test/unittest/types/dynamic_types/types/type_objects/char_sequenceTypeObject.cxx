@@ -111,7 +111,7 @@ const TypeObject* GetMinimalchar_sequenceObject()
     mst_chars.common().member_flags().IS_MUST_UNDERSTAND(false);
     mst_chars.common().member_flags().IS_KEY(false);
     mst_chars.common().member_flags().IS_DEFAULT(false); // Doesn't apply
-    mst_chars.common().member_type_id(*TypeObjectFactory::get_instance()->get_sequence_identifier("char", 100, false));
+    mst_chars.common().member_type_id(*TypeObjectFactory::get_instance()->get_sequence_identifier("char", 0, false));
 
     MD5 chars_hash("chars");
     for(int i = 0; i < 4; ++i)
@@ -186,7 +186,7 @@ const TypeObject* GetCompletechar_sequenceObject()
     cst_chars.common().member_flags().IS_MUST_UNDERSTAND(false);
     cst_chars.common().member_flags().IS_KEY(false);
     cst_chars.common().member_flags().IS_DEFAULT(false); // Doesn't apply
-    cst_chars.common().member_type_id(*TypeObjectFactory::get_instance()->get_sequence_identifier("char", 100, true));
+    cst_chars.common().member_type_id(*TypeObjectFactory::get_instance()->get_sequence_identifier("char", 0, true));
 
     cst_chars.detail().name("chars");
 

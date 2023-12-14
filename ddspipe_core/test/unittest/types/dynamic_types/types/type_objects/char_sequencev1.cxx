@@ -85,7 +85,7 @@ struct FindType {
 };
 }
 
-#define char_sequence_max_cdr_typesize 108ULL;
+#define char_sequence_max_cdr_typesize 8ULL;
 
 
 

@@ -85,7 +85,7 @@ struct FindType {
 };
 }
 
-#define arrays_and_sequences_max_cdr_typesize 1461ULL;
+#define arrays_and_sequences_max_cdr_typesize 261ULL;
 #define AnInternalObject_max_cdr_typesize 9ULL;
 
 
