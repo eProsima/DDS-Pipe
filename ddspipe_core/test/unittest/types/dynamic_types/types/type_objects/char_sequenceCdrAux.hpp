@@ -24,7 +24,7 @@
 
 #include "char_sequence.h"
 
-constexpr uint32_t char_sequence_max_cdr_typesize {108UL};
+constexpr uint32_t char_sequence_max_cdr_typesize {8UL};
 constexpr uint32_t char_sequence_max_key_cdr_typesize {0UL};
 
 

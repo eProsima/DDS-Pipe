@@ -85,10 +85,10 @@ struct FindType {
 };
 }
 
-#define FirstLevelElement_max_cdr_typesize 5896ULL;
+#define FirstLevelElement_max_cdr_typesize 296ULL;
 #define ThirdLevelElement_max_cdr_typesize 24ULL;
 #define SecondLevelElement_max_cdr_typesize 56ULL;
-#define complex_nested_arrays_max_cdr_typesize 17696ULL;
+#define complex_nested_arrays_max_cdr_typesize 896ULL;
 
 
 

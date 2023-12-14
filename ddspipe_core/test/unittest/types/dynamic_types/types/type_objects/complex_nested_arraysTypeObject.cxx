@@ -567,7 +567,7 @@ const TypeObject* GetMinimalFirstLevelElementObject()
     mst_sub.common().member_flags().IS_MUST_UNDERSTAND(false);
     mst_sub.common().member_flags().IS_KEY(false);
     mst_sub.common().member_flags().IS_DEFAULT(false); // Doesn't apply
-    mst_sub.common().member_type_id(*TypeObjectFactory::get_instance()->get_sequence_identifier("SecondLevelElement", 100, false));
+    mst_sub.common().member_type_id(*TypeObjectFactory::get_instance()->get_sequence_identifier("SecondLevelElement", 0, false));
 
     MD5 sub_hash("sub");
     for(int i = 0; i < 4; ++i)
@@ -675,7 +675,7 @@ const TypeObject* GetCompleteFirstLevelElementObject()
     cst_sub.common().member_flags().IS_MUST_UNDERSTAND(false);
     cst_sub.common().member_flags().IS_KEY(false);
     cst_sub.common().member_flags().IS_DEFAULT(false); // Doesn't apply
-    cst_sub.common().member_type_id(*TypeObjectFactory::get_instance()->get_sequence_identifier("SecondLevelElement", 100, true));
+    cst_sub.common().member_type_id(*TypeObjectFactory::get_instance()->get_sequence_identifier("SecondLevelElement", 0, true));
 
     cst_sub.detail().name("sub");
 

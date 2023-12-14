@@ -327,7 +327,7 @@ const TypeObject* GetMinimalarrays_and_sequencesObject()
     mst_unlimited_vector.common().member_flags().IS_MUST_UNDERSTAND(false);
     mst_unlimited_vector.common().member_flags().IS_KEY(false);
     mst_unlimited_vector.common().member_flags().IS_DEFAULT(false); // Doesn't apply
-    mst_unlimited_vector.common().member_type_id(*TypeObjectFactory::get_instance()->get_sequence_identifier("AnInternalObject", 100, false));
+    mst_unlimited_vector.common().member_type_id(*TypeObjectFactory::get_instance()->get_sequence_identifier("AnInternalObject", 0, false));
 
     MD5 unlimited_vector_hash("unlimited_vector");
     for(int i = 0; i < 4; ++i)
@@ -438,7 +438,7 @@ const TypeObject* GetCompletearrays_and_sequencesObject()
     cst_unlimited_vector.common().member_flags().IS_MUST_UNDERSTAND(false);
     cst_unlimited_vector.common().member_flags().IS_KEY(false);
     cst_unlimited_vector.common().member_flags().IS_DEFAULT(false); // Doesn't apply
-    cst_unlimited_vector.common().member_type_id(*TypeObjectFactory::get_instance()->get_sequence_identifier("AnInternalObject", 100, true));
+    cst_unlimited_vector.common().member_type_id(*TypeObjectFactory::get_instance()->get_sequence_identifier("AnInternalObject", 0, true));
 
     cst_unlimited_vector.detail().name("unlimited_vector");
 
