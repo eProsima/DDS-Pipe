@@ -317,7 +317,7 @@ void DdsPipe::removed_endpoint_nts_(
         // Remove the subscriber from the topic.
         auto it_bridge = bridges_.find(topic);
 
-        if (it_bridge != bridges_.end())
+        if (it_bridge != bridges_.end() && endpoint.discoverer_participant_id != DEFAULT_PARTICIPANT_ID)
         {
             it_bridge->second->remove_writer(endpoint.discoverer_participant_id);
         }
@@ -429,7 +429,7 @@ void DdsPipe::discovered_topic_nts_(
             activate_topic_nts_(topic);
         }
     }
-    else if (configuration_.remove_unused_entities)
+    else if (configuration_.remove_unused_entities && topic->topic_discoverer() != DEFAULT_PARTICIPANT_ID)
     {
         // The bridge already exists. Create a writer in the participant who discovered it.
         it_bridge->second->create_writer(topic->topic_discoverer());

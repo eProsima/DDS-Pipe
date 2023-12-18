@@ -39,9 +39,8 @@ DdsBridge::DdsBridge(
 
     routes_ = routes_config();
 
-    if (remove_unused_entities)
+    if (remove_unused_entities && topic->topic_discoverer() != DEFAULT_PARTICIPANT_ID)
     {
-        // The builtin participants and some tests use an empty topic discoverer participant id
         create_writer(topic->topic_discoverer());
     }
     else
