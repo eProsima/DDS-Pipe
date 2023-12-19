@@ -179,6 +179,14 @@ std::ostream& operator <<(
 
 std::ostream& operator <<(
         std::ostream& os,
+        const utils::Fuzzy<DurabilityKind>& qos)
+{
+    os << "Fuzzy{Level(" << qos.get_level_as_str() << ") " << qos.get_reference() << "}";
+    return os;
+}
+
+std::ostream& operator <<(
+        std::ostream& os,
         const ReliabilityKind& kind)
 {
     switch (kind)
@@ -196,6 +204,14 @@ std::ostream& operator <<(
             break;
     }
 
+    return os;
+}
+
+std::ostream& operator <<(
+        std::ostream& os,
+        const utils::Fuzzy<ReliabilityKind>& qos)
+{
+    os << "Fuzzy{Level(" << qos.get_level_as_str() << ") " << qos.get_reference() << "}";
     return os;
 }
 
@@ -223,12 +239,21 @@ std::ostream& operator <<(
 
 std::ostream& operator <<(
         std::ostream& os,
+        const utils::Fuzzy<OwnershipQosPolicyKind>& qos)
+{
+    os << "Fuzzy{Level(" << qos.get_level_as_str() << ") " << qos.get_reference() << "}";
+    return os;
+}
+
+std::ostream& operator <<(
+        std::ostream& os,
         const TopicQoS& qos)
 {
     os <<
-        "TopicQoS{" << qos.durability_qos <<
-        ";" << qos.reliability_qos <<
-        ";" << qos.ownership_qos <<
+        "TopicQoS{" <<
+        "durability(" << qos.durability_qos << ")" <<
+        ";reliability(" << qos.reliability_qos << ")" <<
+        ";ownership(" << qos.ownership_qos << ")" <<
         (qos.has_partitions() ? ";partitions" : "") <<
         (qos.keyed ? ";keyed" : "") <<
         ";depth(" << qos.history_depth << ")" <<
