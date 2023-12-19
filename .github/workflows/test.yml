@@ -307,7 +307,7 @@ jobs:
           source /home/runner/work/fastdds/install/setup.bash
           colcon build \
             --event-handlers=console_direct+ \
-            --cmake-args -DBUILD_TESTS=ON -DCMAKE_CXX_FLAGS='-Werror -fsanitize=${{ matrix.sanitizer-flag }}'
+            --cmake-args -DCMAKE_BUILD_TYPE=Debug -DBUILD_TESTS=ON -DCMAKE_CXX_FLAGS='-Werror -fsanitize=${{ matrix.sanitizer-flag }}'
 
       - name: Run tests ddspipe
         run: |
