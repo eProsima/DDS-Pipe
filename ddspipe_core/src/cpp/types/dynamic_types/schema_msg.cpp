@@ -233,7 +233,7 @@ utils::TreeNode<TreeNodeType> generate_dyn_type_tree(
             }
             return parent;
         }
-        break;
+
 
         case fastrtps::types::TK_ARRAY:
         case fastrtps::types::TK_SEQUENCE:
@@ -249,12 +249,13 @@ utils::TreeNode<TreeNodeType> generate_dyn_type_tree(
 
             return container;
         }
-        break;
+
 
         default:
             return utils::TreeNode<TreeNodeType>(member_name, type_kind_to_str(type));
-            break;
+
     }
+
 }
 
 std::ostream& node_to_str(
