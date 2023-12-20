@@ -281,9 +281,7 @@ utils::TreeNode<TreeNodeType> generate_dyn_type_tree(
         }
 
         default:
-        {
             return utils::TreeNode<TreeNodeType>(member_name, type_kind_to_str(type), type);
-        }
     }
 }
 
