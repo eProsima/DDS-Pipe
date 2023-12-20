@@ -1,0 +1,34 @@
+{
+    "names":
+    {
+        "ddspipe_core":
+        {
+            "cmake-args":
+            [
+                "-DCMAKE_CXX_FLAGS='/WX /EHsc'",
+                "-Ax64",
+                "-T host=x64"
+            ]
+        },
+
+        "ddspipe_yaml":
+        {
+            "cmake-args":
+            [
+                "-DCMAKE_CXX_FLAGS='/WX /EHsc'",
+                "-Ax64",
+                "-T host=x64"
+            ]
+        },
+
+        "ddspipe_participants":
+        {
+            "cmake-args":
+            [
+                "-DCMAKE_CXX_FLAGS='/WX /EHsc'",
+                "-Ax64",
+                "-T host=x64"
+            ]
+        },
+    }
+}

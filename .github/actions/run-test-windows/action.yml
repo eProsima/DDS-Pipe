@@ -8,10 +8,15 @@ inputs:
     description: 'Specifies the build type on single-configuration generators'
     required: true
     default: 'Release'
+  workspace_dependencies:
+    description: Workspace to source where dependencies are
+    required: true
+    default: ''
 runs:
   using: composite
   steps:
   - run: |
-      $env:PATH+=";C:\Program Files\gtest;C:\Program Files\yamlcpp;${{ github.workspace }}\..\fastdds\install\bin"
+      ${{ inputs.workspace_dependencies }}\setup.ps1
+      $env:PATH+=";C:\Program Files;C:\Program Files\gtest;C:\Program Files\yamlcpp;${{ inputs.workspace_dependencies }}\bin"
       ctest -C ${{ inputs.cmake_build_type }} --test-dir build\${{ inputs.package_name }} -V --timeout 60 --label-exclude xfail
     shell: pwsh
