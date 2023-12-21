@@ -57,9 +57,20 @@ bool TopicDataType::serialize(
 
     logDebug(DDSPIPE_DDS_TYPESUPPORT, "Serializing data " << *src_payload << ".");
 
-    // TODO: this could be done when we have access to Fast DDS PayloadPool
-    // Copy each variable
-    target_payload->copy(&src_payload->payload);
+    if (src_payload->payload_owner == payload_pool_.get())
+    {
+        // The src and dst Payload Pools are the same. The payload can be referenced.
+        // We do not call get_payload since Fast-DDS doesn't call release_payload internally.
+        // If we did, there would be leaks.
+        target_payload->data = src_payload->payload.data;
+    }
+    else
+    {
+        logWarning(DDSPIPE_DDS_TYPESUPPORT, "Copying the payload between two different payload pools.");
+
+        // The src and dst Payload Pools are different. The payload must be copied.
+        target_payload->copy(&src_payload->payload);
+    }
 
     return true;
 }
@@ -73,9 +84,10 @@ bool TopicDataType::deserialize(
     DataType* target_payload = static_cast<DataType*>(data);
 
     // Get data and store it in PayloadPool
-    eprosima::fastrtps::rtps::IPayloadPool* _ = nullptr;
-    payload_pool_->get_payload(*src_payload, _, target_payload->payload);
-    target_payload->payload_owner = payload_pool_.get();
+    eprosima::fastrtps::rtps::IPayloadPool* payload_owner =
+            static_cast<eprosima::fastrtps::rtps::IPayloadPool*>(payload_pool_.get());
+
+    payload_pool_->get_payload(*src_payload, payload_owner, target_payload->payload);
 
     return true;
 }
