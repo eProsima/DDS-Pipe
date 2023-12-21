@@ -22,6 +22,7 @@
 #include <fastdds/dds/publisher/qos/DataWriterQos.hpp>
 #include <fastdds/dds/topic/Topic.hpp>
 
+#include <ddspipe_core/efficiency/payload/PayloadPoolMediator.hpp>
 #include <ddspipe_core/types/participant/ParticipantId.hpp>
 #include <ddspipe_core/types/data/RtpsPayloadData.hpp>
 #include <ddspipe_core/types/topic/dds/DdsTopic.hpp>
@@ -146,7 +147,7 @@ protected:
     // INTERNAL VARIABLES
     /////////////////////////
 
-    const std::shared_ptr<core::PayloadPool>& payload_pool_;
+    std::shared_ptr<core::PayloadPoolMediator> payload_pool_;
 
     core::types::DdsTopic topic_;
 

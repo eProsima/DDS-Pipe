@@ -34,12 +34,7 @@ bool FastPayloadPool::get_payload(
         Payload& payload)
 {
     // Reserve new payload
-    if (!reserve_(size, payload))
-    {
-        return false;
-    }
-
-    return true;
+    return reserve_(size, payload);
 }
 
 bool FastPayloadPool::get_payload(
@@ -50,6 +45,8 @@ bool FastPayloadPool::get_payload(
     // If we are not the owner, create a new payload. Else, reference the existing one
     if (data_owner != this)
     {
+        logDebug(DDSPIPE_PAYLOADPOOL_FAST, "Copying payload with ptr: " << static_cast<void*>(src_payload.data) << ".");
+
         // Store space for payload
         if (!get_payload(src_payload.max_size, target_payload))
         {
@@ -62,6 +59,9 @@ bool FastPayloadPool::get_payload(
     }
     else
     {
+        logDebug(DDSPIPE_PAYLOADPOOL_FAST,
+                "Referencing payload with ptr: " << static_cast<void*>(src_payload.data) << ".");
+
         // IMPORTANT: If payload has been reserved from this object, it must have the +4 bytes before data
         // We get this value and add a +1 to set that is referencing from one more payload
         MetaInfoType* reference_place = reinterpret_cast<MetaInfoType*>(src_payload.data);
@@ -115,7 +115,6 @@ bool FastPayloadPool::reserve_(
                 "Trying to reserve a data block of 0 bytes.");
         return false;
     }
-
 
     // Allocate memory + 4 bytes for reference
     void* memory_allocated = std::malloc(size + sizeof(MetaInfoType));
