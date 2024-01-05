@@ -45,7 +45,9 @@ XmlParticipant::XmlParticipant(
     // Replace the configuration's domain with the XML's domainId
     eprosima::fastrtps::ParticipantAttributes attr;
 
-    if (xml_specific_configuration_.participant_profile.is_set() && XMLProfileManager::fillParticipantAttributes(xml_specific_configuration_.participant_profile.get_value(), attr) == XMLP_ret::XML_OK)
+    if (xml_specific_configuration_.participant_profile.is_set() &&
+            XMLProfileManager::fillParticipantAttributes(xml_specific_configuration_.participant_profile
+                    .get_value(), attr) == XMLP_ret::XML_OK)
     {
         configuration_->domain = attr.domainId;
     }

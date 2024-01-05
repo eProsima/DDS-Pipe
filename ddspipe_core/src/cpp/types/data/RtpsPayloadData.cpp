@@ -29,7 +29,7 @@ RtpsPayloadData::RtpsPayloadData()
 RtpsPayloadData::~RtpsPayloadData()
 {
     logDebug(DDSPIPE_PAYLOAD, "Deleting Payload " << this << ": " << *this << ".");
-    
+
     // If payload owner exists and payload has size, release it correctly in pool
     if (payload_owner && payload.length > 0)
     {
