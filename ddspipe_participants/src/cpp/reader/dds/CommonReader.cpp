@@ -133,9 +133,6 @@ utils::ReturnCode CommonReader::take_nts_(
 
     do
     {
-        // The reset method does two things:
-        //      1. It releases the previous object stored in data.
-        //      2. It transfers the ownership of rtps_data to data.
         rtps_data.reset(new RtpsPayloadData());
 
         auto ret = reader_->take_next_sample(rtps_data.get(), &info);
