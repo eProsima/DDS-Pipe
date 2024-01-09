@@ -222,7 +222,7 @@ void Track::transmit_() noexcept
 
         if (ret == utils::ReturnCode::RETCODE_NO_DATA)
         {
-            // There is no more data, so reduce in 1 the status
+            // There is no more data; reduce the status by 1
             unsigned int previous_status = data_available_status_.fetch_sub(DataAvailableStatus::transmitting_data);
             if (previous_status == DataAvailableStatus::transmitting_data)
             {
@@ -271,7 +271,7 @@ void Track::transmit_() noexcept
             }
         }
 
-        // Let the data to be removed by itself
+        // Let the data be removed by itself
     }
 }
 
