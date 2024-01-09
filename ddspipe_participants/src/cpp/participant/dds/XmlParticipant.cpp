@@ -17,6 +17,7 @@
 #include <cpp_utils/exception/InitializationException.hpp>
 
 #include <fastdds/dds/domain/DomainParticipantFactory.hpp>
+#include <fastrtps/xmlparser/XMLProfileManager.h>
 
 #include <cpp_utils/Log.hpp>
 #include <cpp_utils/exception/ConfigurationException.hpp>
@@ -30,6 +31,10 @@ namespace ddspipe {
 namespace participants {
 namespace dds {
 
+
+using namespace eprosima::fastrtps::xmlparser;
+
+
 XmlParticipant::XmlParticipant(
         const std::shared_ptr<XmlParticipantConfiguration>& participant_configuration,
         const std::shared_ptr<core::PayloadPool>& payload_pool,
@@ -37,7 +42,15 @@ XmlParticipant::XmlParticipant(
     : CommonParticipant(participant_configuration, payload_pool, discovery_database)
     , xml_specific_configuration_(*reinterpret_cast<XmlParticipantConfiguration*>(configuration_.get()))
 {
-    // Do nothing
+    // Replace the configuration's domain with the XML's domainId
+    eprosima::fastrtps::ParticipantAttributes attr;
+
+    if (xml_specific_configuration_.participant_profile.is_set() &&
+            XMLProfileManager::fillParticipantAttributes(xml_specific_configuration_.participant_profile
+                    .get_value(), attr) == XMLP_ret::XML_OK)
+    {
+        configuration_->domain = attr.domainId;
+    }
 }
 
 std::shared_ptr<core::IWriter> XmlParticipant::create_writer(
@@ -76,11 +89,9 @@ std::shared_ptr<core::IReader> XmlParticipant::create_reader(
 
 fastdds::dds::DomainParticipantQos XmlParticipant::reckon_participant_qos_() const
 {
-    // NOTE: Due to the creation of the participant using overriden create_dds_participant_
-    // this method is never called. However we keep it for the possible future.
     fastdds::dds::DomainParticipantQos qos = CommonParticipant::reckon_participant_qos_();
 
-    // If participant profile have been set, use it
+    // Use the participant's profile if it has been set
     if (xml_specific_configuration_.participant_profile.is_set())
     {
         auto res = fastdds::dds::DomainParticipantFactory::get_instance()->get_participant_qos_from_profile(
@@ -96,27 +107,12 @@ fastdds::dds::DomainParticipantQos XmlParticipant::reckon_participant_qos_() con
         }
     }
 
+    // Enforce ignore local endpoints on XML participants
+    qos.properties().properties().emplace_back(
+        "fastdds.ignore_local_endpoints",
+        "true");
+
     return qos;
-}
-
-fastdds::dds::DomainParticipant* XmlParticipant::create_dds_participant_()
-{
-    // Set listener mask so reader read its own messages
-    fastdds::dds::StatusMask mask;
-    mask << fastdds::dds::StatusMask::publication_matched();
-    mask << fastdds::dds::StatusMask::subscription_matched();
-
-    if (xml_specific_configuration_.participant_profile.is_set())
-    {
-        return eprosima::fastdds::dds::DomainParticipantFactory::get_instance()->create_participant_with_profile(
-            xml_specific_configuration_.participant_profile.get_value(),
-            this,
-            mask);
-    }
-    else
-    {
-        return CommonParticipant::create_dds_participant_();
-    }
 }
 
 } /* namespace dds */

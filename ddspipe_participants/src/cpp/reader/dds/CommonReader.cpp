@@ -98,8 +98,8 @@ void CommonReader::on_data_available(
 }
 
 CommonReader::CommonReader(
-        const core::types::ParticipantId& participant_id,
-        const core::types::DdsTopic& topic,
+        const ParticipantId& participant_id,
+        const DdsTopic& topic,
         const std::shared_ptr<core::PayloadPool>& payload_pool,
         fastdds::dds::DomainParticipant* participant,
         fastdds::dds::Topic* topic_entity)
@@ -117,8 +117,8 @@ CommonReader::CommonReader(
 utils::ReturnCode CommonReader::take_nts_(
         std::unique_ptr<core::IRoutingData>& data) noexcept
 {
-    // NOTE: we assume this function is called always from same thread
-    // NOTE: we assume this function is called always with nullptr data
+    // NOTE: we assume this function is always called from the same thread
+    // NOTE: we assume this function is always called with nullptr data
 
     logInfo(DDSPIPE_DDS_READER, "Taking data in " << participant_id_ << " for topic " << topic_ << ".");
 
@@ -128,40 +128,38 @@ utils::ReturnCode CommonReader::take_nts_(
         return utils::ReturnCode::RETCODE_NO_DATA;
     }
 
-    RtpsPayloadData* rtps_data;
+    std::unique_ptr<RtpsPayloadData> rtps_data;
     fastdds::dds::SampleInfo info;
 
-    // Loop for read messages until we receive one that does not come from same participant
-    // NOTE: not reading local messages must be done in this loop because:
-    // 1. there is no way in DDS to ignore this reader from writer as there were in RTPS
-    // 2. ignore_local_endpoints would be override by xml configuration
-    while (true)
+    do
     {
-        // Ensure that the previous Payload gets destroyed to avoid memory leaks.
-        rtps_data = new core::types::RtpsPayloadData();
-        data.reset(rtps_data);
+        rtps_data.reset(new RtpsPayloadData());
 
-        auto ret = reader_->take_next_sample(rtps_data, &info);
+        auto ret = reader_->take_next_sample(rtps_data.get(), &info);
 
-        // Save the payload owner so that the memory is freed correctly.
+        // If the payload owner is not set, rtps_data won't release the payload on destruction
         rtps_data->payload_owner = payload_pool_.get();
 
-        // If error reading data
         if (!ret)
         {
+            // There has been an error taking the data. Exit.
             return ret;
         }
-
-        // Check if the sample is acceptable
-        if (should_accept_sample_(info))
-        {
-            break;
-        }
-    }
+    } while (!should_accept_sample_(info));
 
     logInfo(DDSPIPE_DDS_READER, "Data taken in " << participant_id_ << " for topic " << topic_ << ".");
 
+    // Verify that the rtps_data object is valid
+    if (!rtps_data)
+    {
+        logError(DDSPIPE_DDS_READER, "The data taken by the reader is not valid.");
+        return utils::ReturnCode::RETCODE_ERROR;
+    }
+
     fill_received_data_(info, *rtps_data);
+
+    // data is a unique_ptr; the memory will be handled correctly.
+    data.reset(rtps_data.release());
 
     return utils::ReturnCode::RETCODE_OK;
 }
@@ -245,7 +243,7 @@ bool CommonReader::should_accept_sample_(
 
 void CommonReader::fill_received_data_(
         const fastdds::dds::SampleInfo& info,
-        core::types::RtpsPayloadData& data_to_fill) const noexcept
+        RtpsPayloadData& data_to_fill) const noexcept
 {
     // Store the new data that has arrived in the Track data
     // Get the writer guid
