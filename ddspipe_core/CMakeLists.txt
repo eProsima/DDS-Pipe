@@ -70,9 +70,20 @@ compile_library(
 # Test
 ###############################################################################
 # Compile tests if CMake options requires it
-compile_test_library(
-    "${PROJECT_SOURCE_DIR}/test" # Test directory
-)
+
+# Determine Fast DDS version
+if ("${fastrtps_VERSION}" VERSION_LESS 2.13)
+    set(FASTDDS_SUBDIRECTORY "/v2/")
+else()
+    set(FASTDDS_SUBDIRECTORY "/v1/")
+endif()
+
+file(GLOB_RECURSE TEST_FILES "${PROJECT_SOURCE_DIR}/test/")
+foreach(TEST_FILE ${TEST_FILES})
+    if(NOT TEST_FILE MATCHES ${FASTDDS_SUBDIRECTORY})
+        compile_test_tool(${TEST_FILE})
+    endif()
+endforeach()
 
 ###############################################################################
 # Packaging
