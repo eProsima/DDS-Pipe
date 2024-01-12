@@ -17,6 +17,7 @@
 #include <cpp_utils/math/math_extension.hpp>
 
 #include <ddspipe_core/interface/IRoutingData.hpp>
+#include <ddspipe_core/monitoring/Monitor.hpp>
 #include <ddspipe_core/types/data/RtpsPayloadData.hpp>
 
 #include <ddspipe_participants/reader/dds/CommonReader.hpp>
@@ -102,6 +103,8 @@ void CommonReader::on_data_available(
         fastdds::dds::DataReader* /* reader */)
 {
     logInfo(DDSPIPE_DDS_READER, "On data available in reader in " << participant_id_ << " for topic " << topic_ << ".");
+
+    monitor_msg_rx(topic_, participant_id_);
 
     on_data_available_();
 }
