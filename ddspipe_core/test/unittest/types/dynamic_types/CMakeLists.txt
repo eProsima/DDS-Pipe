@@ -20,13 +20,13 @@ set(TEST_NAME dtypes_idl_tests)
 
 # Determine Fast DDS version
 if ("${fastrtps_VERSION}" VERSION_LESS 2.13)
-    set(FASTDDS_SUBDIRECTORY "v1")
+    set(DDS_TYPES_VERSION "v1")
 else()
-    set(FASTDDS_SUBDIRECTORY "v2")
+    set(DDS_TYPES_VERSION "v2")
 endif()
 
 # Add to test sources every FastDDSGen file generated
-file(GLOB DATATYPE_SOURCES_CXX "types/${FASTDDS_SUBDIRECTORY}/**/*.cxx")
+file(GLOB DATATYPE_SOURCES_CXX "types/${DDS_TYPES_VERSION}/**/*.cxx")
 set(TEST_SOURCES
         dtypes_idl_tests.cpp
         ${PROJECT_SOURCE_DIR}/src/cpp/types/dynamic_types/schema_idl.cpp
@@ -49,7 +49,7 @@ file(
         RESULT_SOURCES_IDL
     RELATIVE
         "${CMAKE_CURRENT_SOURCE_DIR}"
-    "types/${FASTDDS_SUBDIRECTORY}/idls/*.idl")
+    "types/${DDS_TYPES_VERSION}/idls/*.idl")
 
 set(TEST_NEEDED_SOURCES
         ${RESULT_SOURCES_IDL}
@@ -70,7 +70,7 @@ add_unittest_executable(
 set(TEST_NAME dtypes_msg_tests)
 
 # Add to test sources every FastDDSGen file generated
-file(GLOB DATATYPE_SOURCES_CXX "types/${FASTDDS_SUBDIRECTORY}/**/*.cxx")
+file(GLOB DATATYPE_SOURCES_CXX "types/${DDS_TYPES_VERSION}/**/*.cxx")
 set(TEST_SOURCES
         dtypes_msg_tests.cpp
         ${PROJECT_SOURCE_DIR}/src/cpp/types/dynamic_types/schema_msg.cpp
@@ -93,7 +93,7 @@ file(
         RESULT_SOURCES_MSG
     RELATIVE
         "${CMAKE_CURRENT_SOURCE_DIR}"
-    "types/${FASTDDS_SUBDIRECTORY}/msgs/*.msg")
+    "types/${DDS_TYPES_VERSION}/msgs/*.msg")
 
 set(TEST_NEEDED_SOURCES
         ${RESULT_SOURCES_MSG}
