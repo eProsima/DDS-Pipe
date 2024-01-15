@@ -21,95 +21,103 @@ namespace ddspipe {
 namespace core {
 
 Monitor::Monitor()
-    : type_(new MonitoringDataPubSubType())
 {
-    fastdds::dds::DomainParticipantQos pqos;
-    pqos.name("DdsPipeMonitorParticipant");
-
-    // CREATE THE PARTICIPANT
-    participant_ = fastdds::dds::DomainParticipantFactory::get_instance()->create_participant(85, pqos);
-
-    if (participant_ == nullptr)
-    {
-        throw utils::InitializationException(
-                  utils::Formatter() << "Error creating Participant " <<
-                      pqos.name() << ".");
-    }
-
-    // REGISTER THE TYPE
-    type_.register_type(participant_);
-
-    // CREATE THE PUBLISHER
-    publisher_ = participant_->create_publisher(fastdds::dds::PUBLISHER_QOS_DEFAULT, nullptr);
-
-    if (publisher_ == nullptr)
-    {
-        throw utils::InitializationException(
-                  utils::Formatter() << "Error creating Publisher for Participant " <<
-                      pqos.name() << ".");
-    }
-
-    // CREATE THE TOPIC
-    topic_ = participant_->create_topic("MonitoringDataTopic", "MonitoringData", fastdds::dds::TOPIC_QOS_DEFAULT);
-
-    if (topic_ == nullptr)
-    {
-        throw utils::InitializationException(
-                  utils::Formatter() << "Error creating Topic for Participant " <<
-                      pqos.name() << ".");
-    }
-
-    // CREATE THE WRITER
-    fastdds::dds::DataWriterQos wqos = fastdds::dds::DATAWRITER_QOS_DEFAULT;
-
-    wqos.data_sharing().automatic();
-    wqos.publish_mode().kind = fastdds::dds::SYNCHRONOUS_PUBLISH_MODE;
-    wqos.reliability().kind = fastdds::dds::BEST_EFFORT_RELIABILITY_QOS;
-    wqos.durability().kind = fastdds::dds::VOLATILE_DURABILITY_QOS;
-
-    writer_ = publisher_->create_datawriter(topic_, wqos);
-
-    if (writer_ == nullptr)
-    {
-        throw utils::InitializationException(
-                  utils::Formatter() << "Error creating DataWriter for Participant " <<
-                      pqos.name() << " in topic " << topic_ << ".");
-    }
+    start_thread();
 }
 
 Monitor::~Monitor()
 {
-    fastdds::dds::DomainParticipantFactory::get_instance()->delete_participant(participant_);
+    stop_thread();
+    clear_consumers();
 }
 
 Monitor& Monitor::get_instance()
 {
-    static Monitor instance; // Guaranteed to be destroyed and instantiated on first use
+    static Monitor instance;
     return instance;
 }
 
-void Monitor::msg_received(const types::DdsTopic& topic, const types::ParticipantId& participant_id)
+void Monitor::start_thread()
 {
-    // Lock to avoid race conditions
-    std::lock_guard<std::mutex> lock(mutex_);
+    enabled_ = true;
+    worker_ = std::thread(&Monitor::run, this);
+}
+
+void Monitor::stop_thread()
+{
+    {
+        std::unique_lock<std::mutex> lock(thread_mutex_);
+        enabled_ = false;
+    }
+
+    cv_.notify_one();
+
+    if (worker_.joinable())
+    {
+        worker_.join();
+    }
+}
+
+void Monitor::run()
+{
+    std::unique_lock<std::mutex> lock(thread_mutex_);
+
+    do {
+        const auto& data = Monitor::get_instance().save_data();
+
+        for (const auto& consumer : consumers_)
+        {
+            consumer->consume(data);
+        }
+
+        // Wait for either the stop signal or for 5 seconds to pass
+    } while (!cv_.wait_for(lock, std::chrono::seconds(5), [this]
+    {
+        return !enabled_;
+    }));
+}
+
+void Monitor::register_consumer(
+        IMonitorConsumer* consumer)
+{
+    std::unique_lock<std::mutex> lock(thread_mutex_);
+    consumers_.push_back(consumer);
+}
+
+void Monitor::clear_consumers()
+{
+    std::unique_lock<std::mutex> lock(thread_mutex_);
+    consumers_.clear();
+}
+
+void Monitor::msg_received(
+        const types::DdsTopic& topic,
+        const types::ParticipantId& participant_id)
+{
+    // Take the lock to prevent:
+    //      1. Changing the data while it's being saved.
+    //      2. Simultaneous calls to msg_received.
+    std::lock_guard<std::mutex> lock(data_mutex_);
 
     if (!data_.count(topic) || !data_[topic].count(participant_id))
     {
-        // First message received for topic. Save the time.
+        // First message received for topic & participant
+
+        // Save the time
         data_[topic][participant_id].start_time = utils::now();
+
+        // Save the participant_id
         data_[topic][participant_id].data.participant_id(participant_id);
     }
 
+    // Increase the count of the received messages
     data_[topic][participant_id].data.msgs_received(data_[topic][participant_id].data.msgs_received() + 1);
-
-    auto data = save_data();
-    writer_->write(&data);
 }
 
 MonitoringData Monitor::save_data()
 {
-    // Take the lock to prevent the data from changing while being saved
-    // std::lock_guard<std::mutex> lock(mutex_);
+    // Take the lock to prevent saving the data while it's changing
+    std::lock_guard<std::mutex> lock(data_mutex_);
 
     std::vector<DdsTopic> topics;
 
@@ -121,6 +129,7 @@ MonitoringData Monitor::save_data()
 
         DdsTopic topic_data;
 
+        // Save the topic name and type
         topic_data.name(dds_topic.m_topic_name);
         topic_data.data_type_name(dds_topic.type_name);
 
@@ -139,15 +148,20 @@ MonitoringData Monitor::save_data()
             // Calculate the message reception frequency
             participant_data.frequency((double) participant_data.msgs_received() / time_elapsed.count());
 
+            // Save the participant's data for the topic
             topic_participants.push_back(participant_data);
         }
 
+        // Save the participants' data for the topic
         topic_data.data(topic_participants);
 
+        // Save the topic data
         topics.push_back(topic_data);
     }
 
     MonitoringData data;
+
+    // Save the topics' data
     data.topics(topics);
 
     return data;
