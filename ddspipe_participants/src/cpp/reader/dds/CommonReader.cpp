@@ -70,19 +70,19 @@ void CommonReader::init()
     // Listener must be set in creation as no callbacks should be missed
     // It is safe to do so here as object is already created and callbacks do not require anything set in this method
     #if FASTRTPS_VERSION_MAJOR <= 2 && FASTRTPS_VERSION_MINOR < 13
-        reader_ = dds_subscriber_->create_datareader(
-            dds_topic_,
-            reckon_reader_qos_(),
-            payload_pool_,
-            nullptr,
-            eprosima::fastdds::dds::StatusMask::all());
+    reader_ = dds_subscriber_->create_datareader_with_payload_pool(
+        dds_topic_,
+        reckon_reader_qos_(),
+        payload_pool_,
+        nullptr,
+        eprosima::fastdds::dds::StatusMask::all());
     #else
-        reader_ = dds_subscriber_->create_datareader(
-            dds_topic_,
-            reckon_reader_qos_(),
-            nullptr,
-            eprosima::fastdds::dds::StatusMask::all(),
-            payload_pool_);
+    reader_ = dds_subscriber_->create_datareader(
+        dds_topic_,
+        reckon_reader_qos_(),
+        nullptr,
+        eprosima::fastdds::dds::StatusMask::all(),
+        payload_pool_);
     #endif // if FASTRTPS_VERSION_MAJOR <= 2 && FASTRTPS_VERSION_MINOR < 13
 
     if (!reader_)
