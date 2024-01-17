@@ -30,7 +30,7 @@ set(MODULE_FIND_PACKAGES
     cpp_utils
 )
 
-set(fastrtps_MINIMUM_VERSION "2.8")
+set(fastrtps_MINIMUM_VERSION "2.10")
 
 set(MODULE_DEPENDENCIES
     $<$<BOOL:${WIN32}>:iphlpapi$<SEMICOLON>Shlwapi>

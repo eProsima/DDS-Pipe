@@ -81,7 +81,7 @@ endif()
 file(GLOB_RECURSE TEST_FILES "${PROJECT_SOURCE_DIR}/test/")
 foreach(TEST_FILE ${TEST_FILES})
     if(NOT TEST_FILE MATCHES ${DDS_TYPES_VERSION})
-        compile_test_tool(${TEST_FILE})
+    compile_test_library(${TEST_FILE})
     endif()
 endforeach()
 
