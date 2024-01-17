@@ -40,7 +40,7 @@ bool RoutesConfiguration::is_valid(
 
 bool RoutesConfiguration::is_valid(
         utils::Formatter& error_msg,
-        const std::map<ddspipe::core::types::ParticipantId, bool>& participant_ids) const noexcept
+        const std::map<types::ParticipantId, bool>& participant_ids) const noexcept
 {
     if (!is_valid(error_msg))
     {
@@ -99,6 +99,89 @@ bool RoutesConfiguration::is_valid(
 RoutesConfiguration::RoutesMap RoutesConfiguration::operator ()() const
 {
     return routes;
+}
+
+RoutesConfiguration::RoutesMap RoutesConfiguration::routes_of_readers(
+    const std::map<types::ParticipantId, bool>& participant_ids) const noexcept
+{
+    static RoutesConfiguration::RoutesMap readers_routes;
+
+    if (!readers_routes.empty())
+    {
+        return readers_routes;
+    }
+
+    for (const auto& it : participant_ids)
+    {
+        const auto& reader_id = it.first;
+        const auto& is_repeater = it.second;
+
+        const auto& routes_it = routes.find(reader_id);
+
+        if (routes_it != routes.end())
+        {
+            // The reader has a route. Add only the writers in the route.
+            readers_routes[reader_id] = routes_it->second;
+        }
+        else
+        {
+            // The reader doesn't have a route. Add every writer (+ itself if repeater).
+            for (const auto& it : participant_ids)
+            {
+                const auto& writer_id = it.first;
+
+                if (reader_id != writer_id || is_repeater)
+                {
+                    readers_routes[reader_id].insert(writer_id);
+                }
+            }
+        }
+    }
+
+    return readers_routes;
+}
+
+RoutesConfiguration::RoutesMap RoutesConfiguration::routes_of_writers(
+    const std::map<types::ParticipantId, bool>& participant_ids) const noexcept
+{
+    static RoutesConfiguration::RoutesMap writers_routes;
+
+    if (!writers_routes.empty())
+    {
+        return writers_routes;
+    }
+
+    for (const auto& it : participant_ids)
+    {
+        const auto& reader_id = it.first;
+        const auto& is_repeater = it.second;
+
+        const auto& routes_it = routes.find(reader_id);
+
+        if (routes_it != routes.end())
+        {
+            // The reader has a route. Add only the writers in the route.
+            for (const auto& writer_id : routes_it->second)
+            {
+                writers_routes[writer_id].insert(reader_id);
+            }
+        }
+        else
+        {
+            // The reader doesn't have a route. Add every writer (+ itself if repeater).
+            for (const auto& it : participant_ids)
+            {
+                const auto& writer_id = it.first;
+
+                if (reader_id != writer_id || is_repeater)
+                {
+                    writers_routes[writer_id].insert(reader_id);
+                }
+            }
+        }
+    }
+
+    return writers_routes;
 }
 
 } /* namespace core */

@@ -56,6 +56,14 @@ struct RoutesConfiguration : public IConfiguration
             utils::Formatter& error_msg,
             const std::map<types::ParticipantId, bool>& participants) const noexcept;
 
+    DDSPIPE_CORE_DllAPI
+    RoutesMap routes_of_readers(
+            const std::map<types::ParticipantId, bool>& participant_ids) const noexcept;
+
+    DDSPIPE_CORE_DllAPI
+    RoutesMap routes_of_writers(
+            const std::map<types::ParticipantId, bool>& participant_ids) const noexcept;
+
     /////////////////////////
     // OPERATORS
     /////////////////////////

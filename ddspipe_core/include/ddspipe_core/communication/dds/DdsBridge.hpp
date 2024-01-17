@@ -182,7 +182,8 @@ protected:
     utils::Heritable<types::DistributedTopic> topic_;
 
     //! Routes associated to the Topic.
-    RoutesConfiguration::RoutesMap routes_;
+    RoutesConfiguration::RoutesMap routes_of_readers_;
+    RoutesConfiguration::RoutesMap routes_of_writers_;
 
     //! Topics that explicitally set a QoS attribute for this participant.
     std::vector<types::ManualTopic> manual_topics_;

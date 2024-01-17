@@ -38,7 +38,8 @@ DdsBridge::DdsBridge(
 {
     logDebug(DDSPIPE_DDSBRIDGE, "Creating DdsBridge " << *this << ".");
 
-    routes_ = routes_config();
+    routes_of_readers_ = routes_config.routes_of_readers(participants_database->get_participants_repeater_map());
+    routes_of_writers_ = routes_config.routes_of_writers(participants_database->get_participants_repeater_map());
 
     if (remove_unused_entities && topic->topic_discoverer() != DEFAULT_PARTICIPANT_ID)
     {
@@ -144,7 +145,7 @@ void DdsBridge::create_writer_and_its_tracks_nts_(
     writers_[participant_id] = writer;
 
     // 2. Find the readers in the writer's route
-    const auto& readers_in_route = readers_in_writers_route_nts_(participant_id);
+    const auto& readers_in_route = routes_of_writers_[participant_id];
 
     // 3. Find or create the tracks in the writer's route
     for (const auto& id : readers_in_route)
@@ -180,7 +181,7 @@ void DdsBridge::create_reader_and_its_track_nts_(
     auto reader = create_reader_nts_(participant_id);
 
     // 2. Find the writers in the reader's route
-    const auto& writers_in_route = writers_in_readers_route_nts_(participant_id);
+    const auto& writers_in_route = routes_of_readers_[participant_id];
 
     // 3. Find or create the writers in the reader's route
     std::map<ParticipantId, std::shared_ptr<IWriter>> writers;
@@ -239,7 +240,7 @@ void DdsBridge::remove_reader_and_its_track_nts_(
     assert(participant_id != DEFAULT_PARTICIPANT_ID);
 
     // 1. Find the writers in the reader's route
-    const auto& writers_in_route = writers_in_readers_route_nts_(participant_id);
+    const auto& writers_in_route = routes_of_readers_[participant_id];
 
     // 2. Remove the writers that don't belong to another track
     for (const auto& writer_id : writers_in_route)
@@ -309,57 +310,6 @@ std::shared_ptr<core::IReader> DdsBridge::create_reader_nts_(
 
     // Create the reader
     return participant->create_reader(*topic);
-}
-
-std::set<types::ParticipantId> DdsBridge::readers_in_writers_route_nts_(const ParticipantId& writer_id)
-{
-    std::set<types::ParticipantId> readers_in_route;
-
-    for (const ParticipantId& id : participants_->get_participants_ids())
-    {
-        if (writer_id == id && !participants_->get_participant(id)->is_repeater())
-        {
-            continue;
-        }
-
-        const auto& routes_it = routes_.find(id);
-
-        if (routes_it == routes_.end() || routes_it->second.count(writer_id))
-        {
-            // Only add the reader if:
-            //      1. The reader doesn't have a route.
-            //      2. The writer is in the reader's route.
-            readers_in_route.insert(id);
-        }
-    }
-
-    return readers_in_route;
-}
-
-std::set<types::ParticipantId> DdsBridge::writers_in_readers_route_nts_(const ParticipantId& reader_id)
-{
-    const auto& routes_it = routes_.find(reader_id);
-
-    std::set<types::ParticipantId> writers_in_route;
-
-    if (routes_it != routes_.end())
-    {
-        // The reader has a route. Add only the writers in the route.
-        writers_in_route = routes_it->second;
-    }
-    else
-    {
-        // The reader doesn't have a route. Add every writer (+ itself if repeater).
-        writers_in_route = participants_->get_participants_ids();
-
-        if (!participants_->get_participant(reader_id)->is_repeater())
-        {
-            // The participant is not a repeater. Do not add its writer.
-            writers_in_route.erase(reader_id);
-        }
-    }
-
-    return writers_in_route;
 }
 
 utils::Heritable<DistributedTopic> DdsBridge::create_topic_for_participant_nts_(
