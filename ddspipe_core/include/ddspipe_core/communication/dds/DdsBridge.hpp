@@ -152,11 +152,11 @@ protected:
 
     // TODO
     std::shared_ptr<core::IWriter> create_writer_nts_(
-        const types::ParticipantId& participant_id);
+            const types::ParticipantId& participant_id);
 
     // TODO
     std::shared_ptr<core::IReader> create_reader_nts_(
-        const types::ParticipantId& participant_id);
+            const types::ParticipantId& participant_id);
 
     // TODO
     std::set<types::ParticipantId> readers_in_writers_route_nts_(
