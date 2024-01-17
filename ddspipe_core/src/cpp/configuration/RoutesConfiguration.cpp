@@ -102,7 +102,7 @@ RoutesConfiguration::RoutesMap RoutesConfiguration::operator ()() const
 }
 
 RoutesConfiguration::RoutesMap RoutesConfiguration::routes_of_readers(
-    const std::map<types::ParticipantId, bool>& participant_ids) const noexcept
+        const std::map<types::ParticipantId, bool>& participant_ids) const noexcept
 {
     static RoutesConfiguration::RoutesMap readers_routes;
 
@@ -142,7 +142,7 @@ RoutesConfiguration::RoutesMap RoutesConfiguration::routes_of_readers(
 }
 
 RoutesConfiguration::RoutesMap RoutesConfiguration::routes_of_writers(
-    const std::map<types::ParticipantId, bool>& participant_ids) const noexcept
+        const std::map<types::ParticipantId, bool>& participant_ids) const noexcept
 {
     static RoutesConfiguration::RoutesMap writers_routes;
 

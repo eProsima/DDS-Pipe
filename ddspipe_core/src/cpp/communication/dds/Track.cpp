@@ -261,11 +261,11 @@ void Track::transmit_() noexcept
             {
                 EPROSIMA_LOG_WARNING(
                     DDSPIPE_TRACK,
-                    "Error writing data in Track "  << *this
-                                                    << " for writer " << writer_it.second.get()
-                                                    << " in participant " << writer_it.first
-                                                    << ". Error code " << ret
-                                                    << ". Skipping data for this writer and continue.");
+                    "Error writing data in Track " << *this
+                                                   << " for writer " << writer_it.second.get()
+                                                   << " in participant " << writer_it.first
+                                                   << ". Error code " << ret
+                                                   << ". Skipping data for this writer and continue.");
                 continue;
             }
         }

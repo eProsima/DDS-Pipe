@@ -293,8 +293,8 @@ void DdsPipe::discovered_endpoint_nts_(
     else if (is_endpoint_relevant_(endpoint))
     {
         discovered_topic_nts_(
-                utils::Heritable<DdsTopic>::make_heritable(endpoint.topic),
-                endpoint.kind);
+            utils::Heritable<DdsTopic>::make_heritable(endpoint.topic),
+            endpoint.kind);
     }
 }
 
