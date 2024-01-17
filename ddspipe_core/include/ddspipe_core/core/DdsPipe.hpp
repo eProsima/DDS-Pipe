@@ -26,6 +26,7 @@
 #include <ddspipe_core/dynamic/DiscoveryDatabase.hpp>
 #include <ddspipe_core/dynamic/ParticipantsDatabase.hpp>
 #include <ddspipe_core/efficiency/payload/PayloadPool.hpp>
+#include <ddspipe_core/types/dds/Endpoint.hpp>
 
 #include <ddspipe_core/library/library_dll.h>
 
@@ -262,7 +263,8 @@ protected:
      * @param [in] topic : topic discovered
      */
     void discovered_topic_nts_(
-            const utils::Heritable<types::DistributedTopic>& topic) noexcept;
+            const utils::Heritable<types::DistributedTopic>& topic,
+            const types::EndpointKind& endpoint_kind = types::EndpointKind::reader) noexcept;
 
     /**
      * @brief Method called every time a new endpoint (corresponding to a server) has been discovered/updated
@@ -304,7 +306,8 @@ protected:
      */
     void create_new_bridge_nts_(
             const utils::Heritable<types::DistributedTopic>& topic,
-            bool enabled = false) noexcept;
+            bool enabled = false,
+            const types::EndpointKind& endpoint_kind = types::EndpointKind::reader) noexcept;
 
     /**
      * @brief Create a new \c RpcBridge object
@@ -324,7 +327,8 @@ protected:
      * @param [in] topic : Topic to be enabled
      */
     void activate_topic_nts_(
-            const utils::Heritable<types::DistributedTopic>& topic) noexcept;
+            const utils::Heritable<types::DistributedTopic>& topic,
+            const types::EndpointKind& endpoint_kind = types::EndpointKind::reader) noexcept;
 
     /**
      * @brief Disable a specific topic.
