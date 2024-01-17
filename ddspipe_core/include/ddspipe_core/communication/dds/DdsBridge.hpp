@@ -18,10 +18,13 @@
 
 #include <ddspipe_core/communication/Bridge.hpp>
 #include <ddspipe_core/communication/dds/Track.hpp>
+#include <ddspipe_core/configuration/DdsPipeConfiguration.hpp>
 #include <ddspipe_core/configuration/RoutesConfiguration.hpp>
+#include <ddspipe_core/types/dds/Endpoint.hpp>
 #include <ddspipe_core/types/topic/dds/DistributedTopic.hpp>
 #include <ddspipe_core/types/topic/filter/ManualTopic.hpp>
 #include <ddspipe_core/types/topic/filter/WildcardDdsFilterTopic.hpp>
+
 
 namespace eprosima {
 namespace ddspipe {
@@ -61,7 +64,8 @@ public:
             const std::shared_ptr<utils::SlotThreadPool>& thread_pool,
             const RoutesConfiguration& routes_config,
             const bool remove_unused_entities,
-            const std::vector<core::types::ManualTopic>& manual_topics);
+            const std::vector<core::types::ManualTopic>& manual_topics,
+            const types::EndpointKind& endpoint_kind);
 
     DDSPIPE_CORE_DllAPI
     ~DdsBridge();
@@ -84,77 +88,89 @@ public:
     DDSPIPE_CORE_DllAPI
     void disable() noexcept override;
 
+    // TODO
+    DDSPIPE_CORE_DllAPI
+    void create_endpoint(
+            const types::ParticipantId& participant_id,
+            const types::EndpointKind& discovered_endpoint_kind);
+
+    // TODO
+    DDSPIPE_CORE_DllAPI
+    void remove_endpoint(
+            const types::ParticipantId& participant_id,
+            const types::EndpointKind& removed_endpoint_kind);
+
+protected:
+
     /**
-     * Build the IReaders and IWriters inside the bridge for the new participant,
-     * and add them to the Tracks.
-     *
-     * Thread safe
+     * Create an IWriter for the new participant.
+     * Create the IReaders in the IWriter's route.
+     * Create the Tracks of the IReaderes with the IWriter.
      *
      * @param participant_id: The id of the participant who is creating the writer.
      *
      * @throw InitializationException in case \c IWriters or \c IReaders creation fails.
      */
-    DDSPIPE_CORE_DllAPI
-    void create_writer(
+    void create_writer_and_its_tracks_nts_(
+            const types::ParticipantId& participant_id);
+
+    /**
+     * Create an IReader for the new participant.
+     * Create the IWriters in the IReader's route.
+     * Create the Track with the IReader and IWriters.
+     *
+     * @param participant_id: The id of the participant who is creating the reader.
+     *
+     * @throw InitializationException in case \c IWriters or \c IReaders creation fails.
+     */
+    void create_reader_and_its_track_nts_(
             const types::ParticipantId& participant_id);
 
     /**
      * Remove the IWriter from all the Tracks in the bridge.
      * Remove the IReaders and Tracks that don't have any IWriters.
      *
-     * Thread safe
-     *
      * @param participant_id: The id of the participant who is removing the writer.
      */
-    DDSPIPE_CORE_DllAPI
-    void remove_writer(
+    void remove_writer_and_its_tracks_nts_(
             const types::ParticipantId& participant_id) noexcept;
 
-protected:
-
     /**
-     * Create the readers, writers, and tracks that are required by the routes.
+     * Remove the IReader and its Track from the bridge.
+     * Remove the IWriters that don't belong to a Track.
      *
-     * Thread safe
-     *
-     * @throw InitializationException in case \c IWriters or \c IReaders creation fails.
+     * @param participant_id: The id of the participant who is removing the reader.
      */
-    DDSPIPE_CORE_DllAPI
-    void create_all_tracks_();
+    void remove_reader_and_its_track_nts_(
+            const types::ParticipantId& participant_id) noexcept;
 
-    /**
-     * Add each Participant's IWriters to its Track.
-     * If the Participant's IReader doesn't exist, create it.
-     * If the Participant's Track doesn't exist, create it.
-     *
-     * @param writers: The map of ids to writers that are required for the tracks.
-     *
-     * @throw InitializationException in case \c IReaders creation fails.
-     */
-    DDSPIPE_CORE_DllAPI
-    void add_writer_to_tracks_nts_(
-            const types::ParticipantId& participant_id,
-            std::shared_ptr<IWriter>& writer);
-
-    /**
-     * Add each Participant's IWriters to its Track.
-     * If the Participant's IReader doesn't exist, create it.
-     * If the Participant's Track doesn't exist, create it.
-     *
-     * @param writers: The map of ids to writers that are required for the tracks.
-     *
-     * @throw InitializationException in case \c IReaders creation fails.
-     */
-    DDSPIPE_CORE_DllAPI
-    void add_writers_to_tracks_nts_(
+    // TODO
+    void create_track_nts_(
+            const types::ParticipantId& id,
+            const std::shared_ptr<IReader>& reader,
             std::map<types::ParticipantId, std::shared_ptr<IWriter>>& writers);
+
+    // TODO
+    std::shared_ptr<core::IWriter> create_writer_nts_(
+        const types::ParticipantId& participant_id);
+
+    // TODO
+    std::shared_ptr<core::IReader> create_reader_nts_(
+        const types::ParticipantId& participant_id);
+
+    // TODO
+    std::set<types::ParticipantId> readers_in_writers_route_nts_(
+            const types::ParticipantId& writer_id);
+
+    // TODO
+    std::set<types::ParticipantId> writers_in_readers_route_nts_(
+            const types::ParticipantId& reader_id);
 
     /**
      * @brief Impose the Topic QoS that have been pre-configured for a participant.
      *
      * First, it imposes the Topic QoS configured at \c manual_topics and then the ones configured at \c participants.
      */
-    DDSPIPE_CORE_DllAPI
     utils::Heritable<types::DistributedTopic> create_topic_for_participant_nts_(
             const std::shared_ptr<IParticipant>& participant) noexcept;
 
@@ -171,11 +187,11 @@ protected:
     //! Topics that explicitally set a QoS attribute for this participant.
     std::vector<types::ManualTopic> manual_topics_;
 
-    /**
-     * Inside \c Tracks
-     * They are indexed by the Id of the participant that is source
-     */
+    //! The tracks of the bridge indexed by the participant_id of their reader.
     std::map<types::ParticipantId, std::unique_ptr<Track>> tracks_;
+
+    //! The writers of the bridge index by their participant_id.
+    std::map<types::ParticipantId, std::shared_ptr<IWriter>> writers_;
 
     //! Mutex to prevent simultaneous calls to enable and/or disable
     std::mutex mutex_;
