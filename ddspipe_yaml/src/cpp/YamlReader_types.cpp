@@ -28,6 +28,7 @@
 #include <ddspipe_core/types/topic/dds/DdsTopic.hpp>
 #include <ddspipe_core/types/topic/filter/WildcardDdsFilterTopic.hpp>
 #include <ddspipe_core/types/topic/filter/ManualTopic.hpp>
+#include <ddspipe_core/types/dds/LogConfiguration.hpp>
 
 #include <ddspipe_participants/types/address/Address.hpp>
 #include <ddspipe_participants/types/address/DiscoveryServerConnectionAddress.hpp>
@@ -427,6 +428,80 @@ void YamlReader::fill(
         object.downsampling.set_value(get_positive_int(yml, QOS_DOWNSAMPLING_TAG));
     }
 }
+
+/************************
+* LOGGING CONFIGURATION *
+************************/
+
+template <>
+DDSPIPE_YAML_DllAPI
+void YamlReader::fill<LogFilter>(
+        LogFilter& object,
+        const Yaml& yml,
+        const YamlReaderVersion version /* version */)
+{
+    if (is_tag_present(yml, LOG_FILTER_ERROR_TAG))
+    {
+        object[eprosima::fastdds::dds::Log::Kind::Error] = get<std::string>(yml, LOG_FILTER_ERROR_TAG, version);
+    }
+    if (is_tag_present(yml, LOG_FILTER_WARNING_TAG))
+    {
+        object[eprosima::fastdds::dds::Log::Kind::Warning] = get<std::string>(yml, LOG_FILTER_WARNING_TAG, version);
+    }
+    if (is_tag_present(yml, LOG_FILTER_INFO_TAG))
+    {
+        object[eprosima::fastdds::dds::Log::Kind::Info] = get<std::string>(yml, LOG_FILTER_INFO_TAG, version);
+    }
+}
+
+template <>
+DDSPIPE_YAML_DllAPI
+LogFilter YamlReader::get(
+        const Yaml& yml,
+        const YamlReaderVersion version)
+{
+    LogFilter object;
+    fill<LogFilter>(object, yml, version);
+    return object;
+}
+
+template <>
+DDSPIPE_YAML_DllAPI
+void YamlReader::fill(
+        LogConfiguration& object,
+        const Yaml& yml,
+        const YamlReaderVersion version)
+{
+    // Verbosity optional
+    if (is_tag_present(yml, LOG_VERBOSITY_TAG))
+    {
+        object.verbosity = get_enumeration<eprosima::fastdds::dds::Log::Kind>(
+        YamlReader::get_value_in_tag(yml, LOG_VERBOSITY_TAG),
+                {
+                    {LOG_VERBOSITY_INFO_TAG, eprosima::fastdds::dds::Log::Kind::Info},
+                    {LOG_VERBOSITY_WARNING_TAG, eprosima::fastdds::dds::Log::Kind::Warning},
+                    {LOG_VERBOSITY_ERROR_TAG, eprosima::fastdds::dds::Log::Kind::Error}
+                });
+    }
+
+    // Filter optional
+    if (is_tag_present(yml, LOG_FILTER_TAG))
+    {
+        object.filter = get<LogFilter>(YamlReader::get_value_in_tag(yml, LOG_FILTER_TAG), version);
+    }
+}
+
+template <>
+DDSPIPE_YAML_DllAPI
+LogConfiguration YamlReader::get(
+        const Yaml& yml,
+        const YamlReaderVersion version)
+{
+    LogConfiguration object;
+    fill<LogConfiguration>(object, yml, version);
+    return object;
+}
+
 
 /************************
 * TOPICS                *
