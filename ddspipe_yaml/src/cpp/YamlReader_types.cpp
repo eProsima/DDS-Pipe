@@ -42,6 +42,7 @@
 
 #include <ddspipe_yaml/Yaml.hpp>
 #include <ddspipe_yaml/YamlReader.hpp>
+#include <ddspipe_yaml/YamlValidator.hpp>
 #include <ddspipe_yaml/yaml_configuration_tags.hpp>
 
 namespace eprosima {
@@ -153,10 +154,26 @@ DomainId YamlReader::get<DomainId>(
 
 template <>
 DDSPIPE_YAML_DllAPI
+bool YamlValidator::validate<GuidPrefix>(
+        const Yaml& yml,
+        const YamlReaderVersion& /* version */)
+{
+    const std::set<TagType> tags{
+        DISCOVERY_SERVER_GUID_TAG,
+        DISCOVERY_SERVER_ID_TAG,
+        DISCOVERY_SERVER_ID_ROS_TAG};
+
+    return YamlValidator::validate_tags(yml, tags);
+}
+
+template <>
+DDSPIPE_YAML_DllAPI
 GuidPrefix YamlReader::get<GuidPrefix>(
         const Yaml& yml,
         const YamlReaderVersion /* version */)
 {
+    YamlValidator::validate<GuidPrefix>(yml);
+
     // If guid exists, use it. Non mandatory.
     if (is_tag_present(yml, DISCOVERY_SERVER_GUID_TAG))
     {
@@ -188,10 +205,29 @@ GuidPrefix YamlReader::get<GuidPrefix>(
 
 template <>
 DDSPIPE_YAML_DllAPI
+bool YamlValidator::validate<Address>(
+        const Yaml& yml,
+        const YamlReaderVersion& /* version */)
+{
+    const std::set<TagType> tags{
+        ADDRESS_IP_VERSION_TAG,
+        ADDRESS_IP_TAG,
+        ADDRESS_DNS_TAG,
+        ADDRESS_PORT_TAG,
+        ADDRESS_EXTERNAL_PORT_TAG,
+        ADDRESS_TRANSPORT_TAG};
+
+    return YamlValidator::validate_tags(yml, tags);
+}
+
+template <>
+DDSPIPE_YAML_DllAPI
 Address YamlReader::get<Address>(
         const Yaml& yml,
         const YamlReaderVersion version)
 {
+    YamlValidator::validate<Address>(yml, version);
+
     // Optional get IP version
     IpVersion ip_version;
     bool ip_version_set = is_tag_present(yml, ADDRESS_IP_VERSION_TAG);
@@ -327,10 +363,34 @@ DiscoveryServerConnectionAddress _get_discovery_server_connection_address_latest
 
 template <>
 DDSPIPE_YAML_DllAPI
+bool YamlValidator::validate<DiscoveryServerConnectionAddress>(
+        const Yaml& yml,
+        const YamlReaderVersion& version)
+{
+    std::set<TagType> tags{
+        COLLECTION_ADDRESSES_TAG};
+
+    switch (version)
+    {
+        case V_1_0:
+            break;
+
+        default:
+            tags.insert(DISCOVERY_SERVER_GUID_PREFIX_TAG);
+            break;
+    }
+
+    return YamlValidator::validate_tags(yml, tags);
+}
+
+template <>
+DDSPIPE_YAML_DllAPI
 DiscoveryServerConnectionAddress YamlReader::get<DiscoveryServerConnectionAddress>(
         const Yaml& yml,
         const YamlReaderVersion version)
 {
+    YamlValidator::validate<DiscoveryServerConnectionAddress>(yml, version);
+
     switch (version)
     {
         case V_1_0:
@@ -469,6 +529,39 @@ void YamlReader::fill(
     }
 }
 
+template <>
+DDSPIPE_YAML_DllAPI
+bool YamlValidator::validate<TopicQoS>(
+        const Yaml& yml,
+        const YamlReaderVersion& /* version */)
+{
+    const std::set<TagType> tags{
+        QOS_TRANSIENT_TAG,
+        QOS_RELIABLE_TAG,
+        QOS_OWNERSHIP_TAG,
+        QOS_PARTITION_TAG,
+        QOS_HISTORY_DEPTH_TAG,
+        QOS_KEYED_TAG,
+        QOS_MAX_TX_RATE_TAG,
+        QOS_MAX_RX_RATE_TAG,
+        QOS_DOWNSAMPLING_TAG};
+
+    return YamlValidator::validate_tags(yml, tags);
+}
+
+template <>
+DDSPIPE_YAML_DllAPI
+TopicQoS YamlReader::get<TopicQoS>(
+        const Yaml& yml,
+        const YamlReaderVersion version)
+{
+    YamlValidator::validate<TopicQoS>(yml, version);
+
+    TopicQoS object;
+    fill<TopicQoS>(object, yml, version);
+    return object;
+}
+
 /************************
 * LOGGING CONFIGURATION *
 ************************/
@@ -577,10 +670,25 @@ void YamlReader::fill(
 
 template <>
 DDSPIPE_YAML_DllAPI
+bool YamlValidator::validate<DdsTopic>(
+        const Yaml& yml,
+        const YamlReaderVersion& /* version */)
+{
+    const std::set<TagType> tags{
+        TOPIC_NAME_TAG,
+        TOPIC_TYPE_NAME_TAG};
+
+    return YamlValidator::validate_tags(yml, tags);
+}
+
+template <>
+DDSPIPE_YAML_DllAPI
 DdsTopic YamlReader::get(
         const Yaml& yml,
         const YamlReaderVersion version)
 {
+    YamlValidator::validate<DdsTopic>(yml, version);
+
     DdsTopic object;
     fill<DdsTopic>(object, yml, version);
     return object;
@@ -605,8 +713,22 @@ void YamlReader::fill(
     // Optional QoS
     if (is_tag_present(yml, TOPIC_QOS_TAG))
     {
-        fill<TopicQoS>(object.topic_qos, get_value_in_tag(yml, TOPIC_QOS_TAG), version);
+        object.topic_qos = get<TopicQoS>(yml, TOPIC_QOS_TAG, version);
     }
+}
+
+template <>
+DDSPIPE_YAML_DllAPI
+bool YamlValidator::validate<WildcardDdsFilterTopic>(
+        const Yaml& yml,
+        const YamlReaderVersion& /* version */)
+{
+    const std::set<TagType> tags{
+        TOPIC_NAME_TAG,
+        TOPIC_TYPE_NAME_TAG,
+        TOPIC_QOS_TAG};
+
+    return YamlValidator::validate_tags(yml, tags);
 }
 
 template <>
@@ -615,6 +737,8 @@ WildcardDdsFilterTopic YamlReader::get(
         const Yaml& yml,
         const YamlReaderVersion version)
 {
+    YamlValidator::validate<WildcardDdsFilterTopic>(yml, version);
+
     WildcardDdsFilterTopic object;
     fill<WildcardDdsFilterTopic>(object, yml, version);
     return object;
@@ -627,7 +751,10 @@ void YamlReader::fill(
         const Yaml& yml,
         const YamlReaderVersion version)
 {
-    auto manual_topic = YamlReader::get<WildcardDdsFilterTopic>(yml, version);
+    // Avoid calling YamlReader::get to avoid validation at a lower level
+    WildcardDdsFilterTopic manual_topic;
+    YamlReader::fill<WildcardDdsFilterTopic>(manual_topic, yml, version);
+
     object.first = utils::Heritable<WildcardDdsFilterTopic>::make_heritable(manual_topic);
 
     // Optional participants tag
@@ -639,10 +766,27 @@ void YamlReader::fill(
 
 template <>
 DDSPIPE_YAML_DllAPI
+bool YamlValidator::validate<ManualTopic>(
+        const Yaml& yml,
+        const YamlReaderVersion& /* version */)
+{
+    const std::set<TagType> tags{
+        TOPIC_NAME_TAG,
+        TOPIC_TYPE_NAME_TAG,
+        TOPIC_QOS_TAG,
+        TOPIC_PARTICIPANTS_TAG};
+
+    return YamlValidator::validate_tags(yml, tags);
+}
+
+template <>
+DDSPIPE_YAML_DllAPI
 ManualTopic YamlReader::get(
         const Yaml& yml,
         const YamlReaderVersion version)
 {
+    YamlValidator::validate<ManualTopic>(yml, version);
+
     auto topic = utils::Heritable<WildcardDdsFilterTopic>::make_heritable();
     std::set<ParticipantId> participants;
     ManualTopic object = std::make_pair(topic, participants);
@@ -657,6 +801,8 @@ utils::Heritable<DistributedTopic> YamlReader::get(
         const YamlReaderVersion version)
 {
     // TODO: do not assume it is a Dds Topic
+    YamlValidator::validate<DdsTopic>(yml, version);
+
     auto topic = utils::Heritable<DdsTopic>::make_heritable();
     fill<DdsTopic>(topic.get_reference(), yml, version);
     return topic;
@@ -669,6 +815,8 @@ utils::Heritable<IFilterTopic> YamlReader::get(
         const YamlReaderVersion version)
 {
     // TODO: do not assume it is a Wildcard Topic
+    YamlValidator::validate<WildcardDdsFilterTopic>(yml, version);
+
     auto topic = utils::Heritable<WildcardDdsFilterTopic>::make_heritable();
     fill<WildcardDdsFilterTopic>(topic.get_reference(), yml, version);
     return topic;
@@ -756,10 +904,30 @@ void YamlReader::fill(
 
 template <>
 DDSPIPE_YAML_DllAPI
+bool YamlValidator::validate<TlsConfiguration>(
+        const Yaml& yml,
+        const YamlReaderVersion& /* version */)
+{
+    const std::set<TagType> tags{
+        TLS_PRIVATE_KEY_TAG,
+        TLS_PASSWORD_TAG,
+        TLS_CA_TAG,
+        TLS_CERT_TAG,
+        TLS_SNI_HOST_TAG,
+        TLS_DHPARAMS_TAG,
+        TLS_PEER_VERIFICATION_TAG};
+
+    return YamlValidator::validate_tags(yml, tags);
+}
+
+template <>
+DDSPIPE_YAML_DllAPI
 TlsConfiguration YamlReader::get(
         const Yaml& yml,
         const YamlReaderVersion version)
 {
+    YamlValidator::validate<TlsConfiguration>(yml, version);
+
     TlsConfiguration object;
     fill<TlsConfiguration>(object, yml, version);
     return object;
