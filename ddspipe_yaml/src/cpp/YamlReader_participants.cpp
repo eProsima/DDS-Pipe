@@ -36,6 +36,7 @@
 
 #include <ddspipe_yaml/Yaml.hpp>
 #include <ddspipe_yaml/YamlReader.hpp>
+#include <ddspipe_yaml/YamlValidator.hpp>
 #include <ddspipe_yaml/yaml_configuration_tags.hpp>
 
 namespace eprosima {
@@ -64,10 +65,25 @@ void YamlReader::fill(
 
 template <>
 DDSPIPE_YAML_DllAPI
+bool YamlValidator::validate<participants::ParticipantConfiguration>(
+        const Yaml& yml,
+        const YamlReaderVersion& /* version */)
+{
+    const std::set<TagType> tags{
+        PARTICIPANT_NAME_TAG,
+        PARTICIPANT_KIND_TAG};
+
+    return YamlValidator::validate_tags(yml, tags);
+}
+
+template <>
+DDSPIPE_YAML_DllAPI
 participants::ParticipantConfiguration YamlReader::get(
         const Yaml& yml,
         const YamlReaderVersion version)
 {
+    YamlValidator::validate<participants::ParticipantConfiguration>(yml, version);
+
     participants::ParticipantConfiguration object;
     fill<participants::ParticipantConfiguration>(object, yml, version);
     return object;
@@ -106,10 +122,28 @@ void YamlReader::fill(
 
 template <>
 DDSPIPE_YAML_DllAPI
+bool YamlValidator::validate<participants::EchoParticipantConfiguration>(
+        const Yaml& yml,
+        const YamlReaderVersion& /* version */)
+{
+    const std::set<TagType> tags{
+        PARTICIPANT_NAME_TAG,
+        PARTICIPANT_KIND_TAG,
+        ECHO_DATA_TAG,
+        ECHO_DISCOVERY_TAG,
+        ECHO_VERBOSE_TAG};
+
+    return YamlValidator::validate_tags(yml, tags);
+}
+
+template <>
+DDSPIPE_YAML_DllAPI
 participants::EchoParticipantConfiguration YamlReader::get(
         const Yaml& yml,
         const YamlReaderVersion version)
 {
+    YamlValidator::validate<participants::EchoParticipantConfiguration>(yml, version);
+
     participants::EchoParticipantConfiguration object;
     fill<participants::EchoParticipantConfiguration>(object, yml, version);
     return object;
@@ -164,8 +198,26 @@ void YamlReader::fill(
     // Optional Praticipant Topic QoS
     if (YamlReader::is_tag_present(yml, PARTICIPANT_QOS_TAG))
     {
-        fill<TopicQoS>(object.topic_qos, get_value_in_tag(yml, PARTICIPANT_QOS_TAG), version);
+        object.topic_qos = get<TopicQoS>(yml, PARTICIPANT_QOS_TAG, version);
     }
+}
+
+template <>
+DDSPIPE_YAML_DllAPI
+bool YamlValidator::validate<participants::SimpleParticipantConfiguration>(
+        const Yaml& yml,
+        const YamlReaderVersion& /* version */)
+{
+    const std::set<TagType> tags{
+        PARTICIPANT_NAME_TAG,
+        PARTICIPANT_KIND_TAG,
+        DOMAIN_ID_TAG,
+        WHITELIST_INTERFACES_TAG,
+        TRANSPORT_DESCRIPTORS_TRANSPORT_TAG,
+        IGNORE_PARTICIPANT_FLAGS_TAG,
+        PARTICIPANT_QOS_TAG};
+
+    return YamlValidator::validate_tags(yml, tags);
 }
 
 template <>
@@ -174,6 +226,8 @@ participants::SimpleParticipantConfiguration YamlReader::get(
         const Yaml& yml,
         const YamlReaderVersion version)
 {
+    YamlValidator::validate<participants::SimpleParticipantConfiguration>(yml, version);
+
     participants::SimpleParticipantConfiguration object;
     fill<participants::SimpleParticipantConfiguration>(object, yml, version);
     return object;
@@ -251,10 +305,34 @@ void YamlReader::fill(
 
 template <>
 DDSPIPE_YAML_DllAPI
+bool YamlValidator::validate<participants::DiscoveryServerParticipantConfiguration>(
+        const Yaml& yml,
+        const YamlReaderVersion& /* version */)
+{
+    const std::set<TagType> tags{
+        PARTICIPANT_NAME_TAG,
+        PARTICIPANT_KIND_TAG,
+        DOMAIN_ID_TAG,
+        WHITELIST_INTERFACES_TAG,
+        TRANSPORT_DESCRIPTORS_TRANSPORT_TAG,
+        IGNORE_PARTICIPANT_FLAGS_TAG,
+        PARTICIPANT_QOS_TAG,
+        LISTENING_ADDRESSES_TAG,
+        CONNECTION_ADDRESSES_TAG,
+        TLS_TAG,
+        DISCOVERY_SERVER_GUID_PREFIX_TAG};
+
+    return YamlValidator::validate_tags(yml, tags);
+}
+
+template <>
+DDSPIPE_YAML_DllAPI
 participants::DiscoveryServerParticipantConfiguration YamlReader::get(
         const Yaml& yml,
         const YamlReaderVersion version)
 {
+    YamlValidator::validate<participants::DiscoveryServerParticipantConfiguration>(yml, version);
+
     participants::DiscoveryServerParticipantConfiguration object;
     fill<participants::DiscoveryServerParticipantConfiguration>(object, yml, version);
     return object;
@@ -312,10 +390,34 @@ void YamlReader::fill(
 
 template <>
 DDSPIPE_YAML_DllAPI
+bool YamlValidator::validate<participants::InitialPeersParticipantConfiguration>(
+        const Yaml& yml,
+        const YamlReaderVersion& /* version */)
+{
+    const std::set<TagType> tags{
+        PARTICIPANT_NAME_TAG,
+        PARTICIPANT_KIND_TAG,
+        DOMAIN_ID_TAG,
+        WHITELIST_INTERFACES_TAG,
+        TRANSPORT_DESCRIPTORS_TRANSPORT_TAG,
+        IGNORE_PARTICIPANT_FLAGS_TAG,
+        PARTICIPANT_QOS_TAG,
+        LISTENING_ADDRESSES_TAG,
+        CONNECTION_ADDRESSES_TAG,
+        TLS_TAG,
+        IS_REPEATER_TAG};
+
+    return YamlValidator::validate_tags(yml, tags);
+}
+
+template <>
+DDSPIPE_YAML_DllAPI
 participants::InitialPeersParticipantConfiguration YamlReader::get(
         const Yaml& yml,
         const YamlReaderVersion version)
 {
+    YamlValidator::validate<participants::InitialPeersParticipantConfiguration>(yml, version);
+
     participants::InitialPeersParticipantConfiguration object;
     fill<participants::InitialPeersParticipantConfiguration>(object, yml, version);
     return object;
@@ -339,10 +441,31 @@ void YamlReader::fill(
 
 template <>
 DDSPIPE_YAML_DllAPI
+bool YamlValidator::validate<participants::XmlParticipantConfiguration>(
+        const Yaml& yml,
+        const YamlReaderVersion& /* version */)
+{
+    const std::set<TagType> tags{
+        PARTICIPANT_NAME_TAG,
+        PARTICIPANT_KIND_TAG,
+        DOMAIN_ID_TAG,
+        WHITELIST_INTERFACES_TAG,
+        TRANSPORT_DESCRIPTORS_TRANSPORT_TAG,
+        IGNORE_PARTICIPANT_FLAGS_TAG,
+        PARTICIPANT_QOS_TAG,
+        XML_PARTICIPANT_PROFILE_TAG};
+
+    return YamlValidator::validate_tags(yml, tags);
+}
+
+template <>
+DDSPIPE_YAML_DllAPI
 participants::XmlParticipantConfiguration YamlReader::get(
         const Yaml& yml,
         const YamlReaderVersion version)
 {
+    YamlValidator::validate<participants::XmlParticipantConfiguration>(yml, version);
+
     participants::XmlParticipantConfiguration object;
     fill<participants::XmlParticipantConfiguration>(object, yml, version);
     return object;
