@@ -69,7 +69,7 @@ void CommonReader::init()
     // Create CommonReader
     // Listener must be set in creation as no callbacks should be missed
     // It is safe to do so here as object is already created and callbacks do not require anything set in this method
-    #if FASTRTPS_VERSION_MAJOR <= 2 && FASTRTPS_VERSION_MINOR < 13
+    #if FASTRTPS_VERSION_MAJOR <= 2 && FASTRTPS_VERSION_MINOR < 12
     reader_ = dds_subscriber_->create_datareader_with_payload_pool(
         dds_topic_,
         reckon_reader_qos_(),
