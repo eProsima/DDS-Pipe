@@ -74,7 +74,7 @@ bool YamlValidator::validate<participants::ParticipantConfiguration>(
         PARTICIPANT_NAME_TAG,
         PARTICIPANT_KIND_TAG};
 
-    return YamlValidator::validate_tags_(yml, tags);
+    return YamlValidator::validate_tags(yml, tags);
 }
 
 template <>
@@ -134,7 +134,7 @@ bool YamlValidator::validate<participants::EchoParticipantConfiguration>(
         ECHO_DISCOVERY_TAG,
         ECHO_VERBOSE_TAG};
 
-    return YamlValidator::validate_tags_(yml, tags);
+    return YamlValidator::validate_tags(yml, tags);
 }
 
 template <>
@@ -217,7 +217,7 @@ bool YamlValidator::validate<participants::SimpleParticipantConfiguration>(
         IGNORE_PARTICIPANT_FLAGS_TAG,
         PARTICIPANT_QOS_TAG};
 
-    return YamlValidator::validate_tags_(yml, tags);
+    return YamlValidator::validate_tags(yml, tags);
 }
 
 template <>
@@ -309,7 +309,7 @@ bool YamlValidator::validate<participants::DiscoveryServerParticipantConfigurati
         TLS_TAG,
         DISCOVERY_SERVER_GUID_PREFIX_TAG};
 
-    return YamlValidator::validate_tags_(yml, tags);
+    return YamlValidator::validate_tags(yml, tags);
 }
 
 template <>
@@ -393,7 +393,7 @@ bool YamlValidator::validate<participants::InitialPeersParticipantConfiguration>
         TLS_TAG,
         IS_REPEATER_TAG};
 
-    return YamlValidator::validate_tags_(yml, tags);
+    return YamlValidator::validate_tags(yml, tags);
 }
 
 template <>
@@ -441,7 +441,7 @@ bool YamlValidator::validate<participants::XmlParticipantConfiguration>(
         PARTICIPANT_QOS_TAG,
         XML_PARTICIPANT_PROFILE_TAG};
 
-    return YamlValidator::validate_tags_(yml, tags);
+    return YamlValidator::validate_tags(yml, tags);
 }
 
 template <>

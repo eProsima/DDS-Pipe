@@ -24,7 +24,7 @@ namespace eprosima {
 namespace ddspipe {
 namespace yaml {
 
-bool YamlValidator::validate_tags_(
+bool YamlValidator::validate_tags(
         const Yaml& yml,
         const std::set<TagType>& tags)
 {

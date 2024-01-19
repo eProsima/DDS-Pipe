@@ -65,7 +65,7 @@ bool YamlValidator::validate<participants::XmlHandlerConfiguration>(
         XML_RAW_TAG,
         XML_FILES_TAG};
 
-    return YamlValidator::validate_tags_(yml, tags);
+    return YamlValidator::validate_tags(yml, tags);
 }
 
 template <>
@@ -95,7 +95,7 @@ bool YamlValidator::validate<core::RoutesConfiguration>(
         ROUTES_SRC_TAG,
         ROUTES_DST_TAG};
 
-    return YamlValidator::validate_tags_(yml, tags);
+    return YamlValidator::validate_tags(yml, tags);
 }
 
 template <>
@@ -174,7 +174,7 @@ bool YamlValidator::validate<core::TopicRoutesConfiguration>(
         TOPIC_TYPE_NAME_TAG,
         ROUTES_TAG};
 
-    return YamlValidator::validate_tags_(yml, tags);
+    return YamlValidator::validate_tags(yml, tags);
 }
 
 template <>

@@ -162,7 +162,7 @@ bool YamlValidator::validate<GuidPrefix>(
         DISCOVERY_SERVER_ID_TAG,
         DISCOVERY_SERVER_ID_ROS_TAG};
 
-    return YamlValidator::validate_tags_(yml, tags);
+    return YamlValidator::validate_tags(yml, tags);
 }
 
 template <>
@@ -216,7 +216,7 @@ bool YamlValidator::validate<Address>(
         ADDRESS_EXTERNAL_PORT_TAG,
         ADDRESS_TRANSPORT_TAG};
 
-    return YamlValidator::validate_tags_(yml, tags);
+    return YamlValidator::validate_tags(yml, tags);
 }
 
 template <>
@@ -379,7 +379,7 @@ bool YamlValidator::validate<DiscoveryServerConnectionAddress>(
             break;
     }
 
-    return YamlValidator::validate_tags_(yml, tags);
+    return YamlValidator::validate_tags(yml, tags);
 }
 
 template <>
@@ -505,7 +505,7 @@ bool YamlValidator::validate<TopicQoS>(
         QOS_MAX_RX_RATE_TAG,
         QOS_DOWNSAMPLING_TAG};
 
-    return YamlValidator::validate_tags_(yml, tags);
+    return YamlValidator::validate_tags(yml, tags);
 }
 
 template <>
@@ -549,7 +549,7 @@ bool YamlValidator::validate<DdsTopic>(
         TOPIC_NAME_TAG,
         TOPIC_TYPE_NAME_TAG};
 
-    return YamlValidator::validate_tags_(yml, tags);
+    return YamlValidator::validate_tags(yml, tags);
 }
 
 template <>
@@ -599,7 +599,7 @@ bool YamlValidator::validate<WildcardDdsFilterTopic>(
         TOPIC_TYPE_NAME_TAG,
         TOPIC_QOS_TAG};
 
-    return YamlValidator::validate_tags_(yml, tags);
+    return YamlValidator::validate_tags(yml, tags);
 }
 
 template <>
@@ -647,7 +647,7 @@ bool YamlValidator::validate<ManualTopic>(
         TOPIC_QOS_TAG,
         TOPIC_PARTICIPANTS_TAG};
 
-    return YamlValidator::validate_tags_(yml, tags);
+    return YamlValidator::validate_tags(yml, tags);
 }
 
 template <>
@@ -788,7 +788,7 @@ bool YamlValidator::validate<TlsConfiguration>(
         TLS_DHPARAMS_TAG,
         TLS_PEER_VERIFICATION_TAG};
 
-    return YamlValidator::validate_tags_(yml, tags);
+    return YamlValidator::validate_tags(yml, tags);
 }
 
 template <>

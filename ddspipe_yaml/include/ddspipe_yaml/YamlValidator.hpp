@@ -33,10 +33,8 @@ public:
             const Yaml& yml,
             const YamlReaderVersion& version = YamlReaderVersion::LATEST);
 
-protected:
-
     //! TODO
-    static bool validate_tags_(
+    static bool validate_tags(
             const Yaml& yml,
             const std::set<TagType>& tags);
 };
