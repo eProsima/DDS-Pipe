@@ -44,9 +44,9 @@ std::string file_name_by_type(
         SupportedType type)
 {
     #if FASTRTPS_VERSION_MAJOR <= 2 && FASTRTPS_VERSION_MINOR < 13
-        return std::string("types/v1/idls/") + to_string(type) + ".idl";
+    return std::string("types/v1/idls/") + to_string(type) + ".idl";
     #else
-        return std::string("types/v2/idls/") + to_string(type) + ".idl";
+    return std::string("types/v2/idls/") + to_string(type) + ".idl";
     #endif // if FASTRTPS_VERSION_MAJOR <= 2 && FASTRTPS_VERSION_MINOR < 13
 }
 

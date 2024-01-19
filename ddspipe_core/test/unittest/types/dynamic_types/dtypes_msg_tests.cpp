@@ -39,9 +39,9 @@ std::string file_name_by_type(
         SupportedType type)
 {
     #if FASTRTPS_VERSION_MAJOR <= 2 && FASTRTPS_VERSION_MINOR < 13
-        return std::string("types/v1/msgs/") + to_string(type) + ".msg";
+    return std::string("types/v1/msgs/") + to_string(type) + ".msg";
     #else
-        return std::string("types/v2/msgs/") + to_string(type) + ".msg";
+    return std::string("types/v2/msgs/") + to_string(type) + ".msg";
     #endif // if FASTRTPS_VERSION_MAJOR <= 2 && FASTRTPS_VERSION_MINOR < 13
 }
 
