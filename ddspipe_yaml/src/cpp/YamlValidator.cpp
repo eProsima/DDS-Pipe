@@ -25,8 +25,8 @@ namespace ddspipe {
 namespace yaml {
 
 bool YamlValidator::validate_tags_(
-    const Yaml& yml,
-    const std::set<TagType>& tags)
+        const Yaml& yml,
+        const std::set<TagType>& tags)
 {
     if (!yml.IsMap() && !yml.IsNull())
     {
