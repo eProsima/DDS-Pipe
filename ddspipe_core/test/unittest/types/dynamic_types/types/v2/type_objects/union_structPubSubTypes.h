@@ -133,4 +133,3 @@ public:
 };
 
 #endif // _FAST_DDS_GENERATED_UNION_STRUCT_PUBSUBTYPES_H_
-

@@ -70,20 +70,7 @@ compile_library(
 # Test
 ###############################################################################
 # Compile tests if CMake options requires it
-
-# Determine Fast DDS version
-if ("${fastrtps_VERSION}" VERSION_LESS 2.13)
-    set(DDS_TYPES_VERSION "/v2/")
-else()
-    set(DDS_TYPES_VERSION "/v1/")
-endif()
-
-file(GLOB_RECURSE TEST_FILES "${PROJECT_SOURCE_DIR}/test/")
-foreach(TEST_FILE ${TEST_FILES})
-    if(NOT TEST_FILE MATCHES ${DDS_TYPES_VERSION})
-    compile_test_library(${TEST_FILE})
-    endif()
-endforeach()
+compile_test_library("${PROJECT_SOURCE_DIR}/test/")
 
 ###############################################################################
 # Packaging

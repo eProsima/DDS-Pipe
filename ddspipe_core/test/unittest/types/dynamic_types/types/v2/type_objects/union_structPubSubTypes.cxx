@@ -222,4 +222,3 @@ bool union_structPubSubType::getKey(
     }
     return true;
 }
-
