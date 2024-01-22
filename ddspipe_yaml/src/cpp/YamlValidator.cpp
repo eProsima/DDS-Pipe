@@ -35,6 +35,8 @@ bool YamlValidator::validate_tags(
     }
 
     // Check if there are any extra tags that are not in either list
+    bool has_extra_tags = false;
+
     for (const auto& tag_it : yml)
     {
         const auto& tag = tag_it.first.as<TagType>();
@@ -42,11 +44,11 @@ bool YamlValidator::validate_tags(
         if (!tags.count(tag))
         {
             logWarning(DDSPIPE_YAML, "Tag <" << tag << "> is not a valid tag.");
-            return false;
+            has_extra_tags = true;
         }
     }
 
-    return true;
+    return !has_extra_tags;
 }
 
 } /* namespace yaml */
