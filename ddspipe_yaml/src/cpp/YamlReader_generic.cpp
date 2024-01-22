@@ -38,6 +38,7 @@
 
 #include <ddspipe_yaml/Yaml.hpp>
 #include <ddspipe_yaml/YamlReader.hpp>
+#include <ddspipe_yaml/YamlValidator.hpp>
 #include <ddspipe_yaml/yaml_configuration_tags.hpp>
 
 namespace eprosima {
@@ -292,10 +293,29 @@ std::string YamlReader::get<std::string>(
 
 template <>
 DDSPIPE_YAML_DllAPI
+bool YamlValidator::validate<utils::Timestamp>(
+        const Yaml& yml,
+        const YamlReaderVersion& /* version */)
+{
+    const std::set<TagType> tags{
+        TIMESTAMP_DATETIME_FORMAT_TAG,
+        TIMESTAMP_LOCAL_TAG,
+        TIMESTAMP_DATETIME_TAG,
+        TIMESTAMP_MILLISECONDS_TAG,
+        TIMESTAMP_MICROSECONDS_TAG,
+        TIMESTAMP_NANOSECONDS_TAG};
+
+    return YamlValidator::validate_tags(yml, tags);
+}
+
+template <>
+DDSPIPE_YAML_DllAPI
 utils::Timestamp YamlReader::get<utils::Timestamp>(
         const Yaml& yml,
         const YamlReaderVersion version /* version */)
 {
+    YamlValidator::validate<utils::Timestamp>(yml, version);
+
     utils::Timestamp ret_timestamp;
     std::string datetime_str;
     std::string datetime_format("%Y-%m-%d_%H-%M-%S");
