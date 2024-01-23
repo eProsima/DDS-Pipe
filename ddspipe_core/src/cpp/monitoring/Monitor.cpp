@@ -22,12 +22,12 @@ namespace core {
 
 Monitor::Monitor()
 {
-    start_thread();
+    start_thread_();
 }
 
 Monitor::~Monitor()
 {
-    stop_thread();
+    stop_thread_();
     clear_consumers();
 }
 
@@ -35,46 +35,6 @@ Monitor& Monitor::get_instance()
 {
     static Monitor instance;
     return instance;
-}
-
-void Monitor::start_thread()
-{
-    enabled_ = true;
-    worker_ = std::thread(&Monitor::run, this);
-}
-
-void Monitor::stop_thread()
-{
-    {
-        std::unique_lock<std::mutex> lock(thread_mutex_);
-        enabled_ = false;
-    }
-
-    cv_.notify_one();
-
-    if (worker_.joinable())
-    {
-        worker_.join();
-    }
-}
-
-void Monitor::run()
-{
-    std::unique_lock<std::mutex> lock(thread_mutex_);
-
-    do {
-        const auto& data = Monitor::get_instance().save_data();
-
-        for (const auto& consumer : consumers_)
-        {
-            consumer->consume_topics(data);
-        }
-
-        // Wait for either the stop signal or for 5 seconds to pass
-    } while (!cv_.wait_for(lock, std::chrono::milliseconds(period_), [this]
-    {
-        return !enabled_;
-    }));
 }
 
 void Monitor::register_consumer(
@@ -97,32 +57,74 @@ void Monitor::msg_received(
     // Take the lock to prevent:
     //      1. Changing the data while it's being saved.
     //      2. Simultaneous calls to msg_received.
-    std::lock_guard<std::mutex> lock(data_mutex_);
+    std::lock_guard<std::mutex> lock(topics_mutex_);
 
-    if (!data_.count(topic) || !data_[topic].count(participant_id))
+    if (!topics_data_.count(topic) || !topics_data_[topic].count(participant_id))
     {
         // First message received for topic & participant
 
         // Save the time
-        data_[topic][participant_id].start_time = utils::now();
+        topics_data_[topic][participant_id].start_time = utils::now();
 
         // Save the participant_id
-        data_[topic][participant_id].data.participant_id(participant_id);
+        topics_data_[topic][participant_id].data.participant_id(participant_id);
     }
 
     // Increase the count of the received messages
-    data_[topic][participant_id].data.msgs_received(data_[topic][participant_id].data.msgs_received() + 1);
+    topics_data_[topic][participant_id].data.msgs_received(topics_data_[topic][participant_id].data.msgs_received() + 1);
 }
 
-MonitoringData Monitor::save_data()
+void Monitor::start_thread_()
+{
+    enabled_ = true;
+    worker_ = std::thread(&Monitor::run_, this);
+}
+
+void Monitor::stop_thread_()
+{
+    {
+        std::unique_lock<std::mutex> lock(thread_mutex_);
+        enabled_ = false;
+    }
+
+    cv_.notify_one();
+
+    if (worker_.joinable())
+    {
+        worker_.join();
+    }
+}
+
+void Monitor::run_()
+{
+    std::unique_lock<std::mutex> lock(thread_mutex_);
+
+    do {
+        const auto& topics_data = Monitor::get_instance().save_topics_data_();
+        const auto& status_data = Monitor::get_instance().save_status_data_();
+
+        for (const auto& consumer : consumers_)
+        {
+            consumer->consume_topics(topics_data);
+            consumer->consume_status(status_data);
+        }
+
+        // Wait for either the stop signal or for 5 seconds to pass
+    } while (!cv_.wait_for(lock, std::chrono::milliseconds(period_), [this]
+    {
+        return !enabled_;
+    }));
+}
+
+MonitoringData Monitor::save_topics_data_()
 {
     // Take the lock to prevent saving the data while it's changing
-    std::lock_guard<std::mutex> lock(data_mutex_);
+    std::lock_guard<std::mutex> lock(topics_mutex_);
 
-    std::vector<DdsTopic> topics;
+    std::vector<DdsTopic> topics_data;
 
     // Iterate through the different topics
-    for (const auto& topic : data_)
+    for (const auto& topic : topics_data_)
     {
         const auto& dds_topic = topic.first;
         const auto& participants = topic.second;
@@ -156,15 +158,23 @@ MonitoringData Monitor::save_data()
         topic_data.data(topic_participants);
 
         // Save the topic data
-        topics.push_back(topic_data);
+        topics_data.push_back(topic_data);
     }
 
     MonitoringData data;
 
     // Save the topics' data
-    data.topics(topics);
+    data.topics(topics_data);
 
     return data;
+}
+
+MonitoringStatus Monitor::save_status_data_()
+{
+    // Take the lock to prevent saving the data while it's changing
+    std::lock_guard<std::mutex> lock(status_mutex_);
+
+    return status_data_;
 }
 
 } //namespace core
