@@ -21,8 +21,7 @@
 #include <fastdds/dds/topic/Topic.hpp>
 #include <fastdds/dds/topic/TypeSupport.hpp>
 
-#include <ddspipe_core/configuration/MonitorStatusConfiguration.hpp>
-#include <ddspipe_core/configuration/MonitorTopicsConfiguration.hpp>
+#include <ddspipe_core/configuration/MonitorConfiguration.hpp>
 #include <ddspipe_core/monitoring/IMonitorConsumer.hpp>
 #include <ddspipe_core/types/monitoring/status/MonitoringStatus.h>
 #include <ddspipe_core/types/monitoring/topics/MonitoringData.h>
@@ -41,8 +40,7 @@ public:
 
     // TODO
     DdsMonitorConsumer(
-            const MonitorStatusConfiguration& status_config,
-            const MonitorTopicsConfiguration& topics_config);
+            const MonitorConfiguration& configuration);
 
     // TODO
     ~DdsMonitorConsumer();

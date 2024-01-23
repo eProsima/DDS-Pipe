@@ -32,8 +32,7 @@ namespace core {
 
 
 DdsMonitorConsumer::DdsMonitorConsumer(
-        const MonitorStatusConfiguration& status_config,
-        const MonitorTopicsConfiguration& topics_config)
+        const MonitorConfiguration& configuration)
     : status_type_(new MonitoringStatusPubSubType())
     , topics_type_(new MonitoringDataPubSubType())
 {
@@ -41,7 +40,7 @@ DdsMonitorConsumer::DdsMonitorConsumer(
     pqos.name("DdsPipeMonitorParticipant");
 
     // Create the participant
-    participant_ = fastdds::dds::DomainParticipantFactory::get_instance()->create_participant(85, pqos);
+    participant_ = fastdds::dds::DomainParticipantFactory::get_instance()->create_participant(configuration.domain, pqos);
 
     if (participant_ == nullptr)
     {
@@ -67,7 +66,7 @@ DdsMonitorConsumer::DdsMonitorConsumer(
     // STATUS
 
     // Create the topic
-    status_topic_ = create_topic_(status_config.topic_name, "MonitoringStatus");
+    status_topic_ = create_topic_(configuration.status.topic_name, "MonitoringStatus");
 
     // Create the writer
     status_writer_ = create_writer_(status_topic_);
@@ -75,7 +74,7 @@ DdsMonitorConsumer::DdsMonitorConsumer(
     // TOPICS
 
     // Create the topic
-    topics_topic_ = create_topic_(topics_config.topic_name, "MonitoringData");
+    topics_topic_ = create_topic_(configuration.topics.topic_name, "MonitoringData");
 
     // Create the writer
     topics_writer_ = create_writer_(topics_topic_);

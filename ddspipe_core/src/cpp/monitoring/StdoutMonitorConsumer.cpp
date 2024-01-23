@@ -22,6 +22,11 @@ namespace eprosima {
 namespace ddspipe {
 namespace core {
 
+StdoutMonitorConsumer::StdoutMonitorConsumer(const MonitorConfiguration& configuration)
+{
+    // TODO
+}
+
 void StdoutMonitorConsumer::consume_status(const MonitoringStatus& data) const
 {
     std::cout << data << std::endl;

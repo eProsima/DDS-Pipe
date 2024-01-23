@@ -223,6 +223,12 @@ void YamlReader::fill(
         const Yaml& yml,
         const YamlReaderVersion version)
 {
+    // Optional domain
+    if (is_tag_present(yml, MONITOR_DOMAIN_TAG))
+    {
+        object.domain = get<int>(yml, MONITOR_DOMAIN_TAG, version);
+    }
+
     // Optional topics
     if (is_tag_present(yml, MONITOR_TOPICS_TAG))
     {

@@ -43,6 +43,7 @@ constexpr const char* TOPIC_PARTICIPANTS_TAG("participants");   //! List of part
 
 // Monitor related tags
 constexpr const char* MONITOR_TAG("monitor"); //! Monitor configuration
+constexpr const char* MONITOR_DOMAIN_TAG("domain"); //! Domain Id of the monitor's participant
 
 constexpr const char* MONITOR_TOPICS_TAG("topics"); //! Monitor topics configuration
 constexpr const char* MONITOR_TOPICS_ENABLE_TAG("enable"); //! Enable monitoring topics

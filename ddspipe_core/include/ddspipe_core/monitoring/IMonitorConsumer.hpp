@@ -15,6 +15,7 @@
 
 #pragma once
 
+#include <ddspipe_core/configuration/MonitorConfiguration.hpp>
 #include <ddspipe_core/types/monitoring/status/MonitoringStatus.h>
 #include <ddspipe_core/types/monitoring/topics/MonitoringData.h>
 
