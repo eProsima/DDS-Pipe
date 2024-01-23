@@ -15,6 +15,7 @@
 
 #include <iostream>
 
+#include <ddspipe_core/monitoring/MonitorStatusError.hpp>
 #include <ddspipe_core/monitoring/StdoutMonitorConsumer.hpp>
 
 
@@ -40,7 +41,40 @@ void StdoutMonitorConsumer::consume(const MonitoringData& data) const
 std::ostream& operator<<(std::ostream& os, const MonitoringStatus& data) {
     os << "Monitoring Status: [";
 
-    // TODO
+    bool is_first_error = true;
+
+    auto print_error = [&](const MonitorStatusError& error)
+    {
+        if (!is_first_error)
+        {
+            os << ", ";
+        }
+
+        os << error;
+        is_first_error = false;
+    };
+
+    const auto& status = data.error_status();
+
+    if (status.mcap_file_creation_failure())
+    {
+        print_error(MonitorStatusError::MCAP_FILE_CREATION_FAILURE);
+    }
+
+    if (status.disk_full())
+    {
+        print_error(MonitorStatusError::DISK_FULL);
+    }
+
+    if (status.type_mismatch())
+    {
+        print_error(MonitorStatusError::TYPE_MISMATCH);
+    }
+
+    if (status.qos_mismatch())
+    {
+        print_error(MonitorStatusError::QOS_MISMATCH);
+    }
 
     os << "]";
     return os;
