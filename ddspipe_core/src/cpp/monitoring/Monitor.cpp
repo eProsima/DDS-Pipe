@@ -71,7 +71,7 @@ void Monitor::run()
         }
 
         // Wait for either the stop signal or for 5 seconds to pass
-    } while (!cv_.wait_for(lock, std::chrono::seconds(5), [this]
+    } while (!cv_.wait_for(lock, std::chrono::milliseconds(period_), [this]
     {
         return !enabled_;
     }));

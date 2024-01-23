@@ -37,7 +37,7 @@ class DdsMonitorConsumer : public IMonitorConsumer
 public:
 
     // TODO
-    DdsMonitorConsumer();
+    DdsMonitorConsumer(std::string topic_name);
 
     // TODO
     ~DdsMonitorConsumer();
