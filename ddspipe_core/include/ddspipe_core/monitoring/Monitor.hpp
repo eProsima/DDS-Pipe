@@ -131,7 +131,7 @@ protected:
 
 // The names of variables inside macros must be unique to avoid conflicts with external variables
 // TODO: change to the positive case
-#if !MONITOR_ENABLED
+#ifdef MONITOR_ENABLED
 
 #define MONITOR_MSG_RX_IMPL_(topic, participant_id) eprosima::ddspipe::core::Monitor::get_instance().msg_received(topic, \
             participant_id)
