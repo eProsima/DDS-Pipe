@@ -54,6 +54,10 @@ public:
 protected:
 
     // TODO
+    template <typename T>
+    void consume_(fastdds::dds::DataWriter* writer, const T& data) const;
+
+    // TODO
     fastdds::dds::Topic* create_topic_(const std::string& topic_name, const std::string& type_name);
 
     // TODO

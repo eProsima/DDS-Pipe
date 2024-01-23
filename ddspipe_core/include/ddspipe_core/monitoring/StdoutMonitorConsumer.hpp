@@ -40,6 +40,12 @@ public:
 
     // TODO
     virtual void consume_topics(const MonitoringData& data) const override;
+
+protected:
+
+    // TODO
+    template <typename T>
+    void consume_(const T& data) const;
 };
 
 std::ostream& operator<<(std::ostream& os, const MonitoringStatus& data);
