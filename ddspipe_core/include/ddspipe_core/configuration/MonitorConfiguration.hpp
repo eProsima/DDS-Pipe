@@ -55,6 +55,9 @@ struct MonitorConfiguration : public IConfiguration
     /////////////////////////
 
     //! TODO
+    int domain = 0;
+
+    //! TODO
     MonitorTopicsConfiguration topics;
 
     //! TODO
