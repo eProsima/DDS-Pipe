@@ -36,16 +36,10 @@ public:
             const MonitorConfiguration& configuration);
 
     // TODO
-    virtual void consume_status(const MonitoringStatus& data) const override;
+    virtual void consume(const MonitoringStatus& data) const override;
 
     // TODO
-    virtual void consume_topics(const MonitoringData& data) const override;
-
-protected:
-
-    // TODO
-    template <typename T>
-    void consume_(const T& data) const;
+    virtual void consume(const MonitoringData& data) const override;
 };
 
 std::ostream& operator<<(std::ostream& os, const MonitoringStatus& data);

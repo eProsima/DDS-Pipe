@@ -27,18 +27,12 @@ StdoutMonitorConsumer::StdoutMonitorConsumer(const MonitorConfiguration& configu
     // TODO
 }
 
-void StdoutMonitorConsumer::consume_status(const MonitoringStatus& data) const
+void StdoutMonitorConsumer::consume(const MonitoringStatus& data) const
 {
-    consume_(data);
+    std::cout << data << std::endl;
 }
 
-void StdoutMonitorConsumer::consume_topics(const MonitoringData& data) const
-{
-    consume_(data);
-}
-
-template <typename T>
-void StdoutMonitorConsumer::consume_(const T& data) const
+void StdoutMonitorConsumer::consume(const MonitoringData& data) const
 {
     std::cout << data << std::endl;
 }

@@ -46,16 +46,12 @@ public:
     ~DdsMonitorConsumer();
 
     // TODO
-    void consume_status(const MonitoringStatus& data) const override;
+    void consume(const MonitoringStatus& data) const override;
 
     // TODO
-    void consume_topics(const MonitoringData& data) const override;
+    void consume(const MonitoringData& data) const override;
 
 protected:
-
-    // TODO
-    template <typename T>
-    void consume_(fastdds::dds::DataWriter* writer, const T& data) const;
 
     // TODO
     fastdds::dds::Topic* create_topic_(const std::string& topic_name, const std::string& type_name);
