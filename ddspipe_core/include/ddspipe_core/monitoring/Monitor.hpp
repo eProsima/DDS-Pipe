@@ -23,6 +23,7 @@
 #include <cpp_utils/time/time_utils.hpp>
 
 #include <ddspipe_core/monitoring/IMonitorConsumer.hpp>
+#include <ddspipe_core/types/monitoring/status/MonitoringStatus.h>
 #include <ddspipe_core/types/monitoring/topics/MonitoringData.h>
 #include <ddspipe_core/types/participant/ParticipantId.hpp>
 #include <ddspipe_core/types/topic/dds/DdsTopic.hpp>
@@ -75,16 +76,19 @@ protected:
     ~Monitor();
 
     // TODO
-    void start_thread();
+    void start_thread_();
 
     // TODO
-    void stop_thread();
+    void stop_thread_();
 
     // TODO
-    void run();
+    void run_();
 
     // TODO
-    MonitoringData save_data();
+    MonitoringData save_topics_data_();
+
+    // TODO
+    MonitoringStatus save_status_data_();
 
     // TODO
     std::thread worker_;
@@ -98,11 +102,17 @@ protected:
     // TODO
     std::condition_variable cv_;
 
-    //! Mutex to prevent simultaneous calls to msg_received
-    std::mutex data_mutex_;
+    // TODO
+    std::mutex topics_mutex_;
 
     // TODO
-    std::map<types::DdsTopic, std::map<types::ParticipantId, MonitoringInfo>> data_;
+    std::mutex status_mutex_;
+
+    // TODO
+    std::map<types::DdsTopic, std::map<types::ParticipantId, MonitoringInfo>> topics_data_;
+
+    // TODO
+    MonitoringStatus status_data_;
 
     // TODO
     std::vector<IMonitorConsumer*> consumers_;
