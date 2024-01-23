@@ -17,6 +17,7 @@
 
 #include <ddspipe_core/configuration/RoutesConfiguration.hpp>
 #include <ddspipe_core/configuration/TopicRoutesConfiguration.hpp>
+#include <ddspipe_core/configuration/MonitorTopicsConfiguration.hpp>
 #include <ddspipe_core/types/topic/dds/DdsTopic.hpp>
 #include <ddspipe_core/types/topic/dds/DistributedTopic.hpp>
 #include <ddspipe_participants/xml/XmlHandler.hpp>
@@ -206,6 +207,47 @@ core::TopicRoutesConfiguration YamlReader::get(
 {
     core::TopicRoutesConfiguration object;
     fill<core::TopicRoutesConfiguration>(object, yml, version);
+    return object;
+}
+
+/*************************
+* Monitor Configuration  *
+**************************/
+
+template <>
+DDSPIPE_YAML_DllAPI
+void YamlReader::fill(
+        core::MonitorTopicsConfiguration& object,
+        const Yaml& yml,
+        const YamlReaderVersion version)
+{
+    // Optional enable
+    if (is_tag_present(yml, MONITOR_TOPICS_ENABLE_TAG))
+    {
+        object.enabled = get<bool>(yml, MONITOR_TOPICS_ENABLE_TAG, version);
+    }
+
+    // Optional period
+    if (is_tag_present(yml, MONITOR_TOPICS_PERIOD_TAG))
+    {
+        object.period = get<uint32_t>(yml, MONITOR_TOPICS_PERIOD_TAG, version);
+    }
+
+    // Optional topic name
+    if (is_tag_present(yml, MONITOR_TOPICS_TOPIC_NAME_TAG))
+    {
+        object.topic_name = get<std::string>(yml, MONITOR_TOPICS_TOPIC_NAME_TAG, version);
+    }
+}
+
+template <>
+DDSPIPE_YAML_DllAPI
+core::MonitorTopicsConfiguration YamlReader::get(
+        const Yaml& yml,
+        const YamlReaderVersion version)
+{
+    core::MonitorTopicsConfiguration object;
+    fill<core::MonitorTopicsConfiguration>(object, yml, version);
     return object;
 }
 

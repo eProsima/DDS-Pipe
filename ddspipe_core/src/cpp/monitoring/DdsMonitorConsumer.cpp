@@ -30,7 +30,7 @@ namespace ddspipe {
 namespace core {
 
 
-DdsMonitorConsumer::DdsMonitorConsumer()
+DdsMonitorConsumer::DdsMonitorConsumer(std::string topic_name)
     : type_(new MonitoringDataPubSubType())
 {
     fastdds::dds::DomainParticipantQos pqos;
@@ -60,7 +60,7 @@ DdsMonitorConsumer::DdsMonitorConsumer()
     }
 
     // Create the topic
-    topic_ = participant_->create_topic("MonitoringDataTopic", "MonitoringData", fastdds::dds::TOPIC_QOS_DEFAULT);
+    topic_ = participant_->create_topic(topic_name, "MonitoringData", fastdds::dds::TOPIC_QOS_DEFAULT);
 
     if (topic_ == nullptr)
     {

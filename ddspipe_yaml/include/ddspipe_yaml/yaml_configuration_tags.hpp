@@ -41,6 +41,13 @@ constexpr const char* TOPIC_TYPE_NAME_TAG("type");              //! Type name of
 constexpr const char* TOPIC_QOS_TAG("qos");                     //! QoS of a topic
 constexpr const char* TOPIC_PARTICIPANTS_TAG("participants");   //! List of participants of a topic
 
+// Monitor related tags
+constexpr const char* MONITOR_TAG("monitor"); //! Monitor configuration
+constexpr const char* MONITOR_TOPICS_TAG("topics"); //! Monitor topics configuration
+constexpr const char* MONITOR_TOPICS_ENABLE_TAG("enable"); //! Enable monitoring topics
+constexpr const char* MONITOR_TOPICS_PERIOD_TAG("period"); //! Period to publish the topics' monitoring data at
+constexpr const char* MONITOR_TOPICS_TOPIC_NAME_TAG("topic-name"); //! Topic name to publish the topics' monitoring data
+
 // QoS related tags
 constexpr const char* QOS_RELIABLE_TAG("reliability"); //! The Endpoints of that topic will be configured as RELIABLE
 constexpr const char* QOS_TRANSIENT_TAG("durability"); //! The Endpoints of that topic will be configured as TRANSIENT_LOCAL

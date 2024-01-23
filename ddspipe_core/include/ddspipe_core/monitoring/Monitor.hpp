@@ -106,6 +106,9 @@ protected:
 
     // TODO
     std::vector<IMonitorConsumer*> consumers_;
+
+    // TODO
+    int period_ = 1000;
 };
 
 // The names of variables inside macros must be unique to avoid conflicts with external variables
