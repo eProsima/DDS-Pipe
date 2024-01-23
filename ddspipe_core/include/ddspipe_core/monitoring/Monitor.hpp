@@ -23,7 +23,7 @@
 #include <cpp_utils/time/time_utils.hpp>
 
 #include <ddspipe_core/monitoring/IMonitorConsumer.hpp>
-#include <ddspipe_core/types/monitoring/MonitoringData.h>
+#include <ddspipe_core/types/monitoring/topics/MonitoringData.h>
 #include <ddspipe_core/types/participant/ParticipantId.hpp>
 #include <ddspipe_core/types/topic/dds/DdsTopic.hpp>
 

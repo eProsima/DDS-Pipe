@@ -22,7 +22,7 @@
 #include <fastdds/dds/topic/TypeSupport.hpp>
 
 #include <ddspipe_core/monitoring/IMonitorConsumer.hpp>
-#include <ddspipe_core/types/monitoring/MonitoringData.h>
+#include <ddspipe_core/types/monitoring/topics/MonitoringData.h>
 
 
 namespace eprosima {

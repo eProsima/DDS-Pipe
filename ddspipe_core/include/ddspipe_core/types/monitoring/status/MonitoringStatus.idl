@@ -1,0 +1,11 @@
+struct MonitoringErrorStatus {
+    boolean has_errors;
+    boolean mcap_file_creation_failure;
+    boolean disk_full;
+    boolean type_mismatch;
+    boolean qos_mismatch;
+};
+
+struct MonitoringStatus {
+    MonitoringErrorStatus error_status;
+};

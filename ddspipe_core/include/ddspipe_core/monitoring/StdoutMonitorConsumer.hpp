@@ -15,7 +15,7 @@
 
 #pragma once
 
-#include <ddspipe_core/types/monitoring/MonitoringData.h>
+#include <ddspipe_core/types/monitoring/topics/MonitoringData.h>
 #include <ddspipe_core/monitoring/IMonitorConsumer.hpp>
 
 namespace eprosima {
