@@ -67,7 +67,7 @@ void Monitor::run()
 
         for (const auto& consumer : consumers_)
         {
-            consumer->consume(data);
+            consumer->consume_topics(data);
         }
 
         // Wait for either the stop signal or for 5 seconds to pass

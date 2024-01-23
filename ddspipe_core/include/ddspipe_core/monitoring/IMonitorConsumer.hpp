@@ -15,6 +15,7 @@
 
 #pragma once
 
+#include <ddspipe_core/types/monitoring/status/MonitoringStatus.h>
 #include <ddspipe_core/types/monitoring/topics/MonitoringData.h>
 
 
@@ -30,7 +31,10 @@ class IMonitorConsumer
 public:
 
     // TODO
-    virtual void consume(const MonitoringData& data) const = 0;
+    virtual void consume_status(const MonitoringStatus& data) const = 0;
+
+    // TODO
+    virtual void consume_topics(const MonitoringData& data) const = 0;
 };
 
 } // namespace core

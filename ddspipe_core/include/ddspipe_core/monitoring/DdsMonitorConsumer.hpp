@@ -21,7 +21,10 @@
 #include <fastdds/dds/topic/Topic.hpp>
 #include <fastdds/dds/topic/TypeSupport.hpp>
 
+#include <ddspipe_core/configuration/MonitorStatusConfiguration.hpp>
+#include <ddspipe_core/configuration/MonitorTopicsConfiguration.hpp>
 #include <ddspipe_core/monitoring/IMonitorConsumer.hpp>
+#include <ddspipe_core/types/monitoring/status/MonitoringStatus.h>
 #include <ddspipe_core/types/monitoring/topics/MonitoringData.h>
 
 
@@ -37,22 +40,40 @@ class DdsMonitorConsumer : public IMonitorConsumer
 public:
 
     // TODO
-    DdsMonitorConsumer(std::string topic_name);
+    DdsMonitorConsumer(
+            const MonitorStatusConfiguration& status_config,
+            const MonitorTopicsConfiguration& topics_config);
 
     // TODO
     ~DdsMonitorConsumer();
 
     // TODO
-    virtual void consume(const MonitoringData& data) const override;
+    void consume_status(const MonitoringStatus& data) const override;
+
+    // TODO
+    void consume_topics(const MonitoringData& data) const override;
 
 protected:
 
-    // Fast-DDS attributes to publish the data
+    // TODO
+    fastdds::dds::Topic* create_topic_(const std::string& topic_name, const std::string& type_name);
+
+    // TODO
+    fastdds::dds::DataWriter* create_writer_(fastdds::dds::Topic* topic);
+
+    // Fast-DDS attributes to publish
     fastdds::dds::DomainParticipant* participant_;
     fastdds::dds::Publisher* publisher_;
-    fastdds::dds::Topic* topic_;
-    fastdds::dds::DataWriter* writer_;
-    fastdds::dds::TypeSupport type_;
+
+    // Fast-DDS attributes to publish the status
+    fastdds::dds::Topic* status_topic_;
+    fastdds::dds::DataWriter* status_writer_;
+    fastdds::dds::TypeSupport status_type_;
+
+    // Fast-DDS attributes to publish the topics
+    fastdds::dds::Topic* topics_topic_;
+    fastdds::dds::DataWriter* topics_writer_;
+    fastdds::dds::TypeSupport topics_type_;
 };
 
 } // namespace core
