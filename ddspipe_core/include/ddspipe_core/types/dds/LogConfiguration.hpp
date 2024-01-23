@@ -69,31 +69,12 @@ LogConfiguration
     /////////////////////////
 
     //! Verbosity kind
-    VerbosityKind verbosity = VerbosityKind::Warning;
+    utils::Fuzzy<VerbosityKind> verbosity;
     //! Log Filter
-    LogFilter filter = {
-        {VerbosityKind::Error, ""},
-        {VerbosityKind::Warning, ""},
-        {VerbosityKind::Info, ""}};
-
-    /////////////////////////
-    // GLOBAL VARIABLES
-    /////////////////////////
-
-    DDSPIPE_CORE_DllAPI
-    static LogConfiguration default_logging_configuration()
-    {
-        LogConfiguration config;
-        config.verbosity = VerbosityKind::Warning;
-        config.filter = {
-            {VerbosityKind::Error, ""},
-            {VerbosityKind::Warning, ""},
-            {VerbosityKind::Info, ""}
-        };
-        return config;
-    }
+    utils::Fuzzy<LogFilter> filter;
 
 };
+
 
 /**
  * @brief \c VerbosityKind to stream serialization
@@ -104,12 +85,29 @@ std::ostream& operator <<(
         const VerbosityKind& kind);
 
 /**
+ * @brief \c VerbosityKind to stream serialization
+ */
+DDSPIPE_CORE_DllAPI
+std::ostream& operator <<(
+        std::ostream& os,
+        const utils::Fuzzy<VerbosityKind>& kind);
+
+/**
  * @brief \c LogFilter to stream serialization
  */
 DDSPIPE_CORE_DllAPI
 std::ostream& operator <<(
         std::ostream& os,
         const LogFilter& filter);
+
+/**
+ * @brief \c LogFilter to stream serialization
+ */
+DDSPIPE_CORE_DllAPI
+std::ostream& operator <<(
+        std::ostream& os,
+        const utils::Fuzzy<LogFilter>& filter);
+
 
 /**
  * @brief \c LogConfiguration to stream serialization

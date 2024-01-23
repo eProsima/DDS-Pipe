@@ -475,19 +475,19 @@ void YamlReader::fill(
     // Verbosity optional
     if (is_tag_present(yml, LOG_VERBOSITY_TAG))
     {
-        object.verbosity = get_enumeration<eprosima::fastdds::dds::Log::Kind>(
+        object.verbosity.set_value(get_enumeration<eprosima::fastdds::dds::Log::Kind>(
         YamlReader::get_value_in_tag(yml, LOG_VERBOSITY_TAG),
                 {
                     {LOG_VERBOSITY_INFO_TAG, eprosima::fastdds::dds::Log::Kind::Info},
                     {LOG_VERBOSITY_WARNING_TAG, eprosima::fastdds::dds::Log::Kind::Warning},
                     {LOG_VERBOSITY_ERROR_TAG, eprosima::fastdds::dds::Log::Kind::Error}
-                });
+                }));
     }
 
     // Filter optional
     if (is_tag_present(yml, LOG_FILTER_TAG))
     {
-        object.filter = get<LogFilter>(YamlReader::get_value_in_tag(yml, LOG_FILTER_TAG), version);
+        object.filter.set_value(get<LogFilter>(YamlReader::get_value_in_tag(yml, LOG_FILTER_TAG), version));
     }
 }
 

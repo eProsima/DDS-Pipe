@@ -26,16 +26,21 @@ namespace ddspipe {
 namespace core {
 namespace types {
 
+
 LogConfiguration::LogConfiguration()
 {
+    LogFilter filter_template;
+
+    verbosity.set_value(VerbosityKind::Warning, utils::FuzzyLevelValues::fuzzy_level_default);
+    filter.set_value(filter_template, utils::FuzzyLevelValues::fuzzy_level_default);
 }
 
 bool LogConfiguration::operator ==(
         const LogConfiguration& other) const noexcept
 {
     return
-        this->verbosity == other.verbosity;
-        this->filter == other.filter;
+        (this->verbosity == other.verbosity) &&
+        (this->filter == other.filter);
 }
 
 std::ostream& operator <<(std::ostream& os, const VerbosityKind& kind)
@@ -59,6 +64,14 @@ std::ostream& operator <<(std::ostream& os, const VerbosityKind& kind)
             break;
     }
 
+    return os;
+}
+
+std::ostream& operator <<(
+        std::ostream& os,
+        const utils::Fuzzy<VerbosityKind>& kind)
+{
+    os << "Fuzzy{Level(" << kind.get_level_as_str() << ") " << kind.get_reference() << "}";
     return os;
 }
 
@@ -86,9 +99,17 @@ std::ostream& operator<<(std::ostream& os, const LogFilter& filter)
                 break;
         }
 
-        os << ", String: " << entry.second << std::endl;
+        os << ", Regex: " << entry.second << std::endl;
     }
 
+    return os;
+}
+
+std::ostream& operator <<(
+        std::ostream& os,
+        const utils::Fuzzy<LogFilter>& filter)
+{
+    os << "Fuzzy{Level(" << filter.get_level_as_str() << ") " << filter.get_reference() << "}";
     return os;
 }
 
@@ -99,7 +120,7 @@ std::ostream& operator <<(std::ostream& os, const LogConfiguration& configuratio
         "verbosity(" << configuration.verbosity << ")" <<
         ";filter(";
 
-    for (const auto& entry : configuration.filter)
+    for (const auto& entry : configuration.filter.get_value())
     {
         os << "{" << entry.first << ", " << entry.second << "} ";
     }
