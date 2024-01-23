@@ -133,13 +133,13 @@ void Monitor::run_()
     std::unique_lock<std::mutex> lock(thread_mutex_);
 
     do {
-        const auto& topics_data = Monitor::get_instance().save_topics_data_();
         const auto& status_data = Monitor::get_instance().save_status_data_();
+        const auto& topics_data = Monitor::get_instance().save_topics_data_();
 
         for (const auto& consumer : consumers_)
         {
-            consumer->consume_topics(topics_data);
-            consumer->consume_status(status_data);
+            consumer->consume(status_data);
+            consumer->consume(topics_data);
         }
 
         // Wait for either the stop signal or for 5 seconds to pass

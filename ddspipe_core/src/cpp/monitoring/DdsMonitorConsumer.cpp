@@ -85,24 +85,18 @@ DdsMonitorConsumer::~DdsMonitorConsumer()
     fastdds::dds::DomainParticipantFactory::get_instance()->delete_participant(participant_);
 }
 
-void DdsMonitorConsumer::consume_topics(const MonitoringData& data) const
-{
-    consume_(topics_writer_, data);
-}
-
-void DdsMonitorConsumer::consume_status(const MonitoringStatus& data) const
-{
-    consume_(status_writer_, data);
-}
-
-template <typename T>
-void DdsMonitorConsumer::consume_(
-        fastdds::dds::DataWriter* writer,
-        const T& data) const
+void DdsMonitorConsumer::consume(const MonitoringStatus& data) const
 {
     // The write method can modify the data. Make a copy.
     auto data_copy = data;
-    writer->write(&data_copy);
+    status_writer_->write(&data_copy);
+}
+
+void DdsMonitorConsumer::consume(const MonitoringData& data) const
+{
+    // The write method can modify the data. Make a copy.
+    auto data_copy = data;
+    topics_writer_->write(&data_copy);
 }
 
 fastdds::dds::Topic* DdsMonitorConsumer::create_topic_(
