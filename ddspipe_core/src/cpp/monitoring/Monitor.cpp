@@ -74,6 +74,38 @@ void Monitor::msg_received(
     topics_data_[topic][participant_id].data.msgs_received(topics_data_[topic][participant_id].data.msgs_received() + 1);
 }
 
+void Monitor::add_error_to_status(
+        const MonitorStatusError& error)
+{
+    // Take the lock to prevent:
+    //      1. Changing the data while it's being saved.
+    //      2. Simultaneous calls to add_error_to_status.
+    std::lock_guard<std::mutex> lock(status_mutex_);
+
+    auto error_status = status_data_.error_status();
+
+    switch (error)
+    {
+        case MonitorStatusError::MCAP_FILE_CREATION_FAILURE:
+            error_status.mcap_file_creation_failure(true);
+            break;
+
+        case MonitorStatusError::DISK_FULL:
+            error_status.disk_full(true);
+            break;
+
+        case MonitorStatusError::TYPE_MISMATCH:
+            error_status.type_mismatch(true);
+            break;
+
+        case MonitorStatusError::QOS_MISMATCH:
+            error_status.qos_mismatch(true);
+            break;
+    }
+
+    status_data_.error_status(error_status);
+}
+
 void Monitor::start_thread_()
 {
     enabled_ = true;

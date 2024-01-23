@@ -23,6 +23,7 @@
 #include <cpp_utils/time/time_utils.hpp>
 
 #include <ddspipe_core/monitoring/IMonitorConsumer.hpp>
+#include <ddspipe_core/monitoring/MonitorStatusError.hpp>
 #include <ddspipe_core/types/monitoring/status/MonitoringStatus.h>
 #include <ddspipe_core/types/monitoring/topics/MonitoringData.h>
 #include <ddspipe_core/types/participant/ParticipantId.hpp>
@@ -34,6 +35,9 @@
 // DDSPIPE MONITOR MACROS
 //! TODO
 #define monitor_msg_rx(topic, participant_id) MONITOR_MSG_RX_IMPL_(topic, participant_id)
+
+//! TODO
+#define monitor_error(error) MONITOR_ERROR_IMPL_(error)
 
 namespace eprosima {
 namespace ddspipe {
@@ -59,6 +63,10 @@ public:
     void msg_received(
             const types::DdsTopic& topic,
             const types::ParticipantId& participant_id);
+
+    // TODO
+    void add_error_to_status(
+            const MonitorStatusError& error);
 
     // TODO
     void register_consumer(
@@ -128,9 +136,13 @@ protected:
 #define MONITOR_MSG_RX_IMPL_(topic, participant_id) eprosima::ddspipe::core::Monitor::get_instance().msg_received(topic, \
             participant_id)
 
+#define MONITOR_ERROR_IMPL_(error) eprosima::ddspipe::core::Monitor::get_instance().add_error_to_status(error)
+
 #else
 
 #define MONITOR_MSG_RX_IMPL_(topic, participant_id)
+
+#define MONITOR_ERROR_IMPL_(error)
 
 #endif // ifndef MONITOR
 
