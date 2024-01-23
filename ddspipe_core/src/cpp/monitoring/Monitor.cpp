@@ -104,6 +104,7 @@ void Monitor::add_error_to_status(
     }
 
     status_data_.error_status(error_status);
+    status_data_.has_errors(true);
 }
 
 void Monitor::start_thread_()

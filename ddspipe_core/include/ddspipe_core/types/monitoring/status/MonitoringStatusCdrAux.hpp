@@ -24,7 +24,7 @@
 
 #include "MonitoringStatus.h"
 
-constexpr uint32_t MonitoringErrorStatus_max_cdr_typesize {9UL};
+constexpr uint32_t MonitoringErrorStatus_max_cdr_typesize {8UL};
 constexpr uint32_t MonitoringErrorStatus_max_key_cdr_typesize {0UL};
 
 constexpr uint32_t MonitoringStatus_max_cdr_typesize {13UL};

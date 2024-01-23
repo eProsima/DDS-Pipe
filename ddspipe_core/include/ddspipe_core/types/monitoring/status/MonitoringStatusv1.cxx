@@ -83,7 +83,7 @@ struct FindType {
 };
 }
 
-#define MonitoringErrorStatus_max_cdr_typesize 9ULL;
+#define MonitoringErrorStatus_max_cdr_typesize 8ULL;
 #define MonitoringStatus_max_cdr_typesize 13ULL;
 
 
@@ -91,8 +91,6 @@ struct FindType {
 
 MonitoringErrorStatus::MonitoringErrorStatus()
 {
-    // boolean m_has_errors
-    m_has_errors = false;
     // boolean m_mcap_file_creation_failure
     m_mcap_file_creation_failure = false;
     // boolean m_disk_full
@@ -111,9 +109,6 @@ MonitoringErrorStatus::~MonitoringErrorStatus()
 MonitoringErrorStatus::MonitoringErrorStatus(
         const MonitoringErrorStatus& x)
 {
-    m_has_errors = x.m_has_errors;
-
-
     m_mcap_file_creation_failure = x.m_mcap_file_creation_failure;
 
 
@@ -130,9 +125,6 @@ MonitoringErrorStatus::MonitoringErrorStatus(
 MonitoringErrorStatus::MonitoringErrorStatus(
         MonitoringErrorStatus&& x) noexcept
 {
-    m_has_errors = x.m_has_errors;
-
-
     m_mcap_file_creation_failure = x.m_mcap_file_creation_failure;
 
 
@@ -149,9 +141,6 @@ MonitoringErrorStatus::MonitoringErrorStatus(
 MonitoringErrorStatus& MonitoringErrorStatus::operator =(
         const MonitoringErrorStatus& x)
 {
-    m_has_errors = x.m_has_errors;
-
-
     m_mcap_file_creation_failure = x.m_mcap_file_creation_failure;
 
 
@@ -169,9 +158,6 @@ MonitoringErrorStatus& MonitoringErrorStatus::operator =(
 MonitoringErrorStatus& MonitoringErrorStatus::operator =(
         MonitoringErrorStatus&& x) noexcept
 {
-    m_has_errors = x.m_has_errors;
-
-
     m_mcap_file_creation_failure = x.m_mcap_file_creation_failure;
 
 
@@ -189,8 +175,7 @@ MonitoringErrorStatus& MonitoringErrorStatus::operator =(
 bool MonitoringErrorStatus::operator ==(
         const MonitoringErrorStatus& x) const
 {
-    return (m_has_errors == x.m_has_errors &&
-           m_mcap_file_creation_failure == x.m_mcap_file_creation_failure &&
+    return (m_mcap_file_creation_failure == x.m_mcap_file_creation_failure &&
            m_disk_full == x.m_disk_full &&
            m_type_mismatch == x.m_type_mismatch &&
            m_qos_mismatch == x.m_qos_mismatch);
@@ -228,9 +213,6 @@ size_t MonitoringErrorStatus::getCdrSerializedSize(
     current_alignment += 1 + eprosima::fastcdr::Cdr::alignment(current_alignment, 1);
 
 
-    current_alignment += 1 + eprosima::fastcdr::Cdr::alignment(current_alignment, 1);
-
-
     return current_alignment - initial_alignment;
 }
 
@@ -238,8 +220,6 @@ size_t MonitoringErrorStatus::getCdrSerializedSize(
 void MonitoringErrorStatus::serialize(
         eprosima::fastcdr::Cdr& scdr) const
 {
-    scdr << m_has_errors;
-
     scdr << m_mcap_file_creation_failure;
 
     scdr << m_disk_full;
@@ -253,10 +233,6 @@ void MonitoringErrorStatus::serialize(
 void MonitoringErrorStatus::deserialize(
         eprosima::fastcdr::Cdr& dcdr)
 {
-    dcdr >> m_has_errors;
-
-
-
     dcdr >> m_mcap_file_creation_failure;
 
 
@@ -285,35 +261,6 @@ void MonitoringErrorStatus::serializeKey(
 {
     (void) scdr;
 }
-
-/*!
- * @brief This function sets a value in member has_errors
- * @param _has_errors New value for member has_errors
- */
-void MonitoringErrorStatus::has_errors(
-        bool _has_errors)
-{
-    m_has_errors = _has_errors;
-}
-
-/*!
- * @brief This function returns the value of member has_errors
- * @return Value of member has_errors
- */
-bool MonitoringErrorStatus::has_errors() const
-{
-    return m_has_errors;
-}
-
-/*!
- * @brief This function returns a reference to member has_errors
- * @return Reference to member has_errors
- */
-bool& MonitoringErrorStatus::has_errors()
-{
-    return m_has_errors;
-}
-
 
 /*!
  * @brief This function sets a value in member mcap_file_creation_failure
@@ -438,6 +385,8 @@ MonitoringStatus::MonitoringStatus()
 {
     // MonitoringErrorStatus m_error_status
 
+    // boolean m_has_errors
+    m_has_errors = false;
 
 }
 
@@ -450,12 +399,18 @@ MonitoringStatus::MonitoringStatus(
 {
     m_error_status = x.m_error_status;
 
+
+    m_has_errors = x.m_has_errors;
+
 }
 
 MonitoringStatus::MonitoringStatus(
         MonitoringStatus&& x) noexcept
 {
     m_error_status = std::move(x.m_error_status);
+
+
+    m_has_errors = x.m_has_errors;
 
 }
 
@@ -464,6 +419,9 @@ MonitoringStatus& MonitoringStatus::operator =(
 {
     m_error_status = x.m_error_status;
 
+
+    m_has_errors = x.m_has_errors;
+
     return *this;
 }
 
@@ -472,13 +430,17 @@ MonitoringStatus& MonitoringStatus::operator =(
 {
     m_error_status = std::move(x.m_error_status);
 
+
+    m_has_errors = x.m_has_errors;
+
     return *this;
 }
 
 bool MonitoringStatus::operator ==(
         const MonitoringStatus& x) const
 {
-    return (m_error_status == x.m_error_status);
+    return (m_error_status == x.m_error_status &&
+           m_has_errors == x.m_has_errors);
 }
 
 bool MonitoringStatus::operator !=(
@@ -504,6 +466,9 @@ size_t MonitoringStatus::getCdrSerializedSize(
     current_alignment += MonitoringErrorStatus::getCdrSerializedSize(data.error_status(), current_alignment);
 
 
+    current_alignment += 1 + eprosima::fastcdr::Cdr::alignment(current_alignment, 1);
+
+
     return current_alignment - initial_alignment;
 }
 
@@ -513,12 +478,18 @@ void MonitoringStatus::serialize(
 {
     scdr << m_error_status;
 
+    scdr << m_has_errors;
+
 }
 
 void MonitoringStatus::deserialize(
         eprosima::fastcdr::Cdr& dcdr)
 {
     dcdr >> m_error_status;
+
+
+
+    dcdr >> m_has_errors;
 
 
 }
@@ -571,6 +542,35 @@ const MonitoringErrorStatus& MonitoringStatus::error_status() const
 MonitoringErrorStatus& MonitoringStatus::error_status()
 {
     return m_error_status;
+}
+
+
+/*!
+ * @brief This function sets a value in member has_errors
+ * @param _has_errors New value for member has_errors
+ */
+void MonitoringStatus::has_errors(
+        bool _has_errors)
+{
+    m_has_errors = _has_errors;
+}
+
+/*!
+ * @brief This function returns the value of member has_errors
+ * @return Value of member has_errors
+ */
+bool MonitoringStatus::has_errors() const
+{
+    return m_has_errors;
+}
+
+/*!
+ * @brief This function returns a reference to member has_errors
+ * @return Reference to member has_errors
+ */
+bool& MonitoringStatus::has_errors()
+{
+    return m_has_errors;
 }
 
 

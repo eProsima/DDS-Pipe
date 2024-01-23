@@ -53,18 +53,15 @@ eProsima_user_DllExport size_t calculate_serialized_size(
 
 
         calculated_size += calculator.calculate_member_serialized_size(eprosima::fastcdr::MemberId(0),
-                data.has_errors(), current_alignment);
-
-        calculated_size += calculator.calculate_member_serialized_size(eprosima::fastcdr::MemberId(1),
                 data.mcap_file_creation_failure(), current_alignment);
 
-        calculated_size += calculator.calculate_member_serialized_size(eprosima::fastcdr::MemberId(2),
+        calculated_size += calculator.calculate_member_serialized_size(eprosima::fastcdr::MemberId(1),
                 data.disk_full(), current_alignment);
 
-        calculated_size += calculator.calculate_member_serialized_size(eprosima::fastcdr::MemberId(3),
+        calculated_size += calculator.calculate_member_serialized_size(eprosima::fastcdr::MemberId(2),
                 data.type_mismatch(), current_alignment);
 
-        calculated_size += calculator.calculate_member_serialized_size(eprosima::fastcdr::MemberId(4),
+        calculated_size += calculator.calculate_member_serialized_size(eprosima::fastcdr::MemberId(3),
                 data.qos_mismatch(), current_alignment);
 
 
@@ -85,11 +82,10 @@ eProsima_user_DllExport void serialize(
             eprosima::fastcdr::EncodingAlgorithmFlag::PLAIN_CDR);
 
     scdr
-        << eprosima::fastcdr::MemberId(0) << data.has_errors()
-        << eprosima::fastcdr::MemberId(1) << data.mcap_file_creation_failure()
-        << eprosima::fastcdr::MemberId(2) << data.disk_full()
-        << eprosima::fastcdr::MemberId(3) << data.type_mismatch()
-        << eprosima::fastcdr::MemberId(4) << data.qos_mismatch()
+        << eprosima::fastcdr::MemberId(0) << data.mcap_file_creation_failure()
+        << eprosima::fastcdr::MemberId(1) << data.disk_full()
+        << eprosima::fastcdr::MemberId(2) << data.type_mismatch()
+        << eprosima::fastcdr::MemberId(3) << data.qos_mismatch()
 ;
     scdr.end_serialize_type(current_state);
 }
@@ -108,22 +104,18 @@ eProsima_user_DllExport void deserialize(
                 switch (mid.id)
                 {
                                         case 0:
-                                                dcdr >> data.has_errors();
-                                            break;
-
-                                        case 1:
                                                 dcdr >> data.mcap_file_creation_failure();
                                             break;
 
-                                        case 2:
+                                        case 1:
                                                 dcdr >> data.disk_full();
                                             break;
 
-                                        case 3:
+                                        case 2:
                                                 dcdr >> data.type_mismatch();
                                             break;
 
-                                        case 4:
+                                        case 3:
                                                 dcdr >> data.qos_mismatch();
                                             break;
 
@@ -165,6 +157,9 @@ eProsima_user_DllExport size_t calculate_serialized_size(
         calculated_size += calculator.calculate_member_serialized_size(eprosima::fastcdr::MemberId(0),
                 data.error_status(), current_alignment);
 
+        calculated_size += calculator.calculate_member_serialized_size(eprosima::fastcdr::MemberId(1),
+                data.has_errors(), current_alignment);
+
 
     calculated_size += calculator.end_calculate_type_serialized_size(previous_encoding, current_alignment);
 
@@ -184,6 +179,7 @@ eProsima_user_DllExport void serialize(
 
     scdr
         << eprosima::fastcdr::MemberId(0) << data.error_status()
+        << eprosima::fastcdr::MemberId(1) << data.has_errors()
 ;
     scdr.end_serialize_type(current_state);
 }
@@ -203,6 +199,10 @@ eProsima_user_DllExport void deserialize(
                 {
                                         case 0:
                                                 dcdr >> data.error_status();
+                                            break;
+
+                                        case 1:
+                                                dcdr >> data.has_errors();
                                             break;
 
                     default:
