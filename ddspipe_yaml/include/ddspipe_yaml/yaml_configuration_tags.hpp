@@ -43,10 +43,16 @@ constexpr const char* TOPIC_PARTICIPANTS_TAG("participants");   //! List of part
 
 // Monitor related tags
 constexpr const char* MONITOR_TAG("monitor"); //! Monitor configuration
+
 constexpr const char* MONITOR_TOPICS_TAG("topics"); //! Monitor topics configuration
 constexpr const char* MONITOR_TOPICS_ENABLE_TAG("enable"); //! Enable monitoring topics
 constexpr const char* MONITOR_TOPICS_PERIOD_TAG("period"); //! Period to publish the topics' monitoring data at
 constexpr const char* MONITOR_TOPICS_TOPIC_NAME_TAG("topic-name"); //! Topic name to publish the topics' monitoring data
+
+constexpr const char* MONITOR_STATUS_TAG("status"); //! Monitor status configuration
+constexpr const char* MONITOR_STATUS_ENABLE_TAG("enable"); //! Enable monitoring status
+constexpr const char* MONITOR_STATUS_PERIOD_TAG("period"); //! Period to publish the status' monitoring data at
+constexpr const char* MONITOR_STATUS_TOPIC_NAME_TAG("topic-name"); //! Topic name to publish the status' monitoring data
 
 // QoS related tags
 constexpr const char* QOS_RELIABLE_TAG("reliability"); //! The Endpoints of that topic will be configured as RELIABLE
