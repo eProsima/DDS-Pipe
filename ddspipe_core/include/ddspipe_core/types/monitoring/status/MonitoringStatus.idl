@@ -1,5 +1,4 @@
 struct MonitoringErrorStatus {
-    boolean has_errors;
     boolean mcap_file_creation_failure;
     boolean disk_full;
     boolean type_mismatch;
@@ -8,4 +7,5 @@ struct MonitoringErrorStatus {
 
 struct MonitoringStatus {
     MonitoringErrorStatus error_status;
+    boolean has_errors;
 };

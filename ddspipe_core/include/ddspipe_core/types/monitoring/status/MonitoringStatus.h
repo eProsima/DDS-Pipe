@@ -136,26 +136,6 @@ public:
             const MonitoringErrorStatus& x) const;
 
     /*!
-     * @brief This function sets a value in member has_errors
-     * @param _has_errors New value for member has_errors
-     */
-    eProsima_user_DllExport void has_errors(
-            bool _has_errors);
-
-    /*!
-     * @brief This function returns the value of member has_errors
-     * @return Value of member has_errors
-     */
-    eProsima_user_DllExport bool has_errors() const;
-
-    /*!
-     * @brief This function returns a reference to member has_errors
-     * @return Reference to member has_errors
-     */
-    eProsima_user_DllExport bool& has_errors();
-
-
-    /*!
      * @brief This function sets a value in member mcap_file_creation_failure
      * @param _mcap_file_creation_failure New value for member mcap_file_creation_failure
      */
@@ -236,7 +216,6 @@ public:
 
 private:
 
-    bool m_has_errors{false};
     bool m_mcap_file_creation_failure{false};
     bool m_disk_full{false};
     bool m_type_mismatch{false};
@@ -331,9 +310,30 @@ public:
      */
     eProsima_user_DllExport MonitoringErrorStatus& error_status();
 
+
+    /*!
+     * @brief This function sets a value in member has_errors
+     * @param _has_errors New value for member has_errors
+     */
+    eProsima_user_DllExport void has_errors(
+            bool _has_errors);
+
+    /*!
+     * @brief This function returns the value of member has_errors
+     * @return Value of member has_errors
+     */
+    eProsima_user_DllExport bool has_errors() const;
+
+    /*!
+     * @brief This function returns a reference to member has_errors
+     * @return Reference to member has_errors
+     */
+    eProsima_user_DllExport bool& has_errors();
+
 private:
 
     MonitoringErrorStatus m_error_status;
+    bool m_has_errors{false};
 
 };
 

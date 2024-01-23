@@ -52,7 +52,6 @@ MonitoringErrorStatus::~MonitoringErrorStatus()
 MonitoringErrorStatus::MonitoringErrorStatus(
         const MonitoringErrorStatus& x)
 {
-    m_has_errors = x.m_has_errors;
     m_mcap_file_creation_failure = x.m_mcap_file_creation_failure;
     m_disk_full = x.m_disk_full;
     m_type_mismatch = x.m_type_mismatch;
@@ -62,7 +61,6 @@ MonitoringErrorStatus::MonitoringErrorStatus(
 MonitoringErrorStatus::MonitoringErrorStatus(
         MonitoringErrorStatus&& x) noexcept
 {
-    m_has_errors = x.m_has_errors;
     m_mcap_file_creation_failure = x.m_mcap_file_creation_failure;
     m_disk_full = x.m_disk_full;
     m_type_mismatch = x.m_type_mismatch;
@@ -73,7 +71,6 @@ MonitoringErrorStatus& MonitoringErrorStatus::operator =(
         const MonitoringErrorStatus& x)
 {
 
-    m_has_errors = x.m_has_errors;
     m_mcap_file_creation_failure = x.m_mcap_file_creation_failure;
     m_disk_full = x.m_disk_full;
     m_type_mismatch = x.m_type_mismatch;
@@ -85,7 +82,6 @@ MonitoringErrorStatus& MonitoringErrorStatus::operator =(
         MonitoringErrorStatus&& x) noexcept
 {
 
-    m_has_errors = x.m_has_errors;
     m_mcap_file_creation_failure = x.m_mcap_file_creation_failure;
     m_disk_full = x.m_disk_full;
     m_type_mismatch = x.m_type_mismatch;
@@ -96,8 +92,7 @@ MonitoringErrorStatus& MonitoringErrorStatus::operator =(
 bool MonitoringErrorStatus::operator ==(
         const MonitoringErrorStatus& x) const
 {
-    return (m_has_errors == x.m_has_errors &&
-           m_mcap_file_creation_failure == x.m_mcap_file_creation_failure &&
+    return (m_mcap_file_creation_failure == x.m_mcap_file_creation_failure &&
            m_disk_full == x.m_disk_full &&
            m_type_mismatch == x.m_type_mismatch &&
            m_qos_mismatch == x.m_qos_mismatch);
@@ -108,35 +103,6 @@ bool MonitoringErrorStatus::operator !=(
 {
     return !(*this == x);
 }
-
-/*!
- * @brief This function sets a value in member has_errors
- * @param _has_errors New value for member has_errors
- */
-void MonitoringErrorStatus::has_errors(
-        bool _has_errors)
-{
-    m_has_errors = _has_errors;
-}
-
-/*!
- * @brief This function returns the value of member has_errors
- * @return Value of member has_errors
- */
-bool MonitoringErrorStatus::has_errors() const
-{
-    return m_has_errors;
-}
-
-/*!
- * @brief This function returns a reference to member has_errors
- * @return Reference to member has_errors
- */
-bool& MonitoringErrorStatus::has_errors()
-{
-    return m_has_errors;
-}
-
 
 /*!
  * @brief This function sets a value in member mcap_file_creation_failure
@@ -268,12 +234,14 @@ MonitoringStatus::MonitoringStatus(
         const MonitoringStatus& x)
 {
     m_error_status = x.m_error_status;
+    m_has_errors = x.m_has_errors;
 }
 
 MonitoringStatus::MonitoringStatus(
         MonitoringStatus&& x) noexcept
 {
     m_error_status = std::move(x.m_error_status);
+    m_has_errors = x.m_has_errors;
 }
 
 MonitoringStatus& MonitoringStatus::operator =(
@@ -281,6 +249,7 @@ MonitoringStatus& MonitoringStatus::operator =(
 {
 
     m_error_status = x.m_error_status;
+    m_has_errors = x.m_has_errors;
     return *this;
 }
 
@@ -289,13 +258,15 @@ MonitoringStatus& MonitoringStatus::operator =(
 {
 
     m_error_status = std::move(x.m_error_status);
+    m_has_errors = x.m_has_errors;
     return *this;
 }
 
 bool MonitoringStatus::operator ==(
         const MonitoringStatus& x) const
 {
-    return (m_error_status == x.m_error_status);
+    return (m_error_status == x.m_error_status &&
+           m_has_errors == x.m_has_errors);
 }
 
 bool MonitoringStatus::operator !=(
@@ -340,6 +311,35 @@ const MonitoringErrorStatus& MonitoringStatus::error_status() const
 MonitoringErrorStatus& MonitoringStatus::error_status()
 {
     return m_error_status;
+}
+
+
+/*!
+ * @brief This function sets a value in member has_errors
+ * @param _has_errors New value for member has_errors
+ */
+void MonitoringStatus::has_errors(
+        bool _has_errors)
+{
+    m_has_errors = _has_errors;
+}
+
+/*!
+ * @brief This function returns the value of member has_errors
+ * @return Value of member has_errors
+ */
+bool MonitoringStatus::has_errors() const
+{
+    return m_has_errors;
+}
+
+/*!
+ * @brief This function returns a reference to member has_errors
+ * @return Reference to member has_errors
+ */
+bool& MonitoringStatus::has_errors()
+{
+    return m_has_errors;
 }
 
 
