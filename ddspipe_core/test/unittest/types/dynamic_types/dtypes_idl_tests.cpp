@@ -24,7 +24,11 @@
 
 #include <ddspipe_core/types/dynamic_types/schema.hpp>
 
-#include "types/all_types.hpp"
+#if FASTRTPS_VERSION_MAJOR <= 2 && FASTRTPS_VERSION_MINOR < 13
+    #include "types/v1/all_types.hpp"
+#else
+    #include "types/v2/all_types.hpp"
+#endif // if FASTRTPS_VERSION_MAJOR <= 2 && FASTRTPS_VERSION_MINOR < 13
 
 using namespace eprosima;
 
@@ -39,7 +43,11 @@ std::string read_idl_from_file_(
 std::string file_name_by_type(
         SupportedType type)
 {
-    return std::string("types/idls/") + to_string(type) + ".idl";
+    #if FASTRTPS_VERSION_MAJOR <= 2 && FASTRTPS_VERSION_MINOR < 13
+    return std::string("types/v1/idls/") + to_string(type) + ".idl";
+    #else
+    return std::string("types/v2/idls/") + to_string(type) + ".idl";
+    #endif // if FASTRTPS_VERSION_MAJOR <= 2 && FASTRTPS_VERSION_MINOR < 13
 }
 
 void compare_schemas(

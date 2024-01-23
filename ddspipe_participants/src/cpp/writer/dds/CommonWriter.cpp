@@ -69,12 +69,21 @@ void CommonWriter::init()
                       participant_id_ << " in topic " << topic_ << ".");
     }
 
+    #if FASTRTPS_VERSION_MAJOR <= 2 && FASTRTPS_VERSION_MINOR < 12
+    writer_ = dds_publisher_->create_datawriter_with_payload_pool(
+        dds_topic_,
+        reckon_writer_qos_(),
+        payload_pool_,
+        nullptr,
+        eprosima::fastdds::dds::StatusMask::all());
+    #else
     writer_ = dds_publisher_->create_datawriter(
         dds_topic_,
         reckon_writer_qos_(),
         nullptr,
         eprosima::fastdds::dds::StatusMask::all(),
         payload_pool_);
+    #endif // if FASTRTPS_VERSION_MAJOR <= 2 && FASTRTPS_VERSION_MINOR < 13
 
     if (!writer_)
     {
