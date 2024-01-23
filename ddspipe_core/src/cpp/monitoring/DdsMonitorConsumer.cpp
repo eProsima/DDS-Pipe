@@ -22,6 +22,7 @@
 #include <fastdds/dds/topic/qos/TopicQos.hpp>
 
 #include <ddspipe_core/monitoring/DdsMonitorConsumer.hpp>
+#include <ddspipe_core/types/monitoring/status/MonitoringStatusPubSubTypes.h>
 #include <ddspipe_core/types/monitoring/topics/MonitoringDataPubSubTypes.h>
 
 
@@ -30,8 +31,11 @@ namespace ddspipe {
 namespace core {
 
 
-DdsMonitorConsumer::DdsMonitorConsumer(std::string topic_name)
-    : type_(new MonitoringDataPubSubType())
+DdsMonitorConsumer::DdsMonitorConsumer(
+        const MonitorStatusConfiguration& status_config,
+        const MonitorTopicsConfiguration& topics_config)
+    : status_type_(new MonitoringStatusPubSubType())
+    , topics_type_(new MonitoringDataPubSubType())
 {
     fastdds::dds::DomainParticipantQos pqos;
     pqos.name("DdsPipeMonitorParticipant");
@@ -46,8 +50,9 @@ DdsMonitorConsumer::DdsMonitorConsumer(std::string topic_name)
                       pqos.name() << ".");
     }
 
-    // Register the type
-    type_.register_type(participant_);
+    // Register the types
+    status_type_.register_type(participant_);
+    topics_type_.register_type(participant_);
 
     // Create the publisher
     publisher_ = participant_->create_publisher(fastdds::dds::PUBLISHER_QOS_DEFAULT, nullptr);
@@ -59,32 +64,21 @@ DdsMonitorConsumer::DdsMonitorConsumer(std::string topic_name)
                       pqos.name() << ".");
     }
 
-    // Create the topic
-    topic_ = participant_->create_topic(topic_name, "MonitoringData", fastdds::dds::TOPIC_QOS_DEFAULT);
+    // STATUS
 
-    if (topic_ == nullptr)
-    {
-        throw utils::InitializationException(
-                  utils::Formatter() << "Error creating Topic for Participant " <<
-                      pqos.name() << ".");
-    }
+    // Create the topic
+    status_topic_ = create_topic_(status_config.topic_name, "MonitoringStatus");
 
     // Create the writer
-    fastdds::dds::DataWriterQos wqos = fastdds::dds::DATAWRITER_QOS_DEFAULT;
+    status_writer_ = create_writer_(status_topic_);
 
-    wqos.data_sharing().automatic();
-    wqos.publish_mode().kind = fastdds::dds::SYNCHRONOUS_PUBLISH_MODE;
-    wqos.reliability().kind = fastdds::dds::BEST_EFFORT_RELIABILITY_QOS;
-    wqos.durability().kind = fastdds::dds::VOLATILE_DURABILITY_QOS;
+    // TOPICS
 
-    writer_ = publisher_->create_datawriter(topic_, wqos);
+    // Create the topic
+    topics_topic_ = create_topic_(topics_config.topic_name, "MonitoringData");
 
-    if (writer_ == nullptr)
-    {
-        throw utils::InitializationException(
-                utils::Formatter() << "Error creating DataWriter for Participant " <<
-                      pqos.name() << " in topic " << topic_ << ".");
-    }
+    // Create the writer
+    topics_writer_ = create_writer_(topics_topic_);
 }
 
 DdsMonitorConsumer::~DdsMonitorConsumer()
@@ -92,11 +86,60 @@ DdsMonitorConsumer::~DdsMonitorConsumer()
     fastdds::dds::DomainParticipantFactory::get_instance()->delete_participant(participant_);
 }
 
-void DdsMonitorConsumer::consume(const MonitoringData& data) const
+void DdsMonitorConsumer::consume_topics(const MonitoringData& data) const
 {
     // The write method can modify the data. Make a copy.
     auto data_copy = data;
-    writer_->write(&data_copy);
+    topics_writer_->write(&data_copy);
+}
+
+void DdsMonitorConsumer::consume_status(const MonitoringStatus& data) const
+{
+    // The write method can modify the data. Make a copy.
+    auto data_copy = data;
+    status_writer_->write(&data_copy);
+}
+
+fastdds::dds::Topic* DdsMonitorConsumer::create_topic_(
+        const std::string& topic_name,
+        const std::string& type_name)
+{
+    fastdds::dds::TopicQos tqos = fastdds::dds::TOPIC_QOS_DEFAULT;
+    tqos.reliability().kind = fastdds::dds::BEST_EFFORT_RELIABILITY_QOS;
+    tqos.durability().kind = fastdds::dds::VOLATILE_DURABILITY_QOS;
+
+    fastdds::dds::Topic* topic = participant_->create_topic(topic_name, type_name, tqos);
+
+    if (topic == nullptr)
+    {
+        throw utils::InitializationException(
+                  utils::Formatter() << "Error creating Topic " << topic_name <<
+                  " for Participant " << participant_->guid() << ".");
+    }
+
+    return topic;
+}
+
+fastdds::dds::DataWriter* DdsMonitorConsumer::create_writer_(
+        fastdds::dds::Topic* topic)
+{
+    fastdds::dds::DataWriterQos wqos = fastdds::dds::DATAWRITER_QOS_DEFAULT;
+
+    wqos.data_sharing().automatic();
+    wqos.publish_mode().kind = fastdds::dds::SYNCHRONOUS_PUBLISH_MODE;
+    wqos.reliability().kind = fastdds::dds::BEST_EFFORT_RELIABILITY_QOS;
+    wqos.durability().kind = fastdds::dds::VOLATILE_DURABILITY_QOS;
+
+    fastdds::dds::DataWriter* writer = publisher_->create_datawriter(topic, wqos);
+
+    if (writer == nullptr)
+    {
+        throw utils::InitializationException(
+                utils::Formatter() << "Error creating DataWriter for Participant " <<
+                      participant_->guid() << " in topic " << topic << ".");
+    }
+
+    return writer;
 }
 
 } //namespace core

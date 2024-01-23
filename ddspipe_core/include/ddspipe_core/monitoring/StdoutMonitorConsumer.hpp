@@ -15,6 +15,7 @@
 
 #pragma once
 
+#include <ddspipe_core/types/monitoring/status/MonitoringStatus.h>
 #include <ddspipe_core/types/monitoring/topics/MonitoringData.h>
 #include <ddspipe_core/monitoring/IMonitorConsumer.hpp>
 
@@ -30,9 +31,13 @@ class StdoutMonitorConsumer : public IMonitorConsumer
 public:
 
     // TODO
-    virtual void consume(const MonitoringData& data) const override;
+    virtual void consume_status(const MonitoringStatus& data) const override;
+
+    // TODO
+    virtual void consume_topics(const MonitoringData& data) const override;
 };
 
+std::ostream& operator<<(std::ostream& os, const MonitoringStatus& data);
 std::ostream& operator<<(std::ostream& os, const DdsTopicData& data);
 std::ostream& operator<<(std::ostream& os, const DdsTopic& topic);
 std::ostream& operator<<(std::ostream& os, const MonitoringData& data);
