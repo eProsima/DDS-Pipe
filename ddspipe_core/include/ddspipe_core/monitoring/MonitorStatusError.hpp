@@ -14,17 +14,19 @@
 
 #pragma once
 
+#include <cpp_utils/macros/custom_enumeration.hpp>
+
 namespace eprosima {
 namespace ddspipe {
 namespace core {
 
-enum MonitorStatusError
-{
+ENUMERATION_BUILDER(
+    MonitorStatusError,
     MCAP_FILE_CREATION_FAILURE,
     DISK_FULL,
     TYPE_MISMATCH,
     QOS_MISMATCH
-};
+    );
 
 } /* namespace core */
 } /* namespace ddspipe */
