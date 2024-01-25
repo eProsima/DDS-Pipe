@@ -21,9 +21,11 @@
 #include <fastdds/dds/publisher/qos/PublisherQos.hpp>
 #include <fastdds/dds/topic/qos/TopicQos.hpp>
 
-#include <ddspipe_core/monitoring/DdsMonitorConsumer.hpp>
+#include <ddspipe_core/monitoring/clients/StatusMonitorClient.hpp>
+#include <ddspipe_core/monitoring/clients/TopicsMonitorClient.hpp>
+#include <ddspipe_core/monitoring/consumers/DdsMonitorConsumer.hpp>
 #include <ddspipe_core/types/monitoring/status/MonitoringStatusPubSubTypes.h>
-#include <ddspipe_core/types/monitoring/topics/MonitoringDataPubSubTypes.h>
+#include <ddspipe_core/types/monitoring/topics/MonitoringTopicsPubSubTypes.h>
 
 
 namespace eprosima {
@@ -34,7 +36,7 @@ namespace core {
 DdsMonitorConsumer::DdsMonitorConsumer(
         const MonitorConfiguration& configuration)
     : status_type_(new MonitoringStatusPubSubType())
-    , topics_type_(new MonitoringDataPubSubType())
+    , topics_type_(new MonitoringTopicsPubSubType())
 {
     fastdds::dds::DomainParticipantQos pqos;
     pqos.name("DdsPipeMonitorParticipant");
@@ -74,7 +76,7 @@ DdsMonitorConsumer::DdsMonitorConsumer(
     // TOPICS
 
     // Create the topic
-    topics_topic_ = create_topic_(configuration.topics.topic_name, "MonitoringData");
+    topics_topic_ = create_topic_(configuration.topics.topic_name, "MonitoringTopics");
 
     // Create the writer
     topics_writer_ = create_writer_(topics_topic_);
@@ -85,18 +87,23 @@ DdsMonitorConsumer::~DdsMonitorConsumer()
     fastdds::dds::DomainParticipantFactory::get_instance()->delete_participant(participant_);
 }
 
-void DdsMonitorConsumer::consume(const MonitoringStatus& data) const
+void DdsMonitorConsumer::consume(IMonitorData* data) const
 {
-    // The write method can modify the data. Make a copy.
-    auto data_copy = data;
-    status_writer_->write(&data_copy);
-}
+    MonitorStatus* status = dynamic_cast<MonitorStatus*>(data);
 
-void DdsMonitorConsumer::consume(const MonitoringData& data) const
-{
-    // The write method can modify the data. Make a copy.
-    auto data_copy = data;
-    topics_writer_->write(&data_copy);
+    if (status != nullptr)
+    {
+        status_writer_->write(&status->data);
+        return;
+    }
+
+    MonitorTopics* topics = dynamic_cast<MonitorTopics*>(data);
+
+    if (topics != nullptr)
+    {
+        topics_writer_->write(&topics->data);
+        return;
+    }
 }
 
 fastdds::dds::Topic* DdsMonitorConsumer::create_topic_(

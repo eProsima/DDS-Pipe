@@ -17,7 +17,7 @@
 #include <cpp_utils/math/math_extension.hpp>
 
 #include <ddspipe_core/interface/IRoutingData.hpp>
-#include <ddspipe_core/monitoring/Monitor.hpp>
+#include <ddspipe_core/monitoring/clients/TopicsMonitorClient.hpp>
 #include <ddspipe_core/types/data/RtpsPayloadData.hpp>
 
 #include <ddspipe_participants/reader/dds/CommonReader.hpp>

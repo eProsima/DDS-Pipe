@@ -16,8 +16,9 @@
 #include <iostream>
 
 #include <ddspipe_core/monitoring/MonitorStatusError.hpp>
-#include <ddspipe_core/monitoring/StdoutMonitorConsumer.hpp>
-
+#include <ddspipe_core/monitoring/clients/StatusMonitorClient.hpp>
+#include <ddspipe_core/monitoring/clients/TopicsMonitorClient.hpp>
+#include <ddspipe_core/monitoring/consumers/StdoutMonitorConsumer.hpp>
 
 namespace eprosima {
 namespace ddspipe {
@@ -28,14 +29,21 @@ StdoutMonitorConsumer::StdoutMonitorConsumer(const MonitorConfiguration& configu
     // TODO
 }
 
-void StdoutMonitorConsumer::consume(const MonitoringStatus& data) const
+void StdoutMonitorConsumer::consume(IMonitorData* data) const
 {
-    std::cout << data << std::endl;
-}
+    MonitorStatus* status = dynamic_cast<MonitorStatus*>(data);
 
-void StdoutMonitorConsumer::consume(const MonitoringData& data) const
-{
-    std::cout << data << std::endl;
+    if (status != nullptr)
+    {
+        std::cout << status->data << std::endl;
+    }
+
+    MonitorTopics* topics = dynamic_cast<MonitorTopics*>(data);
+
+    if (topics != nullptr)
+    {
+        std::cout << topics->data << std::endl;
+    }
 }
 
 std::ostream& operator<<(std::ostream& os, const MonitoringStatus& data) {
@@ -96,7 +104,7 @@ std::ostream& operator<<(std::ostream& os, const DdsTopic& topic) {
     return os;
 }
 
-std::ostream& operator<<(std::ostream& os, const MonitoringData& data) {
+std::ostream& operator<<(std::ostream& os, const MonitoringTopics& data) {
     os << "Monitoring Data: [";
 
     for (const auto& topic : data.topics()) {

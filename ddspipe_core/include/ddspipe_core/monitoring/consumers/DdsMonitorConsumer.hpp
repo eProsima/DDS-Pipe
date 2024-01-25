@@ -22,9 +22,10 @@
 #include <fastdds/dds/topic/TypeSupport.hpp>
 
 #include <ddspipe_core/configuration/MonitorConfiguration.hpp>
-#include <ddspipe_core/monitoring/IMonitorConsumer.hpp>
+#include <ddspipe_core/monitoring/clients/IMonitorClient.hpp>
+#include <ddspipe_core/monitoring/consumers/IMonitorConsumer.hpp>
 #include <ddspipe_core/types/monitoring/status/MonitoringStatus.h>
-#include <ddspipe_core/types/monitoring/topics/MonitoringData.h>
+#include <ddspipe_core/types/monitoring/topics/MonitoringTopics.h>
 
 
 namespace eprosima {
@@ -46,10 +47,7 @@ public:
     ~DdsMonitorConsumer();
 
     // TODO
-    void consume(const MonitoringStatus& data) const override;
-
-    // TODO
-    void consume(const MonitoringData& data) const override;
+    void consume(IMonitorData* data) const override;
 
 protected:
 

@@ -12,90 +12,78 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //
-
 #pragma once
 
-#include <atomic>
-#include <condition_variable>
 #include <mutex>
-#include <thread>
-
-#include <cpp_utils/time/time_utils.hpp>
 
 #include <ddspipe_core/monitoring/clients/IMonitorClient.hpp>
-#include <ddspipe_core/monitoring/consumers/IMonitorConsumer.hpp>
 #include <ddspipe_core/monitoring/MonitorStatusError.hpp>
 #include <ddspipe_core/types/monitoring/status/MonitoringStatus.h>
-#include <ddspipe_core/types/monitoring/topics/MonitoringTopics.h>
-#include <ddspipe_core/types/participant/ParticipantId.hpp>
-#include <ddspipe_core/types/topic/dds/DdsTopic.hpp>
-
 
 // Monitoring API:
+
+// DDSPIPE MONITOR MACROS
+
+//! TODO
+#define monitor_error(error) MONITOR_ERROR_IMPL_(error)
 
 namespace eprosima {
 namespace ddspipe {
 namespace core {
 
+struct MonitorStatus : public IMonitorData
+{
+    MonitoringStatus data;
+};
+
 /**
  * TODO
  */
-class Monitor
+class StatusMonitorClient : IMonitorClient
 {
 public:
 
-    // TODO
-    Monitor();
+    // Static method to get the singleton instance
+    static IMonitorClient* get_instance();
+
+    // Static method to get the reference to the singleton instance
+    static StatusMonitorClient& get_reference();
 
     // TODO
-    ~Monitor();
+    void add_error_to_status(
+            const MonitorStatusError& error);
 
     // TODO
-    void register_consumer(
-            IMonitorConsumer* consumer);
-
-    // TODO
-    void clear_consumers();
-
-    // TODO
-    void register_client(
-            IMonitorClient* client);
-
-    // TODO
-    void clear_clients();
+    IMonitorData* save_data() const override;
 
 protected:
 
     // TODO
-    void start_thread_();
+    StatusMonitorClient() = default;
 
     // TODO
-    void stop_thread_();
+    ~StatusMonitorClient() = default;
 
     // TODO
-    void run_();
+    mutable std::mutex status_mutex_;
 
     // TODO
-    std::thread worker_;
-
-    // TODO
-    std::atomic<bool> enabled_;
-
-    // TODO
-    std::mutex thread_mutex_;
-
-    // TODO
-    std::condition_variable cv_;
-
-    // TODO
-    std::vector<IMonitorConsumer*> consumers_;
-
-    // TODO
-    std::vector<IMonitorClient*> clients_;
+    MonitoringStatus status_data_;
 
     // TODO
     int period_ = 1000;
 };
+
+// The names of variables inside macros must be unique to avoid conflicts with external variables
+#ifdef MONITOR_ENABLED
+
+#define MONITOR_ERROR_IMPL_(error) eprosima::ddspipe::core::StatusMonitorClient::get_reference().add_error_to_status(error)
+
+#else
+
+#define MONITOR_ERROR_IMPL_(error)
+
+#endif // ifndef MONITOR
 
 } // namespace core
 } // namespace ddspipe
