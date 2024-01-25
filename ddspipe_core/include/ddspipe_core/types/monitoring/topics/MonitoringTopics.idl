@@ -12,7 +12,7 @@ struct DdsTopic
   sequence<DdsTopicData> data;
 };
 
-struct MonitoringData
+struct MonitoringTopics
 {
   sequence<DdsTopic> topics;
 };

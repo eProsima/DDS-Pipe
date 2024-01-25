@@ -15,27 +15,35 @@
 
 #pragma once
 
-#include <ddspipe_core/configuration/MonitorConfiguration.hpp>
-#include <ddspipe_core/types/monitoring/status/MonitoringStatus.h>
-#include <ddspipe_core/types/monitoring/topics/MonitoringData.h>
-
+// Monitoring API:
 
 namespace eprosima {
 namespace ddspipe {
 namespace core {
 
+
+struct IMonitorData
+{
+    virtual ~IMonitorData() = default;
+};
+
 /**
  * TODO
  */
-class IMonitorConsumer
+class IMonitorClient
 {
 public:
 
     // TODO
-    virtual void consume(const MonitoringStatus& data) const = 0;
+    virtual IMonitorData* save_data() const = 0;
+
+protected:
 
     // TODO
-    virtual void consume(const MonitoringData& data) const = 0;
+    IMonitorClient() = default;
+
+    // TODO
+    ~IMonitorClient() = default;
 };
 
 } // namespace core

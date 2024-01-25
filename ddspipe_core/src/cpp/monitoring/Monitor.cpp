@@ -29,12 +29,7 @@ Monitor::~Monitor()
 {
     stop_thread_();
     clear_consumers();
-}
-
-Monitor& Monitor::get_instance()
-{
-    static Monitor instance;
-    return instance;
+    clear_clients();
 }
 
 void Monitor::register_consumer(
@@ -50,61 +45,17 @@ void Monitor::clear_consumers()
     consumers_.clear();
 }
 
-void Monitor::msg_received(
-        const types::DdsTopic& topic,
-        const types::ParticipantId& participant_id)
+void Monitor::register_client(
+        IMonitorClient* client)
 {
-    // Take the lock to prevent:
-    //      1. Changing the data while it's being saved.
-    //      2. Simultaneous calls to msg_received.
-    std::lock_guard<std::mutex> lock(topics_mutex_);
-
-    if (!topics_data_.count(topic) || !topics_data_[topic].count(participant_id))
-    {
-        // First message received for topic & participant
-
-        // Save the time
-        topics_data_[topic][participant_id].start_time = utils::now();
-
-        // Save the participant_id
-        topics_data_[topic][participant_id].data.participant_id(participant_id);
-    }
-
-    // Increase the count of the received messages
-    topics_data_[topic][participant_id].data.msgs_received(topics_data_[topic][participant_id].data.msgs_received() + 1);
+    std::unique_lock<std::mutex> lock(thread_mutex_);
+    clients_.push_back(client);
 }
 
-void Monitor::add_error_to_status(
-        const MonitorStatusError& error)
+void Monitor::clear_clients()
 {
-    // Take the lock to prevent:
-    //      1. Changing the data while it's being saved.
-    //      2. Simultaneous calls to add_error_to_status.
-    std::lock_guard<std::mutex> lock(status_mutex_);
-
-    auto error_status = status_data_.error_status();
-
-    switch (error)
-    {
-        case MonitorStatusError::MCAP_FILE_CREATION_FAILURE:
-            error_status.mcap_file_creation_failure(true);
-            break;
-
-        case MonitorStatusError::DISK_FULL:
-            error_status.disk_full(true);
-            break;
-
-        case MonitorStatusError::TYPE_MISMATCH:
-            error_status.type_mismatch(true);
-            break;
-
-        case MonitorStatusError::QOS_MISMATCH:
-            error_status.qos_mismatch(true);
-            break;
-    }
-
-    status_data_.error_status(error_status);
-    status_data_.has_errors(true);
+    std::unique_lock<std::mutex> lock(thread_mutex_);
+    clients_.clear();
 }
 
 void Monitor::start_thread_()
@@ -133,81 +84,21 @@ void Monitor::run_()
     std::unique_lock<std::mutex> lock(thread_mutex_);
 
     do {
-        const auto& status_data = Monitor::get_instance().save_status_data_();
-        const auto& topics_data = Monitor::get_instance().save_topics_data_();
-
-        for (const auto& consumer : consumers_)
+        for (const IMonitorClient* client : clients_)
         {
-            consumer->consume(status_data);
-            consumer->consume(topics_data);
+            IMonitorData* data = client->save_data();
+
+            for (const auto& consumer : consumers_)
+            {
+                consumer->consume(data);
+            }
         }
 
-        // Wait for either the stop signal or for 5 seconds to pass
+        // Wait for either the stop signal or for period_ milliseconds to pass
     } while (!cv_.wait_for(lock, std::chrono::milliseconds(period_), [this]
     {
         return !enabled_;
     }));
-}
-
-MonitoringData Monitor::save_topics_data_()
-{
-    // Take the lock to prevent saving the data while it's changing
-    std::lock_guard<std::mutex> lock(topics_mutex_);
-
-    std::vector<DdsTopic> topics_data;
-
-    // Iterate through the different topics
-    for (const auto& topic : topics_data_)
-    {
-        const auto& dds_topic = topic.first;
-        const auto& participants = topic.second;
-
-        DdsTopic topic_data;
-
-        // Save the topic name and type
-        topic_data.name(dds_topic.m_topic_name);
-        topic_data.data_type_name(dds_topic.type_name);
-
-        std::vector<DdsTopicData> topic_participants;
-
-        for (const auto participant : participants)
-        {
-            const auto& participant_id = participant.first;
-            const auto& info = participant.second;
-
-            DdsTopicData participant_data = info.data;
-
-            // Calculate the time between the first sample and the last
-            const std::chrono::duration<double> time_elapsed = utils::now() - info.start_time;
-
-            // Calculate the message reception frequency
-            participant_data.frequency((double) participant_data.msgs_received() / time_elapsed.count());
-
-            // Save the participant's data for the topic
-            topic_participants.push_back(participant_data);
-        }
-
-        // Save the participants' data for the topic
-        topic_data.data(topic_participants);
-
-        // Save the topic data
-        topics_data.push_back(topic_data);
-    }
-
-    MonitoringData data;
-
-    // Save the topics' data
-    data.topics(topics_data);
-
-    return data;
-}
-
-MonitoringStatus Monitor::save_status_data_()
-{
-    // Take the lock to prevent saving the data while it's changing
-    std::lock_guard<std::mutex> lock(status_mutex_);
-
-    return status_data_;
 }
 
 } //namespace core

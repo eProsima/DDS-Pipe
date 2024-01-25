@@ -15,17 +15,11 @@
 
 #pragma once
 
-#include <atomic>
-#include <condition_variable>
 #include <mutex>
-#include <thread>
 
 #include <cpp_utils/time/time_utils.hpp>
 
 #include <ddspipe_core/monitoring/clients/IMonitorClient.hpp>
-#include <ddspipe_core/monitoring/consumers/IMonitorConsumer.hpp>
-#include <ddspipe_core/monitoring/MonitorStatusError.hpp>
-#include <ddspipe_core/types/monitoring/status/MonitoringStatus.h>
 #include <ddspipe_core/types/monitoring/topics/MonitoringTopics.h>
 #include <ddspipe_core/types/participant/ParticipantId.hpp>
 #include <ddspipe_core/types/topic/dds/DdsTopic.hpp>
@@ -33,69 +27,72 @@
 
 // Monitoring API:
 
+// DDSPIPE MONITOR MACROS
+//! TODO
+#define monitor_msg_rx(topic, participant_id) MONITOR_MSG_RX_IMPL_(topic, participant_id)
+
+
 namespace eprosima {
 namespace ddspipe {
 namespace core {
 
+struct MonitoringInfo
+{
+    utils::Timestamp start_time;
+    DdsTopicData data;
+};
+
+struct MonitorTopics : public IMonitorData
+{
+    MonitoringTopics data;
+};
+
 /**
  * TODO
  */
-class Monitor
+class TopicsMonitorClient : IMonitorClient
 {
 public:
 
-    // TODO
-    Monitor();
+    // Static method to get the instance of the class
+    static IMonitorClient* get_instance();
 
     // TODO
-    ~Monitor();
+    static TopicsMonitorClient& get_reference();
 
     // TODO
-    void register_consumer(
-            IMonitorConsumer* consumer);
+    void msg_received(
+            const types::DdsTopic& topic,
+            const types::ParticipantId& participant_id);
 
     // TODO
-    void clear_consumers();
-
-    // TODO
-    void register_client(
-            IMonitorClient* client);
-
-    // TODO
-    void clear_clients();
+    IMonitorData* save_data() const override;
 
 protected:
 
     // TODO
-    void start_thread_();
+    TopicsMonitorClient() = default;
 
     // TODO
-    void stop_thread_();
+    ~TopicsMonitorClient() = default;
 
     // TODO
-    void run_();
+    mutable std::mutex topics_mutex_;
 
     // TODO
-    std::thread worker_;
-
-    // TODO
-    std::atomic<bool> enabled_;
-
-    // TODO
-    std::mutex thread_mutex_;
-
-    // TODO
-    std::condition_variable cv_;
-
-    // TODO
-    std::vector<IMonitorConsumer*> consumers_;
-
-    // TODO
-    std::vector<IMonitorClient*> clients_;
-
-    // TODO
-    int period_ = 1000;
+    std::map<types::DdsTopic, std::map<types::ParticipantId, MonitoringInfo>> topics_data_;
 };
+
+// The names of variables inside macros must be unique to avoid conflicts with external variables
+#ifdef MONITOR_ENABLED
+
+#define MONITOR_MSG_RX_IMPL_(topic, participant_id) eprosima::ddspipe::core::TopicsMonitorClient::get_reference().msg_received(topic, \
+            participant_id)
+#else
+
+#define MONITOR_MSG_RX_IMPL_(topic, participant_id)
+
+#endif // ifndef MONITOR
 
 } // namespace core
 } // namespace ddspipe

@@ -16,9 +16,10 @@
 #pragma once
 
 #include <ddspipe_core/configuration/MonitorConfiguration.hpp>
+#include <ddspipe_core/monitoring/clients/IMonitorClient.hpp>
+#include <ddspipe_core/monitoring/consumers/IMonitorConsumer.hpp>
 #include <ddspipe_core/types/monitoring/status/MonitoringStatus.h>
-#include <ddspipe_core/types/monitoring/topics/MonitoringData.h>
-#include <ddspipe_core/monitoring/IMonitorConsumer.hpp>
+#include <ddspipe_core/types/monitoring/topics/MonitoringTopics.h>
 
 namespace eprosima {
 namespace ddspipe {
@@ -36,16 +37,13 @@ public:
             const MonitorConfiguration& configuration);
 
     // TODO
-    virtual void consume(const MonitoringStatus& data) const override;
-
-    // TODO
-    virtual void consume(const MonitoringData& data) const override;
+    virtual void consume(IMonitorData* data) const override;
 };
 
 std::ostream& operator<<(std::ostream& os, const MonitoringStatus& data);
 std::ostream& operator<<(std::ostream& os, const DdsTopicData& data);
 std::ostream& operator<<(std::ostream& os, const DdsTopic& topic);
-std::ostream& operator<<(std::ostream& os, const MonitoringData& data);
+std::ostream& operator<<(std::ostream& os, const MonitoringTopics& data);
 
 } // namespace core
 } // namespace ddspipe
