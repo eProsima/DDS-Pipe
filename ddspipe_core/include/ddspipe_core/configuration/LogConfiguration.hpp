@@ -1,4 +1,4 @@
-// Copyright 2022 Proyectos y Sistemas de Mantenimiento SL (eProsima).
+// Copyright 2024 Proyectos y Sistemas de Mantenimiento SL (eProsima).
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,32 +20,29 @@
 #include <fastdds/dds/core/policy/QosPolicies.hpp>
 #include <fastdds/rtps/common/Types.h>
 
+#include <ddspipe_core/configuration/IConfiguration.hpp>
 #include <ddspipe_core/library/library_dll.h>
 
 namespace eprosima {
 namespace ddspipe {
 namespace core {
-namespace types {
 
-//! Durability kind enumeration
-using VerbosityKind = eprosima::utils::Log::Kind;
+//! Verbosity enumeration
+using VerbosityKind = fastdds::dds::Log::Kind;
 
-//! Log Filter map
-using LogFilter = std::map<eprosima::fastdds::dds::Log::Kind, std::string>;
+//! Log Filter map to assign a filter to every kind of Log
+using LogFilter = std::map<VerbosityKind, std::string>;
 
 /**
  * The collection of settings related to Logging.
  *
  * The Logging settings are:
- *  - Publish
- *  - Stdout
  *  - Verbosity
  *  - Filter
  *
  *
  */
-struct
-LogConfiguration
+struct LogConfiguration : public IConfiguration
 {
     /////////////////////////
     // CONSTRUCTORS
@@ -73,6 +70,17 @@ LogConfiguration
     //! Log Filter
     utils::Fuzzy<LogFilter> filter;
 
+    /////////////////////////
+    // METHODS
+    /////////////////////////
+
+    /**
+     * @brief Override \c is_valid method.
+     */
+    DDSPIPE_CORE_DllAPI
+    virtual bool is_valid(
+            utils::Formatter& error_msg) const noexcept override;
+
 };
 
 
@@ -85,7 +93,7 @@ std::ostream& operator <<(
         const VerbosityKind& kind);
 
 /**
- * @brief \c VerbosityKind to stream serialization
+ * @brief \c VerbosityKind to stream Fuzzy level
  */
 DDSPIPE_CORE_DllAPI
 std::ostream& operator <<(
@@ -101,23 +109,13 @@ std::ostream& operator <<(
         const LogFilter& filter);
 
 /**
- * @brief \c LogFilter to stream serialization
+ * @brief \c LogFilter to stream Fuzzy level
  */
 DDSPIPE_CORE_DllAPI
 std::ostream& operator <<(
         std::ostream& os,
         const utils::Fuzzy<LogFilter>& filter);
 
-
-/**
- * @brief \c LogConfiguration to stream serialization
- */
-DDSPIPE_CORE_DllAPI
-std::ostream& operator <<(
-        std::ostream& os,
-        const LogConfiguration& configuration);
-
-} /* namespace types */
 } /* namespace core */
 } /* namespace ddspipe */
 } /* namespace eprosima */

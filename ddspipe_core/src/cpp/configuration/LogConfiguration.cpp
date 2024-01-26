@@ -1,4 +1,4 @@
-// Copyright 2022 Proyectos y Sistemas de Mantenimiento SL (eProsima).
+// Copyright 2024 Proyectos y Sistemas de Mantenimiento SL (eProsima).
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,22 +17,24 @@
  *
  */
 
-#include <ddspipe_core/types/dds/LogConfiguration.hpp>
+#include <ddspipe_core/configuration/LogConfiguration.hpp>
 #include <cpp_utils/utils.hpp>
 
 
 namespace eprosima {
 namespace ddspipe {
 namespace core {
-namespace types {
 
 
 LogConfiguration::LogConfiguration()
+    : verbosity{VerbosityKind::Warning, utils::FuzzyLevelValues::fuzzy_level_default}
 {
     LogFilter filter_template;
-
-    verbosity.set_value(VerbosityKind::Warning, utils::FuzzyLevelValues::fuzzy_level_default);
+    filter_template[VerbosityKind::Info] = "";
+    filter_template[VerbosityKind::Warning] = "";
+    filter_template[VerbosityKind::Error] = "";
     filter.set_value(filter_template, utils::FuzzyLevelValues::fuzzy_level_default);
+    // verbosity.set_value(VerbosityKind::Warning, utils::FuzzyLevelValues::fuzzy_level_default);
 }
 
 bool LogConfiguration::operator ==(
@@ -41,6 +43,20 @@ bool LogConfiguration::operator ==(
     return
         (this->verbosity == other.verbosity) &&
         (this->filter == other.filter);
+}
+
+bool LogConfiguration::is_valid(utils::Formatter& error_msg) const noexcept
+{
+    // Verifica si verbosity es uno de los valores permitidos
+    if (verbosity.get_value() != VerbosityKind::Error &&
+        verbosity.get_value() != VerbosityKind::Warning &&
+        verbosity.get_value() != VerbosityKind::Info)
+    {
+        error_msg << "Invalid verbosity level. Valid values are Error, Warning, or Info.";
+        return false;
+    }
+
+    return true;
 }
 
 std::ostream& operator <<(std::ostream& os, const VerbosityKind& kind)
@@ -79,27 +95,8 @@ std::ostream& operator<<(std::ostream& os, const LogFilter& filter)
 {
     for (const auto& entry : filter)
     {
-        os << "Kind: ";
-        switch (entry.first)
-        {
-            case eprosima::fastdds::dds::Log::Kind::Info:
-                os << "INFO";
-                break;
-
-            case eprosima::fastdds::dds::Log::Kind::Warning:
-                os << "WARNING";
-                break;
-
-            case eprosima::fastdds::dds::Log::Kind::Error:
-                os << "ERROR";
-                break;
-
-            default:
-                os << "Unknown";
-                break;
-        }
-
-        os << ", Regex: " << entry.second << std::endl;
+        os << "Kind: " << entry.first <<
+        ", Regex: " << entry.second << std::endl;
     }
 
     return os;
@@ -113,24 +110,6 @@ std::ostream& operator <<(
     return os;
 }
 
-std::ostream& operator <<(std::ostream& os, const LogConfiguration& configuration)
-{
-    os <<
-        "LogConfiguration{" <<
-        "verbosity(" << configuration.verbosity << ")" <<
-        ";filter(";
-
-    for (const auto& entry : configuration.filter.get_value())
-    {
-        os << "{" << entry.first << ", " << entry.second << "} ";
-    }
-
-    os << ")}";
-
-    return os;
-}
-
-} /* namespace types */
 } /* namespace core */
 } /* namespace ddspipe */
 } /* namespace eprosima */
