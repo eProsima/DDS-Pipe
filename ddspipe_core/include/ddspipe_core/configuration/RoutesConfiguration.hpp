@@ -40,24 +40,36 @@ struct RoutesConfiguration : public IConfiguration
     // CONSTRUCTORS
     /////////////////////////
 
-    DDSPIPE_CORE_DllAPI RoutesConfiguration() = default;
+    DDSPIPE_CORE_DllAPI
+    RoutesConfiguration() = default;
 
     /////////////////////////
     // METHODS
     /////////////////////////
 
-    DDSPIPE_CORE_DllAPI virtual bool is_valid(
+    DDSPIPE_CORE_DllAPI
+    virtual bool is_valid(
             utils::Formatter& error_msg) const noexcept override;
 
-    DDSPIPE_CORE_DllAPI bool is_valid(
+    DDSPIPE_CORE_DllAPI
+    bool is_valid(
             utils::Formatter& error_msg,
             const std::map<types::ParticipantId, bool>& participants) const noexcept;
+
+    DDSPIPE_CORE_DllAPI
+    RoutesMap routes_of_readers(
+            const std::map<types::ParticipantId, bool>& participant_ids) const noexcept;
+
+    DDSPIPE_CORE_DllAPI
+    RoutesMap routes_of_writers(
+            const std::map<types::ParticipantId, bool>& participant_ids) const noexcept;
 
     /////////////////////////
     // OPERATORS
     /////////////////////////
 
-    DDSPIPE_CORE_DllAPI RoutesMap operator () () const;
+    DDSPIPE_CORE_DllAPI
+    RoutesMap operator () () const;
 
     /////////////////////////
     // VARIABLES
