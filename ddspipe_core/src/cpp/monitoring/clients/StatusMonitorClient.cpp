@@ -13,6 +13,7 @@
 // limitations under the License.
 
 
+#include <ddspipe_core/configuration/MonitorStatusConfiguration.hpp>
 #include <ddspipe_core/monitoring/clients/StatusMonitorClient.hpp>
 #include <ddspipe_core/monitoring/consumers/DdsMonitorConsumer.hpp>
 #include <ddspipe_core/monitoring/consumers/StdoutMonitorConsumer.hpp>
@@ -27,6 +28,13 @@ StatusMonitorClient* StatusMonitorClient::get_instance()
 {
     static StatusMonitorClient instance;
     return &instance;
+}
+
+void StatusMonitorClient::init(const MonitorStatusConfiguration* configuration)
+{
+    fastdds::dds::TypeSupport type(new MonitoringStatusPubSubType());
+    consumers_.push_back(new DdsMonitorConsumer<MonitoringStatus>(configuration, type));
+    consumers_.push_back(new StdoutMonitorConsumer<MonitoringStatus>(configuration));
 }
 
 void StatusMonitorClient::consume() const
@@ -74,12 +82,6 @@ void StatusMonitorClient::add_error_to_status(
 
 StatusMonitorClient::StatusMonitorClient()
 {
-    MonitorConfiguration configuration;
-    configuration.domain = 83;
-
-    fastdds::dds::TypeSupport type(new MonitoringStatusPubSubType());
-    consumers_.push_back(new DdsMonitorConsumer<MonitoringStatus>(configuration, "MonitoringStatusTopicName", "MonitoringStatus", type));
-    consumers_.push_back(new StdoutMonitorConsumer<MonitoringStatus>(configuration));
 }
 
 StatusMonitorClient::~StatusMonitorClient()

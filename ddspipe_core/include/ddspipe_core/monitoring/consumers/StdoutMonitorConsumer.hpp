@@ -32,7 +32,7 @@ public:
 
     // TODO
     StdoutMonitorConsumer(
-            const MonitorConfiguration& /* configuration */);
+            const MonitorConfiguration* /* configuration */);
 
     // TODO
     void consume(const T* data) const override;

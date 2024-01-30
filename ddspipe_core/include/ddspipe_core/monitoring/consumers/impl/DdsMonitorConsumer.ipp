@@ -16,9 +16,7 @@
 #include <cpp_utils/exception/InitializationException.hpp>
 
 #include <fastdds/dds/domain/DomainParticipantFactory.hpp>
-#include <fastdds/dds/domain/qos/DomainParticipantQos.hpp>
 #include <fastdds/dds/publisher/qos/DataWriterQos.hpp>
-#include <fastdds/dds/publisher/qos/PublisherQos.hpp>
 #include <fastdds/dds/topic/qos/TopicQos.hpp>
 
 #include <ddspipe_core/types/monitoring/topics/MonitoringTopicsPubSubTypes.h>
@@ -31,16 +29,14 @@ namespace core {
 
 template <typename T>
 DdsMonitorConsumer<T>::DdsMonitorConsumer(
-        const MonitorConfiguration& configuration,
-        const std::string& topic_name,
-        const std::string& type_name,
+        const MonitorConfiguration* configuration,
         fastdds::dds::TypeSupport& type)
 {
     fastdds::dds::DomainParticipantQos pqos;
     pqos.name("DdsPipeMonitorParticipant");
 
     // Create the participant
-    participant_ = fastdds::dds::DomainParticipantFactory::get_instance()->create_participant(configuration.domain, pqos);
+    participant_ = fastdds::dds::DomainParticipantFactory::get_instance()->create_participant(configuration->domain, pqos);
 
     if (participant_ == nullptr)
     {
@@ -68,12 +64,12 @@ DdsMonitorConsumer<T>::DdsMonitorConsumer(
     tqos.reliability().kind = fastdds::dds::BEST_EFFORT_RELIABILITY_QOS;
     tqos.durability().kind = fastdds::dds::VOLATILE_DURABILITY_QOS;
 
-    topic_ = participant_->create_topic(topic_name, type_name, tqos);
+    topic_ = participant_->create_topic(configuration->topic_name, type.get_type_name(), tqos);
 
     if (topic_ == nullptr)
     {
         throw utils::InitializationException(
-                  utils::Formatter() << "Error creating Topic " << topic_name <<
+                  utils::Formatter() << "Error creating Topic " << configuration->topic_name <<
                   " for Participant " << participant_->guid() << ".");
     }
 
@@ -100,7 +96,6 @@ DdsMonitorConsumer<T>::~DdsMonitorConsumer()
 {
     fastdds::dds::DomainParticipantFactory::get_instance()->delete_participant(participant_);
 }
-
 
 template <typename T>
 void DdsMonitorConsumer<T>::consume(const T* data) const

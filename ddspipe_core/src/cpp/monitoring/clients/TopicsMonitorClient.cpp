@@ -13,6 +13,7 @@
 // limitations under the License.
 
 
+#include <ddspipe_core/configuration/MonitorTopicsConfiguration.hpp>
 #include <ddspipe_core/monitoring/clients/TopicsMonitorClient.hpp>
 #include <ddspipe_core/monitoring/consumers/DdsMonitorConsumer.hpp>
 #include <ddspipe_core/monitoring/consumers/StdoutMonitorConsumer.hpp>
@@ -26,6 +27,13 @@ TopicsMonitorClient* TopicsMonitorClient::get_instance()
 {
     static TopicsMonitorClient instance;
     return &instance;
+}
+
+void TopicsMonitorClient::init(const MonitorTopicsConfiguration* configuration)
+{
+    fastdds::dds::TypeSupport type(new MonitoringTopicsPubSubType());
+    consumers_.push_back(new DdsMonitorConsumer<MonitoringTopics>(configuration, type));
+    consumers_.push_back(new StdoutMonitorConsumer<MonitoringTopics>(configuration));
 }
 
 void TopicsMonitorClient::consume() const
@@ -64,12 +72,6 @@ void TopicsMonitorClient::msg_received(
 
 TopicsMonitorClient::TopicsMonitorClient()
 {
-    MonitorConfiguration configuration;
-    configuration.domain = 83;
-
-    fastdds::dds::TypeSupport type(new MonitoringTopicsPubSubType());
-    consumers_.push_back(new DdsMonitorConsumer<MonitoringTopics>(configuration, "MonitoringTopicsTopic", "MonitoringTopics", type));
-    consumers_.push_back(new StdoutMonitorConsumer<MonitoringTopics>(configuration));
 }
 
 TopicsMonitorClient::~TopicsMonitorClient()

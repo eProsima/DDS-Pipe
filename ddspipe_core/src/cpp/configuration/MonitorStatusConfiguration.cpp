@@ -29,24 +29,13 @@ namespace core {
 bool MonitorStatusConfiguration::is_valid(
         utils::Formatter& error_msg) const noexcept
 {
-    if (!enabled)
-    {
-        return true;
-    }
-
-    if (topic_name.empty())
-    {
-        error_msg << "Topic name cannot be empty.";
-        return false;
-    }
-
     if (period <= 0)
     {
         error_msg << "Period must be greater than 0.";
         return false;
     }
 
-    return true;
+    return MonitorConfiguration::is_valid(error_msg);
 }
 
 } /* namespace core */

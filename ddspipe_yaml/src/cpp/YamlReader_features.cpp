@@ -228,18 +228,6 @@ void YamlReader::fill(
     {
         object.domain = get<int>(yml, MONITOR_DOMAIN_TAG, version);
     }
-
-    // Optional topics
-    if (is_tag_present(yml, MONITOR_TOPICS_TAG))
-    {
-        object.topics = get<core::MonitorTopicsConfiguration>(yml, MONITOR_TOPICS_TAG, version);
-    }
-
-    // Optional status
-    if (is_tag_present(yml, MONITOR_STATUS_TAG))
-    {
-        object.status = get<core::MonitorStatusConfiguration>(yml, MONITOR_STATUS_TAG, version);
-    }
 }
 
 template <>
@@ -264,6 +252,12 @@ void YamlReader::fill(
     if (is_tag_present(yml, MONITOR_TOPICS_ENABLE_TAG))
     {
         object.enabled = get<bool>(yml, MONITOR_TOPICS_ENABLE_TAG, version);
+    }
+
+    // Optional domain
+    if (is_tag_present(yml, MONITOR_TOPICS_DOMAIN_TAG))
+    {
+        object.domain = get<int>(yml, MONITOR_TOPICS_DOMAIN_TAG, version);
     }
 
     // Optional period
@@ -301,6 +295,12 @@ void YamlReader::fill(
     if (is_tag_present(yml, MONITOR_STATUS_ENABLE_TAG))
     {
         object.enabled = get<bool>(yml, MONITOR_STATUS_ENABLE_TAG, version);
+    }
+
+    // Optional domain
+    if (is_tag_present(yml, MONITOR_STATUS_DOMAIN_TAG))
+    {
+        object.domain = get<int>(yml, MONITOR_STATUS_DOMAIN_TAG, version);
     }
 
     // Optional period

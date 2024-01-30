@@ -19,6 +19,7 @@
 
 #include <cpp_utils/time/time_utils.hpp>
 
+#include <ddspipe_core/configuration/MonitorTopicsConfiguration.hpp>
 #include <ddspipe_core/monitoring/clients/IMonitorClient.hpp>
 #include <ddspipe_core/monitoring/consumers/IMonitorConsumer.hpp>
 #include <ddspipe_core/types/monitoring/topics/MonitoringTopics.h>
@@ -52,6 +53,9 @@ public:
 
     // TODO
     static TopicsMonitorClient* get_instance();
+
+    // TODO
+    void init(const MonitorTopicsConfiguration* configuration);
 
     // TODO
     void consume() const override;

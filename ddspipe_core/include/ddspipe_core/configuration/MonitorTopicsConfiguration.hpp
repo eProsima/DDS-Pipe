@@ -14,7 +14,7 @@
 
 #pragma once
 
-#include <ddspipe_core/configuration/IConfiguration.hpp>
+#include <ddspipe_core/configuration/MonitorConfiguration.hpp>
 #include <ddspipe_core/library/library_dll.h>
 
 
@@ -25,7 +25,7 @@ namespace core {
 /**
  * TODO
  */
-struct MonitorTopicsConfiguration : public IConfiguration
+struct MonitorTopicsConfiguration : public MonitorConfiguration
 {
     /////////////////////////
     // CONSTRUCTORS
@@ -57,9 +57,6 @@ struct MonitorTopicsConfiguration : public IConfiguration
 
     //! TODO
     int period = 1000;
-
-    //! TODO
-    std::string topic_name = "/monitor/topics";
 };
 
 } /* namespace core */

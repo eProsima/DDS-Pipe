@@ -29,7 +29,19 @@ namespace core {
 bool MonitorConfiguration::is_valid(
         utils::Formatter& error_msg) const noexcept
 {
-    return topics.is_valid(error_msg) && status.is_valid(error_msg);
+    if (domain < 0 || domain > 255)
+    {
+        error_msg << "Domain must be between 0 and 255.";
+        return false;
+    }
+
+    if (topic_name.empty())
+    {
+        error_msg << "Topic name cannot be empty.";
+        return false;
+    }
+
+    return true;
 }
 
 } /* namespace core */
