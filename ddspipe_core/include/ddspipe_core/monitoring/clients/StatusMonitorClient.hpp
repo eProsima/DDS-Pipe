@@ -16,6 +16,7 @@
 
 #include <mutex>
 
+#include <ddspipe_core/configuration/MonitorStatusConfiguration.hpp>
 #include <ddspipe_core/monitoring/clients/IMonitorClient.hpp>
 #include <ddspipe_core/monitoring/consumers/IMonitorConsumer.hpp>
 #include <ddspipe_core/monitoring/MonitorStatusError.hpp>
@@ -41,6 +42,9 @@ public:
 
     // Static method to get the singleton instance
     static StatusMonitorClient* get_instance();
+
+    // TODO
+    void init(const MonitorStatusConfiguration* configuration);
 
     // TODO
     void consume() const override;

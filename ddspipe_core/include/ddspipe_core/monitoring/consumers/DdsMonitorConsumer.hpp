@@ -39,9 +39,7 @@ public:
 
     // TODO
     DdsMonitorConsumer(
-            const MonitorConfiguration& configuration,
-            const std::string& topic_name,
-            const std::string& type_name,
+            const MonitorConfiguration* configuration,
             fastdds::dds::TypeSupport& type);
 
     // TODO

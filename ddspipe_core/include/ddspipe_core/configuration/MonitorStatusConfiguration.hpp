@@ -14,7 +14,7 @@
 
 #pragma once
 
-#include <ddspipe_core/configuration/IConfiguration.hpp>
+#include <ddspipe_core/configuration/MonitorConfiguration.hpp>
 #include <ddspipe_core/library/library_dll.h>
 
 
@@ -25,18 +25,8 @@ namespace core {
 /**
  * TODO
  */
-struct MonitorStatusConfiguration : public IConfiguration
+struct MonitorStatusConfiguration : public MonitorConfiguration
 {
-    /////////////////////////
-    // CONSTRUCTORS
-    /////////////////////////
-
-    DDSPIPE_CORE_DllAPI
-    MonitorStatusConfiguration() = default;
-
-    DDSPIPE_CORE_DllAPI
-    ~MonitorStatusConfiguration() = default;
-
     /////////////////////////
     // METHODS
     /////////////////////////
@@ -57,9 +47,6 @@ struct MonitorStatusConfiguration : public IConfiguration
 
     //! TODO
     int period = 1000;
-
-    //! TODO
-    std::string topic_name = "/monitor/status";
 };
 
 } /* namespace core */

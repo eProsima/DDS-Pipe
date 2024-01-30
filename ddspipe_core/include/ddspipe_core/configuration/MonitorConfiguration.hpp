@@ -15,8 +15,6 @@
 #pragma once
 
 #include <ddspipe_core/configuration/IConfiguration.hpp>
-#include <ddspipe_core/configuration/MonitorStatusConfiguration.hpp>
-#include <ddspipe_core/configuration/MonitorTopicsConfiguration.hpp>
 #include <ddspipe_core/library/library_dll.h>
 
 
@@ -58,10 +56,7 @@ struct MonitorConfiguration : public IConfiguration
     int domain = 0;
 
     //! TODO
-    MonitorTopicsConfiguration topics;
-
-    //! TODO
-    MonitorStatusConfiguration status;
+    std::string topic_name;
 };
 
 } /* namespace core */
