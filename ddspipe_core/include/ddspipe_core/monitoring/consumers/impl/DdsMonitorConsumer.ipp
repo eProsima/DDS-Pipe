@@ -21,10 +21,6 @@
 #include <fastdds/dds/publisher/qos/PublisherQos.hpp>
 #include <fastdds/dds/topic/qos/TopicQos.hpp>
 
-#include <ddspipe_core/monitoring/clients/StatusMonitorClient.hpp>
-#include <ddspipe_core/monitoring/clients/TopicsMonitorClient.hpp>
-#include <ddspipe_core/monitoring/consumers/DdsMonitorConsumer.hpp>
-#include <ddspipe_core/types/monitoring/status/MonitoringStatusPubSubTypes.h>
 #include <ddspipe_core/types/monitoring/topics/MonitoringTopicsPubSubTypes.h>
 
 
@@ -33,10 +29,12 @@ namespace ddspipe {
 namespace core {
 
 
-DdsMonitorConsumer::DdsMonitorConsumer(
-        const MonitorConfiguration& configuration)
-    : status_type_(new MonitoringStatusPubSubType())
-    , topics_type_(new MonitoringTopicsPubSubType())
+template <typename T>
+DdsMonitorConsumer<T>::DdsMonitorConsumer(
+        const MonitorConfiguration& configuration,
+        const std::string& topic_name,
+        const std::string& type_name,
+        fastdds::dds::TypeSupport& type)
 {
     fastdds::dds::DomainParticipantQos pqos;
     pqos.name("DdsPipeMonitorParticipant");
@@ -52,8 +50,8 @@ DdsMonitorConsumer::DdsMonitorConsumer(
     }
 
     // Register the types
-    status_type_.register_type(participant_);
-    topics_type_.register_type(participant_);
+    type_ = type;
+    type_.register_type(participant_);
 
     // Create the publisher
     publisher_ = participant_->create_publisher(fastdds::dds::PUBLISHER_QOS_DEFAULT, nullptr);
@@ -65,70 +63,21 @@ DdsMonitorConsumer::DdsMonitorConsumer(
                       pqos.name() << ".");
     }
 
-    // STATUS
-
     // Create the topic
-    status_topic_ = create_topic_(configuration.status.topic_name, "MonitoringStatus");
-
-    // Create the writer
-    status_writer_ = create_writer_(status_topic_);
-
-    // TOPICS
-
-    // Create the topic
-    topics_topic_ = create_topic_(configuration.topics.topic_name, "MonitoringTopics");
-
-    // Create the writer
-    topics_writer_ = create_writer_(topics_topic_);
-}
-
-DdsMonitorConsumer::~DdsMonitorConsumer()
-{
-    fastdds::dds::DomainParticipantFactory::get_instance()->delete_participant(participant_);
-}
-
-void DdsMonitorConsumer::consume(IMonitorData* data) const
-{
-    MonitorStatus* status = dynamic_cast<MonitorStatus*>(data);
-
-    if (status != nullptr)
-    {
-        status_writer_->write(&status->data);
-        return;
-    }
-
-    MonitorTopics* topics = dynamic_cast<MonitorTopics*>(data);
-
-    if (topics != nullptr)
-    {
-        topics_writer_->write(&topics->data);
-        return;
-    }
-}
-
-fastdds::dds::Topic* DdsMonitorConsumer::create_topic_(
-        const std::string& topic_name,
-        const std::string& type_name)
-{
     fastdds::dds::TopicQos tqos = fastdds::dds::TOPIC_QOS_DEFAULT;
     tqos.reliability().kind = fastdds::dds::BEST_EFFORT_RELIABILITY_QOS;
     tqos.durability().kind = fastdds::dds::VOLATILE_DURABILITY_QOS;
 
-    fastdds::dds::Topic* topic = participant_->create_topic(topic_name, type_name, tqos);
+    topic_ = participant_->create_topic(topic_name, type_name, tqos);
 
-    if (topic == nullptr)
+    if (topic_ == nullptr)
     {
         throw utils::InitializationException(
                   utils::Formatter() << "Error creating Topic " << topic_name <<
                   " for Participant " << participant_->guid() << ".");
     }
 
-    return topic;
-}
-
-fastdds::dds::DataWriter* DdsMonitorConsumer::create_writer_(
-        fastdds::dds::Topic* topic)
-{
+    // Create the writer
     fastdds::dds::DataWriterQos wqos = fastdds::dds::DATAWRITER_QOS_DEFAULT;
 
     wqos.data_sharing().automatic();
@@ -136,16 +85,28 @@ fastdds::dds::DataWriter* DdsMonitorConsumer::create_writer_(
     wqos.reliability().kind = fastdds::dds::BEST_EFFORT_RELIABILITY_QOS;
     wqos.durability().kind = fastdds::dds::VOLATILE_DURABILITY_QOS;
 
-    fastdds::dds::DataWriter* writer = publisher_->create_datawriter(topic, wqos);
+    writer_ = publisher_->create_datawriter(topic_, wqos);
 
-    if (writer == nullptr)
+    if (writer_ == nullptr)
     {
         throw utils::InitializationException(
                 utils::Formatter() << "Error creating DataWriter for Participant " <<
-                      participant_->guid() << " in topic " << topic << ".");
+                      participant_->guid() << " in topic " << topic_ << ".");
     }
+}
 
-    return writer;
+template <typename T>
+DdsMonitorConsumer<T>::~DdsMonitorConsumer()
+{
+    fastdds::dds::DomainParticipantFactory::get_instance()->delete_participant(participant_);
+}
+
+
+template <typename T>
+void DdsMonitorConsumer<T>::consume(const T* data) const
+{
+    T data_copy = *data;
+    writer_->write(&data_copy);
 }
 
 } //namespace core

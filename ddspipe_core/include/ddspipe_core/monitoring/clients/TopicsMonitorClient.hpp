@@ -20,6 +20,7 @@
 #include <cpp_utils/time/time_utils.hpp>
 
 #include <ddspipe_core/monitoring/clients/IMonitorClient.hpp>
+#include <ddspipe_core/monitoring/consumers/IMonitorConsumer.hpp>
 #include <ddspipe_core/types/monitoring/topics/MonitoringTopics.h>
 #include <ddspipe_core/types/participant/ParticipantId.hpp>
 #include <ddspipe_core/types/topic/dds/DdsTopic.hpp>
@@ -42,51 +43,53 @@ struct MonitoringInfo
     DdsTopicData data;
 };
 
-struct MonitorTopics : public IMonitorData
-{
-    MonitoringTopics data;
-};
-
 /**
  * TODO
  */
-class TopicsMonitorClient : IMonitorClient
+class TopicsMonitorClient : public IMonitorClient
 {
 public:
 
-    // Static method to get the instance of the class
-    static IMonitorClient* get_instance();
+    // TODO
+    static TopicsMonitorClient* get_instance();
 
     // TODO
-    static TopicsMonitorClient& get_reference();
+    void consume() const override;
 
     // TODO
     void msg_received(
             const types::DdsTopic& topic,
             const types::ParticipantId& participant_id);
 
-    // TODO
-    IMonitorData* save_data() const override;
-
 protected:
 
     // TODO
-    TopicsMonitorClient() = default;
+    TopicsMonitorClient();
 
     // TODO
-    ~TopicsMonitorClient() = default;
+    ~TopicsMonitorClient();
+
+    // TODO
+    MonitoringTopics save_data_() const;
 
     // TODO
     mutable std::mutex topics_mutex_;
 
     // TODO
     std::map<types::DdsTopic, std::map<types::ParticipantId, MonitoringInfo>> topics_data_;
+
+    // TODO
+    std::vector<IMonitorConsumer<MonitoringTopics>*> consumers_;
 };
+
+std::ostream& operator<<(std::ostream& os, const DdsTopicData& data);
+std::ostream& operator<<(std::ostream& os, const DdsTopic& topic);
+std::ostream& operator<<(std::ostream& os, const MonitoringTopics& data);
 
 // The names of variables inside macros must be unique to avoid conflicts with external variables
 #ifdef MONITOR_ENABLED
 
-#define MONITOR_MSG_RX_IMPL_(topic, participant_id) eprosima::ddspipe::core::TopicsMonitorClient::get_reference().msg_received(topic, \
+#define MONITOR_MSG_RX_IMPL_(topic, participant_id) eprosima::ddspipe::core::TopicsMonitorClient::get_instance()->msg_received(topic, \
             participant_id)
 #else
 

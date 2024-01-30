@@ -14,21 +14,29 @@
 
 
 #include <ddspipe_core/monitoring/clients/StatusMonitorClient.hpp>
+#include <ddspipe_core/monitoring/consumers/DdsMonitorConsumer.hpp>
+#include <ddspipe_core/monitoring/consumers/StdoutMonitorConsumer.hpp>
+#include <ddspipe_core/types/monitoring/status/MonitoringStatusPubSubTypes.h>
 
 
 namespace eprosima {
 namespace ddspipe {
 namespace core {
 
-IMonitorClient* StatusMonitorClient::get_instance()
-{
-    return &get_reference();
-}
-
-StatusMonitorClient& StatusMonitorClient::get_reference()
+StatusMonitorClient* StatusMonitorClient::get_instance()
 {
     static StatusMonitorClient instance;
-    return instance;
+    return &instance;
+}
+
+void StatusMonitorClient::consume() const
+{
+    const MonitoringStatus data = save_data_();
+
+    for (auto consumer : consumers_)
+    {
+        consumer->consume(&data);
+    }
 }
 
 void StatusMonitorClient::add_error_to_status(
@@ -64,16 +72,69 @@ void StatusMonitorClient::add_error_to_status(
     status_data_.has_errors(true);
 }
 
-IMonitorData* StatusMonitorClient::save_data() const
+StatusMonitorClient::StatusMonitorClient()
+{
+    MonitorConfiguration configuration;
+    configuration.domain = 83;
+
+    fastdds::dds::TypeSupport type(new MonitoringStatusPubSubType());
+    consumers_.push_back(new DdsMonitorConsumer<MonitoringStatus>(configuration, "MonitoringStatusTopicName", "MonitoringStatus", type));
+    consumers_.push_back(new StdoutMonitorConsumer<MonitoringStatus>(configuration));
+}
+
+StatusMonitorClient::~StatusMonitorClient()
+{
+    consumers_.clear();
+}
+
+MonitoringStatus StatusMonitorClient::save_data_() const
 {
     // Take the lock to prevent saving the data while it's changing
     std::lock_guard<std::mutex> lock(status_mutex_);
 
-    // Create the IMonitorData object
-    MonitorStatus* status = new MonitorStatus();
-    status->data = status_data_;
+    return status_data_;
+}
 
-    return status;
+std::ostream& operator<<(std::ostream& os, const MonitoringStatus& data) {
+    os << "Monitoring Status: [";
+
+    bool is_first_error = true;
+
+    auto print_error = [&](const MonitorStatusError& error)
+    {
+        if (!is_first_error)
+        {
+            os << ", ";
+        }
+
+        os << error;
+        is_first_error = false;
+    };
+
+    const auto& status = data.error_status();
+
+    if (status.mcap_file_creation_failure())
+    {
+        print_error(MonitorStatusError::MCAP_FILE_CREATION_FAILURE);
+    }
+
+    if (status.disk_full())
+    {
+        print_error(MonitorStatusError::DISK_FULL);
+    }
+
+    if (status.type_mismatch())
+    {
+        print_error(MonitorStatusError::TYPE_MISMATCH);
+    }
+
+    if (status.qos_mismatch())
+    {
+        print_error(MonitorStatusError::QOS_MISMATCH);
+    }
+
+    os << "]";
+    return os;
 }
 
 } //namespace core

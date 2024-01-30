@@ -14,21 +14,28 @@
 
 
 #include <ddspipe_core/monitoring/clients/TopicsMonitorClient.hpp>
-
+#include <ddspipe_core/monitoring/consumers/DdsMonitorConsumer.hpp>
+#include <ddspipe_core/monitoring/consumers/StdoutMonitorConsumer.hpp>
+#include <ddspipe_core/types/monitoring/topics/MonitoringTopicsPubSubTypes.h>
 
 namespace eprosima {
 namespace ddspipe {
 namespace core {
 
-IMonitorClient* TopicsMonitorClient::get_instance()
-{
-    return &get_reference();
-}
-
-TopicsMonitorClient& TopicsMonitorClient::get_reference()
+TopicsMonitorClient* TopicsMonitorClient::get_instance()
 {
     static TopicsMonitorClient instance;
-    return instance;
+    return &instance;
+}
+
+void TopicsMonitorClient::consume() const
+{
+    MonitoringTopics data = save_data_();
+
+    for (auto consumer : consumers_)
+    {
+        consumer->consume(&data);
+    }
 }
 
 void TopicsMonitorClient::msg_received(
@@ -55,7 +62,22 @@ void TopicsMonitorClient::msg_received(
     topics_data_[topic][participant_id].data.msgs_received(topics_data_[topic][participant_id].data.msgs_received() + 1);
 }
 
-IMonitorData* TopicsMonitorClient::save_data() const
+TopicsMonitorClient::TopicsMonitorClient()
+{
+    MonitorConfiguration configuration;
+    configuration.domain = 83;
+
+    fastdds::dds::TypeSupport type(new MonitoringTopicsPubSubType());
+    consumers_.push_back(new DdsMonitorConsumer<MonitoringTopics>(configuration, "MonitoringTopicsTopic", "MonitoringTopics", type));
+    consumers_.push_back(new StdoutMonitorConsumer<MonitoringTopics>(configuration));
+}
+
+TopicsMonitorClient::~TopicsMonitorClient()
+{
+    consumers_.clear();
+}
+
+MonitoringTopics TopicsMonitorClient::save_data_() const
 {
     // Take the lock to prevent saving the data while it's changing
     std::lock_guard<std::mutex> lock(topics_mutex_);
@@ -105,11 +127,34 @@ IMonitorData* TopicsMonitorClient::save_data() const
     // Save the topics' data
     data.topics(topics_data);
 
-    // Create the IMonitorData object
-    MonitorTopics* topics = new MonitorTopics();
-    topics->data = data;
+    return data;
+}
 
-    return topics;
+std::ostream& operator<<(std::ostream& os, const DdsTopicData& data) {
+    os << "Participant ID: " << data.participant_id() << ", Messages Received: " << data.msgs_received() << ", Frequency: " << data.frequency();
+    return os;
+}
+
+std::ostream& operator<<(std::ostream& os, const DdsTopic& topic) {
+    os << "Topic Name: " << topic.name() << ", Type: " << topic.data_type_name() << ", Data: [";
+
+    for (const auto& data : topic.data()) {
+        os << data << "; ";
+    }
+
+    os << "]";
+    return os;
+}
+
+std::ostream& operator<<(std::ostream& os, const MonitoringTopics& data) {
+    os << "Monitoring Topics: [";
+
+    for (const auto& topic : data.topics()) {
+        os << topic << "; ";
+    }
+
+    os << "]";
+    return os;
 }
 
 } //namespace core

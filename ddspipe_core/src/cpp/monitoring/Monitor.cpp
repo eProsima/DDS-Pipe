@@ -28,21 +28,7 @@ Monitor::Monitor()
 Monitor::~Monitor()
 {
     stop_thread_();
-    clear_consumers();
     clear_clients();
-}
-
-void Monitor::register_consumer(
-        IMonitorConsumer* consumer)
-{
-    std::unique_lock<std::mutex> lock(thread_mutex_);
-    consumers_.push_back(consumer);
-}
-
-void Monitor::clear_consumers()
-{
-    std::unique_lock<std::mutex> lock(thread_mutex_);
-    consumers_.clear();
 }
 
 void Monitor::register_client(
@@ -86,12 +72,7 @@ void Monitor::run_()
     do {
         for (const IMonitorClient* client : clients_)
         {
-            IMonitorData* data = client->save_data();
-
-            for (const auto& consumer : consumers_)
-            {
-                consumer->consume(data);
-            }
+            client->consume();
         }
 
         // Wait for either the stop signal or for period_ milliseconds to pass

@@ -11,28 +11,26 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-//
 
 #pragma once
 
-
+#include <iostream>
 
 namespace eprosima {
 namespace ddspipe {
 namespace core {
 
-/**
- * TODO
- */
 template <typename T>
-class IMonitorConsumer
+StdoutMonitorConsumer<T>::StdoutMonitorConsumer(const MonitorConfiguration& /* configuration */)
 {
-public:
+}
 
-    // TODO
-    virtual void consume(const T* data) const = 0;
-};
+template <typename T>
+void StdoutMonitorConsumer<T>::consume(const T* data) const
+{
+    std::cout << *data << std::endl;
+}
 
-} // namespace core
-} // namespace ddspipe
-} // namespace eprosima
+} //namespace core
+} //namespace ddspipe
+} //namespace eprosima

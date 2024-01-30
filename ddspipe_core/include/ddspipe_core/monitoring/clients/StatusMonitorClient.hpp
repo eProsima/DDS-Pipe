@@ -17,6 +17,7 @@
 #include <mutex>
 
 #include <ddspipe_core/monitoring/clients/IMonitorClient.hpp>
+#include <ddspipe_core/monitoring/consumers/IMonitorConsumer.hpp>
 #include <ddspipe_core/monitoring/MonitorStatusError.hpp>
 #include <ddspipe_core/types/monitoring/status/MonitoringStatus.h>
 
@@ -31,38 +32,33 @@ namespace eprosima {
 namespace ddspipe {
 namespace core {
 
-struct MonitorStatus : public IMonitorData
-{
-    MonitoringStatus data;
-};
-
 /**
  * TODO
  */
-class StatusMonitorClient : IMonitorClient
+class StatusMonitorClient : public IMonitorClient
 {
 public:
 
     // Static method to get the singleton instance
-    static IMonitorClient* get_instance();
+    static StatusMonitorClient* get_instance();
 
-    // Static method to get the reference to the singleton instance
-    static StatusMonitorClient& get_reference();
+    // TODO
+    void consume() const override;
 
     // TODO
     void add_error_to_status(
             const MonitorStatusError& error);
 
-    // TODO
-    IMonitorData* save_data() const override;
-
 protected:
 
     // TODO
-    StatusMonitorClient() = default;
+    StatusMonitorClient();
 
     // TODO
-    ~StatusMonitorClient() = default;
+    ~StatusMonitorClient();
+
+    // TODO
+    MonitoringStatus save_data_() const;
 
     // TODO
     mutable std::mutex status_mutex_;
@@ -71,13 +67,15 @@ protected:
     MonitoringStatus status_data_;
 
     // TODO
-    int period_ = 1000;
+    std::vector<IMonitorConsumer<MonitoringStatus>*> consumers_;
 };
+
+std::ostream& operator<<(std::ostream& os, const MonitoringStatus& data);
 
 // The names of variables inside macros must be unique to avoid conflicts with external variables
 #ifdef MONITOR_ENABLED
 
-#define MONITOR_ERROR_IMPL_(error) eprosima::ddspipe::core::StatusMonitorClient::get_reference().add_error_to_status(error)
+#define MONITOR_ERROR_IMPL_(error) eprosima::ddspipe::core::StatusMonitorClient::get_instance()->add_error_to_status(error)
 
 #else
 

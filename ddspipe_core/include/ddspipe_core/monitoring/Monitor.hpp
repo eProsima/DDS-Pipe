@@ -51,13 +51,6 @@ public:
     ~Monitor();
 
     // TODO
-    void register_consumer(
-            IMonitorConsumer* consumer);
-
-    // TODO
-    void clear_consumers();
-
-    // TODO
     void register_client(
             IMonitorClient* client);
 
@@ -86,9 +79,6 @@ protected:
 
     // TODO
     std::condition_variable cv_;
-
-    // TODO
-    std::vector<IMonitorConsumer*> consumers_;
 
     // TODO
     std::vector<IMonitorClient*> clients_;
