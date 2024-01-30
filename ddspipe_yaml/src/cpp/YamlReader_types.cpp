@@ -478,7 +478,7 @@ void YamlReader::fill(
     // Verbosity optional
     if (is_tag_present(yml, LOG_VERBOSITY_TAG))
     {
-        object.verbosity == get_enumeration<VerbosityKind>(
+        object.verbosity = get_enumeration<VerbosityKind>(
         YamlReader::get_value_in_tag(yml, LOG_VERBOSITY_TAG),
                 {
                     {LOG_VERBOSITY_INFO_TAG, VerbosityKind::Info},
@@ -490,7 +490,7 @@ void YamlReader::fill(
     // Filter optional
     if (is_tag_present(yml, LOG_FILTER_TAG))
     {
-        object.filter == get<LogFilter>(YamlReader::get_value_in_tag(yml, LOG_FILTER_TAG), version);
+        object.filter = get<LogFilter>(YamlReader::get_value_in_tag(yml, LOG_FILTER_TAG), version);
     }
 }
 
