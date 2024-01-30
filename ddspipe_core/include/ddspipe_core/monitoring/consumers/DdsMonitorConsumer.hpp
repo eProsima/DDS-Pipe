@@ -22,10 +22,7 @@
 #include <fastdds/dds/topic/TypeSupport.hpp>
 
 #include <ddspipe_core/configuration/MonitorConfiguration.hpp>
-#include <ddspipe_core/monitoring/clients/IMonitorClient.hpp>
 #include <ddspipe_core/monitoring/consumers/IMonitorConsumer.hpp>
-#include <ddspipe_core/types/monitoring/status/MonitoringStatus.h>
-#include <ddspipe_core/types/monitoring/topics/MonitoringTopics.h>
 
 
 namespace eprosima {
@@ -35,43 +32,36 @@ namespace core {
 /**
  * TODO
  */
-class DdsMonitorConsumer : public IMonitorConsumer
+template <typename T>
+class DdsMonitorConsumer : public IMonitorConsumer<T>
 {
 public:
 
     // TODO
     DdsMonitorConsumer(
-            const MonitorConfiguration& configuration);
+            const MonitorConfiguration& configuration,
+            const std::string& topic_name,
+            const std::string& type_name,
+            fastdds::dds::TypeSupport& type);
 
     // TODO
     ~DdsMonitorConsumer();
 
     // TODO
-    void consume(IMonitorData* data) const override;
+    void consume(const T* data) const override;
 
 protected:
-
-    // TODO
-    fastdds::dds::Topic* create_topic_(const std::string& topic_name, const std::string& type_name);
-
-    // TODO
-    fastdds::dds::DataWriter* create_writer_(fastdds::dds::Topic* topic);
 
     // Fast-DDS attributes to publish
     fastdds::dds::DomainParticipant* participant_;
     fastdds::dds::Publisher* publisher_;
-
-    // Fast-DDS attributes to publish the status
-    fastdds::dds::Topic* status_topic_;
-    fastdds::dds::DataWriter* status_writer_;
-    fastdds::dds::TypeSupport status_type_;
-
-    // Fast-DDS attributes to publish the topics
-    fastdds::dds::Topic* topics_topic_;
-    fastdds::dds::DataWriter* topics_writer_;
-    fastdds::dds::TypeSupport topics_type_;
+    fastdds::dds::Topic* topic_;
+    fastdds::dds::DataWriter* writer_;
+    fastdds::dds::TypeSupport type_;
 };
 
 } // namespace core
 } // namespace ddspipe
 } // namespace eprosima
+
+#include <ddspipe_core/monitoring/consumers/impl/DdsMonitorConsumer.ipp>

@@ -22,11 +22,6 @@ namespace ddspipe {
 namespace core {
 
 
-struct IMonitorData
-{
-    virtual ~IMonitorData() = default;
-};
-
 /**
  * TODO
  */
@@ -35,7 +30,7 @@ class IMonitorClient
 public:
 
     // TODO
-    virtual IMonitorData* save_data() const = 0;
+    virtual void consume() const = 0;
 
 protected:
 
