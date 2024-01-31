@@ -16,6 +16,7 @@
 
 #include <ddspipe_core/configuration/IConfiguration.hpp>
 #include <ddspipe_core/library/library_dll.h>
+#include <ddspipe_core/types/dds/DomainId.hpp>
 
 
 namespace eprosima {
@@ -53,7 +54,7 @@ struct MonitorConfiguration : public IConfiguration
     /////////////////////////
 
     //! TODO
-    int domain = 0;
+    types::DomainIdType domain = 0;
 
     //! TODO
     std::string topic_name;
