@@ -33,7 +33,7 @@ DdsMonitorConsumer<T>::DdsMonitorConsumer(
         fastdds::dds::TypeSupport& type)
 {
     // Get the participant from the factory
-    fastdds::dds::DomainParticipant* participant = get_participant(configuration->domain);
+    fastdds::dds::DomainParticipant* participant = get_participant(configuration->domain.get_value());
 
     // Register the types
     type.register_type(participant);
