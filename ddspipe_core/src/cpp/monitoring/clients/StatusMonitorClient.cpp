@@ -32,7 +32,13 @@ StatusMonitorClient* StatusMonitorClient::get_instance()
 
 void StatusMonitorClient::init(const MonitorStatusConfiguration* configuration)
 {
+    // Store the period so it can be used by the Monitor
+    period = configuration->period;
+
+    // Register the type
     fastdds::dds::TypeSupport type(new MonitoringStatusPubSubType());
+
+    // Create the consumers
     consumers_.push_back(new DdsMonitorConsumer<MonitoringStatus>(configuration, type));
     consumers_.push_back(new StdoutMonitorConsumer<MonitoringStatus>(configuration));
 }

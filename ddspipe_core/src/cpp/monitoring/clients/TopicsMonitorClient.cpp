@@ -31,7 +31,13 @@ TopicsMonitorClient* TopicsMonitorClient::get_instance()
 
 void TopicsMonitorClient::init(const MonitorTopicsConfiguration* configuration)
 {
+    // Store the period so it can be used by the Monitor
+    period = configuration->period;
+
+    // Register the type
     fastdds::dds::TypeSupport type(new MonitoringTopicsPubSubType());
+
+    // Create the consumers
     consumers_.push_back(new DdsMonitorConsumer<MonitoringTopics>(configuration, type));
     consumers_.push_back(new StdoutMonitorConsumer<MonitoringTopics>(configuration));
 }

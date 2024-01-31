@@ -32,6 +32,9 @@ public:
     // TODO
     virtual void consume() const = 0;
 
+    // TODO
+    double period = 1000;
+
 protected:
 
     // TODO

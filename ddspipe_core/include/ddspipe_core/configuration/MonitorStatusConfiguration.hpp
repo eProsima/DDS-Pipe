@@ -46,7 +46,7 @@ struct MonitorStatusConfiguration : public MonitorConfiguration
     bool enabled = false;
 
     //! TODO
-    int period = 1000;
+    double period = 1000;
 };
 
 } /* namespace core */
