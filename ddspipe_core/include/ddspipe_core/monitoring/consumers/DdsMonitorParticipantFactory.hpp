@@ -15,11 +15,9 @@
 
 #pragma once
 
-#include <fastdds/dds/publisher/DataWriter.hpp>
+#include <fastdds/dds/domain/DomainParticipant.hpp>
 
-#include <ddspipe_core/configuration/MonitorConfiguration.hpp>
-#include <ddspipe_core/monitoring/consumers/DdsMonitorParticipantFactory.hpp>
-#include <ddspipe_core/monitoring/consumers/IMonitorConsumer.hpp>
+#include <ddspipe_core/types/dds/DomainId.hpp>
 
 
 namespace eprosima {
@@ -29,27 +27,24 @@ namespace core {
 /**
  * TODO
  */
-template <typename T>
-class DdsMonitorConsumer : public DdsMonitorParticipantFactory, public IMonitorConsumer<T>
+class DdsMonitorParticipantFactory
 {
 public:
 
     // TODO
-    DdsMonitorConsumer(
-            const MonitorConfiguration* configuration,
-            fastdds::dds::TypeSupport& type);
-
-    // TODO
-    void consume(const T* data) const override;
+    fastdds::dds::DomainParticipant* get_participant(
+            const types::DomainIdType& domain);
 
 protected:
 
-    // DataWriter to publish the data
-    fastdds::dds::DataWriter* writer_;
+    // TODO
+    ~DdsMonitorParticipantFactory();
+
+    // TODO
+    static std::map<types::DomainIdType, fastdds::dds::DomainParticipant*> participants_;
 };
+
 
 } // namespace core
 } // namespace ddspipe
 } // namespace eprosima
-
-#include <ddspipe_core/monitoring/consumers/impl/DdsMonitorConsumer.ipp>
