@@ -15,20 +15,15 @@
 
 #pragma once
 
-#include <atomic>
-#include <condition_variable>
-#include <mutex>
-#include <thread>
 
-#include <cpp_utils/time/time_utils.hpp>
+#include <memory>
+#include <mutex>
+
+#include <fastrtps/rtps/resources/ResourceEvent.h>
+
+#include <fastdds/rtps/resources/TimedEvent.h>
 
 #include <ddspipe_core/monitoring/clients/IMonitorClient.hpp>
-#include <ddspipe_core/monitoring/consumers/IMonitorConsumer.hpp>
-#include <ddspipe_core/monitoring/MonitorStatusError.hpp>
-#include <ddspipe_core/types/monitoring/status/MonitoringStatus.h>
-#include <ddspipe_core/types/monitoring/topics/MonitoringTopics.h>
-#include <ddspipe_core/types/participant/ParticipantId.hpp>
-#include <ddspipe_core/types/topic/dds/DdsTopic.hpp>
 
 
 // Monitoring API:
@@ -60,31 +55,13 @@ public:
 protected:
 
     // TODO
-    void start_thread_();
+    std::mutex mutex_;
 
     // TODO
-    void stop_thread_();
+    fastrtps::rtps::ResourceEvent event_handler_;
 
     // TODO
-    void run_();
-
-    // TODO
-    std::thread worker_;
-
-    // TODO
-    std::atomic<bool> enabled_;
-
-    // TODO
-    std::mutex thread_mutex_;
-
-    // TODO
-    std::condition_variable cv_;
-
-    // TODO
-    std::vector<IMonitorClient*> clients_;
-
-    // TODO
-    int period_ = 1000;
+    std::vector<std::unique_ptr<fastrtps::rtps::TimedEvent>> events_;
 };
 
 } // namespace core

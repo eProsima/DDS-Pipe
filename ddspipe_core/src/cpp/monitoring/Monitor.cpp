@@ -22,64 +22,40 @@ namespace core {
 
 Monitor::Monitor()
 {
-    start_thread_();
+    fastdds::rtps::ThreadSettings thread_config;
+    event_handler_.init_thread(thread_config, "ddspipe.monitor%u");
 }
 
 Monitor::~Monitor()
 {
-    stop_thread_();
+    event_handler_.stop_thread();
     clear_clients();
 }
 
 void Monitor::register_client(
         IMonitorClient* client)
 {
-    std::unique_lock<std::mutex> lock(thread_mutex_);
-    clients_.push_back(client);
+    std::unique_lock<std::mutex> lock(mutex_);
+
+    events_.emplace_back(std::make_unique<fastrtps::rtps::TimedEvent>(
+        event_handler_,
+        [client]() -> bool
+        {
+            client->consume();
+
+            // The return value must be true to reschedule the event.
+            return true;
+        },
+        client->period));
+
+    // Start the timer
+    events_.back()->restart_timer();
 }
 
 void Monitor::clear_clients()
 {
-    std::unique_lock<std::mutex> lock(thread_mutex_);
-    clients_.clear();
-}
-
-void Monitor::start_thread_()
-{
-    enabled_ = true;
-    worker_ = std::thread(&Monitor::run_, this);
-}
-
-void Monitor::stop_thread_()
-{
-    {
-        std::unique_lock<std::mutex> lock(thread_mutex_);
-        enabled_ = false;
-    }
-
-    cv_.notify_one();
-
-    if (worker_.joinable())
-    {
-        worker_.join();
-    }
-}
-
-void Monitor::run_()
-{
-    std::unique_lock<std::mutex> lock(thread_mutex_);
-
-    do {
-        for (const IMonitorClient* client : clients_)
-        {
-            client->consume();
-        }
-
-        // Wait for either the stop signal or for period_ milliseconds to pass
-    } while (!cv_.wait_for(lock, std::chrono::milliseconds(period_), [this]
-    {
-        return !enabled_;
-    }));
+    std::unique_lock<std::mutex> lock(mutex_);
+    events_.clear();
 }
 
 } //namespace core
