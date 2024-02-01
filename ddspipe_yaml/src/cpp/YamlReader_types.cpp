@@ -18,17 +18,17 @@
  */
 
 #include <cpp_utils/Log.hpp>
-#include <cpp_utils/utils.hpp>
+#include <cpp_utils/logging/LogConfiguration.hpp>
 #include <cpp_utils/memory/Heritable.hpp>
+#include <cpp_utils/utils.hpp>
 
 #include <ddspipe_core/types/dds/CustomTransport.hpp>
 #include <ddspipe_core/types/dds/DomainId.hpp>
 #include <ddspipe_core/types/dds/GuidPrefix.hpp>
 #include <ddspipe_core/types/participant/ParticipantId.hpp>
 #include <ddspipe_core/types/topic/dds/DdsTopic.hpp>
-#include <ddspipe_core/types/topic/filter/WildcardDdsFilterTopic.hpp>
 #include <ddspipe_core/types/topic/filter/ManualTopic.hpp>
-#include <ddspipe_core/configuration/LogConfiguration.hpp>
+#include <ddspipe_core/types/topic/filter/WildcardDdsFilterTopic.hpp>
 
 #include <ddspipe_participants/types/address/Address.hpp>
 #include <ddspipe_participants/types/address/DiscoveryServerConnectionAddress.hpp>
@@ -48,9 +48,9 @@ namespace eprosima {
 namespace ddspipe {
 namespace yaml {
 
-using namespace core;
-using namespace core::types;
-using namespace participants::types;
+using namespace eprosima::ddspipe::core;
+using namespace eprosima::ddspipe::core::types;
+using namespace eprosima::ddspipe::participants::types;
 
 template <>
 DDSPIPE_YAML_DllAPI
@@ -434,74 +434,73 @@ void YamlReader::fill(
 * LOGGING CONFIGURATION *
 ************************/
 
-using VersosityKind = fastdds::dds::Log::Kind;
-
 template <>
 DDSPIPE_YAML_DllAPI
-void YamlReader::fill<LogFilter>(
-        LogFilter& object,
+void YamlReader::fill<utils::LogFilter>(
+        utils::LogFilter& object,
         const Yaml& yml,
         const YamlReaderVersion version)
 {
     if (is_tag_present(yml, LOG_FILTER_ERROR_TAG))
     {
-        object[VerbosityKind::Error] = get<std::string>(yml, LOG_FILTER_ERROR_TAG, version);
+        object[utils::VerbosityKind::Error] = get<std::string>(yml, LOG_FILTER_ERROR_TAG, version);
     }
     if (is_tag_present(yml, LOG_FILTER_WARNING_TAG))
     {
-        object[VerbosityKind::Warning] = get<std::string>(yml, LOG_FILTER_WARNING_TAG, version);
+        object[utils::VerbosityKind::Warning] = get<std::string>(yml, LOG_FILTER_WARNING_TAG, version);
     }
     if (is_tag_present(yml, LOG_FILTER_INFO_TAG))
     {
-        object[VerbosityKind::Info] = get<std::string>(yml, LOG_FILTER_INFO_TAG, version);
+        object[utils::VerbosityKind::Info] = get<std::string>(yml, LOG_FILTER_INFO_TAG, version);
     }
 }
 
 template <>
 DDSPIPE_YAML_DllAPI
-LogFilter YamlReader::get(
+utils::LogFilter YamlReader::get(
         const Yaml& yml,
         const YamlReaderVersion version)
 {
-    LogFilter object;
-    fill<LogFilter>(object, yml, version);
+    utils::LogFilter object;
+    fill<utils::LogFilter>(object, yml, version);
     return object;
 }
 
 template <>
 DDSPIPE_YAML_DllAPI
 void YamlReader::fill(
-        LogConfiguration& object,
+        utils::LogConfiguration& object,
         const Yaml& yml,
         const YamlReaderVersion version)
 {
     // Verbosity optional
     if (is_tag_present(yml, LOG_VERBOSITY_TAG))
     {
-        object.verbosity = get_enumeration<VerbosityKind>(
-        YamlReader::get_value_in_tag(yml, LOG_VERBOSITY_TAG),
+        object.verbosity = get_enumeration<utils::VerbosityKind>(
+            yml,
+            LOG_VERBOSITY_TAG,
                 {
-                    {LOG_VERBOSITY_INFO_TAG, VerbosityKind::Info},
-                    {LOG_VERBOSITY_WARNING_TAG, VerbosityKind::Warning},
-                    {LOG_VERBOSITY_ERROR_TAG, VerbosityKind::Error}
+                    {LOG_VERBOSITY_INFO_TAG, utils::VerbosityKind::Info},
+                    {LOG_VERBOSITY_WARNING_TAG, utils::VerbosityKind::Warning},
+                    {LOG_VERBOSITY_ERROR_TAG, utils::VerbosityKind::Error}
                 });
     }
 
     // Filter optional
     if (is_tag_present(yml, LOG_FILTER_TAG))
     {
-        object.filter = get<LogFilter>(YamlReader::get_value_in_tag(yml, LOG_FILTER_TAG), version);
+        object.filter = get<utils::LogFilter>(YamlReader::get_value_in_tag(yml, LOG_FILTER_TAG), version);
     }
 }
 
 template <>
 DDSPIPE_YAML_DllAPI
-LogConfiguration YamlReader::get(
+utils::LogConfiguration YamlReader::get(
         const Yaml& yml,
         const YamlReaderVersion version)
 {
-    LogConfiguration object;
-    fill<LogConfiguration>(object, yml, version);
+    utils::LogConfiguration object;
+    fill<utils::LogConfiguration>(object, yml, version);
     return object;
 }
 
