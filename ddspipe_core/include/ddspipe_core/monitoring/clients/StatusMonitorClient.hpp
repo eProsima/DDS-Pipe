@@ -20,7 +20,14 @@
 #include <ddspipe_core/monitoring/clients/IMonitorClient.hpp>
 #include <ddspipe_core/monitoring/consumers/IMonitorConsumer.hpp>
 #include <ddspipe_core/monitoring/MonitorStatusError.hpp>
-#include <ddspipe_core/types/monitoring/status/MonitoringStatus.h>
+
+#if FASTRTPS_VERSION_MAJOR <= 2 && FASTRTPS_VERSION_MINOR < 13
+    #include <ddspipe_core/types/monitoring/status/v1/MonitoringStatus.h>
+    #include <ddspipe_core/types/monitoring/status/v1/MonitoringStatusPubSubTypes.h>
+#else
+    #include <ddspipe_core/types/monitoring/status/v2/MonitoringStatus.h>
+    #include <ddspipe_core/types/monitoring/status/v2/MonitoringStatusPubSubTypes.h>
+#endif // if FASTRTPS_VERSION_MAJOR <= 2 && FASTRTPS_VERSION_MINOR < 13
 
 // Monitoring API:
 
