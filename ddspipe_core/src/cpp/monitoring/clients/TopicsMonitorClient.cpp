@@ -17,7 +17,6 @@
 #include <ddspipe_core/monitoring/clients/TopicsMonitorClient.hpp>
 #include <ddspipe_core/monitoring/consumers/DdsMonitorConsumer.hpp>
 #include <ddspipe_core/monitoring/consumers/StdoutMonitorConsumer.hpp>
-#include <ddspipe_core/types/monitoring/topics/MonitoringTopicsPubSubTypes.h>
 
 namespace eprosima {
 namespace ddspipe {
