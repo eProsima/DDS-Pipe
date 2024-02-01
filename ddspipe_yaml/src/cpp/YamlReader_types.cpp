@@ -479,11 +479,11 @@ void YamlReader::fill(
         object.verbosity = get_enumeration<utils::VerbosityKind>(
             yml,
             LOG_VERBOSITY_TAG,
-                {
-                    {LOG_VERBOSITY_INFO_TAG, utils::VerbosityKind::Info},
-                    {LOG_VERBOSITY_WARNING_TAG, utils::VerbosityKind::Warning},
-                    {LOG_VERBOSITY_ERROR_TAG, utils::VerbosityKind::Error}
-                });
+                    {
+                        {LOG_VERBOSITY_INFO_TAG, utils::VerbosityKind::Info},
+                        {LOG_VERBOSITY_WARNING_TAG, utils::VerbosityKind::Warning},
+                        {LOG_VERBOSITY_ERROR_TAG, utils::VerbosityKind::Error}
+                    });
     }
 
     // Filter optional
@@ -503,7 +503,6 @@ utils::LogConfiguration YamlReader::get(
     fill<utils::LogConfiguration>(object, yml, version);
     return object;
 }
-
 
 /************************
 * TOPICS                *
