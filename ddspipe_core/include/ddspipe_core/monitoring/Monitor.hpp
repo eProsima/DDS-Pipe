@@ -23,7 +23,7 @@
 
 #include <fastdds/rtps/resources/TimedEvent.h>
 
-#include <ddspipe_core/monitoring/clients/IMonitorClient.hpp>
+#include <ddspipe_core/monitoring/producers/IMonitorProducer.hpp>
 
 
 // Monitoring API:
@@ -46,11 +46,11 @@ public:
     ~Monitor();
 
     // TODO
-    void register_client(
-            IMonitorClient* client);
+    void register_producer(
+            IMonitorProducer* producer);
 
     // TODO
-    void clear_clients();
+    void clear_producers();
 
 protected:
 

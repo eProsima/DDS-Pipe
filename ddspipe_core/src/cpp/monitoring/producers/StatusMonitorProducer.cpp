@@ -14,29 +14,58 @@
 
 
 #include <ddspipe_core/configuration/MonitorStatusConfiguration.hpp>
-#include <ddspipe_core/monitoring/clients/DdsRecorderStatusMonitorClient.hpp>
 #include <ddspipe_core/monitoring/consumers/DdsMonitorConsumer.hpp>
 #include <ddspipe_core/monitoring/consumers/StdoutMonitorConsumer.hpp>
+#include <ddspipe_core/monitoring/producers/StatusMonitorProducer.hpp>
 
 
 namespace eprosima {
 namespace ddspipe {
 namespace core {
 
-void DdsRecorderStatusMonitorClient::init(const MonitorStatusConfiguration* configuration)
+
+StatusMonitorProducer* StatusMonitorProducer::instance_ = nullptr;
+
+
+void StatusMonitorProducer::init_instance(StatusMonitorProducer* instance)
+{
+    instance_ = instance;
+}
+
+StatusMonitorProducer* StatusMonitorProducer::get_instance()
+{
+    if (instance_ == nullptr)
+    {
+        instance_ = new StatusMonitorProducer();
+    }
+
+    return instance_;
+}
+
+void StatusMonitorProducer::init(const MonitorStatusConfiguration* configuration)
 {
     // Store the period so it can be used by the Monitor
     period = configuration->period;
 
     // Register the type
-    fastdds::dds::TypeSupport type(new DdsRecorderMonitoringStatusPubSubType());
+    fastdds::dds::TypeSupport type(new MonitoringStatusPubSubType());
 
     // Create the consumers
-    consumers_.push_back(new DdsMonitorConsumer<DdsRecorderMonitoringStatus>(configuration, type));
-    consumers_.push_back(new StdoutMonitorConsumer<DdsRecorderMonitoringStatus>(configuration));
+    consumers_.push_back(new DdsMonitorConsumer<MonitoringStatus>(configuration, type));
+    consumers_.push_back(new StdoutMonitorConsumer<MonitoringStatus>(configuration));
 }
 
-void DdsRecorderStatusMonitorClient::add_error_to_status(
+void StatusMonitorProducer::consume() const
+{
+    const MonitoringStatus* data = save_data_();
+
+    for (auto consumer : consumers_)
+    {
+        consumer->consume(data);
+    }
+}
+
+void StatusMonitorProducer::add_error_to_status(
         const std::string& error)
 {
     // Take the lock to prevent:
@@ -45,7 +74,6 @@ void DdsRecorderStatusMonitorClient::add_error_to_status(
     std::lock_guard<std::mutex> lock(mutex_);
 
     auto error_status = data_->error_status();
-    auto ddsrecorder_error_status = data_->ddsrecorder_error_status();
 
     if (error == "TYPE_MISMATCH")
     {
@@ -55,27 +83,23 @@ void DdsRecorderStatusMonitorClient::add_error_to_status(
     {
         error_status.qos_mismatch(true);
     }
-    else if (error == "MCAP_FILE_CREATION_FAILURE")
-    {
-        ddsrecorder_error_status.mcap_file_creation_failure(true);
-    }
-    else if (error == "DISK_FULL")
-    {
-        ddsrecorder_error_status.disk_full(true);
-    }
 
     data_->error_status(error_status);
-    data_->ddsrecorder_error_status(ddsrecorder_error_status);
     data_->has_errors(true);
 }
 
-MonitoringStatus* DdsRecorderStatusMonitorClient::save_data_() const
+StatusMonitorProducer::~StatusMonitorProducer()
+{
+    consumers_.clear();
+}
+
+MonitoringStatus* StatusMonitorProducer::save_data_() const
 {
     return data_;
 }
 
-std::ostream& operator<<(std::ostream& os, const DdsRecorderMonitoringStatus& data) {
-    os << "DdsRecorder Monitoring Status: [";
+std::ostream& operator<<(std::ostream& os, const MonitoringStatus& data) {
+    os << "Monitoring Status: [";
 
     bool is_first_error = true;
 
@@ -90,30 +114,19 @@ std::ostream& operator<<(std::ostream& os, const DdsRecorderMonitoringStatus& da
         is_first_error = false;
     };
 
-    const auto& status = data.ddsrecorder_error_status();
+    auto error = data.error_status();
 
-    if (status.mcap_file_creation_failure())
-    {
-        print_error("MCAP_FILE_CREATION_FAILURE");
-    }
-
-    if (status.disk_full())
-    {
-        print_error("DISK_FULL");
-    }
-
-    if (data.error_status().type_mismatch())
+    if (error.type_mismatch())
     {
         print_error("TYPE_MISMATCH");
     }
 
-    if (data.error_status().qos_mismatch())
+    if (error.qos_mismatch())
     {
         print_error("QOS_MISMATCH");
     }
 
     os << "]";
-
     return os;
 }
 

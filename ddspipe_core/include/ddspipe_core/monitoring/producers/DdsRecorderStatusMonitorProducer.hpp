@@ -17,9 +17,9 @@
 #include <mutex>
 
 #include <ddspipe_core/configuration/MonitorStatusConfiguration.hpp>
-#include <ddspipe_core/monitoring/clients/IMonitorClient.hpp>
-#include <ddspipe_core/monitoring/clients/StatusMonitorClient.hpp>
 #include <ddspipe_core/monitoring/consumers/IMonitorConsumer.hpp>
+#include <ddspipe_core/monitoring/producers/IMonitorProducer.hpp>
+#include <ddspipe_core/monitoring/producers/StatusMonitorProducer.hpp>
 
 #include <ddspipe_core/types/monitoring/ddsrecorder_status/DdsRecorderMonitoringStatus.h>
 #include <ddspipe_core/types/monitoring/ddsrecorder_status/DdsRecorderMonitoringStatusPubSubTypes.h>
@@ -35,7 +35,7 @@ namespace core {
 /**
  * TODO
  */
-class DdsRecorderStatusMonitorClient : public StatusMonitorClient
+class DdsRecorderStatusMonitorProducer : public StatusMonitorProducer
 {
 public:
 
