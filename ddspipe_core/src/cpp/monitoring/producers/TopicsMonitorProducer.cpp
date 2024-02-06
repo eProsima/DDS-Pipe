@@ -43,7 +43,7 @@ void TopicsMonitorProducer::init(const MonitorTopicsConfiguration* configuration
 
 void TopicsMonitorProducer::consume() const
 {
-    MonitoringTopics data = save_data_();
+    const auto data = save_data_();
 
     for (auto consumer : consumers_)
     {

@@ -36,6 +36,16 @@ void DdsRecorderStatusMonitorProducer::init(const MonitorStatusConfiguration* co
     consumers_.push_back(new StdoutMonitorConsumer<DdsRecorderMonitoringStatus>(configuration));
 }
 
+void DdsRecorderStatusMonitorProducer::consume() const
+{
+    const auto data = save_data_();
+
+    for (auto consumer : consumers_)
+    {
+        consumer->consume(data);
+    }
+}
+
 void DdsRecorderStatusMonitorProducer::add_error_to_status(
         const std::string& error)
 {
@@ -69,7 +79,7 @@ void DdsRecorderStatusMonitorProducer::add_error_to_status(
     data_->has_errors(true);
 }
 
-MonitoringStatus* DdsRecorderStatusMonitorProducer::save_data_() const
+DdsRecorderMonitoringStatus* DdsRecorderStatusMonitorProducer::save_data_() const
 {
     return data_;
 }

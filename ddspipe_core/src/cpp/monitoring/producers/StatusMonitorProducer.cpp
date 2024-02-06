@@ -57,7 +57,7 @@ void StatusMonitorProducer::init(const MonitorStatusConfiguration* configuration
 
 void StatusMonitorProducer::consume() const
 {
-    const MonitoringStatus* data = save_data_();
+    const auto data = save_data_();
 
     for (auto consumer : consumers_)
     {

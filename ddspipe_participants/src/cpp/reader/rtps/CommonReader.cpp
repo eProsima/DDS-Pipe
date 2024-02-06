@@ -376,7 +376,6 @@ fastrtps::ReaderQos CommonReader::reckon_reader_qos_(
 
     // If topic is with ownership
     properties.m_ownership.kind = topic.topic_qos.ownership_qos;
-    // monitor_error("DISK_FULL");
 
     return properties;
 }
@@ -388,6 +387,7 @@ void CommonReader::onNewCacheChangeAdded(
     monitor_msg_rx(topic_, participant_id_);
 
     monitor_error("TYPE_MISMATCH");
+    monitor_error("DISK_FULL");
 
     if (should_accept_change_(change))
     {
