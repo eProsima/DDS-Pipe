@@ -1,0 +1,10 @@
+#include "../../status/v1/MonitoringStatus.idl"
+
+struct DdsRecorderMonitoringErrorStatus {
+    boolean mcap_file_creation_failure;
+    boolean disk_full;
+};
+
+struct DdsRecorderMonitoringStatus : MonitoringStatus {
+    DdsRecorderMonitoringErrorStatus ddsrecorder_error_status;
+};

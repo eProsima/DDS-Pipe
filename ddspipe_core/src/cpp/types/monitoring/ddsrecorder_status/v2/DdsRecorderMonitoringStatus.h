@@ -38,7 +38,7 @@
 #include <fastcdr/xcdr/external.hpp>
 #include <fastcdr/xcdr/optional.hpp>
 
-#include "../status/MonitoringStatus.h"
+#include "../../status/v2/MonitoringStatus.h"
 
 
 #if defined(_WIN32)

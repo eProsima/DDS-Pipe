@@ -26,7 +26,7 @@
 #ifndef _FAST_DDS_GENERATED_DDSRECORDERMONITORINGSTATUS_H_
 #define _FAST_DDS_GENERATED_DDSRECORDERMONITORINGSTATUS_H_
 
-#include "../status/MonitoringStatus.h"
+#include "../../status/v2/MonitoringStatus.h"
 
 #include <fastrtps/utils/fixed_size_string.hpp>
 
