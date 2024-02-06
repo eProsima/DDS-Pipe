@@ -14,21 +14,21 @@
 
 
 #include <ddspipe_core/configuration/MonitorTopicsConfiguration.hpp>
-#include <ddspipe_core/monitoring/clients/TopicsMonitorClient.hpp>
 #include <ddspipe_core/monitoring/consumers/DdsMonitorConsumer.hpp>
 #include <ddspipe_core/monitoring/consumers/StdoutMonitorConsumer.hpp>
+#include <ddspipe_core/monitoring/producers/TopicsMonitorProducer.hpp>
 
 namespace eprosima {
 namespace ddspipe {
 namespace core {
 
-TopicsMonitorClient* TopicsMonitorClient::get_instance()
+TopicsMonitorProducer* TopicsMonitorProducer::get_instance()
 {
-    static TopicsMonitorClient instance;
+    static TopicsMonitorProducer instance;
     return &instance;
 }
 
-void TopicsMonitorClient::init(const MonitorTopicsConfiguration* configuration)
+void TopicsMonitorProducer::init(const MonitorTopicsConfiguration* configuration)
 {
     // Store the period so it can be used by the Monitor
     period = configuration->period;
@@ -41,7 +41,7 @@ void TopicsMonitorClient::init(const MonitorTopicsConfiguration* configuration)
     consumers_.push_back(new StdoutMonitorConsumer<MonitoringTopics>(configuration));
 }
 
-void TopicsMonitorClient::consume() const
+void TopicsMonitorProducer::consume() const
 {
     MonitoringTopics data = save_data_();
 
@@ -51,7 +51,7 @@ void TopicsMonitorClient::consume() const
     }
 }
 
-void TopicsMonitorClient::msg_received(
+void TopicsMonitorProducer::msg_received(
         const types::DdsTopic& topic,
         const types::ParticipantId& participant_id)
 {
@@ -75,12 +75,12 @@ void TopicsMonitorClient::msg_received(
     data_[topic][participant_id].data.msgs_received(data_[topic][participant_id].data.msgs_received() + 1);
 }
 
-TopicsMonitorClient::~TopicsMonitorClient()
+TopicsMonitorProducer::~TopicsMonitorProducer()
 {
     consumers_.clear();
 }
 
-MonitoringTopics TopicsMonitorClient::save_data_() const
+MonitoringTopics TopicsMonitorProducer::save_data_() const
 {
     // Take the lock to prevent saving the data while it's changing
     std::lock_guard<std::mutex> lock(mutex_);

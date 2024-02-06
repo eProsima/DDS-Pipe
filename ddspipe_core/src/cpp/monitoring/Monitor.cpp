@@ -29,30 +29,30 @@ Monitor::Monitor()
 Monitor::~Monitor()
 {
     event_handler_.stop_thread();
-    clear_clients();
+    clear_producers();
 }
 
-void Monitor::register_client(
-        IMonitorClient* client)
+void Monitor::register_producer(
+        IMonitorProducer* producer)
 {
     std::unique_lock<std::mutex> lock(mutex_);
 
     events_.emplace_back(std::make_unique<fastrtps::rtps::TimedEvent>(
         event_handler_,
-        [client]() -> bool
+        [producer]() -> bool
         {
-            client->consume();
+            producer->consume();
 
             // The return value must be true to reschedule the event.
             return true;
         },
-        client->period));
+        producer->period));
 
     // Start the timer
     events_.back()->restart_timer();
 }
 
-void Monitor::clear_clients()
+void Monitor::clear_producers()
 {
     std::unique_lock<std::mutex> lock(mutex_);
     events_.clear();

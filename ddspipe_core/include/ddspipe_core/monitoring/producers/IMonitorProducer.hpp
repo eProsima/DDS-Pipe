@@ -25,7 +25,7 @@ namespace core {
 /**
  * TODO
  */
-class IMonitorClient
+class IMonitorProducer
 {
 public:
 
@@ -38,10 +38,10 @@ public:
 protected:
 
     // TODO
-    IMonitorClient() = default;
+    IMonitorProducer() = default;
 
     // TODO
-    ~IMonitorClient() = default;
+    ~IMonitorProducer() = default;
 };
 
 } // namespace core

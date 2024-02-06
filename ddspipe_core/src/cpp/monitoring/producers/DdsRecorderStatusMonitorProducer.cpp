@@ -14,58 +14,29 @@
 
 
 #include <ddspipe_core/configuration/MonitorStatusConfiguration.hpp>
-#include <ddspipe_core/monitoring/clients/StatusMonitorClient.hpp>
 #include <ddspipe_core/monitoring/consumers/DdsMonitorConsumer.hpp>
 #include <ddspipe_core/monitoring/consumers/StdoutMonitorConsumer.hpp>
+#include <ddspipe_core/monitoring/producers/DdsRecorderStatusMonitorProducer.hpp>
 
 
 namespace eprosima {
 namespace ddspipe {
 namespace core {
 
-
-StatusMonitorClient* StatusMonitorClient::instance_ = nullptr;
-
-
-void StatusMonitorClient::init_instance(StatusMonitorClient* instance)
-{
-    instance_ = instance;
-}
-
-StatusMonitorClient* StatusMonitorClient::get_instance()
-{
-    if (instance_ == nullptr)
-    {
-        instance_ = new StatusMonitorClient();
-    }
-
-    return instance_;
-}
-
-void StatusMonitorClient::init(const MonitorStatusConfiguration* configuration)
+void DdsRecorderStatusMonitorProducer::init(const MonitorStatusConfiguration* configuration)
 {
     // Store the period so it can be used by the Monitor
     period = configuration->period;
 
     // Register the type
-    fastdds::dds::TypeSupport type(new MonitoringStatusPubSubType());
+    fastdds::dds::TypeSupport type(new DdsRecorderMonitoringStatusPubSubType());
 
     // Create the consumers
-    consumers_.push_back(new DdsMonitorConsumer<MonitoringStatus>(configuration, type));
-    consumers_.push_back(new StdoutMonitorConsumer<MonitoringStatus>(configuration));
+    consumers_.push_back(new DdsMonitorConsumer<DdsRecorderMonitoringStatus>(configuration, type));
+    consumers_.push_back(new StdoutMonitorConsumer<DdsRecorderMonitoringStatus>(configuration));
 }
 
-void StatusMonitorClient::consume() const
-{
-    const MonitoringStatus* data = save_data_();
-
-    for (auto consumer : consumers_)
-    {
-        consumer->consume(data);
-    }
-}
-
-void StatusMonitorClient::add_error_to_status(
+void DdsRecorderStatusMonitorProducer::add_error_to_status(
         const std::string& error)
 {
     // Take the lock to prevent:
@@ -74,6 +45,7 @@ void StatusMonitorClient::add_error_to_status(
     std::lock_guard<std::mutex> lock(mutex_);
 
     auto error_status = data_->error_status();
+    auto ddsrecorder_error_status = data_->ddsrecorder_error_status();
 
     if (error == "TYPE_MISMATCH")
     {
@@ -83,23 +55,27 @@ void StatusMonitorClient::add_error_to_status(
     {
         error_status.qos_mismatch(true);
     }
+    else if (error == "MCAP_FILE_CREATION_FAILURE")
+    {
+        ddsrecorder_error_status.mcap_file_creation_failure(true);
+    }
+    else if (error == "DISK_FULL")
+    {
+        ddsrecorder_error_status.disk_full(true);
+    }
 
     data_->error_status(error_status);
+    data_->ddsrecorder_error_status(ddsrecorder_error_status);
     data_->has_errors(true);
 }
 
-StatusMonitorClient::~StatusMonitorClient()
-{
-    consumers_.clear();
-}
-
-MonitoringStatus* StatusMonitorClient::save_data_() const
+MonitoringStatus* DdsRecorderStatusMonitorProducer::save_data_() const
 {
     return data_;
 }
 
-std::ostream& operator<<(std::ostream& os, const MonitoringStatus& data) {
-    os << "Monitoring Status: [";
+std::ostream& operator<<(std::ostream& os, const DdsRecorderMonitoringStatus& data) {
+    os << "DdsRecorder Monitoring Status: [";
 
     bool is_first_error = true;
 
@@ -114,19 +90,30 @@ std::ostream& operator<<(std::ostream& os, const MonitoringStatus& data) {
         is_first_error = false;
     };
 
-    auto error = data.error_status();
+    const auto& status = data.ddsrecorder_error_status();
 
-    if (error.type_mismatch())
+    if (status.mcap_file_creation_failure())
+    {
+        print_error("MCAP_FILE_CREATION_FAILURE");
+    }
+
+    if (status.disk_full())
+    {
+        print_error("DISK_FULL");
+    }
+
+    if (data.error_status().type_mismatch())
     {
         print_error("TYPE_MISMATCH");
     }
 
-    if (error.qos_mismatch())
+    if (data.error_status().qos_mismatch())
     {
         print_error("QOS_MISMATCH");
     }
 
     os << "]";
+
     return os;
 }
 

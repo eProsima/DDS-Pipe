@@ -20,8 +20,8 @@
 #include <cpp_utils/time/time_utils.hpp>
 
 #include <ddspipe_core/configuration/MonitorTopicsConfiguration.hpp>
-#include <ddspipe_core/monitoring/clients/IMonitorClient.hpp>
 #include <ddspipe_core/monitoring/consumers/IMonitorConsumer.hpp>
+#include <ddspipe_core/monitoring/producers/IMonitorProducer.hpp>
 #include <ddspipe_core/types/participant/ParticipantId.hpp>
 #include <ddspipe_core/types/topic/dds/DdsTopic.hpp>
 
@@ -49,12 +49,12 @@ struct MonitoringInfo
 /**
  * TODO
  */
-class TopicsMonitorClient : public IMonitorClient
+class TopicsMonitorProducer : public IMonitorProducer
 {
 public:
 
     // TODO
-    static TopicsMonitorClient* get_instance();
+    static TopicsMonitorProducer* get_instance();
 
     // TODO
     void init(const MonitorTopicsConfiguration* configuration);
@@ -70,10 +70,10 @@ public:
 protected:
 
     // TODO
-    TopicsMonitorClient() = default;
+    TopicsMonitorProducer() = default;
 
     // TODO
-    ~TopicsMonitorClient();
+    ~TopicsMonitorProducer();
 
     // TODO
     MonitoringTopics save_data_() const;
@@ -95,7 +95,7 @@ std::ostream& operator<<(std::ostream& os, const MonitoringTopics& data);
 // The names of variables inside macros must be unique to avoid conflicts with external variables
 #ifdef MONITOR_ENABLED
 
-#define MONITOR_MSG_RX_IMPL_(topic, participant_id) eprosima::ddspipe::core::TopicsMonitorClient::get_instance()->msg_received(topic, \
+#define MONITOR_MSG_RX_IMPL_(topic, participant_id) eprosima::ddspipe::core::TopicsMonitorProducer::get_instance()->msg_received(topic, \
             participant_id)
 #else
 

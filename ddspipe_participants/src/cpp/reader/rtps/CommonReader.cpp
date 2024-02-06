@@ -19,7 +19,8 @@
 #include <cpp_utils/Log.hpp>
 
 #include <ddspipe_core/interface/IRoutingData.hpp>
-#include <ddspipe_core/monitoring/clients/TopicsMonitorClient.hpp>
+#include <ddspipe_core/monitoring/producers/StatusMonitorProducer.hpp>
+#include <ddspipe_core/monitoring/producers/TopicsMonitorProducer.hpp>
 #include <ddspipe_core/types/data/RtpsPayloadData.hpp>
 
 #include <ddspipe_participants/reader/rtps/CommonReader.hpp>
@@ -375,6 +376,7 @@ fastrtps::ReaderQos CommonReader::reckon_reader_qos_(
 
     // If topic is with ownership
     properties.m_ownership.kind = topic.topic_qos.ownership_qos;
+    // monitor_error("DISK_FULL");
 
     return properties;
 }
@@ -384,6 +386,8 @@ void CommonReader::onNewCacheChangeAdded(
         const fastrtps::rtps::CacheChange_t* const change) noexcept
 {
     monitor_msg_rx(topic_, participant_id_);
+
+    monitor_error("TYPE_MISMATCH");
 
     if (should_accept_change_(change))
     {
