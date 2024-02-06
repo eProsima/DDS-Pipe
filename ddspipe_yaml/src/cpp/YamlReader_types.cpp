@@ -48,7 +48,6 @@ namespace eprosima {
 namespace ddspipe {
 namespace yaml {
 
-using namespace eprosima::ddspipe::core;
 using namespace eprosima::ddspipe::core::types;
 using namespace eprosima::ddspipe::participants::types;
 
@@ -489,7 +488,7 @@ void YamlReader::fill(
     // Filter optional
     if (is_tag_present(yml, LOG_FILTER_TAG))
     {
-        object.filter = get<utils::LogFilter>(YamlReader::get_value_in_tag(yml, LOG_FILTER_TAG), version);
+        object.filter = get<utils::LogFilter>(yml, LOG_FILTER_TAG, version);
     }
 }
 
