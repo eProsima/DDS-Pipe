@@ -19,15 +19,9 @@
 #include <ddspipe_core/configuration/MonitorStatusConfiguration.hpp>
 #include <ddspipe_core/monitoring/clients/IMonitorClient.hpp>
 #include <ddspipe_core/monitoring/consumers/IMonitorConsumer.hpp>
-#include <ddspipe_core/monitoring/MonitorStatusError.hpp>
 
-#if FASTRTPS_VERSION_MAJOR <= 2 && FASTRTPS_VERSION_MINOR < 13
-    #include <ddspipe_core/types/monitoring/status/v1/MonitoringStatus.h>
-    #include <ddspipe_core/types/monitoring/status/v1/MonitoringStatusPubSubTypes.h>
-#else
-    #include <ddspipe_core/types/monitoring/status/v2/MonitoringStatus.h>
-    #include <ddspipe_core/types/monitoring/status/v2/MonitoringStatusPubSubTypes.h>
-#endif // if FASTRTPS_VERSION_MAJOR <= 2 && FASTRTPS_VERSION_MINOR < 13
+#include <ddspipe_core/types/monitoring/status/MonitoringStatus.h>
+#include <ddspipe_core/types/monitoring/status/MonitoringStatusPubSubTypes.h>
 
 // Monitoring API:
 
@@ -47,35 +41,41 @@ class StatusMonitorClient : public IMonitorClient
 {
 public:
 
+    // TODO
+    static void init_instance(StatusMonitorClient* instance);
+
     // Static method to get the singleton instance
     static StatusMonitorClient* get_instance();
 
     // TODO
-    void init(const MonitorStatusConfiguration* configuration);
+    virtual void init(const MonitorStatusConfiguration* configuration);
 
     // TODO
     void consume() const override;
 
     // TODO
     void add_error_to_status(
-            const MonitorStatusError& error);
+            const std::string& error);
 
 protected:
 
     // TODO
-    StatusMonitorClient();
+    StatusMonitorClient() = default;
 
     // TODO
     ~StatusMonitorClient();
 
     // TODO
-    MonitoringStatus save_data_() const;
+    virtual MonitoringStatus* save_data_() const;
 
     // TODO
-    mutable std::mutex status_mutex_;
+    static StatusMonitorClient* instance_;
 
     // TODO
-    MonitoringStatus status_data_;
+    mutable std::mutex mutex_;
+
+    // TODO
+    MonitoringStatus* data_ = new MonitoringStatus();
 
     // TODO
     std::vector<IMonitorConsumer<MonitoringStatus>*> consumers_;

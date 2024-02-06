@@ -58,25 +58,21 @@ void TopicsMonitorClient::msg_received(
     // Take the lock to prevent:
     //      1. Changing the data while it's being saved.
     //      2. Simultaneous calls to msg_received.
-    std::lock_guard<std::mutex> lock(topics_mutex_);
+    std::lock_guard<std::mutex> lock(mutex_);
 
-    if (!topics_data_.count(topic) || !topics_data_[topic].count(participant_id))
+    if (!data_.count(topic) || !data_[topic].count(participant_id))
     {
         // First message received for topic & participant
 
         // Save the time
-        topics_data_[topic][participant_id].start_time = utils::now();
+        data_[topic][participant_id].start_time = utils::now();
 
         // Save the participant_id
-        topics_data_[topic][participant_id].data.participant_id(participant_id);
+        data_[topic][participant_id].data.participant_id(participant_id);
     }
 
     // Increase the count of the received messages
-    topics_data_[topic][participant_id].data.msgs_received(topics_data_[topic][participant_id].data.msgs_received() + 1);
-}
-
-TopicsMonitorClient::TopicsMonitorClient()
-{
+    data_[topic][participant_id].data.msgs_received(data_[topic][participant_id].data.msgs_received() + 1);
 }
 
 TopicsMonitorClient::~TopicsMonitorClient()
@@ -87,12 +83,12 @@ TopicsMonitorClient::~TopicsMonitorClient()
 MonitoringTopics TopicsMonitorClient::save_data_() const
 {
     // Take the lock to prevent saving the data while it's changing
-    std::lock_guard<std::mutex> lock(topics_mutex_);
+    std::lock_guard<std::mutex> lock(mutex_);
 
     std::vector<DdsTopic> topics_data;
 
     // Iterate through the different topics
-    for (const auto& topic : topics_data_)
+    for (const auto& topic : data_)
     {
         const auto& dds_topic = topic.first;
         const auto& participants = topic.second;

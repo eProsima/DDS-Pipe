@@ -131,46 +131,6 @@ public:
             const MonitoringErrorStatus& x) const;
 
     /*!
-     * @brief This function sets a value in member mcap_file_creation_failure
-     * @param _mcap_file_creation_failure New value for member mcap_file_creation_failure
-     */
-    eProsima_user_DllExport void mcap_file_creation_failure(
-            bool _mcap_file_creation_failure);
-
-    /*!
-     * @brief This function returns the value of member mcap_file_creation_failure
-     * @return Value of member mcap_file_creation_failure
-     */
-    eProsima_user_DllExport bool mcap_file_creation_failure() const;
-
-    /*!
-     * @brief This function returns a reference to member mcap_file_creation_failure
-     * @return Reference to member mcap_file_creation_failure
-     */
-    eProsima_user_DllExport bool& mcap_file_creation_failure();
-
-
-    /*!
-     * @brief This function sets a value in member disk_full
-     * @param _disk_full New value for member disk_full
-     */
-    eProsima_user_DllExport void disk_full(
-            bool _disk_full);
-
-    /*!
-     * @brief This function returns the value of member disk_full
-     * @return Value of member disk_full
-     */
-    eProsima_user_DllExport bool disk_full() const;
-
-    /*!
-     * @brief This function returns a reference to member disk_full
-     * @return Reference to member disk_full
-     */
-    eProsima_user_DllExport bool& disk_full();
-
-
-    /*!
      * @brief This function sets a value in member type_mismatch
      * @param _type_mismatch New value for member type_mismatch
      */
@@ -263,8 +223,6 @@ public:
 
 private:
 
-    bool m_mcap_file_creation_failure;
-    bool m_disk_full;
     bool m_type_mismatch;
     bool m_qos_mismatch;
 

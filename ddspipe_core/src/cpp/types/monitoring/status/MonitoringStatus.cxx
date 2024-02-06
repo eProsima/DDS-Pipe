@@ -52,8 +52,6 @@ MonitoringErrorStatus::~MonitoringErrorStatus()
 MonitoringErrorStatus::MonitoringErrorStatus(
         const MonitoringErrorStatus& x)
 {
-    m_mcap_file_creation_failure = x.m_mcap_file_creation_failure;
-    m_disk_full = x.m_disk_full;
     m_type_mismatch = x.m_type_mismatch;
     m_qos_mismatch = x.m_qos_mismatch;
 }
@@ -61,8 +59,6 @@ MonitoringErrorStatus::MonitoringErrorStatus(
 MonitoringErrorStatus::MonitoringErrorStatus(
         MonitoringErrorStatus&& x) noexcept
 {
-    m_mcap_file_creation_failure = x.m_mcap_file_creation_failure;
-    m_disk_full = x.m_disk_full;
     m_type_mismatch = x.m_type_mismatch;
     m_qos_mismatch = x.m_qos_mismatch;
 }
@@ -71,8 +67,6 @@ MonitoringErrorStatus& MonitoringErrorStatus::operator =(
         const MonitoringErrorStatus& x)
 {
 
-    m_mcap_file_creation_failure = x.m_mcap_file_creation_failure;
-    m_disk_full = x.m_disk_full;
     m_type_mismatch = x.m_type_mismatch;
     m_qos_mismatch = x.m_qos_mismatch;
     return *this;
@@ -82,8 +76,6 @@ MonitoringErrorStatus& MonitoringErrorStatus::operator =(
         MonitoringErrorStatus&& x) noexcept
 {
 
-    m_mcap_file_creation_failure = x.m_mcap_file_creation_failure;
-    m_disk_full = x.m_disk_full;
     m_type_mismatch = x.m_type_mismatch;
     m_qos_mismatch = x.m_qos_mismatch;
     return *this;
@@ -92,9 +84,7 @@ MonitoringErrorStatus& MonitoringErrorStatus::operator =(
 bool MonitoringErrorStatus::operator ==(
         const MonitoringErrorStatus& x) const
 {
-    return (m_mcap_file_creation_failure == x.m_mcap_file_creation_failure &&
-           m_disk_full == x.m_disk_full &&
-           m_type_mismatch == x.m_type_mismatch &&
+    return (m_type_mismatch == x.m_type_mismatch &&
            m_qos_mismatch == x.m_qos_mismatch);
 }
 
@@ -103,64 +93,6 @@ bool MonitoringErrorStatus::operator !=(
 {
     return !(*this == x);
 }
-
-/*!
- * @brief This function sets a value in member mcap_file_creation_failure
- * @param _mcap_file_creation_failure New value for member mcap_file_creation_failure
- */
-void MonitoringErrorStatus::mcap_file_creation_failure(
-        bool _mcap_file_creation_failure)
-{
-    m_mcap_file_creation_failure = _mcap_file_creation_failure;
-}
-
-/*!
- * @brief This function returns the value of member mcap_file_creation_failure
- * @return Value of member mcap_file_creation_failure
- */
-bool MonitoringErrorStatus::mcap_file_creation_failure() const
-{
-    return m_mcap_file_creation_failure;
-}
-
-/*!
- * @brief This function returns a reference to member mcap_file_creation_failure
- * @return Reference to member mcap_file_creation_failure
- */
-bool& MonitoringErrorStatus::mcap_file_creation_failure()
-{
-    return m_mcap_file_creation_failure;
-}
-
-
-/*!
- * @brief This function sets a value in member disk_full
- * @param _disk_full New value for member disk_full
- */
-void MonitoringErrorStatus::disk_full(
-        bool _disk_full)
-{
-    m_disk_full = _disk_full;
-}
-
-/*!
- * @brief This function returns the value of member disk_full
- * @return Value of member disk_full
- */
-bool MonitoringErrorStatus::disk_full() const
-{
-    return m_disk_full;
-}
-
-/*!
- * @brief This function returns a reference to member disk_full
- * @return Reference to member disk_full
- */
-bool& MonitoringErrorStatus::disk_full()
-{
-    return m_disk_full;
-}
-
 
 /*!
  * @brief This function sets a value in member type_mismatch
