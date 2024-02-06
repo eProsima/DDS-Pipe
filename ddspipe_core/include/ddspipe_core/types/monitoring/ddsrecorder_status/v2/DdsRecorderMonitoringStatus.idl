@@ -1,4 +1,4 @@
-#include "../status/MonitoringStatus.idl"
+#include "../../status/v2/MonitoringStatus.idl"
 
 struct DdsRecorderMonitoringErrorStatus {
     boolean mcap_file_creation_failure;

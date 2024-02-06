@@ -21,8 +21,8 @@
 #include <ddspipe_core/monitoring/producers/IMonitorProducer.hpp>
 #include <ddspipe_core/monitoring/producers/StatusMonitorProducer.hpp>
 
-#include <ddspipe_core/types/monitoring/ddsrecorder_status/DdsRecorderMonitoringStatus.h>
-#include <ddspipe_core/types/monitoring/ddsrecorder_status/DdsRecorderMonitoringStatusPubSubTypes.h>
+#include <ddspipe_core/types/monitoring/ddsrecorder_status/v2/DdsRecorderMonitoringStatus.h>
+#include <ddspipe_core/types/monitoring/ddsrecorder_status/v2/DdsRecorderMonitoringStatusPubSubTypes.h>
 
 // Monitoring API:
 

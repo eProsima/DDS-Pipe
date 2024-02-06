@@ -84,6 +84,8 @@ endif()
 compile_library(
     "${PROJECT_SOURCE_DIR}/src/cpp" # Source directory
     "${PROJECT_SOURCE_DIR}/include" # Include directory
+    "${SOURCES_FILES}"
+    "${HEADERS_FILES}"
 )
 
 ###############################################################################

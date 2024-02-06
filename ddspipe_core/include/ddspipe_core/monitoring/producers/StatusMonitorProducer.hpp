@@ -20,8 +20,8 @@
 #include <ddspipe_core/monitoring/consumers/IMonitorConsumer.hpp>
 #include <ddspipe_core/monitoring/producers/IMonitorProducer.hpp>
 
-#include <ddspipe_core/types/monitoring/status/MonitoringStatus.h>
-#include <ddspipe_core/types/monitoring/status/MonitoringStatusPubSubTypes.h>
+#include <ddspipe_core/types/monitoring/status/v2/MonitoringStatus.h>
+#include <ddspipe_core/types/monitoring/status/v2/MonitoringStatusPubSubTypes.h>
 
 // Monitoring API:
 

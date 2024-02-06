@@ -25,8 +25,8 @@
 #include <ddspipe_core/types/participant/ParticipantId.hpp>
 #include <ddspipe_core/types/topic/dds/DdsTopic.hpp>
 
-#include <ddspipe_core/types/monitoring/topics/MonitoringTopics.h>
-#include <ddspipe_core/types/monitoring/topics/MonitoringTopicsPubSubTypes.h>
+#include <ddspipe_core/types/monitoring/topics/v2/MonitoringTopics.h>
+#include <ddspipe_core/types/monitoring/topics/v2/MonitoringTopicsPubSubTypes.h>
 
 
 // Monitoring API:
