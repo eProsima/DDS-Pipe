@@ -1,6 +1,4 @@
 struct MonitoringErrorStatus {
-    boolean mcap_file_creation_failure;
-    boolean disk_full;
     boolean type_mismatch;
     boolean qos_mismatch;
 };

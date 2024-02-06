@@ -25,13 +25,8 @@
 #include <ddspipe_core/types/participant/ParticipantId.hpp>
 #include <ddspipe_core/types/topic/dds/DdsTopic.hpp>
 
-#if FASTRTPS_VERSION_MAJOR <= 2 && FASTRTPS_VERSION_MINOR < 13
-    #include <ddspipe_core/types/monitoring/topics/v1/MonitoringTopics.h>
-    #include <ddspipe_core/types/monitoring/topics/v1/MonitoringTopicsPubSubTypes.h>
-#else
-    #include <ddspipe_core/types/monitoring/topics/v2/MonitoringTopics.h>
-    #include <ddspipe_core/types/monitoring/topics/v2/MonitoringTopicsPubSubTypes.h>
-#endif // if FASTRTPS_VERSION_MAJOR <= 2 && FASTRTPS_VERSION_MINOR < 13
+#include <ddspipe_core/types/monitoring/topics/MonitoringTopics.h>
+#include <ddspipe_core/types/monitoring/topics/MonitoringTopicsPubSubTypes.h>
 
 
 // Monitoring API:
@@ -75,7 +70,7 @@ public:
 protected:
 
     // TODO
-    TopicsMonitorClient();
+    TopicsMonitorClient() = default;
 
     // TODO
     ~TopicsMonitorClient();
@@ -84,10 +79,10 @@ protected:
     MonitoringTopics save_data_() const;
 
     // TODO
-    mutable std::mutex topics_mutex_;
+    mutable std::mutex mutex_;
 
     // TODO
-    std::map<types::DdsTopic, std::map<types::ParticipantId, MonitoringInfo>> topics_data_;
+    std::map<types::DdsTopic, std::map<types::ParticipantId, MonitoringInfo>> data_;
 
     // TODO
     std::vector<IMonitorConsumer<MonitoringTopics>*> consumers_;
