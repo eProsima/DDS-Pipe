@@ -51,10 +51,10 @@ public:
     virtual void init(const MonitorStatusConfiguration* configuration);
 
     // TODO
-    void consume() const override;
+    virtual void consume() const override;
 
     // TODO
-    void add_error_to_status(
+    virtual void add_error_to_status(
             const std::string& error);
 
 protected:

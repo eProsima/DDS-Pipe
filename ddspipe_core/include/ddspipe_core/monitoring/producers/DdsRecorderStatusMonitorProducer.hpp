@@ -43,13 +43,16 @@ public:
     void init(const MonitorStatusConfiguration* configuration) override;
 
     // TODO
-    void add_error_to_status(
-            const std::string& error);
+    void consume() const override;
+
+    // TODO
+    virtual void add_error_to_status(
+            const std::string& error) override;
 
 protected:
 
     // TODO
-    MonitoringStatus* save_data_() const override;
+    DdsRecorderMonitoringStatus* save_data_() const;
 
     // TODO
     DdsRecorderMonitoringStatus* data_ = new DdsRecorderMonitoringStatus();
