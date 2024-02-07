@@ -123,7 +123,7 @@ struct DdsPipeConfiguration : public IConfiguration
     //! The type of the entity whose discovery should trigger the discovery callbacks.
     DiscoveryTrigger discovery_trigger = DiscoveryTrigger::READER;
 
-    //
+    // Logging Configuration.
     utils::LogConfiguration log_configuration{};
 };
 
