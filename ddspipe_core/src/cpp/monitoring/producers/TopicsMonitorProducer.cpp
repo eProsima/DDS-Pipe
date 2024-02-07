@@ -30,6 +30,15 @@ TopicsMonitorProducer* TopicsMonitorProducer::get_instance()
 
 void TopicsMonitorProducer::init(const MonitorTopicsConfiguration* configuration)
 {
+    // Store whether the producer is enabled
+    enabled_ = configuration->enabled;
+
+    if (!enabled_)
+    {
+        // Don't register the consumers if the producer is not enabled
+        return;
+    }
+
     // Store the period so it can be used by the Monitor
     period = configuration->period;
 
@@ -43,6 +52,12 @@ void TopicsMonitorProducer::init(const MonitorTopicsConfiguration* configuration
 
 void TopicsMonitorProducer::consume() const
 {
+    if (!enabled_)
+    {
+        // Don't consume if the producer is not enabled
+        return;
+    }
+
     const auto data = save_data_();
 
     for (auto consumer : consumers_)
@@ -55,6 +70,12 @@ void TopicsMonitorProducer::msg_received(
         const types::DdsTopic& topic,
         const types::ParticipantId& participant_id)
 {
+    if (!enabled_)
+    {
+        // Don't save the data if the producer is not enabled
+        return;
+    }
+
     // Take the lock to prevent:
     //      1. Changing the data while it's being saved.
     //      2. Simultaneous calls to msg_received.
