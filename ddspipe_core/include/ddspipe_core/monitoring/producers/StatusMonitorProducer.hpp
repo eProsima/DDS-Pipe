@@ -84,15 +84,7 @@ protected:
 std::ostream& operator<<(std::ostream& os, const MonitoringStatus& data);
 
 // The names of variables inside macros must be unique to avoid conflicts with external variables
-#ifdef MONITOR_ENABLED
-
 #define MONITOR_ERROR_IMPL_(error) eprosima::ddspipe::core::StatusMonitorProducer::get_instance()->add_error_to_status(error)
-
-#else
-
-#define MONITOR_ERROR_IMPL_(error)
-
-#endif // ifndef MONITOR
 
 } // namespace core
 } // namespace ddspipe
