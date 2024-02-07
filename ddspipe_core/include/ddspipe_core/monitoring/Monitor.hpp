@@ -19,9 +19,7 @@
 #include <memory>
 #include <mutex>
 
-#include <fastrtps/rtps/resources/ResourceEvent.h>
-
-#include <fastdds/rtps/resources/TimedEvent.h>
+#include <cpp_utils/event/PeriodicEventHandler.hpp>
 
 #include <ddspipe_core/monitoring/producers/IMonitorProducer.hpp>
 
@@ -40,28 +38,13 @@ class Monitor
 public:
 
     // TODO
-    Monitor();
-
-    // TODO
-    ~Monitor();
-
-    // TODO
     void register_producer(
             IMonitorProducer* producer);
-
-    // TODO
-    void clear_producers();
 
 protected:
 
     // TODO
-    std::mutex mutex_;
-
-    // TODO
-    fastrtps::rtps::ResourceEvent event_handler_;
-
-    // TODO
-    std::vector<std::unique_ptr<fastrtps::rtps::TimedEvent>> events_;
+    std::vector<std::unique_ptr<utils::event::PeriodicEventHandler>> events_;
 };
 
 } // namespace core
