@@ -40,12 +40,6 @@ namespace eprosima {
 namespace ddspipe {
 namespace core {
 
-struct MonitoringInfo
-{
-    utils::Timestamp start_time;
-    DdsTopicData data;
-};
-
 /**
  * TODO
  */
@@ -60,7 +54,7 @@ public:
     void init(const MonitorTopicsConfiguration* configuration);
 
     // TODO
-    void consume() const override;
+    void consume() override;
 
     // TODO
     void msg_received(
@@ -76,13 +70,13 @@ protected:
     ~TopicsMonitorProducer();
 
     // TODO
-    MonitoringTopics save_data_() const;
+    MonitoringTopics save_data_();
 
     // TODO
     mutable std::mutex mutex_;
 
     // TODO
-    std::map<types::DdsTopic, std::map<types::ParticipantId, MonitoringInfo>> data_;
+    std::map<types::DdsTopic, std::map<types::ParticipantId, DdsTopicData>> data_;
 
     // TODO
     std::vector<IMonitorConsumer<MonitoringTopics>*> consumers_;
