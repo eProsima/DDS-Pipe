@@ -51,7 +51,7 @@ public:
     virtual void init(const MonitorStatusConfiguration* configuration);
 
     // TODO
-    virtual void consume() const override;
+    virtual void consume() override;
 
     // TODO
     virtual void add_error_to_status(

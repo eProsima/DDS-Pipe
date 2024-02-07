@@ -50,7 +50,7 @@ void TopicsMonitorProducer::init(const MonitorTopicsConfiguration* configuration
     consumers_.push_back(new StdoutMonitorConsumer<MonitoringTopics>(configuration));
 }
 
-void TopicsMonitorProducer::consume() const
+void TopicsMonitorProducer::consume()
 {
     if (!enabled_)
     {
@@ -84,16 +84,12 @@ void TopicsMonitorProducer::msg_received(
     if (!data_.count(topic) || !data_[topic].count(participant_id))
     {
         // First message received for topic & participant
-
-        // Save the time
-        data_[topic][participant_id].start_time = utils::now();
-
         // Save the participant_id
-        data_[topic][participant_id].data.participant_id(participant_id);
+        data_[topic][participant_id].participant_id(participant_id);
     }
 
     // Increase the count of the received messages
-    data_[topic][participant_id].data.msgs_received(data_[topic][participant_id].data.msgs_received() + 1);
+    data_[topic][participant_id].msgs_received(data_[topic][participant_id].msgs_received() + 1);
 }
 
 TopicsMonitorProducer::~TopicsMonitorProducer()
@@ -101,7 +97,7 @@ TopicsMonitorProducer::~TopicsMonitorProducer()
     consumers_.clear();
 }
 
-MonitoringTopics TopicsMonitorProducer::save_data_() const
+MonitoringTopics TopicsMonitorProducer::save_data_()
 {
     // Take the lock to prevent saving the data while it's changing
     std::lock_guard<std::mutex> lock(mutex_);
@@ -109,10 +105,10 @@ MonitoringTopics TopicsMonitorProducer::save_data_() const
     std::vector<DdsTopic> topics_data;
 
     // Iterate through the different topics
-    for (const auto& topic : data_)
+    for (auto& topic : data_)
     {
-        const auto& dds_topic = topic.first;
-        const auto& participants = topic.second;
+        auto& dds_topic = topic.first;
+        auto& participants = topic.second;
 
         DdsTopic topic_data;
 
@@ -122,21 +118,20 @@ MonitoringTopics TopicsMonitorProducer::save_data_() const
 
         std::vector<DdsTopicData> topic_participants;
 
-        for (const auto participant : participants)
+        for (auto& participant : participants)
         {
-            const auto& participant_id = participant.first;
-            const auto& info = participant.second;
-
-            DdsTopicData participant_data = info.data;
-
-            // Calculate the time between the first sample and the last
-            const std::chrono::duration<double> time_elapsed = utils::now() - info.start_time;
+            auto& participant_id = participant.first;
+            auto& participant_data = participant.second;
 
             // Calculate the message reception frequency
-            participant_data.frequency((double) participant_data.msgs_received() / time_elapsed.count());
+            const double period_in_secs = (double) period / 1000;
+            participant_data.frequency((double) participant_data.msgs_received() / period_in_secs);
 
             // Save the participant's data for the topic
             topic_participants.push_back(participant_data);
+
+            // Reset the messages received for the next period
+            participant_data.msgs_received(0);
         }
 
         // Save the participants' data for the topic

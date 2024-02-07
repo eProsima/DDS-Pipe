@@ -64,7 +64,7 @@ void StatusMonitorProducer::init(const MonitorStatusConfiguration* configuration
     consumers_.push_back(new StdoutMonitorConsumer<MonitoringStatus>(configuration));
 }
 
-void StatusMonitorProducer::consume() const
+void StatusMonitorProducer::consume()
 {
     if (!enabled_)
     {

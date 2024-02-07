@@ -30,7 +30,7 @@ class IMonitorProducer
 public:
 
     // TODO
-    virtual void consume() const = 0;
+    virtual void consume() = 0;
 
     // TODO
     double period = 1000;

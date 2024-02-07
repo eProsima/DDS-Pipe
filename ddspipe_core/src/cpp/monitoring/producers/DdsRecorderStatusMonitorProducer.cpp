@@ -36,7 +36,7 @@ void DdsRecorderStatusMonitorProducer::init(const MonitorStatusConfiguration* co
     consumers_.push_back(new StdoutMonitorConsumer<DdsRecorderMonitoringStatus>(configuration));
 }
 
-void DdsRecorderStatusMonitorProducer::consume() const
+void DdsRecorderStatusMonitorProducer::consume()
 {
     const auto data = save_data_();
 
