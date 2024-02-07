@@ -42,6 +42,9 @@ protected:
 
     // TODO
     ~IMonitorProducer() = default;
+
+    // TODO
+    bool enabled_ = false;
 };
 
 } // namespace core

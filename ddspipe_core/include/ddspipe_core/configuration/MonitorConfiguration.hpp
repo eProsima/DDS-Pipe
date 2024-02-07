@@ -60,6 +60,9 @@ struct MonitorConfiguration : public IConfiguration
 
     //! TODO
     std::string topic_name;
+
+    //! TODO
+    bool enabled = false;
 };
 
 } /* namespace core */
