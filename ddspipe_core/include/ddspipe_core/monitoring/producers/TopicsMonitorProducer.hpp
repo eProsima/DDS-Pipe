@@ -93,15 +93,8 @@ std::ostream& operator<<(std::ostream& os, const DdsTopic& topic);
 std::ostream& operator<<(std::ostream& os, const MonitoringTopics& data);
 
 // The names of variables inside macros must be unique to avoid conflicts with external variables
-#ifdef MONITOR_ENABLED
-
 #define MONITOR_MSG_RX_IMPL_(topic, participant_id) eprosima::ddspipe::core::TopicsMonitorProducer::get_instance()->msg_received(topic, \
             participant_id)
-#else
-
-#define MONITOR_MSG_RX_IMPL_(topic, participant_id)
-
-#endif // ifndef MONITOR
 
 } // namespace core
 } // namespace ddspipe
