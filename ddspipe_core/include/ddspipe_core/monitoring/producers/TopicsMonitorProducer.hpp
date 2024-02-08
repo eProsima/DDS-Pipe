@@ -81,6 +81,9 @@ protected:
     MonitoringTopics save_data_();
 
     // TODO
+    void reset_data_();
+
+    // TODO
     mutable std::mutex mutex_;
 
     // TODO

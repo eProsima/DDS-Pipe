@@ -64,6 +64,8 @@ void TopicsMonitorProducer::consume()
     {
         consumer->consume(&data);
     }
+
+    reset_data_();
 }
 
 void TopicsMonitorProducer::msg_received(
@@ -155,10 +157,6 @@ MonitoringTopics TopicsMonitorProducer::save_data_()
 
             // Save the participant's data for the topic
             topic_participants.push_back(participant_data);
-
-            // Reset the participant's data for the next period
-            participant_data.msgs_received(0);
-            participant_data.msgs_lost(0);
         }
 
         // Save the participants' data for the topic
@@ -174,6 +172,22 @@ MonitoringTopics TopicsMonitorProducer::save_data_()
     data.topics(topics_data);
 
     return data;
+}
+
+void TopicsMonitorProducer::reset_data_()
+{
+    // Take the lock to prevent reseting the data while it's being saved
+    std::lock_guard<std::mutex> lock(mutex_);
+
+    // Reset the data
+    for (auto& topic : data_)
+    {
+        for (auto& participant : topic.second)
+        {
+            participant.second.msgs_received(0);
+            participant.second.msgs_lost(0);
+        }
+    }
 }
 
 std::ostream& operator<<(std::ostream& os, const DdsTopicData& data) {
