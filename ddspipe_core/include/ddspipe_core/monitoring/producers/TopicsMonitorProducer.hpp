@@ -25,9 +25,13 @@
 #include <ddspipe_core/types/participant/ParticipantId.hpp>
 #include <ddspipe_core/types/topic/dds/DdsTopic.hpp>
 
-#include <ddspipe_core/types/monitoring/topics/v2/MonitoringTopics.h>
-#include <ddspipe_core/types/monitoring/topics/v2/MonitoringTopicsPubSubTypes.h>
-
+#if FASTRTPS_VERSION_MAJOR < 2 || (FASTRTPS_VERSION_MAJOR == 2 && FASTRTPS_VERSION_MINOR < 13)
+    #include <ddspipe_core/types/monitoring/topics/v1/MonitoringTopics.h>
+    #include <ddspipe_core/types/monitoring/topics/v1/MonitoringTopicsPubSubTypes.h>
+#else
+    #include <ddspipe_core/types/monitoring/topics/v2/MonitoringTopics.h>
+    #include <ddspipe_core/types/monitoring/topics/v2/MonitoringTopicsPubSubTypes.h>
+#endif // if FASTRTPS_VERSION_MAJOR < 2 || (FASTRTPS_VERSION_MAJOR == 2 && FASTRTPS_VERSION_MINOR < 13)
 
 // Monitoring API:
 
