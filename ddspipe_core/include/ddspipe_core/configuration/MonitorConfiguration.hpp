@@ -16,6 +16,7 @@
 
 #include <cpp_utils/types/Fuzzy.hpp>
 
+#include <ddspipe_core/configuration/MonitorProducerConfiguration.hpp>
 #include <ddspipe_core/configuration/IConfiguration.hpp>
 #include <ddspipe_core/library/library_dll.h>
 #include <ddspipe_core/types/dds/DomainId.hpp>
@@ -59,10 +60,10 @@ struct MonitorConfiguration : public IConfiguration
     utils::Fuzzy<types::DomainIdType> domain{0, utils::FuzzyLevelValues::fuzzy_level_default};
 
     //! TODO
-    std::string topic_name;
+    MonitorProducerConfiguration status;
 
     //! TODO
-    bool enabled = false;
+    MonitorProducerConfiguration topics;
 };
 
 } /* namespace core */

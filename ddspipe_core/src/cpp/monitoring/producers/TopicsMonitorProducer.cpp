@@ -13,7 +13,7 @@
 // limitations under the License.
 
 
-#include <ddspipe_core/configuration/MonitorTopicsConfiguration.hpp>
+#include <ddspipe_core/configuration/MonitorProducerConfiguration.hpp>
 #include <ddspipe_core/monitoring/consumers/DdsMonitorConsumer.hpp>
 #include <ddspipe_core/monitoring/consumers/StdoutMonitorConsumer.hpp>
 #include <ddspipe_core/monitoring/producers/TopicsMonitorProducer.hpp>
@@ -28,10 +28,10 @@ TopicsMonitorProducer* TopicsMonitorProducer::get_instance()
     return &instance;
 }
 
-void TopicsMonitorProducer::init(const MonitorTopicsConfiguration* configuration)
+void TopicsMonitorProducer::init(const MonitorProducerConfiguration& configuration)
 {
     // Store whether the producer is enabled
-    enabled_ = configuration->enabled;
+    enabled_ = configuration.enabled;
 
     if (!enabled_)
     {
@@ -40,14 +40,14 @@ void TopicsMonitorProducer::init(const MonitorTopicsConfiguration* configuration
     }
 
     // Store the period so it can be used by the Monitor
-    period = configuration->period;
+    period = configuration.period;
 
     // Register the type
     fastdds::dds::TypeSupport type(new MonitoringTopicsPubSubType());
 
     // Create the consumers
-    consumers_.push_back(new DdsMonitorConsumer<MonitoringTopics>(configuration, type));
-    consumers_.push_back(new StdoutMonitorConsumer<MonitoringTopics>(configuration));
+    consumers_.push_back(new DdsMonitorConsumer<MonitoringTopics>(configuration.domain.get_value(), configuration.topic_name, type));
+    consumers_.push_back(new StdoutMonitorConsumer<MonitoringTopics>());
 }
 
 void TopicsMonitorProducer::consume()

@@ -35,12 +35,6 @@ bool MonitorConfiguration::is_valid(
         return false;
     }
 
-    if (topic_name.empty())
-    {
-        error_msg << "Topic name cannot be empty.";
-        return false;
-    }
-
     return true;
 }
 

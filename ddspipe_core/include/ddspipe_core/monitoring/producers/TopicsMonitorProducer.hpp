@@ -19,7 +19,7 @@
 
 #include <cpp_utils/time/time_utils.hpp>
 
-#include <ddspipe_core/configuration/MonitorTopicsConfiguration.hpp>
+#include <ddspipe_core/configuration/MonitorProducerConfiguration.hpp>
 #include <ddspipe_core/monitoring/consumers/IMonitorConsumer.hpp>
 #include <ddspipe_core/monitoring/producers/IMonitorProducer.hpp>
 #include <ddspipe_core/types/participant/ParticipantId.hpp>
@@ -58,7 +58,7 @@ public:
     static TopicsMonitorProducer* get_instance();
 
     // TODO
-    void init(const MonitorTopicsConfiguration* configuration);
+    void init(const MonitorProducerConfiguration& configuration);
 
     // TODO
     void consume() override;

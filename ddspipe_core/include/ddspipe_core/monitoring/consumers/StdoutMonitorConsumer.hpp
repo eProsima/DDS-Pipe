@@ -33,10 +33,6 @@ class StdoutMonitorConsumer : public IMonitorConsumer<T>
 public:
 
     // TODO
-    StdoutMonitorConsumer(
-            const MonitorConfiguration* /* configuration */);
-
-    // TODO
     void consume(const T* data) const override;
 };
 

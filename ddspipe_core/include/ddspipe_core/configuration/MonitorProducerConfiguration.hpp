@@ -14,9 +14,11 @@
 
 #pragma once
 
-#include <ddspipe_core/configuration/MonitorConfiguration.hpp>
-#include <ddspipe_core/library/library_dll.h>
+#include <cpp_utils/types/Fuzzy.hpp>
 
+#include <ddspipe_core/configuration/IConfiguration.hpp>
+#include <ddspipe_core/library/library_dll.h>
+#include <ddspipe_core/types/dds/DomainId.hpp>
 
 namespace eprosima {
 namespace ddspipe {
@@ -25,7 +27,7 @@ namespace core {
 /**
  * TODO
  */
-struct MonitorStatusConfiguration : public MonitorConfiguration
+struct MonitorProducerConfiguration : public IConfiguration
 {
     /////////////////////////
     // METHODS
@@ -43,7 +45,16 @@ struct MonitorStatusConfiguration : public MonitorConfiguration
     /////////////////////////
 
     //! TODO
+    bool enabled = false;
+
+    //! TODO
     double period = 1000;
+
+    //! TODO
+    utils::Fuzzy<types::DomainIdType> domain{0, utils::FuzzyLevelValues::fuzzy_level_default};
+
+    //! TODO
+    std::string topic_name;
 };
 
 } /* namespace core */
