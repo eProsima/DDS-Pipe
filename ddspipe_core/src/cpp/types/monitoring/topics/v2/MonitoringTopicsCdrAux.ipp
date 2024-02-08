@@ -56,9 +56,12 @@ eProsima_user_DllExport size_t calculate_serialized_size(
                 data.participant_id(), current_alignment);
 
         calculated_size += calculator.calculate_member_serialized_size(eprosima::fastcdr::MemberId(1),
-                data.msgs_received(), current_alignment);
+                data.msgs_lost(), current_alignment);
 
         calculated_size += calculator.calculate_member_serialized_size(eprosima::fastcdr::MemberId(2),
+                data.msgs_received(), current_alignment);
+
+        calculated_size += calculator.calculate_member_serialized_size(eprosima::fastcdr::MemberId(3),
                 data.frequency(), current_alignment);
 
 
@@ -80,8 +83,9 @@ eProsima_user_DllExport void serialize(
 
     scdr
         << eprosima::fastcdr::MemberId(0) << data.participant_id()
-        << eprosima::fastcdr::MemberId(1) << data.msgs_received()
-        << eprosima::fastcdr::MemberId(2) << data.frequency()
+        << eprosima::fastcdr::MemberId(1) << data.msgs_lost()
+        << eprosima::fastcdr::MemberId(2) << data.msgs_received()
+        << eprosima::fastcdr::MemberId(3) << data.frequency()
 ;
     scdr.end_serialize_type(current_state);
 }
@@ -104,10 +108,14 @@ eProsima_user_DllExport void deserialize(
                                             break;
 
                                         case 1:
-                                                dcdr >> data.msgs_received();
+                                                dcdr >> data.msgs_lost();
                                             break;
 
                                         case 2:
+                                                dcdr >> data.msgs_received();
+                                            break;
+
+                                        case 3:
                                                 dcdr >> data.frequency();
                                             break;
 

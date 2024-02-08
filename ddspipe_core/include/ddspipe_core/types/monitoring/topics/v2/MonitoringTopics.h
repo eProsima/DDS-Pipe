@@ -163,6 +163,26 @@ public:
 
 
     /*!
+     * @brief This function sets a value in member msgs_lost
+     * @param _msgs_lost New value for member msgs_lost
+     */
+    eProsima_user_DllExport void msgs_lost(
+            uint32_t _msgs_lost);
+
+    /*!
+     * @brief This function returns the value of member msgs_lost
+     * @return Value of member msgs_lost
+     */
+    eProsima_user_DllExport uint32_t msgs_lost() const;
+
+    /*!
+     * @brief This function returns a reference to member msgs_lost
+     * @return Reference to member msgs_lost
+     */
+    eProsima_user_DllExport uint32_t& msgs_lost();
+
+
+    /*!
      * @brief This function sets a value in member msgs_received
      * @param _msgs_received New value for member msgs_received
      */
@@ -204,6 +224,7 @@ public:
 private:
 
     std::string m_participant_id;
+    uint32_t m_msgs_lost{0};
     uint32_t m_msgs_received{0};
     double m_frequency{0.0};
 

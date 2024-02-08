@@ -92,6 +92,32 @@ void TopicsMonitorProducer::msg_received(
     data_[topic][participant_id].msgs_received(data_[topic][participant_id].msgs_received() + 1);
 }
 
+void TopicsMonitorProducer::msg_lost(
+        const types::DdsTopic& topic,
+        const types::ParticipantId& participant_id)
+{
+    if (!enabled_)
+    {
+        // Don't save the data if the producer is not enabled
+        return;
+    }
+
+    // Take the lock to prevent:
+    //      1. Changing the data while it's being saved.
+    //      2. Simultaneous calls to msg_lost.
+    std::lock_guard<std::mutex> lock(mutex_);
+
+    if (!data_.count(topic) || !data_[topic].count(participant_id))
+    {
+        // First message lost for topic & participant
+        // Save the participant_id
+        data_[topic][participant_id].participant_id(participant_id);
+    }
+
+    // Increase the count of the lost messages
+    data_[topic][participant_id].msgs_lost(data_[topic][participant_id].msgs_lost() + 1);
+}
+
 TopicsMonitorProducer::~TopicsMonitorProducer()
 {
     consumers_.clear();
@@ -130,8 +156,9 @@ MonitoringTopics TopicsMonitorProducer::save_data_()
             // Save the participant's data for the topic
             topic_participants.push_back(participant_data);
 
-            // Reset the messages received for the next period
+            // Reset the participant's data for the next period
             participant_data.msgs_received(0);
+            participant_data.msgs_lost(0);
         }
 
         // Save the participants' data for the topic
@@ -150,7 +177,7 @@ MonitoringTopics TopicsMonitorProducer::save_data_()
 }
 
 std::ostream& operator<<(std::ostream& os, const DdsTopicData& data) {
-    os << "Participant ID: " << data.participant_id() << ", Messages Received: " << data.msgs_received() << ", Frequency: " << data.frequency();
+    os << "Participant ID: " << data.participant_id() << ", Messages Received: " << data.msgs_received() << ", Frequency: " << data.frequency() << ", Messages Lost: " << data.msgs_lost();
     return os;
 }
 

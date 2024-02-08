@@ -19,8 +19,6 @@
 #include <cpp_utils/Log.hpp>
 
 #include <ddspipe_core/interface/IRoutingData.hpp>
-#include <ddspipe_core/monitoring/producers/StatusMonitorProducer.hpp>
-#include <ddspipe_core/monitoring/producers/TopicsMonitorProducer.hpp>
 #include <ddspipe_core/types/data/RtpsPayloadData.hpp>
 
 #include <ddspipe_participants/reader/rtps/CommonReader.hpp>
@@ -384,11 +382,6 @@ void CommonReader::onNewCacheChangeAdded(
         fastrtps::rtps::RTPSReader* reader,
         const fastrtps::rtps::CacheChange_t* const change) noexcept
 {
-    monitor_msg_rx(topic_, participant_id_);
-
-    monitor_error("TYPE_MISMATCH");
-    monitor_error("DISK_FULL");
-
     if (should_accept_change_(change))
     {
         // Do not remove previous received changes so they can be read when the reader is enabled

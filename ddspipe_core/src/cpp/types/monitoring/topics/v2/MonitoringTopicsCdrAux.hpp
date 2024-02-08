@@ -27,10 +27,10 @@
 constexpr uint32_t DdsTopicData_max_cdr_typesize {280UL};
 constexpr uint32_t DdsTopicData_max_key_cdr_typesize {0UL};
 
-constexpr uint32_t MonitoringTopics_max_cdr_typesize {2852816UL};
+constexpr uint32_t MonitoringTopics_max_cdr_typesize {2853608UL};
 constexpr uint32_t MonitoringTopics_max_key_cdr_typesize {0UL};
 
-constexpr uint32_t DdsTopic_max_cdr_typesize {28528UL};
+constexpr uint32_t DdsTopic_max_cdr_typesize {28536UL};
 constexpr uint32_t DdsTopic_max_key_cdr_typesize {0UL};
 
 

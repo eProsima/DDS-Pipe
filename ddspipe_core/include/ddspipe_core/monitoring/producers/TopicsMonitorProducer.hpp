@@ -32,9 +32,12 @@
 // Monitoring API:
 
 // DDSPIPE MONITOR MACROS
+
 //! TODO
 #define monitor_msg_rx(topic, participant_id) MONITOR_MSG_RX_IMPL_(topic, participant_id)
 
+//! TODO
+#define monitor_msg_lost(topic, participant_id) MONITOR_MSG_LOST_IMPL_(topic, participant_id)
 
 namespace eprosima {
 namespace ddspipe {
@@ -58,6 +61,11 @@ public:
 
     // TODO
     void msg_received(
+            const types::DdsTopic& topic,
+            const types::ParticipantId& participant_id);
+
+    // TODO
+    void msg_lost(
             const types::DdsTopic& topic,
             const types::ParticipantId& participant_id);
 
@@ -88,6 +96,9 @@ std::ostream& operator<<(std::ostream& os, const MonitoringTopics& data);
 
 // The names of variables inside macros must be unique to avoid conflicts with external variables
 #define MONITOR_MSG_RX_IMPL_(topic, participant_id) eprosima::ddspipe::core::TopicsMonitorProducer::get_instance()->msg_received(topic, \
+            participant_id)
+
+#define MONITOR_MSG_LOST_IMPL_(topic, participant_id) eprosima::ddspipe::core::TopicsMonitorProducer::get_instance()->msg_lost(topic, \
             participant_id)
 
 } // namespace core

@@ -84,8 +84,8 @@ struct FindType {
 }
 
 #define DdsTopicData_max_cdr_typesize 280ULL;
-#define MonitoringTopics_max_cdr_typesize 2852816ULL;
-#define DdsTopic_max_cdr_typesize 28528ULL;
+#define MonitoringTopics_max_cdr_typesize 2853608ULL;
+#define DdsTopic_max_cdr_typesize 28536ULL;
 
 
 
@@ -94,6 +94,8 @@ DdsTopicData::DdsTopicData()
 {
     // /type_d() m_participant_id
 
+    // unsigned long m_msgs_lost
+    m_msgs_lost = 0;
     // unsigned long m_msgs_received
     m_msgs_received = 0;
     // double m_frequency
@@ -111,6 +113,9 @@ DdsTopicData::DdsTopicData(
     m_participant_id = x.m_participant_id;
 
 
+    m_msgs_lost = x.m_msgs_lost;
+
+
     m_msgs_received = x.m_msgs_received;
 
 
@@ -122,6 +127,9 @@ DdsTopicData::DdsTopicData(
         DdsTopicData&& x) noexcept
 {
     m_participant_id = std::move(x.m_participant_id);
+
+
+    m_msgs_lost = x.m_msgs_lost;
 
 
     m_msgs_received = x.m_msgs_received;
@@ -137,6 +145,9 @@ DdsTopicData& DdsTopicData::operator =(
     m_participant_id = x.m_participant_id;
 
 
+    m_msgs_lost = x.m_msgs_lost;
+
+
     m_msgs_received = x.m_msgs_received;
 
 
@@ -151,6 +162,9 @@ DdsTopicData& DdsTopicData::operator =(
     m_participant_id = std::move(x.m_participant_id);
 
 
+    m_msgs_lost = x.m_msgs_lost;
+
+
     m_msgs_received = x.m_msgs_received;
 
 
@@ -163,6 +177,7 @@ bool DdsTopicData::operator ==(
         const DdsTopicData& x) const
 {
     return (m_participant_id == x.m_participant_id &&
+           m_msgs_lost == x.m_msgs_lost &&
            m_msgs_received == x.m_msgs_received &&
            m_frequency == x.m_frequency);
 }
@@ -193,6 +208,9 @@ size_t DdsTopicData::getCdrSerializedSize(
     current_alignment += 4 + eprosima::fastcdr::Cdr::alignment(current_alignment, 4);
 
 
+    current_alignment += 4 + eprosima::fastcdr::Cdr::alignment(current_alignment, 4);
+
+
     current_alignment += 8 + eprosima::fastcdr::Cdr::alignment(current_alignment, 8);
 
 
@@ -205,6 +223,8 @@ void DdsTopicData::serialize(
 {
     scdr << m_participant_id.c_str();
 
+    scdr << m_msgs_lost;
+
     scdr << m_msgs_received;
 
     scdr << m_frequency;
@@ -215,6 +235,10 @@ void DdsTopicData::deserialize(
         eprosima::fastcdr::Cdr& dcdr)
 {
     dcdr >> m_participant_id;
+
+
+
+    dcdr >> m_msgs_lost;
 
 
 
@@ -275,6 +299,35 @@ const std::string& DdsTopicData::participant_id() const
 std::string& DdsTopicData::participant_id()
 {
     return m_participant_id;
+}
+
+
+/*!
+ * @brief This function sets a value in member msgs_lost
+ * @param _msgs_lost New value for member msgs_lost
+ */
+void DdsTopicData::msgs_lost(
+        uint32_t _msgs_lost)
+{
+    m_msgs_lost = _msgs_lost;
+}
+
+/*!
+ * @brief This function returns the value of member msgs_lost
+ * @return Value of member msgs_lost
+ */
+uint32_t DdsTopicData::msgs_lost() const
+{
+    return m_msgs_lost;
+}
+
+/*!
+ * @brief This function returns a reference to member msgs_lost
+ * @return Reference to member msgs_lost
+ */
+uint32_t& DdsTopicData::msgs_lost()
+{
+    return m_msgs_lost;
 }
 
 

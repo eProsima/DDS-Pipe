@@ -53,6 +53,7 @@ DdsTopicData::DdsTopicData(
         const DdsTopicData& x)
 {
     m_participant_id = x.m_participant_id;
+    m_msgs_lost = x.m_msgs_lost;
     m_msgs_received = x.m_msgs_received;
     m_frequency = x.m_frequency;
 }
@@ -61,6 +62,7 @@ DdsTopicData::DdsTopicData(
         DdsTopicData&& x) noexcept
 {
     m_participant_id = std::move(x.m_participant_id);
+    m_msgs_lost = x.m_msgs_lost;
     m_msgs_received = x.m_msgs_received;
     m_frequency = x.m_frequency;
 }
@@ -70,6 +72,7 @@ DdsTopicData& DdsTopicData::operator =(
 {
 
     m_participant_id = x.m_participant_id;
+    m_msgs_lost = x.m_msgs_lost;
     m_msgs_received = x.m_msgs_received;
     m_frequency = x.m_frequency;
     return *this;
@@ -80,6 +83,7 @@ DdsTopicData& DdsTopicData::operator =(
 {
 
     m_participant_id = std::move(x.m_participant_id);
+    m_msgs_lost = x.m_msgs_lost;
     m_msgs_received = x.m_msgs_received;
     m_frequency = x.m_frequency;
     return *this;
@@ -89,6 +93,7 @@ bool DdsTopicData::operator ==(
         const DdsTopicData& x) const
 {
     return (m_participant_id == x.m_participant_id &&
+           m_msgs_lost == x.m_msgs_lost &&
            m_msgs_received == x.m_msgs_received &&
            m_frequency == x.m_frequency);
 }
@@ -135,6 +140,35 @@ const std::string& DdsTopicData::participant_id() const
 std::string& DdsTopicData::participant_id()
 {
     return m_participant_id;
+}
+
+
+/*!
+ * @brief This function sets a value in member msgs_lost
+ * @param _msgs_lost New value for member msgs_lost
+ */
+void DdsTopicData::msgs_lost(
+        uint32_t _msgs_lost)
+{
+    m_msgs_lost = _msgs_lost;
+}
+
+/*!
+ * @brief This function returns the value of member msgs_lost
+ * @return Value of member msgs_lost
+ */
+uint32_t DdsTopicData::msgs_lost() const
+{
+    return m_msgs_lost;
+}
+
+/*!
+ * @brief This function returns a reference to member msgs_lost
+ * @return Reference to member msgs_lost
+ */
+uint32_t& DdsTopicData::msgs_lost()
+{
+    return m_msgs_lost;
 }
 
 
