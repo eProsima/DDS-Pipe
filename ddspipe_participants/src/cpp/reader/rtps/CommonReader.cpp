@@ -458,6 +458,8 @@ void CommonReader::on_requested_incompatible_qos(
 {
     logWarning(DDSPIPE_RTPS_COMMONREADER_LISTENER,
             "TOPIC_MISMATCH_QOS | Reader " << *this << " found a remote Writer with incompatible QoS: " << qos);
+
+    monitor_qos_mismatch(topic_, participant_id_);
 }
 
 void CommonReader::on_sample_lost(
@@ -466,6 +468,8 @@ void CommonReader::on_sample_lost(
 {
     logWarning(DDSPIPE_RTPS_COMMONREADER_LISTENER,
             "SAMPLE_LOST | On reader " << *this << " a data sample was lost and will not be received");
+
+    monitor_msg_lost(topic_, participant_id_);
 }
 
 void CommonReader::on_sample_rejected(

@@ -115,6 +115,8 @@ void CommonReader::on_sample_lost(
 {
     logWarning(DDSPIPE_DDS_READER,
             "SAMPLE_LOST | On reader " << *this << " a data sample was lost and will not be received");
+
+    monitor_msg_lost(topic_, participant_id_);
 }
 
 void CommonReader::on_requested_incompatible_qos(
@@ -123,6 +125,8 @@ void CommonReader::on_requested_incompatible_qos(
 {
     logWarning(DDSPIPE_DDS_READER,
             "TOPIC_MISMATCH_QOS | Reader " << *this << " found a remote Writer with incompatible QoS");
+
+    monitor_qos_mismatch(topic_, participant_id_);
 }
 
 void CommonReader::on_inconsistent_topic(
@@ -131,6 +135,8 @@ void CommonReader::on_inconsistent_topic(
 {
     logWarning(DDSPIPE_DDS_READER,
             "TOPIC_MISMATCH_TYPE | Reader " << *this << " found a remote Writer with same topic name but incompatible type");
+
+    monitor_type_mismatch(topic_, participant_id_);
 }
 
 CommonReader::CommonReader(
