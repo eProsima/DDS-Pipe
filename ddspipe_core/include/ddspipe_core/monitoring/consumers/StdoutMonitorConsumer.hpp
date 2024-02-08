@@ -17,7 +17,6 @@
 
 #include <ddspipe_core/configuration/MonitorConfiguration.hpp>
 #include <ddspipe_core/monitoring/consumers/IMonitorConsumer.hpp>
-#include <ddspipe_core/monitoring/producers/DdsRecorderStatusMonitorProducer.hpp>
 #include <ddspipe_core/monitoring/producers/StatusMonitorProducer.hpp>
 #include <ddspipe_core/monitoring/producers/TopicsMonitorProducer.hpp>
 
