@@ -17,7 +17,7 @@
 
 #include <fastdds/dds/publisher/DataWriter.hpp>
 
-#include <ddspipe_core/configuration/MonitorConfiguration.hpp>
+#include <ddspipe_core/configuration/MonitorProducerConfiguration.hpp>
 #include <ddspipe_core/monitoring/consumers/DdsMonitorParticipantFactory.hpp>
 #include <ddspipe_core/monitoring/consumers/IMonitorConsumer.hpp>
 
@@ -36,7 +36,8 @@ public:
 
     // TODO
     DdsMonitorConsumer(
-            const MonitorConfiguration* configuration,
+            const types::DomainIdType& domain,
+            const std::string& topic_name,
             fastdds::dds::TypeSupport& type);
 
     // TODO

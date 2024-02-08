@@ -15,11 +15,10 @@
 #include <cpp_utils/Log.hpp>
 #include <cpp_utils/memory/Heritable.hpp>
 
+#include <ddspipe_core/configuration/MonitorProducerConfiguration.hpp>
 #include <ddspipe_core/configuration/RoutesConfiguration.hpp>
 #include <ddspipe_core/configuration/TopicRoutesConfiguration.hpp>
 #include <ddspipe_core/configuration/MonitorConfiguration.hpp>
-#include <ddspipe_core/configuration/MonitorTopicsConfiguration.hpp>
-#include <ddspipe_core/configuration/MonitorStatusConfiguration.hpp>
 #include <ddspipe_core/types/topic/dds/DdsTopic.hpp>
 #include <ddspipe_core/types/topic/dds/DistributedTopic.hpp>
 #include <ddspipe_participants/xml/XmlHandler.hpp>
@@ -228,6 +227,30 @@ void YamlReader::fill(
     {
         object.domain = get<int>(yml, MONITOR_DOMAIN_TAG, version);
     }
+
+    /////
+    // Get optional monitor status tag
+    if (YamlReader::is_tag_present(yml, MONITOR_STATUS_TAG))
+    {
+        object.status = YamlReader::get<core::MonitorProducerConfiguration>(yml, MONITOR_STATUS_TAG, version);
+
+        if (!object.status.domain.is_set())
+        {
+            object.status.domain = object.domain;
+        }
+    }
+
+    /////
+    // Get optional monitor topics tag
+    if (YamlReader::is_tag_present(yml, MONITOR_TOPICS_TAG))
+    {
+        object.topics = YamlReader::get<core::MonitorProducerConfiguration>(yml, MONITOR_TOPICS_TAG, version);
+
+        if (!object.topics.domain.is_set())
+        {
+            object.topics.domain = object.domain;
+        }
+    }
 }
 
 template <>
@@ -244,7 +267,7 @@ core::MonitorConfiguration YamlReader::get(
 template <>
 DDSPIPE_YAML_DllAPI
 void YamlReader::fill(
-        core::MonitorTopicsConfiguration& object,
+        core::MonitorProducerConfiguration& object,
         const Yaml& yml,
         const YamlReaderVersion version)
 {
@@ -275,55 +298,12 @@ void YamlReader::fill(
 
 template <>
 DDSPIPE_YAML_DllAPI
-core::MonitorTopicsConfiguration YamlReader::get(
+core::MonitorProducerConfiguration YamlReader::get(
         const Yaml& yml,
         const YamlReaderVersion version)
 {
-    core::MonitorTopicsConfiguration object;
-    fill<core::MonitorTopicsConfiguration>(object, yml, version);
-    return object;
-}
-
-template <>
-DDSPIPE_YAML_DllAPI
-void YamlReader::fill(
-        core::MonitorStatusConfiguration& object,
-        const Yaml& yml,
-        const YamlReaderVersion version)
-{
-    // Optional enable
-    if (is_tag_present(yml, MONITOR_STATUS_ENABLE_TAG))
-    {
-        object.enabled = get<bool>(yml, MONITOR_STATUS_ENABLE_TAG, version);
-    }
-
-    // Optional domain
-    if (is_tag_present(yml, MONITOR_STATUS_DOMAIN_TAG))
-    {
-        object.domain = get<int>(yml, MONITOR_STATUS_DOMAIN_TAG, version);
-    }
-
-    // Optional period
-    if (is_tag_present(yml, MONITOR_STATUS_PERIOD_TAG))
-    {
-        object.period = get<uint32_t>(yml, MONITOR_STATUS_PERIOD_TAG, version);
-    }
-
-    // Optional topic name
-    if (is_tag_present(yml, MONITOR_STATUS_TOPIC_NAME_TAG))
-    {
-        object.topic_name = get<std::string>(yml, MONITOR_STATUS_TOPIC_NAME_TAG, version);
-    }
-}
-
-template <>
-DDSPIPE_YAML_DllAPI
-core::MonitorStatusConfiguration YamlReader::get(
-        const Yaml& yml,
-        const YamlReaderVersion version)
-{
-    core::MonitorStatusConfiguration object;
-    fill<core::MonitorStatusConfiguration>(object, yml, version);
+    core::MonitorProducerConfiguration object;
+    fill<core::MonitorProducerConfiguration>(object, yml, version);
     return object;
 }
 

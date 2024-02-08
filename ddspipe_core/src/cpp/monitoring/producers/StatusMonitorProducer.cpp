@@ -13,7 +13,6 @@
 // limitations under the License.
 
 
-#include <ddspipe_core/configuration/MonitorStatusConfiguration.hpp>
 #include <ddspipe_core/monitoring/consumers/DdsMonitorConsumer.hpp>
 #include <ddspipe_core/monitoring/consumers/StdoutMonitorConsumer.hpp>
 #include <ddspipe_core/monitoring/producers/StatusMonitorProducer.hpp>
@@ -42,10 +41,10 @@ StatusMonitorProducer* StatusMonitorProducer::get_instance()
     return instance_;
 }
 
-void StatusMonitorProducer::init(const MonitorStatusConfiguration* configuration)
+void StatusMonitorProducer::init(const MonitorProducerConfiguration& configuration)
 {
     // Store whether the producer is enabled
-    enabled_ = configuration->enabled;
+    enabled_ = configuration.enabled;
 
     if (!enabled_)
     {
@@ -54,14 +53,14 @@ void StatusMonitorProducer::init(const MonitorStatusConfiguration* configuration
     }
 
     // Store the period so it can be used by the Monitor
-    period = configuration->period;
+    period = configuration.period;
 
     // Register the type
     fastdds::dds::TypeSupport type(new MonitoringStatusPubSubType());
 
     // Create the consumers
-    consumers_.push_back(new DdsMonitorConsumer<MonitoringStatus>(configuration, type));
-    consumers_.push_back(new StdoutMonitorConsumer<MonitoringStatus>(configuration));
+    consumers_.push_back(new DdsMonitorConsumer<MonitoringStatus>(configuration.domain.get_value(), configuration.topic_name, type));
+    consumers_.push_back(new StdoutMonitorConsumer<MonitoringStatus>());
 }
 
 void StatusMonitorProducer::consume()

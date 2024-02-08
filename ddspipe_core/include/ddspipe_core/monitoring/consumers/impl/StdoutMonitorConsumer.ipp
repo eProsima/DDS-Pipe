@@ -21,11 +21,6 @@ namespace ddspipe {
 namespace core {
 
 template <typename T>
-StdoutMonitorConsumer<T>::StdoutMonitorConsumer(const MonitorConfiguration* /* configuration */)
-{
-}
-
-template <typename T>
 void StdoutMonitorConsumer<T>::consume(const T* data) const
 {
     std::cout << *data << std::endl;

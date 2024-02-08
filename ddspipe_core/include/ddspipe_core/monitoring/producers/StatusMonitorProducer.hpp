@@ -16,7 +16,7 @@
 
 #include <mutex>
 
-#include <ddspipe_core/configuration/MonitorStatusConfiguration.hpp>
+#include <ddspipe_core/configuration/MonitorProducerConfiguration.hpp>
 #include <ddspipe_core/monitoring/consumers/IMonitorConsumer.hpp>
 #include <ddspipe_core/monitoring/producers/IMonitorProducer.hpp>
 
@@ -53,7 +53,7 @@ public:
     static StatusMonitorProducer* get_instance();
 
     // TODO
-    virtual void init(const MonitorStatusConfiguration* configuration);
+    virtual void init(const MonitorProducerConfiguration& configuration);
 
     // TODO
     virtual void consume() override;

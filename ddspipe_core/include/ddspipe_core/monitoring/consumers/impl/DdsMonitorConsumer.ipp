@@ -29,11 +29,12 @@ namespace core {
 
 template <typename T>
 DdsMonitorConsumer<T>::DdsMonitorConsumer(
-        const MonitorConfiguration* configuration,
+        const types::DomainIdType& domain,
+        const std::string& topic_name,
         fastdds::dds::TypeSupport& type)
 {
     // Get the participant from the factory
-    fastdds::dds::DomainParticipant* participant = get_participant(configuration->domain.get_value());
+    fastdds::dds::DomainParticipant* participant = get_participant(domain);
 
     // Register the types
     type.register_type(participant);
@@ -53,12 +54,12 @@ DdsMonitorConsumer<T>::DdsMonitorConsumer(
     tqos.reliability().kind = fastdds::dds::BEST_EFFORT_RELIABILITY_QOS;
     tqos.durability().kind = fastdds::dds::VOLATILE_DURABILITY_QOS;
 
-    fastdds::dds::Topic* topic = participant->create_topic(configuration->topic_name, type.get_type_name(), tqos);
+    fastdds::dds::Topic* topic = participant->create_topic(topic_name, type.get_type_name(), tqos);
 
     if (topic == nullptr)
     {
         throw utils::InitializationException(
-                  utils::Formatter() << "Error creating Topic " << configuration->topic_name <<
+                  utils::Formatter() << "Error creating Topic " << topic_name <<
                   " for Participant " << participant->guid() << ".");
     }
 

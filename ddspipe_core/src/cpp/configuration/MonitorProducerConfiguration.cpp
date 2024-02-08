@@ -13,20 +13,20 @@
 // limitations under the License.
 
 /**
- * @file MonitorTopicsConfiguration.cpp
+ * @file MonitorProducerConfiguration.cpp
  *
  */
 
 #include <cpp_utils/Formatter.hpp>
 #include <cpp_utils/Log.hpp>
 
-#include <ddspipe_core/configuration/MonitorTopicsConfiguration.hpp>
+#include <ddspipe_core/configuration/MonitorProducerConfiguration.hpp>
 
 namespace eprosima {
 namespace ddspipe {
 namespace core {
 
-bool MonitorTopicsConfiguration::is_valid(
+bool MonitorProducerConfiguration::is_valid(
         utils::Formatter& error_msg) const noexcept
 {
     if (period <= 0)
@@ -35,7 +35,13 @@ bool MonitorTopicsConfiguration::is_valid(
         return false;
     }
 
-    return MonitorConfiguration::is_valid(error_msg);
+    if (topic_name.empty())
+    {
+        error_msg << "Topic name cannot be empty.";
+        return false;
+    }
+
+    return true;
 }
 
 } /* namespace core */
