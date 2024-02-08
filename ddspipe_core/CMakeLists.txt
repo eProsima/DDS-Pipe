@@ -68,7 +68,6 @@ file(
 file(
     GLOB_RECURSE HEADERS_FILES
         "${PROJECT_SOURCE_DIR}/include/*.h*"
-        "${PROJECT_SOURCE_DIR}/include/*.ipp"
     )
 
 # Exclude types' files depending on the Fast DDS version
