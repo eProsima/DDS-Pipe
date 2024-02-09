@@ -27,10 +27,9 @@ namespace core {
 
 
 CommandlineArgs::CommandlineArgs()
-    : file_path{""},
-    reload_time{0},
-    timeout{0},
-    log_verbosity{utils::VerbosityKind::Warning}
+    : file_path{""}
+    , reload_time{0}
+    , log_verbosity{utils::VerbosityKind::Warning}
 {
     log_filter[utils::VerbosityKind::Info].set_value("");
     log_filter[utils::VerbosityKind::Warning].set_value("DDSPIPE");

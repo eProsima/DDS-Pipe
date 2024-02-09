@@ -1,4 +1,4 @@
-// Copyright 2023 Proyectos y Sistemas de Mantenimiento SL (eProsima).
+// Copyright 2024 Proyectos y Sistemas de Mantenimiento SL (eProsima).
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -54,16 +54,13 @@ struct CommandlineArgs
     // Configuration File path
     std::string file_path;
 
-    // Reload time
+    // Time interval for automatic reloading of the configuration file
     utils::Duration_ms reload_time;
 
-    // Maximum timeout
-    utils::Duration_ms timeout;
-
-    // Log verbosity
+    // Verbosity level for logging
     utils::Fuzzy<utils::VerbosityKind> log_verbosity;
 
-    // Log filter
+    // Filter for log messages
     utils::LogFilter log_filter;
 };
 
