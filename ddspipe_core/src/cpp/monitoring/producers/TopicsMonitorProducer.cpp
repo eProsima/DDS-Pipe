@@ -83,15 +83,15 @@ void TopicsMonitorProducer::msg_received(
     //      2. Simultaneous calls to msg_received.
     std::lock_guard<std::mutex> lock(mutex_);
 
-    if (!data_.count(topic) || !data_[topic].count(participant_id))
+    if (!participant_data_.count(topic) || !participant_data_[topic].count(participant_id))
     {
         // First message received for topic & participant
         // Save the participant_id
-        data_[topic][participant_id].participant_id(participant_id);
+        participant_data_[topic][participant_id].participant_id(participant_id);
     }
 
     // Increase the count of the received messages
-    data_[topic][participant_id].msgs_received(data_[topic][participant_id].msgs_received() + 1);
+    participant_data_[topic][participant_id].msgs_received(participant_data_[topic][participant_id].msgs_received() + 1);
 }
 
 void TopicsMonitorProducer::msg_lost(
@@ -109,15 +109,51 @@ void TopicsMonitorProducer::msg_lost(
     //      2. Simultaneous calls to msg_lost.
     std::lock_guard<std::mutex> lock(mutex_);
 
-    if (!data_.count(topic) || !data_[topic].count(participant_id))
+    if (!participant_data_.count(topic) || !participant_data_[topic].count(participant_id))
     {
         // First message lost for topic & participant
         // Save the participant_id
-        data_[topic][participant_id].participant_id(participant_id);
+        participant_data_[topic][participant_id].participant_id(participant_id);
     }
 
     // Increase the count of the lost messages
-    data_[topic][participant_id].msgs_lost(data_[topic][participant_id].msgs_lost() + 1);
+    participant_data_[topic][participant_id].msgs_lost(participant_data_[topic][participant_id].msgs_lost() + 1);
+}
+
+void TopicsMonitorProducer::type_discovered(
+        const types::DdsTopic& topic)
+{
+    if (!topic_data_.count(topic))
+    {
+        topic_data_[topic].name(topic.m_topic_name);
+        topic_data_[topic].data_type_name(topic.type_name);
+    }
+
+    topic_data_[topic].type_discovered(true);
+}
+
+void TopicsMonitorProducer::type_mismatch(
+        const types::DdsTopic& topic)
+{
+    if (!topic_data_.count(topic))
+    {
+        topic_data_[topic].name(topic.m_topic_name);
+        topic_data_[topic].data_type_name(topic.type_name);
+    }
+
+    topic_data_[topic].type_mismatch(true);
+}
+
+void TopicsMonitorProducer::qos_mismatch(
+        const types::DdsTopic& topic)
+{
+    if (!topic_data_.count(topic))
+    {
+        topic_data_[topic].name(topic.m_topic_name);
+        topic_data_[topic].data_type_name(topic.type_name);
+    }
+
+    topic_data_[topic].qos_mismatch(true);
 }
 
 TopicsMonitorProducer::~TopicsMonitorProducer()
@@ -133,16 +169,10 @@ MonitoringTopics TopicsMonitorProducer::save_data_()
     std::vector<DdsTopic> topics_data;
 
     // Iterate through the different topics
-    for (auto& topic : data_)
+    for (auto& topic : participant_data_)
     {
         auto& dds_topic = topic.first;
         auto& participants = topic.second;
-
-        DdsTopic topic_data;
-
-        // Save the topic name and type
-        topic_data.name(dds_topic.m_topic_name);
-        topic_data.data_type_name(dds_topic.type_name);
 
         std::vector<DdsTopicData> topic_participants;
 
@@ -160,10 +190,10 @@ MonitoringTopics TopicsMonitorProducer::save_data_()
         }
 
         // Save the participants' data for the topic
-        topic_data.data(topic_participants);
+        topic_data_[dds_topic].data(topic_participants);
 
         // Save the topic data
-        topics_data.push_back(topic_data);
+        topics_data.push_back(topic_data_[dds_topic]);
     }
 
     MonitoringTopics data;
@@ -180,7 +210,7 @@ void TopicsMonitorProducer::reset_data_()
     std::lock_guard<std::mutex> lock(mutex_);
 
     // Reset the data
-    for (auto& topic : data_)
+    for (auto& topic : participant_data_)
     {
         for (auto& participant : topic.second)
         {
@@ -196,13 +226,20 @@ std::ostream& operator<<(std::ostream& os, const DdsTopicData& data) {
 }
 
 std::ostream& operator<<(std::ostream& os, const DdsTopic& topic) {
-    os << "Topic Name: " << topic.name() << ", Type: " << topic.data_type_name() << ", Data: [";
+    os << "Topic Name: " << topic.name();
+    os << ", Type Name: " << topic.data_type_name();
+    os << ", Type Discovered: " << topic.type_discovered();
+    os << ", Type Mismatch: " << topic.type_mismatch();
+    os << ", QoS Mismatch: " << topic.qos_mismatch();
+
+    os << ", Data: [";
 
     for (const auto& data : topic.data()) {
         os << data << "; ";
     }
 
     os << "]";
+
     return os;
 }
 
