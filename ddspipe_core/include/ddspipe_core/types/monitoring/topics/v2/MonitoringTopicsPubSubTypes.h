@@ -130,8 +130,6 @@ public:
 
 
 
-
-
 /*!
  * @brief This class represents the TopicDataType of the type DdsTopic defined by the user in the IDL file.
  * @ingroup MonitoringTopics

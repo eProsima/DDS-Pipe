@@ -138,8 +138,6 @@ void serialize_key(
 
 
 
-
-
 template<>
 eProsima_user_DllExport size_t calculate_serialized_size(
         eprosima::fastcdr::CdrSizeCalculator& calculator,
@@ -165,6 +163,15 @@ eProsima_user_DllExport size_t calculate_serialized_size(
         calculated_size += calculator.calculate_member_serialized_size(eprosima::fastcdr::MemberId(2),
                 data.data(), current_alignment);
 
+        calculated_size += calculator.calculate_member_serialized_size(eprosima::fastcdr::MemberId(3),
+                data.qos_mismatch(), current_alignment);
+
+        calculated_size += calculator.calculate_member_serialized_size(eprosima::fastcdr::MemberId(4),
+                data.type_discovered(), current_alignment);
+
+        calculated_size += calculator.calculate_member_serialized_size(eprosima::fastcdr::MemberId(5),
+                data.type_mismatch(), current_alignment);
+
 
     calculated_size += calculator.end_calculate_type_serialized_size(previous_encoding, current_alignment);
 
@@ -186,6 +193,9 @@ eProsima_user_DllExport void serialize(
         << eprosima::fastcdr::MemberId(0) << data.name()
         << eprosima::fastcdr::MemberId(1) << data.data_type_name()
         << eprosima::fastcdr::MemberId(2) << data.data()
+        << eprosima::fastcdr::MemberId(3) << data.qos_mismatch()
+        << eprosima::fastcdr::MemberId(4) << data.type_discovered()
+        << eprosima::fastcdr::MemberId(5) << data.type_mismatch()
 ;
     scdr.end_serialize_type(current_state);
 }
@@ -213,6 +223,18 @@ eProsima_user_DllExport void deserialize(
 
                                         case 2:
                                                 dcdr >> data.data();
+                                            break;
+
+                                        case 3:
+                                                dcdr >> data.qos_mismatch();
+                                            break;
+
+                                        case 4:
+                                                dcdr >> data.type_discovered();
+                                            break;
+
+                                        case 5:
+                                                dcdr >> data.type_mismatch();
                                             break;
 
                     default:

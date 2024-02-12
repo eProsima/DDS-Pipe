@@ -231,8 +231,6 @@ private:
 };
 
 
-
-
 /*!
  * @brief This class represents the structure DdsTopic defined by the user in the IDL file.
  * @ingroup MonitoringTopics
@@ -373,11 +371,74 @@ public:
      */
     eProsima_user_DllExport std::vector<DdsTopicData>& data();
 
+
+    /*!
+     * @brief This function sets a value in member qos_mismatch
+     * @param _qos_mismatch New value for member qos_mismatch
+     */
+    eProsima_user_DllExport void qos_mismatch(
+            bool _qos_mismatch);
+
+    /*!
+     * @brief This function returns the value of member qos_mismatch
+     * @return Value of member qos_mismatch
+     */
+    eProsima_user_DllExport bool qos_mismatch() const;
+
+    /*!
+     * @brief This function returns a reference to member qos_mismatch
+     * @return Reference to member qos_mismatch
+     */
+    eProsima_user_DllExport bool& qos_mismatch();
+
+
+    /*!
+     * @brief This function sets a value in member type_discovered
+     * @param _type_discovered New value for member type_discovered
+     */
+    eProsima_user_DllExport void type_discovered(
+            bool _type_discovered);
+
+    /*!
+     * @brief This function returns the value of member type_discovered
+     * @return Value of member type_discovered
+     */
+    eProsima_user_DllExport bool type_discovered() const;
+
+    /*!
+     * @brief This function returns a reference to member type_discovered
+     * @return Reference to member type_discovered
+     */
+    eProsima_user_DllExport bool& type_discovered();
+
+
+    /*!
+     * @brief This function sets a value in member type_mismatch
+     * @param _type_mismatch New value for member type_mismatch
+     */
+    eProsima_user_DllExport void type_mismatch(
+            bool _type_mismatch);
+
+    /*!
+     * @brief This function returns the value of member type_mismatch
+     * @return Value of member type_mismatch
+     */
+    eProsima_user_DllExport bool type_mismatch() const;
+
+    /*!
+     * @brief This function returns a reference to member type_mismatch
+     * @return Reference to member type_mismatch
+     */
+    eProsima_user_DllExport bool& type_mismatch();
+
 private:
 
     std::string m_name;
     std::string m_data_type_name;
     std::vector<DdsTopicData> m_data;
+    bool m_qos_mismatch{false};
+    bool m_type_discovered{false};
+    bool m_type_mismatch{false};
 
 };
 
