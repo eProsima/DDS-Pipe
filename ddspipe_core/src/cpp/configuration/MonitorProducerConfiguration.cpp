@@ -18,7 +18,6 @@
  */
 
 #include <cpp_utils/Formatter.hpp>
-#include <cpp_utils/Log.hpp>
 
 #include <ddspipe_core/configuration/MonitorProducerConfiguration.hpp>
 
@@ -32,6 +31,12 @@ bool MonitorProducerConfiguration::is_valid(
     if (period <= 0)
     {
         error_msg << "Period must be greater than 0.";
+        return false;
+    }
+
+    if (domain < 0 || domain > 255)
+    {
+        error_msg << "Domain must be between 0 and 255.";
         return false;
     }
 

@@ -15,6 +15,7 @@
 
 #include <cpp_utils/exception/InitializationException.hpp>
 
+#include <fastdds/dds/domain/DomainParticipant.hpp>
 #include <fastdds/dds/publisher/qos/DataWriterQos.hpp>
 #include <fastdds/dds/publisher/Publisher.hpp>
 #include <fastdds/dds/topic/qos/TopicQos.hpp>
@@ -36,7 +37,7 @@ DdsMonitorConsumer<T>::DdsMonitorConsumer(
     // Get the participant from the factory
     fastdds::dds::DomainParticipant* participant = get_participant(domain);
 
-    // Register the types
+    // Register the type
     type.register_type(participant);
 
     // Create the publisher
@@ -84,6 +85,7 @@ DdsMonitorConsumer<T>::DdsMonitorConsumer(
 template <typename T>
 void DdsMonitorConsumer<T>::consume(const T* data) const
 {
+    // The data must be copied since writer_->write takes a non-constant pointer.
     T data_copy = *data;
     writer_->write(&data_copy);
 }

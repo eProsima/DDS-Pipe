@@ -45,17 +45,11 @@ constexpr const char* TOPIC_PARTICIPANTS_TAG("participants");   //! List of part
 constexpr const char* MONITOR_TAG("monitor"); //! Monitor configuration
 constexpr const char* MONITOR_DOMAIN_TAG("domain"); //! Domain Id of the monitor's participant
 
+constexpr const char* MONITOR_STATUS_TAG("status"); //! Monitor topics configuration
 constexpr const char* MONITOR_TOPICS_TAG("topics"); //! Monitor topics configuration
-constexpr const char* MONITOR_TOPICS_ENABLE_TAG("enable"); //! Enable monitoring topics
-constexpr const char* MONITOR_TOPICS_DOMAIN_TAG("domain"); //! Domain Id of the topics' monitoring participant
-constexpr const char* MONITOR_TOPICS_PERIOD_TAG("period"); //! Period to publish the topics' monitoring data at
-constexpr const char* MONITOR_TOPICS_TOPIC_NAME_TAG("topic-name"); //! Topic name to publish the topics' monitoring data
-
-constexpr const char* MONITOR_STATUS_TAG("status"); //! Monitor status configuration
-constexpr const char* MONITOR_STATUS_ENABLE_TAG("enable"); //! Enable monitoring status
-constexpr const char* MONITOR_STATUS_DOMAIN_TAG("domain"); //! Domain Id of the status' monitoring participant
-constexpr const char* MONITOR_STATUS_PERIOD_TAG("period"); //! Period to publish the status' monitoring data at
-constexpr const char* MONITOR_STATUS_TOPIC_NAME_TAG("topic-name"); //! Topic name to publish the status' monitoring data
+constexpr const char* MONITOR_ENABLE_TAG("enable"); //! Enable monitoring topics
+constexpr const char* MONITOR_PERIOD_TAG("period"); //! Period to publish the topics' monitoring data at
+constexpr const char* MONITOR_TOPIC_NAME_TAG("topic-name"); //! Topic name to publish the topics' monitoring data
 
 // QoS related tags
 constexpr const char* QOS_RELIABLE_TAG("reliability"); //! The Endpoints of that topic will be configured as RELIABLE

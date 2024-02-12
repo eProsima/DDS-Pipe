@@ -33,8 +33,6 @@
     #include <ddspipe_core/types/monitoring/topics/v2/MonitoringTopicsPubSubTypes.h>
 #endif // if FASTRTPS_VERSION_MAJOR < 2 || (FASTRTPS_VERSION_MAJOR == 2 && FASTRTPS_VERSION_MINOR < 13)
 
-// Monitoring API:
-
 // DDSPIPE MONITOR MACROS
 
 //! TODO

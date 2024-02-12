@@ -16,6 +16,13 @@
 
 #include <iostream>
 
+// TODO:
+// The StdoutMonitorConsumer includes the producers to have access to their overloaded <<.
+// The StdoutMonitorConsumer would ideally be agonostic of the producers.
+#include <ddspipe_core/monitoring/producers/StatusMonitorProducer.hpp>
+#include <ddspipe_core/monitoring/producers/TopicsMonitorProducer.hpp>
+
+
 namespace eprosima {
 namespace ddspipe {
 namespace core {

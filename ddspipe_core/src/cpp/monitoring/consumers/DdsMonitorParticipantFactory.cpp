@@ -13,9 +13,9 @@
 // limitations under the License.
 
 
-#include <cpp_utils/exception/InitializationException.hpp>
-
 #include <fastdds/dds/domain/DomainParticipantFactory.hpp>
+
+#include <cpp_utils/exception/InitializationException.hpp>
 
 #include <ddspipe_core/monitoring/consumers/DdsMonitorParticipantFactory.hpp>
 
@@ -42,7 +42,7 @@ fastdds::dds::DomainParticipant* DdsMonitorParticipantFactory::get_participant(
     {
         // The participant does not exist. Create it.
         fastdds::dds::DomainParticipantQos pqos;
-        pqos.name("DdsPipeMonitorParticipant_" + std::to_string(domain));
+        pqos.name("DdsMonitorParticipant_" + std::to_string(domain));
 
         participant = fastdds::dds::DomainParticipantFactory::get_instance()->create_participant(domain, pqos);
 

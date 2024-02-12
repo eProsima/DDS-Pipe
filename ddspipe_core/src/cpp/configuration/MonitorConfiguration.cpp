@@ -18,7 +18,6 @@
  */
 
 #include <cpp_utils/Formatter.hpp>
-#include <cpp_utils/Log.hpp>
 
 #include <ddspipe_core/configuration/MonitorConfiguration.hpp>
 
