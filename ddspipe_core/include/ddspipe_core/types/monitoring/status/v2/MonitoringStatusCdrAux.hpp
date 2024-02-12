@@ -22,7 +22,7 @@
 #ifndef _FAST_DDS_GENERATED_MONITORINGSTATUSCDRAUX_HPP_
 #define _FAST_DDS_GENERATED_MONITORINGSTATUSCDRAUX_HPP_
 
-#include "MonitoringStatus.h"
+#include <ddspipe_core/types/monitoring/status/v2/MonitoringStatus.h>
 
 constexpr uint32_t MonitoringErrorStatus_max_cdr_typesize {6UL};
 constexpr uint32_t MonitoringErrorStatus_max_key_cdr_typesize {0UL};
@@ -54,4 +54,3 @@ eProsima_user_DllExport void serialize_key(
 } // namespace eprosima
 
 #endif // _FAST_DDS_GENERATED_MONITORINGSTATUSCDRAUX_HPP_
-

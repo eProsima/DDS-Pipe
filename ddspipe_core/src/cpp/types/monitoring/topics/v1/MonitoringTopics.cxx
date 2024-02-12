@@ -26,7 +26,7 @@ char dummy;
 }  // namespace
 #endif  // _WIN32
 
-#include "MonitoringTopics.h"
+#include <ddspipe_core/types/monitoring/topics/v1/MonitoringTopics.h>
 
 #include <fastcdr/Cdr.h>
 
@@ -974,7 +974,3 @@ std::vector<DdsTopic>& MonitoringTopics::topics()
 {
     return m_topics;
 }
-
-
-
-

@@ -22,7 +22,7 @@
 #ifndef _FAST_DDS_GENERATED_MONITORINGSTATUSCDRAUX_IPP_
 #define _FAST_DDS_GENERATED_MONITORINGSTATUSCDRAUX_IPP_
 
-#include "MonitoringStatusCdrAux.hpp"
+#include <ddspipe_core/types/monitoring/status/v2/MonitoringStatus.h>
 
 #include <fastcdr/Cdr.h>
 #include <fastcdr/CdrSizeCalculator.hpp>
@@ -211,4 +211,3 @@ void serialize_key(
 } // namespace eprosima
 
 #endif // _FAST_DDS_GENERATED_MONITORINGSTATUSCDRAUX_IPP_
-
