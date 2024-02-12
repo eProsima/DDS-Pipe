@@ -363,30 +363,70 @@ public:
 
 
     /*!
-     * @brief This function copies the value in member data_type_name
-     * @param _data_type_name New value to be copied in member data_type_name
+     * @brief This function copies the value in member type_name
+     * @param _type_name New value to be copied in member type_name
      */
-    eProsima_user_DllExport void data_type_name(
-            const std::string& _data_type_name);
+    eProsima_user_DllExport void type_name(
+            const std::string& _type_name);
 
     /*!
-     * @brief This function moves the value in member data_type_name
-     * @param _data_type_name New value to be moved in member data_type_name
+     * @brief This function moves the value in member type_name
+     * @param _type_name New value to be moved in member type_name
      */
-    eProsima_user_DllExport void data_type_name(
-            std::string&& _data_type_name);
+    eProsima_user_DllExport void type_name(
+            std::string&& _type_name);
 
     /*!
-     * @brief This function returns a constant reference to member data_type_name
-     * @return Constant reference to member data_type_name
+     * @brief This function returns a constant reference to member type_name
+     * @return Constant reference to member type_name
      */
-    eProsima_user_DllExport const std::string& data_type_name() const;
+    eProsima_user_DllExport const std::string& type_name() const;
 
     /*!
-     * @brief This function returns a reference to member data_type_name
-     * @return Reference to member data_type_name
+     * @brief This function returns a reference to member type_name
+     * @return Reference to member type_name
      */
-    eProsima_user_DllExport std::string& data_type_name();
+    eProsima_user_DllExport std::string& type_name();
+
+
+    /*!
+     * @brief This function sets a value in member type_discovered
+     * @param _type_discovered New value for member type_discovered
+     */
+    eProsima_user_DllExport void type_discovered(
+            bool _type_discovered);
+
+    /*!
+     * @brief This function returns the value of member type_discovered
+     * @return Value of member type_discovered
+     */
+    eProsima_user_DllExport bool type_discovered() const;
+
+    /*!
+     * @brief This function returns a reference to member type_discovered
+     * @return Reference to member type_discovered
+     */
+    eProsima_user_DllExport bool& type_discovered();
+
+
+    /*!
+     * @brief This function sets a value in member type_mismatch
+     * @param _type_mismatch New value for member type_mismatch
+     */
+    eProsima_user_DllExport void type_mismatch(
+            bool _type_mismatch);
+
+    /*!
+     * @brief This function returns the value of member type_mismatch
+     * @return Value of member type_mismatch
+     */
+    eProsima_user_DllExport bool type_mismatch() const;
+
+    /*!
+     * @brief This function returns a reference to member type_mismatch
+     * @return Reference to member type_mismatch
+     */
+    eProsima_user_DllExport bool& type_mismatch();
 
 
     /*!
@@ -434,46 +474,6 @@ public:
      * @return Reference to member qos_mismatch
      */
     eProsima_user_DllExport bool& qos_mismatch();
-
-
-    /*!
-     * @brief This function sets a value in member type_discovered
-     * @param _type_discovered New value for member type_discovered
-     */
-    eProsima_user_DllExport void type_discovered(
-            bool _type_discovered);
-
-    /*!
-     * @brief This function returns the value of member type_discovered
-     * @return Value of member type_discovered
-     */
-    eProsima_user_DllExport bool type_discovered() const;
-
-    /*!
-     * @brief This function returns a reference to member type_discovered
-     * @return Reference to member type_discovered
-     */
-    eProsima_user_DllExport bool& type_discovered();
-
-
-    /*!
-     * @brief This function sets a value in member type_mismatch
-     * @param _type_mismatch New value for member type_mismatch
-     */
-    eProsima_user_DllExport void type_mismatch(
-            bool _type_mismatch);
-
-    /*!
-     * @brief This function returns the value of member type_mismatch
-     * @return Value of member type_mismatch
-     */
-    eProsima_user_DllExport bool type_mismatch() const;
-
-    /*!
-     * @brief This function returns a reference to member type_mismatch
-     * @return Reference to member type_mismatch
-     */
-    eProsima_user_DllExport bool& type_mismatch();
 
 
     /*!
@@ -530,11 +530,11 @@ public:
 private:
 
     std::string m_name;
-    std::string m_data_type_name;
-    std::vector<DdsTopicData> m_data;
-    bool m_qos_mismatch;
+    std::string m_type_name;
     bool m_type_discovered;
     bool m_type_mismatch;
+    std::vector<DdsTopicData> m_data;
+    bool m_qos_mismatch;
 
 };
 

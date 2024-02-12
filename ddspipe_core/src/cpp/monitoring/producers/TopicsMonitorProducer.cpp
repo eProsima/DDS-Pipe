@@ -126,7 +126,7 @@ void TopicsMonitorProducer::type_discovered(
     if (!topic_data_.count(topic))
     {
         topic_data_[topic].name(topic.m_topic_name);
-        topic_data_[topic].data_type_name(topic.type_name);
+        topic_data_[topic].type_name(topic.type_name);
     }
 
     topic_data_[topic].type_discovered(true);
@@ -138,7 +138,7 @@ void TopicsMonitorProducer::type_mismatch(
     if (!topic_data_.count(topic))
     {
         topic_data_[topic].name(topic.m_topic_name);
-        topic_data_[topic].data_type_name(topic.type_name);
+        topic_data_[topic].type_name(topic.type_name);
     }
 
     topic_data_[topic].type_mismatch(true);
@@ -150,7 +150,7 @@ void TopicsMonitorProducer::qos_mismatch(
     if (!topic_data_.count(topic))
     {
         topic_data_[topic].name(topic.m_topic_name);
-        topic_data_[topic].data_type_name(topic.type_name);
+        topic_data_[topic].type_name(topic.type_name);
     }
 
     topic_data_[topic].qos_mismatch(true);
@@ -227,7 +227,7 @@ std::ostream& operator<<(std::ostream& os, const DdsTopicData& data) {
 
 std::ostream& operator<<(std::ostream& os, const DdsTopic& topic) {
     os << "Topic Name: " << topic.name();
-    os << ", Type Name: " << topic.data_type_name();
+    os << ", Type Name: " << topic.type_name();
     os << ", Type Discovered: " << topic.type_discovered();
     os << ", Type Mismatch: " << topic.type_mismatch();
     os << ", QoS Mismatch: " << topic.qos_mismatch();
