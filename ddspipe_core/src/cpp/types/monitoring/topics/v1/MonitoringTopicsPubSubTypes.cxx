@@ -221,8 +221,6 @@ bool DdsTopicDataPubSubType::getKey(
 
 
 
-
-
 DdsTopicPubSubType::DdsTopicPubSubType()
 {
     setName("DdsTopic");

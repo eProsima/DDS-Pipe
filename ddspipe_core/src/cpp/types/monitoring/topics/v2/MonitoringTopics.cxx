@@ -232,8 +232,6 @@ double& DdsTopicData::frequency()
 
 
 
-
-
 DdsTopic::DdsTopic()
 {
 }
@@ -248,6 +246,9 @@ DdsTopic::DdsTopic(
     m_name = x.m_name;
     m_data_type_name = x.m_data_type_name;
     m_data = x.m_data;
+    m_qos_mismatch = x.m_qos_mismatch;
+    m_type_discovered = x.m_type_discovered;
+    m_type_mismatch = x.m_type_mismatch;
 }
 
 DdsTopic::DdsTopic(
@@ -256,6 +257,9 @@ DdsTopic::DdsTopic(
     m_name = std::move(x.m_name);
     m_data_type_name = std::move(x.m_data_type_name);
     m_data = std::move(x.m_data);
+    m_qos_mismatch = x.m_qos_mismatch;
+    m_type_discovered = x.m_type_discovered;
+    m_type_mismatch = x.m_type_mismatch;
 }
 
 DdsTopic& DdsTopic::operator =(
@@ -265,6 +269,9 @@ DdsTopic& DdsTopic::operator =(
     m_name = x.m_name;
     m_data_type_name = x.m_data_type_name;
     m_data = x.m_data;
+    m_qos_mismatch = x.m_qos_mismatch;
+    m_type_discovered = x.m_type_discovered;
+    m_type_mismatch = x.m_type_mismatch;
     return *this;
 }
 
@@ -275,6 +282,9 @@ DdsTopic& DdsTopic::operator =(
     m_name = std::move(x.m_name);
     m_data_type_name = std::move(x.m_data_type_name);
     m_data = std::move(x.m_data);
+    m_qos_mismatch = x.m_qos_mismatch;
+    m_type_discovered = x.m_type_discovered;
+    m_type_mismatch = x.m_type_mismatch;
     return *this;
 }
 
@@ -283,7 +293,10 @@ bool DdsTopic::operator ==(
 {
     return (m_name == x.m_name &&
            m_data_type_name == x.m_data_type_name &&
-           m_data == x.m_data);
+           m_data == x.m_data &&
+           m_qos_mismatch == x.m_qos_mismatch &&
+           m_type_discovered == x.m_type_discovered &&
+           m_type_mismatch == x.m_type_mismatch);
 }
 
 bool DdsTopic::operator !=(
@@ -406,6 +419,93 @@ const std::vector<DdsTopicData>& DdsTopic::data() const
 std::vector<DdsTopicData>& DdsTopic::data()
 {
     return m_data;
+}
+
+
+/*!
+ * @brief This function sets a value in member qos_mismatch
+ * @param _qos_mismatch New value for member qos_mismatch
+ */
+void DdsTopic::qos_mismatch(
+        bool _qos_mismatch)
+{
+    m_qos_mismatch = _qos_mismatch;
+}
+
+/*!
+ * @brief This function returns the value of member qos_mismatch
+ * @return Value of member qos_mismatch
+ */
+bool DdsTopic::qos_mismatch() const
+{
+    return m_qos_mismatch;
+}
+
+/*!
+ * @brief This function returns a reference to member qos_mismatch
+ * @return Reference to member qos_mismatch
+ */
+bool& DdsTopic::qos_mismatch()
+{
+    return m_qos_mismatch;
+}
+
+
+/*!
+ * @brief This function sets a value in member type_discovered
+ * @param _type_discovered New value for member type_discovered
+ */
+void DdsTopic::type_discovered(
+        bool _type_discovered)
+{
+    m_type_discovered = _type_discovered;
+}
+
+/*!
+ * @brief This function returns the value of member type_discovered
+ * @return Value of member type_discovered
+ */
+bool DdsTopic::type_discovered() const
+{
+    return m_type_discovered;
+}
+
+/*!
+ * @brief This function returns a reference to member type_discovered
+ * @return Reference to member type_discovered
+ */
+bool& DdsTopic::type_discovered()
+{
+    return m_type_discovered;
+}
+
+
+/*!
+ * @brief This function sets a value in member type_mismatch
+ * @param _type_mismatch New value for member type_mismatch
+ */
+void DdsTopic::type_mismatch(
+        bool _type_mismatch)
+{
+    m_type_mismatch = _type_mismatch;
+}
+
+/*!
+ * @brief This function returns the value of member type_mismatch
+ * @return Value of member type_mismatch
+ */
+bool DdsTopic::type_mismatch() const
+{
+    return m_type_mismatch;
+}
+
+/*!
+ * @brief This function returns a reference to member type_mismatch
+ * @return Reference to member type_mismatch
+ */
+bool& DdsTopic::type_mismatch()
+{
+    return m_type_mismatch;
 }
 
 
