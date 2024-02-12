@@ -28,7 +28,8 @@ namespace ddspipe {
 namespace core {
 
 template <typename T>
-void StdoutMonitorConsumer<T>::consume(const T* data) const
+void StdoutMonitorConsumer<T>::consume(
+        const T* data) const
 {
     std::cout << *data << std::endl;
 }

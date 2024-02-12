@@ -212,8 +212,8 @@ core::TopicRoutesConfiguration YamlReader::get(
 }
 
 /*************************
-* Monitor Configuration  *
-**************************/
+ * Monitor Configuration  *
+ **************************/
 
 template <>
 DDSPIPE_YAML_DllAPI

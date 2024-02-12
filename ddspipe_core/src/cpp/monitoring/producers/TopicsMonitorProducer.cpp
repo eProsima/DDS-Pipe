@@ -28,7 +28,8 @@ TopicsMonitorProducer* TopicsMonitorProducer::get_instance()
     return &instance;
 }
 
-void TopicsMonitorProducer::init(const MonitorProducerConfiguration& configuration)
+void TopicsMonitorProducer::init(
+        const MonitorProducerConfiguration& configuration)
 {
     // Store whether the producer is enabled
     enabled_ = configuration.enabled;
@@ -48,7 +49,8 @@ void TopicsMonitorProducer::init(const MonitorProducerConfiguration& configurati
     fastdds::dds::TypeSupport type(new MonitoringTopicsPubSubType());
 
     // Create the consumers
-    consumers_.push_back(new DdsMonitorConsumer<MonitoringTopics>(configuration.domain.get_value(), configuration.topic_name, type));
+    consumers_.push_back(new DdsMonitorConsumer<MonitoringTopics>(
+                configuration.domain.get_value(), configuration.topic_name, type));
     consumers_.push_back(new StdoutMonitorConsumer<MonitoringTopics>());
 }
 
@@ -93,7 +95,8 @@ void TopicsMonitorProducer::msg_received(
     }
 
     // Increase the count of the received messages
-    participant_data_[topic][participant_id].msgs_received(participant_data_[topic][participant_id].msgs_received() + 1);
+    participant_data_[topic][participant_id].msgs_received(participant_data_[topic][participant_id].msgs_received() +
+            1);
 }
 
 void TopicsMonitorProducer::msg_lost(
@@ -255,7 +258,10 @@ void TopicsMonitorProducer::reset_data_()
     }
 }
 
-std::ostream& operator<<(std::ostream& os, const DdsTopicData& data) {
+std::ostream& operator <<(
+        std::ostream& os,
+        const DdsTopicData& data)
+{
     os << "Participant ID: " << data.participant_id();
     os << ", Messages Received: " << data.msgs_received();
     os << ", Frequency: " << data.frequency();
@@ -263,7 +269,10 @@ std::ostream& operator<<(std::ostream& os, const DdsTopicData& data) {
     return os;
 }
 
-std::ostream& operator<<(std::ostream& os, const DdsTopic& topic) {
+std::ostream& operator <<(
+        std::ostream& os,
+        const DdsTopic& topic)
+{
     os << "Topic Name: " << topic.name();
     os << ", Type Name: " << topic.type_name();
     os << ", Type Discovered: " << topic.type_discovered();
@@ -272,7 +281,8 @@ std::ostream& operator<<(std::ostream& os, const DdsTopic& topic) {
 
     os << ", Data: [";
 
-    for (const auto& data : topic.data()) {
+    for (const auto& data : topic.data())
+    {
         os << data << "; ";
     }
 
@@ -281,10 +291,14 @@ std::ostream& operator<<(std::ostream& os, const DdsTopic& topic) {
     return os;
 }
 
-std::ostream& operator<<(std::ostream& os, const MonitoringTopics& data) {
+std::ostream& operator <<(
+        std::ostream& os,
+        const MonitoringTopics& data)
+{
     os << "Monitoring Topics: [";
 
-    for (const auto& topic : data.topics()) {
+    for (const auto& topic : data.topics())
+    {
         os << topic << "; ";
     }
 

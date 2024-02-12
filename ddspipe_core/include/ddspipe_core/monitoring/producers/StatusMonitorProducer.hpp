@@ -45,13 +45,15 @@ class StatusMonitorProducer : public IMonitorProducer
 public:
 
     // TODO
-    static void init_instance(StatusMonitorProducer* instance);
+    static void init_instance(
+            StatusMonitorProducer* instance);
 
     // Static method to get the singleton instance
     static StatusMonitorProducer* get_instance();
 
     // TODO
-    virtual void init(const MonitorProducerConfiguration& configuration);
+    virtual void init(
+            const MonitorProducerConfiguration& configuration);
 
     // TODO
     virtual void consume() override;
@@ -84,10 +86,13 @@ protected:
     std::vector<IMonitorConsumer<MonitoringStatus>*> consumers_;
 };
 
-std::ostream& operator<<(std::ostream& os, const MonitoringStatus& data);
+std::ostream& operator <<(
+        std::ostream& os,
+        const MonitoringStatus& data);
 
 // The names of variables inside macros must be unique to avoid conflicts with external variables
-#define MONITOR_ERROR_IMPL_(error) eprosima::ddspipe::core::StatusMonitorProducer::get_instance()->add_error_to_status(error)
+#define MONITOR_ERROR_IMPL_(error) eprosima::ddspipe::core::StatusMonitorProducer::get_instance()->add_error_to_status( \
+        error)
 
 } // namespace core
 } // namespace ddspipe

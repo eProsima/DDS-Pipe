@@ -29,7 +29,8 @@ class IMonitorConsumer
 public:
 
     // TODO
-    virtual void consume(const T* data) const = 0;
+    virtual void consume(
+            const T* data) const = 0;
 };
 
 } // namespace core

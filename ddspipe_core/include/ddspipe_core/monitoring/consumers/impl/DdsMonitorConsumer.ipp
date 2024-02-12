@@ -61,7 +61,7 @@ DdsMonitorConsumer<T>::DdsMonitorConsumer(
     {
         throw utils::InitializationException(
                   utils::Formatter() << "Error creating Topic " << topic_name <<
-                  " for Participant " << participant->guid() << ".");
+                      " for Participant " << participant->guid() << ".");
     }
 
     // Create the writer
@@ -77,13 +77,14 @@ DdsMonitorConsumer<T>::DdsMonitorConsumer(
     if (writer_ == nullptr)
     {
         throw utils::InitializationException(
-                utils::Formatter() << "Error creating DataWriter for Participant " <<
+                  utils::Formatter() << "Error creating DataWriter for Participant " <<
                       participant->guid() << " in topic " << topic << ".");
     }
 }
 
 template <typename T>
-void DdsMonitorConsumer<T>::consume(const T* data) const
+void DdsMonitorConsumer<T>::consume(
+        const T* data) const
 {
     // The data must be copied since writer_->write takes a non-constant pointer.
     T data_copy = *data;

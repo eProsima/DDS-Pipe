@@ -65,7 +65,8 @@ public:
     static TopicsMonitorProducer* get_instance();
 
     // TODO
-    void init(const MonitorProducerConfiguration& configuration);
+    void init(
+            const MonitorProducerConfiguration& configuration);
 
     // TODO
     void consume() override;
@@ -119,22 +120,35 @@ protected:
     std::vector<IMonitorConsumer<MonitoringTopics>*> consumers_;
 };
 
-std::ostream& operator<<(std::ostream& os, const DdsTopicData& data);
-std::ostream& operator<<(std::ostream& os, const DdsTopic& topic);
-std::ostream& operator<<(std::ostream& os, const MonitoringTopics& data);
+std::ostream& operator <<(
+        std::ostream& os,
+        const DdsTopicData& data);
+
+std::ostream& operator <<(
+        std::ostream& os,
+        const DdsTopic& topic);
+
+std::ostream& operator <<(
+        std::ostream& os,
+        const MonitoringTopics& data);
 
 // The names of variables inside macros must be unique to avoid conflicts with external variables
-#define MONITOR_MSG_RX_IMPL_(topic, participant_id) eprosima::ddspipe::core::TopicsMonitorProducer::get_instance()->msg_received(topic, \
+#define MONITOR_MSG_RX_IMPL_(topic, \
+            participant_id) eprosima::ddspipe::core::TopicsMonitorProducer::get_instance()->msg_received(topic, \
             participant_id)
 
-#define MONITOR_MSG_LOST_IMPL_(topic, participant_id) eprosima::ddspipe::core::TopicsMonitorProducer::get_instance()->msg_lost(topic, \
+#define MONITOR_MSG_LOST_IMPL_(topic, \
+            participant_id) eprosima::ddspipe::core::TopicsMonitorProducer::get_instance()->msg_lost(topic, \
             participant_id)
 
-#define MONITOR_TYPE_DISCOVERED_IMPL_(topic) eprosima::ddspipe::core::TopicsMonitorProducer::get_instance()->type_discovered(topic)
+#define MONITOR_TYPE_DISCOVERED_IMPL_(topic) eprosima::ddspipe::core::TopicsMonitorProducer::get_instance()-> \
+            type_discovered(topic)
 
-#define MONITOR_TYPE_MISMATCH_IMPL_(topic) eprosima::ddspipe::core::TopicsMonitorProducer::get_instance()->type_mismatch(topic)
+#define MONITOR_TYPE_MISMATCH_IMPL_(topic) eprosima::ddspipe::core::TopicsMonitorProducer::get_instance()->type_mismatch( \
+        topic)
 
-#define MONITOR_QOS_MISMATCH_IMPL_(topic) eprosima::ddspipe::core::TopicsMonitorProducer::get_instance()->qos_mismatch(topic)
+#define MONITOR_QOS_MISMATCH_IMPL_(topic) eprosima::ddspipe::core::TopicsMonitorProducer::get_instance()->qos_mismatch( \
+        topic)
 
 } // namespace core
 } // namespace ddspipe

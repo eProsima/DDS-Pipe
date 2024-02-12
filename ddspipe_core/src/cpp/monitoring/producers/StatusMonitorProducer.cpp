@@ -26,7 +26,8 @@ namespace core {
 StatusMonitorProducer* StatusMonitorProducer::instance_ = nullptr;
 
 
-void StatusMonitorProducer::init_instance(StatusMonitorProducer* instance)
+void StatusMonitorProducer::init_instance(
+        StatusMonitorProducer* instance)
 {
     instance_ = instance;
 }
@@ -41,7 +42,8 @@ StatusMonitorProducer* StatusMonitorProducer::get_instance()
     return instance_;
 }
 
-void StatusMonitorProducer::init(const MonitorProducerConfiguration& configuration)
+void StatusMonitorProducer::init(
+        const MonitorProducerConfiguration& configuration)
 {
     // Store whether the producer is enabled
     enabled_ = configuration.enabled;
@@ -61,7 +63,8 @@ void StatusMonitorProducer::init(const MonitorProducerConfiguration& configurati
     fastdds::dds::TypeSupport type(new MonitoringStatusPubSubType());
 
     // Create the consumers
-    consumers_.push_back(new DdsMonitorConsumer<MonitoringStatus>(configuration.domain.get_value(), configuration.topic_name, type));
+    consumers_.push_back(new DdsMonitorConsumer<MonitoringStatus>(
+                configuration.domain.get_value(), configuration.topic_name, type));
     consumers_.push_back(new StdoutMonitorConsumer<MonitoringStatus>());
 }
 
@@ -120,21 +123,24 @@ MonitoringStatus* StatusMonitorProducer::save_data_() const
     return data_;
 }
 
-std::ostream& operator<<(std::ostream& os, const MonitoringStatus& data) {
+std::ostream& operator <<(
+        std::ostream& os,
+        const MonitoringStatus& data)
+{
     os << "Monitoring Status: [";
 
     bool is_first_error = true;
 
     auto print_error = [&](const std::string& error)
-    {
-        if (!is_first_error)
-        {
-            os << ", ";
-        }
+            {
+                if (!is_first_error)
+                {
+                    os << ", ";
+                }
 
-        os << error;
-        is_first_error = false;
-    };
+                os << error;
+                is_first_error = false;
+            };
 
     auto error = data.error_status();
 

@@ -122,7 +122,6 @@ bool& MonitoringErrorStatus::type_mismatch()
     return m_type_mismatch;
 }
 
-
 /*!
  * @brief This function sets a value in member qos_mismatch
  * @param _qos_mismatch New value for member qos_mismatch
@@ -150,9 +149,6 @@ bool& MonitoringErrorStatus::qos_mismatch()
 {
     return m_qos_mismatch;
 }
-
-
-
 
 MonitoringStatus::MonitoringStatus()
 {
@@ -245,7 +241,6 @@ MonitoringErrorStatus& MonitoringStatus::error_status()
     return m_error_status;
 }
 
-
 /*!
  * @brief This function sets a value in member has_errors
  * @param _has_errors New value for member has_errors
@@ -273,7 +268,6 @@ bool& MonitoringStatus::has_errors()
 {
     return m_has_errors;
 }
-
 
 // Include auxiliary functions like for serializing/deserializing.
 #include <ddspipe_core/types/monitoring/status/v2/MonitoringStatusCdrAux.ipp>
