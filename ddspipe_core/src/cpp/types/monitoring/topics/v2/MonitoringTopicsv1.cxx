@@ -26,7 +26,7 @@ char dummy;
 }  // namespace
 #endif  // _WIN32
 
-#include "MonitoringTopics.h"
+#include <ddspipe_core/types/monitoring/topics/v2/MonitoringTopics.h>
 
 #if FASTCDR_VERSION_MAJOR == 1
 

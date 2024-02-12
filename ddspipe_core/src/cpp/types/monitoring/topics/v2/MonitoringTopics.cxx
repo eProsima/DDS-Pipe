@@ -26,7 +26,7 @@ char dummy;
 }  // namespace
 #endif  // _WIN32
 
-#include "MonitoringTopics.h"
+#include <ddspipe_core/types/monitoring/topics/v2/MonitoringTopics.h>
 
 #if FASTCDR_VERSION_MAJOR > 1
 
@@ -601,6 +601,6 @@ std::vector<DdsTopic>& MonitoringTopics::topics()
 
 
 // Include auxiliary functions like for serializing/deserializing.
-#include "MonitoringTopicsCdrAux.ipp"
+#include <ddspipe_core/types/monitoring/topics/v2/MonitoringTopicsCdrAux.ipp>
 
 #endif // FASTCDR_VERSION_MAJOR > 1

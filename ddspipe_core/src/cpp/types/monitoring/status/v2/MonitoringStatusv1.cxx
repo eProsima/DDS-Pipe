@@ -26,7 +26,7 @@ char dummy;
 }  // namespace
 #endif  // _WIN32
 
-#include "MonitoringStatus.h"
+#include <ddspipe_core/types/monitoring/status/v2/MonitoringStatus.h>
 
 #if FASTCDR_VERSION_MAJOR == 1
 

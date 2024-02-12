@@ -22,7 +22,7 @@
 #ifndef _FAST_DDS_GENERATED_MONITORINGTOPICSCDRAUX_HPP_
 #define _FAST_DDS_GENERATED_MONITORINGTOPICSCDRAUX_HPP_
 
-#include "MonitoringTopics.h"
+#include <ddspipe_core/types/monitoring/topics/v2/MonitoringTopics.h>
 
 constexpr uint32_t DdsTopicData_max_cdr_typesize {280UL};
 constexpr uint32_t DdsTopicData_max_key_cdr_typesize {0UL};
@@ -65,4 +65,3 @@ eProsima_user_DllExport void serialize_key(
 } // namespace eprosima
 
 #endif // _FAST_DDS_GENERATED_MONITORINGTOPICSCDRAUX_HPP_
-

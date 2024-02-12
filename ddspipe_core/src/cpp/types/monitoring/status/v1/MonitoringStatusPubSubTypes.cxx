@@ -22,8 +22,8 @@
 
 #include <fastdds/rtps/common/CdrSerialization.hpp>
 
-#include "MonitoringStatusPubSubTypes.h"
-#include "MonitoringStatusCdrAux.hpp"
+#include <ddspipe_core/types/monitoring/topics/v1/MonitoringStatusPubSubTypes.h>
+#include <ddspipe_core/types/monitoring/status/v1/MonitoringStatusCdrAux.h>
 
 using SerializedPayload_t = eprosima::fastrtps::rtps::SerializedPayload_t;
 using InstanceHandle_t = eprosima::fastrtps::rtps::InstanceHandle_t;
@@ -408,4 +408,3 @@ bool MonitoringStatusPubSubType::getKey(
     }
     return true;
 }
-

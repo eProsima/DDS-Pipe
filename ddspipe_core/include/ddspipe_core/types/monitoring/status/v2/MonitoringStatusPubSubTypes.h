@@ -29,7 +29,7 @@
 #include <fastdds/rtps/common/SerializedPayload.h>
 #include <fastrtps/utils/md5.h>
 
-#include "MonitoringStatus.h"
+#include <ddspipe_core/types/monitoring/status/v2/MonitoringStatus.h>
 
 
 #if !defined(GEN_API_VER) || (GEN_API_VER != 2)
@@ -219,4 +219,3 @@ public:
 };
 
 #endif // _FAST_DDS_GENERATED_MONITORINGSTATUS_PUBSUBTYPES_H_
-

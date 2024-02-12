@@ -26,7 +26,7 @@ char dummy;
 }  // namespace
 #endif  // _WIN32
 
-#include "MonitoringStatus.h"
+#include <ddspipe_core/types/monitoring/status/v1/MonitoringStatus.h>
 
 #include <fastcdr/Cdr.h>
 
@@ -464,7 +464,3 @@ bool& MonitoringStatus::has_errors()
 {
     return m_has_errors;
 }
-
-
-
-
