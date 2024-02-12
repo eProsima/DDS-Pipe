@@ -16,7 +16,6 @@
 #pragma once
 
 
-
 namespace eprosima {
 namespace ddspipe {
 namespace core {

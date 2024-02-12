@@ -32,16 +32,6 @@ namespace core {
 struct MonitorConfiguration : public IConfiguration
 {
     /////////////////////////
-    // CONSTRUCTORS
-    /////////////////////////
-
-    DDSPIPE_CORE_DllAPI
-    MonitorConfiguration() = default;
-
-    DDSPIPE_CORE_DllAPI
-    ~MonitorConfiguration() = default;
-
-    /////////////////////////
     // METHODS
     /////////////////////////
 

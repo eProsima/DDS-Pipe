@@ -15,10 +15,10 @@
 #include <cpp_utils/Log.hpp>
 #include <cpp_utils/memory/Heritable.hpp>
 
+#include <ddspipe_core/configuration/MonitorConfiguration.hpp>
 #include <ddspipe_core/configuration/MonitorProducerConfiguration.hpp>
 #include <ddspipe_core/configuration/RoutesConfiguration.hpp>
 #include <ddspipe_core/configuration/TopicRoutesConfiguration.hpp>
-#include <ddspipe_core/configuration/MonitorConfiguration.hpp>
 #include <ddspipe_core/types/topic/dds/DdsTopic.hpp>
 #include <ddspipe_core/types/topic/dds/DistributedTopic.hpp>
 #include <ddspipe_participants/xml/XmlHandler.hpp>
@@ -272,27 +272,27 @@ void YamlReader::fill(
         const YamlReaderVersion version)
 {
     // Optional enable
-    if (is_tag_present(yml, MONITOR_TOPICS_ENABLE_TAG))
+    if (is_tag_present(yml, MONITOR_ENABLE_TAG))
     {
-        object.enabled = get<bool>(yml, MONITOR_TOPICS_ENABLE_TAG, version);
-    }
-
-    // Optional domain
-    if (is_tag_present(yml, MONITOR_TOPICS_DOMAIN_TAG))
-    {
-        object.domain = get<int>(yml, MONITOR_TOPICS_DOMAIN_TAG, version);
+        object.enabled = get<bool>(yml, MONITOR_ENABLE_TAG, version);
     }
 
     // Optional period
-    if (is_tag_present(yml, MONITOR_TOPICS_PERIOD_TAG))
+    if (is_tag_present(yml, MONITOR_PERIOD_TAG))
     {
-        object.period = get<uint32_t>(yml, MONITOR_TOPICS_PERIOD_TAG, version);
+        object.period = get<uint32_t>(yml, MONITOR_PERIOD_TAG, version);
+    }
+
+    // Optional domain
+    if (is_tag_present(yml, MONITOR_DOMAIN_TAG))
+    {
+        object.domain = get<int>(yml, MONITOR_DOMAIN_TAG, version);
     }
 
     // Optional topic name
-    if (is_tag_present(yml, MONITOR_TOPICS_TOPIC_NAME_TAG))
+    if (is_tag_present(yml, MONITOR_TOPIC_NAME_TAG))
     {
-        object.topic_name = get<std::string>(yml, MONITOR_TOPICS_TOPIC_NAME_TAG, version);
+        object.topic_name = get<std::string>(yml, MONITOR_TOPIC_NAME_TAG, version);
     }
 }
 

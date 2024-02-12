@@ -42,6 +42,8 @@ void TopicsMonitorProducer::init(const MonitorProducerConfiguration& configurati
     // Store the period so it can be used by the Monitor
     period = configuration.period;
 
+    // TODO: initialize the consumers outside of the producer so it remains agnostic of its consumers.
+
     // Register the type
     fastdds::dds::TypeSupport type(new MonitoringTopicsPubSubType());
 
@@ -123,6 +125,17 @@ void TopicsMonitorProducer::msg_lost(
 void TopicsMonitorProducer::type_discovered(
         const types::DdsTopic& topic)
 {
+    if (!enabled_)
+    {
+        // Don't save the data if the producer is not enabled
+        return;
+    }
+
+    // Take the lock to prevent:
+    //      1. Changing the data while it's being saved.
+    //      2. Simultaneous calls to msg_lost.
+    std::lock_guard<std::mutex> lock(mutex_);
+
     if (!topic_data_.count(topic))
     {
         topic_data_[topic].name(topic.m_topic_name);
@@ -135,6 +148,17 @@ void TopicsMonitorProducer::type_discovered(
 void TopicsMonitorProducer::type_mismatch(
         const types::DdsTopic& topic)
 {
+    if (!enabled_)
+    {
+        // Don't save the data if the producer is not enabled
+        return;
+    }
+
+    // Take the lock to prevent:
+    //      1. Changing the data while it's being saved.
+    //      2. Simultaneous calls to msg_lost.
+    std::lock_guard<std::mutex> lock(mutex_);
+
     if (!topic_data_.count(topic))
     {
         topic_data_[topic].name(topic.m_topic_name);
@@ -147,6 +171,17 @@ void TopicsMonitorProducer::type_mismatch(
 void TopicsMonitorProducer::qos_mismatch(
         const types::DdsTopic& topic)
 {
+    if (!enabled_)
+    {
+        // Don't save the data if the producer is not enabled
+        return;
+    }
+
+    // Take the lock to prevent:
+    //      1. Changing the data while it's being saved.
+    //      2. Simultaneous calls to msg_lost.
+    std::lock_guard<std::mutex> lock(mutex_);
+
     if (!topic_data_.count(topic))
     {
         topic_data_[topic].name(topic.m_topic_name);
@@ -221,7 +256,10 @@ void TopicsMonitorProducer::reset_data_()
 }
 
 std::ostream& operator<<(std::ostream& os, const DdsTopicData& data) {
-    os << "Participant ID: " << data.participant_id() << ", Messages Received: " << data.msgs_received() << ", Frequency: " << data.frequency() << ", Messages Lost: " << data.msgs_lost();
+    os << "Participant ID: " << data.participant_id();
+    os << ", Messages Received: " << data.msgs_received();
+    os << ", Frequency: " << data.frequency();
+    os << ", Messages Lost: " << data.msgs_lost();
     return os;
 }
 

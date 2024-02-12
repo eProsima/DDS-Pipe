@@ -17,7 +17,6 @@
 
 
 #include <memory>
-#include <mutex>
 
 #include <cpp_utils/event/PeriodicEventHandler.hpp>
 

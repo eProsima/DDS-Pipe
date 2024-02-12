@@ -17,7 +17,6 @@
 
 #include <fastdds/dds/publisher/DataWriter.hpp>
 
-#include <ddspipe_core/configuration/MonitorProducerConfiguration.hpp>
 #include <ddspipe_core/monitoring/consumers/DdsMonitorParticipantFactory.hpp>
 #include <ddspipe_core/monitoring/consumers/IMonitorConsumer.hpp>
 

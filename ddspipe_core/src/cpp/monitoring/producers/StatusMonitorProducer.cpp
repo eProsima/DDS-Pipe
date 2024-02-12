@@ -55,6 +55,8 @@ void StatusMonitorProducer::init(const MonitorProducerConfiguration& configurati
     // Store the period so it can be used by the Monitor
     period = configuration.period;
 
+    // TODO: initialize the consumers outside of the producer so it remains agnostic of its consumers.
+
     // Register the type
     fastdds::dds::TypeSupport type(new MonitoringStatusPubSubType());
 

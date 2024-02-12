@@ -15,7 +15,6 @@
 
 #pragma once
 
-// Monitoring API:
 
 namespace eprosima {
 namespace ddspipe {
