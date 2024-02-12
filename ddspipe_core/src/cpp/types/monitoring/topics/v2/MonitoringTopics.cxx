@@ -142,7 +142,6 @@ std::string& DdsTopicData::participant_id()
     return m_participant_id;
 }
 
-
 /*!
  * @brief This function sets a value in member msgs_lost
  * @param _msgs_lost New value for member msgs_lost
@@ -170,7 +169,6 @@ uint32_t& DdsTopicData::msgs_lost()
 {
     return m_msgs_lost;
 }
-
 
 /*!
  * @brief This function sets a value in member msgs_received
@@ -200,7 +198,6 @@ uint32_t& DdsTopicData::msgs_received()
     return m_msgs_received;
 }
 
-
 /*!
  * @brief This function sets a value in member frequency
  * @param _frequency New value for member frequency
@@ -228,9 +225,6 @@ double& DdsTopicData::frequency()
 {
     return m_frequency;
 }
-
-
-
 
 DdsTopic::DdsTopic()
 {
@@ -343,7 +337,6 @@ std::string& DdsTopic::name()
     return m_name;
 }
 
-
 /*!
  * @brief This function copies the value in member type_name
  * @param _type_name New value to be copied in member type_name
@@ -382,7 +375,6 @@ std::string& DdsTopic::type_name()
     return m_type_name;
 }
 
-
 /*!
  * @brief This function sets a value in member type_discovered
  * @param _type_discovered New value for member type_discovered
@@ -411,7 +403,6 @@ bool& DdsTopic::type_discovered()
     return m_type_discovered;
 }
 
-
 /*!
  * @brief This function sets a value in member type_mismatch
  * @param _type_mismatch New value for member type_mismatch
@@ -439,7 +430,6 @@ bool& DdsTopic::type_mismatch()
 {
     return m_type_mismatch;
 }
-
 
 /*!
  * @brief This function copies the value in member data
@@ -479,7 +469,6 @@ std::vector<DdsTopicData>& DdsTopic::data()
     return m_data;
 }
 
-
 /*!
  * @brief This function sets a value in member qos_mismatch
  * @param _qos_mismatch New value for member qos_mismatch
@@ -507,11 +496,6 @@ bool& DdsTopic::qos_mismatch()
 {
     return m_qos_mismatch;
 }
-
-
-
-
-
 
 MonitoringTopics::MonitoringTopics()
 {
@@ -598,7 +582,6 @@ std::vector<DdsTopic>& MonitoringTopics::topics()
 {
     return m_topics;
 }
-
 
 // Include auxiliary functions like for serializing/deserializing.
 #include <ddspipe_core/types/monitoring/topics/v2/MonitoringTopicsCdrAux.ipp>

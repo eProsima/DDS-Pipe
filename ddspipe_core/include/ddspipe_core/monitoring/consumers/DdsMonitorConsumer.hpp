@@ -40,7 +40,8 @@ public:
             fastdds::dds::TypeSupport& type);
 
     // TODO
-    void consume(const T* data) const override;
+    void consume(
+            const T* data) const override;
 
 protected:
 

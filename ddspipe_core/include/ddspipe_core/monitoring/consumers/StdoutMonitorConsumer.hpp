@@ -30,7 +30,8 @@ class StdoutMonitorConsumer : public IMonitorConsumer<T>
 public:
 
     // TODO
-    void consume(const T* data) const override;
+    void consume(
+            const T* data) const override;
 };
 
 } // namespace core
