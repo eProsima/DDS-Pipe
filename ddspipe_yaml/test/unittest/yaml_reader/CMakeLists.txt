@@ -18,3 +18,4 @@
 
 add_subdirectory(scalar)
 add_subdirectory(forwarding_routes)
+add_subdirectory(log_conf)

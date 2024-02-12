@@ -26,7 +26,7 @@ namespace ddspipe {
 namespace core {
 
 /**
- * Configuration structure encapsulating the configuration of a \c DdsPipe instance.
+ * Configuration structure encapsulating the Command-Line arguments configuration.
  */
 struct CommandlineArgs
 {
