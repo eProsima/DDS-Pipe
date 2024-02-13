@@ -486,6 +486,13 @@ void CommonReader::on_sample_rejected(
                       << ". Reason: " << reason_str);
 }
 
+void CommonReader::on_incompatible_type(
+        fastrtps::rtps::RTPSReader* reader) noexcept
+{
+    logWarning(DDSPIPE_RTPS_COMMONREADER_LISTENER,
+            "Reader " << *this << " shows incompatible type")
+}
+
 utils::ReturnCode CommonReader::is_data_correct_(
         const fastrtps::rtps::CacheChange_t* received_change) const noexcept
 {

@@ -147,6 +147,17 @@ public:
             eprosima::fastdds::dds::SampleRejectedStatusKind reason,
             const fastrtps::rtps::CacheChange_t* const change) noexcept override;
 
+    /**
+     * This method is called when a new Writer is discovered, with a Topic that
+     * matches the name of a local reader, but with an incompatible type
+     *
+     * @param reader Pointer to the RTPSReader.
+     */
+
+    DDSPIPE_PARTICIPANTS_DllAPI
+    void on_incompatible_type(
+        fastrtps::rtps::RTPSReader* reader) noexcept override;
+
     /////////////////////////
     // RPC REQUIRED METHODS
     /////////////////////////
