@@ -52,13 +52,13 @@ struct CommandlineArgs
     /////////////////////////
 
     // Configuration File path
-    std::string file_path;
+    std::string file_path{""};
 
     // Time interval for automatic reloading of the configuration file
-    utils::Duration_ms reload_time;
+    utils::Duration_ms reload_time{0};
 
     // Verbosity level for logging
-    utils::Fuzzy<utils::VerbosityKind> log_verbosity;
+    utils::Fuzzy<utils::VerbosityKind> log_verbosity{utils::VerbosityKind::Warning, utils::FuzzyLevelValues::fuzzy_level_default};
 
     // Filter for log messages
     utils::LogFilter log_filter;

@@ -12,9 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-###############################
-# Yaml Reader Log Config Test #
-###############################
+######################################
+# Yaml Reader Log Configuration Test #
+######################################
 
 set(TEST_NAME YamlReaderLogConfig)
 

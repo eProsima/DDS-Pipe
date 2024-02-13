@@ -27,9 +27,6 @@ namespace core {
 
 
 CommandlineArgs::CommandlineArgs()
-    : file_path{""}
-    , reload_time{0}
-    , log_verbosity{utils::VerbosityKind::Warning, utils::FuzzyLevelValues::fuzzy_level_default}
 {
     log_filter[utils::VerbosityKind::Info].set_value("DDSPIPE", utils::FuzzyLevelValues::fuzzy_level_default);
     log_filter[utils::VerbosityKind::Warning].set_value("DDSPIPE", utils::FuzzyLevelValues::fuzzy_level_default);

@@ -48,10 +48,10 @@ TEST(YamlReaderLogConfig, parse_correct_log_config_yaml)
     utils::Formatter error_msg;
 
     ASSERT_TRUE(conf.is_valid(error_msg));
-    ASSERT_TRUE(conf.verbosity.get_value() == utils::VerbosityKind::Info);
-    ASSERT_TRUE(conf.filter[utils::VerbosityKind::Error].get_value() == "DDSPIPE");
-    ASSERT_TRUE(conf.filter[utils::VerbosityKind::Warning].get_value() == "");
-    ASSERT_TRUE(conf.filter[utils::VerbosityKind::Info].get_value() == "DEBUG");
+    ASSERT_EQ(conf.verbosity.get_value(), utils::VerbosityKind::Info);
+    ASSERT_EQ(conf.filter[utils::VerbosityKind::Error].get_value(), "DDSPIPE");
+    ASSERT_EQ(conf.filter[utils::VerbosityKind::Warning].get_value(), "");
+    ASSERT_EQ(conf.filter[utils::VerbosityKind::Info].get_value(), "DEBUG");
 }
 
 /**
@@ -78,10 +78,10 @@ TEST(YamlReaderLogConfig, parse_correct_log_config_yaml_and_default)
     utils::Formatter error_msg;
 
     ASSERT_TRUE(conf.is_valid(error_msg));
-    ASSERT_TRUE(conf.verbosity.get_value() == utils::VerbosityKind::Warning);
-    ASSERT_TRUE(conf.filter[utils::VerbosityKind::Error].get_value() == "");
-    ASSERT_TRUE(conf.filter[utils::VerbosityKind::Warning].get_value() == "");
-    ASSERT_TRUE(conf.filter[utils::VerbosityKind::Info].get_value() == "DEBUG");
+    ASSERT_EQ(conf.verbosity.get_value(), utils::VerbosityKind::Warning);
+    ASSERT_EQ(conf.filter[utils::VerbosityKind::Error].get_value(), "");
+    ASSERT_EQ(conf.filter[utils::VerbosityKind::Warning].get_value(), "");
+    ASSERT_EQ(conf.filter[utils::VerbosityKind::Info].get_value(), "DEBUG");
 }
 
 int main(
