@@ -96,12 +96,6 @@ public:
 protected:
 
     // TODO
-    TopicsMonitorProducer() = default;
-
-    // TODO
-    ~TopicsMonitorProducer();
-
-    // TODO
     MonitoringTopics save_data_();
 
     // TODO
@@ -117,7 +111,7 @@ protected:
     std::map<types::DdsTopic, std::map<types::ParticipantId, DdsTopicData>> participant_data_;
 
     // TODO
-    std::vector<IMonitorConsumer<MonitoringTopics>*> consumers_;
+    std::vector<std::unique_ptr<IMonitorConsumer<MonitoringTopics>>> consumers_;
 };
 
 std::ostream& operator <<(

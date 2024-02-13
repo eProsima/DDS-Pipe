@@ -65,12 +65,6 @@ public:
 protected:
 
     // TODO
-    StatusMonitorProducer() = default;
-
-    // TODO
-    ~StatusMonitorProducer();
-
-    // TODO
     virtual MonitoringStatus* save_data_() const;
 
     // TODO
@@ -83,7 +77,7 @@ protected:
     MonitoringStatus* data_ = new MonitoringStatus();
 
     // TODO
-    std::vector<IMonitorConsumer<MonitoringStatus>*> consumers_;
+    std::vector<std::unique_ptr<IMonitorConsumer<MonitoringStatus>>> consumers_;
 };
 
 std::ostream& operator <<(
