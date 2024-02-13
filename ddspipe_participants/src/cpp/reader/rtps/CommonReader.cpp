@@ -19,6 +19,7 @@
 #include <cpp_utils/Log.hpp>
 
 #include <ddspipe_core/interface/IRoutingData.hpp>
+#include <ddspipe_core/monitoring/producers/StatusMonitorProducer.hpp>
 #include <ddspipe_core/monitoring/producers/TopicsMonitorProducer.hpp>
 #include <ddspipe_core/types/data/RtpsPayloadData.hpp>
 
@@ -455,6 +456,7 @@ void CommonReader::on_requested_incompatible_qos(
     logWarning(DDSPIPE_RTPS_COMMONREADER_LISTENER,
             "TOPIC_MISMATCH_QOS | Reader " << *this << " found a remote Writer with incompatible QoS: " << qos);
 
+    monitor_error("QOS_MISMATCH");
     monitor_qos_mismatch(topic_, participant_id_);
 }
 
@@ -503,6 +505,7 @@ void CommonReader::on_incompatible_type(
     logWarning(DDSPIPE_RTPS_COMMONREADER_LISTENER,
             "TOPIC_MISMATCH_TYPE | Reader " << *this << " discovered a Writer with a matching Topic name but with an incompatible type");
 
+    monitor_error("TYPE_MISMATCH");
     monitor_type_mismatch(topic_);
 }
 
