@@ -42,13 +42,13 @@
 #define monitor_msg_lost(topic, participant_id) MONITOR_MSG_LOST_IMPL_(topic, participant_id)
 
 //! TODO
-#define monitor_type_discovered(topic) MONITOR_TYPE_DISCOVERED(topic)
+#define monitor_type_discovered(topic_name, type_name) MONITOR_TYPE_DISCOVERED_IMPL_(topic_name, type_name)
 
 //! TODO
-#define monitor_type_mismatch(topic) MONITOR_TYPE_MISMATCH(topic)
+#define monitor_type_mismatch(topic) MONITOR_TYPE_MISMATCH_IMPL_(topic)
 
 //! TODO
-#define monitor_qos_mismatch(topic) MONITOR_QOS_MISMATCH(topic)
+#define monitor_qos_mismatch(topic) MONITOR_QOS_MISMATCH_IMPL_(topic)
 
 namespace eprosima {
 namespace ddspipe {
@@ -83,7 +83,8 @@ public:
 
     // TODO
     void type_discovered(
-            const types::DdsTopic& topic);
+            const std::string& topic_name,
+            const std::string& type_name);
 
     // TODO
     void type_mismatch(
@@ -105,10 +106,10 @@ protected:
     mutable std::mutex mutex_;
 
     // TODO
-    std::map<types::DdsTopic, DdsTopic> topic_data_;
+    std::map<std::string, DdsTopic> topic_data_;
 
     // TODO
-    std::map<types::DdsTopic, std::map<types::ParticipantId, DdsTopicData>> participant_data_;
+    std::map<std::string, std::map<types::ParticipantId, DdsTopicData>> participant_data_;
 
     // TODO
     std::vector<std::unique_ptr<IMonitorConsumer<MonitoringTopics>>> consumers_;
@@ -135,8 +136,8 @@ std::ostream& operator <<(
             participant_id) eprosima::ddspipe::core::TopicsMonitorProducer::get_instance()->msg_lost(topic, \
             participant_id)
 
-#define MONITOR_TYPE_DISCOVERED_IMPL_(topic) eprosima::ddspipe::core::TopicsMonitorProducer::get_instance()-> \
-            type_discovered(topic)
+#define MONITOR_TYPE_DISCOVERED_IMPL_(topic_name, type_name) eprosima::ddspipe::core::TopicsMonitorProducer::get_instance()-> \
+            type_discovered(topic_name, type_name)
 
 #define MONITOR_TYPE_MISMATCH_IMPL_(topic) eprosima::ddspipe::core::TopicsMonitorProducer::get_instance()->type_mismatch( \
         topic)

@@ -87,21 +87,24 @@ void TopicsMonitorProducer::msg_received(
     //      2. Simultaneous calls to msg_received.
     std::lock_guard<std::mutex> lock(mutex_);
 
-    if (!topic_data_.count(topic))
+    const auto& topic_name = topic.m_topic_name;
+    const auto& type_name = topic.type_name;
+
+    if (!topic_data_.count(topic_name))
     {
-        topic_data_[topic].name(topic.m_topic_name);
-        topic_data_[topic].type_name(topic.type_name);
+        topic_data_[topic_name].name(topic_name);
+        topic_data_[topic_name].type_name(type_name);
     }
 
-    if (!participant_data_.count(topic) || !participant_data_[topic].count(participant_id))
+    if (!participant_data_.count(topic_name) || !participant_data_[topic_name].count(participant_id))
     {
         // First message received for topic & participant
         // Save the participant_id
-        participant_data_[topic][participant_id].participant_id(participant_id);
+        participant_data_[topic_name][participant_id].participant_id(participant_id);
     }
 
     // Increase the count of the received messages
-    participant_data_[topic][participant_id].msgs_received(participant_data_[topic][participant_id].msgs_received() +
+    participant_data_[topic_name][participant_id].msgs_received(participant_data_[topic_name][participant_id].msgs_received() +
             1);
 }
 
@@ -120,19 +123,23 @@ void TopicsMonitorProducer::msg_lost(
     //      2. Simultaneous calls to msg_lost.
     std::lock_guard<std::mutex> lock(mutex_);
 
-    if (!participant_data_.count(topic) || !participant_data_[topic].count(participant_id))
+    const auto& topic_name = topic.m_topic_name;
+    const auto& type_name = topic.type_name;
+
+    if (!participant_data_.count(topic_name) || !participant_data_[topic_name].count(participant_id))
     {
         // First message lost for topic & participant
         // Save the participant_id
-        participant_data_[topic][participant_id].participant_id(participant_id);
+        participant_data_[topic_name][participant_id].participant_id(participant_id);
     }
 
     // Increase the count of the lost messages
-    participant_data_[topic][participant_id].msgs_lost(participant_data_[topic][participant_id].msgs_lost() + 1);
+    participant_data_[topic_name][participant_id].msgs_lost(participant_data_[topic_name][participant_id].msgs_lost() + 1);
 }
 
 void TopicsMonitorProducer::type_discovered(
-        const types::DdsTopic& topic)
+        const std::string& topic_name,
+        const std::string& type_name)
 {
     if (!enabled_)
     {
@@ -145,13 +152,13 @@ void TopicsMonitorProducer::type_discovered(
     //      2. Simultaneous calls to msg_lost.
     std::lock_guard<std::mutex> lock(mutex_);
 
-    if (!topic_data_.count(topic))
+    if (!topic_data_.count(topic_name))
     {
-        topic_data_[topic].name(topic.m_topic_name);
-        topic_data_[topic].type_name(topic.type_name);
+        topic_data_[topic_name].name(topic_name);
+        topic_data_[topic_name].type_name(type_name);
     }
 
-    topic_data_[topic].type_discovered(true);
+    topic_data_[topic_name].type_discovered(true);
 }
 
 void TopicsMonitorProducer::type_mismatch(
@@ -168,13 +175,16 @@ void TopicsMonitorProducer::type_mismatch(
     //      2. Simultaneous calls to msg_lost.
     std::lock_guard<std::mutex> lock(mutex_);
 
-    if (!topic_data_.count(topic))
+    const auto& topic_name = topic.m_topic_name;
+    const auto& type_name = topic.type_name;
+
+    if (!topic_data_.count(topic_name))
     {
-        topic_data_[topic].name(topic.m_topic_name);
-        topic_data_[topic].type_name(topic.type_name);
+        topic_data_[topic_name].name(topic_name);
+        topic_data_[topic_name].type_name(type_name);
     }
 
-    topic_data_[topic].type_mismatch(true);
+    topic_data_[topic.m_topic_name].type_mismatch(true);
 }
 
 void TopicsMonitorProducer::qos_mismatch(
@@ -191,13 +201,16 @@ void TopicsMonitorProducer::qos_mismatch(
     //      2. Simultaneous calls to msg_lost.
     std::lock_guard<std::mutex> lock(mutex_);
 
-    if (!topic_data_.count(topic))
+    const auto& topic_name = topic.m_topic_name;
+    const auto& type_name = topic.type_name;
+
+    if (!topic_data_.count(topic_name))
     {
-        topic_data_[topic].name(topic.m_topic_name);
-        topic_data_[topic].type_name(topic.type_name);
+        topic_data_[topic_name].name(topic_name);
+        topic_data_[topic_name].type_name(type_name);
     }
 
-    topic_data_[topic].qos_mismatch(true);
+    topic_data_[topic_name].qos_mismatch(true);
 }
 
 MonitoringTopics TopicsMonitorProducer::save_data_()
