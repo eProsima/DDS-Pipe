@@ -87,6 +87,12 @@ void TopicsMonitorProducer::msg_received(
     //      2. Simultaneous calls to msg_received.
     std::lock_guard<std::mutex> lock(mutex_);
 
+    if (!topic_data_.count(topic))
+    {
+        topic_data_[topic].name(topic.m_topic_name);
+        topic_data_[topic].type_name(topic.type_name);
+    }
+
     if (!participant_data_.count(topic) || !participant_data_[topic].count(participant_id))
     {
         // First message received for topic & participant
@@ -268,11 +274,16 @@ std::ostream& operator <<(
         std::ostream& os,
         const DdsTopic& topic)
 {
+    auto bool_to_string = [](bool value) -> std::string
+            {
+                return value ? "true" : "false";
+            };
+
     os << "Topic Name: " << topic.name();
     os << ", Type Name: " << topic.type_name();
-    os << ", Type Discovered: " << topic.type_discovered();
-    os << ", Type Mismatch: " << topic.type_mismatch();
-    os << ", QoS Mismatch: " << topic.qos_mismatch();
+    os << ", Type Discovered: " << bool_to_string(topic.type_discovered());
+    os << ", Type Mismatch: " << bool_to_string(topic.type_mismatch());
+    os << ", QoS Mismatch: " << bool_to_string(topic.qos_mismatch());
 
     os << ", Data: [";
 
