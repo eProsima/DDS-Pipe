@@ -502,6 +502,8 @@ void CommonReader::on_incompatible_type(
 {
     logWarning(DDSPIPE_RTPS_COMMONREADER_LISTENER,
             "TOPIC_MISMATCH_TYPE | Reader " << *this << " discovered a Writer with a matching Topic name but with an incompatible type");
+
+    monitor_type_mismatch(topic_);
 }
 
 utils::ReturnCode CommonReader::is_data_correct_(
