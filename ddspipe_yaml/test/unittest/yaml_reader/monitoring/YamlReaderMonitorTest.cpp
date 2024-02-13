@@ -72,41 +72,6 @@ TEST(YamlReaderMonitorTest, is_valid_conf_with_status_and_topics)
     ASSERT_EQ(conf.topics.period, 3000);
     ASSERT_EQ(conf.topics.topic_name, "DdsPipeTopics");
 }
-{
-    const char* yml_str =
-            R"(
-            domain: 10
-            status:
-              enable: true
-              domain: 11
-              period: 2000
-              topic-name: "DdsPipeStatus"
-            topics:
-              enable: true
-              period: 3000
-              topic-name: "DdsPipeTopics"
-        )";
-
-    Yaml yml = YAML::Load(yml_str);
-
-    core::MonitorConfiguration conf = YamlReader::get<core::MonitorConfiguration>(yml, YamlReaderVersion::LATEST);
-
-    utils::Formatter error_msg;
-    ASSERT_TRUE(conf.is_valid(error_msg));
-
-    ASSERT_EQ(conf.domain.get_value(), 10);
-
-    ASSERT_TRUE(conf.status.enabled);
-    ASSERT_EQ(conf.status.domain.get_value(), 11);
-    ASSERT_EQ(conf.status.period, 2000);
-    ASSERT_EQ(conf.status.topic_name, "DdsPipeStatus");
-
-    ASSERT_TRUE(conf.topics.enabled);
-    ASSERT_EQ(conf.topics.domain.get_value(), 10);
-    ASSERT_EQ(conf.topics.period, 3000);
-    ASSERT_EQ(conf.topics.topic_name, "DdsPipeTopics");
-}
-
 
 int main(
         int argc,
