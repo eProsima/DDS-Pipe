@@ -17,7 +17,6 @@
 #include <ddspipe_core/monitoring/consumers/StdoutMonitorConsumer.hpp>
 #include <ddspipe_core/monitoring/producers/StatusMonitorProducer.hpp>
 
-
 namespace eprosima {
 namespace ddspipe {
 namespace core {
@@ -63,9 +62,9 @@ void StatusMonitorProducer::init(
     fastdds::dds::TypeSupport type(new MonitoringStatusPubSubType());
 
     // Create the consumers
-    consumers_.push_back(new DdsMonitorConsumer<MonitoringStatus>(
+    consumers_.push_back(std::make_unique<DdsMonitorConsumer<MonitoringStatus>>(
                 configuration.domain.get_value(), configuration.topic_name, type));
-    consumers_.push_back(new StdoutMonitorConsumer<MonitoringStatus>());
+    consumers_.push_back(std::make_unique<StdoutMonitorConsumer<MonitoringStatus>>());
 }
 
 void StatusMonitorProducer::consume()
@@ -78,7 +77,7 @@ void StatusMonitorProducer::consume()
 
     const auto data = save_data_();
 
-    for (auto consumer : consumers_)
+    for (auto& consumer : consumers_)
     {
         consumer->consume(data);
     }
@@ -111,11 +110,6 @@ void StatusMonitorProducer::add_error_to_status(
 
     data_->error_status(error_status);
     data_->has_errors(true);
-}
-
-StatusMonitorProducer::~StatusMonitorProducer()
-{
-    consumers_.clear();
 }
 
 MonitoringStatus* StatusMonitorProducer::save_data_() const

@@ -49,9 +49,9 @@ void TopicsMonitorProducer::init(
     fastdds::dds::TypeSupport type(new MonitoringTopicsPubSubType());
 
     // Create the consumers
-    consumers_.push_back(new DdsMonitorConsumer<MonitoringTopics>(
+    consumers_.push_back(std::make_unique<DdsMonitorConsumer<MonitoringTopics>>(
                 configuration.domain.get_value(), configuration.topic_name, type));
-    consumers_.push_back(new StdoutMonitorConsumer<MonitoringTopics>());
+    consumers_.push_back(std::make_unique<StdoutMonitorConsumer<MonitoringTopics>>());
 }
 
 void TopicsMonitorProducer::consume()
@@ -64,7 +64,7 @@ void TopicsMonitorProducer::consume()
 
     const auto data = save_data_();
 
-    for (auto consumer : consumers_)
+    for (auto& consumer : consumers_)
     {
         consumer->consume(&data);
     }
@@ -192,11 +192,6 @@ void TopicsMonitorProducer::qos_mismatch(
     }
 
     topic_data_[topic].qos_mismatch(true);
-}
-
-TopicsMonitorProducer::~TopicsMonitorProducer()
-{
-    consumers_.clear();
 }
 
 MonitoringTopics TopicsMonitorProducer::save_data_()
