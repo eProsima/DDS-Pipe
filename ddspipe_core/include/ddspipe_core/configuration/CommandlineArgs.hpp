@@ -44,7 +44,7 @@ struct CommandlineArgs
      * @brief \c is_valid method.
      */
     DDSPIPE_CORE_DllAPI
-    bool is_valid(
+    virtual bool is_valid(
             utils::Formatter& error_msg) const noexcept;
 
     /////////////////////////
