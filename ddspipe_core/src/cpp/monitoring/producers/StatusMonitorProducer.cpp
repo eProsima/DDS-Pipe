@@ -61,6 +61,9 @@ void StatusMonitorProducer::init(
     // Register the type
     fastdds::dds::TypeSupport type(new MonitoringStatusPubSubType());
 
+    // Register the type object
+    registerMonitoringStatusTypes();
+
     // Create the consumers
     consumers_.push_back(std::make_unique<DdsMonitorConsumer<MonitoringStatus>>(
                 configuration.domain.get_value(), configuration.topic_name, type));
