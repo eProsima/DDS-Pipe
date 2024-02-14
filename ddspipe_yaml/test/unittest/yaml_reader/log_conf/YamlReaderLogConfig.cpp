@@ -22,12 +22,12 @@
 using namespace eprosima;
 
 /**
- * Check the get function for LogConfiguration.
+ * Check the get function for LogConfiguration when parsing from YAML all Log Configuration tags.
  *
  * CASES:
  *  Checks:
  *  - If logging shows a valid configuration
- *  - If chooses correctly log configuration when parsing from YAML.
+ *  - If it chooses correctly log configuration when parsing from YAML all Log Configuration tags.
  */
 TEST(YamlReaderLogConfig, parse_correct_log_config_yaml)
 {
@@ -55,12 +55,12 @@ TEST(YamlReaderLogConfig, parse_correct_log_config_yaml)
 }
 
 /**
- * Check the get function for LogConfiguration.
+ * Check the get function for LogConfiguration when parsing from YAML just a few Log Configuration tags.
  *
  * CASES:
  *  Checks:
  *  - If logging shows a valid configuration
- *  - If chooses correctly log configuration when parsing from YAML.
+ *  - If it chooses correctly log configuration when parsing from YAML some tags and sets the others by default.
  */
 TEST(YamlReaderLogConfig, parse_correct_log_config_yaml_and_default)
 {
