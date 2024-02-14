@@ -12,8 +12,8 @@ struct DdsTopic
   string type_name;
   boolean type_discovered;
   boolean type_mismatch;
-  sequence<DdsTopicData> data;
   boolean qos_mismatch;
+  sequence<DdsTopicData> data;
 };
 
 struct MonitoringTopics

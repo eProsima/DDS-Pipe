@@ -23,9 +23,11 @@
 #if FASTRTPS_VERSION_MAJOR < 2 || (FASTRTPS_VERSION_MAJOR == 2 && FASTRTPS_VERSION_MINOR < 13)
     #include <ddspipe_core/types/monitoring/status/v1/MonitoringStatus.h>
     #include <ddspipe_core/types/monitoring/status/v1/MonitoringStatusPubSubTypes.h>
+    #include <ddspipe_core/types/monitoring/status/v1/MonitoringStatusTypeObject.h>
 #else
     #include <ddspipe_core/types/monitoring/status/v2/MonitoringStatus.h>
     #include <ddspipe_core/types/monitoring/status/v2/MonitoringStatusPubSubTypes.h>
+    #include <ddspipe_core/types/monitoring/status/v2/MonitoringStatusTypeObject.h>
 #endif // if FASTRTPS_VERSION_MAJOR < 2 || (FASTRTPS_VERSION_MAJOR == 2 && FASTRTPS_VERSION_MINOR < 13)
 
 // DDSPIPE MONITOR MACROS

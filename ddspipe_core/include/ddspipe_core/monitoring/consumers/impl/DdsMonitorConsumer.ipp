@@ -38,6 +38,7 @@ DdsMonitorConsumer<T>::DdsMonitorConsumer(
     fastdds::dds::DomainParticipant* participant = get_participant(domain);
 
     // Register the type
+    type->auto_fill_type_information(true);
     type.register_type(participant);
 
     // Create the publisher

@@ -44,6 +44,10 @@ fastdds::dds::DomainParticipant* DdsMonitorParticipantFactory::get_participant(
         fastdds::dds::DomainParticipantQos pqos;
         pqos.name("DdsMonitorParticipant_" + std::to_string(domain));
 
+        // Send type information
+        pqos.wire_protocol().builtin.typelookup_config.use_client = false;
+        pqos.wire_protocol().builtin.typelookup_config.use_server = true;
+
         participant = fastdds::dds::DomainParticipantFactory::get_instance()->create_participant(domain, pqos);
 
         if (participant == nullptr)
