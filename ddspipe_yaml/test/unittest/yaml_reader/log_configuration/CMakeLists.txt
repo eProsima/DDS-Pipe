@@ -16,15 +16,15 @@
 # Yaml Reader Log Configuration Test #
 ######################################
 
-set(TEST_NAME YamlReaderLogConfig)
+set(TEST_NAME YamlReaderLogConfiguration)
 
 set(TEST_SOURCES
-        YamlReaderLogConfig.cpp
+        YamlReaderLogConfiguration.cpp
     )
 
 set(TEST_LIST
-        parse_correct_log_config_yaml
-        parse_correct_log_config_yaml_and_default
+        parse_correct_LogConfiguration_yaml
+        parse_correct_LogConfiguration_yaml_and_default
     )
 
 set(TEST_EXTRA_LIBRARIES

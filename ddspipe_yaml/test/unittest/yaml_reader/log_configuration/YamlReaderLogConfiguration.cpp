@@ -29,7 +29,7 @@ using namespace eprosima;
  *  - If logging shows a valid configuration
  *  - If it chooses correctly log configuration when parsing from YAML all Log Configuration tags.
  */
-TEST(YamlReaderLogConfig, parse_correct_log_config_yaml)
+TEST(YamlReaderLogConfiguration, parse_correct_LogConfiguration_yaml)
 {
     const char* yml_str =
             R"(
@@ -62,7 +62,7 @@ TEST(YamlReaderLogConfig, parse_correct_log_config_yaml)
  *  - If logging shows a valid configuration
  *  - If it chooses correctly log configuration when parsing from YAML some tags and sets the others by default.
  */
-TEST(YamlReaderLogConfig, parse_correct_log_config_yaml_and_default)
+TEST(YamlReaderLogConfiguration, parse_correct_LogConfiguration_yaml_and_default)
 {
     const char* yml_str =
             R"(
