@@ -73,6 +73,14 @@ public:
     virtual void on_data_available(
             fastdds::dds::DataReader* reader);
 
+    virtual void on_sample_lost(
+            fastdds::dds::DataReader* reader,
+            const fastdds::dds::SampleLostStatus& status);
+
+    virtual void on_requested_incompatible_qos(
+            fastdds::dds::DataReader* reader,
+            fastdds::dds::PolicyMask qos);
+
 protected:
 
     /////////////////////////
