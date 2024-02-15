@@ -1,0 +1,12 @@
+enum Kind {
+   Info,
+   Warning,
+   Error
+};
+
+struct LogEntry {
+   Kind kind;
+   string category;
+   string message;
+   string timestamp;
+};
