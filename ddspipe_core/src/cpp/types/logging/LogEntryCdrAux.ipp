@@ -36,6 +36,15 @@ namespace fastcdr {
 
 
 
+
+
+
+
+
+
+
+
+
 template<>
 eProsima_user_DllExport size_t calculate_serialized_size(
         eprosima::fastcdr::CdrSizeCalculator& calculator,
@@ -53,15 +62,18 @@ eProsima_user_DllExport size_t calculate_serialized_size(
 
 
         calculated_size += calculator.calculate_member_serialized_size(eprosima::fastcdr::MemberId(0),
-                data.kind(), current_alignment);
+                data.event(), current_alignment);
 
         calculated_size += calculator.calculate_member_serialized_size(eprosima::fastcdr::MemberId(1),
-                data.category(), current_alignment);
+                data.kind(), current_alignment);
 
         calculated_size += calculator.calculate_member_serialized_size(eprosima::fastcdr::MemberId(2),
-                data.message(), current_alignment);
+                data.category(), current_alignment);
 
         calculated_size += calculator.calculate_member_serialized_size(eprosima::fastcdr::MemberId(3),
+                data.message(), current_alignment);
+
+        calculated_size += calculator.calculate_member_serialized_size(eprosima::fastcdr::MemberId(4),
                 data.timestamp(), current_alignment);
 
 
@@ -82,10 +94,11 @@ eProsima_user_DllExport void serialize(
             eprosima::fastcdr::EncodingAlgorithmFlag::PLAIN_CDR);
 
     scdr
-        << eprosima::fastcdr::MemberId(0) << data.kind()
-        << eprosima::fastcdr::MemberId(1) << data.category()
-        << eprosima::fastcdr::MemberId(2) << data.message()
-        << eprosima::fastcdr::MemberId(3) << data.timestamp()
+        << eprosima::fastcdr::MemberId(0) << data.event()
+        << eprosima::fastcdr::MemberId(1) << data.kind()
+        << eprosima::fastcdr::MemberId(2) << data.category()
+        << eprosima::fastcdr::MemberId(3) << data.message()
+        << eprosima::fastcdr::MemberId(4) << data.timestamp()
 ;
     scdr.end_serialize_type(current_state);
 }
@@ -104,18 +117,22 @@ eProsima_user_DllExport void deserialize(
                 switch (mid.id)
                 {
                                         case 0:
-                                                dcdr >> data.kind();
+                                                dcdr >> data.event();
                                             break;
 
                                         case 1:
-                                                dcdr >> data.category();
+                                                dcdr >> data.kind();
                                             break;
 
                                         case 2:
-                                                dcdr >> data.message();
+                                                dcdr >> data.category();
                                             break;
 
                                         case 3:
+                                                dcdr >> data.message();
+                                            break;
+
+                                        case 4:
                                                 dcdr >> data.timestamp();
                                             break;
 
@@ -133,6 +150,12 @@ void serialize_key(
 {
     static_cast<void>(scdr);
     static_cast<void>(data);
+                            scdr << data.event();
+
+
+
+
+
 }
 
 

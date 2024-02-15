@@ -85,13 +85,15 @@ struct FindType {
 };
 }
 
-#define LogEntry_max_cdr_typesize 788ULL;
+#define LogEntry_max_cdr_typesize 792ULL;
 
 
 
 
 LogEntry::LogEntry()
 {
+    // long m_event
+    m_event = 0;
     // Kind m_kind
     m_kind = ::Info;
     // /type_d() m_category
@@ -112,6 +114,9 @@ LogEntry::~LogEntry()
 LogEntry::LogEntry(
         const LogEntry& x)
 {
+    m_event = x.m_event;
+
+
     m_kind = x.m_kind;
 
 
@@ -128,6 +133,9 @@ LogEntry::LogEntry(
 LogEntry::LogEntry(
         LogEntry&& x) noexcept
 {
+    m_event = x.m_event;
+
+
     m_kind = x.m_kind;
 
 
@@ -144,6 +152,9 @@ LogEntry::LogEntry(
 LogEntry& LogEntry::operator =(
         const LogEntry& x)
 {
+    m_event = x.m_event;
+
+
     m_kind = x.m_kind;
 
 
@@ -161,6 +172,9 @@ LogEntry& LogEntry::operator =(
 LogEntry& LogEntry::operator =(
         LogEntry&& x) noexcept
 {
+    m_event = x.m_event;
+
+
     m_kind = x.m_kind;
 
 
@@ -178,7 +192,8 @@ LogEntry& LogEntry::operator =(
 bool LogEntry::operator ==(
         const LogEntry& x) const
 {
-    return (m_kind == x.m_kind &&
+    return (m_event == x.m_event &&
+           m_kind == x.m_kind &&
            m_category == x.m_category &&
            m_message == x.m_message &&
            m_timestamp == x.m_timestamp);
@@ -207,6 +222,9 @@ size_t LogEntry::getCdrSerializedSize(
     current_alignment += 4 + eprosima::fastcdr::Cdr::alignment(current_alignment, 4);
 
 
+    current_alignment += 4 + eprosima::fastcdr::Cdr::alignment(current_alignment, 4);
+
+
     current_alignment += 4 + eprosima::fastcdr::Cdr::alignment(current_alignment, 4) + data.category().size() + 1;
 
 
@@ -223,6 +241,8 @@ size_t LogEntry::getCdrSerializedSize(
 void LogEntry::serialize(
         eprosima::fastcdr::Cdr& scdr) const
 {
+    scdr << m_event;
+
     scdr << (uint32_t)m_kind;
 
     scdr << m_category.c_str();
@@ -236,6 +256,10 @@ void LogEntry::serialize(
 void LogEntry::deserialize(
         eprosima::fastcdr::Cdr& dcdr)
 {
+    dcdr >> m_event;
+
+
+
     {
         uint32_t enum_value = 0;
         dcdr >> enum_value;
@@ -260,14 +284,50 @@ void LogEntry::deserialize(
 
 bool LogEntry::isKeyDefined()
 {
-    return false;
+    return true;
 }
 
 void LogEntry::serializeKey(
         eprosima::fastcdr::Cdr& scdr) const
 {
     (void) scdr;
+       
+    scdr << m_event;
+       
+     
+     
+     
+      
 }
+
+/*!
+ * @brief This function sets a value in member event
+ * @param _event New value for member event
+ */
+void LogEntry::event(
+        int32_t _event)
+{
+    m_event = _event;
+}
+
+/*!
+ * @brief This function returns the value of member event
+ * @return Value of member event
+ */
+int32_t LogEntry::event() const
+{
+    return m_event;
+}
+
+/*!
+ * @brief This function returns a reference to member event
+ * @return Reference to member event
+ */
+int32_t& LogEntry::event()
+{
+    return m_event;
+}
+
 
 /*!
  * @brief This function sets a value in member kind

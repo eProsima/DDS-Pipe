@@ -56,6 +56,7 @@ LogEntry::~LogEntry()
 LogEntry::LogEntry(
         const LogEntry& x)
 {
+    m_event = x.m_event;
     m_kind = x.m_kind;
     m_category = x.m_category;
     m_message = x.m_message;
@@ -65,6 +66,7 @@ LogEntry::LogEntry(
 LogEntry::LogEntry(
         LogEntry&& x) noexcept
 {
+    m_event = x.m_event;
     m_kind = x.m_kind;
     m_category = std::move(x.m_category);
     m_message = std::move(x.m_message);
@@ -75,6 +77,7 @@ LogEntry& LogEntry::operator =(
         const LogEntry& x)
 {
 
+    m_event = x.m_event;
     m_kind = x.m_kind;
     m_category = x.m_category;
     m_message = x.m_message;
@@ -86,6 +89,7 @@ LogEntry& LogEntry::operator =(
         LogEntry&& x) noexcept
 {
 
+    m_event = x.m_event;
     m_kind = x.m_kind;
     m_category = std::move(x.m_category);
     m_message = std::move(x.m_message);
@@ -96,7 +100,8 @@ LogEntry& LogEntry::operator =(
 bool LogEntry::operator ==(
         const LogEntry& x) const
 {
-    return (m_kind == x.m_kind &&
+    return (m_event == x.m_event &&
+           m_kind == x.m_kind &&
            m_category == x.m_category &&
            m_message == x.m_message &&
            m_timestamp == x.m_timestamp);
@@ -107,6 +112,35 @@ bool LogEntry::operator !=(
 {
     return !(*this == x);
 }
+
+/*!
+ * @brief This function sets a value in member event
+ * @param _event New value for member event
+ */
+void LogEntry::event(
+        int32_t _event)
+{
+    m_event = _event;
+}
+
+/*!
+ * @brief This function returns the value of member event
+ * @return Value of member event
+ */
+int32_t LogEntry::event() const
+{
+    return m_event;
+}
+
+/*!
+ * @brief This function returns a reference to member event
+ * @return Reference to member event
+ */
+int32_t& LogEntry::event()
+{
+    return m_event;
+}
+
 
 /*!
  * @brief This function sets a value in member kind

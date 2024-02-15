@@ -128,11 +128,35 @@ void DdsLogConsumer::Consume(
             break;
     }
 
+    // Extract event from message
+    int long event = UNDEFINED;
+
+    std::smatch match;
+    std::regex pattern(R"(^([^|]+)\s\|\s)");
+
+    if (std::regex_search(entry.message, match, pattern) && match.size() > 1)
+    {
+        const std::string& event_str = match.str(1);
+
+        if (events_.count(event_str))
+        {
+            event = events_[event_str];
+        }
+    }
+
+    log_entry.event(event);
     log_entry.category(entry.context.category);
     log_entry.message(entry.message);
     log_entry.timestamp(entry.timestamp);
 
     writer_->write(&log_entry);
+}
+
+void DdsLogConsumer::add_event(
+        const std::string& pattern,
+        const long event)
+{
+    events_[pattern] = event;
 }
 
 } /* namespace core */

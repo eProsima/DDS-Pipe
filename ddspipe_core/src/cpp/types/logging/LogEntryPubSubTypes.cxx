@@ -31,6 +31,15 @@ using DataRepresentationId_t = eprosima::fastdds::dds::DataRepresentationId_t;
 
 
 
+
+
+
+
+
+
+
+
+
 LogEntryPubSubType::LogEntryPubSubType()
 {
     setName("LogEntry");
@@ -42,7 +51,7 @@ LogEntryPubSubType::LogEntryPubSubType()
 #endif
     type_size += static_cast<uint32_t>(eprosima::fastcdr::Cdr::alignment(type_size, 4)); /* possible submessage alignment */
     m_typeSize = type_size + 4; /*encapsulation*/
-    m_isGetKeyDefined = false;
+    m_isGetKeyDefined = true;
     uint32_t keyLength = LogEntry_max_key_cdr_typesize > 16 ? LogEntry_max_key_cdr_typesize : 16;
     m_keyBuffer = reinterpret_cast<unsigned char*>(malloc(keyLength));
     memset(m_keyBuffer, 0, keyLength);

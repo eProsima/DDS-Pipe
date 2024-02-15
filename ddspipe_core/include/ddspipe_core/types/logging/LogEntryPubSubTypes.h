@@ -40,6 +40,15 @@
 
 
 
+
+
+
+
+
+
+
+
+
 /*!
  * @brief This class represents the TopicDataType of the type LogEntry defined by the user in the IDL file.
  * @ingroup LogEntry

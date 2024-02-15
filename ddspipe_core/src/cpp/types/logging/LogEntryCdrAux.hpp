@@ -24,8 +24,8 @@
 
 #include "LogEntry.h"
 
-constexpr uint32_t LogEntry_max_cdr_typesize {788UL};
-constexpr uint32_t LogEntry_max_key_cdr_typesize {0UL};
+constexpr uint32_t LogEntry_max_cdr_typesize {792UL};
+constexpr uint32_t LogEntry_max_key_cdr_typesize {4UL};
 
 
 namespace eprosima {
@@ -33,6 +33,15 @@ namespace fastcdr {
 
 class Cdr;
 class CdrSizeCalculator;
+
+
+
+
+
+
+
+
+
 
 
 

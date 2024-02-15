@@ -58,6 +58,14 @@ void registerLogEntryTypes()
             });
 }
 
+
+
+
+
+
+
+
+
 const TypeIdentifier* GetKindIdentifier(bool complete)
 {
     const TypeIdentifier* c_identifier = TypeObjectFactory::get_instance()->get_type_identifier("Kind", complete);
@@ -333,6 +341,25 @@ const TypeObject* GetMinimalLogEntryObject()
     type_object->minimal().struct_type().struct_flags().IS_AUTOID_HASH(false); // Unsupported
 
     MemberId memberId = 0;
+    MinimalStructMember mst_event;
+    mst_event.common().member_id(memberId++);
+    mst_event.common().member_flags().TRY_CONSTRUCT1(false); // Unsupported
+    mst_event.common().member_flags().TRY_CONSTRUCT2(false); // Unsupported
+    mst_event.common().member_flags().IS_EXTERNAL(false); // Unsupported
+    mst_event.common().member_flags().IS_OPTIONAL(false);
+    mst_event.common().member_flags().IS_MUST_UNDERSTAND(false);
+    mst_event.common().member_flags().IS_KEY(true);
+    mst_event.common().member_flags().IS_DEFAULT(false); // Doesn't apply
+    mst_event.common().member_type_id(*TypeObjectFactory::get_instance()->get_type_identifier("int32_t", false));
+
+
+    MD5 event_hash("event");
+    for(int i = 0; i < 4; ++i)
+    {
+        mst_event.detail().name_hash()[i] = event_hash.digest[i];
+    }
+    type_object->minimal().struct_type().member_seq().emplace_back(mst_event);
+
     MinimalStructMember mst_kind;
     mst_kind.common().member_id(memberId++);
     mst_kind.common().member_flags().TRY_CONSTRUCT1(false); // Unsupported
@@ -462,6 +489,44 @@ const TypeObject* GetCompleteLogEntryObject()
     type_object->complete().struct_type().struct_flags().IS_AUTOID_HASH(false); // Unsupported
 
     MemberId memberId = 0;
+    CompleteStructMember cst_event;
+    cst_event.common().member_id(memberId++);
+    cst_event.common().member_flags().TRY_CONSTRUCT1(false); // Unsupported
+    cst_event.common().member_flags().TRY_CONSTRUCT2(false); // Unsupported
+    cst_event.common().member_flags().IS_EXTERNAL(false); // Unsupported
+    cst_event.common().member_flags().IS_OPTIONAL(false);
+    cst_event.common().member_flags().IS_MUST_UNDERSTAND(false);
+    cst_event.common().member_flags().IS_KEY(true);
+    cst_event.common().member_flags().IS_DEFAULT(false); // Doesn't apply
+    cst_event.common().member_type_id(*TypeObjectFactory::get_instance()->get_type_identifier("int32_t", false));
+
+
+    cst_event.detail().name("event");
+
+    {
+        AppliedAnnotation ann;
+        //ann.annotation_typeid(GetkeyIdentifier(true));
+        ann.annotation_typeid(*TypeObjectFactory::get_instance()->get_type_identifier_trying_complete("key"));
+            {
+                AppliedAnnotationParameter annParam;
+                MD5 message_hash("value");
+                for(int i = 0; i < 4; ++i)
+                {
+                    annParam.paramname_hash()[i] = message_hash.digest[i];
+                }
+                AnnotationParameterValue paramValue;
+                paramValue._d(TK_BOOLEAN);
+                paramValue.from_string("true");
+                annParam.value(paramValue);
+                ann.param_seq().push_back(annParam);
+            }
+
+        cst_event.detail().ann_custom().push_back(ann);
+    }
+
+
+    type_object->complete().struct_type().member_seq().emplace_back(cst_event);
+
     CompleteStructMember cst_kind;
     cst_kind.common().member_id(memberId++);
     cst_kind.common().member_flags().TRY_CONSTRUCT1(false); // Unsupported

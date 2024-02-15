@@ -65,10 +65,25 @@ public:
     void Consume(
             const utils::Log::Entry& entry) override;
 
+    /**
+     * TODO
+     */
+    DDSPIPE_CORE_DllAPI
+    void add_event(
+            const std::string& pattern,
+            const long event);
+
 protected:
 
     //! DataWriter to send log entries
     fastdds::dds::DataWriter* writer_;
+
+    //! Map relating the pattern string to its corresponding event
+    std::map<std::string, long> events_{
+        {"SAMPLE_LOST", SAMPLE_LOST},
+        {"TOPIC_MISMATCH_TYPE", TOPIC_MISMATCH_TYPE},
+        {"TOPIC_MISMATCH_QOS", TOPIC_MISMATCH_QOS}
+    };
 };
 
 } /* namespace core */

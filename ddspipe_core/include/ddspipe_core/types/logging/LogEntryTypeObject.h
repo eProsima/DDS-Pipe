@@ -54,6 +54,14 @@ using namespace eprosima::fastrtps::types;
 
 eProsima_user_DllExport void registerLogEntryTypes();
 
+
+
+
+
+
+
+
+
 eProsima_user_DllExport const TypeIdentifier* GetKindIdentifier(bool complete = false);
 eProsima_user_DllExport const TypeObject* GetKindObject(bool complete = false);
 eProsima_user_DllExport const TypeObject* GetMinimalKindObject();

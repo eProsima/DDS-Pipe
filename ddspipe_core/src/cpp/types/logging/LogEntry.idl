@@ -1,3 +1,8 @@
+const long UNDEFINED = 0x10000000;
+const long SAMPLE_LOST = 0x10000001;
+const long TOPIC_MISMATCH_TYPE = 0x10000002;
+const long TOPIC_MISMATCH_QOS = 0x10000003;
+
 enum Kind {
    Info,
    Warning,
@@ -5,6 +10,7 @@ enum Kind {
 };
 
 struct LogEntry {
+   @key long event;
    Kind kind;
    string category;
    string message;

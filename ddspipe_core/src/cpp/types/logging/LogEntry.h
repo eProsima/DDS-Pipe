@@ -73,6 +73,10 @@ class CdrSizeCalculator;
 
 
 
+const int32_t UNDEFINED = 0x10000000;
+const int32_t SAMPLE_LOST = 0x10000001;
+const int32_t TOPIC_MISMATCH_TYPE = 0x10000002;
+const int32_t TOPIC_MISMATCH_QOS = 0x10000003;
 /*!
  * @brief This class represents the enumeration Kind defined by the user in the IDL file.
  * @ingroup LogEntry
@@ -144,6 +148,26 @@ public:
      */
     eProsima_user_DllExport bool operator !=(
             const LogEntry& x) const;
+
+    /*!
+     * @brief This function sets a value in member event
+     * @param _event New value for member event
+     */
+    eProsima_user_DllExport void event(
+            int32_t _event);
+
+    /*!
+     * @brief This function returns the value of member event
+     * @return Value of member event
+     */
+    eProsima_user_DllExport int32_t event() const;
+
+    /*!
+     * @brief This function returns a reference to member event
+     * @return Reference to member event
+     */
+    eProsima_user_DllExport int32_t& event();
+
 
     /*!
      * @brief This function sets a value in member kind
@@ -247,6 +271,7 @@ public:
 
 private:
 
+    int32_t m_event{0};
     Kind m_kind{::Info};
     std::string m_category;
     std::string m_message;
