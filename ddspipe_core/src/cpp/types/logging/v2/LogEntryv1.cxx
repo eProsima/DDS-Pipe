@@ -26,11 +26,11 @@ char dummy;
 }  // namespace
 #endif  // _WIN32
 
-#include "LogEntry.h"
+#include <ddspipe_core/types/logging/v2/LogEntry.h>
 
 #if FASTCDR_VERSION_MAJOR == 1
 
-#include "LogEntryTypeObject.h"
+#include <ddspipe_core/types/logging/v2/LogEntryTypeObject.h>
 
 #include <fastcdr/Cdr.h>
 
@@ -291,13 +291,13 @@ void LogEntry::serializeKey(
         eprosima::fastcdr::Cdr& scdr) const
 {
     (void) scdr;
-       
+
     scdr << m_event;
-       
-     
-     
-     
-      
+
+
+
+
+
 }
 
 /*!

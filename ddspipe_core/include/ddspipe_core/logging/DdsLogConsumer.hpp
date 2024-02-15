@@ -25,9 +25,16 @@
 #include <fastdds/dds/publisher/DataWriter.hpp>
 
 #include <ddspipe_core/library/library_dll.h>
-#include <ddspipe_core/types/logging/LogEntry.h>
-#include <ddspipe_core/types/logging/LogEntryPubSubTypes.h>
-#include <ddspipe_core/types/logging/LogEntryTypeObject.h>
+
+#if FASTRTPS_VERSION_MAJOR < 2 || (FASTRTPS_VERSION_MAJOR == 2 && FASTRTPS_VERSION_MINOR < 13)
+    #include <ddspipe_core/types/logging/v1/LogEntry.h>
+    #include <ddspipe_core/types/logging/v1/LogEntryPubSubTypes.h>
+    #include <ddspipe_core/types/logging/v1/LogEntryTypeObject.h>
+#else
+    #include <ddspipe_core/types/logging/v2/LogEntry.h>
+    #include <ddspipe_core/types/logging/v2/LogEntryPubSubTypes.h>
+    #include <ddspipe_core/types/logging/v2/LogEntryTypeObject.h>
+#endif // if FASTRTPS_VERSION_MAJOR < 2 || (FASTRTPS_VERSION_MAJOR == 2 && FASTRTPS_VERSION_MINOR < 13)
 
 namespace eprosima {
 namespace ddspipe {

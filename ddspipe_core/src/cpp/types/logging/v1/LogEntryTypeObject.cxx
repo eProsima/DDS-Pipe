@@ -24,8 +24,8 @@
 namespace { char dummy; }
 #endif
 
-#include "LogEntry.h"
-#include "LogEntryTypeObject.h"
+#include <ddspipe_core/types/logging/v1/LogEntry.h>
+#include <ddspipe_core/types/logging/v1/LogEntryTypeObject.h>
 #include <mutex>
 #include <utility>
 #include <sstream>

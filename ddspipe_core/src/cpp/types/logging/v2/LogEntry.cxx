@@ -26,11 +26,11 @@ char dummy;
 }  // namespace
 #endif  // _WIN32
 
-#include "LogEntry.h"
+#include <ddspipe_core/types/logging/v2/LogEntry.h>
 
 #if FASTCDR_VERSION_MAJOR > 1
 
-#include "LogEntryTypeObject.h"
+#include <ddspipe_core/types/logging/v2/LogEntryTypeObject.h>
 
 #include <fastcdr/Cdr.h>
 
@@ -289,6 +289,6 @@ std::string& LogEntry::timestamp()
 
 
 // Include auxiliary functions like for serializing/deserializing.
-#include "LogEntryCdrAux.ipp"
+#include <ddspipe_core/types/logging/v2/LogEntryCdrAux.ipp>
 
 #endif // FASTCDR_VERSION_MAJOR > 1

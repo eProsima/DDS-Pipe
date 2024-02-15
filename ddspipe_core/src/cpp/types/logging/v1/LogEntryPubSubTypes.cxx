@@ -22,8 +22,8 @@
 
 #include <fastdds/rtps/common/CdrSerialization.hpp>
 
-#include "LogEntryPubSubTypes.h"
-#include "LogEntryCdrAux.hpp"
+#include <ddspipe_core/types/logging/v1/LogEntryPubSubTypes.h>
+#include <ddspipe_core/types/logging/v1/LogEntryCdrAux.hpp>
 
 using SerializedPayload_t = eprosima::fastrtps::rtps::SerializedPayload_t;
 using InstanceHandle_t = eprosima::fastrtps::rtps::InstanceHandle_t;
@@ -227,4 +227,3 @@ bool LogEntryPubSubType::getKey(
     }
     return true;
 }
-

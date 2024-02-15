@@ -29,7 +29,7 @@
 #include <fastdds/rtps/common/SerializedPayload.h>
 #include <fastrtps/utils/md5.h>
 
-#include "LogEntry.h"
+#include <ddspipe_core/types/logging/v2/LogEntry.h>
 
 
 #if !defined(GEN_API_VER) || (GEN_API_VER != 2)
@@ -138,4 +138,3 @@ public:
 };
 
 #endif // _FAST_DDS_GENERATED_LOGENTRY_PUBSUBTYPES_H_
-

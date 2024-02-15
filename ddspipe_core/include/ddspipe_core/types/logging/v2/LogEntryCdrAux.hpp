@@ -22,7 +22,7 @@
 #ifndef _FAST_DDS_GENERATED_LOGENTRYCDRAUX_HPP_
 #define _FAST_DDS_GENERATED_LOGENTRYCDRAUX_HPP_
 
-#include "LogEntry.h"
+#include <ddspipe_core/types/logging/v2/LogEntry.h>
 
 constexpr uint32_t LogEntry_max_cdr_typesize {792UL};
 constexpr uint32_t LogEntry_max_key_cdr_typesize {4UL};
@@ -54,4 +54,3 @@ eProsima_user_DllExport void serialize_key(
 } // namespace eprosima
 
 #endif // _FAST_DDS_GENERATED_LOGENTRYCDRAUX_HPP_
-

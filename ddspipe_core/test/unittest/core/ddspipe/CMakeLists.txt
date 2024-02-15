@@ -17,7 +17,25 @@ set(TEST_NAME DdsPipeTest)
 set(TEST_SOURCES
         DdsPipeTest.cpp
     )
-all_library_sources("${TEST_SOURCES}")
+
+file(
+    GLOB_RECURSE LIBRARY_SOURCES
+        "${PROJECT_SOURCE_DIR}/src/cpp/*.c*"
+        "${PROJECT_SOURCE_DIR}/include/*.h*"
+        "${PROJECT_SOURCE_DIR}/include/*.ipp"
+    )
+
+# Exclude types' files depending on the Fast DDS version
+if ("${fastrtps_VERSION}" VERSION_LESS 2.13)
+    list(FILTER LIBRARY_SOURCES EXCLUDE REGEX "v2/")
+else()
+    list(FILTER LIBRARY_SOURCES EXCLUDE REGEX "v1/")
+endif()
+
+all_library_sources(
+        "${TEST_SOURCES}"
+        "${LIBRARY_SOURCES}"
+    )
 
 set(TEST_LIST
         default_initialization
