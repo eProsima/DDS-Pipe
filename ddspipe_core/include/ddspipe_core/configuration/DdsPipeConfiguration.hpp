@@ -18,9 +18,9 @@
 #include <set>
 
 #include <cpp_utils/Formatter.hpp>
-#include <cpp_utils/logging/LogConfiguration.hpp>
 #include <cpp_utils/macros/custom_enumeration.hpp>
 
+#include <ddspipe_core/configuration/DdsPipeLogConfiguration.hpp>
 #include <ddspipe_core/configuration/IConfiguration.hpp>
 #include <ddspipe_core/configuration/RoutesConfiguration.hpp>
 #include <ddspipe_core/configuration/TopicRoutesConfiguration.hpp>
@@ -124,7 +124,7 @@ struct DdsPipeConfiguration : public IConfiguration
     DiscoveryTrigger discovery_trigger = DiscoveryTrigger::READER;
 
     // Configuration of the CustomStdLogConsumer.
-    utils::LogConfiguration log_configuration{};
+    DdsPipeLogConfiguration log_configuration{};
 };
 
 } /* namespace core */

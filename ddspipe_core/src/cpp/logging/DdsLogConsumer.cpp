@@ -34,21 +34,18 @@ namespace ddspipe {
 namespace core {
 
 DdsLogConsumer::DdsLogConsumer(
-        const utils::LogConfiguration& log_configuration)
-    : utils::CustomStdLogConsumer(log_configuration)
+        const DdsPipeLogConfiguration& configuration)
+    : utils::CustomStdLogConsumer(&configuration)
 {
-    const types::DomainIdType domain = 84;
-    const std::string topic_name = "DdsLogConsumerTopic";
-
     // Create the participant
     fastdds::dds::DomainParticipantQos pqos;
-    pqos.name("DdsLogConsumerParticipant_" + std::to_string(domain));
+    pqos.name("DdsLogConsumerParticipant_" + std::to_string(configuration.publish.domain));
 
     // Send type information
     pqos.wire_protocol().builtin.typelookup_config.use_client = false;
     pqos.wire_protocol().builtin.typelookup_config.use_server = true;
 
-    fastdds::dds::DomainParticipant* participant = fastdds::dds::DomainParticipantFactory::get_instance()->create_participant(domain, pqos);
+    fastdds::dds::DomainParticipant* participant = fastdds::dds::DomainParticipantFactory::get_instance()->create_participant(configuration.publish.domain, pqos);
 
     if (participant == nullptr)
     {
@@ -78,12 +75,12 @@ DdsLogConsumer::DdsLogConsumer(
     tqos.reliability().kind = fastdds::dds::BEST_EFFORT_RELIABILITY_QOS;
     tqos.durability().kind = fastdds::dds::VOLATILE_DURABILITY_QOS;
 
-    fastdds::dds::Topic* topic = participant->create_topic(topic_name, type.get_type_name(), tqos);
+    fastdds::dds::Topic* topic = participant->create_topic(configuration.publish.topic_name, type.get_type_name(), tqos);
 
     if (topic == nullptr)
     {
         throw utils::InitializationException(
-                  utils::Formatter() << "Error creating Topic " << topic_name <<
+                  utils::Formatter() << "Error creating Topic " << configuration.publish.topic_name <<
                       " for Participant " << participant->guid() << ".");
     }
 

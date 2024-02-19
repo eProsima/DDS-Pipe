@@ -129,6 +129,11 @@ constexpr const char* TIMESTAMP_MILLISECONDS_TAG("milliseconds"); //! TODO: add 
 constexpr const char* TIMESTAMP_MICROSECONDS_TAG("microseconds"); //! TODO: add comment
 constexpr const char* TIMESTAMP_NANOSECONDS_TAG("nanoseconds"); //! TODO: add comment
 
+// TODO
+constexpr const char* DDS_PUBLISHING_ENABLE_TAG("enable"); //! TODO
+constexpr const char* DDS_PUBLISHING_DOMAIN_TAG("domain"); //! TODO
+constexpr const char* DDS_PUBLISHING_TOPIC_NAME_TAG("topic-name"); //! TODO
+
 // Custom routes related tags
 constexpr const char* ROUTES_TAG("routes"); //! Forwarding routes
 constexpr const char* ROUTES_SRC_TAG("src"); //! Route's source participant
@@ -144,13 +149,13 @@ constexpr const char* REMOVE_UNUSED_ENTITIES_TAG("remove-unused-entities"); //! 
 constexpr const char* DISCOVERY_TRIGGER_TAG("discovery-trigger"); //! Make the trigger of the DDS Pipe callbacks configurable.
 constexpr const char* LOG_CONFIGURATION_TAG("logging"); //! Configure Logging settings
 
-// Logging verbosity tags
+// Logging tags
+constexpr const char* LOG_PUBLISH_TAG("publish"); //! TODO
+constexpr const char* LOG_STDOUT_TAG("stdout"); //! TODO
 constexpr const char* LOG_VERBOSITY_TAG("verbosity"); //! Set logging verbosity
 constexpr const char* LOG_VERBOSITY_INFO_TAG("info"); //! Set logging verbosity to info
 constexpr const char* LOG_VERBOSITY_WARNING_TAG("warning"); //! Set logging verbosity to warning
 constexpr const char* LOG_VERBOSITY_ERROR_TAG("error"); //! Set logging verbosity to error
-
-// Logging filter tags
 constexpr const char* LOG_FILTER_TAG("filter"); //! Set logging filter for verbosity
 constexpr const char* LOG_FILTER_INFO_TAG("info"); //! Set logging filter info
 constexpr const char* LOG_FILTER_WARNING_TAG("warning"); //! Set logging filter warning

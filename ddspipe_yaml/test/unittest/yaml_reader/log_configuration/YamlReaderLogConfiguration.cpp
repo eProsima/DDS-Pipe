@@ -15,9 +15,9 @@
 #include <cpp_utils/testing/gtest_aux.hpp>
 #include <gtest/gtest.h>
 
-#include <cpp_utils/logging/LogConfiguration.hpp>
-
 #include <ddspipe_yaml/YamlReader.hpp>
+
+#include <ddspipe_core/configuration/DdsPipeLogConfiguration.hpp>
 
 using namespace eprosima;
 
@@ -43,8 +43,7 @@ TEST(YamlReaderLogConfiguration, parse_correct_LogConfiguration_yaml)
     Yaml yml = YAML::Load(yml_str);
 
     // Load configuration from YAML
-    const utils::LogConfiguration conf = ddspipe::yaml::YamlReader::get<utils::LogConfiguration>(yml,
-                    ddspipe::yaml::YamlReaderVersion::LATEST);
+    ddspipe::core::DdsPipeLogConfiguration conf = ddspipe::yaml::YamlReader::get<ddspipe::core::DdsPipeLogConfiguration>(yml, ddspipe::yaml::YamlReaderVersion::LATEST);
 
     utils::Formatter error_msg;
 
@@ -74,8 +73,7 @@ TEST(YamlReaderLogConfiguration, parse_correct_LogConfiguration_yaml_and_default
     Yaml yml = YAML::Load(yml_str);
 
     // Load configuration from YAML
-    const utils::LogConfiguration conf = ddspipe::yaml::YamlReader::get<utils::LogConfiguration>(yml,
-                    ddspipe::yaml::YamlReaderVersion::LATEST);
+    ddspipe::core::DdsPipeLogConfiguration conf = ddspipe::yaml::YamlReader::get<ddspipe::core::DdsPipeLogConfiguration>(yml, ddspipe::yaml::YamlReaderVersion::LATEST);
 
     utils::Formatter error_msg;
 

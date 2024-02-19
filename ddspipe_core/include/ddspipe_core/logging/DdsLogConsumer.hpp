@@ -24,6 +24,7 @@
 
 #include <fastdds/dds/publisher/DataWriter.hpp>
 
+#include <ddspipe_core/configuration/DdsPipeLogConfiguration.hpp>
 #include <ddspipe_core/library/library_dll.h>
 
 #if FASTRTPS_VERSION_MAJOR < 2 || (FASTRTPS_VERSION_MAJOR == 2 && FASTRTPS_VERSION_MINOR < 13)
@@ -56,7 +57,7 @@ public:
     //! Create a new \c DdsLogConsumer from a \c LogConfiguration .
     DDSPIPE_CORE_DllAPI
     DdsLogConsumer(
-            const utils::LogConfiguration& log_configuration);
+            const DdsPipeLogConfiguration& configuration);
 
     /**
      * @brief Implements \c LogConsumer \c Consume method.
