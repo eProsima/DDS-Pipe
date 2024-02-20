@@ -488,7 +488,7 @@ void YamlReader::fill(
     // Filter optional
     if (is_tag_present(yml, LOG_FILTER_TAG))
     {
-        object.filter = get<utils::LogFilter>(yml, LOG_FILTER_TAG, version);
+        fill<utils::LogFilter>(object.filter, get_value_in_tag(yml, LOG_FILTER_TAG), version);
     }
 }
 

@@ -43,15 +43,15 @@ TEST(YamlReaderLogConfiguration, parse_correct_LogConfiguration_yaml)
     Yaml yml = YAML::Load(yml_str);
 
     // Load configuration from YAML
-    utils::LogConfiguration conf = ddspipe::yaml::YamlReader::get<utils::LogConfiguration>(yml, ddspipe::yaml::YamlReaderVersion::LATEST);
+    const utils::LogConfiguration conf = ddspipe::yaml::YamlReader::get<utils::LogConfiguration>(yml, ddspipe::yaml::YamlReaderVersion::LATEST);
 
     utils::Formatter error_msg;
 
     ASSERT_TRUE(conf.is_valid(error_msg));
     ASSERT_EQ(conf.verbosity.get_value(), utils::VerbosityKind::Info);
-    ASSERT_EQ(conf.filter[utils::VerbosityKind::Error].get_value(), "DDSPIPE");
-    ASSERT_EQ(conf.filter[utils::VerbosityKind::Warning].get_value(), "");
-    ASSERT_EQ(conf.filter[utils::VerbosityKind::Info].get_value(), "DEBUG");
+    ASSERT_EQ(conf.filter.at(utils::VerbosityKind::Error).get_value(), "DDSPIPE");
+    ASSERT_EQ(conf.filter.at(utils::VerbosityKind::Warning).get_value(), "");
+    ASSERT_EQ(conf.filter.at(utils::VerbosityKind::Info).get_value(), "DEBUG");
 }
 
 /**
@@ -73,15 +73,15 @@ TEST(YamlReaderLogConfiguration, parse_correct_LogConfiguration_yaml_and_default
     Yaml yml = YAML::Load(yml_str);
 
     // Load configuration from YAML
-    utils::LogConfiguration conf = ddspipe::yaml::YamlReader::get<utils::LogConfiguration>(yml, ddspipe::yaml::YamlReaderVersion::LATEST);
+    const utils::LogConfiguration conf = ddspipe::yaml::YamlReader::get<utils::LogConfiguration>(yml, ddspipe::yaml::YamlReaderVersion::LATEST);
 
     utils::Formatter error_msg;
 
     ASSERT_TRUE(conf.is_valid(error_msg));
     ASSERT_EQ(conf.verbosity.get_value(), utils::VerbosityKind::Warning);
-    ASSERT_EQ(conf.filter[utils::VerbosityKind::Error].get_value(), "");
-    ASSERT_EQ(conf.filter[utils::VerbosityKind::Warning].get_value(), "");
-    ASSERT_EQ(conf.filter[utils::VerbosityKind::Info].get_value(), "DEBUG");
+    ASSERT_EQ(conf.filter.at(utils::VerbosityKind::Error).get_value(), "");
+    ASSERT_EQ(conf.filter.at(utils::VerbosityKind::Warning).get_value(), "");
+    ASSERT_EQ(conf.filter.at(utils::VerbosityKind::Info).get_value(), "DEBUG");
 }
 
 int main(
