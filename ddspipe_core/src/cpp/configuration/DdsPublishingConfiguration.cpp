@@ -27,6 +27,11 @@ namespace core {
 bool DdsPublishingConfiguration::is_valid(
         utils::Formatter& error_msg) const noexcept
 {
+    if (!enable)
+    {
+        return true;
+    }
+
     if (domain < 0 || domain > 255)
     {
         error_msg << "Invalid domain: " << domain;
@@ -35,7 +40,7 @@ bool DdsPublishingConfiguration::is_valid(
 
     if (topic_name.empty())
     {
-        error_msg << "No topic routes defined.";
+        error_msg << "Empty topic name.";
         return false;
     }
 

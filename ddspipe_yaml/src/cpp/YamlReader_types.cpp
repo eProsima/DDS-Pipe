@@ -351,11 +351,17 @@ void YamlReader::fill(
     // Required enable
     object.enable = get<bool>(yml, DDS_PUBLISHING_ENABLE_TAG, version);
 
-    // Required domain
-    object.domain = get<DomainIdType>(yml, DDS_PUBLISHING_DOMAIN_TAG, version);
+    // Optional domain
+    if (is_tag_present(yml, DDS_PUBLISHING_DOMAIN_TAG))
+    {
+        object.domain = get<DomainIdType>(yml, DDS_PUBLISHING_DOMAIN_TAG, version);
+    }
 
-    // Required topic name
-    object.topic_name = get<std::string>(yml, DDS_PUBLISHING_TOPIC_NAME_TAG, version);
+    // Optional topic name
+    if (is_tag_present(yml, DDS_PUBLISHING_TOPIC_NAME_TAG))
+    {
+        object.topic_name = get<std::string>(yml, DDS_PUBLISHING_TOPIC_NAME_TAG, version);
+    }
 }
 
 template <>
