@@ -163,7 +163,6 @@ fastrtps::rtps::RTPSParticipantAttributes InitialPeersParticipant::reckon_partic
         if (address.is_ipv4())
         {
             eprosima::fastrtps::rtps::IPLocator::setIPv4(locator, address.ip());
-            eprosima::fastrtps::rtps::IPLocator::setWan(locator, address.ip());
         }
         else
         {
@@ -176,7 +175,6 @@ fastrtps::rtps::RTPSParticipantAttributes InitialPeersParticipant::reckon_partic
         // In TCP case, set Physical port
         if (address.is_tcp())
         {
-            eprosima::fastrtps::rtps::IPLocator::setPhysicalPort(locator, address.external_port());
             eprosima::fastrtps::rtps::IPLocator::setLogicalPort(locator, address.external_port());
         }
 
@@ -231,13 +229,13 @@ fastrtps::rtps::RTPSParticipantAttributes InitialPeersParticipant::reckon_partic
             eprosima::fastrtps::rtps::IPLocator::setIPv6(locator, connection_address.ip());
         }
 
-        // Set Logical port for every locator
+        // Set Physical port for every locator
         eprosima::fastrtps::rtps::IPLocator::setPhysicalPort(locator, connection_address.port());
 
-        // In TCP case, set Physical port
+        // In TCP case, set Logical port
         if (connection_address.is_tcp())
         {
-            eprosima::fastrtps::rtps::IPLocator::setLogicalPort(locator, connection_address.port());
+            eprosima::fastrtps::rtps::IPLocator::setLogicalPort(locator, connection_address.external_port());
         }
 
         // Add it to builtin

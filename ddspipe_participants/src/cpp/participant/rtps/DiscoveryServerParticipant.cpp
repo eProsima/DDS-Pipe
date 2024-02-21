@@ -168,7 +168,6 @@ DiscoveryServerParticipant::reckon_participant_attributes_(
         if (address.is_ipv4())
         {
             eprosima::fastrtps::rtps::IPLocator::setIPv4(locator, address.ip());
-            eprosima::fastrtps::rtps::IPLocator::setWan(locator, address.ip());
         }
         else
         {
@@ -180,7 +179,6 @@ DiscoveryServerParticipant::reckon_participant_attributes_(
 
         if (address.is_tcp())
         {
-            eprosima::fastrtps::rtps::IPLocator::setPhysicalPort(locator, address.external_port());
             eprosima::fastrtps::rtps::IPLocator::setLogicalPort(locator, address.external_port());
         }
 
@@ -256,8 +254,10 @@ DiscoveryServerParticipant::reckon_participant_attributes_(
 
             // PORT
             eprosima::fastrtps::rtps::IPLocator::setPhysicalPort(locator, address.port());
-            eprosima::fastrtps::rtps::IPLocator::setLogicalPort(locator, address.port());
-            // Warning: Logical port is not needed unless domain could change
+            if (address.is_tcp())
+            {
+                eprosima::fastrtps::rtps::IPLocator::setLogicalPort(locator, address.external_port());
+            }
 
             // Add as remote server and add it to builtin
             server_attr.metatrafficUnicastLocatorList.push_back(locator);
