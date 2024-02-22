@@ -18,7 +18,7 @@
 
 #include <cpp_utils/Log.hpp>
 
-#include <fastrtps/types/DynamicType.h>
+#include <fastdds/dds/xtypes/dynamic_types/DynamicType.hpp>
 #include <fastrtps/types/DynamicTypePtr.h>
 
 #include <ddspipe_core/types/dynamic_types/schema.hpp>

@@ -23,7 +23,7 @@
 #include <fastdds/dds/domain/DomainParticipantFactory.hpp>
 #include <fastrtps/rtps/participant/RTPSParticipant.h>
 #include <fastrtps/rtps/RTPSDomain.h>
-#include <fastrtps/types/DynamicType.h>
+#include <fastdds/dds/xtypes/dynamic_types/DynamicType.hpp>
 #include <fastrtps/types/DynamicTypePtr.h>
 #include <fastrtps/types/TypeObjectFactory.h>
 #include <fastdds/rtps/transport/UDPv4TransportDescriptor.h>
