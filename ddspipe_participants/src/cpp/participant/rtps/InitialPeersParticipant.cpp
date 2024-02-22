@@ -175,7 +175,14 @@ fastrtps::rtps::RTPSParticipantAttributes InitialPeersParticipant::reckon_partic
         // In TCP case, set Physical port
         if (address.is_tcp())
         {
-            eprosima::fastrtps::rtps::IPLocator::setLogicalPort(locator, address.external_port());
+            // Server side
+            // Internal local port is the one passed to add_listener_port (port value).
+            // If external port is not defined, it gets internal port value. Therefore, the physical
+            // port announced is equal to the internal port.
+            // If external port is defined, announced port is external port. This is the one clients,
+            // should try to connect, which should match network router public port.
+            eprosima::fastrtps::rtps::IPLocator::setPhysicalPort(locator, address.external_port());
+            eprosima::fastrtps::rtps::IPLocator::setLogicalPort(locator, 0);
         }
 
         // Add listening address to builtin
@@ -232,10 +239,14 @@ fastrtps::rtps::RTPSParticipantAttributes InitialPeersParticipant::reckon_partic
         // Set Physical port for every locator
         eprosima::fastrtps::rtps::IPLocator::setPhysicalPort(locator, connection_address.port());
 
+        // TCP client side
+        // Initial peer physical port must match server's public port. If server specified an external port,
+        // client port value must be server's external port. Client's external port have no effect.
+
         // In TCP case, set Logical port
         if (connection_address.is_tcp())
         {
-            eprosima::fastrtps::rtps::IPLocator::setLogicalPort(locator, connection_address.external_port());
+            eprosima::fastrtps::rtps::IPLocator::setLogicalPort(locator, 0);
         }
 
         // Add it to builtin
