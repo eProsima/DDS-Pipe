@@ -58,7 +58,7 @@ bool PayloadPoolMediator::write(
     return writer->write(data, params);
 }
 
-utils::ReturnCode PayloadPoolMediator::write(
+fastdds::dds::ReturnCode_t PayloadPoolMediator::write(
         fastdds::dds::DataWriter* writer,
         types::RtpsPayloadData* data,
         const fastrtps::rtps::InstanceHandle_t& handle)

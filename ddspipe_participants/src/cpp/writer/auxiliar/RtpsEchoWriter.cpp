@@ -62,7 +62,7 @@ utils::ReturnCode RtpsEchoWriter::write(
                 ".");
     }
 
-    return utils::ReturnCode::RETCODE_OK;
+    return utils::ReturnCode::OK;
 }
 
 } /* namespace participants */

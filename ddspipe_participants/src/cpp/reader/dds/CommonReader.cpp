@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#include <fastdds/dds/core/ReturnCode.hpp>
+
 #include <cpp_utils/exception/InitializationException.hpp>
 #include <cpp_utils/Log.hpp>
 #include <cpp_utils/math/math_extension.hpp>
@@ -134,7 +136,7 @@ utils::ReturnCode CommonReader::take_nts_(
     // Check if there is data available
     if (!(reader_->get_unread_count() > 0))
     {
-        return utils::ReturnCode::RETCODE_NO_DATA;
+        return utils::ReturnCode::NO_DATA;
     }
 
     std::unique_ptr<RtpsPayloadData> rtps_data;
@@ -162,7 +164,7 @@ utils::ReturnCode CommonReader::take_nts_(
     if (!rtps_data)
     {
         logError(DDSPIPE_DDS_READER, "The data taken by the reader is not valid.");
-        return utils::ReturnCode::RETCODE_ERROR;
+        return utils::ReturnCode::ERROR;
     }
 
     fill_received_data_(info, *rtps_data);
@@ -170,7 +172,7 @@ utils::ReturnCode CommonReader::take_nts_(
     // data is a unique_ptr; the memory will be handled correctly.
     data.reset(rtps_data.release());
 
-    return utils::ReturnCode::RETCODE_OK;
+    return utils::ReturnCode::OK;
 }
 
 void CommonReader::enable_nts_() noexcept

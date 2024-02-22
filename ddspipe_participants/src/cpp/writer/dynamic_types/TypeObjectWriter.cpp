@@ -60,10 +60,10 @@ utils::ReturnCode TypeObjectWriter::write_nts_(
             DDSPIPE_TYPEOBJECT_WRITER,
             "Error generating schema for type " << dynamic_type_data.dynamic_type->get_name()
                                                 << " : <" << e.what() << ">.");
-        return utils::ReturnCode::RETCODE_ERROR;
+        return utils::ReturnCode::ERROR;
     }
 
-    return utils::ReturnCode::RETCODE_OK;
+    return utils::ReturnCode::OK;
 }
 
 } /* namespace participants */

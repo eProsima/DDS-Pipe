@@ -14,13 +14,13 @@
 
 #include <memory>
 
-#include <cpp_utils/exception/InitializationException.hpp>
-
 #include <fastdds/dds/domain/DomainParticipantFactory.hpp>
 #include <fastrtps/xmlparser/XMLProfileManager.h>
 
 #include <cpp_utils/Log.hpp>
 #include <cpp_utils/exception/ConfigurationException.hpp>
+#include <cpp_utils/exception/InitializationException.hpp>
+#include <cpp_utils/ReturnCode.hpp>
 
 #include <ddspipe_participants/participant/dds/XmlParticipant.hpp>
 #include <ddspipe_participants/writer/auxiliar/BlankWriter.hpp>
@@ -99,7 +99,7 @@ fastdds::dds::DomainParticipantQos XmlParticipant::reckon_participant_qos_() con
             qos
             );
 
-        if (res != fastrtps::types::ReturnCode_t::ReturnCodeValue::RETCODE_OK)
+        if (res != fastdds::dds::RETCODE_OK)
         {
             throw utils::ConfigurationException(STR_ENTRY
                           << "Participant profile <" << xml_specific_configuration_.participant_profile.get_value()

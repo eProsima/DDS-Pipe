@@ -38,7 +38,7 @@ utils::ReturnCode XmlHandler::load_xml(
 
         if (res != fastrtps::xmlparser::XMLP_ret::XML_OK)
         {
-            return utils::ReturnCode::RETCODE_ERROR;
+            return utils::ReturnCode::ERROR;
         }
     }
 
@@ -49,11 +49,11 @@ utils::ReturnCode XmlHandler::load_xml(
 
         if (res != fastrtps::xmlparser::XMLP_ret::XML_OK)
         {
-            return utils::ReturnCode::RETCODE_ERROR;
+            return utils::ReturnCode::ERROR;
         }
     }
 
-    return utils::ReturnCode::RETCODE_OK;
+    return utils::ReturnCode::OK;
 }
 
 } /* namespace participants */

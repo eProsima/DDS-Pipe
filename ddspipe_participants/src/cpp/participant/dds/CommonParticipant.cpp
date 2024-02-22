@@ -15,6 +15,7 @@
 #include <memory>
 
 #include <cpp_utils/Log.hpp>
+#include <cpp_utils/ReturnCode.hpp>
 
 #include <fastdds/dds/domain/DomainParticipantFactory.hpp>
 
@@ -90,7 +91,7 @@ void CommonParticipant::init()
         throw utils::InitializationException(STR_ENTRY << "Error creating DDS Participant " << id() << ".");
     }
 
-    if (dds_participant_->enable() != utils::ReturnCode::RETCODE_OK)
+    if (dds_participant_->enable() != fastdds::dds::RETCODE_OK)
     {
         throw utils::InitializationException(STR_ENTRY << "Error enabling DDS Participant " << id() << ".");
     }

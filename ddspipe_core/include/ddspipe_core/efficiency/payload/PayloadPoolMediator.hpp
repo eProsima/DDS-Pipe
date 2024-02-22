@@ -18,8 +18,7 @@
 #include <map>
 #include <mutex>
 
-#include <cpp_utils/ReturnCode.hpp>
-
+#include <fastdds/dds/core/ReturnCode.hpp>
 #include <fastdds/dds/publisher/DataWriter.hpp>
 #include <fastdds/rtps/common/InstanceHandle.h>
 #include <fastdds/rtps/common/SerializedPayload.h>
@@ -119,7 +118,7 @@ public:
      * @return false if something went wrong
      */
     DDSPIPE_CORE_DllAPI
-    utils::ReturnCode write(
+    fastdds::dds::ReturnCode_t write(
             fastdds::dds::DataWriter* writer,
             types::RtpsPayloadData* data,
             const fastrtps::rtps::InstanceHandle_t& handle);

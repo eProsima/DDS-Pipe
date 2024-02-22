@@ -12,7 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#include <fastdds/dds/core/ReturnCode.hpp>
+
 #include <cpp_utils/Log.hpp>
+
 #include <ddspipe_core/types/participant/ParticipantId.hpp>
 #include <ddspipe_participants/writer/auxiliar/BaseWriter.hpp>
 
@@ -75,7 +78,7 @@ utils::ReturnCode BaseWriter::write(
     {
         if (!should_send_sample_())
         {
-            return utils::ReturnCode::RETCODE_OK;
+            return utils::ReturnCode::OK;
         }
         else
         {
@@ -87,7 +90,7 @@ utils::ReturnCode BaseWriter::write(
     {
         logDevError(DDSPIPE_BASEWRITER,
                 "Attempt to write data from disabled Writer in topic in Participant " << participant_id_);
-        return utils::ReturnCode::RETCODE_NOT_ENABLED;
+        return utils::ReturnCode::NOT_ENABLED;
     }
 }
 

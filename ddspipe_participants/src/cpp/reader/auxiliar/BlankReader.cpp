@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#include <fastdds/dds/core/ReturnCode.hpp>
+
 #include <cpp_utils/exception/UnsupportedException.hpp>
 
 #include <ddspipe_participants/reader/auxiliar/BlankReader.hpp>
@@ -40,7 +42,7 @@ void BlankReader::unset_on_data_available_callback() noexcept
 utils::ReturnCode BlankReader::take(
         std::unique_ptr<core::IRoutingData>& /* data */) noexcept
 {
-    return utils::ReturnCode::RETCODE_NO_DATA;
+    return utils::ReturnCode::NO_DATA;
 }
 
 core::types::Guid BlankReader::guid() const

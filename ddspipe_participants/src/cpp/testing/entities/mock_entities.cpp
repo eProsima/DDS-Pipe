@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#include <cpp_utils/ReturnCode.hpp>
+
 #include <ddspipe_participants/testing/entities/mock_entities.hpp>
 #include <ddspipe_participants/writer/auxiliar/BlankWriter.hpp>
 #include <ddspipe_participants/reader/auxiliar/BlankReader.hpp>
@@ -143,13 +145,13 @@ utils::ReturnCode MockReader::take_nts_(
 
     if (data_queue_.empty())
     {
-        return utils::ReturnCode::RETCODE_NO_DATA;
+        return utils::ReturnCode::NO_DATA;
     }
 
     data.reset(new MockRoutingData(std::move(data_queue_.front())));
     data_queue_.pop();
 
-    return utils::ReturnCode::RETCODE_OK;
+    return utils::ReturnCode::OK;
 }
 
 void MockReader::enable_nts_() noexcept
@@ -181,7 +183,7 @@ utils::ReturnCode MockWriter::write_nts_(
     }
 
     ++waiter_;
-    return utils::ReturnCode::RETCODE_OK;
+    return utils::ReturnCode::OK;
 }
 
 MockRoutingData MockWriter::wait_data()
