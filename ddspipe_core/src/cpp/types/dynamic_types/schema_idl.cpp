@@ -20,7 +20,7 @@
 #include <map>
 
 #include <fastdds/dds/xtypes/dynamic_types/DynamicType.hpp>
-#include <fastrtps/types/DynamicTypeMember.h>
+#include <fastdds/dds/xtypes/dynamic_types/DynamicTypeMember.hpp>
 #include <fastrtps/types/DynamicTypePtr.h>
 #include <fastrtps/types/TypeDescriptor.h>
 
