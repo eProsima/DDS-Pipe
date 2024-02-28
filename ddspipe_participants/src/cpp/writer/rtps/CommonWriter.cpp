@@ -340,6 +340,11 @@ fastrtps::rtps::HistoryAttributes CommonWriter::reckon_history_attributes_(
             eprosima::fastrtps::rtps::MemoryManagementPolicy_t::PREALLOCATED_WITH_REALLOC_MEMORY_MODE;
 
     att.maximumReservedCaches = topic.topic_qos.history_depth;
+    if (att.maximumReservedCaches > 0 && att.initialReservedCaches > att.maximumReservedCaches)
+    {
+        att.initialReservedCaches = att.maximumReservedCaches;
+    }
+    att.extraReservedCaches = 0;
 
     return att;
 }
