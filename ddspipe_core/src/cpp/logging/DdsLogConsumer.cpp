@@ -16,8 +16,6 @@
  * @file DdsLogConsumer.cpp
  */
 
-#include <cpp_utils/exception/InitializationException.hpp>
-
 #include <fastdds/dds/domain/DomainParticipant.hpp>
 #include <fastdds/dds/domain/DomainParticipantFactory.hpp>
 #include <fastdds/dds/publisher/qos/DataWriterQos.hpp>
@@ -25,6 +23,8 @@
 #include <fastdds/dds/topic/qos/TopicQos.hpp>
 #include <fastdds/dds/topic/Topic.hpp>
 #include <fastdds/dds/topic/TypeSupport.hpp>
+
+#include <cpp_utils/exception/InitializationException.hpp>
 
 #include <ddspipe_core/logging/DdsLogConsumer.hpp>
 #include <ddspipe_core/types/dds/DomainId.hpp>
@@ -34,8 +34,8 @@ namespace ddspipe {
 namespace core {
 
 DdsLogConsumer::DdsLogConsumer(
-        const DdsPipeLogConfiguration& configuration)
-    : utils::CustomStdLogConsumer(&configuration)
+        const DdsLogConfiguration& configuration)
+    : utils::BaseLogConsumer(&configuration)
 {
     // Create the participant
     fastdds::dds::DomainParticipantQos pqos;
@@ -129,6 +129,9 @@ void DdsLogConsumer::Consume(
     int long event = UNDEFINED;
 
     std::smatch match;
+
+    // The content of log messages should be either
+    // "Event | Message" or "Message"
     std::regex pattern(R"(^([^|]+)\s\|\s)");
 
     if (std::regex_search(entry.message, match, pattern) && match.size() > 1)

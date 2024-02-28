@@ -13,18 +13,18 @@
 // limitations under the License.
 
 /**
- * @file DdsPipeLogConfiguration.cpp
+ * @file DdsLogConfiguration.cpp
  */
 
 #include <cpp_utils/Formatter.hpp>
 
-#include <ddspipe_core/configuration/DdsPipeLogConfiguration.hpp>
+#include <ddspipe_core/configuration/DdsLogConfiguration.hpp>
 
 namespace eprosima {
 namespace ddspipe {
 namespace core {
 
-bool DdsPipeLogConfiguration::is_valid(
+bool DdsLogConfiguration::is_valid(
         utils::Formatter& error_msg) const noexcept
 {
     if (!publish.is_valid(error_msg))

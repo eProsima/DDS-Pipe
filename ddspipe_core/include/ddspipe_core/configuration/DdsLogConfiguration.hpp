@@ -15,7 +15,7 @@
 #pragma once
 
 #include <cpp_utils/Formatter.hpp>
-#include <cpp_utils/logging/CustomStdLogConsumer.hpp>
+#include <cpp_utils/logging/LogConfiguration.hpp>
 
 #include <ddspipe_core/configuration/DdsPublishingConfiguration.hpp>
 #include <ddspipe_core/library/library_dll.h>
@@ -27,7 +27,7 @@ namespace core {
 /**
  * TODO
  */
-struct DdsPipeLogConfiguration : public utils::LogConfiguration
+struct DdsLogConfiguration : public utils::LogConfiguration
 {
 
     /////////////////////////
@@ -35,7 +35,7 @@ struct DdsPipeLogConfiguration : public utils::LogConfiguration
     /////////////////////////
 
     DDSPIPE_CORE_DllAPI
-    DdsPipeLogConfiguration() = default;
+    DdsLogConfiguration() = default;
 
     /////////////////////////
     // METHODS
@@ -51,7 +51,7 @@ struct DdsPipeLogConfiguration : public utils::LogConfiguration
 
     DdsPublishingConfiguration publish;
 
-    bool stdout_enable = false;
+    bool stdout_enable = true;
 };
 
 } /* namespace core */

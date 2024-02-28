@@ -17,7 +17,7 @@
 
 #include <ddspipe_yaml/YamlReader.hpp>
 
-#include <ddspipe_core/configuration/DdsPipeLogConfiguration.hpp>
+#include <ddspipe_core/configuration/DdsLogConfiguration.hpp>
 
 using namespace eprosima;
 
@@ -48,7 +48,7 @@ TEST(YamlReaderLogConfiguration, parse_correct_LogConfiguration_yaml)
     Yaml yml = YAML::Load(yml_str);
 
     // Load configuration from YAML
-    ddspipe::core::DdsPipeLogConfiguration conf = ddspipe::yaml::YamlReader::get<ddspipe::core::DdsPipeLogConfiguration>(yml, ddspipe::yaml::YamlReaderVersion::LATEST);
+    ddspipe::core::DdsLogConfiguration conf = ddspipe::yaml::YamlReader::get<ddspipe::core::DdsLogConfiguration>(yml, ddspipe::yaml::YamlReaderVersion::LATEST);
 
     // Verify that the configuration is valid
     utils::Formatter error_msg;
@@ -86,7 +86,7 @@ TEST(YamlReaderLogConfiguration, parse_correct_LogConfiguration_yaml_and_default
     Yaml yml = YAML::Load(yml_str);
 
     // Load configuration from YAML
-    ddspipe::core::DdsPipeLogConfiguration conf = ddspipe::yaml::YamlReader::get<ddspipe::core::DdsPipeLogConfiguration>(yml, ddspipe::yaml::YamlReaderVersion::LATEST);
+    ddspipe::core::DdsLogConfiguration conf = ddspipe::yaml::YamlReader::get<ddspipe::core::DdsLogConfiguration>(yml, ddspipe::yaml::YamlReaderVersion::LATEST);
 
     utils::Formatter error_msg;
 
@@ -113,7 +113,7 @@ TEST(YamlReaderLogConfiguration, incorrect_domain)
     Yaml yml = YAML::Load(yml_str);
 
     // Load configuration from YAML
-    const auto conf = ddspipe::yaml::YamlReader::get<ddspipe::core::DdsPipeLogConfiguration>(yml, ddspipe::yaml::YamlReaderVersion::LATEST);
+    const auto conf = ddspipe::yaml::YamlReader::get<ddspipe::core::DdsLogConfiguration>(yml, ddspipe::yaml::YamlReaderVersion::LATEST);
 
     // Verify that the configuration is invalid
     utils::Formatter error_msg;
@@ -138,7 +138,7 @@ TEST(YamlReaderLogConfiguration, missing_topic_name)
     Yaml yml = YAML::Load(yml_str);
 
     // Load configuration from YAML
-    const auto conf = ddspipe::yaml::YamlReader::get<ddspipe::core::DdsPipeLogConfiguration>(yml, ddspipe::yaml::YamlReaderVersion::LATEST);
+    const auto conf = ddspipe::yaml::YamlReader::get<ddspipe::core::DdsLogConfiguration>(yml, ddspipe::yaml::YamlReaderVersion::LATEST);
 
     // Verify that the configuration is invalid
     utils::Formatter error_msg;
@@ -164,7 +164,7 @@ TEST(YamlReaderLogConfiguration, publishing_disabled)
     Yaml yml = YAML::Load(yml_str);
 
     // Load configuration from YAML
-    const auto conf = ddspipe::yaml::YamlReader::get<ddspipe::core::DdsPipeLogConfiguration>(yml, ddspipe::yaml::YamlReaderVersion::LATEST);
+    const auto conf = ddspipe::yaml::YamlReader::get<ddspipe::core::DdsLogConfiguration>(yml, ddspipe::yaml::YamlReaderVersion::LATEST);
 
     // Verify that the configuration is valid
     utils::Formatter error_msg;

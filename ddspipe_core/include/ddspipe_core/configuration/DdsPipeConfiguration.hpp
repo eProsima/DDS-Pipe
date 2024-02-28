@@ -20,7 +20,7 @@
 #include <cpp_utils/Formatter.hpp>
 #include <cpp_utils/macros/custom_enumeration.hpp>
 
-#include <ddspipe_core/configuration/DdsPipeLogConfiguration.hpp>
+#include <ddspipe_core/configuration/DdsLogConfiguration.hpp>
 #include <ddspipe_core/configuration/IConfiguration.hpp>
 #include <ddspipe_core/configuration/RoutesConfiguration.hpp>
 #include <ddspipe_core/configuration/TopicRoutesConfiguration.hpp>
@@ -123,8 +123,8 @@ struct DdsPipeConfiguration : public IConfiguration
     //! The type of the entity whose discovery should trigger the discovery callbacks.
     DiscoveryTrigger discovery_trigger = DiscoveryTrigger::READER;
 
-    // Configuration of the CustomStdLogConsumer.
-    DdsPipeLogConfiguration log_configuration{};
+    // Configuration of the BaseLogConsumer.
+    DdsLogConfiguration log_configuration{};
 };
 
 } /* namespace core */

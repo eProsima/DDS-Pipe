@@ -19,13 +19,12 @@
 #pragma once
 
 #include <cpp_utils/Log.hpp>
-#include <cpp_utils/logging/CustomStdLogConsumer.hpp>
-#include <cpp_utils/logging/LogConfiguration.hpp>
+#include <cpp_utils/logging/BaseLogConsumer.hpp>
+
+#include <ddspipe_core/configuration/DdsLogConfiguration.hpp>
+#include <ddspipe_core/library/library_dll.h>
 
 #include <fastdds/dds/publisher/DataWriter.hpp>
-
-#include <ddspipe_core/configuration/DdsPipeLogConfiguration.hpp>
-#include <ddspipe_core/library/library_dll.h>
 
 #if FASTRTPS_VERSION_MAJOR < 2 || (FASTRTPS_VERSION_MAJOR == 2 && FASTRTPS_VERSION_MINOR < 13)
     #include <ddspipe_core/types/logging/v1/LogEntry.h>
@@ -44,20 +43,16 @@ namespace core {
 /**
  * DDS Log Consumer with Standard (logical) behaviour.
  *
- * This consumer publishes every log entry whose kind is higher or equal to a given one and whose content or category
- * match a regex filter.
- *
- * @attention The consumer filters the entries that it receives, but entries could be filtered beforehand by Fast DDS's
- * Log. To avoid this, set the verbosity to Info and do not apply a filter.
+ * Registering this consumer in Fast DDS's Log publishes the log entries accepted by the BaseLogConsumer.
  */
-class DdsLogConsumer : public utils::CustomStdLogConsumer
+class DdsLogConsumer : public utils::BaseLogConsumer
 {
 public:
 
-    //! Create a new \c DdsLogConsumer from a \c LogConfiguration .
+    //! Create a new \c DdsLogConsumer from a \c DdsLogConfiguration .
     DDSPIPE_CORE_DllAPI
     DdsLogConsumer(
-            const DdsPipeLogConfiguration& configuration);
+            const DdsLogConfiguration& configuration);
 
     /**
      * @brief Implements \c LogConsumer \c Consume method.
