@@ -58,11 +58,11 @@ void StatusMonitorProducer::init(
 
     // TODO: initialize the consumers outside of the producer so it remains agnostic of its consumers.
 
-    // Register the type
-    fastdds::dds::TypeSupport type(new MonitoringStatusPubSubType());
-
     // Register the type object
     registerMonitoringStatusTypes();
+
+    // Register the type
+    fastdds::dds::TypeSupport type(new MonitoringStatusPubSubType());
 
     // Create the consumers
     consumers_.push_back(std::make_unique<DdsMonitorConsumer<MonitoringStatus>>(

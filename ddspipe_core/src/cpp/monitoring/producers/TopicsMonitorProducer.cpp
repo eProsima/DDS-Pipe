@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-
 #include <ddspipe_core/configuration/MonitorProducerConfiguration.hpp>
 #include <ddspipe_core/monitoring/consumers/DdsMonitorConsumer.hpp>
 #include <ddspipe_core/monitoring/consumers/StdoutMonitorConsumer.hpp>
@@ -45,11 +44,24 @@ void TopicsMonitorProducer::init(
 
     // TODO: initialize the consumers outside of the producer so it remains agnostic of its consumers.
 
-    // Register the type
-    fastdds::dds::TypeSupport type(new MonitoringTopicsPubSubType());
-
     // Register the type object
     registerMonitoringTopicsTypes();
+
+    // TODO(tempate): Register the type the usual way
+    // Register the type
+    // fastdds::dds::TypeSupport type(new MonitoringTopicsPubSubType());
+
+    // Register the type dynamically
+    auto type_object = GetMonitoringTopicsObject(true);
+    auto type_id = GetMonitoringTopicsIdentifier(true);
+    auto dyn_type = fastrtps::types::TypeObjectFactory::get_instance()->build_dynamic_type(
+            "MonitoringTopics",
+            type_id,
+            type_object);
+    auto dyn_pub_sub_type = new fastrtps::types::DynamicPubSubType(dyn_type);
+
+    fastdds::dds::TypeSupport type;
+    type.reset(dyn_pub_sub_type);
 
     // Create the consumers
     consumers_.push_back(std::make_unique<DdsMonitorConsumer<MonitoringTopics>>(
