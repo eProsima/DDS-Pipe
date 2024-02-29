@@ -15,4 +15,5 @@
 add_subdirectory(core)
 add_subdirectory(dynamic)
 add_subdirectory(efficiency)
+add_subdirectory(logging)
 add_subdirectory(types)
