@@ -139,10 +139,6 @@ TEST_F(DdsLogConsumerTest, publish_log_entries)
     // Create the DdsLogConsumer
     auto consumer = std::make_unique<ddspipe::core::DdsLogConsumer>(&log_configuration);
 
-    // Add DdsPipeTest specific events
-    const int32_t LOG_CONSUMER_TEST = 0x10010001;
-    consumer->add_event("LOG_CONSUMER_TEST", LOG_CONSUMER_TEST);
-
     // Register the DdsLogConsumer
     utils::Log::RegisterConsumer(std::move(consumer));
 
@@ -163,7 +159,7 @@ TEST_F(DdsLogConsumerTest, publish_log_entries)
         ASSERT_EQ(reader_->take_next_sample(&entry, &info), ReturnCode_t::RETCODE_OK);
         ASSERT_EQ(info.instance_state, ALIVE_INSTANCE_STATE);
 
-        ASSERT_EQ(entry.event(), LOG_CONSUMER_TEST);
+        ASSERT_EQ(entry.event(), UNDEFINED);
         ASSERT_EQ(entry.kind(), Kind::Info);
         ASSERT_EQ(entry.category(), "DDSPIPE_TEST");
         ASSERT_EQ(entry.message(), "LOG_CONSUMER_TEST | You only live once.");
@@ -180,7 +176,7 @@ TEST_F(DdsLogConsumerTest, publish_log_entries)
         ASSERT_EQ(reader_->take_next_sample(&entry, &info), ReturnCode_t::RETCODE_OK);
         ASSERT_EQ(info.instance_state, ALIVE_INSTANCE_STATE);
 
-        ASSERT_EQ(entry.event(), LOG_CONSUMER_TEST);
+        ASSERT_EQ(entry.event(), UNDEFINED);
         ASSERT_EQ(entry.kind(), Kind::Warning);
         ASSERT_EQ(entry.category(), "DDSPIPE_TEST");
         ASSERT_EQ(entry.message(), "LOG_CONSUMER_TEST | You only live once.");
@@ -197,7 +193,7 @@ TEST_F(DdsLogConsumerTest, publish_log_entries)
         ASSERT_EQ(reader_->take_next_sample(&entry, &info), ReturnCode_t::RETCODE_OK);
         ASSERT_EQ(info.instance_state, ALIVE_INSTANCE_STATE);
 
-        ASSERT_EQ(entry.event(), LOG_CONSUMER_TEST);
+        ASSERT_EQ(entry.event(), UNDEFINED);
         ASSERT_EQ(entry.kind(), Kind::Error);
         ASSERT_EQ(entry.category(), "DDSPIPE_TEST");
         ASSERT_EQ(entry.message(), "LOG_CONSUMER_TEST | You only live once.");

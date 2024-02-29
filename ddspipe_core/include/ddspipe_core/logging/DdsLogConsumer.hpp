@@ -68,14 +68,6 @@ public:
     void Consume(
             const utils::Log::Entry& entry) override;
 
-    /**
-     * TODO
-     */
-    DDSPIPE_CORE_DllAPI
-    void add_event(
-            const std::string& pattern,
-            const long event);
-
 protected:
 
     //! DataWriter to send log entries

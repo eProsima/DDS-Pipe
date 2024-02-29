@@ -161,13 +161,6 @@ void DdsLogConsumer::Consume(
     writer_->write(&log_entry);
 }
 
-void DdsLogConsumer::add_event(
-        const std::string& pattern,
-        const long event)
-{
-    events_[pattern] = event;
-}
-
 } /* namespace core */
 } /* namespace ddspipe */
 } /* namespace eprosima */
