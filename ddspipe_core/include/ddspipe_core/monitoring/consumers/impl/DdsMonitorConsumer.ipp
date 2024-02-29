@@ -12,8 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-
-#include <cpp_utils/exception/InitializationException.hpp>
+#include <type_traits>
 
 #include <fastdds/dds/domain/DomainParticipant.hpp>
 #include <fastdds/dds/publisher/qos/DataWriterQos.hpp>
@@ -21,6 +20,21 @@
 #include <fastdds/dds/topic/qos/TopicQos.hpp>
 #include <fastdds/dds/topic/Topic.hpp>
 #include <fastdds/dds/topic/TypeSupport.hpp>
+#include <fastrtps/types/DynamicDataFactory.h>
+#include <fastrtps/types/DynamicDataPtr.h>
+#include <fastrtps/types/TypeObjectFactory.h>
+
+#include <cpp_utils/exception/InitializationException.hpp>
+
+#if FASTRTPS_VERSION_MAJOR < 2 || (FASTRTPS_VERSION_MAJOR == 2 && FASTRTPS_VERSION_MINOR < 13)
+    #include <ddspipe_core/types/monitoring/topics/v1/MonitoringTopics.h>
+    #include <ddspipe_core/types/monitoring/topics/v1/MonitoringTopicsPubSubTypes.h>
+    #include <ddspipe_core/types/monitoring/topics/v1/MonitoringTopicsTypeObject.h>
+#else
+    #include <ddspipe_core/types/monitoring/topics/v2/MonitoringTopics.h>
+    #include <ddspipe_core/types/monitoring/topics/v2/MonitoringTopicsPubSubTypes.h>
+    #include <ddspipe_core/types/monitoring/topics/v2/MonitoringTopicsTypeObject.h>
+#endif // if FASTRTPS_VERSION_MAJOR < 2 || (FASTRTPS_VERSION_MAJOR == 2 && FASTRTPS_VERSION_MINOR < 13)
 
 
 namespace eprosima {
@@ -87,9 +101,65 @@ template <typename T>
 void DdsMonitorConsumer<T>::consume(
         const T* data) const
 {
-    // The data must be copied since writer_->write takes a non-constant pointer.
-    T data_copy = *data;
-    writer_->write(&data_copy);
+    if constexpr (std::is_same<T, MonitoringTopics>::value)
+    {
+        // TODO(tempate): Remove this method and use the generic one
+        auto type_object = GetMonitoringTopicsObject(true);
+        auto type_id = GetMonitoringTopicsIdentifier(true);
+        fastrtps::types::DynamicType_ptr dyn_type = fastrtps::types::TypeObjectFactory::get_instance()->build_dynamic_type(
+                "MonitoringTopics",
+                type_id,
+                type_object);
+
+        // Create and initialize new data
+        fastrtps::types::DynamicData_ptr new_data;
+        new_data = fastrtps::types::DynamicDataFactory::get_instance()->create_data(dyn_type);
+
+        for (const auto& topic : data->topics())
+        {
+            eprosima::fastrtps::types::DynamicData* sequence = new_data->loan_value(0);
+            eprosima::fastrtps::types::DynamicType_ptr seq_elem_type = sequence->get_type()->get_descriptor()->get_element_type();
+
+            eprosima::fastrtps::types::DynamicData_ptr seq_elem;
+            seq_elem = eprosima::fastrtps::types::DynamicDataFactory::get_instance()->create_data(seq_elem_type);
+            seq_elem->set_string_value(topic.name(), 0);
+            seq_elem->set_string_value(topic.type_name(), 1);
+            seq_elem->set_bool_value(topic.type_discovered(), 2);
+            seq_elem->set_bool_value(topic.type_mismatch(), 3);
+            seq_elem->set_bool_value(topic.qos_mismatch(), 5);
+
+            for (const auto& participant : topic.data())
+            {
+                eprosima::fastrtps::types::DynamicData* sequence2 = seq_elem->loan_value(4);
+                eprosima::fastrtps::types::DynamicType_ptr seq_elem_type2 = sequence2->get_type()->get_descriptor()->get_element_type();
+
+                eprosima::fastrtps::types::DynamicData_ptr seq_elem2;
+                seq_elem2 = eprosima::fastrtps::types::DynamicDataFactory::get_instance()->create_data(seq_elem_type2);
+
+                seq_elem2->set_string_value(participant.participant_id(), 0);
+                seq_elem2->set_uint32_value(participant.msgs_lost(), 1);
+                seq_elem2->set_uint32_value(participant.msgs_received(), 2);
+                seq_elem2->set_float64_value(participant.frequency(), 3);
+
+                eprosima::fastrtps::types::MemberId id2;
+                sequence2->insert_complex_value(seq_elem2, id2);
+                seq_elem->return_loaned_value(sequence2);
+            }
+
+            eprosima::fastrtps::types::MemberId id;
+            sequence->insert_complex_value(seq_elem, id);
+
+            new_data->return_loaned_value(sequence);
+        }
+
+        writer_->write(new_data.get());
+    }
+    else
+    {
+        // The data must be copied since writer_->write takes a non-constant pointer.
+        T data_copy = *data;
+        writer_->write(&data_copy);
+    }
 }
 
 } //namespace core
