@@ -58,7 +58,8 @@ struct CommandlineArgs
     utils::Duration_ms reload_time{0};
 
     // Verbosity level for logging
-    utils::Fuzzy<utils::VerbosityKind> log_verbosity{utils::VerbosityKind::Warning, utils::FuzzyLevelValues::fuzzy_level_default};
+    utils::Fuzzy<utils::VerbosityKind> log_verbosity{utils::VerbosityKind::Warning,
+                                                     utils::FuzzyLevelValues::fuzzy_level_default};
 
     // Filter for log messages
     utils::LogFilter log_filter;

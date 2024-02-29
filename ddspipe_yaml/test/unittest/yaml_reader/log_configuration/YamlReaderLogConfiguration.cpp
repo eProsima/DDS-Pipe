@@ -43,7 +43,8 @@ TEST(YamlReaderLogConfiguration, parse_correct_LogConfiguration_yaml)
     Yaml yml = YAML::Load(yml_str);
 
     // Load configuration from YAML
-    const utils::LogConfiguration conf = ddspipe::yaml::YamlReader::get<utils::LogConfiguration>(yml, ddspipe::yaml::YamlReaderVersion::LATEST);
+    const utils::LogConfiguration conf = ddspipe::yaml::YamlReader::get<utils::LogConfiguration>(yml,
+                    ddspipe::yaml::YamlReaderVersion::LATEST);
 
     utils::Formatter error_msg;
 
@@ -73,7 +74,8 @@ TEST(YamlReaderLogConfiguration, parse_correct_LogConfiguration_yaml_and_default
     Yaml yml = YAML::Load(yml_str);
 
     // Load configuration from YAML
-    const utils::LogConfiguration conf = ddspipe::yaml::YamlReader::get<utils::LogConfiguration>(yml, ddspipe::yaml::YamlReaderVersion::LATEST);
+    const utils::LogConfiguration conf = ddspipe::yaml::YamlReader::get<utils::LogConfiguration>(yml,
+                    ddspipe::yaml::YamlReaderVersion::LATEST);
 
     utils::Formatter error_msg;
 
