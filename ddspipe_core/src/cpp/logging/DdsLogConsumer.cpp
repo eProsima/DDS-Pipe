@@ -41,9 +41,12 @@ DdsLogConsumer::DdsLogConsumer(
     fastdds::dds::DomainParticipantQos pqos;
     pqos.name("DdsLogConsumerParticipant_" + std::to_string(configuration->publish.domain));
 
-    // Send type information
-    pqos.wire_protocol().builtin.typelookup_config.use_client = false;
-    pqos.wire_protocol().builtin.typelookup_config.use_server = true;
+    if (configuration->publish.publish_type)
+    {
+        // Send the type information
+        pqos.wire_protocol().builtin.typelookup_config.use_client = false;
+        pqos.wire_protocol().builtin.typelookup_config.use_server = true;
+    }
 
     fastdds::dds::DomainParticipant* participant = fastdds::dds::DomainParticipantFactory::get_instance()->create_participant(configuration->publish.domain, pqos);
 
@@ -55,9 +58,15 @@ DdsLogConsumer::DdsLogConsumer(
     }
 
     // Register the type
-    registerLogEntryTypes();
     fastdds::dds::TypeSupport type(new LogEntryPubSubType());
-    type->auto_fill_type_information(true);
+
+    if (configuration->publish.publish_type)
+    {
+        // Publish the type
+        registerLogEntryTypes();
+        type->auto_fill_type_information(true);
+    }
+
     type.register_type(participant);
 
     // Create the publisher
@@ -126,7 +135,7 @@ void DdsLogConsumer::Consume(
     }
 
     // Extract event from message
-    int long event = UNDEFINED;
+    long event = UNDEFINED;
 
     std::smatch match;
 

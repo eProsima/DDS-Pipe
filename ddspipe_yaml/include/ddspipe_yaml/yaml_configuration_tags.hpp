@@ -133,6 +133,7 @@ constexpr const char* TIMESTAMP_NANOSECONDS_TAG("nanoseconds"); //! TODO: add co
 constexpr const char* DDS_PUBLISHING_ENABLE_TAG("enable"); //! TODO
 constexpr const char* DDS_PUBLISHING_DOMAIN_TAG("domain"); //! TODO
 constexpr const char* DDS_PUBLISHING_TOPIC_NAME_TAG("topic-name"); //! TODO
+constexpr const char* DDS_PUBLISHING_PUBLISH_TYPE_TAG("publish-type"); //! TODO
 
 // Custom routes related tags
 constexpr const char* ROUTES_TAG("routes"); //! Forwarding routes

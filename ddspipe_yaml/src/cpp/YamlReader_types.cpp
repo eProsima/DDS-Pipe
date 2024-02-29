@@ -362,6 +362,12 @@ void YamlReader::fill(
     {
         object.topic_name = get<std::string>(yml, DDS_PUBLISHING_TOPIC_NAME_TAG, version);
     }
+
+    // Optional publish type
+    if (is_tag_present(yml, DDS_PUBLISHING_PUBLISH_TYPE_TAG))
+    {
+        object.publish_type = get<bool>(yml, DDS_PUBLISHING_PUBLISH_TYPE_TAG, version);
+    }
 }
 
 template <>

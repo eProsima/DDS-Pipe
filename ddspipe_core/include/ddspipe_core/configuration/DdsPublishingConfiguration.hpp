@@ -56,6 +56,9 @@ struct DdsPublishingConfiguration : public IConfiguration
 
     //! TODO
     std::string topic_name{};
+
+    //! TODO
+    bool publish_type = false;
 };
 
 } /* namespace core */
