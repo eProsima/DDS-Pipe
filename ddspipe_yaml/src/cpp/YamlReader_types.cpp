@@ -21,7 +21,7 @@
 #include <cpp_utils/memory/Heritable.hpp>
 #include <cpp_utils/utils.hpp>
 
-#include <ddspipe_core/configuration/DdsLogConfiguration.hpp>
+#include <ddspipe_core/configuration/DdsPipeLogConfiguration.hpp>
 #include <ddspipe_core/types/dds/CustomTransport.hpp>
 #include <ddspipe_core/types/dds/DomainId.hpp>
 #include <ddspipe_core/types/dds/GuidPrefix.hpp>
@@ -504,7 +504,7 @@ utils::LogFilter YamlReader::get(
 template <>
 DDSPIPE_YAML_DllAPI
 void YamlReader::fill(
-        core::DdsLogConfiguration& object,
+        core::DdsPipeLogConfiguration& object,
         const Yaml& yml,
         const YamlReaderVersion version)
 {
@@ -542,12 +542,12 @@ void YamlReader::fill(
 
 template <>
 DDSPIPE_YAML_DllAPI
-core::DdsLogConfiguration YamlReader::get(
+core::DdsPipeLogConfiguration YamlReader::get(
         const Yaml& yml,
         const YamlReaderVersion version)
 {
-    core::DdsLogConfiguration object;
-    fill<core::DdsLogConfiguration>(object, yml, version);
+    core::DdsPipeLogConfiguration object;
+    fill<core::DdsPipeLogConfiguration>(object, yml, version);
     return object;
 }
 

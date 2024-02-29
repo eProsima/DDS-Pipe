@@ -21,7 +21,7 @@
 #include <cpp_utils/Log.hpp>
 #include <cpp_utils/logging/BaseLogConsumer.hpp>
 
-#include <ddspipe_core/configuration/DdsLogConfiguration.hpp>
+#include <ddspipe_core/configuration/DdsPipeLogConfiguration.hpp>
 #include <ddspipe_core/library/library_dll.h>
 
 #include <fastdds/dds/publisher/DataWriter.hpp>
@@ -49,10 +49,10 @@ class DdsLogConsumer : public utils::BaseLogConsumer
 {
 public:
 
-    //! Create a new \c DdsLogConsumer from a \c DdsLogConfiguration .
+    //! Create a new \c DdsLogConsumer from a \c DdsPipeLogConfiguration .
     DDSPIPE_CORE_DllAPI
     DdsLogConsumer(
-            const DdsLogConfiguration& configuration);
+            const DdsPipeLogConfiguration* configuration);
 
     /**
      * @brief Implements \c LogConsumer \c Consume method.

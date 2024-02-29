@@ -38,7 +38,7 @@ all_library_sources(
     )
 
 set(TEST_LIST
-        is_publishing_log_entries_correctly
+        publish_log_entries
     )
 
 set(TEST_EXTRA_LIBRARIES

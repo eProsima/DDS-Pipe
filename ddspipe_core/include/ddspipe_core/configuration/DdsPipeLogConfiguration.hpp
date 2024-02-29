@@ -12,28 +12,47 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-/**
- * @file DdsLogConfiguration.cpp
- */
+#pragma once
 
 #include <cpp_utils/Formatter.hpp>
+#include <cpp_utils/logging/BaseLogConfiguration.hpp>
 
-#include <ddspipe_core/configuration/DdsLogConfiguration.hpp>
+#include <ddspipe_core/configuration/DdsPublishingConfiguration.hpp>
+#include <ddspipe_core/library/library_dll.h>
 
 namespace eprosima {
 namespace ddspipe {
 namespace core {
 
-bool DdsLogConfiguration::is_valid(
-        utils::Formatter& error_msg) const noexcept
+/**
+ * TODO
+ */
+struct DdsPipeLogConfiguration : public utils::BaseLogConfiguration
 {
-    if (!publish.is_valid(error_msg))
-    {
-        return false;
-    }
 
-    return LogConfiguration::is_valid(error_msg);
-}
+    /////////////////////////
+    // CONSTRUCTORS
+    /////////////////////////
+
+    DDSPIPE_CORE_DllAPI
+    DdsPipeLogConfiguration() = default;
+
+    /////////////////////////
+    // METHODS
+    /////////////////////////
+
+    DDSPIPE_CORE_DllAPI
+    virtual bool is_valid(
+            utils::Formatter& error_msg) const noexcept override;
+
+    /////////////////////////
+    // VARIABLES
+    /////////////////////////
+
+    DdsPublishingConfiguration publish;
+
+    bool stdout_enable = true;
+};
 
 } /* namespace core */
 } /* namespace ddspipe */
