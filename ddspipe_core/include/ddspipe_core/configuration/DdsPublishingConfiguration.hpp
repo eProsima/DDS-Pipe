@@ -48,16 +48,16 @@ struct DdsPublishingConfiguration : public IConfiguration
     // VARIABLES
     /////////////////////////
 
-    //! TODO
+    //! Whether the publishing is enabled or not.
     bool enable = false;
 
-    //! TODO
+    //! The DDS domain id to publish in.
     types::DomainIdType domain{0};
 
-    //! TODO
+    //! The DDS topic name to publish in.
     std::string topic_name{};
 
-    //! TODO
+    //! Whether the LogEntry type should be published or not.
     bool publish_type = false;
 };
 

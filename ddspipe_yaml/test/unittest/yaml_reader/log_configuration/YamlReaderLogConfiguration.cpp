@@ -15,9 +15,8 @@
 #include <cpp_utils/testing/gtest_aux.hpp>
 #include <gtest/gtest.h>
 
-#include <ddspipe_yaml/YamlReader.hpp>
-
 #include <ddspipe_core/configuration/DdsPipeLogConfiguration.hpp>
+#include <ddspipe_yaml/YamlReader.hpp>
 
 using namespace eprosima;
 
@@ -47,8 +46,8 @@ TEST(YamlReaderLogConfiguration, parse_correct_LogConfiguration_yaml)
 
     Yaml yml = YAML::Load(yml_str);
 
-    // Load configuration from YAML
-    ddspipe::core::DdsPipeLogConfiguration conf = ddspipe::yaml::YamlReader::get<ddspipe::core::DdsPipeLogConfiguration>(yml, ddspipe::yaml::YamlReaderVersion::LATEST);
+    // Load the configuration from the YAML
+    const auto conf = ddspipe::yaml::YamlReader::get<ddspipe::core::DdsPipeLogConfiguration>(yml, ddspipe::yaml::YamlReaderVersion::LATEST);
 
     // Verify that the configuration is valid
     utils::Formatter error_msg;
@@ -86,7 +85,7 @@ TEST(YamlReaderLogConfiguration, parse_correct_LogConfiguration_yaml_and_default
     Yaml yml = YAML::Load(yml_str);
 
     // Load configuration from YAML
-    ddspipe::core::DdsPipeLogConfiguration conf = ddspipe::yaml::YamlReader::get<ddspipe::core::DdsPipeLogConfiguration>(yml, ddspipe::yaml::YamlReaderVersion::LATEST);
+    const auto conf = ddspipe::yaml::YamlReader::get<ddspipe::core::DdsPipeLogConfiguration>(yml, ddspipe::yaml::YamlReaderVersion::LATEST);
 
     utils::Formatter error_msg;
 
@@ -98,9 +97,40 @@ TEST(YamlReaderLogConfiguration, parse_correct_LogConfiguration_yaml_and_default
 }
 
 /**
- * TODO
+ * Verify that, when the publishing is disabled, the configuration is valid regardless of the domain and topic name.
+ *
+ * CASES:
+ *  Checks:
+ *  - The publishing is disabled.
  */
-TEST(YamlReaderLogConfiguration, incorrect_domain)
+TEST(YamlReaderLogConfiguration, publishing_disabled)
+{
+    const char* yml_str =
+            R"(
+            publish:
+              enable: false
+              domain: 300
+              topic-name: ""
+        )";
+
+    Yaml yml = YAML::Load(yml_str);
+
+    // Load configuration from YAML
+    const auto conf = ddspipe::yaml::YamlReader::get<ddspipe::core::DdsPipeLogConfiguration>(yml, ddspipe::yaml::YamlReaderVersion::LATEST);
+
+    // Verify that the configuration is valid
+    utils::Formatter error_msg;
+    ASSERT_TRUE(conf.is_valid(error_msg));
+}
+
+/**
+ * Verify that the configuration is invalid when the domain is invalid.
+ *
+ * CASES:
+ *  Checks:
+ *  - The domain is too high.
+ */
+TEST(YamlReaderLogConfiguration, invalid_domain)
 {
     const char* yml_str =
             R"(
@@ -124,9 +154,14 @@ TEST(YamlReaderLogConfiguration, incorrect_domain)
 }
 
 /**
- * TODO
+ * Verify that the configuration is invalid when the topic name is invalid.
+ *
+ * CASES:
+ *  Checks:
+ *  - The topic name is missing.
+ *  - The topic name is empty.
  */
-TEST(YamlReaderLogConfiguration, missing_topic_name)
+TEST(YamlReaderLogConfiguration, invalid_topic_name)
 {
     const char* yml_str =
             R"(
@@ -146,29 +181,6 @@ TEST(YamlReaderLogConfiguration, missing_topic_name)
 
     // Verify that the error message is correct
     ASSERT_EQ(error_msg.to_string(), "Empty topic name.");
-}
-
-/**
- * TODO
- */
-TEST(YamlReaderLogConfiguration, publishing_disabled)
-{
-    const char* yml_str =
-            R"(
-            publish:
-              enable: false
-              domain: 300
-              topic-name: ""
-        )";
-
-    Yaml yml = YAML::Load(yml_str);
-
-    // Load configuration from YAML
-    const auto conf = ddspipe::yaml::YamlReader::get<ddspipe::core::DdsPipeLogConfiguration>(yml, ddspipe::yaml::YamlReaderVersion::LATEST);
-
-    // Verify that the configuration is valid
-    utils::Formatter error_msg;
-    ASSERT_TRUE(conf.is_valid(error_msg));
 }
 
 int main(

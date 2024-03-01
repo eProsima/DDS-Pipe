@@ -25,9 +25,9 @@ set(TEST_SOURCES
 set(TEST_LIST
         parse_correct_LogConfiguration_yaml
         parse_correct_LogConfiguration_yaml_and_default
-        incorrect_domain
-        missing_topic_name
         publishing_disabled
+        invalid_domain
+        invalid_topic_name
     )
 
 set(TEST_EXTRA_LIBRARIES

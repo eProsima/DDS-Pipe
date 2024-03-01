@@ -25,7 +25,11 @@ namespace ddspipe {
 namespace core {
 
 /**
- * TODO
+ * The collection of settings related to the DDS Pipe's Log consumers.
+ *
+ * The Log consumers configured are:
+ *  - DdsLogConsumer
+ *  - StdLogConsumer
  */
 struct DdsPipeLogConfiguration : public utils::BaseLogConfiguration
 {

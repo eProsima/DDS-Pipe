@@ -16,6 +16,10 @@
  * @file DdsLogConsumer.cpp
  */
 
+#include <map>
+#include <regex>
+#include <string>
+
 #include <fastdds/dds/domain/DomainParticipant.hpp>
 #include <fastdds/dds/domain/DomainParticipantFactory.hpp>
 #include <fastdds/dds/publisher/qos/DataWriterQos.hpp>
@@ -119,41 +123,37 @@ void DdsLogConsumer::Consume(
         return;
     }
 
-    LogEntry log_entry;
-
-    switch (entry.kind)
-    {
-        case utils::Log::Kind::Error:
-            log_entry.kind(Kind::Error);
-            break;
-        case utils::Log::Kind::Warning:
-            log_entry.kind(Kind::Warning);
-            break;
-        case utils::Log::Kind::Info:
-            log_entry.kind(Kind::Info);
-            break;
-    }
-
     // Extract event from message
     long event = UNDEFINED;
-
-    std::smatch match;
 
     // The content of log messages should be either
     // "Event | Message" or "Message"
     std::regex pattern(R"(^([^|]+)\s\|\s)");
+    std::smatch match;
 
     if (std::regex_search(entry.message, match, pattern) && match.size() > 1)
     {
         const std::string& event_str = match.str(1);
 
+        // For an event to be valid, it must be in the events_ map.
+        // Derived classes should add their specific events to the map.
         if (events_.count(event_str))
         {
             event = events_[event_str];
         }
     }
 
+    // Map Fast-DDS's Log kind to the LogEntry's kind
+    static const std::map<utils::Log::Kind, Kind> kind_map
+    {
+        {utils::Log::Kind::Error, Kind::Error},
+        {utils::Log::Kind::Warning, Kind::Warning},
+        {utils::Log::Kind::Info, Kind::Info}
+    };
+
+    LogEntry log_entry;
     log_entry.event(event);
+    log_entry.kind(kind_map.at(entry.kind));
     log_entry.category(entry.context.category);
     log_entry.message(entry.message);
     log_entry.timestamp(entry.timestamp);

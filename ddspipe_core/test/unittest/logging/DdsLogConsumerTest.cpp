@@ -29,7 +29,6 @@
 #include <fastdds/dds/topic/TypeSupport.hpp>
 
 #include <cpp_utils/Log.hpp>
-#include <cpp_utils/logging/StdLogConsumer.hpp>
 
 #include <ddspipe_core/configuration/DdsPipeLogConfiguration.hpp>
 #include <ddspipe_core/logging/DdsLogConsumer.hpp>
@@ -63,6 +62,7 @@ public:
         ASSERT_NE(participant_, nullptr);
 
         // Register the type
+        // TODO(tempate): write another test in which the type is discovered.
         TypeSupport type(new LogEntryPubSubType());
         type.register_type(participant_);
 
@@ -136,11 +136,8 @@ TEST_F(DdsLogConsumerTest, publish_log_entries)
     utils::Log::ClearConsumers();
     utils::Log::SetVerbosity(log_configuration.verbosity);
 
-    // Create the DdsLogConsumer
-    auto consumer = std::make_unique<ddspipe::core::DdsLogConsumer>(&log_configuration);
-
     // Register the DdsLogConsumer
-    utils::Log::RegisterConsumer(std::move(consumer));
+    utils::Log::RegisterConsumer(std::make_unique<ddspipe::core::DdsLogConsumer>(&log_configuration));
 
     // Wait for the publisher and the subscriber to match
     std::this_thread::sleep_for(std::chrono::milliseconds(100));
@@ -155,7 +152,7 @@ TEST_F(DdsLogConsumerTest, publish_log_entries)
         // Wait for the subscriber to receive the message
         std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
-        // Check the information in the LogEntry published by the Log
+        // Verify that the content of the LogEntry published by the Log is correct
         ASSERT_EQ(reader_->take_next_sample(&entry, &info), ReturnCode_t::RETCODE_OK);
         ASSERT_EQ(info.instance_state, ALIVE_INSTANCE_STATE);
 
@@ -172,7 +169,7 @@ TEST_F(DdsLogConsumerTest, publish_log_entries)
         // Wait for the subscriber to receive the message
         std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
-        // Check the information in the LogEntry published by the Log
+        // Verify that the content of the LogEntry published by the Log is correct
         ASSERT_EQ(reader_->take_next_sample(&entry, &info), ReturnCode_t::RETCODE_OK);
         ASSERT_EQ(info.instance_state, ALIVE_INSTANCE_STATE);
 
@@ -189,7 +186,7 @@ TEST_F(DdsLogConsumerTest, publish_log_entries)
         // Wait for the subscriber to receive the message
         std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
-        // Check the information in the LogEntry published by the Log
+        // Verify that the content of the LogEntry published by the Log is correct
         ASSERT_EQ(reader_->take_next_sample(&entry, &info), ReturnCode_t::RETCODE_OK);
         ASSERT_EQ(info.instance_state, ALIVE_INSTANCE_STATE);
 
