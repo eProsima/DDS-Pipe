@@ -22,52 +22,35 @@ namespace ddspipe {
 namespace core {
 
 
-StatusMonitorProducer* StatusMonitorProducer::instance_ = nullptr;
+std::unique_ptr<StatusMonitorProducer> StatusMonitorProducer::instance_ = nullptr;
 
 
 void StatusMonitorProducer::init_instance(
-        StatusMonitorProducer* instance)
+        std::unique_ptr<StatusMonitorProducer> instance)
 {
-    instance_ = instance;
+    instance_ = std::move(instance);
 }
 
 StatusMonitorProducer* StatusMonitorProducer::get_instance()
 {
     if (instance_ == nullptr)
     {
-        instance_ = new StatusMonitorProducer();
+        instance_ = std::make_unique<StatusMonitorProducer>();
     }
 
-    return instance_;
+    return instance_.get();
 }
 
-void StatusMonitorProducer::init(
-        const MonitorProducerConfiguration& configuration)
+void StatusMonitorProducer::register_consumer(
+        std::unique_ptr<IMonitorConsumer<MonitoringStatus>> consumer)
 {
-    // Store whether the producer is enabled
-    enabled_ = configuration.enabled;
-
     if (!enabled_)
     {
-        // Don't register the consumers if the producer is not enabled
+        // Don't register the consumer if the producer is not enabled
         return;
     }
 
-    // Store the period so it can be used by the Monitor
-    period = configuration.period;
-
-    // TODO: initialize the consumers outside of the producer so it remains agnostic of its consumers.
-
-    // Register the type object
-    registerMonitoringStatusTypes();
-
-    // Register the type
-    fastdds::dds::TypeSupport type(new MonitoringStatusPubSubType());
-
-    // Create the consumers
-    consumers_.push_back(std::make_unique<DdsMonitorConsumer<MonitoringStatus>>(
-                configuration.domain.get_value(), configuration.topic_name, type));
-    consumers_.push_back(std::make_unique<StdoutMonitorConsumer<MonitoringStatus>>());
+    consumers_.push_back(std::move(consumer));
 }
 
 void StatusMonitorProducer::consume()
@@ -117,7 +100,7 @@ void StatusMonitorProducer::add_error_to_status(
 
 MonitoringStatus* StatusMonitorProducer::save_data_() const
 {
-    return data_;
+    return data_.get();
 }
 
 std::ostream& operator <<(

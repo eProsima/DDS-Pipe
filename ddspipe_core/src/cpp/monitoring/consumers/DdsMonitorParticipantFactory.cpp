@@ -31,6 +31,8 @@ std::map<types::DomainIdType, fastdds::dds::DomainParticipant*> DdsMonitorPartic
 fastdds::dds::DomainParticipant* DdsMonitorParticipantFactory::get_participant(
         const types::DomainIdType& domain)
 {
+    std::lock_guard<std::mutex> lock(mutex_);
+
     fastdds::dds::DomainParticipant* participant;
 
     if (participants_.find(domain) != participants_.end())

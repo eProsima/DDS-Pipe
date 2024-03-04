@@ -12,31 +12,28 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-/**
- * @file MonitorProducerConfiguration.cpp
- *
- */
-
-#include <cpp_utils/Formatter.hpp>
-
-#include <ddspipe_core/configuration/MonitorProducerConfiguration.hpp>
+#include <ddspipe_core/monitoring/producers/MonitorProducer.hpp>
 
 namespace eprosima {
 namespace ddspipe {
 namespace core {
 
-bool MonitorProducerConfiguration::is_valid(
-        utils::Formatter& error_msg) const noexcept
+void MonitorProducer::init(
+        const MonitorProducerConfiguration& configuration)
 {
-    if (period <= 0)
+    // Store whether the producer is enabled
+    enabled_ = configuration.enabled;
+
+    if (!enabled_)
     {
-        error_msg << "Period must be greater than 0.";
-        return false;
+        // Don't register the consumers if the producer is not enabled
+        return;
     }
 
-    return true;
+    // Store the period so it can be used by the Monitor
+    period = configuration.period;
 }
 
-} /* namespace core */
-} /* namespace ddspipe */
-} /* namespace eprosima */
+} //namespace core
+} //namespace ddspipe
+} //namespace eprosima

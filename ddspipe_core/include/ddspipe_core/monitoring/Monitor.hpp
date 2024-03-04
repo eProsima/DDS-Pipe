@@ -22,9 +22,6 @@
 
 #include <ddspipe_core/monitoring/producers/IMonitorProducer.hpp>
 
-
-// Monitoring API:
-
 namespace eprosima {
 namespace ddspipe {
 namespace core {

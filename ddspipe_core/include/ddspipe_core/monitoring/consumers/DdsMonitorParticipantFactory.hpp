@@ -15,6 +15,9 @@
 
 #pragma once
 
+#include <map>
+#include <mutex>
+
 #include <fastdds/dds/domain/DomainParticipant.hpp>
 
 #include <ddspipe_core/types/dds/DomainId.hpp>
@@ -42,6 +45,9 @@ protected:
 
     // TODO
     static std::map<types::DomainIdType, fastdds::dds::DomainParticipant*> participants_;
+
+    // TODO
+    std::mutex mutex_;
 };
 
 

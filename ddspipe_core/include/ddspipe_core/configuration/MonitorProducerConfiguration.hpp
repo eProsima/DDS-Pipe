@@ -14,11 +14,8 @@
 
 #pragma once
 
-#include <cpp_utils/types/Fuzzy.hpp>
-
 #include <ddspipe_core/configuration/IConfiguration.hpp>
 #include <ddspipe_core/library/library_dll.h>
-#include <ddspipe_core/types/dds/DomainId.hpp>
 
 namespace eprosima {
 namespace ddspipe {
@@ -47,14 +44,8 @@ struct MonitorProducerConfiguration : public IConfiguration
     //! TODO
     bool enabled = false;
 
-    //! TODO
+    //! The period in milliseconds at which the producer should consume data.
     double period = 1000;
-
-    //! TODO
-    utils::Fuzzy<types::DomainIdType> domain{0, utils::FuzzyLevelValues::fuzzy_level_default};
-
-    //! TODO
-    std::string topic_name;
 };
 
 } /* namespace core */
