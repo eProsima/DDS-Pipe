@@ -12,48 +12,47 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-/**
- * @file MonitorConfiguration.cpp
- *
- */
+#pragma once
+
+#include <string>
 
 #include <cpp_utils/Formatter.hpp>
+#include <cpp_utils/types/Fuzzy.hpp>
 
-#include <ddspipe_core/configuration/MonitorConfiguration.hpp>
+#include <ddspipe_core/configuration/IConfiguration.hpp>
+#include <ddspipe_core/library/library_dll.h>
+#include <ddspipe_core/types/dds/DomainId.hpp>
 
 namespace eprosima {
 namespace ddspipe {
 namespace core {
 
-bool MonitorConfiguration::is_valid(
-        utils::Formatter& error_msg) const noexcept
+/**
+ * TODO
+ */
+struct DdsMonitorConsumerConfiguration : public IConfiguration
 {
-    if (domain < 0 || domain > 255)
-    {
-        error_msg << "Domain must be between 0 and 255.";
-        return false;
-    }
+    /////////////////////////
+    // METHODS
+    /////////////////////////
 
-    // Verify that the consumers' configuration is valid
-    for (const auto& consumer : consumers)
-    {
-        if (!consumer.second.is_valid(error_msg))
-        {
-            return false;
-        }
-    }
+    /**
+     * @brief Override \c is_valid method.
+     */
+    DDSPIPE_CORE_DllAPI
+    virtual bool is_valid(
+            utils::Formatter& error_msg) const noexcept override;
 
-    // Verify that the producers' configuration is valid
-    for (const auto& producer : producers)
-    {
-        if (!producer.second.is_valid(error_msg))
-        {
-            return false;
-        }
-    }
+    /////////////////////////
+    // VARIABLES
+    /////////////////////////
 
-    return true;
-}
+    //! TODO
+    utils::Fuzzy<types::DomainIdType> domain{0, utils::FuzzyLevelValues::fuzzy_level_default};
+
+    //! TODO
+    std::string topic_name;
+};
 
 } /* namespace core */
 } /* namespace ddspipe */

@@ -27,46 +27,16 @@ TopicsMonitorProducer* TopicsMonitorProducer::get_instance()
     return &instance;
 }
 
-void TopicsMonitorProducer::init(
-        const MonitorProducerConfiguration& configuration)
+void TopicsMonitorProducer::register_consumer(
+        std::unique_ptr<IMonitorConsumer<MonitoringTopics>> consumer)
 {
-    // Store whether the producer is enabled
-    enabled_ = configuration.enabled;
-
     if (!enabled_)
     {
-        // Don't register the consumers if the producer is not enabled
+        // Don't register the consumer if the producer is not enabled
         return;
     }
 
-    // Store the period so it can be used by the Monitor
-    period = configuration.period;
-
-    // TODO: initialize the consumers outside of the producer so it remains agnostic of its consumers.
-
-    // Register the type object
-    registerMonitoringTopicsTypes();
-
-    // TODO(tempate): Register the type the usual way
-    // Register the type
-    // fastdds::dds::TypeSupport type(new MonitoringTopicsPubSubType());
-
-    // Register the type dynamically
-    auto type_object = GetMonitoringTopicsObject(true);
-    auto type_id = GetMonitoringTopicsIdentifier(true);
-    auto dyn_type = fastrtps::types::TypeObjectFactory::get_instance()->build_dynamic_type(
-            "MonitoringTopics",
-            type_id,
-            type_object);
-    auto dyn_pub_sub_type = new fastrtps::types::DynamicPubSubType(dyn_type);
-
-    fastdds::dds::TypeSupport type;
-    type.reset(dyn_pub_sub_type);
-
-    // Create the consumers
-    consumers_.push_back(std::make_unique<DdsMonitorConsumer<MonitoringTopics>>(
-                configuration.domain.get_value(), configuration.topic_name, type));
-    consumers_.push_back(std::make_unique<StdoutMonitorConsumer<MonitoringTopics>>());
+    consumers_.push_back(std::move(consumer));
 }
 
 void TopicsMonitorProducer::consume()
@@ -102,24 +72,15 @@ void TopicsMonitorProducer::msg_received(
     //      2. Simultaneous calls to msg_received.
     std::lock_guard<std::mutex> lock(mutex_);
 
-    const auto& topic_name = topic.m_topic_name;
-    const auto& type_name = topic.type_name;
+    // Register the topic
+    topic_data_[topic].name(topic.m_topic_name);
+    topic_data_[topic].type_name(topic.type_name);
 
-    if (!topic_data_.count(topic_name))
-    {
-        topic_data_[topic_name].name(topic_name);
-        topic_data_[topic_name].type_name(type_name);
-    }
-
-    if (!participant_data_.count(topic_name) || !participant_data_[topic_name].count(participant_id))
-    {
-        // First message received for topic & participant
-        // Save the participant_id
-        participant_data_[topic_name][participant_id].participant_id(participant_id);
-    }
+    // Register the participant
+    participant_data_[topic][participant_id].participant_id(participant_id);
 
     // Increase the count of the received messages
-    participant_data_[topic_name][participant_id].msgs_received(participant_data_[topic_name][participant_id].msgs_received() +
+    participant_data_[topic][participant_id].msgs_received(participant_data_[topic][participant_id].msgs_received() +
             1);
 }
 
@@ -138,22 +99,18 @@ void TopicsMonitorProducer::msg_lost(
     //      2. Simultaneous calls to msg_lost.
     std::lock_guard<std::mutex> lock(mutex_);
 
-    const auto& topic_name = topic.m_topic_name;
-    const auto& type_name = topic.type_name;
+    // Register the topic
+    topic_data_[topic].name(topic.m_topic_name);
+    topic_data_[topic].type_name(topic.type_name);
 
-    if (!participant_data_.count(topic_name) || !participant_data_[topic_name].count(participant_id))
-    {
-        // First message lost for topic & participant
-        // Save the participant_id
-        participant_data_[topic_name][participant_id].participant_id(participant_id);
-    }
+    // Register the participant id
+    participant_data_[topic][participant_id].participant_id(participant_id);
 
     // Increase the count of the lost messages
-    participant_data_[topic_name][participant_id].msgs_lost(participant_data_[topic_name][participant_id].msgs_lost() + 1);
+    participant_data_[topic][participant_id].msgs_lost(participant_data_[topic][participant_id].msgs_lost() + 1);
 }
 
 void TopicsMonitorProducer::type_discovered(
-        const std::string& topic_name,
         const std::string& type_name)
 {
     if (!enabled_)
@@ -167,13 +124,14 @@ void TopicsMonitorProducer::type_discovered(
     //      2. Simultaneous calls to msg_lost.
     std::lock_guard<std::mutex> lock(mutex_);
 
-    if (!topic_data_.count(topic_name))
+    for (auto& topic : topic_data_)
     {
-        topic_data_[topic_name].name(topic_name);
-        topic_data_[topic_name].type_name(type_name);
+        if (topic.second.type_name() == type_name)
+        {
+            // Set the type discovered flag
+            topic.second.type_discovered(true);
+        }
     }
-
-    topic_data_[topic_name].type_discovered(true);
 }
 
 void TopicsMonitorProducer::type_mismatch(
@@ -190,16 +148,12 @@ void TopicsMonitorProducer::type_mismatch(
     //      2. Simultaneous calls to msg_lost.
     std::lock_guard<std::mutex> lock(mutex_);
 
-    const auto& topic_name = topic.m_topic_name;
-    const auto& type_name = topic.type_name;
+    // Register the topic
+    topic_data_[topic].name(topic.m_topic_name);
+    topic_data_[topic].type_name(topic.type_name);
 
-    if (!topic_data_.count(topic_name))
-    {
-        topic_data_[topic_name].name(topic_name);
-        topic_data_[topic_name].type_name(type_name);
-    }
-
-    topic_data_[topic.m_topic_name].type_mismatch(true);
+    // Set the type mismatch flag
+    topic_data_[topic].type_mismatch(true);
 }
 
 void TopicsMonitorProducer::qos_mismatch(
@@ -216,16 +170,12 @@ void TopicsMonitorProducer::qos_mismatch(
     //      2. Simultaneous calls to msg_lost.
     std::lock_guard<std::mutex> lock(mutex_);
 
-    const auto& topic_name = topic.m_topic_name;
-    const auto& type_name = topic.type_name;
+    // Register the topic
+    topic_data_[topic].name(topic.m_topic_name);
+    topic_data_[topic].type_name(topic.type_name);
 
-    if (!topic_data_.count(topic_name))
-    {
-        topic_data_[topic_name].name(topic_name);
-        topic_data_[topic_name].type_name(type_name);
-    }
-
-    topic_data_[topic_name].qos_mismatch(true);
+    // Set the QoS mismatch flag
+    topic_data_[topic].qos_mismatch(true);
 }
 
 MonitoringTopics TopicsMonitorProducer::save_data_()

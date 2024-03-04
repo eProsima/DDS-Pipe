@@ -14,11 +14,12 @@
 //
 #pragma once
 
+#include <memory>
 #include <mutex>
 
 #include <ddspipe_core/configuration/MonitorProducerConfiguration.hpp>
 #include <ddspipe_core/monitoring/consumers/IMonitorConsumer.hpp>
-#include <ddspipe_core/monitoring/producers/IMonitorProducer.hpp>
+#include <ddspipe_core/monitoring/producers/MonitorProducer.hpp>
 
 #if FASTRTPS_VERSION_MAJOR < 2 || (FASTRTPS_VERSION_MAJOR == 2 && FASTRTPS_VERSION_MINOR < 13)
     #include <ddspipe_core/types/monitoring/status/v1/MonitoringStatus.h>
@@ -42,20 +43,20 @@ namespace core {
 /**
  * TODO
  */
-class StatusMonitorProducer : public IMonitorProducer
+class StatusMonitorProducer : public MonitorProducer
 {
 public:
 
     // TODO
     static void init_instance(
-            StatusMonitorProducer* instance);
+            std::unique_ptr<StatusMonitorProducer> instance);
 
     // Static method to get the singleton instance
     static StatusMonitorProducer* get_instance();
 
     // TODO
-    virtual void init(
-            const MonitorProducerConfiguration& configuration);
+    virtual void register_consumer(
+            std::unique_ptr<IMonitorConsumer<MonitoringStatus>> consumer);
 
     // TODO
     virtual void consume() override;
@@ -70,13 +71,13 @@ protected:
     virtual MonitoringStatus* save_data_() const;
 
     // TODO
-    static StatusMonitorProducer* instance_;
+    static std::unique_ptr<StatusMonitorProducer> instance_;
 
     // TODO
     mutable std::mutex mutex_;
 
     // TODO
-    MonitoringStatus* data_ = new MonitoringStatus();
+    std::unique_ptr<MonitoringStatus> data_ = std::make_unique<MonitoringStatus>();
 
     // TODO
     std::vector<std::unique_ptr<IMonitorConsumer<MonitoringStatus>>> consumers_;

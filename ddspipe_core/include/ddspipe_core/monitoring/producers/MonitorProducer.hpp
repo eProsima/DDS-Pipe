@@ -12,15 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //
-
 #pragma once
 
-#include <fastdds/dds/publisher/DataWriter.hpp>
-
-#include <ddspipe_core/configuration/DdsMonitorConsumerConfiguration.hpp>
-#include <ddspipe_core/monitoring/consumers/DdsMonitorParticipantFactory.hpp>
-#include <ddspipe_core/monitoring/consumers/IMonitorConsumer.hpp>
-
+#include <ddspipe_core/configuration/MonitorProducerConfiguration.hpp>
+#include <ddspipe_core/monitoring/producers/IMonitorProducer.hpp>
 
 namespace eprosima {
 namespace ddspipe {
@@ -29,28 +24,20 @@ namespace core {
 /**
  * TODO
  */
-template <typename T>
-class DdsMonitorConsumer : public DdsMonitorParticipantFactory, public IMonitorConsumer<T>
+class MonitorProducer : public IMonitorProducer
 {
 public:
 
     // TODO
-    DdsMonitorConsumer(
-            const DdsMonitorConsumerConfiguration& configuration,
-            fastdds::dds::TypeSupport& type);
-
-    // TODO
-    void consume(
-            const T* data) const override;
+    virtual void init(
+            const MonitorProducerConfiguration& configuration);
 
 protected:
 
-    // DataWriter to publish the data
-    fastdds::dds::DataWriter* writer_;
+    // TODO
+    bool enabled_ = false;
 };
 
 } // namespace core
 } // namespace ddspipe
 } // namespace eprosima
-
-#include <ddspipe_core/monitoring/consumers/impl/DdsMonitorConsumer.ipp>

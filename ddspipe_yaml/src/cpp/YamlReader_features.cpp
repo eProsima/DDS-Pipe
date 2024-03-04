@@ -15,6 +15,7 @@
 #include <cpp_utils/Log.hpp>
 #include <cpp_utils/memory/Heritable.hpp>
 
+#include <ddspipe_core/configuration/DdsMonitorConsumerConfiguration.hpp>
 #include <ddspipe_core/configuration/MonitorConfiguration.hpp>
 #include <ddspipe_core/configuration/MonitorProducerConfiguration.hpp>
 #include <ddspipe_core/configuration/RoutesConfiguration.hpp>
@@ -232,11 +233,12 @@ void YamlReader::fill(
     // Get optional monitor status tag
     if (YamlReader::is_tag_present(yml, MONITOR_STATUS_TAG))
     {
-        object.status = YamlReader::get<core::MonitorProducerConfiguration>(yml, MONITOR_STATUS_TAG, version);
+        object.producers["status"] = YamlReader::get<core::MonitorProducerConfiguration>(yml, MONITOR_STATUS_TAG, version);
+        object.consumers["status"] = YamlReader::get<core::DdsMonitorConsumerConfiguration>(yml, MONITOR_STATUS_TAG, version);
 
-        if (!object.status.domain.is_set())
+        if (!object.consumers["status"].domain.is_set())
         {
-            object.status.domain = object.domain;
+            object.consumers["status"].domain = object.domain;
         }
     }
 
@@ -244,11 +246,12 @@ void YamlReader::fill(
     // Get optional monitor topics tag
     if (YamlReader::is_tag_present(yml, MONITOR_TOPICS_TAG))
     {
-        object.topics = YamlReader::get<core::MonitorProducerConfiguration>(yml, MONITOR_TOPICS_TAG, version);
+        object.producers["topics"] = YamlReader::get<core::MonitorProducerConfiguration>(yml, MONITOR_TOPICS_TAG, version);
+        object.consumers["topics"] = YamlReader::get<core::DdsMonitorConsumerConfiguration>(yml, MONITOR_TOPICS_TAG, version);
 
-        if (!object.topics.domain.is_set())
+        if (!object.consumers["topics"].domain.is_set())
         {
-            object.topics.domain = object.domain;
+            object.consumers["topics"].domain = object.domain;
         }
     }
 }
@@ -280,9 +283,28 @@ void YamlReader::fill(
     // Optional period
     if (is_tag_present(yml, MONITOR_PERIOD_TAG))
     {
-        object.period = get<uint32_t>(yml, MONITOR_PERIOD_TAG, version);
+        object.period = get_positive_double(yml, MONITOR_PERIOD_TAG);
     }
+}
 
+template <>
+DDSPIPE_YAML_DllAPI
+core::MonitorProducerConfiguration YamlReader::get(
+        const Yaml& yml,
+        const YamlReaderVersion version)
+{
+    core::MonitorProducerConfiguration object;
+    fill<core::MonitorProducerConfiguration>(object, yml, version);
+    return object;
+}
+
+template <>
+DDSPIPE_YAML_DllAPI
+void YamlReader::fill(
+        core::DdsMonitorConsumerConfiguration& object,
+        const Yaml& yml,
+        const YamlReaderVersion version)
+{
     // Optional domain
     if (is_tag_present(yml, MONITOR_DOMAIN_TAG))
     {
@@ -298,12 +320,12 @@ void YamlReader::fill(
 
 template <>
 DDSPIPE_YAML_DllAPI
-core::MonitorProducerConfiguration YamlReader::get(
+core::DdsMonitorConsumerConfiguration YamlReader::get(
         const Yaml& yml,
         const YamlReaderVersion version)
 {
-    core::MonitorProducerConfiguration object;
-    fill<core::MonitorProducerConfiguration>(object, yml, version);
+    core::DdsMonitorConsumerConfiguration object;
+    fill<core::DdsMonitorConsumerConfiguration>(object, yml, version);
     return object;
 }
 

@@ -14,10 +14,15 @@
 
 #pragma once
 
+#include <map>
+#include <string>
+
+#include <cpp_utils/Formatter.hpp>
 #include <cpp_utils/types/Fuzzy.hpp>
 
-#include <ddspipe_core/configuration/MonitorProducerConfiguration.hpp>
+#include <ddspipe_core/configuration/DdsMonitorConsumerConfiguration.hpp>
 #include <ddspipe_core/configuration/IConfiguration.hpp>
+#include <ddspipe_core/configuration/MonitorProducerConfiguration.hpp>
 #include <ddspipe_core/library/library_dll.h>
 #include <ddspipe_core/types/dds/DomainId.hpp>
 
@@ -50,10 +55,10 @@ struct MonitorConfiguration : public IConfiguration
     utils::Fuzzy<types::DomainIdType> domain{0, utils::FuzzyLevelValues::fuzzy_level_default};
 
     //! TODO
-    MonitorProducerConfiguration status;
+    std::map<std::string, DdsMonitorConsumerConfiguration> consumers;
 
     //! TODO
-    MonitorProducerConfiguration topics;
+    std::map<std::string, MonitorProducerConfiguration> producers;
 };
 
 } /* namespace core */

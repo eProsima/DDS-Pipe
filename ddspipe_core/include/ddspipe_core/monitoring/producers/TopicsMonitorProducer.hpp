@@ -21,7 +21,7 @@
 
 #include <ddspipe_core/configuration/MonitorProducerConfiguration.hpp>
 #include <ddspipe_core/monitoring/consumers/IMonitorConsumer.hpp>
-#include <ddspipe_core/monitoring/producers/IMonitorProducer.hpp>
+#include <ddspipe_core/monitoring/producers/MonitorProducer.hpp>
 #include <ddspipe_core/types/participant/ParticipantId.hpp>
 #include <ddspipe_core/types/topic/dds/DdsTopic.hpp>
 
@@ -44,7 +44,7 @@
 #define monitor_msg_lost(topic, participant_id) MONITOR_MSG_LOST_IMPL_(topic, participant_id)
 
 //! TODO
-#define monitor_type_discovered(topic_name, type_name) MONITOR_TYPE_DISCOVERED_IMPL_(topic_name, type_name)
+#define monitor_type_discovered(type_name) MONITOR_TYPE_DISCOVERED_IMPL_(type_name)
 
 //! TODO
 #define monitor_type_mismatch(topic) MONITOR_TYPE_MISMATCH_IMPL_(topic)
@@ -59,7 +59,7 @@ namespace core {
 /**
  * TODO
  */
-class TopicsMonitorProducer : public IMonitorProducer
+class TopicsMonitorProducer : public MonitorProducer
 {
 public:
 
@@ -67,8 +67,8 @@ public:
     static TopicsMonitorProducer* get_instance();
 
     // TODO
-    void init(
-            const MonitorProducerConfiguration& configuration);
+    void register_consumer(
+            std::unique_ptr<IMonitorConsumer<MonitoringTopics>> consumer);
 
     // TODO
     void consume() override;
@@ -85,7 +85,6 @@ public:
 
     // TODO
     void type_discovered(
-            const std::string& topic_name,
             const std::string& type_name);
 
     // TODO
@@ -108,10 +107,10 @@ protected:
     mutable std::mutex mutex_;
 
     // TODO
-    std::map<std::string, DdsTopic> topic_data_;
+    std::map<types::DdsTopic, DdsTopic> topic_data_;
 
     // TODO
-    std::map<std::string, std::map<types::ParticipantId, DdsTopicData>> participant_data_;
+    std::map<types::DdsTopic, std::map<types::ParticipantId, DdsTopicData>> participant_data_;
 
     // TODO
     std::vector<std::unique_ptr<IMonitorConsumer<MonitoringTopics>>> consumers_;
@@ -138,8 +137,8 @@ std::ostream& operator <<(
             participant_id) eprosima::ddspipe::core::TopicsMonitorProducer::get_instance()->msg_lost(topic, \
             participant_id)
 
-#define MONITOR_TYPE_DISCOVERED_IMPL_(topic_name, type_name) eprosima::ddspipe::core::TopicsMonitorProducer::get_instance()-> \
-            type_discovered(topic_name, type_name)
+#define MONITOR_TYPE_DISCOVERED_IMPL_(type_name) eprosima::ddspipe::core::TopicsMonitorProducer::get_instance()-> \
+            type_discovered(type_name)
 
 #define MONITOR_TYPE_MISMATCH_IMPL_(topic) eprosima::ddspipe::core::TopicsMonitorProducer::get_instance()->type_mismatch( \
         topic)
