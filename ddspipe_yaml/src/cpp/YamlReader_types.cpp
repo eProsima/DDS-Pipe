@@ -18,16 +18,17 @@
  */
 
 #include <cpp_utils/Log.hpp>
-#include <cpp_utils/utils.hpp>
+#include <cpp_utils/logging/LogConfiguration.hpp>
 #include <cpp_utils/memory/Heritable.hpp>
+#include <cpp_utils/utils.hpp>
 
 #include <ddspipe_core/types/dds/CustomTransport.hpp>
 #include <ddspipe_core/types/dds/DomainId.hpp>
 #include <ddspipe_core/types/dds/GuidPrefix.hpp>
 #include <ddspipe_core/types/participant/ParticipantId.hpp>
 #include <ddspipe_core/types/topic/dds/DdsTopic.hpp>
-#include <ddspipe_core/types/topic/filter/WildcardDdsFilterTopic.hpp>
 #include <ddspipe_core/types/topic/filter/ManualTopic.hpp>
+#include <ddspipe_core/types/topic/filter/WildcardDdsFilterTopic.hpp>
 
 #include <ddspipe_participants/types/address/Address.hpp>
 #include <ddspipe_participants/types/address/DiscoveryServerConnectionAddress.hpp>
@@ -227,7 +228,7 @@ Address YamlReader::get<Address>(
     }
     else if (!ip_set && !domain_name_set)
     {
-        throw eprosima::utils::ConfigurationException(utils::Formatter() <<
+        throw utils::ConfigurationException(utils::Formatter() <<
                       "Address requires to specify <" << ADDRESS_IP_TAG << "> or <" << ADDRESS_DNS_TAG << ">.");
     }
 
@@ -356,11 +357,11 @@ void YamlReader::fill(
     {
         if (get<bool>(yml, QOS_TRANSIENT_TAG, version))
         {
-            object.durability_qos.set_value(eprosima::ddspipe::core::types::DurabilityKind::TRANSIENT_LOCAL);
+            object.durability_qos.set_value(ddspipe::core::types::DurabilityKind::TRANSIENT_LOCAL);
         }
         else
         {
-            object.durability_qos.set_value(eprosima::ddspipe::core::types::DurabilityKind::VOLATILE);
+            object.durability_qos.set_value(ddspipe::core::types::DurabilityKind::VOLATILE);
         }
     }
 
@@ -369,11 +370,11 @@ void YamlReader::fill(
     {
         if (get<bool>(yml, QOS_RELIABLE_TAG, version))
         {
-            object.reliability_qos.set_value(eprosima::ddspipe::core::types::ReliabilityKind::RELIABLE);
+            object.reliability_qos.set_value(ddspipe::core::types::ReliabilityKind::RELIABLE);
         }
         else
         {
-            object.reliability_qos.set_value(eprosima::ddspipe::core::types::ReliabilityKind::BEST_EFFORT);
+            object.reliability_qos.set_value(ddspipe::core::types::ReliabilityKind::BEST_EFFORT);
         }
     }
 
@@ -383,11 +384,11 @@ void YamlReader::fill(
         if (get<bool>(yml, QOS_OWNERSHIP_TAG, version))
         {
             object.ownership_qos.set_value(
-                eprosima::ddspipe::core::types::OwnershipQosPolicyKind::EXCLUSIVE_OWNERSHIP_QOS);
+                ddspipe::core::types::OwnershipQosPolicyKind::EXCLUSIVE_OWNERSHIP_QOS);
         }
         else
         {
-            object.ownership_qos.set_value(eprosima::ddspipe::core::types::OwnershipQosPolicyKind::SHARED_OWNERSHIP_QOS);
+            object.ownership_qos.set_value(ddspipe::core::types::OwnershipQosPolicyKind::SHARED_OWNERSHIP_QOS);
         }
     }
 
@@ -426,6 +427,80 @@ void YamlReader::fill(
     {
         object.downsampling.set_value(get_positive_int(yml, QOS_DOWNSAMPLING_TAG));
     }
+}
+
+/************************
+* LOGGING CONFIGURATION *
+************************/
+
+template <>
+DDSPIPE_YAML_DllAPI
+void YamlReader::fill<utils::LogFilter>(
+        utils::LogFilter& object,
+        const Yaml& yml,
+        const YamlReaderVersion version)
+{
+    if (is_tag_present(yml, LOG_FILTER_ERROR_TAG))
+    {
+        object[utils::VerbosityKind::Error] = get<std::string>(yml, LOG_FILTER_ERROR_TAG, version);
+    }
+    if (is_tag_present(yml, LOG_FILTER_WARNING_TAG))
+    {
+        object[utils::VerbosityKind::Warning] = get<std::string>(yml, LOG_FILTER_WARNING_TAG, version);
+    }
+    if (is_tag_present(yml, LOG_FILTER_INFO_TAG))
+    {
+        object[utils::VerbosityKind::Info] = get<std::string>(yml, LOG_FILTER_INFO_TAG, version);
+    }
+}
+
+template <>
+DDSPIPE_YAML_DllAPI
+utils::LogFilter YamlReader::get(
+        const Yaml& yml,
+        const YamlReaderVersion version)
+{
+    utils::LogFilter object;
+    fill<utils::LogFilter>(object, yml, version);
+    return object;
+}
+
+template <>
+DDSPIPE_YAML_DllAPI
+void YamlReader::fill(
+        utils::LogConfiguration& object,
+        const Yaml& yml,
+        const YamlReaderVersion version)
+{
+    // Verbosity optional
+    if (is_tag_present(yml, LOG_VERBOSITY_TAG))
+    {
+        object.verbosity = get_enumeration<utils::VerbosityKind>(
+            yml,
+            LOG_VERBOSITY_TAG,
+                    {
+                        {LOG_VERBOSITY_INFO_TAG, utils::VerbosityKind::Info},
+                        {LOG_VERBOSITY_WARNING_TAG, utils::VerbosityKind::Warning},
+                        {LOG_VERBOSITY_ERROR_TAG, utils::VerbosityKind::Error}
+                    });
+    }
+
+    // Filter optional
+    if (is_tag_present(yml, LOG_FILTER_TAG))
+    {
+        fill<utils::LogFilter>(object.filter, get_value_in_tag(yml, LOG_FILTER_TAG), version);
+    }
+}
+
+template <>
+DDSPIPE_YAML_DllAPI
+utils::LogConfiguration YamlReader::get(
+        const Yaml& yml,
+        const YamlReaderVersion version)
+{
+    utils::LogConfiguration object;
+    fill<utils::LogConfiguration>(object, yml, version);
+    return object;
 }
 
 /************************
@@ -616,7 +691,7 @@ void YamlReader::fill(
     }
     else
     {
-        throw eprosima::utils::ConfigurationException(
+        throw utils::ConfigurationException(
                   STR_ENTRY << "Incorrect TLS configuration." <<
                       " Could not be client because: " << error_msg_client <<
                       " Neither server because: " << error_msg_server <<

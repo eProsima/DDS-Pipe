@@ -142,6 +142,19 @@ constexpr const char* NUMBER_THREADS_TAG("threads"); //! Number of threads to co
 constexpr const char* WAIT_ALL_ACKED_TIMEOUT_TAG("wait-all-acked-timeout"); //! Wait for a maximum of *wait-all-acked-timeout* ms until all msgs sent by reliable writers are acknowledged by their matched readers
 constexpr const char* REMOVE_UNUSED_ENTITIES_TAG("remove-unused-entities"); //! Dynamically create and delete entities and tracks.
 constexpr const char* DISCOVERY_TRIGGER_TAG("discovery-trigger"); //! Make the trigger of the DDS Pipe callbacks configurable.
+constexpr const char* LOG_CONFIGURATION_TAG("logging"); //! Configure Logging settings
+
+// Logging verbosity tags
+constexpr const char* LOG_VERBOSITY_TAG("verbosity"); //! Set logging verbosity
+constexpr const char* LOG_VERBOSITY_INFO_TAG("info"); //! Set logging verbosity to info
+constexpr const char* LOG_VERBOSITY_WARNING_TAG("warning"); //! Set logging verbosity to warning
+constexpr const char* LOG_VERBOSITY_ERROR_TAG("error"); //! Set logging verbosity to error
+
+// Logging filter tags
+constexpr const char* LOG_FILTER_TAG("filter"); //! Set logging filter for verbosity
+constexpr const char* LOG_FILTER_INFO_TAG("info"); //! Set logging filter info
+constexpr const char* LOG_FILTER_WARNING_TAG("warning"); //! Set logging filter warning
+constexpr const char* LOG_FILTER_ERROR_TAG("error"); //! Set logging filter error
 
 // XML configuration tags
 constexpr const char* XML_TAG("xml"); //! Tag to read xml configuration
