@@ -153,7 +153,6 @@ public:
      *
      * @param reader Pointer to the RTPSReader.
      */
-
     DDSPIPE_PARTICIPANTS_DllAPI
     void on_incompatible_type(
         fastrtps::rtps::RTPSReader* reader) noexcept override;
