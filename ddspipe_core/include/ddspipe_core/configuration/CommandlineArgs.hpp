@@ -28,13 +28,13 @@ namespace core {
 /**
  * Configuration structure encapsulating the Command-Line arguments configuration.
  */
-struct CommandlineArgs
+struct DDSPIPE_CORE_DllAPI CommandlineArgs
 {
     /////////////////////////
     // CONSTRUCTORS
     /////////////////////////
 
-    DDSPIPE_CORE_DllAPI CommandlineArgs();
+    CommandlineArgs();
 
     /////////////////////////
     // METHODS
@@ -43,7 +43,6 @@ struct CommandlineArgs
     /**
      * @brief \c is_valid method.
      */
-    DDSPIPE_CORE_DllAPI
     virtual bool is_valid(
             utils::Formatter& error_msg) const noexcept;
 
