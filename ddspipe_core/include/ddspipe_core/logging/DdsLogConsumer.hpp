@@ -24,7 +24,10 @@
 #include <ddspipe_core/configuration/DdsPipeLogConfiguration.hpp>
 #include <ddspipe_core/library/library_dll.h>
 
+#include <fastdds/dds/domain/DomainParticipant.hpp>
 #include <fastdds/dds/publisher/DataWriter.hpp>
+#include <fastdds/dds/publisher/Publisher.hpp>
+#include <fastdds/dds/topic/Topic.hpp>
 
 #if FASTRTPS_VERSION_MAJOR < 2 || (FASTRTPS_VERSION_MAJOR == 2 && FASTRTPS_VERSION_MINOR < 13)
     #include <ddspipe_core/types/logging/v1/LogEntry.h>
@@ -54,6 +57,9 @@ public:
     DdsLogConsumer(
             const DdsPipeLogConfiguration* configuration);
 
+    DDSPIPE_CORE_DllAPI
+    ~DdsLogConsumer();
+
     /**
      * @brief Implements \c LogConsumer \c Consume method.
      *
@@ -70,7 +76,14 @@ public:
 
 protected:
 
-    //! DataWriter to send log entries
+    //! Convert the \c Log::Kind to the \c LogEntry::Kind
+    constexpr Kind get_log_entry_kind_(
+            const utils::Log::Kind kind) const noexcept;
+
+    //! Fast-DDS entities for publishing log entries
+    fastdds::dds::DomainParticipant* participant_;
+    fastdds::dds::Publisher* publisher_;
+    fastdds::dds::Topic* topic_;
     fastdds::dds::DataWriter* writer_;
 
     //! Map relating the pattern string to its corresponding event

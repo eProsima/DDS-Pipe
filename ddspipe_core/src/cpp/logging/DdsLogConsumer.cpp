@@ -20,12 +20,9 @@
 #include <regex>
 #include <string>
 
-#include <fastdds/dds/domain/DomainParticipant.hpp>
 #include <fastdds/dds/domain/DomainParticipantFactory.hpp>
 #include <fastdds/dds/publisher/qos/DataWriterQos.hpp>
-#include <fastdds/dds/publisher/Publisher.hpp>
 #include <fastdds/dds/topic/qos/TopicQos.hpp>
-#include <fastdds/dds/topic/Topic.hpp>
 #include <fastdds/dds/topic/TypeSupport.hpp>
 
 #include <cpp_utils/exception/InitializationException.hpp>
@@ -52,9 +49,9 @@ DdsLogConsumer::DdsLogConsumer(
         pqos.wire_protocol().builtin.typelookup_config.use_server = true;
     }
 
-    fastdds::dds::DomainParticipant* participant = fastdds::dds::DomainParticipantFactory::get_instance()->create_participant(configuration->publish.domain, pqos);
+    participant_ = fastdds::dds::DomainParticipantFactory::get_instance()->create_participant(configuration->publish.domain, pqos);
 
-    if (participant == nullptr)
+    if (participant_ == nullptr)
     {
         throw utils::InitializationException(
                     utils::Formatter() << "Error creating Participant " <<
@@ -71,36 +68,59 @@ DdsLogConsumer::DdsLogConsumer(
         type->auto_fill_type_information(true);
     }
 
-    type.register_type(participant);
+    type.register_type(participant_);
 
     // Create the publisher
-    fastdds::dds::Publisher* publisher = participant->create_publisher(fastdds::dds::PUBLISHER_QOS_DEFAULT, nullptr);
+    publisher_ = participant_->create_publisher(fastdds::dds::PUBLISHER_QOS_DEFAULT, nullptr);
 
-    if (publisher == nullptr)
+    if (publisher_ == nullptr)
     {
         throw utils::InitializationException(
                   utils::Formatter() << "Error creating Publisher for Participant " <<
-                      participant->get_qos().name() << ".");
+                      participant_->get_qos().name() << ".");
     }
 
     // Create the topic
-    fastdds::dds::Topic* topic = participant->create_topic(configuration->publish.topic_name, type.get_type_name(), fastdds::dds::TOPIC_QOS_DEFAULT);
+    topic_ = participant_->create_topic(configuration->publish.topic_name, type.get_type_name(), fastdds::dds::TOPIC_QOS_DEFAULT);
 
-    if (topic == nullptr)
+    if (topic_ == nullptr)
     {
         throw utils::InitializationException(
                   utils::Formatter() << "Error creating Topic " << configuration->publish.topic_name <<
-                      " for Participant " << participant->guid() << ".");
+                      " for Participant " << participant_->guid() << ".");
     }
 
     // Create the writer
-    writer_ = publisher->create_datawriter(topic, fastdds::dds::DATAWRITER_QOS_DEFAULT);
+    writer_ = publisher_->create_datawriter(topic_, fastdds::dds::DATAWRITER_QOS_DEFAULT);
 
     if (writer_ == nullptr)
     {
         throw utils::InitializationException(
                   utils::Formatter() << "Error creating DataWriter for Participant " <<
-                      participant->guid() << " in topic " << topic << ".");
+                      participant_->guid() << " in topic " << topic_ << ".");
+    }
+}
+
+DdsLogConsumer::~DdsLogConsumer()
+{
+    if (writer_ != nullptr)
+    {
+        publisher_->delete_datawriter(writer_);
+    }
+
+    if (topic_ != nullptr)
+    {
+        participant_->delete_topic(topic_);
+    }
+
+    if (publisher_ != nullptr)
+    {
+        participant_->delete_publisher(publisher_);
+    }
+
+    if (participant_ != nullptr)
+    {
+        fastdds::dds::DomainParticipantFactory::get_instance()->delete_participant(participant_);
     }
 }
 
@@ -132,22 +152,31 @@ void DdsLogConsumer::Consume(
         }
     }
 
-    // Map Fast-DDS's Log kind to the LogEntry's kind
-    static const std::map<utils::Log::Kind, Kind> kind_map
-    {
-        {utils::Log::Kind::Error, Kind::Error},
-        {utils::Log::Kind::Warning, Kind::Warning},
-        {utils::Log::Kind::Info, Kind::Info}
-    };
-
     LogEntry log_entry;
     log_entry.event(event);
-    log_entry.kind(kind_map.at(entry.kind));
+    log_entry.kind(get_log_entry_kind_(entry.kind));
     log_entry.category(entry.context.category);
     log_entry.message(entry.message);
     log_entry.timestamp(entry.timestamp);
 
     writer_->write(&log_entry);
+}
+
+constexpr Kind DdsLogConsumer::get_log_entry_kind_(
+        const utils::Log::Kind kind) const noexcept
+{
+    switch (kind)
+    {
+        case utils::Log::Kind::Error:
+            return Kind::Error;
+
+        case utils::Log::Kind::Warning:
+            return Kind::Warning;
+
+        case utils::Log::Kind::Info:
+        default:
+            return Kind::Info;
+    }
 }
 
 } /* namespace core */

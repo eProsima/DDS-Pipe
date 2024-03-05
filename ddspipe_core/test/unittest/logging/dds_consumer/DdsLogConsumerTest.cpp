@@ -150,6 +150,7 @@ TEST_F(DdsLogConsumerTest, publish_logs)
     // INFO
     {
         logInfo(DDSPIPE_TEST, "LOG_CONSUMER_TEST | You only live once.");
+        utils::Log::Flush();
 
         // Wait for the subscriber to receive the message
         std::this_thread::sleep_for(std::chrono::milliseconds(100));
@@ -167,6 +168,7 @@ TEST_F(DdsLogConsumerTest, publish_logs)
     // WARNING
     {
         logWarning(DDSPIPE_TEST, "LOG_CONSUMER_TEST | You only live once.");
+        utils::Log::Flush();
 
         // Wait for the subscriber to receive the message
         std::this_thread::sleep_for(std::chrono::milliseconds(100));
@@ -184,6 +186,7 @@ TEST_F(DdsLogConsumerTest, publish_logs)
     // ERROR
     {
         logError(DDSPIPE_TEST, "LOG_CONSUMER_TEST | You only live once.");
+        utils::Log::Flush();
 
         // Wait for the subscriber to receive the message
         std::this_thread::sleep_for(std::chrono::milliseconds(100));
@@ -197,6 +200,8 @@ TEST_F(DdsLogConsumerTest, publish_logs)
         ASSERT_EQ(entry.category(), "DDSPIPE_TEST");
         ASSERT_EQ(entry.message(), "LOG_CONSUMER_TEST | You only live once.");
     }
+
+    utils::Log::ClearConsumers();
 }
 
 /**
@@ -239,6 +244,7 @@ TEST_F(DdsLogConsumerTest, dont_publish_logs)
     // INFO
     {
         logInfo(DDSPIPE_TEST, "LOG_CONSUMER_TEST | You only live once.");
+        utils::Log::Flush();
 
         // Wait for the subscriber to receive the message
         std::this_thread::sleep_for(std::chrono::milliseconds(100));
@@ -250,6 +256,7 @@ TEST_F(DdsLogConsumerTest, dont_publish_logs)
     // WARNING
     {
         logWarning(DDSPIPE_TEST, "LOG_CONSUMER_TEST | You only live once.");
+        utils::Log::Flush();
 
         // Wait for the subscriber to receive the message
         std::this_thread::sleep_for(std::chrono::milliseconds(100));
@@ -261,6 +268,7 @@ TEST_F(DdsLogConsumerTest, dont_publish_logs)
     // ERROR
     {
         logError(DDSPIPE_TEST, "LOG_CONSUMER_TEST | You only live once.");
+        utils::Log::Flush();
 
         // Wait for the subscriber to receive the message
         std::this_thread::sleep_for(std::chrono::milliseconds(100));
@@ -268,6 +276,8 @@ TEST_F(DdsLogConsumerTest, dont_publish_logs)
         // Verify that the content of the LogEntry published by the Log is correct
         ASSERT_EQ(reader_->take_next_sample(&entry, &info), ReturnCode_t::RETCODE_NO_DATA);
     }
+
+    utils::Log::ClearConsumers();
 }
 
 int main(
