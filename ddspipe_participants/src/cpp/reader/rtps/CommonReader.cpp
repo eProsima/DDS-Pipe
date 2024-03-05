@@ -446,7 +446,7 @@ void CommonReader::on_requested_incompatible_qos(
         eprosima::fastdds::dds::PolicyMask qos) noexcept
 {
     logWarning(DDSPIPE_RTPS_COMMONREADER_LISTENER,
-            "Reader " << *this << " found a remote Writer with incompatible QoS: " << qos);
+            "TOPIC_MISMATCH_QOS | Reader " << *this << " found a remote Writer with incompatible QoS: " << qos);
 }
 
 void CommonReader::on_sample_lost(
@@ -454,7 +454,7 @@ void CommonReader::on_sample_lost(
         int32_t sample_lost_since_last_update) noexcept
 {
     logWarning(DDSPIPE_RTPS_COMMONREADER_LISTENER,
-            "On reader " << *this << " a data sample was lost and will not be received");
+            "SAMPLE_LOST | On reader " << *this << " a data sample was lost and will not be received");
 }
 
 void CommonReader::on_sample_rejected(
@@ -490,7 +490,7 @@ void CommonReader::on_incompatible_type(
         fastrtps::rtps::RTPSReader* reader) noexcept
 {
     logWarning(DDSPIPE_RTPS_COMMONREADER_LISTENER,
-            "Reader " << *this << " shows incompatible type")
+            "TOPIC_MISMATCH_TYPE | Reader " << *this << " shows incompatible type")
 }
 
 utils::ReturnCode CommonReader::is_data_correct_(

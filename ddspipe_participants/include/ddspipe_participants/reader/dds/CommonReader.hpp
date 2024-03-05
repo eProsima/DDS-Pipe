@@ -79,7 +79,7 @@ public:
 
     virtual void on_requested_incompatible_qos(
             fastdds::dds::DataReader* reader,
-            fastdds::dds::PolicyMask qos);
+            const fastdds::dds::RequestedIncompatibleQosStatus& status);
 
 protected:
 

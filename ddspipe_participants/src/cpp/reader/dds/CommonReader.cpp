@@ -111,15 +111,15 @@ void CommonReader::on_sample_lost(
         const fastdds::dds::SampleLostStatus& status)
 {
     logWarning(DDSPIPE_DDS_READER,
-            "On reader " << *this << " a data sample was lost and will not be received");
+            "SAMPLE_LOST | On reader " << *this << " a data sample was lost and will not be received");
 }
 
 void CommonReader::on_requested_incompatible_qos(
         fastdds::dds::DataReader* reader,
-        fastdds::dds::PolicyMask qos)
+        const fastdds::dds::RequestedIncompatibleQosStatus& statuss)
 {
     logWarning(DDSPIPE_DDS_READER,
-            "Reader " << *this << " found a remote Writer with incompatible QoS: " << qos);
+            "TOPIC_MISMATCH_QOS | Reader " << *this << " found a remote Writer with incompatible QoS");
 }
 
 CommonReader::CommonReader(
