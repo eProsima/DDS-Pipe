@@ -111,18 +111,17 @@ protected:
 };
 
 /**
- * Test that the DdsLogConsumer publishes LogEntries correctly.
+ * Test that the DdsLogConsumer publishes logs when publish::enable is set to true.
  *
  * CASES:
- * - check that the DdsLogConsumer publishes logInfos correctly.
- * - check that the DdsLogConsumer publishes logWarnings correctly.
- * - check that the DdsLogConsumer publishes logErrors correctly.
+ * - check that the DdsLogConsumer publishes logInfos.
+ * - check that the DdsLogConsumer publishes logWarnings.
+ * - check that the DdsLogConsumer publishes logErrors.
  */
-TEST_F(DdsLogConsumerTest, publish_log_entries)
+TEST_F(DdsLogConsumerTest, publish_logs)
 {
     // Configure the Log
     ddspipe::core::DdsPipeLogConfiguration log_configuration;
-    log_configuration.stdout_enable = false;
     log_configuration.publish.enable = true;
     log_configuration.publish.domain = DOMAIN;
     log_configuration.publish.topic_name = TOPIC_NAME;
@@ -137,7 +136,10 @@ TEST_F(DdsLogConsumerTest, publish_log_entries)
     utils::Log::SetVerbosity(log_configuration.verbosity);
 
     // Register the DdsLogConsumer
-    utils::Log::RegisterConsumer(std::make_unique<ddspipe::core::DdsLogConsumer>(&log_configuration));
+    if (log_configuration.publish.enable)
+    {
+        utils::Log::RegisterConsumer(std::make_unique<ddspipe::core::DdsLogConsumer>(&log_configuration));
+    }
 
     // Wait for the publisher and the subscriber to match
     std::this_thread::sleep_for(std::chrono::milliseconds(100));
@@ -194,6 +196,77 @@ TEST_F(DdsLogConsumerTest, publish_log_entries)
         ASSERT_EQ(entry.kind(), Kind::Error);
         ASSERT_EQ(entry.category(), "DDSPIPE_TEST");
         ASSERT_EQ(entry.message(), "LOG_CONSUMER_TEST | You only live once.");
+    }
+}
+
+/**
+ * Test that the DdsLogConsumer doesn't publish when publish::enable is set to false.
+ *
+ * CASES:
+ * - check that the DdsLogConsumer doesn't publish logInfos.
+ * - check that the DdsLogConsumer doesn't publish logWarnings.
+ * - check that the DdsLogConsumer doesn't publish logErrors.
+ */
+TEST_F(DdsLogConsumerTest, dont_publish_logs)
+{
+    // Configure the Log
+    ddspipe::core::DdsPipeLogConfiguration log_configuration;
+    log_configuration.publish.enable = false;
+    log_configuration.publish.domain = DOMAIN;
+    log_configuration.publish.topic_name = TOPIC_NAME;
+
+    // Filter out every log except ours
+    log_configuration.verbosity = utils::VerbosityKind::Info;
+    log_configuration.filter[utils::VerbosityKind::Info].set_value("DDSPIPE_TEST");
+    log_configuration.filter[utils::VerbosityKind::Warning].set_value("DDSPIPE_TEST");
+    log_configuration.filter[utils::VerbosityKind::Error].set_value("DDSPIPE_TEST");
+
+    utils::Log::ClearConsumers();
+    utils::Log::SetVerbosity(log_configuration.verbosity);
+
+    // Register the DdsLogConsumer
+    if (log_configuration.publish.enable)
+    {
+        utils::Log::RegisterConsumer(std::make_unique<ddspipe::core::DdsLogConsumer>(&log_configuration));
+    }
+
+    // Wait for the publisher and the subscriber to match
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+
+    LogEntry entry;
+    SampleInfo info;
+
+    // INFO
+    {
+        logInfo(DDSPIPE_TEST, "LOG_CONSUMER_TEST | You only live once.");
+
+        // Wait for the subscriber to receive the message
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+
+        // Verify that the content of the LogEntry published by the Log is correct
+        ASSERT_EQ(reader_->take_next_sample(&entry, &info), ReturnCode_t::RETCODE_NO_DATA);
+    }
+
+    // WARNING
+    {
+        logWarning(DDSPIPE_TEST, "LOG_CONSUMER_TEST | You only live once.");
+
+        // Wait for the subscriber to receive the message
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+
+        // Verify that the content of the LogEntry published by the Log is correct
+        ASSERT_EQ(reader_->take_next_sample(&entry, &info), ReturnCode_t::RETCODE_NO_DATA);
+    }
+
+    // ERROR
+    {
+        logError(DDSPIPE_TEST, "LOG_CONSUMER_TEST | You only live once.");
+
+        // Wait for the subscriber to receive the message
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+
+        // Verify that the content of the LogEntry published by the Log is correct
+        ASSERT_EQ(reader_->take_next_sample(&entry, &info), ReturnCode_t::RETCODE_NO_DATA);
     }
 }
 

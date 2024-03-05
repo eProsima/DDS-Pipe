@@ -84,11 +84,7 @@ DdsLogConsumer::DdsLogConsumer(
     }
 
     // Create the topic
-    fastdds::dds::TopicQos tqos = fastdds::dds::TOPIC_QOS_DEFAULT;
-    tqos.reliability().kind = fastdds::dds::BEST_EFFORT_RELIABILITY_QOS;
-    tqos.durability().kind = fastdds::dds::VOLATILE_DURABILITY_QOS;
-
-    fastdds::dds::Topic* topic = participant->create_topic(configuration->publish.topic_name, type.get_type_name(), tqos);
+    fastdds::dds::Topic* topic = participant->create_topic(configuration->publish.topic_name, type.get_type_name(), fastdds::dds::TOPIC_QOS_DEFAULT);
 
     if (topic == nullptr)
     {
@@ -98,14 +94,7 @@ DdsLogConsumer::DdsLogConsumer(
     }
 
     // Create the writer
-    fastdds::dds::DataWriterQos wqos = fastdds::dds::DATAWRITER_QOS_DEFAULT;
-
-    wqos.data_sharing().automatic();
-    wqos.publish_mode().kind = fastdds::dds::SYNCHRONOUS_PUBLISH_MODE;
-    wqos.reliability().kind = fastdds::dds::BEST_EFFORT_RELIABILITY_QOS;
-    wqos.durability().kind = fastdds::dds::VOLATILE_DURABILITY_QOS;
-
-    writer_ = publisher->create_datawriter(topic, wqos);
+    writer_ = publisher->create_datawriter(topic, fastdds::dds::DATAWRITER_QOS_DEFAULT);
 
     if (writer_ == nullptr)
     {

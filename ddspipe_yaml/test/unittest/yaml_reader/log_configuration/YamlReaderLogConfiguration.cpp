@@ -36,7 +36,7 @@ TEST(YamlReaderLogConfiguration, parse_correct_LogConfiguration_yaml)
               enable: true
               domain: 1
               topic-name: "DdsPipeLogs"
-            stdout: true
+            stdout: false
             verbosity: info
             filter:
                 error: "DDSPIPE"
@@ -57,7 +57,7 @@ TEST(YamlReaderLogConfiguration, parse_correct_LogConfiguration_yaml)
     ASSERT_TRUE(conf.publish.enable);
     ASSERT_EQ(conf.publish.domain, 1);
     ASSERT_EQ(conf.publish.topic_name, "DdsPipeLogs");
-    ASSERT_TRUE(conf.stdout_enable);
+    ASSERT_FALSE(conf.stdout_enable);
 
     // Verify that the verbosity and filters are correct
     ASSERT_EQ(conf.verbosity.get_value(), utils::VerbosityKind::Info);
@@ -147,7 +147,7 @@ TEST(YamlReaderLogConfiguration, invalid_domain)
 
     // Verify that the configuration is invalid
     utils::Formatter error_msg;
-    ASSERT_TRUE(!conf.is_valid(error_msg));
+    ASSERT_FALSE(conf.is_valid(error_msg));
 
     // Verify that the error message is correct
     ASSERT_EQ(error_msg.to_string(), "Invalid domain: 300");
@@ -177,7 +177,7 @@ TEST(YamlReaderLogConfiguration, invalid_topic_name)
 
     // Verify that the configuration is invalid
     utils::Formatter error_msg;
-    ASSERT_TRUE(!conf.is_valid(error_msg));
+    ASSERT_FALSE(conf.is_valid(error_msg));
 
     // Verify that the error message is correct
     ASSERT_EQ(error_msg.to_string(), "Empty topic name.");

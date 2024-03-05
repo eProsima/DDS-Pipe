@@ -24,7 +24,7 @@ namespace ddspipe {
 namespace core {
 
 /**
- * TODO
+ * Configuration structure encapsulating the configuration required to publish data.
  */
 struct DdsPublishingConfiguration : public IConfiguration
 {
