@@ -15,7 +15,9 @@
 
 #pragma once
 
+#include <map>
 #include <mutex>
+#include <vector>
 
 #include <cpp_utils/time/time_utils.hpp>
 
@@ -111,6 +113,9 @@ protected:
 
     // TODO
     std::map<types::DdsTopic, std::map<types::ParticipantId, DdsTopicData>> participant_data_;
+
+    // TODO
+    std::map<std::string, bool> types_discovered_;
 
     // TODO
     std::vector<std::unique_ptr<IMonitorConsumer<MonitoringTopics>>> consumers_;

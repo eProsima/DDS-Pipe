@@ -124,14 +124,7 @@ void TopicsMonitorProducer::type_discovered(
     //      2. Simultaneous calls to msg_lost.
     std::lock_guard<std::mutex> lock(mutex_);
 
-    for (auto& topic : topic_data_)
-    {
-        if (topic.second.type_name() == type_name)
-        {
-            // Set the type discovered flag
-            topic.second.type_discovered(true);
-        }
-    }
+    types_discovered_[type_name] = true;
 }
 
 void TopicsMonitorProducer::type_mismatch(
@@ -190,6 +183,9 @@ MonitoringTopics TopicsMonitorProducer::save_data_()
     {
         auto& dds_topic = topic.first;
         auto& participants = topic.second;
+
+        // Set the type discovered flag
+        topic_data_[dds_topic].type_discovered(types_discovered_[topic_data_[dds_topic].type_name()]);
 
         std::vector<DdsTopicData> topic_participants;
 

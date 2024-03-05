@@ -62,15 +62,15 @@ TEST(YamlReaderMonitorTest, is_valid_conf_with_status_and_topics)
 
     ASSERT_EQ(conf.domain.get_value(), 10);
 
-    ASSERT_TRUE(conf.status.enabled);
-    ASSERT_EQ(conf.status.domain.get_value(), 11);
-    ASSERT_EQ(conf.status.period, 2000);
-    ASSERT_EQ(conf.status.topic_name, "DdsPipeStatus");
+    ASSERT_TRUE(conf.producers["status"].enabled);
+    ASSERT_EQ(conf.producers["status"].period, 2000);
+    ASSERT_EQ(conf.consumers["status"].domain.get_value(), 11);
+    ASSERT_EQ(conf.consumers["status"].topic_name, "DdsPipeStatus");
 
-    ASSERT_TRUE(conf.topics.enabled);
-    ASSERT_EQ(conf.topics.domain.get_value(), 10);
-    ASSERT_EQ(conf.topics.period, 3000);
-    ASSERT_EQ(conf.topics.topic_name, "DdsPipeTopics");
+    ASSERT_TRUE(conf.producers["topics"].enabled);
+    ASSERT_EQ(conf.producers["topics"].period, 3000);
+    ASSERT_EQ(conf.consumers["topics"].domain.get_value(), 10);
+    ASSERT_EQ(conf.consumers["topics"].topic_name, "DdsPipeTopics");
 }
 
 int main(
