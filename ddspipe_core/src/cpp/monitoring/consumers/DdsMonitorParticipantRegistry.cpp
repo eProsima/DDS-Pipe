@@ -17,7 +17,7 @@
 
 #include <cpp_utils/exception/InitializationException.hpp>
 
-#include <ddspipe_core/monitoring/consumers/DdsMonitorParticipantFactory.hpp>
+#include <ddspipe_core/monitoring/consumers/DdsMonitorParticipantRegistry.hpp>
 
 
 namespace eprosima {
@@ -25,10 +25,18 @@ namespace ddspipe {
 namespace core {
 
 
-std::map<types::DomainIdType, fastdds::dds::DomainParticipant*> DdsMonitorParticipantFactory::participants_;
+DdsMonitorParticipantRegistry::~DdsMonitorParticipantRegistry()
+{
+    // Delete all the participants
+    for (auto& participant : participants_)
+    {
+        fastdds::dds::DomainParticipantFactory::get_instance()->delete_participant(participant.second);
+    }
 
+    participants_.clear();
+}
 
-fastdds::dds::DomainParticipant* DdsMonitorParticipantFactory::get_participant(
+fastdds::dds::DomainParticipant* DdsMonitorParticipantRegistry::get_participant(
         const types::DomainIdType& domain)
 {
     std::lock_guard<std::mutex> lock(mutex_);
@@ -64,17 +72,6 @@ fastdds::dds::DomainParticipant* DdsMonitorParticipantFactory::get_participant(
     }
 
     return participant;
-}
-
-DdsMonitorParticipantFactory::~DdsMonitorParticipantFactory()
-{
-    // Delete all the participants
-    for (auto& participant : participants_)
-    {
-        fastdds::dds::DomainParticipantFactory::get_instance()->delete_participant(participant.second);
-    }
-
-    participants_.clear();
 }
 
 } //namespace core

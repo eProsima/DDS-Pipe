@@ -15,10 +15,13 @@
 
 #pragma once
 
+#include <fastdds/dds/domain/DomainParticipant.hpp>
 #include <fastdds/dds/publisher/DataWriter.hpp>
+#include <fastdds/dds/publisher/Publisher.hpp>
+#include <fastdds/dds/topic/Topic.hpp>
 
 #include <ddspipe_core/configuration/DdsMonitorConsumerConfiguration.hpp>
-#include <ddspipe_core/monitoring/consumers/DdsMonitorParticipantFactory.hpp>
+#include <ddspipe_core/monitoring/consumers/DdsMonitorParticipantRegistry.hpp>
 #include <ddspipe_core/monitoring/consumers/IMonitorConsumer.hpp>
 
 
@@ -30,14 +33,18 @@ namespace core {
  * TODO
  */
 template <typename T>
-class DdsMonitorConsumer : public DdsMonitorParticipantFactory, public IMonitorConsumer<T>
+class DdsMonitorConsumer : public IMonitorConsumer<T>
 {
 public:
 
     // TODO
     DdsMonitorConsumer(
             const DdsMonitorConsumerConfiguration& configuration,
+            DdsMonitorParticipantRegistry& registry,
             fastdds::dds::TypeSupport& type);
+
+    // TODO
+    ~DdsMonitorConsumer();
 
     // TODO
     void consume(
@@ -45,7 +52,10 @@ public:
 
 protected:
 
-    // DataWriter to publish the data
+    // TODO
+    fastdds::dds::DomainParticipant* participant_;
+    fastdds::dds::Publisher* publisher_;
+    fastdds::dds::Topic* topic_;
     fastdds::dds::DataWriter* writer_;
 };
 

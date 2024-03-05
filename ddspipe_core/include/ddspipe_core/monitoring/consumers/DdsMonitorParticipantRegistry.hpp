@@ -30,9 +30,12 @@ namespace core {
 /**
  * TODO
  */
-class DdsMonitorParticipantFactory
+class DdsMonitorParticipantRegistry
 {
 public:
+
+    // TODO
+    ~DdsMonitorParticipantRegistry();
 
     // TODO
     fastdds::dds::DomainParticipant* get_participant(
@@ -41,10 +44,7 @@ public:
 protected:
 
     // TODO
-    ~DdsMonitorParticipantFactory();
-
-    // TODO
-    static std::map<types::DomainIdType, fastdds::dds::DomainParticipant*> participants_;
+    std::map<types::DomainIdType, fastdds::dds::DomainParticipant*> participants_;
 
     // TODO
     std::mutex mutex_;
