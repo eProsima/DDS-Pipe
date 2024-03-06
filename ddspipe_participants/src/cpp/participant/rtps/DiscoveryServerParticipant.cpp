@@ -168,7 +168,6 @@ DiscoveryServerParticipant::reckon_participant_attributes_(
         if (address.is_ipv4())
         {
             eprosima::fastrtps::rtps::IPLocator::setIPv4(locator, address.ip());
-            eprosima::fastrtps::rtps::IPLocator::setWan(locator, address.ip());
         }
         else
         {
@@ -180,8 +179,14 @@ DiscoveryServerParticipant::reckon_participant_attributes_(
 
         if (address.is_tcp())
         {
+            // Server side
+            // Internal local port is the one passed to add_listener_port (port value).
+            // If external port is not defined, it gets internal port value. Therefore, the physical
+            // port announced is equal to the internal port.
+            // If external port is defined, announced port is external port. This is the one clients,
+            // should try to connect, which should match network router public port.
             eprosima::fastrtps::rtps::IPLocator::setPhysicalPort(locator, address.external_port());
-            eprosima::fastrtps::rtps::IPLocator::setLogicalPort(locator, address.external_port());
+            eprosima::fastrtps::rtps::IPLocator::setLogicalPort(locator, 0);
         }
 
         // Add listening address to builtin
@@ -256,8 +261,14 @@ DiscoveryServerParticipant::reckon_participant_attributes_(
 
             // PORT
             eprosima::fastrtps::rtps::IPLocator::setPhysicalPort(locator, address.port());
-            eprosima::fastrtps::rtps::IPLocator::setLogicalPort(locator, address.port());
-            // Warning: Logical port is not needed unless domain could change
+            
+            // TCP client side
+            // Initial peer physical port must match server's public port. If server specified an external port,
+            // client port value must be server's external port. Client's external port have no effect.
+            if (address.is_tcp())
+            {
+                eprosima::fastrtps::rtps::IPLocator::setLogicalPort(locator, 0);
+            }
 
             // Add as remote server and add it to builtin
             server_attr.metatrafficUnicastLocatorList.push_back(locator);
