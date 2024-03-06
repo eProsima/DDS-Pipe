@@ -163,7 +163,6 @@ fastrtps::rtps::RTPSParticipantAttributes InitialPeersParticipant::reckon_partic
         if (address.is_ipv4())
         {
             eprosima::fastrtps::rtps::IPLocator::setIPv4(locator, address.ip());
-            eprosima::fastrtps::rtps::IPLocator::setWan(locator, address.ip());
         }
         else
         {
@@ -176,8 +175,14 @@ fastrtps::rtps::RTPSParticipantAttributes InitialPeersParticipant::reckon_partic
         // In TCP case, set Physical port
         if (address.is_tcp())
         {
+            // Server side
+            // Internal local port is the one passed to add_listener_port (port value).
+            // If external port is not defined, it gets internal port value. Therefore, the physical
+            // port announced is equal to the internal port.
+            // If external port is defined, announced port is external port. This is the one clients,
+            // should try to connect, which should match network router public port.
             eprosima::fastrtps::rtps::IPLocator::setPhysicalPort(locator, address.external_port());
-            eprosima::fastrtps::rtps::IPLocator::setLogicalPort(locator, address.external_port());
+            eprosima::fastrtps::rtps::IPLocator::setLogicalPort(locator, 0);
         }
 
         // Add listening address to builtin
@@ -231,13 +236,17 @@ fastrtps::rtps::RTPSParticipantAttributes InitialPeersParticipant::reckon_partic
             eprosima::fastrtps::rtps::IPLocator::setIPv6(locator, connection_address.ip());
         }
 
-        // Set Logical port for every locator
+        // Set Physical port for every locator
         eprosima::fastrtps::rtps::IPLocator::setPhysicalPort(locator, connection_address.port());
 
-        // In TCP case, set Physical port
+        // TCP client side
+        // Initial peer physical port must match server's public port. If server specified an external port,
+        // client port value must be server's external port. Client's external port have no effect.
+
+        // In TCP case, set Logical port
         if (connection_address.is_tcp())
         {
-            eprosima::fastrtps::rtps::IPLocator::setLogicalPort(locator, connection_address.port());
+            eprosima::fastrtps::rtps::IPLocator::setLogicalPort(locator, 0);
         }
 
         // Add it to builtin
