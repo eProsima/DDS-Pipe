@@ -179,34 +179,28 @@ MonitoringTopics TopicsMonitorProducer::save_data_()
     std::vector<DdsTopic> topics_data;
 
     // Iterate through the different topics
-    for (auto& topic : participant_data_)
+    for (auto& topic : topic_data_)
     {
-        auto& dds_topic = topic.first;
-        auto& participants = topic.second;
-
         // Set the type discovered flag
-        topic_data_[dds_topic].type_discovered(types_discovered_[topic_data_[dds_topic].type_name()]);
+        topic.second.type_discovered(types_discovered_[topic.second.type_name()]);
 
         std::vector<DdsTopicData> topic_participants;
 
-        for (auto& participant : participants)
+        for (auto& participant : participant_data_[topic.first])
         {
-            auto& participant_id = participant.first;
-            auto& participant_data = participant.second;
-
             // Calculate the message reception frequency
             const double period_in_secs = (double) period / 1000;
-            participant_data.frequency((double) participant_data.msgs_received() / period_in_secs);
+            participant.second.frequency((double) participant.second.msgs_received() / period_in_secs);
 
             // Save the participant's data for the topic
-            topic_participants.push_back(participant_data);
+            topic_participants.push_back(participant.second);
         }
 
         // Save the participants' data for the topic
-        topic_data_[dds_topic].data(topic_participants);
+        topic.second.data(topic_participants);
 
         // Save the topic data
-        topics_data.push_back(topic_data_[dds_topic]);
+        topics_data.push_back(topic.second);
     }
 
     MonitoringTopics data;
