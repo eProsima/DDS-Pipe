@@ -14,11 +14,10 @@
 
 #pragma once
 
+#include <cpp_utils/Formatter.hpp>
 #include <cpp_utils/logging/BaseLogConfiguration.hpp>
-#include <cpp_utils/time/time_utils.hpp>
-#include <cpp_utils/types/Fuzzy.hpp>
-#include <cpp_utils/utils.hpp>
 
+#include <ddspipe_core/configuration/DdsPublishingConfiguration.hpp>
 #include <ddspipe_core/library/library_dll.h>
 
 namespace eprosima {
@@ -26,42 +25,37 @@ namespace ddspipe {
 namespace core {
 
 /**
- * Configuration structure encapsulating the Command-Line arguments configuration.
+ * The collection of settings related to the DDS Pipe's Log consumers.
+ *
+ * The Log consumers configured are:
+ *  - DdsLogConsumer
+ *  - StdLogConsumer
  */
-struct DDSPIPE_CORE_DllAPI CommandlineArgs
+struct DdsPipeLogConfiguration : public utils::BaseLogConfiguration
 {
+
     /////////////////////////
     // CONSTRUCTORS
     /////////////////////////
 
-    CommandlineArgs();
+    DDSPIPE_CORE_DllAPI
+    DdsPipeLogConfiguration() = default;
 
     /////////////////////////
     // METHODS
     /////////////////////////
 
-    /**
-     * @brief \c is_valid method.
-     */
+    DDSPIPE_CORE_DllAPI
     virtual bool is_valid(
-            utils::Formatter& error_msg) const noexcept;
+            utils::Formatter& error_msg) const noexcept override;
 
     /////////////////////////
     // VARIABLES
     /////////////////////////
 
-    // Configuration File path
-    std::string file_path{""};
+    DdsPublishingConfiguration publish;
 
-    // Time interval for automatic reloading of the configuration file
-    utils::Duration_ms reload_time{0};
-
-    // Verbosity level for logging
-    utils::Fuzzy<utils::VerbosityKind> log_verbosity{utils::VerbosityKind::Warning,
-                                                     utils::FuzzyLevelValues::fuzzy_level_default};
-
-    // Filter for log messages
-    utils::LogFilter log_filter;
+    bool stdout_enable = true;
 };
 
 } /* namespace core */

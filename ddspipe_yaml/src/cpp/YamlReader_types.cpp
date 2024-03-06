@@ -18,10 +18,10 @@
  */
 
 #include <cpp_utils/Log.hpp>
-#include <cpp_utils/logging/LogConfiguration.hpp>
 #include <cpp_utils/memory/Heritable.hpp>
 #include <cpp_utils/utils.hpp>
 
+#include <ddspipe_core/configuration/DdsPipeLogConfiguration.hpp>
 #include <ddspipe_core/types/dds/CustomTransport.hpp>
 #include <ddspipe_core/types/dds/DomainId.hpp>
 #include <ddspipe_core/types/dds/GuidPrefix.hpp>
@@ -341,6 +341,46 @@ DiscoveryServerConnectionAddress YamlReader::get<DiscoveryServerConnectionAddres
     }
 }
 
+template <>
+DDSPIPE_YAML_DllAPI
+void YamlReader::fill(
+        core::DdsPublishingConfiguration& object,
+        const Yaml& yml,
+        const YamlReaderVersion version)
+{
+    // Required enable
+    object.enable = get<bool>(yml, DDS_PUBLISHING_ENABLE_TAG, version);
+
+    // Optional domain
+    if (is_tag_present(yml, DDS_PUBLISHING_DOMAIN_TAG))
+    {
+        object.domain = get<DomainIdType>(yml, DDS_PUBLISHING_DOMAIN_TAG, version);
+    }
+
+    // Optional topic name
+    if (is_tag_present(yml, DDS_PUBLISHING_TOPIC_NAME_TAG))
+    {
+        object.topic_name = get<std::string>(yml, DDS_PUBLISHING_TOPIC_NAME_TAG, version);
+    }
+
+    // Optional publish type
+    if (is_tag_present(yml, DDS_PUBLISHING_PUBLISH_TYPE_TAG))
+    {
+        object.publish_type = get<bool>(yml, DDS_PUBLISHING_PUBLISH_TYPE_TAG, version);
+    }
+}
+
+template <>
+DDSPIPE_YAML_DllAPI
+core::DdsPublishingConfiguration YamlReader::get(
+        const Yaml& yml,
+        const YamlReaderVersion version)
+{
+    core::DdsPublishingConfiguration object;
+    fill<core::DdsPublishingConfiguration>(object, yml, version);
+    return object;
+}
+
 /************************
 * QoS                   *
 ************************/
@@ -444,10 +484,12 @@ void YamlReader::fill<utils::LogFilter>(
     {
         object[utils::VerbosityKind::Error] = get<std::string>(yml, LOG_FILTER_ERROR_TAG, version);
     }
+
     if (is_tag_present(yml, LOG_FILTER_WARNING_TAG))
     {
         object[utils::VerbosityKind::Warning] = get<std::string>(yml, LOG_FILTER_WARNING_TAG, version);
     }
+
     if (is_tag_present(yml, LOG_FILTER_INFO_TAG))
     {
         object[utils::VerbosityKind::Info] = get<std::string>(yml, LOG_FILTER_INFO_TAG, version);
@@ -468,10 +510,22 @@ utils::LogFilter YamlReader::get(
 template <>
 DDSPIPE_YAML_DllAPI
 void YamlReader::fill(
-        utils::LogConfiguration& object,
+        core::DdsPipeLogConfiguration& object,
         const Yaml& yml,
         const YamlReaderVersion version)
 {
+    // Optional publish
+    if (is_tag_present(yml, LOG_PUBLISH_TAG))
+    {
+        object.publish = get<core::DdsPublishingConfiguration>(yml, LOG_PUBLISH_TAG, version);
+    }
+
+    // Optional stdout
+    if (is_tag_present(yml, LOG_STDOUT_TAG))
+    {
+        object.stdout_enable = get<bool>(yml, LOG_STDOUT_TAG, version);
+    }
+
     // Verbosity optional
     if (is_tag_present(yml, LOG_VERBOSITY_TAG))
     {
@@ -494,12 +548,12 @@ void YamlReader::fill(
 
 template <>
 DDSPIPE_YAML_DllAPI
-utils::LogConfiguration YamlReader::get(
+core::DdsPipeLogConfiguration YamlReader::get(
         const Yaml& yml,
         const YamlReaderVersion version)
 {
-    utils::LogConfiguration object;
-    fill<utils::LogConfiguration>(object, yml, version);
+    core::DdsPipeLogConfiguration object;
+    fill<core::DdsPipeLogConfiguration>(object, yml, version);
     return object;
 }
 

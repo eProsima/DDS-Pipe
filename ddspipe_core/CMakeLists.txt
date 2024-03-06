@@ -60,10 +60,32 @@ project(
 # - Configure log depending on LOG_INFO flag and CMake type
 configure_project_cpp()
 
+file(
+    GLOB_RECURSE SOURCES_FILES
+        "${PROJECT_SOURCE_DIR}/src/cpp/*.c*"
+    )
+
+file(
+    GLOB_RECURSE HEADERS_FILES
+        "${PROJECT_SOURCE_DIR}/include/*.h*"
+        "${PROJECT_SOURCE_DIR}/include/*.ipp"
+    )
+
+# Exclude types' files depending on the Fast DDS version
+if ("${fastrtps_VERSION}" VERSION_LESS 2.13)
+    list(FILTER SOURCES_FILES EXCLUDE REGEX "v2/")
+    list(FILTER HEADERS_FILES EXCLUDE REGEX "v2/")
+else()
+    list(FILTER SOURCES_FILES EXCLUDE REGEX "v1/")
+    list(FILTER HEADERS_FILES EXCLUDE REGEX "v1/")
+endif()
+
 # Compile C++ library
 compile_library(
     "${PROJECT_SOURCE_DIR}/src/cpp" # Source directory
     "${PROJECT_SOURCE_DIR}/include" # Include directory
+    "${SOURCES_FILES}"
+    "${HEADERS_FILES}"
 )
 
 ###############################################################################

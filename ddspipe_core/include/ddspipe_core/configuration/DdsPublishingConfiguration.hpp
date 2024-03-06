@@ -14,54 +14,51 @@
 
 #pragma once
 
-#include <cpp_utils/logging/BaseLogConfiguration.hpp>
-#include <cpp_utils/time/time_utils.hpp>
-#include <cpp_utils/types/Fuzzy.hpp>
-#include <cpp_utils/utils.hpp>
+#include <ddspipe_core/configuration/IConfiguration.hpp>
 
 #include <ddspipe_core/library/library_dll.h>
+#include <ddspipe_core/types/dds/DomainId.hpp>
 
 namespace eprosima {
 namespace ddspipe {
 namespace core {
 
 /**
- * Configuration structure encapsulating the Command-Line arguments configuration.
+ * Configuration structure encapsulating the configuration required to publish data.
  */
-struct DDSPIPE_CORE_DllAPI CommandlineArgs
+struct DdsPublishingConfiguration : public IConfiguration
 {
+
     /////////////////////////
     // CONSTRUCTORS
     /////////////////////////
 
-    CommandlineArgs();
+    DDSPIPE_CORE_DllAPI
+    DdsPublishingConfiguration() = default;
 
     /////////////////////////
     // METHODS
     /////////////////////////
 
-    /**
-     * @brief \c is_valid method.
-     */
+    DDSPIPE_CORE_DllAPI
     virtual bool is_valid(
-            utils::Formatter& error_msg) const noexcept;
+            utils::Formatter& error_msg) const noexcept override;
 
     /////////////////////////
     // VARIABLES
     /////////////////////////
 
-    // Configuration File path
-    std::string file_path{""};
+    //! Whether the publishing is enabled or not.
+    bool enable = false;
 
-    // Time interval for automatic reloading of the configuration file
-    utils::Duration_ms reload_time{0};
+    //! The DDS domain id to publish in.
+    types::DomainIdType domain{0};
 
-    // Verbosity level for logging
-    utils::Fuzzy<utils::VerbosityKind> log_verbosity{utils::VerbosityKind::Warning,
-                                                     utils::FuzzyLevelValues::fuzzy_level_default};
+    //! The DDS topic name to publish in.
+    std::string topic_name{};
 
-    // Filter for log messages
-    utils::LogFilter log_filter;
+    //! Whether the LogEntry type should be published or not.
+    bool publish_type = false;
 };
 
 } /* namespace core */

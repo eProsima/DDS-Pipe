@@ -12,35 +12,45 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-######################################
-# Yaml Reader Log Configuration Test #
-######################################
-
-set(TEST_NAME YamlReaderLogConfiguration)
+set(TEST_NAME StdLogConsumerTest)
 
 set(TEST_SOURCES
-        YamlReaderLogConfiguration.cpp
+        StdLogConsumerTest.cpp
+    )
+
+file(
+    GLOB_RECURSE LIBRARY_SOURCES
+        "${PROJECT_SOURCE_DIR}/src/cpp/*.c*"
+        "${PROJECT_SOURCE_DIR}/include/*.h*"
+        "${PROJECT_SOURCE_DIR}/include/*.ipp"
+    )
+
+# Exclude types' files depending on the Fast DDS version
+if ("${fastrtps_VERSION}" VERSION_LESS 2.13)
+    list(FILTER LIBRARY_SOURCES EXCLUDE REGEX "v2/")
+else()
+    list(FILTER LIBRARY_SOURCES EXCLUDE REGEX "v1/")
+endif()
+
+all_library_sources(
+        "${TEST_SOURCES}"
+        "${LIBRARY_SOURCES}"
     )
 
 set(TEST_LIST
-        parse_correct_LogConfiguration_yaml
-        parse_correct_LogConfiguration_yaml_and_default
-        publishing_disabled
-        invalid_domain
-        invalid_topic_name
+        print_logs
+        dont_print_logs
     )
 
 set(TEST_EXTRA_LIBRARIES
-        yaml-cpp
         fastcdr
         fastrtps
         cpp_utils
-        ddspipe_core
-        ddspipe_yaml
     )
 
 add_unittest_executable(
-    "${TEST_NAME}"
-    "${TEST_SOURCES}"
-    "${TEST_LIST}"
-    "${TEST_EXTRA_LIBRARIES}")
+        "${TEST_NAME}"
+        "${TEST_SOURCES}"
+        "${TEST_LIST}"
+        "${TEST_EXTRA_LIBRARIES}"
+    )
