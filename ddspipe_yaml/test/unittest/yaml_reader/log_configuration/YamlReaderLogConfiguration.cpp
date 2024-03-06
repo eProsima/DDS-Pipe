@@ -47,7 +47,8 @@ TEST(YamlReaderLogConfiguration, parse_correct_LogConfiguration_yaml)
     Yaml yml = YAML::Load(yml_str);
 
     // Load the configuration from the YAML
-    const auto conf = ddspipe::yaml::YamlReader::get<ddspipe::core::DdsPipeLogConfiguration>(yml, ddspipe::yaml::YamlReaderVersion::LATEST);
+    const auto conf = ddspipe::yaml::YamlReader::get<ddspipe::core::DdsPipeLogConfiguration>(yml,
+                    ddspipe::yaml::YamlReaderVersion::LATEST);
 
     // Verify that the configuration is valid
     utils::Formatter error_msg;
@@ -85,7 +86,8 @@ TEST(YamlReaderLogConfiguration, parse_correct_LogConfiguration_yaml_and_default
     Yaml yml = YAML::Load(yml_str);
 
     // Load configuration from YAML
-    const auto conf = ddspipe::yaml::YamlReader::get<ddspipe::core::DdsPipeLogConfiguration>(yml, ddspipe::yaml::YamlReaderVersion::LATEST);
+    const auto conf = ddspipe::yaml::YamlReader::get<ddspipe::core::DdsPipeLogConfiguration>(yml,
+                    ddspipe::yaml::YamlReaderVersion::LATEST);
 
     utils::Formatter error_msg;
 
@@ -116,7 +118,8 @@ TEST(YamlReaderLogConfiguration, publishing_disabled)
     Yaml yml = YAML::Load(yml_str);
 
     // Load configuration from YAML
-    const auto conf = ddspipe::yaml::YamlReader::get<ddspipe::core::DdsPipeLogConfiguration>(yml, ddspipe::yaml::YamlReaderVersion::LATEST);
+    const auto conf = ddspipe::yaml::YamlReader::get<ddspipe::core::DdsPipeLogConfiguration>(yml,
+                    ddspipe::yaml::YamlReaderVersion::LATEST);
 
     // Verify that the configuration is valid
     utils::Formatter error_msg;
@@ -143,7 +146,8 @@ TEST(YamlReaderLogConfiguration, invalid_domain)
     Yaml yml = YAML::Load(yml_str);
 
     // Load configuration from YAML
-    const auto conf = ddspipe::yaml::YamlReader::get<ddspipe::core::DdsPipeLogConfiguration>(yml, ddspipe::yaml::YamlReaderVersion::LATEST);
+    const auto conf = ddspipe::yaml::YamlReader::get<ddspipe::core::DdsPipeLogConfiguration>(yml,
+                    ddspipe::yaml::YamlReaderVersion::LATEST);
 
     // Verify that the configuration is invalid
     utils::Formatter error_msg;
@@ -173,7 +177,8 @@ TEST(YamlReaderLogConfiguration, invalid_topic_name)
     Yaml yml = YAML::Load(yml_str);
 
     // Load configuration from YAML
-    const auto conf = ddspipe::yaml::YamlReader::get<ddspipe::core::DdsPipeLogConfiguration>(yml, ddspipe::yaml::YamlReaderVersion::LATEST);
+    const auto conf = ddspipe::yaml::YamlReader::get<ddspipe::core::DdsPipeLogConfiguration>(yml,
+                    ddspipe::yaml::YamlReaderVersion::LATEST);
 
     // Verify that the configuration is invalid
     utils::Formatter error_msg;

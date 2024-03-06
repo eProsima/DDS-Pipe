@@ -40,16 +40,20 @@ using namespace eprosima::fastcdr::exception;
 
 #include <utility>
 
-namespace helper { namespace internal {
+namespace helper {
+namespace internal {
 
-enum class Size {
+enum class Size
+{
     UInt8,
     UInt16,
     UInt32,
     UInt64,
 };
 
-constexpr Size get_size(int s) {
+constexpr Size get_size(
+        int s)
+{
     return (s <= 8 ) ? Size::UInt8:
            (s <= 16) ? Size::UInt16:
            (s <= 32) ? Size::UInt32: Size::UInt64;
@@ -59,31 +63,36 @@ template<Size s>
 struct FindTypeH;
 
 template<>
-struct FindTypeH<Size::UInt8> {
+struct FindTypeH<Size::UInt8>
+{
     using type = std::uint8_t;
 };
 
 template<>
-struct FindTypeH<Size::UInt16> {
+struct FindTypeH<Size::UInt16>
+{
     using type = std::uint16_t;
 };
 
 template<>
-struct FindTypeH<Size::UInt32> {
+struct FindTypeH<Size::UInt32>
+{
     using type = std::uint32_t;
 };
 
 template<>
-struct FindTypeH<Size::UInt64> {
+struct FindTypeH<Size::UInt64>
+{
     using type = std::uint64_t;
 };
-}
+} // namespace internal
 
 template<int S>
-struct FindType {
+struct FindType
+{
     using type = typename internal::FindTypeH<internal::get_size(S)>::type;
 };
-}
+} // namespace helper
 
 #define LogEntry_max_cdr_typesize 792ULL;
 
@@ -237,7 +246,6 @@ size_t LogEntry::getCdrSerializedSize(
     return current_alignment - initial_alignment;
 }
 
-
 void LogEntry::serialize(
         eprosima::fastcdr::Cdr& scdr) const
 {
@@ -280,7 +288,6 @@ void LogEntry::deserialize(
 
 
 }
-
 
 bool LogEntry::isKeyDefined()
 {
@@ -328,7 +335,6 @@ int32_t& LogEntry::event()
     return m_event;
 }
 
-
 /*!
  * @brief This function sets a value in member kind
  * @param _kind New value for member kind
@@ -356,7 +362,6 @@ Kind& LogEntry::kind()
 {
     return m_kind;
 }
-
 
 /*!
  * @brief This function copies the value in member category
@@ -396,7 +401,6 @@ std::string& LogEntry::category()
     return m_category;
 }
 
-
 /*!
  * @brief This function copies the value in member message
  * @param _message New value to be copied in member message
@@ -435,7 +439,6 @@ std::string& LogEntry::message()
     return m_message;
 }
 
-
 /*!
  * @brief This function copies the value in member timestamp
  * @param _timestamp New value to be copied in member timestamp
@@ -473,8 +476,5 @@ std::string& LogEntry::timestamp()
 {
     return m_timestamp;
 }
-
-
-
 
 #endif // FASTCDR_VERSION_MAJOR == 1

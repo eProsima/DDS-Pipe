@@ -31,10 +31,10 @@
 #define eProsima_user_DllExport __declspec( dllexport )
 #else
 #define eProsima_user_DllExport
-#endif
+#endif // if defined(EPROSIMA_USER_DLL_EXPORT)
 #else
 #define eProsima_user_DllExport
-#endif
+#endif // if defined(_WIN32)
 
 #if defined(_WIN32)
 #if defined(EPROSIMA_USER_DLL_EXPORT)
@@ -45,7 +45,7 @@
 #endif // LogEntry_SOURCE
 #else
 #define LogEntry_DllAPI
-#endif
+#endif // if defined(EPROSIMA_USER_DLL_EXPORT)
 #else
 #define LogEntry_DllAPI
 #endif // _WIN32
@@ -62,15 +62,19 @@ eProsima_user_DllExport void registerLogEntryTypes();
 
 
 
-eProsima_user_DllExport const TypeIdentifier* GetKindIdentifier(bool complete = false);
-eProsima_user_DllExport const TypeObject* GetKindObject(bool complete = false);
+eProsima_user_DllExport const TypeIdentifier* GetKindIdentifier(
+        bool complete = false);
+eProsima_user_DllExport const TypeObject* GetKindObject(
+        bool complete = false);
 eProsima_user_DllExport const TypeObject* GetMinimalKindObject();
 eProsima_user_DllExport const TypeObject* GetCompleteKindObject();
 
 
 
-eProsima_user_DllExport const TypeIdentifier* GetLogEntryIdentifier(bool complete = false);
-eProsima_user_DllExport const TypeObject* GetLogEntryObject(bool complete = false);
+eProsima_user_DllExport const TypeIdentifier* GetLogEntryIdentifier(
+        bool complete = false);
+eProsima_user_DllExport const TypeObject* GetLogEntryObject(
+        bool complete = false);
 eProsima_user_DllExport const TypeObject* GetMinimalLogEntryObject();
 eProsima_user_DllExport const TypeObject* GetCompleteLogEntryObject();
 

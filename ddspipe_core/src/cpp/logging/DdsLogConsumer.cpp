@@ -49,13 +49,14 @@ DdsLogConsumer::DdsLogConsumer(
         pqos.wire_protocol().builtin.typelookup_config.use_server = true;
     }
 
-    participant_ = fastdds::dds::DomainParticipantFactory::get_instance()->create_participant(configuration->publish.domain, pqos);
+    participant_ = fastdds::dds::DomainParticipantFactory::get_instance()->create_participant(
+        configuration->publish.domain, pqos);
 
     if (participant_ == nullptr)
     {
         throw utils::InitializationException(
-                    utils::Formatter() << "Error creating Participant " <<
-                        pqos.name() << ".");
+                  utils::Formatter() << "Error creating Participant " <<
+                      pqos.name() << ".");
     }
 
     // Register the type
@@ -81,7 +82,8 @@ DdsLogConsumer::DdsLogConsumer(
     }
 
     // Create the topic
-    topic_ = participant_->create_topic(configuration->publish.topic_name, type.get_type_name(), fastdds::dds::TOPIC_QOS_DEFAULT);
+    topic_ = participant_->create_topic(configuration->publish.topic_name,
+                    type.get_type_name(), fastdds::dds::TOPIC_QOS_DEFAULT);
 
     if (topic_ == nullptr)
     {

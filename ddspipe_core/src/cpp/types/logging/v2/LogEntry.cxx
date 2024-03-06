@@ -141,7 +141,6 @@ int32_t& LogEntry::event()
     return m_event;
 }
 
-
 /*!
  * @brief This function sets a value in member kind
  * @param _kind New value for member kind
@@ -169,7 +168,6 @@ Kind& LogEntry::kind()
 {
     return m_kind;
 }
-
 
 /*!
  * @brief This function copies the value in member category
@@ -209,7 +207,6 @@ std::string& LogEntry::category()
     return m_category;
 }
 
-
 /*!
  * @brief This function copies the value in member message
  * @param _message New value to be copied in member message
@@ -248,7 +245,6 @@ std::string& LogEntry::message()
     return m_message;
 }
 
-
 /*!
  * @brief This function copies the value in member timestamp
  * @param _timestamp New value to be copied in member timestamp
@@ -286,7 +282,6 @@ std::string& LogEntry::timestamp()
 {
     return m_timestamp;
 }
-
 
 // Include auxiliary functions like for serializing/deserializing.
 #include <ddspipe_core/types/logging/v2/LogEntryCdrAux.ipp>
