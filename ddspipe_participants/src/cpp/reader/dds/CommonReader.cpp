@@ -123,8 +123,8 @@ void CommonReader::on_requested_incompatible_qos(
 }
 
 void CommonReader::on_inconsistent_topic(
-        fadsdds::dds::Topic* topic,
-        fadsdds::dds::InconsistentTopicStatus status)
+        fastdds::dds::Topic* topic,
+        fastdds::dds::InconsistentTopicStatus status)
 {
     logWarning(DDSPIPE_DDS_READER,
             "TOPIC_MISMATCH_TYPE | Reader " << *this << " found a remote Writer with same topic name but incompatible type");

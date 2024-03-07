@@ -83,8 +83,8 @@ public:
             const fastdds::dds::RequestedIncompatibleQosStatus& status);
 
     virtual void on_inconsistent_topic(
-            fadsdds::dds::Topic* topic,
-            fadsdds::dds::InconsistentTopicStatus status);
+            fastdds::dds::Topic* topic,
+            fastdds::dds::InconsistentTopicStatus status);
 
 protected:
 
