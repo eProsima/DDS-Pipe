@@ -457,7 +457,7 @@ void CommonReader::on_requested_incompatible_qos(
             "TOPIC_MISMATCH_QOS | Reader " << *this << " found a remote Writer with incompatible QoS: " << qos);
 
     monitor_error("QOS_MISMATCH");
-    monitor_qos_mismatch(topic_, participant_id_);
+    monitor_qos_mismatch(topic_);
 }
 
 void CommonReader::on_sample_lost(
