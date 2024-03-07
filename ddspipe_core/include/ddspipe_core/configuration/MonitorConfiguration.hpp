@@ -18,7 +18,6 @@
 #include <string>
 
 #include <cpp_utils/Formatter.hpp>
-#include <cpp_utils/types/Fuzzy.hpp>
 
 #include <ddspipe_core/configuration/DdsMonitorConsumerConfiguration.hpp>
 #include <ddspipe_core/configuration/IConfiguration.hpp>
@@ -32,7 +31,7 @@ namespace ddspipe {
 namespace core {
 
 /**
- * TODO
+ * Configuration structure encapsulating the configuration of a \c Monitor instance.
  */
 struct MonitorConfiguration : public IConfiguration
 {
@@ -41,23 +40,25 @@ struct MonitorConfiguration : public IConfiguration
     /////////////////////////
 
     /**
-     * @brief Override \c is_valid method.
+     * @brief Check if the configuration is valid.
+     *
+     * @param error_msg The error message to be filled if the configuration is not valid.
      */
     DDSPIPE_CORE_DllAPI
-    virtual bool is_valid(
+    bool is_valid(
             utils::Formatter& error_msg) const noexcept override;
 
     /////////////////////////
     // VARIABLES
     /////////////////////////
 
-    //! TODO
-    utils::Fuzzy<types::DomainIdType> domain{0, utils::FuzzyLevelValues::fuzzy_level_default};
+    // Domain to be used by the DdsMonitorConsumers that don't have a domain configured.
+    types::DomainIdType domain{0};
 
-    //! TODO
+    // Configurations of the DdsMonitorConsumers.
     std::map<std::string, DdsMonitorConsumerConfiguration> consumers;
 
-    //! TODO
+    // Configurations of the MonitorProducers.
     std::map<std::string, MonitorProducerConfiguration> producers;
 };
 

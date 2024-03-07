@@ -28,7 +28,7 @@ namespace ddspipe {
 namespace core {
 
 /**
- * TODO
+ * Configuration structure encapsulating the configuration of a \c DdsMonitorConsumer instance.
  */
 struct DdsMonitorConsumerConfiguration : public IConfiguration
 {
@@ -37,20 +37,22 @@ struct DdsMonitorConsumerConfiguration : public IConfiguration
     /////////////////////////
 
     /**
-     * @brief Override \c is_valid method.
+     * @brief Check if the configuration is valid.
+     *
+     * @param error_msg The error message to be filled if the configuration is not valid.
      */
     DDSPIPE_CORE_DllAPI
-    virtual bool is_valid(
+    bool is_valid(
             utils::Formatter& error_msg) const noexcept override;
 
     /////////////////////////
     // VARIABLES
     /////////////////////////
 
-    //! TODO
+    // Domain in which to publish the monitoring data.
     utils::Fuzzy<types::DomainIdType> domain{0, utils::FuzzyLevelValues::fuzzy_level_default};
 
-    //! TODO
+    // Name of the topic to publish the monitoring data.
     std::string topic_name;
 };
 

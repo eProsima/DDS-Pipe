@@ -15,20 +15,31 @@
 
 #pragma once
 
+#include <ddspipe_core/library/library_dll.h>
+
 
 namespace eprosima {
 namespace ddspipe {
 namespace core {
 
 /**
- * TODO
+ * @brief Interface that represents a generic consumer of the \c Monitor.
+ *
+ * The Monitor's consumers are the entities that consume the data produced by the Monitor's producers.
+ *
+ * @tparam T Type of the data that the consumer is going to consume.
  */
 template <typename T>
 class IMonitorConsumer
 {
 public:
 
-    // TODO
+    /**
+     * @brief Virtual method that consumes the data.
+     *
+     * @param data Pointer to the data to be consumed.
+     */
+    DDSPIPE_CORE_DllAPI
     virtual void consume(
             const T* data) const = 0;
 };

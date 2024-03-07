@@ -22,7 +22,7 @@ namespace ddspipe {
 namespace core {
 
 /**
- * TODO
+ * Configuration structure encapsulating the configuration of a \c MonitorProducer instance.
  */
 struct MonitorProducerConfiguration : public IConfiguration
 {
@@ -31,20 +31,22 @@ struct MonitorProducerConfiguration : public IConfiguration
     /////////////////////////
 
     /**
-     * @brief Override \c is_valid method.
+     * @brief Check if the configuration is valid.
+     *
+     * @param error_msg The error message to be filled if the configuration is not valid.
      */
     DDSPIPE_CORE_DllAPI
-    virtual bool is_valid(
+    bool is_valid(
             utils::Formatter& error_msg) const noexcept override;
 
     /////////////////////////
     // VARIABLES
     /////////////////////////
 
-    //! TODO
+    // Whether the producer should produce and consume data.
     bool enabled = false;
 
-    //! The period in milliseconds at which the producer should consume data.
+    // The period in milliseconds at which the producer should consume data.
     double period = 1000;
 };
 

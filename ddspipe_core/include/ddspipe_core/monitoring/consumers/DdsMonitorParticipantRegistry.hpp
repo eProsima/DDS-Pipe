@@ -20,6 +20,7 @@
 
 #include <fastdds/dds/domain/DomainParticipant.hpp>
 
+#include <ddspipe_core/library/library_dll.h>
 #include <ddspipe_core/types/dds/DomainId.hpp>
 
 
@@ -28,25 +29,41 @@ namespace ddspipe {
 namespace core {
 
 /**
- * TODO
+ * The \c DdsMonitorParticipantRegistry is a helper class that manages the \c DomainParticipant instances.
+ * \c DdsMonitorConsumers use the registry to avoid creating multiple \c DomainParticipants on the same domain.
  */
 class DdsMonitorParticipantRegistry
 {
 public:
 
-    // TODO
+    /**
+     * @brief Destroy the \c DomainParticipants.
+     */
+    DDSPIPE_CORE_DllAPI
     ~DdsMonitorParticipantRegistry();
 
-    // TODO
+    /**
+     * @brief Get the \c DomainParticipant for the given domain.
+     *
+     * If the \c DomainParticipant doesn't exist, it is created with the default QoS.
+     * If the \c DomainParticipant already exists, it is returned.
+     *
+     * @todo Let the user configure the QoS.
+     *
+     * @param domain The domain to get the \c DomainParticipant for.
+     *
+     * @return The \c DomainParticipant for the given domain.
+     */
+    DDSPIPE_CORE_DllAPI
     fastdds::dds::DomainParticipant* get_participant(
             const types::DomainIdType& domain);
 
 protected:
 
-    // TODO
+    // Map of DomainId to DomainParticipant.
     std::map<types::DomainIdType, fastdds::dds::DomainParticipant*> participants_;
 
-    // TODO
+    // Mutex to protect the access to the participants_ map.
     std::mutex mutex_;
 };
 

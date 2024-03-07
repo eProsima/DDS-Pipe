@@ -15,30 +15,45 @@
 
 #pragma once
 
+#include <ddspipe_core/library/library_dll.h>
+
 
 namespace eprosima {
 namespace ddspipe {
 namespace core {
 
 /**
- * TODO
+ * @brief Interface that represents a generic producer of the \c Monitor.
+ *
+ * The Monitor's producers are the entities that produce and consume the monitored data.
+ * They use their consumes to consume the data.
+ *
+ * @tparam T Type of the data that the producer is going to produce.
  */
 class IMonitorProducer
 {
 public:
 
-    // TODO
+    /**
+     * @brief Virtual method that consumes the data.
+     *
+     * @param data Pointer to the data to be consumed.
+     */
+    DDSPIPE_CORE_DllAPI
     virtual void consume() = 0;
 
-    // TODO
+    /**
+     * @brief Attribute that represents the period at which the producer should consume data.
+     */
+    DDSPIPE_CORE_DllAPI
     double period = 1000;
 
 protected:
 
-    // TODO
+    // Since producers are singletons, they should be self-constructible.
     IMonitorProducer() = default;
 
-    // TODO
+    // Since producers are singletons, they should be self-destructible.
     ~IMonitorProducer() = default;
 };
 

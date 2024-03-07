@@ -18,6 +18,7 @@
 #include <mutex>
 
 #include <ddspipe_core/configuration/MonitorProducerConfiguration.hpp>
+#include <ddspipe_core/library/library_dll.h>
 #include <ddspipe_core/monitoring/consumers/IMonitorConsumer.hpp>
 #include <ddspipe_core/monitoring/producers/MonitorProducer.hpp>
 
@@ -33,7 +34,7 @@
 
 // DDSPIPE MONITOR MACROS
 
-//! TODO
+// Macro to add an error to the MonitoringStatus.
 #define monitor_error(error) MONITOR_ERROR_IMPL_(error)
 
 namespace eprosima {
@@ -41,45 +42,87 @@ namespace ddspipe {
 namespace core {
 
 /**
- * TODO
+ * @brief Producer of the \c MonitoringStatus.
+ *
+ * The \c StatusMonitorProducer produces the \c MonitoringStatus by gathering data with its macros:
+ * - \c monitor_error
+ *
+ * The \c StatusMonitorProducer consumes the \c MonitoringStatus by using its consumers.
+ *
+ * @note It is a singleton class so its macros can be called from anywhere in the code.
  */
 class StatusMonitorProducer : public MonitorProducer
 {
 public:
 
-    // TODO
+    /**
+     * @brief Initialize the instance of the \c StatusMonitorProducer.
+     *
+     * Applications can initialize the instance of the \c StatusMonitorProducer with derived classes.
+     *
+     * @param instance Instance of the \c StatusMonitorProducer.
+     */
+    DDSPIPE_CORE_DllAPI
     static void init_instance(
             std::unique_ptr<StatusMonitorProducer> instance);
 
-    // Static method to get the singleton instance
+    /**
+     * @brief Get the instance of the \c StatusMonitorProducer.
+     *
+     * If the instance has not been initialized, it will be initialized with the default configuration.
+     *
+     * @return Instance of the \c StatusMonitorProducer.
+     */
+    DDSPIPE_CORE_DllAPI
     static StatusMonitorProducer* get_instance();
 
-    // TODO
+    /**
+     * @brief Register a consumer.
+     *
+     * The consumer can be any class that implements the \c IMonitorConsumer interface as long as it is a template class
+     * that accepts the \c MonitoringStatus as a template parameter.
+     *
+     * @param consumer Consumer to be registered.
+     */
+    DDSPIPE_CORE_DllAPI
     virtual void register_consumer(
             std::unique_ptr<IMonitorConsumer<MonitoringStatus>> consumer);
 
-    // TODO
-    virtual void consume() override;
+    /**
+     * @brief Consume the \c MonitoringStatus.
+     *
+     * To consume data, the \c StatusMonitorProducer saves the \c MonitoringStatus and then calls the consume method of
+     * its consumers.
+     */
+    DDSPIPE_CORE_DllAPI
+    void consume() override;
 
-    // TODO
+    /**
+     * @brief Add an error to the \c MonitoringStatus.
+     *
+     * Method called by the \c monitor_error macro to.
+     *
+     * @param error String identifying the error to be added to the \c MonitoringStatus.
+     */
+    DDSPIPE_CORE_DllAPI
     virtual void add_error_to_status(
             const std::string& error);
 
 protected:
 
-    // TODO
+    // Generate the MonitoringStatus to be consumed.
     virtual MonitoringStatus* save_data_() const;
 
-    // TODO
+    // Instance of the StatusMonitorProducer.
     static std::unique_ptr<StatusMonitorProducer> instance_;
 
-    // TODO
+    // Mutex to protect the StatusMonitorProducer.
     mutable std::mutex mutex_;
 
-    // TODO
+    // The produced data.
     std::unique_ptr<MonitoringStatus> data_ = std::make_unique<MonitoringStatus>();
 
-    // TODO
+    // Vector of consumers of the MonitoringStatus.
     std::vector<std::unique_ptr<IMonitorConsumer<MonitoringStatus>>> consumers_;
 };
 
