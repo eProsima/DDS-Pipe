@@ -15,6 +15,7 @@
 #pragma once
 
 #include <ddspipe_core/configuration/MonitorProducerConfiguration.hpp>
+#include <ddspipe_core/library/library_dll.h>
 #include <ddspipe_core/monitoring/producers/IMonitorProducer.hpp>
 
 namespace eprosima {
@@ -22,19 +23,29 @@ namespace ddspipe {
 namespace core {
 
 /**
- * TODO
+ * @brief Class that represents a generic producer of the \c Monitor.
+ *
+ * The Monitor's producers are the entities that produce and consume the monitored data.
+ * They use their consumes to consume the data.
+ *
+ * @tparam T Type of the data that the producer is going to produce.
  */
 class MonitorProducer : public IMonitorProducer
 {
 public:
 
-    // TODO
+    /**
+     * @brief Virtual method that initializes a producer with a given configuration.
+     *
+     * @param configuration Configuration to initialize the producer with.
+     */
+    DDSPIPE_CORE_DllAPI
     virtual void init(
             const MonitorProducerConfiguration& configuration);
 
 protected:
 
-    // TODO
+    // Whether the producer should produce and consume data.
     bool enabled_ = false;
 };
 

@@ -15,6 +15,7 @@
 
 #pragma once
 
+#include <ddspipe_core/library/library_dll.h>
 #include <ddspipe_core/monitoring/consumers/IMonitorConsumer.hpp>
 
 namespace eprosima {
@@ -22,14 +23,21 @@ namespace ddspipe {
 namespace core {
 
 /**
- * TODO
+ * The \c StdoutMonitorConsumer consumes data by printing it on \c std::cout.
+ *
+ * @tparam T Type of the data that the \c StdoutMonitorConsumer publishes.
  */
 template <typename T>
 class StdoutMonitorConsumer : public IMonitorConsumer<T>
 {
 public:
 
-    // TODO
+    /**
+     * @brief Consume data by publishing it on \c topic_.
+     *
+     * @param data Pointer to the data to be consumed.
+     */
+    DDSPIPE_CORE_DllAPI
     void consume(
             const T* data) const override;
 };

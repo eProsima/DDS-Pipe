@@ -21,6 +21,7 @@
 #include <fastdds/dds/topic/Topic.hpp>
 
 #include <ddspipe_core/configuration/DdsMonitorConsumerConfiguration.hpp>
+#include <ddspipe_core/library/library_dll.h>
 #include <ddspipe_core/monitoring/consumers/DdsMonitorParticipantRegistry.hpp>
 #include <ddspipe_core/monitoring/consumers/IMonitorConsumer.hpp>
 
@@ -30,29 +31,46 @@ namespace ddspipe {
 namespace core {
 
 /**
- * TODO
+ * The \c DdsMonitorConsumer consumes data by publishing it on a DDS Topic.
+ *
+ * @tparam T Type of the data that the \c DdsMonitorConsumer publishes.
  */
 template <typename T>
 class DdsMonitorConsumer : public IMonitorConsumer<T>
 {
 public:
 
-    // TODO
+    /**
+     * @brief Initialize the Fast-DDS entities required to publish data.
+     *
+     * @param configuration Configuration of the \c DdsMonitorConsumer.
+     * @param registry Contains the DDS Participants to avoid creating multiple participants on the same domain.
+     * @param type TypeSupport of the data to be published.
+     */
+    DDSPIPE_CORE_DllAPI
     DdsMonitorConsumer(
             const DdsMonitorConsumerConfiguration& configuration,
             DdsMonitorParticipantRegistry& registry,
             fastdds::dds::TypeSupport& type);
 
-    // TODO
+    /**
+     * @brief Destroy the Fast-DDS entities.
+     */
+    DDSPIPE_CORE_DllAPI
     ~DdsMonitorConsumer();
 
-    // TODO
+    /**
+     * @brief Consume data by publishing it on \c topic_.
+     *
+     * @param data Pointer to the data to be consumed.
+     */
+    DDSPIPE_CORE_DllAPI
     void consume(
             const T* data) const override;
 
 protected:
 
-    // TODO
+    // Fast-DDS entities to publish data.
     fastdds::dds::DomainParticipant* participant_;
     fastdds::dds::Publisher* publisher_;
     fastdds::dds::Topic* topic_;

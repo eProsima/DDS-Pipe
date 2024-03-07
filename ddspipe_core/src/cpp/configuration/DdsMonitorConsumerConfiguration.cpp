@@ -14,7 +14,6 @@
 
 /**
  * @file DdsMonitorConsumerConfiguration.cpp
- *
  */
 
 #include <ddspipe_core/configuration/DdsMonitorConsumerConfiguration.hpp>

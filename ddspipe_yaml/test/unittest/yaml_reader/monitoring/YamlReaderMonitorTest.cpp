@@ -60,7 +60,7 @@ TEST(YamlReaderMonitorTest, is_valid_conf_with_status_and_topics)
     utils::Formatter error_msg;
     ASSERT_TRUE(conf.is_valid(error_msg));
 
-    ASSERT_EQ(conf.domain.get_value(), 10);
+    ASSERT_EQ(conf.domain, 10);
 
     ASSERT_TRUE(conf.producers["status"].enabled);
     ASSERT_EQ(conf.producers["status"].period, 2000);

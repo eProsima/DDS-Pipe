@@ -22,6 +22,7 @@
 #include <cpp_utils/time/time_utils.hpp>
 
 #include <ddspipe_core/configuration/MonitorProducerConfiguration.hpp>
+#include <ddspipe_core/library/library_dll.h>
 #include <ddspipe_core/monitoring/consumers/IMonitorConsumer.hpp>
 #include <ddspipe_core/monitoring/producers/MonitorProducer.hpp>
 #include <ddspipe_core/types/participant/ParticipantId.hpp>
@@ -37,21 +38,20 @@
     #include <ddspipe_core/types/monitoring/topics/v2/MonitoringTopicsTypeObject.h>
 #endif // if FASTRTPS_VERSION_MAJOR < 2 || (FASTRTPS_VERSION_MAJOR == 2 && FASTRTPS_VERSION_MINOR < 13)
 
-// DDSPIPE MONITOR MACROS
 
-//! TODO
+// Macro to notify that a message has been received in a topic by a participant.
 #define monitor_msg_rx(topic, participant_id) MONITOR_MSG_RX_IMPL_(topic, participant_id)
 
-//! TODO
+// Macro to notify that a message has been lost in a topic by a participant.
 #define monitor_msg_lost(topic, participant_id) MONITOR_MSG_LOST_IMPL_(topic, participant_id)
 
-//! TODO
+// Macro to notify that a type has been discovered.
 #define monitor_type_discovered(type_name) MONITOR_TYPE_DISCOVERED_IMPL_(type_name)
 
-//! TODO
+// Macro to notify that there has been a type mismatch in a topic.
 #define monitor_type_mismatch(topic) MONITOR_TYPE_MISMATCH_IMPL_(topic)
 
-//! TODO
+// Macro to notify that there has been a QoS mismatch in a topic.
 #define monitor_qos_mismatch(topic) MONITOR_QOS_MISMATCH_IMPL_(topic)
 
 namespace eprosima {
@@ -59,65 +59,138 @@ namespace ddspipe {
 namespace core {
 
 /**
- * TODO
+ * @brief Producer of the \c MonitoringTopics.
+ *
+ * The \c TopicsMonitorProducer produces the \c MonitoringTopics by gathering data with its macros:
+ * - \c monitor_msg_rx
+ * - \c monitor_msg_lost
+ * - \c monitor_type_discovered
+ * - \c monitor_type_mismatch
+ * - \c monitor_qos_mismatch
+ *
+ * The \c TopicsMonitorProducer consumes the \c MonitoringTopics by using its consumers.
+ *
+ * @note It is a singleton class so its macros can be called from anywhere in the code.
  */
 class TopicsMonitorProducer : public MonitorProducer
 {
 public:
 
-    // TODO
+    /**
+     * @brief Get the instance of the \c TopicsMonitorProducer.
+     *
+     * If the instance has not been initialized, it will initialize it.
+     *
+     * @return Instance of the \c TopicsMonitorProducer.
+     */
+    DDSPIPE_CORE_DllAPI
     static TopicsMonitorProducer* get_instance();
 
-    // TODO
+    /**
+     * @brief Register a consumer.
+     *
+     * The consumer can be any class that implements the \c IMonitorConsumer interface as long as it is a template class
+     * that accepts the \c MonitoringTopics as a template parameter.
+     *
+     * @param consumer Consumer to be registered.
+     */
+    DDSPIPE_CORE_DllAPI
     void register_consumer(
             std::unique_ptr<IMonitorConsumer<MonitoringTopics>> consumer);
 
-    // TODO
+    /**
+     * @brief Consume the \c MonitoringTopics.
+     *
+     * To consume data, the \c TopicsMonitorProducer saves the \c MonitoringTopics and then calls the consume method of
+     * its consumers.
+     */
+    DDSPIPE_CORE_DllAPI
     void consume() override;
 
-    // TODO
+    ///////////////////
+    // Data methods ///
+    ///////////////////
+
+    /**
+     * @brief Increase the number of messages received in a \c topic by a participant.
+     *
+     * Method called by the \c monitor_msg_rx macro.
+     *
+     * @param topic Topic where the message was received.
+     * @param participant_id Participant that received the message.
+     */
+    DDSPIPE_CORE_DllAPI
     void msg_received(
             const types::DdsTopic& topic,
             const types::ParticipantId& participant_id);
 
-    // TODO
+    /**
+     * @brief Increase the number of messages lost in a \c topic by a participant.
+     *
+     * Method called by the \c monitor_msg_lost macro.
+     *
+     * @param topic Topic where the message was lost.
+     * @param participant_id Participant that noticed the message was lost.
+     */
+    DDSPIPE_CORE_DllAPI
     void msg_lost(
             const types::DdsTopic& topic,
             const types::ParticipantId& participant_id);
 
-    // TODO
+    /**
+     * @brief Set a type as discovered in the \c MonitoringTopics.
+     *
+     * Method called by the \c monitor_type_discovered macro.
+     *
+     * @param type_name Name of the type discovered.
+     */
+    DDSPIPE_CORE_DllAPI
     void type_discovered(
             const std::string& type_name);
 
-    // TODO
+    /**
+     * @brief Set a type mismatch in a \c topic.
+     *
+     * Method called by the \c monitor_type_mismatch macro.
+     *
+     * @param topic Topic with the type mismatch.
+     */
+    DDSPIPE_CORE_DllAPI
     void type_mismatch(
             const types::DdsTopic& topic);
 
-    // TODO
+    /**
+     * @brief Set a QoS mismatch in a \c topic.
+     *
+     * Method called by the \c monitor_qos_mismatch macro.
+     *
+     * @param topic Topic with the QoS mismatch.
+     */
+    DDSPIPE_CORE_DllAPI
     void qos_mismatch(
             const types::DdsTopic& topic);
 
 protected:
 
-    // TODO
+    // Generate the MonitoringTopics to be consumed.
     MonitoringTopics save_data_();
 
-    // TODO
+    // Generate the MonitoringTopics to be consumed.
     void reset_data_();
 
-    // TODO
+    // Mutex to protect the TopicsMonitorProducer.
     mutable std::mutex mutex_;
 
-    // TODO
+    // Data specific to a Topic.
     std::map<types::DdsTopic, DdsTopic> topic_data_;
 
-    // TODO
+    // Data specific to a Participant.
     std::map<types::DdsTopic, std::map<types::ParticipantId, DdsTopicData>> participant_data_;
 
-    // TODO
+    // The types that have been discovered.
     std::map<std::string, bool> types_discovered_;
 
-    // TODO
+    // Vector of consumers of the MonitoringTopics.
     std::vector<std::unique_ptr<IMonitorConsumer<MonitoringTopics>>> consumers_;
 };
 

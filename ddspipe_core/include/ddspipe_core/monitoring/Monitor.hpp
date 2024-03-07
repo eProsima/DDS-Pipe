@@ -20,6 +20,7 @@
 
 #include <cpp_utils/event/PeriodicEventHandler.hpp>
 
+#include <ddspipe_core/library/library_dll.h>
 #include <ddspipe_core/monitoring/producers/IMonitorProducer.hpp>
 
 namespace eprosima {
@@ -27,19 +28,24 @@ namespace ddspipe {
 namespace core {
 
 /**
- * TODO
+ * The \c Monitor is the entity that reports internal data of the \c DdsPipe.
+ * It manages the \c MonitorProducer instances to produce and consume their data.
  */
 class Monitor
 {
 public:
 
-    // TODO
+    /**
+     * Create a \c PeriodicEventHandler to consume monitored data every period.
+     *
+     * @param producer The \c producer to register.
+     */
     void register_producer(
             IMonitorProducer* producer);
 
 protected:
 
-    // TODO
+    // Events that trigger the consumption of monitored data every period.
     std::vector<std::unique_ptr<utils::event::PeriodicEventHandler>> events_;
 };
 
