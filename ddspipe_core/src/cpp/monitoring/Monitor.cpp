@@ -12,15 +12,71 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#include <fastdds/dds/topic/TypeSupport.hpp>
 
 #include <ddspipe_core/monitoring/Monitor.hpp>
+#include <ddspipe_core/monitoring/consumers/DdsMonitorConsumer.hpp>
+#include <ddspipe_core/monitoring/consumers/StdoutMonitorConsumer.hpp>
+#include <ddspipe_core/monitoring/producers/StatusMonitorProducer.hpp>
+#include <ddspipe_core/monitoring/producers/TopicsMonitorProducer.hpp>
 
+#if FASTRTPS_VERSION_MAJOR < 2 || (FASTRTPS_VERSION_MAJOR == 2 && FASTRTPS_VERSION_MINOR < 13)
+    #include <ddspipe_core/types/monitoring/status/v1/MonitoringStatus.h>
+    #include <ddspipe_core/types/monitoring/status/v1/MonitoringStatusPubSubTypes.h>
+    #include <ddspipe_core/types/monitoring/topics/v1/MonitoringTopics.h>
+    #include <ddspipe_core/types/monitoring/topics/v1/MonitoringTopicsPubSubTypes.h>
+#else
+    #include <ddspipe_core/types/monitoring/status/v2/MonitoringStatus.h>
+    #include <ddspipe_core/types/monitoring/status/v2/MonitoringStatusPubSubTypes.h>
+    #include <ddspipe_core/types/monitoring/topics/v2/MonitoringTopics.h>
+    #include <ddspipe_core/types/monitoring/topics/v2/MonitoringTopicsPubSubTypes.h>
+#endif // if FASTRTPS_VERSION_MAJOR < 2 || (FASTRTPS_VERSION_MAJOR == 2 && FASTRTPS_VERSION_MINOR < 13)
 
 namespace eprosima {
 namespace ddspipe {
 namespace core {
 
-void Monitor::register_producer(
+Monitor::Monitor(
+        const MonitorConfiguration& configuration)
+        : configuration_(configuration)
+{
+}
+
+void Monitor::monitorize_status()
+{
+    // Register the Status Monitor Producer
+    auto status_producer = ddspipe::core::StatusMonitorProducer::get_instance();
+    status_producer->init(configuration_.producers.at("status"));
+
+    // Register the type
+    fastdds::dds::TypeSupport type(new MonitoringStatusPubSubType());
+
+    // Register the consumers
+    status_producer->register_consumer(std::make_unique<ddspipe::core::StdoutMonitorConsumer<MonitoringStatus>>());
+    status_producer->register_consumer(std::make_unique<ddspipe::core::DdsMonitorConsumer<MonitoringStatus>>(
+            configuration_.consumers.at("status"), registry_, type));
+
+    register_producer_(status_producer);
+}
+
+void Monitor::monitorize_topics()
+{
+    // Register the Topics Monitor Producer
+    auto topics_producer = ddspipe::core::TopicsMonitorProducer::get_instance();
+    topics_producer->init(configuration_.producers.at("topics"));
+
+    // Register the type
+    fastdds::dds::TypeSupport type(new MonitoringTopicsPubSubType());
+
+    // Register the consumers
+    topics_producer->register_consumer(std::make_unique<ddspipe::core::StdoutMonitorConsumer<MonitoringTopics>>());
+    topics_producer->register_consumer(std::make_unique<ddspipe::core::DdsMonitorConsumer<MonitoringTopics>>(
+            configuration_.consumers.at("topics"), registry_, type));
+
+    register_producer_(topics_producer);
+}
+
+void Monitor::register_producer_(
         IMonitorProducer* producer)
 {
     std::function<void()> periodic_callback = [producer]()
