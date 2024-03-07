@@ -108,21 +108,11 @@ public:
         utils::Formatter error_msg;
         ASSERT_TRUE(configuration.is_valid(error_msg));
 
+        static ddspipe::core::Monitor monitor(configuration);
+
         if (configuration.producers["topics"].enabled)
         {
-            // Register the Topics Monitor Producer
-            auto topics_producer = ddspipe::core::TopicsMonitorProducer::get_instance();
-            topics_producer->init(configuration.producers["topics"]);
-
-            // Register the consumers
-            topics_producer->register_consumer(std::make_unique<ddspipe::core::StdoutMonitorConsumer<MonitoringTopics>>());
-            topics_producer->register_consumer(std::make_unique<ddspipe::core::DdsMonitorConsumer<MonitoringTopics>>(
-                    configuration.consumers["topics"], registry_, type));
-
-            monitor_.register_producer(topics_producer);
-
-            // Wait for the publisher and the subscriber to match
-            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+            monitor.monitorize_topics();
         }
     }
 
@@ -142,9 +132,6 @@ protected:
 
     DomainParticipant* participant_ = nullptr;
     DataReader* reader_ = nullptr;
-
-    ddspipe::core::Monitor monitor_;
-    ddspipe::core::DdsMonitorParticipantRegistry registry_;
 };
 
 /**
