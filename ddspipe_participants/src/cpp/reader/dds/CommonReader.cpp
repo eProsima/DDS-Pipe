@@ -116,10 +116,18 @@ void CommonReader::on_sample_lost(
 
 void CommonReader::on_requested_incompatible_qos(
         fastdds::dds::DataReader* reader,
-        const fastdds::dds::RequestedIncompatibleQosStatus& statuss)
+        const fastdds::dds::RequestedIncompatibleQosStatus& status)
 {
     logWarning(DDSPIPE_DDS_READER,
             "TOPIC_MISMATCH_QOS | Reader " << *this << " found a remote Writer with incompatible QoS");
+}
+
+void CommonReader::on_inconsistent_topic(
+        fadsdds::dds::Topic* topic,
+        fadsdds::dds::InconsistentTopicStatus status)
+{
+    logWarning(DDSPIPE_DDS_READER,
+            "TOPIC_MISMATCH_TYPE | Reader " << *this << " found a remote Writer with same topic name but incompatible type");
 }
 
 CommonReader::CommonReader(
