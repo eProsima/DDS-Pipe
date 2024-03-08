@@ -38,8 +38,10 @@ all_library_sources(
     )
 
 set(TEST_LIST
-        type_mismatch
-        qos_mismatch
+        dds_type_mismatch
+        dds_qos_mismatch
+        std_type_mismatch
+        std_qos_mismatch
     )
 
 set(TEST_EXTRA_LIBRARIES

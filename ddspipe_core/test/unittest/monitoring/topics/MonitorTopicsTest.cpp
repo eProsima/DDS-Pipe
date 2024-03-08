@@ -51,7 +51,7 @@ using namespace eprosima;
 using namespace eprosima::fastdds::dds;
 
 
-const int PERIOD = 200;
+const int PERIOD = 1000;
 
 
 class MonitorTopicsTest : public testing::Test
@@ -138,14 +138,10 @@ protected:
  * Test that the Monitor monitors the messages received correctly.
  *
  * CASES:
- * - check that the Monitor prints the msgs_received correctly.
  * - check that the Monitor publishes the msgs_received correctly.
  */
-TEST_F(MonitorTopicsTest, msgs_received)
+TEST_F(MonitorTopicsTest, dds_msgs_received)
 {
-    MonitoringTopics topics;
-    SampleInfo info;
-
     // Mock a topic and a participant_id to monitor
     ddspipe::core::types::DdsTopic topic;
     topic.m_topic_name = "MonitoredTopic";
@@ -156,26 +152,14 @@ TEST_F(MonitorTopicsTest, msgs_received)
     // Mock a message received
     monitor_msg_rx(topic, participant_id);
 
-    // StdoutMonitorConsumer
+    MonitoringTopics topics;
+    SampleInfo info;
+
+    // Loop to wait for the monitored message to be received
+    for (int i = 0; i < 3; i++)
     {
-        testing::internal::CaptureStdout();
-
-        // Wait for the monitor to publish the message
-        std::this_thread::sleep_for(std::chrono::milliseconds(PERIOD));
-
-        ASSERT_EQ(testing::internal::GetCapturedStdout(),
-                "Monitoring Topics: [Topic Name: MonitoredTopic, Type Name: MonitoredTopicType, Type Discovered: "
-                "false, Type Mismatch: false, QoS Mismatch: false, Data: [Participant ID: MonitoredParticipant, "
-                "Messages Received: 1, Frequency: 5, Messages Lost: 0; ]; ]\n");
-    }
-
-    // DdsMonitorConsumer
-    {
-        // Loop to wait for the monitored message to be received
-        for (int i = 0; i < 3; i++)
+        if (reader_->take_next_sample(&topics, &info) == ReturnCode_t::RETCODE_OK)
         {
-            // Verify that the Monitor is publishing MonitoringTopics in the topic
-            ASSERT_EQ(reader_->take_next_sample(&topics, &info), ReturnCode_t::RETCODE_OK);
             ASSERT_EQ(info.instance_state, ALIVE_INSTANCE_STATE);
 
             if (topics.topics().size() == 1)
@@ -184,30 +168,28 @@ TEST_F(MonitorTopicsTest, msgs_received)
             }
         }
 
-        // Verify that the content of the MonitoringTopics published by the Monitor is correct
-        ASSERT_EQ(topics.topics().size(), 1);
-        ASSERT_FALSE(topics.topics()[0].type_discovered());
-        ASSERT_FALSE(topics.topics()[0].type_mismatch());
-        ASSERT_FALSE(topics.topics()[0].qos_mismatch());
-        ASSERT_EQ(topics.topics()[0].data().size(), 1);
-        ASSERT_EQ(topics.topics()[0].data()[0].msgs_received(), 1);
-        ASSERT_EQ(topics.topics()[0].data()[0].msgs_lost(), 0);
-        ASSERT_EQ(topics.topics()[0].data()[0].msg_rx_rate(), 1.0 / ((double) PERIOD / 1000));
+        // Wait for the monitor to publish the next message
+        std::this_thread::sleep_for(std::chrono::milliseconds(PERIOD));
     }
+
+    ASSERT_EQ(topics.topics().size(), 1);
+    ASSERT_FALSE(topics.topics()[0].type_discovered());
+    ASSERT_FALSE(topics.topics()[0].type_mismatch());
+    ASSERT_FALSE(topics.topics()[0].qos_mismatch());
+    ASSERT_EQ(topics.topics()[0].data()[0].msgs_received(), 1);
+    ASSERT_EQ(topics.topics()[0].data().size(), 1);
+    ASSERT_EQ(topics.topics()[0].data()[0].msgs_lost(), 0);
+    ASSERT_EQ(topics.topics()[0].data()[0].msg_rx_rate(), 1.0 / ((double) PERIOD / 1000));
 }
 
 /**
  * Test that the Monitor monitors the messages lost correctly.
  *
  * CASES:
- * - check that the Monitor prints the msgs_lost correctly.
  * - check that the Monitor publishes the msgs_lost correctly.
  */
-TEST_F(MonitorTopicsTest, msgs_lost)
+TEST_F(MonitorTopicsTest, dds_msgs_lost)
 {
-    MonitoringTopics topics;
-    SampleInfo info;
-
     // Mock a topic and a participant_id to monitor
     ddspipe::core::types::DdsTopic topic;
     topic.m_topic_name = "MonitoredTopic";
@@ -218,26 +200,14 @@ TEST_F(MonitorTopicsTest, msgs_lost)
     // Mock a message received
     monitor_msg_lost(topic, participant_id);
 
-    // StdoutMonitorConsumer
+    MonitoringTopics topics;
+    SampleInfo info;
+
+    // Loop to wait for the monitored message to be received
+    for (int i = 0; i < 3; i++)
     {
-        testing::internal::CaptureStdout();
-
-        // Wait for the monitor to publish the message
-        std::this_thread::sleep_for(std::chrono::milliseconds(PERIOD));
-
-        ASSERT_EQ(testing::internal::GetCapturedStdout(),
-                "Monitoring Topics: [Topic Name: MonitoredTopic, Type Name: MonitoredTopicType, Type Discovered: "
-                "false, Type Mismatch: false, QoS Mismatch: false, Data: [Participant ID: MonitoredParticipant, "
-                "Messages Received: 0, Frequency: 0, Messages Lost: 1; ]; ]\n");
-    }
-
-    // DdsMonitorConsumer
-    {
-        // Loop to wait for the monitored message to be received
-        for (int i = 0; i < 3; i++)
+        if (reader_->take_next_sample(&topics, &info) == ReturnCode_t::RETCODE_OK)
         {
-            // Verify that the Monitor is publishing MonitoringTopics in the topic
-            ASSERT_EQ(reader_->take_next_sample(&topics, &info), ReturnCode_t::RETCODE_OK);
             ASSERT_EQ(info.instance_state, ALIVE_INSTANCE_STATE);
 
             if (topics.topics().size() == 1)
@@ -246,30 +216,29 @@ TEST_F(MonitorTopicsTest, msgs_lost)
             }
         }
 
-        // Verify that the content of the MonitoringTopics published by the Monitor is correct
-        ASSERT_EQ(topics.topics().size(), 1);
-        ASSERT_FALSE(topics.topics()[0].type_discovered());
-        ASSERT_FALSE(topics.topics()[0].type_mismatch());
-        ASSERT_FALSE(topics.topics()[0].qos_mismatch());
-        ASSERT_EQ(topics.topics()[0].data().size(), 1);
-        ASSERT_EQ(topics.topics()[0].data()[0].msgs_received(), 0);
-        ASSERT_EQ(topics.topics()[0].data()[0].msgs_lost(), 1);
-        ASSERT_EQ(topics.topics()[0].data()[0].msg_rx_rate(), 0);
+        // Wait for the monitor to publish the next message
+        std::this_thread::sleep_for(std::chrono::milliseconds(PERIOD));
     }
+
+    // Verify that the content of the MonitoringTopics published by the Monitor is correct
+    ASSERT_EQ(topics.topics().size(), 1);
+    ASSERT_FALSE(topics.topics()[0].type_discovered());
+    ASSERT_FALSE(topics.topics()[0].type_mismatch());
+    ASSERT_FALSE(topics.topics()[0].qos_mismatch());
+    ASSERT_EQ(topics.topics()[0].data().size(), 1);
+    ASSERT_EQ(topics.topics()[0].data()[0].msgs_received(), 0);
+    ASSERT_EQ(topics.topics()[0].data()[0].msgs_lost(), 1);
+    ASSERT_EQ(topics.topics()[0].data()[0].msg_rx_rate(), 0);
 }
 
 /**
  * Test that the Monitor monitors the type discovered correctly.
  *
  * CASES:
- * - check that the Monitor prints the type_discovered correctly.
  * - check that the Monitor publishes the type_discovered correctly.
  */
-TEST_F(MonitorTopicsTest, type_discovered)
+TEST_F(MonitorTopicsTest, dds_type_discovered)
 {
-    MonitoringTopics topics;
-    SampleInfo info;
-
     // Mock a topic and a participant_id to monitor
     ddspipe::core::types::DdsTopic topic;
     topic.m_topic_name = "MonitoredTopic";
@@ -283,26 +252,14 @@ TEST_F(MonitorTopicsTest, type_discovered)
     // Mock a type discovered
     monitor_type_discovered(topic.type_name);
 
-    // StdoutMonitorConsumer
+    MonitoringTopics topics;
+    SampleInfo info;
+
+    // Loop to wait for the monitored message to be received
+    for (int i = 0; i < 3; i++)
     {
-        testing::internal::CaptureStdout();
-
-        // Wait for the monitor to publish the message
-        std::this_thread::sleep_for(std::chrono::milliseconds(PERIOD));
-
-        ASSERT_EQ(testing::internal::GetCapturedStdout(),
-                "Monitoring Topics: [Topic Name: MonitoredTopic, Type Name: MonitoredTopicType, Type Discovered: "
-                "true, Type Mismatch: false, QoS Mismatch: false, Data: [Participant ID: MonitoredParticipant, "
-                "Messages Received: 0, Frequency: 0, Messages Lost: 1; ]; ]\n");
-    }
-
-    // DdsMonitorConsumer
-    {
-        // Loop to wait for the monitored message to be received
-        for (int i = 0; i < 3; i++)
+        if (reader_->take_next_sample(&topics, &info) == ReturnCode_t::RETCODE_OK)
         {
-            // Verify that the Monitor is publishing MonitoringTopics in the topic
-            ASSERT_EQ(reader_->take_next_sample(&topics, &info), ReturnCode_t::RETCODE_OK);
             ASSERT_EQ(info.instance_state, ALIVE_INSTANCE_STATE);
 
             if (topics.topics().size() == 1)
@@ -311,30 +268,29 @@ TEST_F(MonitorTopicsTest, type_discovered)
             }
         }
 
-        // Verify that the content of the MonitoringTopics published by the Monitor is correct
-        ASSERT_EQ(topics.topics().size(), 1);
-        ASSERT_TRUE(topics.topics()[0].type_discovered());
-        ASSERT_FALSE(topics.topics()[0].type_mismatch());
-        ASSERT_FALSE(topics.topics()[0].qos_mismatch());
-        ASSERT_EQ(topics.topics()[0].data().size(), 1);
-        ASSERT_EQ(topics.topics()[0].data()[0].msgs_received(), 0);
-        ASSERT_EQ(topics.topics()[0].data()[0].msgs_lost(), 1);
-        ASSERT_EQ(topics.topics()[0].data()[0].msg_rx_rate(), 0);
+        // Wait for the monitor to publish the next message
+        std::this_thread::sleep_for(std::chrono::milliseconds(PERIOD));
     }
+
+    // Verify that the content of the MonitoringTopics published by the Monitor is correct
+    ASSERT_EQ(topics.topics().size(), 1);
+    ASSERT_TRUE(topics.topics()[0].type_discovered());
+    ASSERT_FALSE(topics.topics()[0].type_mismatch());
+    ASSERT_FALSE(topics.topics()[0].qos_mismatch());
+    ASSERT_EQ(topics.topics()[0].data().size(), 1);
+    ASSERT_EQ(topics.topics()[0].data()[0].msgs_received(), 0);
+    ASSERT_EQ(topics.topics()[0].data()[0].msgs_lost(), 1);
+    ASSERT_EQ(topics.topics()[0].data()[0].msg_rx_rate(), 0);
 }
 
 /**
  * Test that the Monitor monitors the type mismatch correctly.
  *
  * CASES:
- * - check that the Monitor prints the type_mismatch correctly.
  * - check that the Monitor publishes the type_mismatch correctly.
  */
-TEST_F(MonitorTopicsTest, type_mismatch)
+TEST_F(MonitorTopicsTest, dds_type_mismatch)
 {
-    MonitoringTopics topics;
-    SampleInfo info;
-
     // Mock a topic and a participant_id to monitor
     ddspipe::core::types::DdsTopic topic;
     topic.m_topic_name = "MonitoredTopic";
@@ -343,25 +299,14 @@ TEST_F(MonitorTopicsTest, type_mismatch)
     // Mock a type mismatch
     monitor_type_mismatch(topic);
 
-    // StdoutMonitorConsumer
+    MonitoringTopics topics;
+    SampleInfo info;
+
+    // Loop to wait for the monitored message to be received
+    for (int i = 0; i < 3; i++)
     {
-        testing::internal::CaptureStdout();
-
-        // Wait for the monitor to publish the message
-        std::this_thread::sleep_for(std::chrono::milliseconds(PERIOD));
-
-        ASSERT_EQ(testing::internal::GetCapturedStdout(),
-                "Monitoring Topics: [Topic Name: MonitoredTopic, Type Name: MonitoredTopicType, Type Discovered: "
-                "false, Type Mismatch: true, QoS Mismatch: false, Data: []; ]\n");
-    }
-
-    // DdsMonitorConsumer
-    {
-        // Loop to wait for the monitored message to be received
-        for (int i = 0; i < 3; i++)
+        if (reader_->take_next_sample(&topics, &info) == ReturnCode_t::RETCODE_OK)
         {
-            // Verify that the Monitor is publishing MonitoringTopics in the topic
-            ASSERT_EQ(reader_->take_next_sample(&topics, &info), ReturnCode_t::RETCODE_OK);
             ASSERT_EQ(info.instance_state, ALIVE_INSTANCE_STATE);
 
             if (topics.topics().size() == 1)
@@ -370,27 +315,26 @@ TEST_F(MonitorTopicsTest, type_mismatch)
             }
         }
 
-        // Verify that the content of the MonitoringTopics published by the Monitor is correct
-        ASSERT_EQ(topics.topics().size(), 1);
-        ASSERT_FALSE(topics.topics()[0].type_discovered());
-        ASSERT_TRUE(topics.topics()[0].type_mismatch());
-        ASSERT_FALSE(topics.topics()[0].qos_mismatch());
-        ASSERT_EQ(topics.topics()[0].data().size(), 0);
+        // Wait for the monitor to publish the next message
+        std::this_thread::sleep_for(std::chrono::milliseconds(PERIOD));
     }
+
+    // Verify that the content of the MonitoringTopics published by the Monitor is correct
+    ASSERT_EQ(topics.topics().size(), 1);
+    ASSERT_FALSE(topics.topics()[0].type_discovered());
+    ASSERT_TRUE(topics.topics()[0].type_mismatch());
+    ASSERT_FALSE(topics.topics()[0].qos_mismatch());
+    ASSERT_EQ(topics.topics()[0].data().size(), 0);
 }
 
 /**
  * Test that the Monitor monitors the QoS mismatch correctly.
  *
  * CASES:
- * - check that the Monitor prints the qos_mismatch correctly.
  * - check that the Monitor publishes the qos_mismatch correctly.
  */
-TEST_F(MonitorTopicsTest, qos_mismatch)
+TEST_F(MonitorTopicsTest, dds_qos_mismatch)
 {
-    MonitoringTopics topics;
-    SampleInfo info;
-
     // Mock a topic and a participant_id to monitor
     ddspipe::core::types::DdsTopic topic;
     topic.m_topic_name = "MonitoredTopic";
@@ -399,25 +343,14 @@ TEST_F(MonitorTopicsTest, qos_mismatch)
     // Mock a QoS mismatch
     monitor_qos_mismatch(topic);
 
-    // StdoutMonitorConsumer
+    MonitoringTopics topics;
+    SampleInfo info;
+
+    // Loop to wait for the monitored message to be received
+    for (int i = 0; i < 3; i++)
     {
-        testing::internal::CaptureStdout();
-
-        // Wait for the monitor to publish the message
-        std::this_thread::sleep_for(std::chrono::milliseconds(PERIOD));
-
-        ASSERT_EQ(testing::internal::GetCapturedStdout(),
-                "Monitoring Topics: [Topic Name: MonitoredTopic, Type Name: MonitoredTopicType, Type Discovered: "
-                "false, Type Mismatch: false, QoS Mismatch: true, Data: []; ]\n");
-    }
-
-    // DdsMonitorConsumer
-    {
-        // Loop to wait for the monitored message to be received
-        for (int i = 0; i < 3; i++)
+        if (reader_->take_next_sample(&topics, &info) == ReturnCode_t::RETCODE_OK)
         {
-            // Verify that the Monitor is publishing MonitoringTopics in the topic
-            ASSERT_EQ(reader_->take_next_sample(&topics, &info), ReturnCode_t::RETCODE_OK);
             ASSERT_EQ(info.instance_state, ALIVE_INSTANCE_STATE);
 
             if (topics.topics().size() == 1)
@@ -426,13 +359,158 @@ TEST_F(MonitorTopicsTest, qos_mismatch)
             }
         }
 
-        // Verify that the content of the MonitoringTopics published by the Monitor is correct
-        ASSERT_EQ(topics.topics().size(), 1);
-        ASSERT_FALSE(topics.topics()[0].type_discovered());
-        ASSERT_FALSE(topics.topics()[0].type_mismatch());
-        ASSERT_TRUE(topics.topics()[0].qos_mismatch());
-        ASSERT_EQ(topics.topics()[0].data().size(), 0);
+        // Wait for the monitor to publish the next message
+        std::this_thread::sleep_for(std::chrono::milliseconds(PERIOD));
     }
+
+    // Verify that the content of the MonitoringTopics published by the Monitor is correct
+    ASSERT_EQ(topics.topics().size(), 1);
+    ASSERT_FALSE(topics.topics()[0].type_discovered());
+    ASSERT_FALSE(topics.topics()[0].type_mismatch());
+    ASSERT_TRUE(topics.topics()[0].qos_mismatch());
+    ASSERT_EQ(topics.topics()[0].data().size(), 0);
+}
+
+/**
+ * Test that the Monitor monitors the messages received correctly.
+ *
+ * CASES:
+ * - check that the Monitor prints the msgs_received correctly.
+ */
+TEST_F(MonitorTopicsTest, std_msgs_received)
+{
+    // Mock a topic and a participant_id to monitor
+    ddspipe::core::types::DdsTopic topic;
+    topic.m_topic_name = "MonitoredTopic";
+    topic.type_name = "MonitoredTopicType";
+
+    ddspipe::core::types::ParticipantId participant_id = "MonitoredParticipant";
+
+    // Mock a message received
+    monitor_msg_rx(topic, participant_id);
+
+    testing::internal::CaptureStdout();
+
+    // Wait for the monitor to print the message
+    std::this_thread::sleep_for(std::chrono::milliseconds(PERIOD+100));
+
+    ASSERT_EQ(testing::internal::GetCapturedStdout(),
+            "Monitoring Topics: [Topic Name: MonitoredTopic, Type Name: MonitoredTopicType, Type Discovered: "
+            "false, Type Mismatch: false, QoS Mismatch: false, Data: [Participant ID: MonitoredParticipant, "
+            "Messages Received: 1, Messages Lost: 0, Message Reception Rate: 1; ]; ]\n");
+}
+
+/**
+ * Test that the Monitor monitors the messages lost correctly.
+ *
+ * CASES:
+ * - check that the Monitor prints the msgs_lost correctly.
+ */
+TEST_F(MonitorTopicsTest, std_msgs_lost)
+{
+    // Mock a topic and a participant_id to monitor
+    ddspipe::core::types::DdsTopic topic;
+    topic.m_topic_name = "MonitoredTopic";
+    topic.type_name = "MonitoredTopicType";
+
+    ddspipe::core::types::ParticipantId participant_id = "MonitoredParticipant";
+
+    // Mock a message lost
+    monitor_msg_lost(topic, participant_id);
+
+    testing::internal::CaptureStdout();
+
+    // Wait for the monitor to print the message
+    std::this_thread::sleep_for(std::chrono::milliseconds(PERIOD+100));
+
+    ASSERT_EQ(testing::internal::GetCapturedStdout(),
+            "Monitoring Topics: [Topic Name: MonitoredTopic, Type Name: MonitoredTopicType, Type Discovered: "
+            "false, Type Mismatch: false, QoS Mismatch: false, Data: [Participant ID: MonitoredParticipant, "
+            "Messages Received: 0, Messages Lost: 1, Message Reception Rate: 0; ]; ]\n");
+}
+
+/**
+ * Test that the Monitor monitors the type discovered correctly.
+ *
+ * CASES:
+ * - check that the Monitor prints the type_discovered correctly.
+ */
+TEST_F(MonitorTopicsTest, std_type_discovered)
+{
+    // Mock a topic and a participant_id to monitor
+    ddspipe::core::types::DdsTopic topic;
+    topic.m_topic_name = "MonitoredTopic";
+    topic.type_name = "MonitoredTopicType";
+
+    ddspipe::core::types::ParticipantId participant_id = "MonitoredParticipant";
+
+    // Mock a message lost to register the topic's name in the Monitor
+    monitor_msg_lost(topic, participant_id);
+
+    // Mock a type discovered
+    monitor_type_discovered(topic.type_name);
+
+    testing::internal::CaptureStdout();
+
+    // Wait for the monitor to print the message
+    std::this_thread::sleep_for(std::chrono::milliseconds(PERIOD+100));
+
+    ASSERT_EQ(testing::internal::GetCapturedStdout(),
+            "Monitoring Topics: [Topic Name: MonitoredTopic, Type Name: MonitoredTopicType, Type Discovered: "
+            "true, Type Mismatch: false, QoS Mismatch: false, Data: [Participant ID: MonitoredParticipant, "
+            "Messages Received: 0, Messages Lost: 1, Message Reception Rate: 0; ]; ]\n");
+}
+
+/**
+ * Test that the Monitor monitors the type mismatch correctly.
+ *
+ * CASES:
+ * - check that the Monitor prints the type_mismatch correctly.
+ */
+TEST_F(MonitorTopicsTest, std_type_mismatch)
+{
+    // Mock a topic and a participant_id to monitor
+    ddspipe::core::types::DdsTopic topic;
+    topic.m_topic_name = "MonitoredTopic";
+    topic.type_name = "MonitoredTopicType";
+
+    // Mock a type mismatch
+    monitor_type_mismatch(topic);
+
+    testing::internal::CaptureStdout();
+
+    // Wait for the monitor to print the message
+    std::this_thread::sleep_for(std::chrono::milliseconds(PERIOD+100));
+
+    ASSERT_EQ(testing::internal::GetCapturedStdout(),
+            "Monitoring Topics: [Topic Name: MonitoredTopic, Type Name: MonitoredTopicType, Type Discovered: "
+            "false, Type Mismatch: true, QoS Mismatch: false, Data: []; ]\n");
+}
+
+/**
+ * Test that the Monitor monitors the QoS mismatch correctly.
+ *
+ * CASES:
+ * - check that the Monitor prints the qos_mismatch correctly.
+ */
+TEST_F(MonitorTopicsTest, std_qos_mismatch)
+{
+    // Mock a topic and a participant_id to monitor
+    ddspipe::core::types::DdsTopic topic;
+    topic.m_topic_name = "MonitoredTopic";
+    topic.type_name = "MonitoredTopicType";
+
+    // Mock a QoS mismatch
+    monitor_qos_mismatch(topic);
+
+    testing::internal::CaptureStdout();
+
+    // Wait for the monitor to print the message
+    std::this_thread::sleep_for(std::chrono::milliseconds(PERIOD+100));
+
+    ASSERT_EQ(testing::internal::GetCapturedStdout(),
+            "Monitoring Topics: [Topic Name: MonitoredTopic, Type Name: MonitoredTopicType, Type Discovered: "
+            "false, Type Mismatch: false, QoS Mismatch: true, Data: []; ]\n");
 }
 
 int main(

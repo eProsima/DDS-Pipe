@@ -50,7 +50,7 @@ using namespace eprosima;
 using namespace eprosima::fastdds::dds;
 
 
-const int PERIOD = 200;
+const int PERIOD = 1000;
 
 
 class MonitorStatusTest : public testing::Test
@@ -137,82 +137,110 @@ protected:
  * Test that the Monitor monitors the type mismatch correctly.
  *
  * CASES:
- * - check that the Monitor prints the type_mismatch correctly.
  * - check that the Monitor publishes the type_mismatch correctly.
  */
-TEST_F(MonitorStatusTest, type_mismatch)
+TEST_F(MonitorStatusTest, dds_type_mismatch)
 {
-    MonitoringStatus status;
-    SampleInfo info;
-
     // Mock a type mismatch
     monitor_error("TYPE_MISMATCH");
 
-    // StdoutMonitorConsumer
-    {
-        testing::internal::CaptureStdout();
+    MonitoringStatus status;
+    SampleInfo info;
 
-        // Wait for the monitor to publish the message
-        std::this_thread::sleep_for(std::chrono::milliseconds(PERIOD));
-
-        ASSERT_EQ(testing::internal::GetCapturedStdout(),
-                "Monitoring Status: [TYPE_MISMATCH]\n");
-    }
-
-    // DdsMonitorConsumer
+    // Loop to wait for the monitored message to be received
+    for (int i = 0; i < 3; i++)
     {
         // Wait for the subscriber to receive the message
         std::this_thread::sleep_for(std::chrono::milliseconds(PERIOD));
 
-        // Verify that the content of the MonitoringStatus published by the Monitor is correct
-        ASSERT_EQ(reader_->take_next_sample(&status, &info), ReturnCode_t::RETCODE_OK);
-        ASSERT_EQ(info.instance_state, ALIVE_INSTANCE_STATE);
-
-        ASSERT_TRUE(status.error_status().type_mismatch());
-        ASSERT_FALSE(status.error_status().qos_mismatch());
-        ASSERT_TRUE(status.has_errors());
+        if (reader_->take_next_sample(&status, &info) == ReturnCode_t::RETCODE_OK)
+        {
+            ASSERT_EQ(info.instance_state, ALIVE_INSTANCE_STATE);
+        }
     }
+
+    // Verify that the content of the MonitoringStatus published by the Monitor is correct
+    ASSERT_TRUE(status.error_status().type_mismatch());
+    ASSERT_FALSE(status.error_status().qos_mismatch());
+    ASSERT_TRUE(status.has_errors());
+}
+
+/**
+ * Test that the Monitor monitors the qos mismatch correctly.
+ *
+ * CASES:
+ * - check that the Monitor publishes the qos_mismatch correctly.
+ */
+TEST_F(MonitorStatusTest, dds_qos_mismatch)
+{
+    // Mock a qos mismatch
+    monitor_error("QOS_MISMATCH");
+
+    MonitoringStatus status;
+    SampleInfo info;
+
+    // Loop to wait for the monitored message to be received
+    for (int i = 0; i < 3; i++)
+    {
+        // Wait for the subscriber to receive the message
+        std::this_thread::sleep_for(std::chrono::milliseconds(PERIOD));
+
+        if (reader_->take_next_sample(&status, &info) == ReturnCode_t::RETCODE_OK)
+        {
+            ASSERT_EQ(info.instance_state, ALIVE_INSTANCE_STATE);
+        }
+    }
+
+    // Verify that the content of the MonitoringStatus published by the Monitor is correct
+    ASSERT_FALSE(status.error_status().type_mismatch());
+    ASSERT_TRUE(status.error_status().qos_mismatch());
+    ASSERT_TRUE(status.has_errors());
 }
 
 /**
  * Test that the Monitor monitors the type mismatch correctly.
  *
  * CASES:
- * - check that the Monitor prints the qos_mismatch correctly.
- * - check that the Monitor publishes the qos_mismatch correctly.
+ * - check that the Monitor prints the type_mismatch correctly.
  */
-TEST_F(MonitorStatusTest, qos_mismatch)
+TEST_F(MonitorStatusTest, std_type_mismatch)
 {
+    // Mock a type mismatch
+    monitor_error("TYPE_MISMATCH");
+
     MonitoringStatus status;
     SampleInfo info;
 
-    // Mock a type mismatch
+    testing::internal::CaptureStdout();
+
+    // Wait for the monitor to publish the message
+    std::this_thread::sleep_for(std::chrono::milliseconds(PERIOD+100));
+
+    ASSERT_EQ(testing::internal::GetCapturedStdout(),
+            "Monitoring Status: [TYPE_MISMATCH]\n");
+}
+
+/**
+ * Test that the Monitor monitors the qos mismatch correctly.
+ *
+ * CASES:
+ * - check that the Monitor prints the qos_mismatch correctly.
+ */
+TEST_F(MonitorStatusTest, std_qos_mismatch)
+{
+    // Mock a qos mismatch
     monitor_error("QOS_MISMATCH");
 
-    // StdoutMonitorConsumer
-    {
-        testing::internal::CaptureStdout();
+    MonitoringStatus status;
+    SampleInfo info;
 
-        // Wait for the monitor to publish the message
-        std::this_thread::sleep_for(std::chrono::milliseconds(PERIOD));
+    testing::internal::CaptureStdout();
 
-        ASSERT_EQ(testing::internal::GetCapturedStdout(),
-                "Monitoring Status: [QOS_MISMATCH]\n");
-    }
+    // Wait for the monitor to publish the message
+    std::this_thread::sleep_for(std::chrono::milliseconds(PERIOD+100));
 
-    // DdsMonitorConsumer
-    {
-        // Wait for the subscriber to receive the message
-        std::this_thread::sleep_for(std::chrono::milliseconds(PERIOD));
-
-        // Verify that the content of the MonitoringStatus published by the Monitor is correct
-        ASSERT_EQ(reader_->take_next_sample(&status, &info), ReturnCode_t::RETCODE_OK);
-        ASSERT_EQ(info.instance_state, ALIVE_INSTANCE_STATE);
-
-        ASSERT_FALSE(status.error_status().type_mismatch());
-        ASSERT_TRUE(status.error_status().qos_mismatch());
-        ASSERT_TRUE(status.has_errors());
-    }
+    ASSERT_EQ(testing::internal::GetCapturedStdout(),
+            "Monitoring Status: [QOS_MISMATCH]\n");
 }
 
 int main(

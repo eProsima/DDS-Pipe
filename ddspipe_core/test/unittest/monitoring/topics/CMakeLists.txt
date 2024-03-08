@@ -38,11 +38,16 @@ all_library_sources(
     )
 
 set(TEST_LIST
-        msgs_received
-        msgs_lost
-        type_discovered
-        type_mismatch
-        qos_mismatch
+        dds_msgs_received
+        dds_msgs_lost
+        dds_type_discovered
+        dds_type_mismatch
+        dds_qos_mismatch
+        std_msgs_received
+        std_msgs_lost
+        std_type_discovered
+        std_type_mismatch
+        std_qos_mismatch
     )
 
 set(TEST_EXTRA_LIBRARIES
