@@ -31,10 +31,10 @@
 #define eProsima_user_DllExport __declspec( dllexport )
 #else
 #define eProsima_user_DllExport
-#endif
+#endif // if defined(EPROSIMA_USER_DLL_EXPORT)
 #else
 #define eProsima_user_DllExport
-#endif
+#endif // if defined(_WIN32)
 
 #if defined(_WIN32)
 #if defined(EPROSIMA_USER_DLL_EXPORT)
@@ -45,7 +45,7 @@
 #endif // MonitoringTopics_SOURCE
 #else
 #define MonitoringTopics_DllAPI
-#endif
+#endif // if defined(EPROSIMA_USER_DLL_EXPORT)
 #else
 #define MonitoringTopics_DllAPI
 #endif // _WIN32
@@ -56,15 +56,21 @@ eProsima_user_DllExport void registerMonitoringTopicsTypes();
 
 
 
-eProsima_user_DllExport const TypeIdentifier* GetDdsTopicDataIdentifier(bool complete = false);
-eProsima_user_DllExport const TypeObject* GetDdsTopicDataObject(bool complete = false);
+eProsima_user_DllExport const TypeIdentifier* GetDdsTopicDataIdentifier(
+        bool complete = false);
+eProsima_user_DllExport const TypeObject* GetDdsTopicDataObject(
+        bool complete = false);
 eProsima_user_DllExport const TypeObject* GetMinimalDdsTopicDataObject();
 eProsima_user_DllExport const TypeObject* GetCompleteDdsTopicDataObject();
 
 
 
-eProsima_user_DllExport const TypeIdentifier* GetDdsTopicIdentifier(bool complete = false);
-eProsima_user_DllExport const TypeObject* GetDdsTopicObject(bool complete = false);
+
+
+eProsima_user_DllExport const TypeIdentifier* GetDdsTopicIdentifier(
+        bool complete = false);
+eProsima_user_DllExport const TypeObject* GetDdsTopicObject(
+        bool complete = false);
 eProsima_user_DllExport const TypeObject* GetMinimalDdsTopicObject();
 eProsima_user_DllExport const TypeObject* GetCompleteDdsTopicObject();
 
@@ -72,8 +78,10 @@ eProsima_user_DllExport const TypeObject* GetCompleteDdsTopicObject();
 
 
 
-eProsima_user_DllExport const TypeIdentifier* GetMonitoringTopicsIdentifier(bool complete = false);
-eProsima_user_DllExport const TypeObject* GetMonitoringTopicsObject(bool complete = false);
+eProsima_user_DllExport const TypeIdentifier* GetMonitoringTopicsIdentifier(
+        bool complete = false);
+eProsima_user_DllExport const TypeObject* GetMonitoringTopicsObject(
+        bool complete = false);
 eProsima_user_DllExport const TypeObject* GetMinimalMonitoringTopicsObject();
 eProsima_user_DllExport const TypeObject* GetCompleteMonitoringTopicsObject();
 

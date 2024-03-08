@@ -28,6 +28,8 @@ char dummy;
 
 #include <ddspipe_core/types/monitoring/topics/v1/MonitoringTopics.h>
 
+#include <ddspipe_core/types/monitoring/topics/v1/MonitoringTopicsTypeObject.h>
+
 #include <fastcdr/Cdr.h>
 
 
@@ -91,8 +93,8 @@ struct FindType
 } // namespace helper
 
 #define DdsTopicData_max_cdr_typesize 280ULL;
-#define MonitoringTopics_max_cdr_typesize 2854409ULL;
-#define DdsTopic_max_cdr_typesize 28537ULL;
+#define MonitoringTopics_max_cdr_typesize 2853616ULL;
+#define DdsTopic_max_cdr_typesize 28536ULL;
 
 
 
@@ -105,9 +107,11 @@ DdsTopicData::DdsTopicData()
     m_msgs_lost = 0;
     // unsigned long m_msgs_received
     m_msgs_received = 0;
-    // double m_frequency
-    m_frequency = 0.0;
+    // double m_msg_rx_rate
+    m_msg_rx_rate = 0.0;
 
+    // Just to register all known types
+    registerMonitoringTopicsTypes();
 }
 
 DdsTopicData::~DdsTopicData()
@@ -126,7 +130,7 @@ DdsTopicData::DdsTopicData(
     m_msgs_received = x.m_msgs_received;
 
 
-    m_frequency = x.m_frequency;
+    m_msg_rx_rate = x.m_msg_rx_rate;
 
 }
 
@@ -142,7 +146,7 @@ DdsTopicData::DdsTopicData(
     m_msgs_received = x.m_msgs_received;
 
 
-    m_frequency = x.m_frequency;
+    m_msg_rx_rate = x.m_msg_rx_rate;
 
 }
 
@@ -158,7 +162,7 @@ DdsTopicData& DdsTopicData::operator =(
     m_msgs_received = x.m_msgs_received;
 
 
-    m_frequency = x.m_frequency;
+    m_msg_rx_rate = x.m_msg_rx_rate;
 
     return *this;
 }
@@ -175,7 +179,7 @@ DdsTopicData& DdsTopicData::operator =(
     m_msgs_received = x.m_msgs_received;
 
 
-    m_frequency = x.m_frequency;
+    m_msg_rx_rate = x.m_msg_rx_rate;
 
     return *this;
 }
@@ -186,7 +190,7 @@ bool DdsTopicData::operator ==(
     return (m_participant_id == x.m_participant_id &&
            m_msgs_lost == x.m_msgs_lost &&
            m_msgs_received == x.m_msgs_received &&
-           m_frequency == x.m_frequency);
+           m_msg_rx_rate == x.m_msg_rx_rate);
 }
 
 bool DdsTopicData::operator !=(
@@ -233,7 +237,7 @@ void DdsTopicData::serialize(
 
     scdr << m_msgs_received;
 
-    scdr << m_frequency;
+    scdr << m_msg_rx_rate;
 
 }
 
@@ -252,7 +256,7 @@ void DdsTopicData::deserialize(
 
 
 
-    dcdr >> m_frequency;
+    dcdr >> m_msg_rx_rate;
 
 
 }
@@ -363,31 +367,31 @@ uint32_t& DdsTopicData::msgs_received()
 }
 
 /*!
- * @brief This function sets a value in member frequency
- * @param _frequency New value for member frequency
+ * @brief This function sets a value in member msg_rx_rate
+ * @param _msg_rx_rate New value for member msg_rx_rate
  */
-void DdsTopicData::frequency(
-        double _frequency)
+void DdsTopicData::msg_rx_rate(
+        double _msg_rx_rate)
 {
-    m_frequency = _frequency;
+    m_msg_rx_rate = _msg_rx_rate;
 }
 
 /*!
- * @brief This function returns the value of member frequency
- * @return Value of member frequency
+ * @brief This function returns the value of member msg_rx_rate
+ * @return Value of member msg_rx_rate
  */
-double DdsTopicData::frequency() const
+double DdsTopicData::msg_rx_rate() const
 {
-    return m_frequency;
+    return m_msg_rx_rate;
 }
 
 /*!
- * @brief This function returns a reference to member frequency
- * @return Reference to member frequency
+ * @brief This function returns a reference to member msg_rx_rate
+ * @return Reference to member msg_rx_rate
  */
-double& DdsTopicData::frequency()
+double& DdsTopicData::msg_rx_rate()
 {
-    return m_frequency;
+    return m_msg_rx_rate;
 }
 
 DdsTopic::DdsTopic()
@@ -400,11 +404,13 @@ DdsTopic::DdsTopic()
     m_type_discovered = false;
     // boolean m_type_mismatch
     m_type_mismatch = false;
-    // sequence<DdsTopicData> m_data
-
     // boolean m_qos_mismatch
     m_qos_mismatch = false;
+    // sequence<DdsTopicData> m_data
 
+
+    // Just to register all known types
+    registerMonitoringTopicsTypes();
 }
 
 DdsTopic::~DdsTopic()
@@ -426,10 +432,10 @@ DdsTopic::DdsTopic(
     m_type_mismatch = x.m_type_mismatch;
 
 
-    m_data = x.m_data;
-
-
     m_qos_mismatch = x.m_qos_mismatch;
+
+
+    m_data = x.m_data;
 
 }
 
@@ -448,10 +454,10 @@ DdsTopic::DdsTopic(
     m_type_mismatch = x.m_type_mismatch;
 
 
-    m_data = std::move(x.m_data);
-
-
     m_qos_mismatch = x.m_qos_mismatch;
+
+
+    m_data = std::move(x.m_data);
 
 }
 
@@ -470,10 +476,10 @@ DdsTopic& DdsTopic::operator =(
     m_type_mismatch = x.m_type_mismatch;
 
 
-    m_data = x.m_data;
-
-
     m_qos_mismatch = x.m_qos_mismatch;
+
+
+    m_data = x.m_data;
 
     return *this;
 }
@@ -493,10 +499,10 @@ DdsTopic& DdsTopic::operator =(
     m_type_mismatch = x.m_type_mismatch;
 
 
-    m_data = std::move(x.m_data);
-
-
     m_qos_mismatch = x.m_qos_mismatch;
+
+
+    m_data = std::move(x.m_data);
 
     return *this;
 }
@@ -508,8 +514,8 @@ bool DdsTopic::operator ==(
            m_type_name == x.m_type_name &&
            m_type_discovered == x.m_type_discovered &&
            m_type_mismatch == x.m_type_mismatch &&
-           m_data == x.m_data &&
-           m_qos_mismatch == x.m_qos_mismatch);
+           m_qos_mismatch == x.m_qos_mismatch &&
+           m_data == x.m_data);
 }
 
 bool DdsTopic::operator !=(
@@ -544,6 +550,9 @@ size_t DdsTopic::getCdrSerializedSize(
     current_alignment += 1 + eprosima::fastcdr::Cdr::alignment(current_alignment, 1);
 
 
+    current_alignment += 1 + eprosima::fastcdr::Cdr::alignment(current_alignment, 1);
+
+
     current_alignment += 4 + eprosima::fastcdr::Cdr::alignment(current_alignment, 4);
 
 
@@ -552,9 +561,6 @@ size_t DdsTopic::getCdrSerializedSize(
         current_alignment += DdsTopicData::getCdrSerializedSize(data.data().at(a), current_alignment);
     }
 
-
-
-    current_alignment += 1 + eprosima::fastcdr::Cdr::alignment(current_alignment, 1);
 
 
     return current_alignment - initial_alignment;
@@ -571,10 +577,10 @@ void DdsTopic::serialize(
 
     scdr << m_type_mismatch;
 
+    scdr << m_qos_mismatch;
+
     scdr << m_data;
 
-
-    scdr << m_qos_mismatch;
 
 }
 
@@ -597,11 +603,11 @@ void DdsTopic::deserialize(
 
 
 
-    dcdr >> m_data;
-
-
-
     dcdr >> m_qos_mismatch;
+
+
+
+    dcdr >> m_data;
 
 
 }
@@ -750,6 +756,34 @@ bool& DdsTopic::type_mismatch()
 }
 
 /*!
+ * @brief This function sets a value in member qos_mismatch
+ * @param _qos_mismatch New value for member qos_mismatch
+ */
+void DdsTopic::qos_mismatch(
+        bool _qos_mismatch)
+{
+    m_qos_mismatch = _qos_mismatch;
+}
+
+/*!
+ * @brief This function returns the value of member qos_mismatch
+ * @return Value of member qos_mismatch
+ */
+bool DdsTopic::qos_mismatch() const
+{
+    return m_qos_mismatch;
+}
+
+/*!
+ * @brief This function returns a reference to member qos_mismatch
+ * @return Reference to member qos_mismatch
+ */
+bool& DdsTopic::qos_mismatch()
+{
+    return m_qos_mismatch;
+}
+
+/*!
  * @brief This function copies the value in member data
  * @param _data New value to be copied in member data
  */
@@ -787,39 +821,13 @@ std::vector<DdsTopicData>& DdsTopic::data()
     return m_data;
 }
 
-/*!
- * @brief This function sets a value in member qos_mismatch
- * @param _qos_mismatch New value for member qos_mismatch
- */
-void DdsTopic::qos_mismatch(
-        bool _qos_mismatch)
-{
-    m_qos_mismatch = _qos_mismatch;
-}
-
-/*!
- * @brief This function returns the value of member qos_mismatch
- * @return Value of member qos_mismatch
- */
-bool DdsTopic::qos_mismatch() const
-{
-    return m_qos_mismatch;
-}
-
-/*!
- * @brief This function returns a reference to member qos_mismatch
- * @return Reference to member qos_mismatch
- */
-bool& DdsTopic::qos_mismatch()
-{
-    return m_qos_mismatch;
-}
-
 MonitoringTopics::MonitoringTopics()
 {
     // sequence<DdsTopic> m_topics
 
 
+    // Just to register all known types
+    registerMonitoringTopicsTypes();
 }
 
 MonitoringTopics::~MonitoringTopics()

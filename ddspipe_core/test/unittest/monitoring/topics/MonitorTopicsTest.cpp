@@ -192,7 +192,7 @@ TEST_F(MonitorTopicsTest, msgs_received)
         ASSERT_EQ(topics.topics()[0].data().size(), 1);
         ASSERT_EQ(topics.topics()[0].data()[0].msgs_received(), 1);
         ASSERT_EQ(topics.topics()[0].data()[0].msgs_lost(), 0);
-        ASSERT_EQ(topics.topics()[0].data()[0].frequency(), 1.0 / ((double) PERIOD / 1000));
+        ASSERT_EQ(topics.topics()[0].data()[0].msg_rx_rate(), 1.0 / ((double) PERIOD / 1000));
     }
 }
 
@@ -254,7 +254,7 @@ TEST_F(MonitorTopicsTest, msgs_lost)
         ASSERT_EQ(topics.topics()[0].data().size(), 1);
         ASSERT_EQ(topics.topics()[0].data()[0].msgs_received(), 0);
         ASSERT_EQ(topics.topics()[0].data()[0].msgs_lost(), 1);
-        ASSERT_EQ(topics.topics()[0].data()[0].frequency(), 0);
+        ASSERT_EQ(topics.topics()[0].data()[0].msg_rx_rate(), 0);
     }
 }
 
@@ -319,7 +319,7 @@ TEST_F(MonitorTopicsTest, type_discovered)
         ASSERT_EQ(topics.topics()[0].data().size(), 1);
         ASSERT_EQ(topics.topics()[0].data()[0].msgs_received(), 0);
         ASSERT_EQ(topics.topics()[0].data()[0].msgs_lost(), 1);
-        ASSERT_EQ(topics.topics()[0].data()[0].frequency(), 0);
+        ASSERT_EQ(topics.topics()[0].data()[0].msg_rx_rate(), 0);
     }
 }
 

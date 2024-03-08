@@ -188,9 +188,9 @@ MonitoringTopics TopicsMonitorProducer::save_data_()
 
         for (auto& participant : participant_data_[topic.first])
         {
-            // Calculate the message reception frequency
+            // Calculate the message reception rate
             const double period_in_secs = (double) period / 1000;
-            participant.second.frequency((double) participant.second.msgs_received() / period_in_secs);
+            participant.second.msg_rx_rate((double) participant.second.msgs_received() / period_in_secs);
 
             // Save the participant's data for the topic
             topic_participants.push_back(participant.second);
@@ -233,8 +233,8 @@ std::ostream& operator <<(
 {
     os << "Participant ID: " << data.participant_id();
     os << ", Messages Received: " << data.msgs_received();
-    os << ", Frequency: " << data.frequency();
     os << ", Messages Lost: " << data.msgs_lost();
+    os << ", Message Reception Rate: " << data.msg_rx_rate();
     return os;
 }
 

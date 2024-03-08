@@ -21,8 +21,10 @@
 
 #ifdef _WIN32
 // Remove linker warning LNK4221 on Visual Studio
-namespace { char dummy; }
-#endif
+namespace {
+char dummy;
+} // namespace
+#endif // ifdef _WIN32
 
 #include <ddspipe_core/types/monitoring/topics/v1/MonitoringTopics.h>
 #include <ddspipe_core/types/monitoring/topics/v1/MonitoringTopicsTypeObject.h>
@@ -43,7 +45,7 @@ void registerMonitoringTopicsTypes()
     static std::once_flag once_flag;
     std::call_once(once_flag, []()
             {
-                TypeObjectFactory *factory = TypeObjectFactory::get_instance();
+                TypeObjectFactory* factory = TypeObjectFactory::get_instance();
                 factory->add_type_object("DdsTopicData", GetDdsTopicDataIdentifier(true),
                 GetDdsTopicDataObject(true));
                 factory->add_type_object("DdsTopicData", GetDdsTopicDataIdentifier(false),
@@ -64,11 +66,11 @@ void registerMonitoringTopicsTypes()
             });
 }
 
-
-
-const TypeIdentifier* GetDdsTopicDataIdentifier(bool complete)
+const TypeIdentifier* GetDdsTopicDataIdentifier(
+        bool complete)
 {
-    const TypeIdentifier * c_identifier = TypeObjectFactory::get_instance()->get_type_identifier("DdsTopicData", complete);
+    const TypeIdentifier* c_identifier =
+            TypeObjectFactory::get_instance()->get_type_identifier("DdsTopicData", complete);
     if (c_identifier != nullptr && (!complete || c_identifier->_d() == EK_COMPLETE))
     {
         return c_identifier;
@@ -78,7 +80,8 @@ const TypeIdentifier* GetDdsTopicDataIdentifier(bool complete)
     return TypeObjectFactory::get_instance()->get_type_identifier("DdsTopicData", complete);
 }
 
-const TypeObject* GetDdsTopicDataObject(bool complete)
+const TypeObject* GetDdsTopicDataObject(
+        bool complete)
 {
     const TypeObject* c_type_object = TypeObjectFactory::get_instance()->get_type_object("DdsTopicData", complete);
     if (c_type_object != nullptr)
@@ -101,7 +104,7 @@ const TypeObject* GetMinimalDdsTopicDataObject()
         return c_type_object;
     }
 
-    TypeObject *type_object = new TypeObject();
+    TypeObject* type_object = new TypeObject();
     type_object->_d(EK_MINIMAL);
     type_object->minimal()._d(TK_STRUCTURE);
 
@@ -124,7 +127,7 @@ const TypeObject* GetMinimalDdsTopicDataObject()
     mst_participant_id.common().member_type_id(*TypeObjectFactory::get_instance()->get_string_identifier(255, false));
 
     MD5 participant_id_hash("participant_id");
-    for(int i = 0; i < 4; ++i)
+    for (int i = 0; i < 4; ++i)
     {
         mst_participant_id.detail().name_hash()[i] = participant_id_hash.digest[i];
     }
@@ -143,7 +146,7 @@ const TypeObject* GetMinimalDdsTopicDataObject()
 
 
     MD5 msgs_lost_hash("msgs_lost");
-    for(int i = 0; i < 4; ++i)
+    for (int i = 0; i < 4; ++i)
     {
         mst_msgs_lost.detail().name_hash()[i] = msgs_lost_hash.digest[i];
     }
@@ -158,34 +161,36 @@ const TypeObject* GetMinimalDdsTopicDataObject()
     mst_msgs_received.common().member_flags().IS_MUST_UNDERSTAND(false);
     mst_msgs_received.common().member_flags().IS_KEY(false);
     mst_msgs_received.common().member_flags().IS_DEFAULT(false); // Doesn't apply
-    mst_msgs_received.common().member_type_id(*TypeObjectFactory::get_instance()->get_type_identifier("uint32_t", false));
+    mst_msgs_received.common().member_type_id(*TypeObjectFactory::get_instance()->get_type_identifier("uint32_t",
+            false));
 
 
     MD5 msgs_received_hash("msgs_received");
-    for(int i = 0; i < 4; ++i)
+    for (int i = 0; i < 4; ++i)
     {
         mst_msgs_received.detail().name_hash()[i] = msgs_received_hash.digest[i];
     }
     type_object->minimal().struct_type().member_seq().emplace_back(mst_msgs_received);
 
-    MinimalStructMember mst_frequency;
-    mst_frequency.common().member_id(memberId++);
-    mst_frequency.common().member_flags().TRY_CONSTRUCT1(false); // Unsupported
-    mst_frequency.common().member_flags().TRY_CONSTRUCT2(false); // Unsupported
-    mst_frequency.common().member_flags().IS_EXTERNAL(false); // Unsupported
-    mst_frequency.common().member_flags().IS_OPTIONAL(false);
-    mst_frequency.common().member_flags().IS_MUST_UNDERSTAND(false);
-    mst_frequency.common().member_flags().IS_KEY(false);
-    mst_frequency.common().member_flags().IS_DEFAULT(false); // Doesn't apply
-    mst_frequency.common().member_type_id(*TypeObjectFactory::get_instance()->get_type_identifier("double", false));
+    MinimalStructMember mst_msg_rx_rate;
+    mst_msg_rx_rate.common().member_id(memberId++);
+    mst_msg_rx_rate.common().member_flags().TRY_CONSTRUCT1(false); // Unsupported
+    mst_msg_rx_rate.common().member_flags().TRY_CONSTRUCT2(false); // Unsupported
+    mst_msg_rx_rate.common().member_flags().IS_EXTERNAL(false); // Unsupported
+    mst_msg_rx_rate.common().member_flags().IS_OPTIONAL(false);
+    mst_msg_rx_rate.common().member_flags().IS_MUST_UNDERSTAND(false);
+    mst_msg_rx_rate.common().member_flags().IS_KEY(false);
+    mst_msg_rx_rate.common().member_flags().IS_DEFAULT(false); // Doesn't apply
+    mst_msg_rx_rate.common().member_type_id(*TypeObjectFactory::get_instance()->get_type_identifier("double",
+            false));
 
 
-    MD5 frequency_hash("frequency");
-    for(int i = 0; i < 4; ++i)
+    MD5 msg_rx_rate_hash("msg_rx_rate");
+    for (int i = 0; i < 4; ++i)
     {
-        mst_frequency.detail().name_hash()[i] = frequency_hash.digest[i];
+        mst_msg_rx_rate.detail().name_hash()[i] = msg_rx_rate_hash.digest[i];
     }
-    type_object->minimal().struct_type().member_seq().emplace_back(mst_frequency);
+    type_object->minimal().struct_type().member_seq().emplace_back(mst_msg_rx_rate);
 
 
     // Header
@@ -198,7 +203,7 @@ const TypeObject* GetMinimalDdsTopicDataObject()
     eprosima::fastcdr::CdrSizeCalculator calculator(eprosima::fastcdr::CdrVersion::XCDRv1);
     size_t current_alignment {0};
     SerializedPayload_t payload(static_cast<uint32_t>(
-        calculator.calculate_serialized_size(type_object->minimal().struct_type(), current_alignment) + 4));
+                calculator.calculate_serialized_size(type_object->minimal().struct_type(), current_alignment) + 4));
     eprosima::fastcdr::FastBuffer fastbuffer((char*) payload.data, payload.max_size);
     // Fixed endian (Page 221, EquivalenceHash definition of Extensible and Dynamic Topic Types for DDS document)
     eprosima::fastcdr::Cdr ser(
@@ -215,7 +220,7 @@ const TypeObject* GetMinimalDdsTopicDataObject()
     MD5 objectHash;
     objectHash.update((char*)payload.data, payload.length);
     objectHash.finalize();
-    for(int i = 0; i < 14; ++i)
+    for (int i = 0; i < 14; ++i)
     {
         identifier.equivalence_hash()[i] = objectHash.digest[i];
     }
@@ -233,7 +238,7 @@ const TypeObject* GetCompleteDdsTopicDataObject()
         return c_type_object;
     }
 
-    TypeObject *type_object = new TypeObject();
+    TypeObject* type_object = new TypeObject();
     type_object->_d(EK_COMPLETE);
     type_object->complete()._d(TK_STRUCTURE);
 
@@ -284,28 +289,30 @@ const TypeObject* GetCompleteDdsTopicDataObject()
     cst_msgs_received.common().member_flags().IS_MUST_UNDERSTAND(false);
     cst_msgs_received.common().member_flags().IS_KEY(false);
     cst_msgs_received.common().member_flags().IS_DEFAULT(false); // Doesn't apply
-    cst_msgs_received.common().member_type_id(*TypeObjectFactory::get_instance()->get_type_identifier("uint32_t", false));
+    cst_msgs_received.common().member_type_id(*TypeObjectFactory::get_instance()->get_type_identifier("uint32_t",
+            false));
 
 
     cst_msgs_received.detail().name("msgs_received");
 
     type_object->complete().struct_type().member_seq().emplace_back(cst_msgs_received);
 
-    CompleteStructMember cst_frequency;
-    cst_frequency.common().member_id(memberId++);
-    cst_frequency.common().member_flags().TRY_CONSTRUCT1(false); // Unsupported
-    cst_frequency.common().member_flags().TRY_CONSTRUCT2(false); // Unsupported
-    cst_frequency.common().member_flags().IS_EXTERNAL(false); // Unsupported
-    cst_frequency.common().member_flags().IS_OPTIONAL(false);
-    cst_frequency.common().member_flags().IS_MUST_UNDERSTAND(false);
-    cst_frequency.common().member_flags().IS_KEY(false);
-    cst_frequency.common().member_flags().IS_DEFAULT(false); // Doesn't apply
-    cst_frequency.common().member_type_id(*TypeObjectFactory::get_instance()->get_type_identifier("double", false));
+    CompleteStructMember cst_msg_rx_rate;
+    cst_msg_rx_rate.common().member_id(memberId++);
+    cst_msg_rx_rate.common().member_flags().TRY_CONSTRUCT1(false); // Unsupported
+    cst_msg_rx_rate.common().member_flags().TRY_CONSTRUCT2(false); // Unsupported
+    cst_msg_rx_rate.common().member_flags().IS_EXTERNAL(false); // Unsupported
+    cst_msg_rx_rate.common().member_flags().IS_OPTIONAL(false);
+    cst_msg_rx_rate.common().member_flags().IS_MUST_UNDERSTAND(false);
+    cst_msg_rx_rate.common().member_flags().IS_KEY(false);
+    cst_msg_rx_rate.common().member_flags().IS_DEFAULT(false); // Doesn't apply
+    cst_msg_rx_rate.common().member_type_id(*TypeObjectFactory::get_instance()->get_type_identifier("double",
+            false));
 
 
-    cst_frequency.detail().name("frequency");
+    cst_msg_rx_rate.detail().name("msg_rx_rate");
 
-    type_object->complete().struct_type().member_seq().emplace_back(cst_frequency);
+    type_object->complete().struct_type().member_seq().emplace_back(cst_msg_rx_rate);
 
 
     // Header
@@ -317,7 +324,7 @@ const TypeObject* GetCompleteDdsTopicDataObject()
     eprosima::fastcdr::CdrSizeCalculator calculator(eprosima::fastcdr::CdrVersion::XCDRv1);
     size_t current_alignment {0};
     SerializedPayload_t payload(static_cast<uint32_t>(
-        calculator.calculate_serialized_size(type_object->complete().struct_type(), current_alignment) + 4));
+                calculator.calculate_serialized_size(type_object->complete().struct_type(), current_alignment) + 4));
     eprosima::fastcdr::FastBuffer fastbuffer((char*) payload.data, payload.max_size);
     // Fixed endian (Page 221, EquivalenceHash definition of Extensible and Dynamic Topic Types for DDS document)
     eprosima::fastcdr::Cdr ser(
@@ -334,7 +341,7 @@ const TypeObject* GetCompleteDdsTopicDataObject()
     MD5 objectHash;
     objectHash.update((char*)payload.data, payload.length);
     objectHash.finalize();
-    for(int i = 0; i < 14; ++i)
+    for (int i = 0; i < 14; ++i)
     {
         identifier.equivalence_hash()[i] = objectHash.digest[i];
     }
@@ -344,11 +351,10 @@ const TypeObject* GetCompleteDdsTopicDataObject()
     return TypeObjectFactory::get_instance()->get_type_object("DdsTopicData", true);
 }
 
-
-
-const TypeIdentifier* GetDdsTopicIdentifier(bool complete)
+const TypeIdentifier* GetDdsTopicIdentifier(
+        bool complete)
 {
-    const TypeIdentifier * c_identifier = TypeObjectFactory::get_instance()->get_type_identifier("DdsTopic", complete);
+    const TypeIdentifier* c_identifier = TypeObjectFactory::get_instance()->get_type_identifier("DdsTopic", complete);
     if (c_identifier != nullptr && (!complete || c_identifier->_d() == EK_COMPLETE))
     {
         return c_identifier;
@@ -358,7 +364,8 @@ const TypeIdentifier* GetDdsTopicIdentifier(bool complete)
     return TypeObjectFactory::get_instance()->get_type_identifier("DdsTopic", complete);
 }
 
-const TypeObject* GetDdsTopicObject(bool complete)
+const TypeObject* GetDdsTopicObject(
+        bool complete)
 {
     const TypeObject* c_type_object = TypeObjectFactory::get_instance()->get_type_object("DdsTopic", complete);
     if (c_type_object != nullptr)
@@ -381,7 +388,7 @@ const TypeObject* GetMinimalDdsTopicObject()
         return c_type_object;
     }
 
-    TypeObject *type_object = new TypeObject();
+    TypeObject* type_object = new TypeObject();
     type_object->_d(EK_MINIMAL);
     type_object->minimal()._d(TK_STRUCTURE);
 
@@ -404,7 +411,7 @@ const TypeObject* GetMinimalDdsTopicObject()
     mst_name.common().member_type_id(*TypeObjectFactory::get_instance()->get_string_identifier(255, false));
 
     MD5 name_hash("name");
-    for(int i = 0; i < 4; ++i)
+    for (int i = 0; i < 4; ++i)
     {
         mst_name.detail().name_hash()[i] = name_hash.digest[i];
     }
@@ -422,7 +429,7 @@ const TypeObject* GetMinimalDdsTopicObject()
     mst_type_name.common().member_type_id(*TypeObjectFactory::get_instance()->get_string_identifier(255, false));
 
     MD5 type_name_hash("type_name");
-    for(int i = 0; i < 4; ++i)
+    for (int i = 0; i < 4; ++i)
     {
         mst_type_name.detail().name_hash()[i] = type_name_hash.digest[i];
     }
@@ -441,7 +448,7 @@ const TypeObject* GetMinimalDdsTopicObject()
 
 
     MD5 type_discovered_hash("type_discovered");
-    for(int i = 0; i < 4; ++i)
+    for (int i = 0; i < 4; ++i)
     {
         mst_type_discovered.detail().name_hash()[i] = type_discovered_hash.digest[i];
     }
@@ -460,29 +467,11 @@ const TypeObject* GetMinimalDdsTopicObject()
 
 
     MD5 type_mismatch_hash("type_mismatch");
-    for(int i = 0; i < 4; ++i)
+    for (int i = 0; i < 4; ++i)
     {
         mst_type_mismatch.detail().name_hash()[i] = type_mismatch_hash.digest[i];
     }
     type_object->minimal().struct_type().member_seq().emplace_back(mst_type_mismatch);
-
-    MinimalStructMember mst_data;
-    mst_data.common().member_id(memberId++);
-    mst_data.common().member_flags().TRY_CONSTRUCT1(false); // Unsupported
-    mst_data.common().member_flags().TRY_CONSTRUCT2(false); // Unsupported
-    mst_data.common().member_flags().IS_EXTERNAL(false); // Unsupported
-    mst_data.common().member_flags().IS_OPTIONAL(false);
-    mst_data.common().member_flags().IS_MUST_UNDERSTAND(false);
-    mst_data.common().member_flags().IS_KEY(false);
-    mst_data.common().member_flags().IS_DEFAULT(false); // Doesn't apply
-    mst_data.common().member_type_id(*TypeObjectFactory::get_instance()->get_sequence_identifier("DdsTopicData", 100, false));
-
-    MD5 data_hash("data");
-    for(int i = 0; i < 4; ++i)
-    {
-        mst_data.detail().name_hash()[i] = data_hash.digest[i];
-    }
-    type_object->minimal().struct_type().member_seq().emplace_back(mst_data);
 
     MinimalStructMember mst_qos_mismatch;
     mst_qos_mismatch.common().member_id(memberId++);
@@ -497,11 +486,30 @@ const TypeObject* GetMinimalDdsTopicObject()
 
 
     MD5 qos_mismatch_hash("qos_mismatch");
-    for(int i = 0; i < 4; ++i)
+    for (int i = 0; i < 4; ++i)
     {
         mst_qos_mismatch.detail().name_hash()[i] = qos_mismatch_hash.digest[i];
     }
     type_object->minimal().struct_type().member_seq().emplace_back(mst_qos_mismatch);
+
+    MinimalStructMember mst_data;
+    mst_data.common().member_id(memberId++);
+    mst_data.common().member_flags().TRY_CONSTRUCT1(false); // Unsupported
+    mst_data.common().member_flags().TRY_CONSTRUCT2(false); // Unsupported
+    mst_data.common().member_flags().IS_EXTERNAL(false); // Unsupported
+    mst_data.common().member_flags().IS_OPTIONAL(false);
+    mst_data.common().member_flags().IS_MUST_UNDERSTAND(false);
+    mst_data.common().member_flags().IS_KEY(false);
+    mst_data.common().member_flags().IS_DEFAULT(false); // Doesn't apply
+    mst_data.common().member_type_id(*TypeObjectFactory::get_instance()->get_sequence_identifier("DdsTopicData", 100,
+            false));
+
+    MD5 data_hash("data");
+    for (int i = 0; i < 4; ++i)
+    {
+        mst_data.detail().name_hash()[i] = data_hash.digest[i];
+    }
+    type_object->minimal().struct_type().member_seq().emplace_back(mst_data);
 
 
     // Header
@@ -514,7 +522,7 @@ const TypeObject* GetMinimalDdsTopicObject()
     eprosima::fastcdr::CdrSizeCalculator calculator(eprosima::fastcdr::CdrVersion::XCDRv1);
     size_t current_alignment {0};
     SerializedPayload_t payload(static_cast<uint32_t>(
-        calculator.calculate_serialized_size(type_object->minimal().struct_type(), current_alignment) + 4));
+                calculator.calculate_serialized_size(type_object->minimal().struct_type(), current_alignment) + 4));
     eprosima::fastcdr::FastBuffer fastbuffer((char*) payload.data, payload.max_size);
     // Fixed endian (Page 221, EquivalenceHash definition of Extensible and Dynamic Topic Types for DDS document)
     eprosima::fastcdr::Cdr ser(
@@ -531,7 +539,7 @@ const TypeObject* GetMinimalDdsTopicObject()
     MD5 objectHash;
     objectHash.update((char*)payload.data, payload.length);
     objectHash.finalize();
-    for(int i = 0; i < 14; ++i)
+    for (int i = 0; i < 14; ++i)
     {
         identifier.equivalence_hash()[i] = objectHash.digest[i];
     }
@@ -549,7 +557,7 @@ const TypeObject* GetCompleteDdsTopicObject()
         return c_type_object;
     }
 
-    TypeObject *type_object = new TypeObject();
+    TypeObject* type_object = new TypeObject();
     type_object->_d(EK_COMPLETE);
     type_object->complete()._d(TK_STRUCTURE);
 
@@ -622,21 +630,6 @@ const TypeObject* GetCompleteDdsTopicObject()
 
     type_object->complete().struct_type().member_seq().emplace_back(cst_type_mismatch);
 
-    CompleteStructMember cst_data;
-    cst_data.common().member_id(memberId++);
-    cst_data.common().member_flags().TRY_CONSTRUCT1(false); // Unsupported
-    cst_data.common().member_flags().TRY_CONSTRUCT2(false); // Unsupported
-    cst_data.common().member_flags().IS_EXTERNAL(false); // Unsupported
-    cst_data.common().member_flags().IS_OPTIONAL(false);
-    cst_data.common().member_flags().IS_MUST_UNDERSTAND(false);
-    cst_data.common().member_flags().IS_KEY(false);
-    cst_data.common().member_flags().IS_DEFAULT(false); // Doesn't apply
-    cst_data.common().member_type_id(*TypeObjectFactory::get_instance()->get_sequence_identifier("DdsTopicData", 100, true));
-
-    cst_data.detail().name("data");
-
-    type_object->complete().struct_type().member_seq().emplace_back(cst_data);
-
     CompleteStructMember cst_qos_mismatch;
     cst_qos_mismatch.common().member_id(memberId++);
     cst_qos_mismatch.common().member_flags().TRY_CONSTRUCT1(false); // Unsupported
@@ -653,6 +646,22 @@ const TypeObject* GetCompleteDdsTopicObject()
 
     type_object->complete().struct_type().member_seq().emplace_back(cst_qos_mismatch);
 
+    CompleteStructMember cst_data;
+    cst_data.common().member_id(memberId++);
+    cst_data.common().member_flags().TRY_CONSTRUCT1(false); // Unsupported
+    cst_data.common().member_flags().TRY_CONSTRUCT2(false); // Unsupported
+    cst_data.common().member_flags().IS_EXTERNAL(false); // Unsupported
+    cst_data.common().member_flags().IS_OPTIONAL(false);
+    cst_data.common().member_flags().IS_MUST_UNDERSTAND(false);
+    cst_data.common().member_flags().IS_KEY(false);
+    cst_data.common().member_flags().IS_DEFAULT(false); // Doesn't apply
+    cst_data.common().member_type_id(*TypeObjectFactory::get_instance()->get_sequence_identifier("DdsTopicData", 100,
+            true));
+
+    cst_data.detail().name("data");
+
+    type_object->complete().struct_type().member_seq().emplace_back(cst_data);
+
 
     // Header
     type_object->complete().struct_type().header().detail().type_name("DdsTopic");
@@ -663,7 +672,7 @@ const TypeObject* GetCompleteDdsTopicObject()
     eprosima::fastcdr::CdrSizeCalculator calculator(eprosima::fastcdr::CdrVersion::XCDRv1);
     size_t current_alignment {0};
     SerializedPayload_t payload(static_cast<uint32_t>(
-        calculator.calculate_serialized_size(type_object->complete().struct_type(), current_alignment) + 4));
+                calculator.calculate_serialized_size(type_object->complete().struct_type(), current_alignment) + 4));
     eprosima::fastcdr::FastBuffer fastbuffer((char*) payload.data, payload.max_size);
     // Fixed endian (Page 221, EquivalenceHash definition of Extensible and Dynamic Topic Types for DDS document)
     eprosima::fastcdr::Cdr ser(
@@ -680,7 +689,7 @@ const TypeObject* GetCompleteDdsTopicObject()
     MD5 objectHash;
     objectHash.update((char*)payload.data, payload.length);
     objectHash.finalize();
-    for(int i = 0; i < 14; ++i)
+    for (int i = 0; i < 14; ++i)
     {
         identifier.equivalence_hash()[i] = objectHash.digest[i];
     }
@@ -690,13 +699,11 @@ const TypeObject* GetCompleteDdsTopicObject()
     return TypeObjectFactory::get_instance()->get_type_object("DdsTopic", true);
 }
 
-
-
-
-
-const TypeIdentifier* GetMonitoringTopicsIdentifier(bool complete)
+const TypeIdentifier* GetMonitoringTopicsIdentifier(
+        bool complete)
 {
-    const TypeIdentifier * c_identifier = TypeObjectFactory::get_instance()->get_type_identifier("MonitoringTopics", complete);
+    const TypeIdentifier* c_identifier = TypeObjectFactory::get_instance()->get_type_identifier("MonitoringTopics",
+                    complete);
     if (c_identifier != nullptr && (!complete || c_identifier->_d() == EK_COMPLETE))
     {
         return c_identifier;
@@ -706,7 +713,8 @@ const TypeIdentifier* GetMonitoringTopicsIdentifier(bool complete)
     return TypeObjectFactory::get_instance()->get_type_identifier("MonitoringTopics", complete);
 }
 
-const TypeObject* GetMonitoringTopicsObject(bool complete)
+const TypeObject* GetMonitoringTopicsObject(
+        bool complete)
 {
     const TypeObject* c_type_object = TypeObjectFactory::get_instance()->get_type_object("MonitoringTopics", complete);
     if (c_type_object != nullptr)
@@ -729,7 +737,7 @@ const TypeObject* GetMinimalMonitoringTopicsObject()
         return c_type_object;
     }
 
-    TypeObject *type_object = new TypeObject();
+    TypeObject* type_object = new TypeObject();
     type_object->_d(EK_MINIMAL);
     type_object->minimal()._d(TK_STRUCTURE);
 
@@ -749,10 +757,11 @@ const TypeObject* GetMinimalMonitoringTopicsObject()
     mst_topics.common().member_flags().IS_MUST_UNDERSTAND(false);
     mst_topics.common().member_flags().IS_KEY(false);
     mst_topics.common().member_flags().IS_DEFAULT(false); // Doesn't apply
-    mst_topics.common().member_type_id(*TypeObjectFactory::get_instance()->get_sequence_identifier("DdsTopic", 100, false));
+    mst_topics.common().member_type_id(*TypeObjectFactory::get_instance()->get_sequence_identifier("DdsTopic", 100,
+            false));
 
     MD5 topics_hash("topics");
-    for(int i = 0; i < 4; ++i)
+    for (int i = 0; i < 4; ++i)
     {
         mst_topics.detail().name_hash()[i] = topics_hash.digest[i];
     }
@@ -769,7 +778,7 @@ const TypeObject* GetMinimalMonitoringTopicsObject()
     eprosima::fastcdr::CdrSizeCalculator calculator(eprosima::fastcdr::CdrVersion::XCDRv1);
     size_t current_alignment {0};
     SerializedPayload_t payload(static_cast<uint32_t>(
-        calculator.calculate_serialized_size(type_object->minimal().struct_type(), current_alignment) + 4));
+                calculator.calculate_serialized_size(type_object->minimal().struct_type(), current_alignment) + 4));
     eprosima::fastcdr::FastBuffer fastbuffer((char*) payload.data, payload.max_size);
     // Fixed endian (Page 221, EquivalenceHash definition of Extensible and Dynamic Topic Types for DDS document)
     eprosima::fastcdr::Cdr ser(
@@ -786,7 +795,7 @@ const TypeObject* GetMinimalMonitoringTopicsObject()
     MD5 objectHash;
     objectHash.update((char*)payload.data, payload.length);
     objectHash.finalize();
-    for(int i = 0; i < 14; ++i)
+    for (int i = 0; i < 14; ++i)
     {
         identifier.equivalence_hash()[i] = objectHash.digest[i];
     }
@@ -804,7 +813,7 @@ const TypeObject* GetCompleteMonitoringTopicsObject()
         return c_type_object;
     }
 
-    TypeObject *type_object = new TypeObject();
+    TypeObject* type_object = new TypeObject();
     type_object->_d(EK_COMPLETE);
     type_object->complete()._d(TK_STRUCTURE);
 
@@ -824,7 +833,8 @@ const TypeObject* GetCompleteMonitoringTopicsObject()
     cst_topics.common().member_flags().IS_MUST_UNDERSTAND(false);
     cst_topics.common().member_flags().IS_KEY(false);
     cst_topics.common().member_flags().IS_DEFAULT(false); // Doesn't apply
-    cst_topics.common().member_type_id(*TypeObjectFactory::get_instance()->get_sequence_identifier("DdsTopic", 100, true));
+    cst_topics.common().member_type_id(*TypeObjectFactory::get_instance()->get_sequence_identifier("DdsTopic", 100,
+            true));
 
     cst_topics.detail().name("topics");
 
@@ -840,7 +850,7 @@ const TypeObject* GetCompleteMonitoringTopicsObject()
     eprosima::fastcdr::CdrSizeCalculator calculator(eprosima::fastcdr::CdrVersion::XCDRv1);
     size_t current_alignment {0};
     SerializedPayload_t payload(static_cast<uint32_t>(
-        calculator.calculate_serialized_size(type_object->complete().struct_type(), current_alignment) + 4));
+                calculator.calculate_serialized_size(type_object->complete().struct_type(), current_alignment) + 4));
     eprosima::fastcdr::FastBuffer fastbuffer((char*) payload.data, payload.max_size);
     // Fixed endian (Page 221, EquivalenceHash definition of Extensible and Dynamic Topic Types for DDS document)
     eprosima::fastcdr::Cdr ser(
@@ -857,7 +867,7 @@ const TypeObject* GetCompleteMonitoringTopicsObject()
     MD5 objectHash;
     objectHash.update((char*)payload.data, payload.length);
     objectHash.finalize();
-    for(int i = 0; i < 14; ++i)
+    for (int i = 0; i < 14; ++i)
     {
         identifier.equivalence_hash()[i] = objectHash.digest[i];
     }

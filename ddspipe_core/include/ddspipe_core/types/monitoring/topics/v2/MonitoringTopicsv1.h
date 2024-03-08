@@ -198,23 +198,23 @@ public:
 
 
     /*!
-     * @brief This function sets a value in member frequency
-     * @param _frequency New value for member frequency
+     * @brief This function sets a value in member msg_rx_rate
+     * @param _msg_rx_rate New value for member msg_rx_rate
      */
-    eProsima_user_DllExport void frequency(
-            double _frequency);
+    eProsima_user_DllExport void msg_rx_rate(
+            double _msg_rx_rate);
 
     /*!
-     * @brief This function returns the value of member frequency
-     * @return Value of member frequency
+     * @brief This function returns the value of member msg_rx_rate
+     * @return Value of member msg_rx_rate
      */
-    eProsima_user_DllExport double frequency() const;
+    eProsima_user_DllExport double msg_rx_rate() const;
 
     /*!
-     * @brief This function returns a reference to member frequency
-     * @return Reference to member frequency
+     * @brief This function returns a reference to member msg_rx_rate
+     * @return Reference to member msg_rx_rate
      */
-    eProsima_user_DllExport double& frequency();
+    eProsima_user_DllExport double& msg_rx_rate();
 
 
     /*!
@@ -272,9 +272,11 @@ private:
     std::string m_participant_id;
     uint32_t m_msgs_lost;
     uint32_t m_msgs_received;
-    double m_frequency;
+    double m_msg_rx_rate;
 
 };
+
+
 
 
 
@@ -433,6 +435,26 @@ public:
 
 
     /*!
+     * @brief This function sets a value in member qos_mismatch
+     * @param _qos_mismatch New value for member qos_mismatch
+     */
+    eProsima_user_DllExport void qos_mismatch(
+            bool _qos_mismatch);
+
+    /*!
+     * @brief This function returns the value of member qos_mismatch
+     * @return Value of member qos_mismatch
+     */
+    eProsima_user_DllExport bool qos_mismatch() const;
+
+    /*!
+     * @brief This function returns a reference to member qos_mismatch
+     * @return Reference to member qos_mismatch
+     */
+    eProsima_user_DllExport bool& qos_mismatch();
+
+
+    /*!
      * @brief This function copies the value in member data
      * @param _data New value to be copied in member data
      */
@@ -457,26 +479,6 @@ public:
      * @return Reference to member data
      */
     eProsima_user_DllExport std::vector<DdsTopicData>& data();
-
-
-    /*!
-     * @brief This function sets a value in member qos_mismatch
-     * @param _qos_mismatch New value for member qos_mismatch
-     */
-    eProsima_user_DllExport void qos_mismatch(
-            bool _qos_mismatch);
-
-    /*!
-     * @brief This function returns the value of member qos_mismatch
-     * @return Value of member qos_mismatch
-     */
-    eProsima_user_DllExport bool qos_mismatch() const;
-
-    /*!
-     * @brief This function returns a reference to member qos_mismatch
-     * @return Reference to member qos_mismatch
-     */
-    eProsima_user_DllExport bool& qos_mismatch();
 
 
     /*!
@@ -535,8 +537,8 @@ private:
     std::string m_type_name;
     bool m_type_discovered;
     bool m_type_mismatch;
-    std::vector<DdsTopicData> m_data;
     bool m_qos_mismatch;
+    std::vector<DdsTopicData> m_data;
 
 };
 

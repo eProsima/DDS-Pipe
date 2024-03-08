@@ -30,6 +30,8 @@ char dummy;
 
 #if FASTCDR_VERSION_MAJOR > 1
 
+#include <ddspipe_core/types/monitoring/topics/v2/MonitoringTopicsTypeObject.h>
+
 #include <fastcdr/Cdr.h>
 
 
@@ -43,6 +45,8 @@ using namespace eprosima::fastcdr::exception;
 
 DdsTopicData::DdsTopicData()
 {
+    // Just to register all known types
+    registerMonitoringTopicsTypes();
 }
 
 DdsTopicData::~DdsTopicData()
@@ -55,7 +59,7 @@ DdsTopicData::DdsTopicData(
     m_participant_id = x.m_participant_id;
     m_msgs_lost = x.m_msgs_lost;
     m_msgs_received = x.m_msgs_received;
-    m_frequency = x.m_frequency;
+    m_msg_rx_rate = x.m_msg_rx_rate;
 }
 
 DdsTopicData::DdsTopicData(
@@ -64,7 +68,7 @@ DdsTopicData::DdsTopicData(
     m_participant_id = std::move(x.m_participant_id);
     m_msgs_lost = x.m_msgs_lost;
     m_msgs_received = x.m_msgs_received;
-    m_frequency = x.m_frequency;
+    m_msg_rx_rate = x.m_msg_rx_rate;
 }
 
 DdsTopicData& DdsTopicData::operator =(
@@ -74,7 +78,7 @@ DdsTopicData& DdsTopicData::operator =(
     m_participant_id = x.m_participant_id;
     m_msgs_lost = x.m_msgs_lost;
     m_msgs_received = x.m_msgs_received;
-    m_frequency = x.m_frequency;
+    m_msg_rx_rate = x.m_msg_rx_rate;
     return *this;
 }
 
@@ -85,7 +89,7 @@ DdsTopicData& DdsTopicData::operator =(
     m_participant_id = std::move(x.m_participant_id);
     m_msgs_lost = x.m_msgs_lost;
     m_msgs_received = x.m_msgs_received;
-    m_frequency = x.m_frequency;
+    m_msg_rx_rate = x.m_msg_rx_rate;
     return *this;
 }
 
@@ -95,7 +99,7 @@ bool DdsTopicData::operator ==(
     return (m_participant_id == x.m_participant_id &&
            m_msgs_lost == x.m_msgs_lost &&
            m_msgs_received == x.m_msgs_received &&
-           m_frequency == x.m_frequency);
+           m_msg_rx_rate == x.m_msg_rx_rate);
 }
 
 bool DdsTopicData::operator !=(
@@ -199,35 +203,37 @@ uint32_t& DdsTopicData::msgs_received()
 }
 
 /*!
- * @brief This function sets a value in member frequency
- * @param _frequency New value for member frequency
+ * @brief This function sets a value in member msg_rx_rate
+ * @param _msg_rx_rate New value for member msg_rx_rate
  */
-void DdsTopicData::frequency(
-        double _frequency)
+void DdsTopicData::msg_rx_rate(
+        double _msg_rx_rate)
 {
-    m_frequency = _frequency;
+    m_msg_rx_rate = _msg_rx_rate;
 }
 
 /*!
- * @brief This function returns the value of member frequency
- * @return Value of member frequency
+ * @brief This function returns the value of member msg_rx_rate
+ * @return Value of member msg_rx_rate
  */
-double DdsTopicData::frequency() const
+double DdsTopicData::msg_rx_rate() const
 {
-    return m_frequency;
+    return m_msg_rx_rate;
 }
 
 /*!
- * @brief This function returns a reference to member frequency
- * @return Reference to member frequency
+ * @brief This function returns a reference to member msg_rx_rate
+ * @return Reference to member msg_rx_rate
  */
-double& DdsTopicData::frequency()
+double& DdsTopicData::msg_rx_rate()
 {
-    return m_frequency;
+    return m_msg_rx_rate;
 }
 
 DdsTopic::DdsTopic()
 {
+    // Just to register all known types
+    registerMonitoringTopicsTypes();
 }
 
 DdsTopic::~DdsTopic()
@@ -241,8 +247,8 @@ DdsTopic::DdsTopic(
     m_type_name = x.m_type_name;
     m_type_discovered = x.m_type_discovered;
     m_type_mismatch = x.m_type_mismatch;
-    m_data = x.m_data;
     m_qos_mismatch = x.m_qos_mismatch;
+    m_data = x.m_data;
 }
 
 DdsTopic::DdsTopic(
@@ -252,8 +258,8 @@ DdsTopic::DdsTopic(
     m_type_name = std::move(x.m_type_name);
     m_type_discovered = x.m_type_discovered;
     m_type_mismatch = x.m_type_mismatch;
-    m_data = std::move(x.m_data);
     m_qos_mismatch = x.m_qos_mismatch;
+    m_data = std::move(x.m_data);
 }
 
 DdsTopic& DdsTopic::operator =(
@@ -264,8 +270,8 @@ DdsTopic& DdsTopic::operator =(
     m_type_name = x.m_type_name;
     m_type_discovered = x.m_type_discovered;
     m_type_mismatch = x.m_type_mismatch;
-    m_data = x.m_data;
     m_qos_mismatch = x.m_qos_mismatch;
+    m_data = x.m_data;
     return *this;
 }
 
@@ -277,8 +283,8 @@ DdsTopic& DdsTopic::operator =(
     m_type_name = std::move(x.m_type_name);
     m_type_discovered = x.m_type_discovered;
     m_type_mismatch = x.m_type_mismatch;
-    m_data = std::move(x.m_data);
     m_qos_mismatch = x.m_qos_mismatch;
+    m_data = std::move(x.m_data);
     return *this;
 }
 
@@ -289,8 +295,8 @@ bool DdsTopic::operator ==(
            m_type_name == x.m_type_name &&
            m_type_discovered == x.m_type_discovered &&
            m_type_mismatch == x.m_type_mismatch &&
-           m_data == x.m_data &&
-           m_qos_mismatch == x.m_qos_mismatch);
+           m_qos_mismatch == x.m_qos_mismatch &&
+           m_data == x.m_data);
 }
 
 bool DdsTopic::operator !=(
@@ -432,6 +438,34 @@ bool& DdsTopic::type_mismatch()
 }
 
 /*!
+ * @brief This function sets a value in member qos_mismatch
+ * @param _qos_mismatch New value for member qos_mismatch
+ */
+void DdsTopic::qos_mismatch(
+        bool _qos_mismatch)
+{
+    m_qos_mismatch = _qos_mismatch;
+}
+
+/*!
+ * @brief This function returns the value of member qos_mismatch
+ * @return Value of member qos_mismatch
+ */
+bool DdsTopic::qos_mismatch() const
+{
+    return m_qos_mismatch;
+}
+
+/*!
+ * @brief This function returns a reference to member qos_mismatch
+ * @return Reference to member qos_mismatch
+ */
+bool& DdsTopic::qos_mismatch()
+{
+    return m_qos_mismatch;
+}
+
+/*!
  * @brief This function copies the value in member data
  * @param _data New value to be copied in member data
  */
@@ -469,36 +503,10 @@ std::vector<DdsTopicData>& DdsTopic::data()
     return m_data;
 }
 
-/*!
- * @brief This function sets a value in member qos_mismatch
- * @param _qos_mismatch New value for member qos_mismatch
- */
-void DdsTopic::qos_mismatch(
-        bool _qos_mismatch)
-{
-    m_qos_mismatch = _qos_mismatch;
-}
-
-/*!
- * @brief This function returns the value of member qos_mismatch
- * @return Value of member qos_mismatch
- */
-bool DdsTopic::qos_mismatch() const
-{
-    return m_qos_mismatch;
-}
-
-/*!
- * @brief This function returns a reference to member qos_mismatch
- * @return Reference to member qos_mismatch
- */
-bool& DdsTopic::qos_mismatch()
-{
-    return m_qos_mismatch;
-}
-
 MonitoringTopics::MonitoringTopics()
 {
+    // Just to register all known types
+    registerMonitoringTopicsTypes();
 }
 
 MonitoringTopics::~MonitoringTopics()

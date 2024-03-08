@@ -3,7 +3,7 @@ struct DdsTopicData
   string participant_id;
   unsigned long msgs_lost;
   unsigned long msgs_received;
-  double frequency;
+  double msg_rx_rate;
 };
 
 struct DdsTopic

@@ -27,10 +27,10 @@
 constexpr uint32_t DdsTopicData_max_cdr_typesize {280UL};
 constexpr uint32_t DdsTopicData_max_key_cdr_typesize {0UL};
 
-constexpr uint32_t MonitoringTopics_max_cdr_typesize {2854409UL};
+constexpr uint32_t MonitoringTopics_max_cdr_typesize {2853616UL};
 constexpr uint32_t MonitoringTopics_max_key_cdr_typesize {0UL};
 
-constexpr uint32_t DdsTopic_max_cdr_typesize {28537UL};
+constexpr uint32_t DdsTopic_max_cdr_typesize {28536UL};
 constexpr uint32_t DdsTopic_max_key_cdr_typesize {0UL};
 
 
@@ -45,6 +45,8 @@ class CdrSizeCalculator;
 eProsima_user_DllExport void serialize_key(
         eprosima::fastcdr::Cdr& scdr,
         const DdsTopicData& data);
+
+
 
 
 
