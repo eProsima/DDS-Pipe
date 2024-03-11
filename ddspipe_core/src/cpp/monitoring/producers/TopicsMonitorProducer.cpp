@@ -57,9 +57,10 @@ void TopicsMonitorProducer::consume()
     reset_data_();
 }
 
-void TopicsMonitorProducer::msg_received(
+void TopicsMonitorProducer::msgs_received(
         const types::DdsTopic& topic,
-        const types::ParticipantId& participant_id)
+        const types::ParticipantId& participant_id,
+        const int number_of_messages /*= 1*/)
 {
     if (!enabled_)
     {
@@ -81,12 +82,13 @@ void TopicsMonitorProducer::msg_received(
 
     // Increase the count of the received messages
     participant_data_[topic][participant_id].msgs_received(participant_data_[topic][participant_id].msgs_received() +
-            1);
+            number_of_messages);
 }
 
-void TopicsMonitorProducer::msg_lost(
+void TopicsMonitorProducer::msgs_lost(
         const types::DdsTopic& topic,
-        const types::ParticipantId& participant_id)
+        const types::ParticipantId& participant_id,
+        const int number_of_messages /*= 1*/)
 {
     if (!enabled_)
     {
@@ -107,7 +109,8 @@ void TopicsMonitorProducer::msg_lost(
     participant_data_[topic][participant_id].participant_id(participant_id);
 
     // Increase the count of the lost messages
-    participant_data_[topic][participant_id].msgs_lost(participant_data_[topic][participant_id].msgs_lost() + 1);
+    participant_data_[topic][participant_id].msgs_lost(participant_data_[topic][participant_id].msgs_lost() +
+            number_of_messages);
 }
 
 void TopicsMonitorProducer::type_discovered(

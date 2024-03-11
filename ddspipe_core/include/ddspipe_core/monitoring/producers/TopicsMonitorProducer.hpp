@@ -42,8 +42,14 @@
 // Macro to notify that a message has been received in a topic by a participant.
 #define monitor_msg_rx(topic, participant_id) MONITOR_MSG_RX_IMPL_(topic, participant_id)
 
+// Macro to notify that n messages have been received in a topic by a participant.
+#define monitor_msgs_rx(topic, participant_id, n) MONITOR_MSGS_RX_IMPL_(topic, participant_id, n)
+
 // Macro to notify that a message has been lost in a topic by a participant.
 #define monitor_msg_lost(topic, participant_id) MONITOR_MSG_LOST_IMPL_(topic, participant_id)
+
+// Macro to notify that n messages have been lost in a topic by a participant.
+#define monitor_msgs_lost(topic, participant_id, n) MONITOR_MSGS_LOST_IMPL_(topic, participant_id, n)
 
 // Macro to notify that a type has been discovered.
 #define monitor_type_discovered(type_name) MONITOR_TYPE_DISCOVERED_IMPL_(type_name)
@@ -120,9 +126,10 @@ public:
      * @param participant_id Participant that received the message.
      */
     DDSPIPE_CORE_DllAPI
-    void msg_received(
+    void msgs_received(
             const types::DdsTopic& topic,
-            const types::ParticipantId& participant_id);
+            const types::ParticipantId& participant_id,
+            const int number_of_messages = 1);
 
     /**
      * @brief Increase the number of messages lost in a \c topic by a participant.
@@ -133,9 +140,10 @@ public:
      * @param participant_id Participant that noticed the message was lost.
      */
     DDSPIPE_CORE_DllAPI
-    void msg_lost(
+    void msgs_lost(
             const types::DdsTopic& topic,
-            const types::ParticipantId& participant_id);
+            const types::ParticipantId& participant_id,
+            const int number_of_messages = 1);
 
     /**
      * @brief Set a type as discovered in the \c MonitoringTopics.
@@ -196,13 +204,17 @@ protected:
 
 
 // The names of variables inside macros must be unique to avoid conflicts with external variables
-#define MONITOR_MSG_RX_IMPL_(topic, \
-            participant_id) eprosima::ddspipe::core::TopicsMonitorProducer::get_instance()->msg_received(topic, \
-            participant_id)
+#define MONITOR_MSG_RX_IMPL_(topic, participant_id) \
+            eprosima::ddspipe::core::TopicsMonitorProducer::get_instance()->msgs_received(topic, participant_id)
 
-#define MONITOR_MSG_LOST_IMPL_(topic, \
-            participant_id) eprosima::ddspipe::core::TopicsMonitorProducer::get_instance()->msg_lost(topic, \
-            participant_id)
+#define MONITOR_MSGS_RX_IMPL_(topic, participant_id, n) \
+            eprosima::ddspipe::core::TopicsMonitorProducer::get_instance()->msgs_received(topic, participant_id, n)
+
+#define MONITOR_MSG_LOST_IMPL_(topic, participant_id) \
+            eprosima::ddspipe::core::TopicsMonitorProducer::get_instance()->msgs_lost(topic, participant_id)
+
+#define MONITOR_MSGS_LOST_IMPL_(topic, participant_id, n) \
+            eprosima::ddspipe::core::TopicsMonitorProducer::get_instance()->msgs_lost(topic, participant_id, n)
 
 #define MONITOR_TYPE_DISCOVERED_IMPL_(type_name) eprosima::ddspipe::core::TopicsMonitorProducer::get_instance()-> \
             type_discovered(type_name)
