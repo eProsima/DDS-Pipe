@@ -126,9 +126,6 @@ protected:
     std::vector<std::unique_ptr<IMonitorConsumer<MonitoringStatus>>> consumers_;
 };
 
-std::ostream& operator <<(
-        std::ostream& os,
-        const MonitoringStatus& data);
 
 // The names of variables inside macros must be unique to avoid conflicts with external variables
 #define MONITOR_ERROR_IMPL_(error) eprosima::ddspipe::core::StatusMonitorProducer::get_instance()->add_error_to_status( \
@@ -137,3 +134,12 @@ std::ostream& operator <<(
 } // namespace core
 } // namespace ddspipe
 } // namespace eprosima
+
+namespace std
+{
+
+std::ostream& operator <<(
+        std::ostream& os,
+        const MonitoringStatus& data);
+
+} // namespace std

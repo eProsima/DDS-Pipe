@@ -103,6 +103,13 @@ MonitoringStatus* StatusMonitorProducer::save_data_() const
     return data_.get();
 }
 
+} //namespace core
+} //namespace ddspipe
+} //namespace eprosima
+
+namespace std
+{
+
 std::ostream& operator <<(
         std::ostream& os,
         const MonitoringStatus& data)
@@ -138,6 +145,4 @@ std::ostream& operator <<(
     return os;
 }
 
-} //namespace core
-} //namespace ddspipe
-} //namespace eprosima
+} // namespace std

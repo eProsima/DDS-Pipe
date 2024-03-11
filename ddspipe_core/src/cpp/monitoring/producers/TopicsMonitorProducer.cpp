@@ -227,6 +227,13 @@ void TopicsMonitorProducer::reset_data_()
     }
 }
 
+} //namespace core
+} //namespace ddspipe
+} //namespace eprosima
+
+namespace std
+{
+
 std::ostream& operator <<(
         std::ostream& os,
         const DdsTopicData& data)
@@ -280,6 +287,4 @@ std::ostream& operator <<(
     return os;
 }
 
-} //namespace core
-} //namespace ddspipe
-} //namespace eprosima
+} // namespace std

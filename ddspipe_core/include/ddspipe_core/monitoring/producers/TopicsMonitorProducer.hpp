@@ -194,17 +194,6 @@ protected:
     std::vector<std::unique_ptr<IMonitorConsumer<MonitoringTopics>>> consumers_;
 };
 
-std::ostream& operator <<(
-        std::ostream& os,
-        const DdsTopicData& data);
-
-std::ostream& operator <<(
-        std::ostream& os,
-        const DdsTopic& topic);
-
-std::ostream& operator <<(
-        std::ostream& os,
-        const MonitoringTopics& data);
 
 // The names of variables inside macros must be unique to avoid conflicts with external variables
 #define MONITOR_MSG_RX_IMPL_(topic, \
@@ -227,3 +216,20 @@ std::ostream& operator <<(
 } // namespace core
 } // namespace ddspipe
 } // namespace eprosima
+
+namespace std
+{
+
+std::ostream& operator <<(
+        std::ostream& os,
+        const DdsTopicData& data);
+
+std::ostream& operator <<(
+        std::ostream& os,
+        const DdsTopic& topic);
+
+std::ostream& operator <<(
+        std::ostream& os,
+        const MonitoringTopics& data);
+
+} // namespace std
