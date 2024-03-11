@@ -100,6 +100,11 @@ void StatusMonitorProducer::add_error_to_status(
 
 MonitoringStatus* StatusMonitorProducer::save_data_() const
 {
+    // Take the lock to prevent:
+    //      1. Changing the data while it's being saved.
+    //      2. Simultaneous calls to save_data_.
+    std::lock_guard<std::mutex> lock(mutex_);
+
     return data_.get();
 }
 

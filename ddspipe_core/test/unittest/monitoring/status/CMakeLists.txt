@@ -12,47 +12,5 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-set(TEST_NAME MonitorStatusTest)
-
-set(TEST_SOURCES
-        MonitorStatusTest.cpp
-    )
-
-file(
-    GLOB_RECURSE LIBRARY_SOURCES
-        "${PROJECT_SOURCE_DIR}/src/cpp/*.c*"
-        "${PROJECT_SOURCE_DIR}/include/*.h*"
-        "${PROJECT_SOURCE_DIR}/include/*.ipp"
-    )
-
-# Exclude types' files depending on the Fast DDS version
-if ("${fastrtps_VERSION}" VERSION_LESS 2.13)
-    list(FILTER LIBRARY_SOURCES EXCLUDE REGEX "v2/")
-else()
-    list(FILTER LIBRARY_SOURCES EXCLUDE REGEX "v1/")
-endif()
-
-all_library_sources(
-        "${TEST_SOURCES}"
-        "${LIBRARY_SOURCES}"
-    )
-
-set(TEST_LIST
-        dds_type_mismatch
-        dds_qos_mismatch
-        std_type_mismatch
-        std_qos_mismatch
-    )
-
-set(TEST_EXTRA_LIBRARIES
-        fastcdr
-        fastrtps
-        cpp_utils
-    )
-
-add_unittest_executable(
-        "${TEST_NAME}"
-        "${TEST_SOURCES}"
-        "${TEST_LIST}"
-        "${TEST_EXTRA_LIBRARIES}"
-    )
+add_subdirectory(dds)
+add_subdirectory(stdout)
