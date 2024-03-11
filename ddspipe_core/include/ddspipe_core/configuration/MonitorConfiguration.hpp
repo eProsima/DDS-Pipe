@@ -19,7 +19,7 @@
 
 #include <cpp_utils/Formatter.hpp>
 
-#include <ddspipe_core/configuration/DdsMonitorConsumerConfiguration.hpp>
+#include <ddspipe_core/configuration/DdsPublishingConfiguration.hpp>
 #include <ddspipe_core/configuration/IConfiguration.hpp>
 #include <ddspipe_core/configuration/MonitorProducerConfiguration.hpp>
 #include <ddspipe_core/library/library_dll.h>
@@ -56,7 +56,7 @@ struct MonitorConfiguration : public IConfiguration
     types::DomainIdType domain{0};
 
     // Configurations of the DdsMonitorConsumers.
-    std::map<std::string, DdsMonitorConsumerConfiguration> consumers;
+    std::map<std::string, DdsPublishingConfiguration> consumers;
 
     // Configurations of the MonitorProducers.
     std::map<std::string, MonitorProducerConfiguration> producers;

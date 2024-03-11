@@ -15,7 +15,7 @@
 #include <cpp_utils/Log.hpp>
 #include <cpp_utils/memory/Heritable.hpp>
 
-#include <ddspipe_core/configuration/DdsMonitorConsumerConfiguration.hpp>
+#include <ddspipe_core/configuration/DdsPublishingConfiguration.hpp>
 #include <ddspipe_core/configuration/MonitorConfiguration.hpp>
 #include <ddspipe_core/configuration/MonitorProducerConfiguration.hpp>
 #include <ddspipe_core/configuration/RoutesConfiguration.hpp>
@@ -234,12 +234,8 @@ void YamlReader::fill(
     if (YamlReader::is_tag_present(yml, MONITOR_STATUS_TAG))
     {
         object.producers["status"] = YamlReader::get<core::MonitorProducerConfiguration>(yml, MONITOR_STATUS_TAG, version);
-        object.consumers["status"] = YamlReader::get<core::DdsMonitorConsumerConfiguration>(yml, MONITOR_STATUS_TAG, version);
-
-        if (!object.consumers["status"].domain.is_set())
-        {
-            object.consumers["status"].domain = object.domain;
-        }
+        object.consumers["status"].domain = object.domain;
+        YamlReader::fill<core::DdsPublishingConfiguration>(object.consumers["status"], get_value_in_tag(yml, MONITOR_STATUS_TAG), version);
     }
 
     /////
@@ -247,12 +243,8 @@ void YamlReader::fill(
     if (YamlReader::is_tag_present(yml, MONITOR_TOPICS_TAG))
     {
         object.producers["topics"] = YamlReader::get<core::MonitorProducerConfiguration>(yml, MONITOR_TOPICS_TAG, version);
-        object.consumers["topics"] = YamlReader::get<core::DdsMonitorConsumerConfiguration>(yml, MONITOR_TOPICS_TAG, version);
-
-        if (!object.consumers["topics"].domain.is_set())
-        {
-            object.consumers["topics"].domain = object.domain;
-        }
+        object.consumers["topics"].domain = object.domain;
+        YamlReader::fill<core::DdsPublishingConfiguration>(object.consumers["topics"], get_value_in_tag(yml, MONITOR_TOPICS_TAG), version);
     }
 }
 
@@ -295,37 +287,6 @@ core::MonitorProducerConfiguration YamlReader::get(
 {
     core::MonitorProducerConfiguration object;
     fill<core::MonitorProducerConfiguration>(object, yml, version);
-    return object;
-}
-
-template <>
-DDSPIPE_YAML_DllAPI
-void YamlReader::fill(
-        core::DdsMonitorConsumerConfiguration& object,
-        const Yaml& yml,
-        const YamlReaderVersion version)
-{
-    // Optional domain
-    if (is_tag_present(yml, MONITOR_DOMAIN_TAG))
-    {
-        object.domain = get<int>(yml, MONITOR_DOMAIN_TAG, version);
-    }
-
-    // Optional topic name
-    if (is_tag_present(yml, MONITOR_TOPIC_NAME_TAG))
-    {
-        object.topic_name = get<std::string>(yml, MONITOR_TOPIC_NAME_TAG, version);
-    }
-}
-
-template <>
-DDSPIPE_YAML_DllAPI
-core::DdsMonitorConsumerConfiguration YamlReader::get(
-        const Yaml& yml,
-        const YamlReaderVersion version)
-{
-    core::DdsMonitorConsumerConfiguration object;
-    fill<core::DdsMonitorConsumerConfiguration>(object, yml, version);
     return object;
 }
 

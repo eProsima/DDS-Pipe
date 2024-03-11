@@ -20,7 +20,7 @@
 #include <fastdds/dds/publisher/Publisher.hpp>
 #include <fastdds/dds/topic/Topic.hpp>
 
-#include <ddspipe_core/configuration/DdsMonitorConsumerConfiguration.hpp>
+#include <ddspipe_core/configuration/DdsPublishingConfiguration.hpp>
 #include <ddspipe_core/library/library_dll.h>
 #include <ddspipe_core/monitoring/consumers/DdsMonitorParticipantRegistry.hpp>
 #include <ddspipe_core/monitoring/consumers/IMonitorConsumer.hpp>
@@ -49,7 +49,7 @@ public:
      */
     DDSPIPE_CORE_DllAPI
     DdsMonitorConsumer(
-            const DdsMonitorConsumerConfiguration& configuration,
+            const DdsPublishingConfiguration& configuration,
             DdsMonitorParticipantRegistry& registry,
             fastdds::dds::TypeSupport& type);
 

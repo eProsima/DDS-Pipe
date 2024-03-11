@@ -27,12 +27,12 @@ namespace core {
 
 template <typename T>
 DdsMonitorConsumer<T>::DdsMonitorConsumer(
-        const DdsMonitorConsumerConfiguration& configuration,
+        const DdsPublishingConfiguration& configuration,
         DdsMonitorParticipantRegistry& registry,
         fastdds::dds::TypeSupport& type)
 {
     // Get the participant from the factory
-    participant_ = registry.get_participant(configuration.domain.get_value());
+    participant_ = registry.get_participant(configuration.domain);
 
     // Register the type
     type.register_type(participant_);
