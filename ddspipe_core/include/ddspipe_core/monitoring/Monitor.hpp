@@ -49,12 +49,12 @@ public:
      *
      * The DdsPipe's status is monitored by the \c StatusMonitorProducer, which produces the \c MonitoringStatus.
      */
-    virtual void monitorize_status();
+    virtual void monitor_status();
 
     /**
      * Monitorize the topics.
      */
-    virtual void monitorize_topics();
+    virtual void monitor_topics();
 
 protected:
 

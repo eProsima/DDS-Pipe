@@ -42,7 +42,7 @@ Monitor::Monitor(
 {
 }
 
-void Monitor::monitorize_status()
+void Monitor::monitor_status()
 {
     // Register the Status Monitor Producer
     auto status_producer = ddspipe::core::StatusMonitorProducer::get_instance();
@@ -59,7 +59,7 @@ void Monitor::monitorize_status()
     register_producer_(status_producer);
 }
 
-void Monitor::monitorize_topics()
+void Monitor::monitor_topics()
 {
     // Register the Topics Monitor Producer
     auto topics_producer = ddspipe::core::TopicsMonitorProducer::get_instance();
