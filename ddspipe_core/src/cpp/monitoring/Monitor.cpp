@@ -53,8 +53,12 @@ void Monitor::monitor_status()
 
     // Register the consumers
     status_producer->register_consumer(std::make_unique<ddspipe::core::StdoutMonitorConsumer<MonitoringStatus>>());
-    status_producer->register_consumer(std::make_unique<ddspipe::core::DdsMonitorConsumer<MonitoringStatus>>(
+
+    if (configuration_.consumers.count("status") > 0)
+    {
+        status_producer->register_consumer(std::make_unique<ddspipe::core::DdsMonitorConsumer<MonitoringStatus>>(
             configuration_.consumers.at("status"), registry_, type));
+    }
 
     register_producer_(status_producer);
 }
@@ -70,8 +74,12 @@ void Monitor::monitor_topics()
 
     // Register the consumers
     topics_producer->register_consumer(std::make_unique<ddspipe::core::StdoutMonitorConsumer<MonitoringTopics>>());
-    topics_producer->register_consumer(std::make_unique<ddspipe::core::DdsMonitorConsumer<MonitoringTopics>>(
+
+    if (configuration_.consumers.count("topics") > 0)
+    {
+        topics_producer->register_consumer(std::make_unique<ddspipe::core::DdsMonitorConsumer<MonitoringTopics>>(
             configuration_.consumers.at("topics"), registry_, type));
+    }
 
     register_producer_(topics_producer);
 }
