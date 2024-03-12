@@ -35,9 +35,13 @@ class IMonitorProducer
 public:
 
     /**
-     * @brief Virtual method that consumes the data.
-     *
-     * @param data Pointer to the data to be consumed.
+     * @brief Virtual method to produce data.
+     */
+    DDSPIPE_CORE_DllAPI
+    virtual void produce() = 0;
+
+    /**
+     * @brief Virtual method to consume data.
      */
     DDSPIPE_CORE_DllAPI
     virtual void consume() = 0;

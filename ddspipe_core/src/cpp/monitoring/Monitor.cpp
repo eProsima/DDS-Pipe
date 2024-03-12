@@ -81,6 +81,7 @@ void Monitor::register_producer_(
 {
     std::function<void()> periodic_callback = [producer]()
             {
+                producer->produce();
                 producer->consume();
             };
 

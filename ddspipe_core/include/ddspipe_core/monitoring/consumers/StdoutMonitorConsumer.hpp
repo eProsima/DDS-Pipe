@@ -39,7 +39,7 @@ public:
      */
     DDSPIPE_CORE_DllAPI
     void consume(
-            const T* data) const override;
+            const T& data) const override;
 };
 
 } // namespace core

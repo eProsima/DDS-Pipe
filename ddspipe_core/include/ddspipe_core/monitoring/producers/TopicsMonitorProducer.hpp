@@ -105,10 +105,17 @@ public:
             std::unique_ptr<IMonitorConsumer<MonitoringTopics>> consumer);
 
     /**
+     * @brief Produce the \c MonitoringTopics.
+     *
+     * Generates a \c MonitoringTopics with the data gathered by the producer.
+     */
+    DDSPIPE_CORE_DllAPI
+    void produce() override;
+
+    /**
      * @brief Consume the \c MonitoringTopics.
      *
-     * To consume data, the \c TopicsMonitorProducer saves the \c MonitoringTopics and then calls the consume method of
-     * its consumers.
+     * Calls the consume method of its consumers.
      */
     DDSPIPE_CORE_DllAPI
     void consume() override;
@@ -181,13 +188,13 @@ public:
 protected:
 
     // Generate the MonitoringTopics to be consumed.
-    MonitoringTopics save_data_();
-
-    // Generate the MonitoringTopics to be consumed.
     void reset_data_();
 
     // Mutex to protect the TopicsMonitorProducer.
     mutable std::mutex mutex_;
+
+    // The produced data.
+    MonitoringTopics data_;
 
     // Data specific to a Topic.
     std::map<types::DdsTopic, DdsTopic> topic_data_;

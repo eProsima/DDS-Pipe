@@ -89,10 +89,17 @@ public:
             std::unique_ptr<IMonitorConsumer<MonitoringStatus>> consumer);
 
     /**
+     * @brief Produce the \c MonitoringStatus.
+     *
+     * Generates a \c MonitoringStatus with the data gathered by the producer.
+     */
+    DDSPIPE_CORE_DllAPI
+    void produce() override;
+
+    /**
      * @brief Consume the \c MonitoringStatus.
      *
-     * To consume data, the \c StatusMonitorProducer saves the \c MonitoringStatus and then calls the consume method of
-     * its consumers.
+     * Calls the consume method of its consumers.
      */
     DDSPIPE_CORE_DllAPI
     void consume() override;
@@ -110,9 +117,6 @@ public:
 
 protected:
 
-    // Generate the MonitoringStatus to be consumed.
-    virtual MonitoringStatus* save_data_() const;
-
     // Instance of the StatusMonitorProducer.
     static std::unique_ptr<StatusMonitorProducer> instance_;
 
@@ -120,7 +124,13 @@ protected:
     mutable std::mutex mutex_;
 
     // The produced data.
-    std::unique_ptr<MonitoringStatus> data_ = std::make_unique<MonitoringStatus>();
+    MonitoringStatus data_;
+
+    // Errors gathered by the producer.
+    MonitoringErrorStatus error_status_;
+
+    // Whether the producer has gathered any errors.
+    bool has_errors_ = false;
 
     // Vector of consumers of the MonitoringStatus.
     std::vector<std::unique_ptr<IMonitorConsumer<MonitoringStatus>>> consumers_;

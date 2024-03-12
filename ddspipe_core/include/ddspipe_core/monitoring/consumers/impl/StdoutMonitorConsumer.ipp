@@ -23,9 +23,9 @@ namespace core {
 
 template <typename T>
 void StdoutMonitorConsumer<T>::consume(
-        const T* data) const
+        const T& data) const
 {
-    std::cout << *data << std::endl;
+    std::cout << data << std::endl;
 }
 
 } //namespace core

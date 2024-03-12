@@ -41,7 +41,7 @@ public:
      */
     DDSPIPE_CORE_DllAPI
     virtual void consume(
-            const T* data) const = 0;
+            const T& data) const = 0;
 };
 
 } // namespace core

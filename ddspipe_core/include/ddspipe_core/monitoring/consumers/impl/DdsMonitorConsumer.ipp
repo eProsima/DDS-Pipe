@@ -89,9 +89,9 @@ DdsMonitorConsumer<T>::~DdsMonitorConsumer()
 
 template <typename T>
 void DdsMonitorConsumer<T>::consume(
-        const T* data) const
+        const T& data) const
 {
-    writer_->write(const_cast<T*>(data));
+    writer_->write(&const_cast<T&>(data));
 }
 
 } //namespace core

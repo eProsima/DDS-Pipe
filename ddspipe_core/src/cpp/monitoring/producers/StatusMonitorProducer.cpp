@@ -53,6 +53,23 @@ void StatusMonitorProducer::register_consumer(
     consumers_.push_back(std::move(consumer));
 }
 
+void StatusMonitorProducer::produce()
+{
+    if (!enabled_)
+    {
+        // Don't produce if the producer is not enabled
+        return;
+    }
+
+    // Take the lock to prevent:
+    //      1. Changing the data while it's being saved.
+    //      2. Simultaneous calls to save_data_.
+    std::lock_guard<std::mutex> lock(mutex_);
+
+    data_.error_status(error_status_);
+    data_.has_errors(has_errors_);
+}
+
 void StatusMonitorProducer::consume()
 {
     if (!enabled_)
@@ -61,11 +78,14 @@ void StatusMonitorProducer::consume()
         return;
     }
 
-    const auto data = save_data_();
+    // Take the lock to prevent:
+    //      1. Changing the data while it's being consumed.
+    //      2. Simultaneous calls to save_data_.
+    std::lock_guard<std::mutex> lock(mutex_);
 
     for (auto& consumer : consumers_)
     {
-        consumer->consume(data);
+        consumer->consume(data_);
     }
 }
 
@@ -83,29 +103,16 @@ void StatusMonitorProducer::add_error_to_status(
     //      2. Simultaneous calls to add_error_to_status.
     std::lock_guard<std::mutex> lock(mutex_);
 
-    auto error_status = data_->error_status();
-
     if (error == "TYPE_MISMATCH")
     {
-        error_status.type_mismatch(true);
+        error_status_.type_mismatch(true);
     }
     else if (error == "QOS_MISMATCH")
     {
-        error_status.qos_mismatch(true);
+        error_status_.qos_mismatch(true);
     }
 
-    data_->error_status(error_status);
-    data_->has_errors(true);
-}
-
-MonitoringStatus* StatusMonitorProducer::save_data_() const
-{
-    // Take the lock to prevent:
-    //      1. Changing the data while it's being saved.
-    //      2. Simultaneous calls to save_data_.
-    std::lock_guard<std::mutex> lock(mutex_);
-
-    return data_.get();
+    has_errors_ = true;
 }
 
 } //namespace core
