@@ -12,9 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include <chrono>
-#include <thread>
-
 #include <cpp_utils/testing/gtest_aux.hpp>
 #include <gtest/gtest.h>
 
@@ -37,24 +34,15 @@
 #if FASTRTPS_VERSION_MAJOR < 2 || (FASTRTPS_VERSION_MAJOR == 2 && FASTRTPS_VERSION_MINOR < 13)
     #include <ddspipe_core/types/monitoring/topics/v1/MonitoringTopics.h>
     #include <ddspipe_core/types/monitoring/topics/v1/MonitoringTopicsPubSubTypes.h>
-    #include <ddspipe_core/types/monitoring/topics/v1/MonitoringTopicsTypeObject.h>
 #else
     #include <ddspipe_core/types/monitoring/topics/v2/MonitoringTopics.h>
     #include <ddspipe_core/types/monitoring/topics/v2/MonitoringTopicsPubSubTypes.h>
-    #include <ddspipe_core/types/monitoring/topics/v2/MonitoringTopicsTypeObject.h>
 #endif // if FASTRTPS_VERSION_MAJOR < 2 || (FASTRTPS_VERSION_MAJOR == 2 && FASTRTPS_VERSION_MINOR < 13)
+
+#include "../../constants.hpp"
 
 using namespace eprosima;
 using namespace eprosima::fastdds::dds;
-
-
-const int PERIOD = 100;
-const ddspipe::core::types::DomainIdType DOMAIN = 84;
-const std::string TOPIC_NAME = "DdsMonitoringTopicsTopic";
-
-const std::string MOCK_TOPIC_NAME = "MonitoredTopic";
-const std::string MOCK_TYPE_NAME = "MonitoredTopicType";
-const ddspipe::core::types::ParticipantId MOCK_PARTICIPANT_ID = "MonitoredParticipant";
 
 
 class DdsMonitorTopicsTest : public testing::Test
@@ -66,9 +54,9 @@ public:
         // Initialize the Monitor
         ddspipe::core::MonitorConfiguration configuration;
         configuration.producers["topics"].enabled = true;
-        configuration.producers["topics"].period = PERIOD;
-        configuration.consumers["topics"].domain = DOMAIN;
-        configuration.consumers["topics"].topic_name = TOPIC_NAME;
+        configuration.producers["topics"].period = test::monitor::PERIOD_MS;
+        configuration.consumers["topics"].domain = test::monitor::DOMAIN;
+        configuration.consumers["topics"].topic_name = test::monitor::TOPIC_NAME;
 
         utils::Formatter error_msg;
         ASSERT_TRUE(configuration.is_valid(error_msg));
@@ -77,21 +65,21 @@ public:
 
         if (configuration.producers["topics"].enabled)
         {
-            monitor_->monitorize_topics();
+            monitor_->monitor_topics();
         }
 
         // Initialize the Topic
-        topic_.m_topic_name = MOCK_TOPIC_NAME;
-        topic_.type_name = MOCK_TYPE_NAME;
+        topic_.m_topic_name = test::monitor::MOCK_TOPIC_NAME;
+        topic_.type_name = test::monitor::MOCK_TYPE_NAME;
 
         // Initialize the Participant ID
-        participant_id_ = MOCK_PARTICIPANT_ID;
+        participant_id_ = test::monitor::MOCK_PARTICIPANT_ID;
 
         // Create the participant
         DomainParticipantQos pqos;
-        pqos.name("MonitorTopicsTestParticipant");
+        pqos.name(test::monitor::PARTICIPANT_ID);
 
-        participant_ = DomainParticipantFactory::get_instance()->create_participant(DOMAIN, pqos);
+        participant_ = DomainParticipantFactory::get_instance()->create_participant(test::monitor::DOMAIN, pqos);
 
         ASSERT_NE(participant_, nullptr);
 
@@ -106,22 +94,12 @@ public:
         ASSERT_NE(subscriber, nullptr);
 
         // Create the topic
-        TopicQos tqos = TOPIC_QOS_DEFAULT;
-        tqos.reliability().kind = BEST_EFFORT_RELIABILITY_QOS;
-        tqos.durability().kind = VOLATILE_DURABILITY_QOS;
-
-        Topic* topic = participant_->create_topic(TOPIC_NAME, type.get_type_name(), tqos);
+        Topic* topic = participant_->create_topic(test::monitor::TOPIC_NAME, type.get_type_name(), TOPIC_QOS_DEFAULT);
 
         ASSERT_NE(topic, nullptr);
 
         // Create the reader
-        DataReaderQos rqos = DATAREADER_QOS_DEFAULT;
-
-        rqos.data_sharing().automatic();
-        rqos.reliability().kind = BEST_EFFORT_RELIABILITY_QOS;
-        rqos.durability().kind = VOLATILE_DURABILITY_QOS;
-
-        reader_ = subscriber->create_datareader(topic, rqos);
+        reader_ = subscriber->create_datareader(topic, DATAREADER_QOS_DEFAULT);
 
         ASSERT_NE(reader_, nullptr);
     }
@@ -163,11 +141,10 @@ TEST_F(DdsMonitorTopicsTest, msgs_received)
     SampleInfo info;
 
     // Wait for the monitor to publish the next message
-    ASSERT_TRUE(reader_->wait_for_unread_message(fastrtps::Duration_t(PERIOD*3)));
+    ASSERT_TRUE(reader_->wait_for_unread_message(test::monitor::MAX_WAITING_TIME));
 
     ASSERT_EQ(reader_->take_next_sample(&topics, &info), ReturnCode_t::RETCODE_OK);
     ASSERT_EQ(info.instance_state, ALIVE_INSTANCE_STATE);
-    ASSERT_EQ(topics.topics().size(), 1);
 
     ASSERT_EQ(topics.topics().size(), 1);
     ASSERT_EQ(topics.topics()[0].name(), topic_.m_topic_name);
@@ -178,7 +155,7 @@ TEST_F(DdsMonitorTopicsTest, msgs_received)
     ASSERT_EQ(topics.topics()[0].data()[0].msgs_received(), 1);
     ASSERT_EQ(topics.topics()[0].data().size(), 1);
     ASSERT_EQ(topics.topics()[0].data()[0].msgs_lost(), 0);
-    ASSERT_EQ(topics.topics()[0].data()[0].msg_rx_rate(), 1.0 / ((double) PERIOD / 1000));
+    ASSERT_EQ(topics.topics()[0].data()[0].msg_rx_rate(), 1.0 / (test::monitor::PERIOD_SECS));
 }
 
 /**
@@ -196,11 +173,10 @@ TEST_F(DdsMonitorTopicsTest, msgs_lost)
     SampleInfo info;
 
     // Wait for the monitor to publish the next message
-    ASSERT_TRUE(reader_->wait_for_unread_message(fastrtps::Duration_t(PERIOD*3)));
+    ASSERT_TRUE(reader_->wait_for_unread_message(test::monitor::MAX_WAITING_TIME));
 
     ASSERT_EQ(reader_->take_next_sample(&topics, &info), ReturnCode_t::RETCODE_OK);
     ASSERT_EQ(info.instance_state, ALIVE_INSTANCE_STATE);
-    ASSERT_EQ(topics.topics().size(), 1);
 
     // Verify that the content of the MonitoringTopics published by the Monitor is correct
     ASSERT_EQ(topics.topics().size(), 1);
@@ -233,11 +209,10 @@ TEST_F(DdsMonitorTopicsTest, type_discovered)
     SampleInfo info;
 
     // Wait for the monitor to publish the next message
-    ASSERT_TRUE(reader_->wait_for_unread_message(fastrtps::Duration_t(PERIOD*3)));
+    ASSERT_TRUE(reader_->wait_for_unread_message(test::monitor::MAX_WAITING_TIME));
 
     ASSERT_EQ(reader_->take_next_sample(&topics, &info), ReturnCode_t::RETCODE_OK);
     ASSERT_EQ(info.instance_state, ALIVE_INSTANCE_STATE);
-    ASSERT_EQ(topics.topics().size(), 1);
 
     // Verify that the content of the MonitoringTopics published by the Monitor is correct
     ASSERT_EQ(topics.topics().size(), 1);
@@ -267,11 +242,10 @@ TEST_F(DdsMonitorTopicsTest, type_mismatch)
     SampleInfo info;
 
     // Wait for the monitor to publish the next message
-    ASSERT_TRUE(reader_->wait_for_unread_message(fastrtps::Duration_t(PERIOD*3)));
+    ASSERT_TRUE(reader_->wait_for_unread_message(test::monitor::MAX_WAITING_TIME));
 
     ASSERT_EQ(reader_->take_next_sample(&topics, &info), ReturnCode_t::RETCODE_OK);
     ASSERT_EQ(info.instance_state, ALIVE_INSTANCE_STATE);
-    ASSERT_EQ(topics.topics().size(), 1);
 
     // Verify that the content of the MonitoringTopics published by the Monitor is correct
     ASSERT_EQ(topics.topics().size(), 1);
@@ -298,11 +272,10 @@ TEST_F(DdsMonitorTopicsTest, qos_mismatch)
     SampleInfo info;
 
     // Wait for the monitor to publish the next message
-    ASSERT_TRUE(reader_->wait_for_unread_message(fastrtps::Duration_t(PERIOD*3)));
+    ASSERT_TRUE(reader_->wait_for_unread_message(test::monitor::MAX_WAITING_TIME));
 
     ASSERT_EQ(reader_->take_next_sample(&topics, &info), ReturnCode_t::RETCODE_OK);
     ASSERT_EQ(info.instance_state, ALIVE_INSTANCE_STATE);
-    ASSERT_EQ(topics.topics().size(), 1);
 
     // Verify that the content of the MonitoringTopics published by the Monitor is correct
     ASSERT_EQ(topics.topics().size(), 1);

@@ -22,13 +22,10 @@
 #include <ddspipe_core/monitoring/Monitor.hpp>
 #include <ddspipe_core/monitoring/producers/StatusMonitorProducer.hpp>
 
+#include "../../constants.hpp"
+
 using namespace eprosima;
 using namespace eprosima::fastdds::dds;
-
-
-const int PERIOD = 100;
-const ddspipe::core::types::DomainIdType DOMAIN = 84;
-const std::string TOPIC_NAME = "DdsMonitoringTopicsTopic";
 
 
 class StdoutMonitorStatusTest : public testing::Test
@@ -40,9 +37,7 @@ public:
         // Initialize the Monitor
         ddspipe::core::MonitorConfiguration configuration;
         configuration.producers["status"].enabled = true;
-        configuration.producers["status"].period = PERIOD;
-        configuration.consumers["status"].domain = DOMAIN;
-        configuration.consumers["status"].topic_name = TOPIC_NAME;
+        configuration.producers["status"].period = test::monitor::PERIOD_MS;
 
         utils::Formatter error_msg;
         ASSERT_TRUE(configuration.is_valid(error_msg));
@@ -51,7 +46,7 @@ public:
 
         if (configuration.producers["status"].enabled)
         {
-            monitor_->monitorize_status();
+            monitor_->monitor_status();
         }
     }
 
@@ -79,7 +74,7 @@ TEST_F(StdoutMonitorStatusTest, type_mismatch)
     testing::internal::CaptureStdout();
 
     // Wait for the monitor to print the message
-    std::this_thread::sleep_for(std::chrono::milliseconds(PERIOD+1));
+    std::this_thread::sleep_for(std::chrono::milliseconds(test::monitor::PERIOD_MS+1));
 
     ASSERT_EQ(testing::internal::GetCapturedStdout(),
             "Monitoring Status: [TYPE_MISMATCH]\n");
@@ -99,7 +94,7 @@ TEST_F(StdoutMonitorStatusTest, qos_mismatch)
     testing::internal::CaptureStdout();
 
     // Wait for the monitor to print the message
-    std::this_thread::sleep_for(std::chrono::milliseconds(PERIOD+1));
+    std::this_thread::sleep_for(std::chrono::milliseconds(test::monitor::PERIOD_MS+1));
 
     ASSERT_EQ(testing::internal::GetCapturedStdout(),
             "Monitoring Status: [QOS_MISMATCH]\n");

@@ -23,17 +23,11 @@
 #include <ddspipe_core/monitoring/producers/TopicsMonitorProducer.hpp>
 #include <ddspipe_core/types/participant/ParticipantId.hpp>
 
+#include "../../constants.hpp"
+
 using namespace eprosima;
 using namespace eprosima::fastdds::dds;
 
-
-const int PERIOD = 100;
-const ddspipe::core::types::DomainIdType DOMAIN = 84;
-const std::string TOPIC_NAME = "DdsMonitoringTopicsTopic";
-
-const std::string MOCK_TOPIC_NAME = "MonitoredTopic";
-const std::string MOCK_TYPE_NAME = "MonitoredTopicType";
-const ddspipe::core::types::ParticipantId MOCK_PARTICIPANT_ID = "MonitoredParticipant";
 
 
 class StdoutMonitorTopicsTest : public testing::Test
@@ -45,9 +39,7 @@ public:
         // Initialize the Monitor
         ddspipe::core::MonitorConfiguration configuration;
         configuration.producers["topics"].enabled = true;
-        configuration.producers["topics"].period = PERIOD;
-        configuration.consumers["topics"].domain = DOMAIN;
-        configuration.consumers["topics"].topic_name = TOPIC_NAME;
+        configuration.producers["topics"].period = test::monitor::PERIOD_MS;
 
         utils::Formatter error_msg;
         ASSERT_TRUE(configuration.is_valid(error_msg));
@@ -56,15 +48,15 @@ public:
 
         if (configuration.producers["topics"].enabled)
         {
-            monitor_->monitorize_topics();
+            monitor_->monitor_topics();
         }
 
         // Initialize the Topic
-        topic_.m_topic_name = MOCK_TOPIC_NAME;
-        topic_.type_name = MOCK_TYPE_NAME;
+        topic_.m_topic_name = test::monitor::MOCK_TOPIC_NAME;
+        topic_.type_name = test::monitor::MOCK_TYPE_NAME;
 
         // Initialize the Participant ID
-        participant_id_ = MOCK_PARTICIPANT_ID;
+        participant_id_ = test::monitor::MOCK_PARTICIPANT_ID;
     }
 
     void TearDown() override
@@ -94,7 +86,7 @@ TEST_F(StdoutMonitorTopicsTest, msgs_received)
     testing::internal::CaptureStdout();
 
     // Wait for the monitor to print the message
-    std::this_thread::sleep_for(std::chrono::milliseconds(PERIOD));
+    std::this_thread::sleep_for(std::chrono::milliseconds(test::monitor::PERIOD_MS+1));
 
     ASSERT_EQ(testing::internal::GetCapturedStdout(),
             "Monitoring Topics: [Topic Name: MonitoredTopic, Type Name: MonitoredTopicType, Type Discovered: "
@@ -116,7 +108,7 @@ TEST_F(StdoutMonitorTopicsTest, msgs_lost)
     testing::internal::CaptureStdout();
 
     // Wait for the monitor to print the message
-    std::this_thread::sleep_for(std::chrono::milliseconds(PERIOD));
+    std::this_thread::sleep_for(std::chrono::milliseconds(test::monitor::PERIOD_MS+1));
 
     ASSERT_EQ(testing::internal::GetCapturedStdout(),
             "Monitoring Topics: [Topic Name: MonitoredTopic, Type Name: MonitoredTopicType, Type Discovered: "
@@ -141,7 +133,7 @@ TEST_F(StdoutMonitorTopicsTest, type_discovered)
     testing::internal::CaptureStdout();
 
     // Wait for the monitor to print the message
-    std::this_thread::sleep_for(std::chrono::milliseconds(PERIOD));
+    std::this_thread::sleep_for(std::chrono::milliseconds(test::monitor::PERIOD_MS+1));
 
     ASSERT_EQ(testing::internal::GetCapturedStdout(),
             "Monitoring Topics: [Topic Name: MonitoredTopic, Type Name: MonitoredTopicType, Type Discovered: "
@@ -163,7 +155,7 @@ TEST_F(StdoutMonitorTopicsTest, type_mismatch)
     testing::internal::CaptureStdout();
 
     // Wait for the monitor to print the message
-    std::this_thread::sleep_for(std::chrono::milliseconds(PERIOD));
+    std::this_thread::sleep_for(std::chrono::milliseconds(test::monitor::PERIOD_MS+1));
 
     ASSERT_EQ(testing::internal::GetCapturedStdout(),
             "Monitoring Topics: [Topic Name: MonitoredTopic, Type Name: MonitoredTopicType, Type Discovered: "
@@ -184,7 +176,7 @@ TEST_F(StdoutMonitorTopicsTest, qos_mismatch)
     testing::internal::CaptureStdout();
 
     // Wait for the monitor to print the message
-    std::this_thread::sleep_for(std::chrono::milliseconds(PERIOD));
+    std::this_thread::sleep_for(std::chrono::milliseconds(test::monitor::PERIOD_MS+1));
 
     ASSERT_EQ(testing::internal::GetCapturedStdout(),
             "Monitoring Topics: [Topic Name: MonitoredTopic, Type Name: MonitoredTopicType, Type Discovered: "

@@ -12,9 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include <chrono>
-#include <thread>
-
 #include <cpp_utils/testing/gtest_aux.hpp>
 #include <gtest/gtest.h>
 
@@ -31,23 +28,19 @@
 #include <ddspipe_core/configuration/MonitorConfiguration.hpp>
 #include <ddspipe_core/monitoring/Monitor.hpp>
 #include <ddspipe_core/monitoring/producers/StatusMonitorProducer.hpp>
-#include <ddspipe_core/types/dds/DomainId.hpp>
 
 #if FASTRTPS_VERSION_MAJOR < 2 || (FASTRTPS_VERSION_MAJOR == 2 && FASTRTPS_VERSION_MINOR < 13)
     #include <ddspipe_core/types/monitoring/status/v1/MonitoringStatus.h>
     #include <ddspipe_core/types/monitoring/status/v1/MonitoringStatusPubSubTypes.h>
-    #include <ddspipe_core/types/monitoring/status/v1/MonitoringStatusTypeObject.h>
 #else
     #include <ddspipe_core/types/monitoring/status/v2/MonitoringStatus.h>
     #include <ddspipe_core/types/monitoring/status/v2/MonitoringStatusPubSubTypes.h>
-    #include <ddspipe_core/types/monitoring/status/v2/MonitoringStatusTypeObject.h>
 #endif // if FASTRTPS_VERSION_MAJOR < 2 || (FASTRTPS_VERSION_MAJOR == 2 && FASTRTPS_VERSION_MINOR < 13)
+
+#include "../../constants.hpp"
 
 using namespace eprosima;
 using namespace eprosima::fastdds::dds;
-
-
-const int PERIOD = 100;
 
 
 class DdsMonitorStatusTest : public testing::Test
@@ -56,11 +49,28 @@ public:
 
     void SetUp() override
     {
+        // Initialize the Monitor
+        ddspipe::core::MonitorConfiguration configuration;
+        configuration.producers["status"].enabled = true;
+        configuration.producers["status"].period = test::monitor::PERIOD_MS;
+        configuration.consumers["status"].domain = test::monitor::DOMAIN;
+        configuration.consumers["status"].topic_name = test::monitor::TOPIC_NAME;
+
+        utils::Formatter error_msg;
+        ASSERT_TRUE(configuration.is_valid(error_msg));
+
+        monitor_ = std::make_unique<ddspipe::core::Monitor>(configuration);
+
+        if (configuration.producers["status"].enabled)
+        {
+            monitor_->monitor_status();
+        }
+
         // Create the participant
         DomainParticipantQos pqos;
-        pqos.name("MonitorStatusTestParticipant");
+        pqos.name(test::monitor::PARTICIPANT_ID);
 
-        participant_ = DomainParticipantFactory::get_instance()->create_participant(DOMAIN, pqos);
+        participant_ = DomainParticipantFactory::get_instance()->create_participant(test::monitor::DOMAIN, pqos);
 
         ASSERT_NE(participant_, nullptr);
 
@@ -75,45 +85,20 @@ public:
         ASSERT_NE(subscriber, nullptr);
 
         // Create the topic
-        TopicQos tqos = TOPIC_QOS_DEFAULT;
-        tqos.reliability().kind = BEST_EFFORT_RELIABILITY_QOS;
-        tqos.durability().kind = VOLATILE_DURABILITY_QOS;
-
-        Topic* topic = participant_->create_topic(TOPIC_NAME, type.get_type_name(), tqos);
+        Topic* topic = participant_->create_topic(test::monitor::TOPIC_NAME, type.get_type_name(), TOPIC_QOS_DEFAULT);
 
         ASSERT_NE(topic, nullptr);
 
         // Create the reader
-        DataReaderQos rqos = DATAREADER_QOS_DEFAULT;
-
-        rqos.data_sharing().automatic();
-        rqos.reliability().kind = BEST_EFFORT_RELIABILITY_QOS;
-        rqos.durability().kind = VOLATILE_DURABILITY_QOS;
-
-        reader_ = subscriber->create_datareader(topic, rqos);
+        reader_ = subscriber->create_datareader(topic, DATAREADER_QOS_DEFAULT);
 
         ASSERT_NE(reader_, nullptr);
-
-        // Initialize the Monitor
-        ddspipe::core::MonitorConfiguration configuration;
-        configuration.producers["status"].enabled = true;
-        configuration.producers["status"].period = PERIOD;
-        configuration.consumers["status"].domain = DOMAIN;
-        configuration.consumers["status"].topic_name = TOPIC_NAME;
-
-        utils::Formatter error_msg;
-        ASSERT_TRUE(configuration.is_valid(error_msg));
-
-        static ddspipe::core::Monitor monitor(configuration);
-
-        if (configuration.producers["status"].enabled)
-        {
-            monitor.monitorize_status();
-        }
     }
 
     void TearDown() override
     {
+        monitor_.reset(nullptr);
+
         if (nullptr != participant_)
         {
             participant_->delete_contained_entities();
@@ -123,8 +108,7 @@ public:
 
 protected:
 
-    const ddspipe::core::types::DomainIdType DOMAIN{84};
-    const std::string TOPIC_NAME{"DdsMonitoringStatusTopic"};
+    std::unique_ptr<ddspipe::core::Monitor> monitor_{nullptr};
 
     DomainParticipant* participant_ = nullptr;
     DataReader* reader_ = nullptr;
@@ -145,7 +129,7 @@ TEST_F(DdsMonitorStatusTest, type_mismatch)
     SampleInfo info;
 
     // Wait for the monitor to publish the next message
-    ASSERT_TRUE(reader_->wait_for_unread_message(fastrtps::Duration_t(PERIOD*3)));
+    ASSERT_TRUE(reader_->wait_for_unread_message(test::monitor::MAX_WAITING_TIME));
 
     ASSERT_EQ(reader_->take_next_sample(&status, &info), ReturnCode_t::RETCODE_OK);
     ASSERT_EQ(info.instance_state, ALIVE_INSTANCE_STATE);
@@ -157,21 +141,21 @@ TEST_F(DdsMonitorStatusTest, type_mismatch)
 }
 
 /**
- * Test that the Monitor monitors the qos mismatch correctly.
+ * Test that the Monitor monitors the QoS mismatch correctly.
  *
  * CASES:
  * - check that the Monitor publishes the qos_mismatch correctly.
  */
 TEST_F(DdsMonitorStatusTest, qos_mismatch)
 {
-    // Mock a qos mismatch
+    // Mock a QoS mismatch
     monitor_error("QOS_MISMATCH");
 
     MonitoringStatus status;
     SampleInfo info;
 
     // Wait for the monitor to publish the next message
-    ASSERT_TRUE(reader_->wait_for_unread_message(fastrtps::Duration_t(PERIOD*3)));
+    ASSERT_TRUE(reader_->wait_for_unread_message(test::monitor::MAX_WAITING_TIME));
 
     ASSERT_EQ(reader_->take_next_sample(&status, &info), ReturnCode_t::RETCODE_OK);
     ASSERT_EQ(info.instance_state, ALIVE_INSTANCE_STATE);
