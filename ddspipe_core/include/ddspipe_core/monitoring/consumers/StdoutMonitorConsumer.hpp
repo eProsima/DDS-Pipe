@@ -40,6 +40,14 @@ public:
     DDSPIPE_CORE_DllAPI
     void consume(
             const T& data) const override;
+
+    /**
+     * @brief Get the name of the consumer.
+     *
+     * @return Name of the consumer.
+     */
+    DDSPIPE_CORE_DllAPI
+    std::string get_name() const override;
 };
 
 } // namespace core

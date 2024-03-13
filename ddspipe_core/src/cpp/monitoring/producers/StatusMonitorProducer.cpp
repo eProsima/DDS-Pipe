@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#include <cpp_utils/Log.hpp>
 
 #include <ddspipe_core/monitoring/consumers/DdsMonitorConsumer.hpp>
 #include <ddspipe_core/monitoring/consumers/StdoutMonitorConsumer.hpp>
@@ -46,9 +47,13 @@ void StatusMonitorProducer::register_consumer(
 {
     if (!enabled_)
     {
-        // Don't register the consumer if the producer is not enabled
+        logWarning(DDSPIPE_MONITOR, "MONITOR | Not registering consumer " << consumer->get_name() << " on StatusMonitorProducer"
+                "since the StatusMonitorProducer is disabled.");
+
         return;
     }
+
+    logInfo(DDSPIPE_MONITOR, "MONITOR | Registering consumer " << consumer->get_name() << " on StatusMonitorProducer.");
 
     consumers_.push_back(std::move(consumer));
 }
@@ -66,6 +71,8 @@ void StatusMonitorProducer::produce()
     //      2. Simultaneous calls to save_data_.
     std::lock_guard<std::mutex> lock(mutex_);
 
+    logInfo(DDSPIPE_MONITOR, "MONITOR | Producing MonitoringStatus.");
+
     data_.error_status(error_status_);
     data_.has_errors(has_errors_);
 }
@@ -82,6 +89,8 @@ void StatusMonitorProducer::consume()
     //      1. Changing the data while it's being consumed.
     //      2. Simultaneous calls to save_data_.
     std::lock_guard<std::mutex> lock(mutex_);
+
+    logInfo(DDSPIPE_MONITOR, "MONITOR | Consuming MonitoringStatus.")
 
     for (auto& consumer : consumers_)
     {
@@ -102,6 +111,8 @@ void StatusMonitorProducer::add_error_to_status(
     //      1. Changing the data while it's being saved.
     //      2. Simultaneous calls to add_error_to_status.
     std::lock_guard<std::mutex> lock(mutex_);
+
+    logInfo(DDSPIPE_MONITOR, "MONITOR | Adding error " << error << " to status.");
 
     if (error == "TYPE_MISMATCH")
     {

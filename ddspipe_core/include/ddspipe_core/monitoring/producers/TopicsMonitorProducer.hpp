@@ -83,9 +83,20 @@ class TopicsMonitorProducer : public MonitorProducer
 public:
 
     /**
+     * @brief Initialize the instance of the \c TopicsMonitorProducer.
+     *
+     * Applications can initialize the instance of the \c TopicsMonitorProducer with derived classes.
+     *
+     * @param instance Instance of the \c TopicsMonitorProducer.
+     */
+    DDSPIPE_CORE_DllAPI
+    static void init_instance(
+            std::unique_ptr<TopicsMonitorProducer> instance);
+
+    /**
      * @brief Get the instance of the \c TopicsMonitorProducer.
      *
-     * If the instance has not been initialized, it will initialize it.
+     * If the instance has not been initialized, it will be initialized with the default configuration.
      *
      * @return Instance of the \c TopicsMonitorProducer.
      */
@@ -189,6 +200,9 @@ protected:
 
     // Generate the MonitoringTopics to be consumed.
     void reset_data_();
+
+    // Instance of the TopicsMonitorProducer.
+    static std::unique_ptr<TopicsMonitorProducer> instance_;
 
     // Mutex to protect the TopicsMonitorProducer.
     mutable std::mutex mutex_;

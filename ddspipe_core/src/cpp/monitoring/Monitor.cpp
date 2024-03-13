@@ -14,6 +14,8 @@
 
 #include <fastdds/dds/topic/TypeSupport.hpp>
 
+#include <cpp_utils/Log.hpp>
+
 #include <ddspipe_core/monitoring/Monitor.hpp>
 #include <ddspipe_core/monitoring/consumers/DdsMonitorConsumer.hpp>
 #include <ddspipe_core/monitoring/consumers/StdoutMonitorConsumer.hpp>
@@ -44,6 +46,8 @@ Monitor::Monitor(
 
 void Monitor::monitor_status()
 {
+    logInfo(DDSPIPE_MONITOR, "MONITOR | Registering Status Monitor Producer.")
+
     // Register the Status Monitor Producer
     auto status_producer = ddspipe::core::StatusMonitorProducer::get_instance();
     status_producer->init(configuration_.producers.at("status"));
@@ -65,6 +69,8 @@ void Monitor::monitor_status()
 
 void Monitor::monitor_topics()
 {
+    logInfo(DDSPIPE_MONITOR, "MONITOR | Registering Topics Monitor Producer.")
+
     // Register the Topics Monitor Producer
     auto topics_producer = ddspipe::core::TopicsMonitorProducer::get_instance();
     topics_producer->init(configuration_.producers.at("topics"));
@@ -87,6 +93,8 @@ void Monitor::monitor_topics()
 void Monitor::register_producer_(
         IMonitorProducer* producer)
 {
+    logInfo(DDSPIPE_MONITOR, "MONITOR | Registering producer " << producer << ".");
+
     std::function<void()> periodic_callback = [producer]()
             {
                 producer->produce();

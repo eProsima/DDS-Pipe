@@ -16,6 +16,7 @@
 #include <fastdds/dds/domain/DomainParticipantFactory.hpp>
 
 #include <cpp_utils/exception/InitializationException.hpp>
+#include <cpp_utils/Log.hpp>
 
 #include <ddspipe_core/monitoring/consumers/DdsMonitorParticipantRegistry.hpp>
 
@@ -30,6 +31,7 @@ DdsMonitorParticipantRegistry::~DdsMonitorParticipantRegistry()
     // Delete all the participants
     for (auto& participant : participants_)
     {
+        logInfo(DDSPIPE_MONITOR, "MONITOR | Deleting Participant " << participant.second << " on domain " << participant.first << ".");
         fastdds::dds::DomainParticipantFactory::get_instance()->delete_participant(participant.second);
     }
 
@@ -47,6 +49,8 @@ fastdds::dds::DomainParticipant* DdsMonitorParticipantRegistry::get_participant(
     {
         // The participant already exists. Use it.
         participant = participants_[domain];
+
+        logInfo(DDSPIPE_MONITOR, "MONITOR | Reusing Participant " << participant << " on domain " << domain << ".")
     }
     else
     {
@@ -54,11 +58,9 @@ fastdds::dds::DomainParticipant* DdsMonitorParticipantRegistry::get_participant(
         fastdds::dds::DomainParticipantQos pqos;
         pqos.name("DdsMonitorParticipant_" + std::to_string(domain));
 
-        // Send type information
-        pqos.wire_protocol().builtin.typelookup_config.use_client = false;
-        pqos.wire_protocol().builtin.typelookup_config.use_server = true;
-
         participant = fastdds::dds::DomainParticipantFactory::get_instance()->create_participant(domain, pqos);
+
+        logInfo(DDSPIPE_MONITOR, "MONITOR | Created Participant " << participant << " on domain " << domain << ".");
 
         if (participant == nullptr)
         {

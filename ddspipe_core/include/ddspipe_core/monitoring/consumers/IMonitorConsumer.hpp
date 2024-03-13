@@ -42,6 +42,14 @@ public:
     DDSPIPE_CORE_DllAPI
     virtual void consume(
             const T& data) const = 0;
+
+    /**
+     * @brief Virtual method that returns the name of the consumer.
+     *
+     * @return Name of the consumer.
+     */
+    DDSPIPE_CORE_DllAPI
+    virtual std::string get_name() const = 0;
 };
 
 } // namespace core

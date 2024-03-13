@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#include <cpp_utils/Log.hpp>
+
 #include <ddspipe_core/configuration/MonitorProducerConfiguration.hpp>
 #include <ddspipe_core/monitoring/consumers/DdsMonitorConsumer.hpp>
 #include <ddspipe_core/monitoring/consumers/StdoutMonitorConsumer.hpp>
@@ -21,10 +23,23 @@ namespace eprosima {
 namespace ddspipe {
 namespace core {
 
+std::unique_ptr<TopicsMonitorProducer> TopicsMonitorProducer::instance_ = nullptr;
+
+
+void TopicsMonitorProducer::init_instance(
+        std::unique_ptr<TopicsMonitorProducer> instance)
+{
+    instance_ = std::move(instance);
+}
+
 TopicsMonitorProducer* TopicsMonitorProducer::get_instance()
 {
-    static TopicsMonitorProducer instance;
-    return &instance;
+    if (instance_ == nullptr)
+    {
+        instance_ = std::make_unique<TopicsMonitorProducer>();
+    }
+
+    return instance_.get();
 }
 
 void TopicsMonitorProducer::register_consumer(
@@ -32,9 +47,13 @@ void TopicsMonitorProducer::register_consumer(
 {
     if (!enabled_)
     {
-        // Don't register the consumer if the producer is not enabled
+        logWarning(DDSPIPE_MONITOR, "MONITOR | Not registering consumer " << consumer->get_name() << " on TopicsMonitorProducer"
+                "since the TopicsMonitorProducer is disabled.");
+
         return;
     }
+
+    logInfo(DDSPIPE_MONITOR, "MONITOR | Registering consumer " << consumer->get_name() << " on TopicsMonitorProducer.");
 
     consumers_.push_back(std::move(consumer));
 }
@@ -49,6 +68,8 @@ void TopicsMonitorProducer::produce()
 
     // Take the lock to prevent saving the data while it's changing
     std::lock_guard<std::mutex> lock(mutex_);
+
+    logInfo(DDSPIPE_MONITOR, "MONITOR | Producing MonitoringTopics.");
 
     std::vector<DdsTopic> topics_data;
 
@@ -89,6 +110,8 @@ void TopicsMonitorProducer::consume()
         return;
     }
 
+    logInfo(DDSPIPE_MONITOR, "MONITOR | Consuming MonitoringTopics.");
+
     for (auto& consumer : consumers_)
     {
         consumer->consume(data_);
@@ -112,6 +135,9 @@ void TopicsMonitorProducer::msgs_received(
     //      1. Changing the data while it's being saved.
     //      2. Simultaneous calls to msg_received.
     std::lock_guard<std::mutex> lock(mutex_);
+
+    logInfo(DDSPIPE_MONITOR, "MONITOR | Received " << number_of_messages << " messages from Participant " <<
+            participant_id << " on Topic " << topic << ".");
 
     // Register the topic
     topic_data_[topic].name(topic.m_topic_name);
@@ -141,6 +167,9 @@ void TopicsMonitorProducer::msgs_lost(
     //      2. Simultaneous calls to msg_lost.
     std::lock_guard<std::mutex> lock(mutex_);
 
+    logInfo(DDSPIPE_MONITOR, "MONITOR | Lost " << number_of_messages << " messages from Participant " <<
+            participant_id << " on Topic " << topic << ".");
+
     // Register the topic
     topic_data_[topic].name(topic.m_topic_name);
     topic_data_[topic].type_name(topic.type_name);
@@ -167,6 +196,8 @@ void TopicsMonitorProducer::type_discovered(
     //      2. Simultaneous calls to msg_lost.
     std::lock_guard<std::mutex> lock(mutex_);
 
+    logInfo(DDSPIPE_MONITOR, "MONITOR | Discovered type " << type_name << ".");
+
     types_discovered_[type_name] = true;
 }
 
@@ -183,6 +214,8 @@ void TopicsMonitorProducer::type_mismatch(
     //      1. Changing the data while it's being saved.
     //      2. Simultaneous calls to msg_lost.
     std::lock_guard<std::mutex> lock(mutex_);
+
+    logInfo(DDSPIPE_MONITOR, "MONITOR | Type mismatch on Topic " << topic << ".");
 
     // Register the topic
     topic_data_[topic].name(topic.m_topic_name);
@@ -206,6 +239,8 @@ void TopicsMonitorProducer::qos_mismatch(
     //      2. Simultaneous calls to msg_lost.
     std::lock_guard<std::mutex> lock(mutex_);
 
+    logInfo(DDSPIPE_MONITOR, "MONITOR | QoS mismatch on Topic " << topic << ".");
+
     // Register the topic
     topic_data_[topic].name(topic.m_topic_name);
     topic_data_[topic].type_name(topic.type_name);
@@ -218,6 +253,8 @@ void TopicsMonitorProducer::reset_data_()
 {
     // Take the lock to prevent reseting the data while it's being saved
     std::lock_guard<std::mutex> lock(mutex_);
+
+    logInfo(DDSPIPE_MONITOR, "MONITOR | Resetting the messages received and lost for the next period.");
 
     // Reset the data
     for (auto& topic : participant_data_)

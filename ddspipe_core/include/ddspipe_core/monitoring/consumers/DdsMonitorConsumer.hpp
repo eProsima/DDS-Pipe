@@ -68,6 +68,14 @@ public:
     void consume(
             const T& data) const override;
 
+    /**
+     * @brief Get the name of the consumer.
+     *
+     * @return Name of the consumer.
+     */
+    DDSPIPE_CORE_DllAPI
+    std::string get_name() const override;
+
 protected:
 
     // Fast-DDS entities to publish data.

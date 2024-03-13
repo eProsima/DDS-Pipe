@@ -12,11 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include <type_traits>
 
 #include <fastdds/dds/publisher/qos/DataWriterQos.hpp>
 #include <fastdds/dds/topic/qos/TopicQos.hpp>
 
+#include <cpp_utils/Log.hpp>
 #include <cpp_utils/exception/InitializationException.hpp>
 
 
@@ -66,6 +66,9 @@ DdsMonitorConsumer<T>::DdsMonitorConsumer(
                   utils::Formatter() << "Error creating DataWriter for Participant " <<
                       participant_->guid() << " in topic " << topic_ << ".");
     }
+
+    logInfo(DDSPIPE_MONITOR, "MONITOR | Created DataWriter " << writer_ << " for Participant " <<
+        participant_->guid() << " in topic " << topic_ << ".");
 }
 
 template <typename T>
@@ -92,6 +95,12 @@ void DdsMonitorConsumer<T>::consume(
         const T& data) const
 {
     writer_->write(&const_cast<T&>(data));
+}
+
+template <typename T>
+std::string DdsMonitorConsumer<T>::get_name() const
+{
+    return "DdsMonitorConsumer";
 }
 
 } //namespace core

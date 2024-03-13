@@ -28,6 +28,12 @@ void StdoutMonitorConsumer<T>::consume(
     std::cout << data << std::endl;
 }
 
+template <typename T>
+std::string StdoutMonitorConsumer<T>::get_name() const
+{
+    return "StdoutMonitorConsumer";
+}
+
 } //namespace core
 } //namespace ddspipe
 } //namespace eprosima
