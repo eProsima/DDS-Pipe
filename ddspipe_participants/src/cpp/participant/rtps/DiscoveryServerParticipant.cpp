@@ -186,7 +186,7 @@ DiscoveryServerParticipant::reckon_participant_attributes_(
             // If external port is defined, announced port is external port. This is the one clients,
             // should try to connect, which should match network router public port.
             eprosima::fastrtps::rtps::IPLocator::setPhysicalPort(locator, address.external_port());
-            eprosima::fastrtps::rtps::IPLocator::setLogicalPort(locator, 0);
+            eprosima::fastrtps::rtps::IPLocator::setLogicalPort(locator, address.external_port());
         }
 
         // Add listening address to builtin
@@ -261,14 +261,8 @@ DiscoveryServerParticipant::reckon_participant_attributes_(
 
             // PORT
             eprosima::fastrtps::rtps::IPLocator::setPhysicalPort(locator, address.port());
-            
-            // TCP client side
-            // Initial peer physical port must match server's public port. If server specified an external port,
-            // client port value must be server's external port. Client's external port have no effect.
-            if (address.is_tcp())
-            {
-                eprosima::fastrtps::rtps::IPLocator::setLogicalPort(locator, 0);
-            }
+            eprosima::fastrtps::rtps::IPLocator::setLogicalPort(locator, address.port());
+            // Warning: Logical port is not needed unless domain could change
 
             // Add as remote server and add it to builtin
             server_attr.metatrafficUnicastLocatorList.push_back(locator);
