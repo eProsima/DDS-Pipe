@@ -67,7 +67,7 @@ void EchoParticipant::echo_updated(
     {
         logUser(
             DDSPIPE_ECHO_DISCOVERY,
-            "Endpoint undiscovered: " << endpoint_updated << ".");
+            "Endpoint removed: " << endpoint_updated << ".");
     }
 }
 
