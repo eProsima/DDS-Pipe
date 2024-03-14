@@ -42,6 +42,12 @@ EchoParticipant::EchoParticipant(
             {
                 this->echo_discovery(endpoint_discovered);
             });
+
+        discovery_database->add_endpoint_updated_callback(
+            [this](const core::types::Endpoint& endpoint_updated)
+            {
+                this->echo_updated(endpoint_updated);
+            });
     }
 }
 
@@ -52,6 +58,17 @@ void EchoParticipant::echo_discovery(
     logUser(
         DDSPIPE_ECHO_DISCOVERY,
         "New endpoint discovered: " << endpoint_discovered << ".");
+}
+
+void EchoParticipant::echo_updated(
+        core::types::Endpoint endpoint_updated) const noexcept
+{
+    if (!endpoint_updated.active)
+    {
+        logUser(
+            DDSPIPE_ECHO_DISCOVERY,
+            "Endpoint undiscovered: " << endpoint_updated << ".");
+    }
 }
 
 std::shared_ptr<core::IWriter> EchoParticipant::create_writer(

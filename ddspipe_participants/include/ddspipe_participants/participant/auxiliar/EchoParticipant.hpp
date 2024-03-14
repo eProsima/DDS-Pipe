@@ -41,6 +41,11 @@ public:
     void echo_discovery(
             core::types::Endpoint endpoint_discovered) const noexcept;
 
+    //! Print discovery information from endpoint updated
+    DDSPIPE_PARTICIPANTS_DllAPI
+    void echo_updated(
+            core::types::Endpoint endpoint_updated) const noexcept;
+
     //! Override create_writer() IParticipant method
     DDSPIPE_PARTICIPANTS_DllAPI
     std::shared_ptr<core::IWriter> create_writer(
