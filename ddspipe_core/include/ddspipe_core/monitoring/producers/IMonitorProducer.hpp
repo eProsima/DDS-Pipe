@@ -55,7 +55,6 @@ public:
     /**
      * @brief Attribute that represents the period at which the producer should consume data.
      */
-    DDSPIPE_CORE_DllAPI
     double period = 1000;
 
 protected:
