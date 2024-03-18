@@ -155,7 +155,7 @@ public:
      */
     DDSPIPE_PARTICIPANTS_DllAPI
     void on_incompatible_type(
-        fastrtps::rtps::RTPSReader* reader) noexcept override;
+            fastrtps::rtps::RTPSReader* reader) noexcept override;
 
     /////////////////////////
     // RPC REQUIRED METHODS

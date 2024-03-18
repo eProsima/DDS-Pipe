@@ -127,7 +127,8 @@ void CommonReader::on_inconsistent_topic(
         fastdds::dds::InconsistentTopicStatus status)
 {
     logWarning(DDSPIPE_DDS_READER,
-            "TOPIC_MISMATCH_TYPE | Reader " << *this << " found a remote Writer with same topic name but incompatible type");
+            "TOPIC_MISMATCH_TYPE | Reader " << *this <<
+                            " found a remote Writer with same topic name but incompatible type");
 }
 
 CommonReader::CommonReader(

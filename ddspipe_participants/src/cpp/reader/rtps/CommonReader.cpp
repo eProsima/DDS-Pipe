@@ -490,7 +490,8 @@ void CommonReader::on_incompatible_type(
         fastrtps::rtps::RTPSReader* reader) noexcept
 {
     logWarning(DDSPIPE_RTPS_COMMONREADER_LISTENER,
-            "TOPIC_MISMATCH_TYPE | Reader " << *this << " discovered a Writer with a matching Topic name but with an incompatible type");
+            "TOPIC_MISMATCH_TYPE | Reader " << *this <<
+                            " discovered a Writer with a matching Topic name but with an incompatible type");
 }
 
 utils::ReturnCode CommonReader::is_data_correct_(
