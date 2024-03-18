@@ -37,16 +37,6 @@ DdsMonitorConsumer<T>::DdsMonitorConsumer(
     // Register the type
     type.register_type(participant_);
 
-    // Create the publisher
-    publisher_ = participant_->create_publisher(fastdds::dds::PUBLISHER_QOS_DEFAULT, nullptr);
-
-    if (publisher_ == nullptr)
-    {
-        throw utils::InitializationException(
-                  utils::Formatter() << "Error creating Publisher for Participant " <<
-                      participant_->get_qos().name() << ".");
-    }
-
     // Create the topic
     topic_ = participant_->create_topic(configuration.topic_name, type.get_type_name(), fastdds::dds::TOPIC_QOS_DEFAULT);
 
@@ -55,6 +45,16 @@ DdsMonitorConsumer<T>::DdsMonitorConsumer(
         throw utils::InitializationException(
                   utils::Formatter() << "Error creating Topic " << configuration.topic_name <<
                       " for Participant " << participant_->guid() << ".");
+    }
+
+    // Create the publisher
+    publisher_ = participant_->create_publisher(fastdds::dds::PUBLISHER_QOS_DEFAULT, nullptr);
+
+    if (publisher_ == nullptr)
+    {
+        throw utils::InitializationException(
+                  utils::Formatter() << "Error creating Publisher for Participant " <<
+                      participant_->get_qos().name() << ".");
     }
 
     // Create the writer
@@ -79,14 +79,14 @@ DdsMonitorConsumer<T>::~DdsMonitorConsumer()
         publisher_->delete_datawriter(writer_);
     }
 
-    if (topic_ != nullptr)
-    {
-        participant_->delete_topic(topic_);
-    }
-
     if (publisher_ != nullptr)
     {
         participant_->delete_publisher(publisher_);
+    }
+
+    if (topic_ != nullptr)
+    {
+        participant_->delete_topic(topic_);
     }
 }
 

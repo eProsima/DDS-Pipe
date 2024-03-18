@@ -58,6 +58,20 @@ void TopicsMonitorProducer::register_consumer(
     consumers_.push_back(std::move(consumer));
 }
 
+void TopicsMonitorProducer::produce_and_consume()
+{
+    if (!enabled_)
+    {
+        // Don't produce if the producer is not enabled
+        return;
+    }
+
+    std::lock_guard<std::mutex> lock(mutex_);
+
+    produce_nts_();
+    consume_nts_();
+}
+
 void TopicsMonitorProducer::produce()
 {
     if (!enabled_)
@@ -69,37 +83,7 @@ void TopicsMonitorProducer::produce()
     // Take the lock to prevent saving the data while it's changing
     std::lock_guard<std::mutex> lock(mutex_);
 
-    logInfo(DDSPIPE_MONITOR, "MONITOR | Producing MonitoringTopics.");
-
-    std::vector<DdsTopic> topics_data;
-
-    // Iterate through the different topics
-    for (auto& topic : topic_data_)
-    {
-        // Set the type discovered flag
-        topic.second.type_discovered(types_discovered_[topic.second.type_name()]);
-
-        std::vector<DdsTopicData> topic_participants;
-
-        for (auto& participant : participant_data_[topic.first])
-        {
-            // Calculate the message reception rate
-            const double period_in_secs = (double) period / 1000;
-            participant.second.msg_rx_rate((double) participant.second.msgs_received() / period_in_secs);
-
-            // Save the participant's data for the topic
-            topic_participants.push_back(participant.second);
-        }
-
-        // Save the participants' data for the topic
-        topic.second.data(topic_participants);
-
-        // Save the topic data
-        topics_data.push_back(topic.second);
-    }
-
-    // Save the topics' data
-    data_.topics(topics_data);
+    produce_nts_();
 }
 
 void TopicsMonitorProducer::consume()
@@ -110,14 +94,10 @@ void TopicsMonitorProducer::consume()
         return;
     }
 
-    logInfo(DDSPIPE_MONITOR, "MONITOR | Consuming MonitoringTopics.");
+    // Take the lock to prevent consuming the data while it's changing
+    std::lock_guard<std::mutex> lock(mutex_);
 
-    for (auto& consumer : consumers_)
-    {
-        consumer->consume(data_);
-    }
-
-    reset_data_();
+    consume_nts_();
 }
 
 void TopicsMonitorProducer::msgs_received(
@@ -249,11 +229,55 @@ void TopicsMonitorProducer::qos_mismatch(
     topic_data_[topic].qos_mismatch(true);
 }
 
+void TopicsMonitorProducer::produce_nts_()
+{
+    logInfo(DDSPIPE_MONITOR, "MONITOR | Producing MonitoringTopics.");
+
+    std::vector<DdsTopic> topics_data;
+
+    // Iterate through the different topics
+    for (auto& topic : topic_data_)
+    {
+        // Set the type discovered flag
+        topic.second.type_discovered(types_discovered_[topic.second.type_name()]);
+
+        std::vector<DdsTopicData> topic_participants;
+
+        for (auto& participant : participant_data_[topic.first])
+        {
+            // Calculate the message reception rate
+            const double period_in_secs = (double) period / 1000;
+            participant.second.msg_rx_rate((double) participant.second.msgs_received() / period_in_secs);
+
+            // Save the participant's data for the topic
+            topic_participants.push_back(participant.second);
+        }
+
+        // Save the participants' data for the topic
+        topic.second.data(topic_participants);
+
+        // Save the topic data
+        topics_data.push_back(topic.second);
+    }
+
+    // Save the topics' data
+    data_.topics(topics_data);
+}
+
+void TopicsMonitorProducer::consume_nts_()
+{
+    logInfo(DDSPIPE_MONITOR, "MONITOR | Consuming MonitoringTopics.");
+
+    for (auto& consumer : consumers_)
+    {
+        consumer->consume(data_);
+    }
+
+    reset_data_();
+}
+
 void TopicsMonitorProducer::reset_data_()
 {
-    // Take the lock to prevent reseting the data while it's being saved
-    std::lock_guard<std::mutex> lock(mutex_);
-
     logInfo(DDSPIPE_MONITOR, "MONITOR | Resetting the messages received and lost for the next period.");
 
     // Reset the data

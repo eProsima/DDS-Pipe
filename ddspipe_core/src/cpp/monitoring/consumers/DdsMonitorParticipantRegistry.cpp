@@ -31,6 +31,11 @@ DdsMonitorParticipantRegistry::~DdsMonitorParticipantRegistry()
     // Delete all the participants
     for (auto& participant : participants_)
     {
+        if (participant.second == nullptr)
+        {
+            continue;
+        }
+
         logInfo(DDSPIPE_MONITOR, "MONITOR | Deleting Participant " << participant.second << " on domain " << participant.first << ".");
         fastdds::dds::DomainParticipantFactory::get_instance()->delete_participant(participant.second);
     }

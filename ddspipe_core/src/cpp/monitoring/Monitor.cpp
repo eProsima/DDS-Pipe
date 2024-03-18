@@ -46,7 +46,7 @@ Monitor::Monitor(
 
 void Monitor::monitor_status()
 {
-    logInfo(DDSPIPE_MONITOR, "MONITOR | Registering Status Monitor Producer.")
+    logInfo(DDSPIPE_MONITOR, "MONITOR | Registering Status Monitor Producer.");
 
     // Register the Status Monitor Producer
     auto status_producer = ddspipe::core::StatusMonitorProducer::get_instance();
@@ -69,7 +69,7 @@ void Monitor::monitor_status()
 
 void Monitor::monitor_topics()
 {
-    logInfo(DDSPIPE_MONITOR, "MONITOR | Registering Topics Monitor Producer.")
+    logInfo(DDSPIPE_MONITOR, "MONITOR | Registering Topics Monitor Producer.");
 
     // Register the Topics Monitor Producer
     auto topics_producer = ddspipe::core::TopicsMonitorProducer::get_instance();

@@ -13,37 +13,24 @@
 // limitations under the License.
 
 /**
- * @file MonitorConfiguration.cpp
+ * @file MonitorConsumerConfiguration.cpp
  *
  */
 
 #include <cpp_utils/Formatter.hpp>
 
-#include <ddspipe_core/configuration/MonitorConfiguration.hpp>
+#include <ddspipe_core/configuration/MonitorConsumerConfiguration.hpp>
 
 namespace eprosima {
 namespace ddspipe {
 namespace core {
 
-bool MonitorConfiguration::is_valid(
+bool MonitorConsumerConfiguration::is_valid(
         utils::Formatter& error_msg) const noexcept
 {
-    // Verify that the consumers' configuration is valid
-    for (const auto& consumer : consumers)
+    if (DdsPublishingConfiguration::is_valid(error_msg) == false)
     {
-        if (!consumer.second.is_valid(error_msg))
-        {
-            return false;
-        }
-    }
-
-    // Verify that the producers' configuration is valid
-    for (const auto& producer : producers)
-    {
-        if (!producer.second.is_valid(error_msg))
-        {
-            return false;
-        }
+        return false;
     }
 
     return true;

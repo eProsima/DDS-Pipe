@@ -20,6 +20,7 @@
 #include <ddspipe_core/configuration/MonitorProducerConfiguration.hpp>
 #include <ddspipe_core/configuration/RoutesConfiguration.hpp>
 #include <ddspipe_core/configuration/TopicRoutesConfiguration.hpp>
+#include <ddspipe_core/types/dds/DomainId.hpp>
 #include <ddspipe_core/types/topic/dds/DdsTopic.hpp>
 #include <ddspipe_core/types/topic/dds/DistributedTopic.hpp>
 #include <ddspipe_participants/xml/XmlHandler.hpp>
@@ -223,10 +224,12 @@ void YamlReader::fill(
         const Yaml& yml,
         const YamlReaderVersion version)
 {
+    core::types::DomainIdType domain = 0;
+
     // Optional domain
     if (is_tag_present(yml, MONITOR_DOMAIN_TAG))
     {
-        object.domain = get<int>(yml, MONITOR_DOMAIN_TAG, version);
+        domain = get<int>(yml, MONITOR_DOMAIN_TAG, version);
     }
 
     /////
@@ -234,7 +237,7 @@ void YamlReader::fill(
     if (YamlReader::is_tag_present(yml, MONITOR_STATUS_TAG))
     {
         object.producers["status"] = YamlReader::get<core::MonitorProducerConfiguration>(yml, MONITOR_STATUS_TAG, version);
-        object.consumers["status"].domain = object.domain;
+        object.consumers["status"].domain = domain;
         YamlReader::fill<core::DdsPublishingConfiguration>(object.consumers["status"], get_value_in_tag(yml, MONITOR_STATUS_TAG), version);
     }
 
@@ -243,7 +246,7 @@ void YamlReader::fill(
     if (YamlReader::is_tag_present(yml, MONITOR_TOPICS_TAG))
     {
         object.producers["topics"] = YamlReader::get<core::MonitorProducerConfiguration>(yml, MONITOR_TOPICS_TAG, version);
-        object.consumers["topics"].domain = object.domain;
+        object.consumers["topics"].domain = domain;
         YamlReader::fill<core::DdsPublishingConfiguration>(object.consumers["topics"], get_value_in_tag(yml, MONITOR_TOPICS_TAG), version);
     }
 }

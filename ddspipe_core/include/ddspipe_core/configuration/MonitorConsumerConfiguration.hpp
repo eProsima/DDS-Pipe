@@ -12,42 +12,34 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-/**
- * @file MonitorConfiguration.cpp
- *
- */
+#pragma once
 
-#include <cpp_utils/Formatter.hpp>
-
-#include <ddspipe_core/configuration/MonitorConfiguration.hpp>
+#include <ddspipe_core/configuration/DdsPublishingConfiguration.hpp>
+#include <ddspipe_core/library/library_dll.h>
 
 namespace eprosima {
 namespace ddspipe {
 namespace core {
 
-bool MonitorConfiguration::is_valid(
-        utils::Formatter& error_msg) const noexcept
+/**
+ * Configuration structure encapsulating the configuration of a \c MonitorConsumer instance.
+ */
+struct MonitorConsumerConfiguration : public DdsPublishingConfiguration
 {
-    // Verify that the consumers' configuration is valid
-    for (const auto& consumer : consumers)
-    {
-        if (!consumer.second.is_valid(error_msg))
-        {
-            return false;
-        }
-    }
+    /////////////////////////
+    // METHODS
+    /////////////////////////
 
-    // Verify that the producers' configuration is valid
-    for (const auto& producer : producers)
-    {
-        if (!producer.second.is_valid(error_msg))
-        {
-            return false;
-        }
-    }
-
-    return true;
-}
+    /**
+     * @brief Check if the configuration is valid.
+     *
+     * @param error_msg The error message to be filled if the configuration is not valid.
+     * @return \c true if the configuration is valid, \c false otherwise.
+     */
+    DDSPIPE_CORE_DllAPI
+    bool is_valid(
+            utils::Formatter& error_msg) const noexcept override;
+};
 
 } /* namespace core */
 } /* namespace ddspipe */

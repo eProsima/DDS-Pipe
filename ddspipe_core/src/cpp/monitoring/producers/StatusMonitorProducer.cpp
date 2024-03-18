@@ -58,6 +58,20 @@ void StatusMonitorProducer::register_consumer(
     consumers_.push_back(std::move(consumer));
 }
 
+void StatusMonitorProducer::produce_and_consume()
+{
+    if (!enabled_)
+    {
+        // Don't produce and consume if the producer is not enabled
+        return;
+    }
+
+    std::lock_guard<std::mutex> lock(mutex_);
+
+    produce_nts_();
+    consume_nts_();
+}
+
 void StatusMonitorProducer::produce()
 {
     if (!enabled_)
@@ -71,10 +85,7 @@ void StatusMonitorProducer::produce()
     //      2. Simultaneous calls to save_data_.
     std::lock_guard<std::mutex> lock(mutex_);
 
-    logInfo(DDSPIPE_MONITOR, "MONITOR | Producing MonitoringStatus.");
-
-    data_.error_status(error_status_);
-    data_.has_errors(has_errors_);
+    produce_nts_();
 }
 
 void StatusMonitorProducer::consume()
@@ -90,12 +101,7 @@ void StatusMonitorProducer::consume()
     //      2. Simultaneous calls to save_data_.
     std::lock_guard<std::mutex> lock(mutex_);
 
-    logInfo(DDSPIPE_MONITOR, "MONITOR | Consuming MonitoringStatus.")
-
-    for (auto& consumer : consumers_)
-    {
-        consumer->consume(data_);
-    }
+    consume_nts_();
 }
 
 void StatusMonitorProducer::add_error_to_status(
@@ -124,6 +130,24 @@ void StatusMonitorProducer::add_error_to_status(
     }
 
     has_errors_ = true;
+}
+
+void StatusMonitorProducer::produce_nts_()
+{
+    logInfo(DDSPIPE_MONITOR, "MONITOR | Producing MonitoringStatus.");
+
+    data_.error_status(error_status_);
+    data_.has_errors(has_errors_);
+}
+
+void StatusMonitorProducer::consume_nts_()
+{
+    logInfo(DDSPIPE_MONITOR, "MONITOR | Consuming MonitoringStatus.")
+
+    for (auto& consumer : consumers_)
+    {
+        consumer->consume(data_);
+    }
 }
 
 } //namespace core

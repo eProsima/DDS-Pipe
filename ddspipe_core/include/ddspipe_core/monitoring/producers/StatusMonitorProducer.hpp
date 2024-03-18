@@ -89,6 +89,14 @@ public:
             std::unique_ptr<IMonitorConsumer<MonitoringStatus>> consumer);
 
     /**
+     * @brief Produce and consume the \c MonitoringStatus.
+     *
+     * Produces a \c MonitoringStatus with the data gathered and consumes it.
+     */
+    DDSPIPE_CORE_DllAPI
+    void produce_and_consume() override;
+
+    /**
      * @brief Produce the \c MonitoringStatus.
      *
      * Generates a \c MonitoringStatus with the data gathered by the producer.
@@ -116,6 +124,12 @@ public:
             const std::string& error);
 
 protected:
+
+    // Produce data_.
+    void produce_nts_();
+
+    // Consume data_.
+    void consume_nts_();
 
     // Instance of the StatusMonitorProducer.
     static std::unique_ptr<StatusMonitorProducer> instance_;

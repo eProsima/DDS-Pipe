@@ -116,9 +116,17 @@ public:
             std::unique_ptr<IMonitorConsumer<MonitoringTopics>> consumer);
 
     /**
+     * @brief Produce and consume the \c MonitoringTopics.
+     *
+     * Produces a \c MonitoringTopics with the data gathered and consumes it.
+     */
+    DDSPIPE_CORE_DllAPI
+    void produce_and_consume() override;
+
+    /**
      * @brief Produce the \c MonitoringTopics.
      *
-     * Generates a \c MonitoringTopics with the data gathered by the producer.
+     * Generates a \c MonitoringTopics with the data gathered.
      */
     DDSPIPE_CORE_DllAPI
     void produce() override;
@@ -197,6 +205,12 @@ public:
             const types::DdsTopic& topic);
 
 protected:
+
+    // Produce data_.
+    void produce_nts_();
+
+    // Consume data_.
+    void consume_nts_();
 
     // Generate the MonitoringTopics to be consumed.
     void reset_data_();

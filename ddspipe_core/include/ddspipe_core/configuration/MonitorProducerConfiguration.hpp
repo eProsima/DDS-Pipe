@@ -46,7 +46,7 @@ struct MonitorProducerConfiguration : public IConfiguration
     // Whether the producer should produce and consume data.
     bool enabled = false;
 
-    // The period in milliseconds at which the producer should consume data.
+    // The period in milliseconds at which the producer should produce and consume data.
     double period = 1000;
 };
 

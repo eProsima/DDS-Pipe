@@ -27,6 +27,8 @@ set(TEST_SOURCES
     )
 
 set(TEST_LIST
+        missing_status_topic_name
+        missing_topics_topic_name
         is_valid_conf_with_status_and_topics
     )
 

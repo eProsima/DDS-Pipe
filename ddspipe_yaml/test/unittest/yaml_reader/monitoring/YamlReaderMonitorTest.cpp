@@ -23,6 +23,7 @@
 #include <ddspipe_yaml/testing/generate_yaml.hpp>
 
 #include <ddspipe_core/configuration/MonitorConfiguration.hpp>
+#include <ddspipe_core/configuration/MonitorConsumerConfiguration.hpp>
 
 
 using namespace eprosima;
@@ -32,10 +33,70 @@ using namespace eprosima::ddspipe::core::testing;
 using namespace eprosima::ddspipe::yaml::testing;
 
 /**
- * TODO
+ * Check the get function for the MonitorConfiguration.
  *
  * CASES:
- *  TODO
+ *  Verify that the configuration is invalid when the Status's topic-name is missing.
+ */
+TEST(YamlReaderMonitorTest, missing_status_topic_name)
+{
+    const char* yml_str =
+            R"(
+            domain: 10
+            status:
+              enable: true
+              period: 2000
+              domain: 11
+            topics:
+              enable: true
+              period: 3000
+              topic-name: "DdsPipeTopics"
+        )";
+
+    Yaml yml = YAML::Load(yml_str);
+
+    core::MonitorConfiguration conf = YamlReader::get<core::MonitorConfiguration>(yml, YamlReaderVersion::LATEST);
+
+    utils::Formatter error_msg;
+    ASSERT_FALSE(conf.is_valid(error_msg));
+    ASSERT_EQ(error_msg.to_string(), "Empty topic name.");
+}
+
+/**
+ * Check the get function for the MonitorConfiguration.
+ *
+ * CASES:
+ *  Verify that the configuration is invalid when the Topics's topic-name is missing.
+ */
+TEST(YamlReaderMonitorTest, missing_topics_topic_name)
+{
+    const char* yml_str =
+            R"(
+            domain: 10
+            status:
+              enable: true
+              period: 2000
+              domain: 11
+              topic-name: "DdsPipeStatus"
+            topics:
+              enable: true
+              period: 3000
+        )";
+
+    Yaml yml = YAML::Load(yml_str);
+
+    core::MonitorConfiguration conf = YamlReader::get<core::MonitorConfiguration>(yml, YamlReaderVersion::LATEST);
+
+    utils::Formatter error_msg;
+    ASSERT_FALSE(conf.is_valid(error_msg));
+    ASSERT_EQ(error_msg.to_string(), "Empty topic name.");
+}
+
+/**
+ * Check the get function for the MonitorConfiguration.
+ *
+ * CASES:
+ *  Verify that the configuration is parsed correctly.
  */
 TEST(YamlReaderMonitorTest, is_valid_conf_with_status_and_topics)
 {
@@ -44,8 +105,8 @@ TEST(YamlReaderMonitorTest, is_valid_conf_with_status_and_topics)
             domain: 10
             status:
               enable: true
-              domain: 11
               period: 2000
+              domain: 11
               topic-name: "DdsPipeStatus"
             topics:
               enable: true
@@ -59,8 +120,6 @@ TEST(YamlReaderMonitorTest, is_valid_conf_with_status_and_topics)
 
     utils::Formatter error_msg;
     ASSERT_TRUE(conf.is_valid(error_msg));
-
-    ASSERT_EQ(conf.domain, 10);
 
     ASSERT_TRUE(conf.producers["status"].enabled);
     ASSERT_EQ(conf.producers["status"].period, 2000);

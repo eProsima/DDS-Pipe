@@ -19,8 +19,8 @@
 
 #include <cpp_utils/Formatter.hpp>
 
-#include <ddspipe_core/configuration/DdsPublishingConfiguration.hpp>
 #include <ddspipe_core/configuration/IConfiguration.hpp>
+#include <ddspipe_core/configuration/MonitorConsumerConfiguration.hpp>
 #include <ddspipe_core/configuration/MonitorProducerConfiguration.hpp>
 #include <ddspipe_core/library/library_dll.h>
 #include <ddspipe_core/types/dds/DomainId.hpp>
@@ -43,6 +43,7 @@ struct MonitorConfiguration : public IConfiguration
      * @brief Check if the configuration is valid.
      *
      * @param error_msg The error message to be filled if the configuration is not valid.
+     * @return \c true if the configuration is valid, \c false otherwise.
      */
     DDSPIPE_CORE_DllAPI
     bool is_valid(
@@ -52,14 +53,11 @@ struct MonitorConfiguration : public IConfiguration
     // VARIABLES
     /////////////////////////
 
-    // Domain to be used by the DdsMonitorConsumers that don't have a domain configured.
-    types::DomainIdType domain{0};
-
-    // Configurations of the DdsMonitorConsumers.
-    std::map<std::string, DdsPublishingConfiguration> consumers;
-
     // Configurations of the MonitorProducers.
     std::map<std::string, MonitorProducerConfiguration> producers;
+
+    // Configurations of the MonitorConsumers.
+    std::map<std::string, MonitorConsumerConfiguration> consumers;
 };
 
 } /* namespace core */

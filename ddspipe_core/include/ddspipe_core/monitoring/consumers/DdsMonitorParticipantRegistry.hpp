@@ -51,6 +51,7 @@ public:
      * @todo Let the user configure the QoS.
      *
      * @param domain The domain to get the \c DomainParticipant for.
+     * @throws \c InitializationException if the \c DomainParticipant cannot be created.
      *
      * @return The \c DomainParticipant for the given domain.
      */
