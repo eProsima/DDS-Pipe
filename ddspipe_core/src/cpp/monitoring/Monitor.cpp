@@ -101,7 +101,8 @@ void Monitor::register_producer_(
                 producer->consume();
             };
 
-    events_.emplace_back(std::make_unique<utils::event::PeriodicEventHandler>(periodic_callback, producer->period));
+    const auto duration = utils::Duration_ms(static_cast<int>(producer->period));
+    events_.emplace_back(std::make_unique<utils::event::PeriodicEventHandler>(periodic_callback, duration));
 }
 
 } //namespace core
