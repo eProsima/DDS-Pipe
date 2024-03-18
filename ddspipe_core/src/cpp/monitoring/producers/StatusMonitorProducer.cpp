@@ -14,8 +14,6 @@
 
 #include <cpp_utils/Log.hpp>
 
-#include <ddspipe_core/monitoring/consumers/DdsMonitorConsumer.hpp>
-#include <ddspipe_core/monitoring/consumers/StdoutMonitorConsumer.hpp>
 #include <ddspipe_core/monitoring/producers/StatusMonitorProducer.hpp>
 
 namespace eprosima {

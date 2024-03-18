@@ -18,7 +18,7 @@
 
 #include <ddspipe_core/monitoring/Monitor.hpp>
 #include <ddspipe_core/monitoring/consumers/DdsMonitorConsumer.hpp>
-#include <ddspipe_core/monitoring/consumers/StdoutMonitorConsumer.hpp>
+#include <ddspipe_core/monitoring/consumers/LogMonitorConsumer.hpp>
 #include <ddspipe_core/monitoring/producers/StatusMonitorProducer.hpp>
 #include <ddspipe_core/monitoring/producers/TopicsMonitorProducer.hpp>
 
@@ -56,7 +56,7 @@ void Monitor::monitor_status()
     fastdds::dds::TypeSupport type(new MonitoringStatusPubSubType());
 
     // Register the consumers
-    status_producer->register_consumer(std::make_unique<ddspipe::core::StdoutMonitorConsumer<MonitoringStatus>>());
+    status_producer->register_consumer(std::make_unique<ddspipe::core::LogMonitorConsumer<MonitoringStatus>>());
 
     if (configuration_.consumers.count("status") > 0)
     {
@@ -79,7 +79,7 @@ void Monitor::monitor_topics()
     fastdds::dds::TypeSupport type(new MonitoringTopicsPubSubType());
 
     // Register the consumers
-    topics_producer->register_consumer(std::make_unique<ddspipe::core::StdoutMonitorConsumer<MonitoringTopics>>());
+    topics_producer->register_consumer(std::make_unique<ddspipe::core::LogMonitorConsumer<MonitoringTopics>>());
 
     if (configuration_.consumers.count("topics") > 0)
     {
