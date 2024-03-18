@@ -31,6 +31,7 @@
 #include <fastdds/rtps/attributes/RTPSParticipantAttributes.h>
 #include <ddspipe_core/types/dynamic_types/types.hpp>
 
+#include <ddspipe_core/monitoring/producers/TopicsMonitorProducer.hpp>
 #include <ddspipe_participants/reader/auxiliar/BlankReader.hpp>
 #include <ddspipe_participants/reader/rtps/SimpleReader.hpp>
 #include <ddspipe_participants/reader/rtps/SpecificQoSReader.hpp>
@@ -170,6 +171,8 @@ void DynTypesParticipant::internal_notify_type_object_(
 {
     logInfo(DDSPIPE_DYNTYPES_PARTICIPANT,
             "Participant " << this->id() << " discovered type object " << dynamic_type->get_name());
+
+    monitor_type_discovered(dynamic_type->get_name());
 
     // Create data containing Dynamic Type
     auto data = std::make_unique<DynamicTypeData>();

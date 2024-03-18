@@ -17,6 +17,8 @@
 #include <cpp_utils/math/math_extension.hpp>
 
 #include <ddspipe_core/interface/IRoutingData.hpp>
+#include <ddspipe_core/monitoring/producers/StatusMonitorProducer.hpp>
+#include <ddspipe_core/monitoring/producers/TopicsMonitorProducer.hpp>
 #include <ddspipe_core/types/data/RtpsPayloadData.hpp>
 
 #include <ddspipe_participants/reader/dds/CommonReader.hpp>
@@ -103,6 +105,8 @@ void CommonReader::on_data_available(
 {
     logInfo(DDSPIPE_DDS_READER, "On data available in reader in " << participant_id_ << " for topic " << topic_ << ".");
 
+    monitor_msg_rx(topic_, participant_id_);
+
     on_data_available_();
 }
 
@@ -112,6 +116,8 @@ void CommonReader::on_sample_lost(
 {
     logWarning(DDSPIPE_DDS_READER,
             "SAMPLE_LOST | On reader " << *this << " a data sample was lost and will not be received");
+
+    monitor_msg_lost(topic_, participant_id_);
 }
 
 void CommonReader::on_requested_incompatible_qos(
@@ -120,6 +126,9 @@ void CommonReader::on_requested_incompatible_qos(
 {
     logWarning(DDSPIPE_DDS_READER,
             "TOPIC_MISMATCH_QOS | Reader " << *this << " found a remote Writer with incompatible QoS");
+
+    monitor_qos_mismatch(topic_);
+    monitor_error("QOS_MISMATCH");
 }
 
 void CommonReader::on_inconsistent_topic(
@@ -129,6 +138,9 @@ void CommonReader::on_inconsistent_topic(
     logWarning(DDSPIPE_DDS_READER,
             "TOPIC_MISMATCH_TYPE | Reader " << *this <<
             " found a remote Writer with same topic name but incompatible type");
+
+    monitor_type_mismatch(topic_);
+    monitor_error("TYPE_MISMATCH");
 }
 
 CommonReader::CommonReader(

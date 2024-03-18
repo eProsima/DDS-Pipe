@@ -19,6 +19,8 @@
 #include <cpp_utils/Log.hpp>
 
 #include <ddspipe_core/interface/IRoutingData.hpp>
+#include <ddspipe_core/monitoring/producers/StatusMonitorProducer.hpp>
+#include <ddspipe_core/monitoring/producers/TopicsMonitorProducer.hpp>
 #include <ddspipe_core/types/data/RtpsPayloadData.hpp>
 
 #include <ddspipe_participants/reader/rtps/CommonReader.hpp>
@@ -382,6 +384,8 @@ void CommonReader::onNewCacheChangeAdded(
         fastrtps::rtps::RTPSReader* reader,
         const fastrtps::rtps::CacheChange_t* const change) noexcept
 {
+    monitor_msg_rx(topic_, participant_id_);
+
     if (should_accept_change_(change))
     {
         // Do not remove previous received changes so they can be read when the reader is enabled
@@ -447,6 +451,9 @@ void CommonReader::on_requested_incompatible_qos(
 {
     logWarning(DDSPIPE_RTPS_COMMONREADER_LISTENER,
             "TOPIC_MISMATCH_QOS | Reader " << *this << " found a remote Writer with incompatible QoS: " << qos);
+
+    monitor_qos_mismatch(topic_);
+    monitor_error("QOS_MISMATCH");
 }
 
 void CommonReader::on_sample_lost(
@@ -455,6 +462,8 @@ void CommonReader::on_sample_lost(
 {
     logWarning(DDSPIPE_RTPS_COMMONREADER_LISTENER,
             "SAMPLE_LOST | On reader " << *this << " a data sample was lost and will not be received");
+
+    monitor_msg_lost(topic_, participant_id_);
 }
 
 void CommonReader::on_sample_rejected(
@@ -492,6 +501,9 @@ void CommonReader::on_incompatible_type(
     logWarning(DDSPIPE_RTPS_COMMONREADER_LISTENER,
             "TOPIC_MISMATCH_TYPE | Reader " << *this <<
             " discovered a Writer with a matching Topic name but with an incompatible type");
+
+    monitor_type_mismatch(topic_);
+    monitor_error("TYPE_MISMATCH");
 }
 
 utils::ReturnCode CommonReader::is_data_correct_(
