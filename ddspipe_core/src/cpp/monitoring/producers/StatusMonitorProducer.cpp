@@ -47,7 +47,8 @@ void StatusMonitorProducer::register_consumer(
 {
     if (!enabled_)
     {
-        logWarning(DDSPIPE_MONITOR, "MONITOR | Not registering consumer " << consumer->get_name() << " on StatusMonitorProducer"
+        logWarning(DDSPIPE_MONITOR,
+                "MONITOR | Not registering consumer " << consumer->get_name() << " on StatusMonitorProducer"
                 "since the StatusMonitorProducer is disabled.");
 
         return;
@@ -154,8 +155,7 @@ void StatusMonitorProducer::consume_nts_()
 } //namespace ddspipe
 } //namespace eprosima
 
-namespace std
-{
+namespace std {
 
 std::ostream& operator <<(
         std::ostream& os,

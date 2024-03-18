@@ -40,7 +40,7 @@ namespace core {
 
 Monitor::Monitor(
         const MonitorConfiguration& configuration)
-        : configuration_(configuration)
+    : configuration_(configuration)
 {
 }
 
@@ -61,7 +61,7 @@ void Monitor::monitor_status()
     if (configuration_.consumers.count("status") > 0)
     {
         status_producer->register_consumer(std::make_unique<ddspipe::core::DdsMonitorConsumer<MonitoringStatus>>(
-            configuration_.consumers.at("status"), registry_, type));
+                    configuration_.consumers.at("status"), registry_, type));
     }
 
     register_producer_(status_producer);
@@ -84,7 +84,7 @@ void Monitor::monitor_topics()
     if (configuration_.consumers.count("topics") > 0)
     {
         topics_producer->register_consumer(std::make_unique<ddspipe::core::DdsMonitorConsumer<MonitoringTopics>>(
-            configuration_.consumers.at("topics"), registry_, type));
+                    configuration_.consumers.at("topics"), registry_, type));
     }
 
     register_producer_(topics_producer);

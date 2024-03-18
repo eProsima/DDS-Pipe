@@ -36,7 +36,8 @@ DdsMonitorParticipantRegistry::~DdsMonitorParticipantRegistry()
             continue;
         }
 
-        logInfo(DDSPIPE_MONITOR, "MONITOR | Deleting Participant " << participant.second << " on domain " << participant.first << ".");
+        logInfo(DDSPIPE_MONITOR,
+                "MONITOR | Deleting Participant " << participant.second << " on domain " << participant.first << ".");
         fastdds::dds::DomainParticipantFactory::get_instance()->delete_participant(participant.second);
     }
 

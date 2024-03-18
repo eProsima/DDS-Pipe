@@ -31,10 +31,10 @@
 #define eProsima_user_DllExport __declspec( dllexport )
 #else
 #define eProsima_user_DllExport
-#endif
+#endif // if defined(EPROSIMA_USER_DLL_EXPORT)
 #else
 #define eProsima_user_DllExport
-#endif
+#endif // if defined(_WIN32)
 
 #if defined(_WIN32)
 #if defined(EPROSIMA_USER_DLL_EXPORT)
@@ -45,7 +45,7 @@
 #endif // MonitoringStatus_SOURCE
 #else
 #define MonitoringStatus_DllAPI
-#endif
+#endif // if defined(EPROSIMA_USER_DLL_EXPORT)
 #else
 #define MonitoringStatus_DllAPI
 #endif // _WIN32
@@ -56,15 +56,19 @@ eProsima_user_DllExport void registerMonitoringStatusTypes();
 
 
 
-eProsima_user_DllExport const TypeIdentifier* GetMonitoringErrorStatusIdentifier(bool complete = false);
-eProsima_user_DllExport const TypeObject* GetMonitoringErrorStatusObject(bool complete = false);
+eProsima_user_DllExport const TypeIdentifier* GetMonitoringErrorStatusIdentifier(
+        bool complete = false);
+eProsima_user_DllExport const TypeObject* GetMonitoringErrorStatusObject(
+        bool complete = false);
 eProsima_user_DllExport const TypeObject* GetMinimalMonitoringErrorStatusObject();
 eProsima_user_DllExport const TypeObject* GetCompleteMonitoringErrorStatusObject();
 
 
 
-eProsima_user_DllExport const TypeIdentifier* GetMonitoringStatusIdentifier(bool complete = false);
-eProsima_user_DllExport const TypeObject* GetMonitoringStatusObject(bool complete = false);
+eProsima_user_DllExport const TypeIdentifier* GetMonitoringStatusIdentifier(
+        bool complete = false);
+eProsima_user_DllExport const TypeObject* GetMonitoringStatusObject(
+        bool complete = false);
 eProsima_user_DllExport const TypeObject* GetMinimalMonitoringStatusObject();
 eProsima_user_DllExport const TypeObject* GetCompleteMonitoringStatusObject();
 

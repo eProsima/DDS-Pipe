@@ -240,16 +240,16 @@ protected:
 
 // The names of variables inside macros must be unique to avoid conflicts with external variables
 #define MONITOR_MSG_RX_IMPL_(topic, participant_id) \
-            eprosima::ddspipe::core::TopicsMonitorProducer::get_instance()->msgs_received(topic, participant_id)
+    eprosima::ddspipe::core::TopicsMonitorProducer::get_instance()->msgs_received(topic, participant_id)
 
 #define MONITOR_MSGS_RX_IMPL_(topic, participant_id, n) \
-            eprosima::ddspipe::core::TopicsMonitorProducer::get_instance()->msgs_received(topic, participant_id, n)
+    eprosima::ddspipe::core::TopicsMonitorProducer::get_instance()->msgs_received(topic, participant_id, n)
 
 #define MONITOR_MSG_LOST_IMPL_(topic, participant_id) \
-            eprosima::ddspipe::core::TopicsMonitorProducer::get_instance()->msgs_lost(topic, participant_id)
+    eprosima::ddspipe::core::TopicsMonitorProducer::get_instance()->msgs_lost(topic, participant_id)
 
 #define MONITOR_MSGS_LOST_IMPL_(topic, participant_id, n) \
-            eprosima::ddspipe::core::TopicsMonitorProducer::get_instance()->msgs_lost(topic, participant_id, n)
+    eprosima::ddspipe::core::TopicsMonitorProducer::get_instance()->msgs_lost(topic, participant_id, n)
 
 #define MONITOR_TYPE_DISCOVERED_IMPL_(type_name) eprosima::ddspipe::core::TopicsMonitorProducer::get_instance()-> \
             type_discovered(type_name)
@@ -264,8 +264,7 @@ protected:
 } // namespace ddspipe
 } // namespace eprosima
 
-namespace std
-{
+namespace std {
 
 std::ostream& operator <<(
         std::ostream& os,

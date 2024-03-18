@@ -86,7 +86,7 @@ TEST_F(StdoutMonitorTopicsTest, msgs_received)
     testing::internal::CaptureStdout();
 
     // Wait for the monitor to print the message
-    std::this_thread::sleep_for(std::chrono::milliseconds(test::monitor::PERIOD_MS+1));
+    std::this_thread::sleep_for(std::chrono::milliseconds(test::monitor::PERIOD_MS + 1));
 
     ASSERT_EQ(testing::internal::GetCapturedStdout(),
             "Monitoring Topics: [Topic Name: MonitoredTopic, Type Name: MonitoredTopicType, Type Discovered: "
@@ -108,7 +108,7 @@ TEST_F(StdoutMonitorTopicsTest, msgs_lost)
     testing::internal::CaptureStdout();
 
     // Wait for the monitor to print the message
-    std::this_thread::sleep_for(std::chrono::milliseconds(test::monitor::PERIOD_MS+1));
+    std::this_thread::sleep_for(std::chrono::milliseconds(test::monitor::PERIOD_MS + 1));
 
     ASSERT_EQ(testing::internal::GetCapturedStdout(),
             "Monitoring Topics: [Topic Name: MonitoredTopic, Type Name: MonitoredTopicType, Type Discovered: "
@@ -133,7 +133,7 @@ TEST_F(StdoutMonitorTopicsTest, type_discovered)
     testing::internal::CaptureStdout();
 
     // Wait for the monitor to print the message
-    std::this_thread::sleep_for(std::chrono::milliseconds(test::monitor::PERIOD_MS+1));
+    std::this_thread::sleep_for(std::chrono::milliseconds(test::monitor::PERIOD_MS + 1));
 
     ASSERT_EQ(testing::internal::GetCapturedStdout(),
             "Monitoring Topics: [Topic Name: MonitoredTopic, Type Name: MonitoredTopicType, Type Discovered: "
@@ -155,7 +155,7 @@ TEST_F(StdoutMonitorTopicsTest, type_mismatch)
     testing::internal::CaptureStdout();
 
     // Wait for the monitor to print the message
-    std::this_thread::sleep_for(std::chrono::milliseconds(test::monitor::PERIOD_MS+1));
+    std::this_thread::sleep_for(std::chrono::milliseconds(test::monitor::PERIOD_MS + 1));
 
     ASSERT_EQ(testing::internal::GetCapturedStdout(),
             "Monitoring Topics: [Topic Name: MonitoredTopic, Type Name: MonitoredTopicType, Type Discovered: "
@@ -176,7 +176,7 @@ TEST_F(StdoutMonitorTopicsTest, qos_mismatch)
     testing::internal::CaptureStdout();
 
     // Wait for the monitor to print the message
-    std::this_thread::sleep_for(std::chrono::milliseconds(test::monitor::PERIOD_MS+1));
+    std::this_thread::sleep_for(std::chrono::milliseconds(test::monitor::PERIOD_MS + 1));
 
     ASSERT_EQ(testing::internal::GetCapturedStdout(),
             "Monitoring Topics: [Topic Name: MonitoredTopic, Type Name: MonitoredTopicType, Type Discovered: "

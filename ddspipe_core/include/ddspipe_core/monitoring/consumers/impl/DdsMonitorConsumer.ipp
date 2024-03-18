@@ -38,7 +38,8 @@ DdsMonitorConsumer<T>::DdsMonitorConsumer(
     type.register_type(participant_);
 
     // Create the topic
-    topic_ = participant_->create_topic(configuration.topic_name, type.get_type_name(), fastdds::dds::TOPIC_QOS_DEFAULT);
+    topic_ = participant_->create_topic(configuration.topic_name, type.get_type_name(),
+                    fastdds::dds::TOPIC_QOS_DEFAULT);
 
     if (topic_ == nullptr)
     {
@@ -68,7 +69,7 @@ DdsMonitorConsumer<T>::DdsMonitorConsumer(
     }
 
     logInfo(DDSPIPE_MONITOR, "MONITOR | Created DataWriter " << writer_ << " for Participant " <<
-        participant_->guid() << " in topic " << topic_ << ".");
+            participant_->guid() << " in topic " << topic_ << ".");
 }
 
 template <typename T>

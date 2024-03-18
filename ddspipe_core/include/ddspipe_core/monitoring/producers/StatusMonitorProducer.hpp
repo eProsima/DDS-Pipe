@@ -159,8 +159,7 @@ protected:
 } // namespace ddspipe
 } // namespace eprosima
 
-namespace std
-{
+namespace std {
 
 std::ostream& operator <<(
         std::ostream& os,

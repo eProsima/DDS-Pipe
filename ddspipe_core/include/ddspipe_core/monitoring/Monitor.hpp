@@ -42,7 +42,8 @@ public:
      *
      * @param configuration The \c MonitorConfiguration to initialize the \c Monitor.
      */
-    Monitor(const MonitorConfiguration& configuration);
+    Monitor(
+            const MonitorConfiguration& configuration);
 
     /**
      * @brief Monitorize the DdsPipe status.

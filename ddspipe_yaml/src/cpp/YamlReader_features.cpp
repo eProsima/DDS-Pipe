@@ -236,18 +236,22 @@ void YamlReader::fill(
     // Get optional monitor status tag
     if (YamlReader::is_tag_present(yml, MONITOR_STATUS_TAG))
     {
-        object.producers["status"] = YamlReader::get<core::MonitorProducerConfiguration>(yml, MONITOR_STATUS_TAG, version);
+        object.producers["status"] = YamlReader::get<core::MonitorProducerConfiguration>(yml, MONITOR_STATUS_TAG,
+                        version);
         object.consumers["status"].domain = domain;
-        YamlReader::fill<core::DdsPublishingConfiguration>(object.consumers["status"], get_value_in_tag(yml, MONITOR_STATUS_TAG), version);
+        YamlReader::fill<core::DdsPublishingConfiguration>(object.consumers["status"],
+                get_value_in_tag(yml, MONITOR_STATUS_TAG), version);
     }
 
     /////
     // Get optional monitor topics tag
     if (YamlReader::is_tag_present(yml, MONITOR_TOPICS_TAG))
     {
-        object.producers["topics"] = YamlReader::get<core::MonitorProducerConfiguration>(yml, MONITOR_TOPICS_TAG, version);
+        object.producers["topics"] = YamlReader::get<core::MonitorProducerConfiguration>(yml, MONITOR_TOPICS_TAG,
+                        version);
         object.consumers["topics"].domain = domain;
-        YamlReader::fill<core::DdsPublishingConfiguration>(object.consumers["topics"], get_value_in_tag(yml, MONITOR_TOPICS_TAG), version);
+        YamlReader::fill<core::DdsPublishingConfiguration>(object.consumers["topics"],
+                get_value_in_tag(yml, MONITOR_TOPICS_TAG), version);
     }
 }
 

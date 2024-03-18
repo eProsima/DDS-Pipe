@@ -21,8 +21,10 @@
 
 #ifdef _WIN32
 // Remove linker warning LNK4221 on Visual Studio
-namespace { char dummy; }
-#endif
+namespace {
+char dummy;
+} // namespace
+#endif // ifdef _WIN32
 
 #include <ddspipe_core/types/monitoring/status/v2/MonitoringStatus.h>
 #include <ddspipe_core/types/monitoring/status/v2/MonitoringStatusTypeObject.h>
@@ -43,7 +45,7 @@ void registerMonitoringStatusTypes()
     static std::once_flag once_flag;
     std::call_once(once_flag, []()
             {
-                TypeObjectFactory *factory = TypeObjectFactory::get_instance();
+                TypeObjectFactory* factory = TypeObjectFactory::get_instance();
                 factory->add_type_object("MonitoringErrorStatus", GetMonitoringErrorStatusIdentifier(true),
                 GetMonitoringErrorStatusObject(true));
                 factory->add_type_object("MonitoringErrorStatus", GetMonitoringErrorStatusIdentifier(false),
@@ -58,11 +60,11 @@ void registerMonitoringStatusTypes()
             });
 }
 
-
-
-const TypeIdentifier* GetMonitoringErrorStatusIdentifier(bool complete)
+const TypeIdentifier* GetMonitoringErrorStatusIdentifier(
+        bool complete)
 {
-    const TypeIdentifier * c_identifier = TypeObjectFactory::get_instance()->get_type_identifier("MonitoringErrorStatus", complete);
+    const TypeIdentifier* c_identifier = TypeObjectFactory::get_instance()->get_type_identifier("MonitoringErrorStatus",
+                    complete);
     if (c_identifier != nullptr && (!complete || c_identifier->_d() == EK_COMPLETE))
     {
         return c_identifier;
@@ -72,9 +74,11 @@ const TypeIdentifier* GetMonitoringErrorStatusIdentifier(bool complete)
     return TypeObjectFactory::get_instance()->get_type_identifier("MonitoringErrorStatus", complete);
 }
 
-const TypeObject* GetMonitoringErrorStatusObject(bool complete)
+const TypeObject* GetMonitoringErrorStatusObject(
+        bool complete)
 {
-    const TypeObject* c_type_object = TypeObjectFactory::get_instance()->get_type_object("MonitoringErrorStatus", complete);
+    const TypeObject* c_type_object = TypeObjectFactory::get_instance()->get_type_object("MonitoringErrorStatus",
+                    complete);
     if (c_type_object != nullptr)
     {
         return c_type_object;
@@ -89,13 +93,14 @@ const TypeObject* GetMonitoringErrorStatusObject(bool complete)
 
 const TypeObject* GetMinimalMonitoringErrorStatusObject()
 {
-    const TypeObject* c_type_object = TypeObjectFactory::get_instance()->get_type_object("MonitoringErrorStatus", false);
+    const TypeObject* c_type_object =
+            TypeObjectFactory::get_instance()->get_type_object("MonitoringErrorStatus", false);
     if (c_type_object != nullptr)
     {
         return c_type_object;
     }
 
-    TypeObject *type_object = new TypeObject();
+    TypeObject* type_object = new TypeObject();
     type_object->_d(EK_MINIMAL);
     type_object->minimal()._d(TK_STRUCTURE);
 
@@ -119,7 +124,7 @@ const TypeObject* GetMinimalMonitoringErrorStatusObject()
 
 
     MD5 type_mismatch_hash("type_mismatch");
-    for(int i = 0; i < 4; ++i)
+    for (int i = 0; i < 4; ++i)
     {
         mst_type_mismatch.detail().name_hash()[i] = type_mismatch_hash.digest[i];
     }
@@ -138,7 +143,7 @@ const TypeObject* GetMinimalMonitoringErrorStatusObject()
 
 
     MD5 qos_mismatch_hash("qos_mismatch");
-    for(int i = 0; i < 4; ++i)
+    for (int i = 0; i < 4; ++i)
     {
         mst_qos_mismatch.detail().name_hash()[i] = qos_mismatch_hash.digest[i];
     }
@@ -155,7 +160,7 @@ const TypeObject* GetMinimalMonitoringErrorStatusObject()
     eprosima::fastcdr::CdrSizeCalculator calculator(eprosima::fastcdr::CdrVersion::XCDRv1);
     size_t current_alignment {0};
     SerializedPayload_t payload(static_cast<uint32_t>(
-        calculator.calculate_serialized_size(type_object->minimal().struct_type(), current_alignment) + 4));
+                calculator.calculate_serialized_size(type_object->minimal().struct_type(), current_alignment) + 4));
     eprosima::fastcdr::FastBuffer fastbuffer((char*) payload.data, payload.max_size);
     // Fixed endian (Page 221, EquivalenceHash definition of Extensible and Dynamic Topic Types for DDS document)
     eprosima::fastcdr::Cdr ser(
@@ -172,7 +177,7 @@ const TypeObject* GetMinimalMonitoringErrorStatusObject()
     MD5 objectHash;
     objectHash.update((char*)payload.data, payload.length);
     objectHash.finalize();
-    for(int i = 0; i < 14; ++i)
+    for (int i = 0; i < 14; ++i)
     {
         identifier.equivalence_hash()[i] = objectHash.digest[i];
     }
@@ -190,7 +195,7 @@ const TypeObject* GetCompleteMonitoringErrorStatusObject()
         return c_type_object;
     }
 
-    TypeObject *type_object = new TypeObject();
+    TypeObject* type_object = new TypeObject();
     type_object->_d(EK_COMPLETE);
     type_object->complete()._d(TK_STRUCTURE);
 
@@ -243,7 +248,7 @@ const TypeObject* GetCompleteMonitoringErrorStatusObject()
     eprosima::fastcdr::CdrSizeCalculator calculator(eprosima::fastcdr::CdrVersion::XCDRv1);
     size_t current_alignment {0};
     SerializedPayload_t payload(static_cast<uint32_t>(
-        calculator.calculate_serialized_size(type_object->complete().struct_type(), current_alignment) + 4));
+                calculator.calculate_serialized_size(type_object->complete().struct_type(), current_alignment) + 4));
     eprosima::fastcdr::FastBuffer fastbuffer((char*) payload.data, payload.max_size);
     // Fixed endian (Page 221, EquivalenceHash definition of Extensible and Dynamic Topic Types for DDS document)
     eprosima::fastcdr::Cdr ser(
@@ -260,7 +265,7 @@ const TypeObject* GetCompleteMonitoringErrorStatusObject()
     MD5 objectHash;
     objectHash.update((char*)payload.data, payload.length);
     objectHash.finalize();
-    for(int i = 0; i < 14; ++i)
+    for (int i = 0; i < 14; ++i)
     {
         identifier.equivalence_hash()[i] = objectHash.digest[i];
     }
@@ -270,11 +275,11 @@ const TypeObject* GetCompleteMonitoringErrorStatusObject()
     return TypeObjectFactory::get_instance()->get_type_object("MonitoringErrorStatus", true);
 }
 
-
-
-const TypeIdentifier* GetMonitoringStatusIdentifier(bool complete)
+const TypeIdentifier* GetMonitoringStatusIdentifier(
+        bool complete)
 {
-    const TypeIdentifier * c_identifier = TypeObjectFactory::get_instance()->get_type_identifier("MonitoringStatus", complete);
+    const TypeIdentifier* c_identifier = TypeObjectFactory::get_instance()->get_type_identifier("MonitoringStatus",
+                    complete);
     if (c_identifier != nullptr && (!complete || c_identifier->_d() == EK_COMPLETE))
     {
         return c_identifier;
@@ -284,7 +289,8 @@ const TypeIdentifier* GetMonitoringStatusIdentifier(bool complete)
     return TypeObjectFactory::get_instance()->get_type_identifier("MonitoringStatus", complete);
 }
 
-const TypeObject* GetMonitoringStatusObject(bool complete)
+const TypeObject* GetMonitoringStatusObject(
+        bool complete)
 {
     const TypeObject* c_type_object = TypeObjectFactory::get_instance()->get_type_object("MonitoringStatus", complete);
     if (c_type_object != nullptr)
@@ -307,7 +313,7 @@ const TypeObject* GetMinimalMonitoringStatusObject()
         return c_type_object;
     }
 
-    TypeObject *type_object = new TypeObject();
+    TypeObject* type_object = new TypeObject();
     type_object->_d(EK_MINIMAL);
     type_object->minimal()._d(TK_STRUCTURE);
 
@@ -330,7 +336,7 @@ const TypeObject* GetMinimalMonitoringStatusObject()
     mst_error_status.common().member_type_id(*GetMonitoringErrorStatusIdentifier(false));
 
     MD5 error_status_hash("error_status");
-    for(int i = 0; i < 4; ++i)
+    for (int i = 0; i < 4; ++i)
     {
         mst_error_status.detail().name_hash()[i] = error_status_hash.digest[i];
     }
@@ -349,7 +355,7 @@ const TypeObject* GetMinimalMonitoringStatusObject()
 
 
     MD5 has_errors_hash("has_errors");
-    for(int i = 0; i < 4; ++i)
+    for (int i = 0; i < 4; ++i)
     {
         mst_has_errors.detail().name_hash()[i] = has_errors_hash.digest[i];
     }
@@ -366,7 +372,7 @@ const TypeObject* GetMinimalMonitoringStatusObject()
     eprosima::fastcdr::CdrSizeCalculator calculator(eprosima::fastcdr::CdrVersion::XCDRv1);
     size_t current_alignment {0};
     SerializedPayload_t payload(static_cast<uint32_t>(
-        calculator.calculate_serialized_size(type_object->minimal().struct_type(), current_alignment) + 4));
+                calculator.calculate_serialized_size(type_object->minimal().struct_type(), current_alignment) + 4));
     eprosima::fastcdr::FastBuffer fastbuffer((char*) payload.data, payload.max_size);
     // Fixed endian (Page 221, EquivalenceHash definition of Extensible and Dynamic Topic Types for DDS document)
     eprosima::fastcdr::Cdr ser(
@@ -383,7 +389,7 @@ const TypeObject* GetMinimalMonitoringStatusObject()
     MD5 objectHash;
     objectHash.update((char*)payload.data, payload.length);
     objectHash.finalize();
-    for(int i = 0; i < 14; ++i)
+    for (int i = 0; i < 14; ++i)
     {
         identifier.equivalence_hash()[i] = objectHash.digest[i];
     }
@@ -401,7 +407,7 @@ const TypeObject* GetCompleteMonitoringStatusObject()
         return c_type_object;
     }
 
-    TypeObject *type_object = new TypeObject();
+    TypeObject* type_object = new TypeObject();
     type_object->_d(EK_COMPLETE);
     type_object->complete()._d(TK_STRUCTURE);
 
@@ -453,7 +459,7 @@ const TypeObject* GetCompleteMonitoringStatusObject()
     eprosima::fastcdr::CdrSizeCalculator calculator(eprosima::fastcdr::CdrVersion::XCDRv1);
     size_t current_alignment {0};
     SerializedPayload_t payload(static_cast<uint32_t>(
-        calculator.calculate_serialized_size(type_object->complete().struct_type(), current_alignment) + 4));
+                calculator.calculate_serialized_size(type_object->complete().struct_type(), current_alignment) + 4));
     eprosima::fastcdr::FastBuffer fastbuffer((char*) payload.data, payload.max_size);
     // Fixed endian (Page 221, EquivalenceHash definition of Extensible and Dynamic Topic Types for DDS document)
     eprosima::fastcdr::Cdr ser(
@@ -470,7 +476,7 @@ const TypeObject* GetCompleteMonitoringStatusObject()
     MD5 objectHash;
     objectHash.update((char*)payload.data, payload.length);
     objectHash.finalize();
-    for(int i = 0; i < 14; ++i)
+    for (int i = 0; i < 14; ++i)
     {
         identifier.equivalence_hash()[i] = objectHash.digest[i];
     }
