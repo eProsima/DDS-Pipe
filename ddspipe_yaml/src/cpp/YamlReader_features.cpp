@@ -20,6 +20,8 @@
 #include <ddspipe_core/configuration/MonitorProducerConfiguration.hpp>
 #include <ddspipe_core/configuration/RoutesConfiguration.hpp>
 #include <ddspipe_core/configuration/TopicRoutesConfiguration.hpp>
+#include <ddspipe_core/monitoring/producers/StatusMonitorProducer.hpp>
+#include <ddspipe_core/monitoring/producers/TopicsMonitorProducer.hpp>
 #include <ddspipe_core/types/dds/DomainId.hpp>
 #include <ddspipe_core/types/topic/dds/DdsTopic.hpp>
 #include <ddspipe_core/types/topic/dds/DistributedTopic.hpp>
@@ -236,10 +238,11 @@ void YamlReader::fill(
     // Get optional monitor status tag
     if (YamlReader::is_tag_present(yml, MONITOR_STATUS_TAG))
     {
-        object.producers["status"] = YamlReader::get<core::MonitorProducerConfiguration>(yml, MONITOR_STATUS_TAG,
+        object.producers[core::STATUS_MONITOR_PRODUCER_ID] = YamlReader::get<core::MonitorProducerConfiguration>(yml,
+                        MONITOR_STATUS_TAG,
                         version);
-        object.consumers["status"].domain = domain;
-        YamlReader::fill<core::DdsPublishingConfiguration>(object.consumers["status"],
+        object.consumers[core::STATUS_MONITOR_PRODUCER_ID].domain = domain;
+        YamlReader::fill<core::DdsPublishingConfiguration>(object.consumers[core::STATUS_MONITOR_PRODUCER_ID],
                 get_value_in_tag(yml, MONITOR_STATUS_TAG), version);
     }
 
@@ -247,10 +250,11 @@ void YamlReader::fill(
     // Get optional monitor topics tag
     if (YamlReader::is_tag_present(yml, MONITOR_TOPICS_TAG))
     {
-        object.producers["topics"] = YamlReader::get<core::MonitorProducerConfiguration>(yml, MONITOR_TOPICS_TAG,
+        object.producers[core::TOPICS_MONITOR_PRODUCER_ID] = YamlReader::get<core::MonitorProducerConfiguration>(yml,
+                        MONITOR_TOPICS_TAG,
                         version);
-        object.consumers["topics"].domain = domain;
-        YamlReader::fill<core::DdsPublishingConfiguration>(object.consumers["topics"],
+        object.consumers[core::TOPICS_MONITOR_PRODUCER_ID].domain = domain;
+        YamlReader::fill<core::DdsPublishingConfiguration>(object.consumers[core::TOPICS_MONITOR_PRODUCER_ID],
                 get_value_in_tag(yml, MONITOR_TOPICS_TAG), version);
     }
 }

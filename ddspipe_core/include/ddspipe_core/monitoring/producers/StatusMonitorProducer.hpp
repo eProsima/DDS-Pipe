@@ -16,6 +16,7 @@
 
 #include <memory>
 #include <mutex>
+#include <string>
 
 #include <ddspipe_core/configuration/MonitorProducerConfiguration.hpp>
 #include <ddspipe_core/library/library_dll.h>
@@ -40,6 +41,8 @@
 namespace eprosima {
 namespace ddspipe {
 namespace core {
+
+const std::string STATUS_MONITOR_PRODUCER_ID = "status";
 
 /**
  * @brief Producer of the \c MonitoringStatus.

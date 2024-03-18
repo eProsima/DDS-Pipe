@@ -17,6 +17,7 @@
 
 #include <map>
 #include <mutex>
+#include <string>
 #include <vector>
 
 #include <cpp_utils/time/time_utils.hpp>
@@ -63,6 +64,8 @@
 namespace eprosima {
 namespace ddspipe {
 namespace core {
+
+const std::string TOPICS_MONITOR_PRODUCER_ID = "topics";
 
 /**
  * @brief Producer of the \c MonitoringTopics.

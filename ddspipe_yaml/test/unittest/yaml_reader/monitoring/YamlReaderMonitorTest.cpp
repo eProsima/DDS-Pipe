@@ -24,6 +24,8 @@
 
 #include <ddspipe_core/configuration/MonitorConfiguration.hpp>
 #include <ddspipe_core/configuration/MonitorConsumerConfiguration.hpp>
+#include <ddspipe_core/monitoring/producers/StatusMonitorProducer.hpp>
+#include <ddspipe_core/monitoring/producers/TopicsMonitorProducer.hpp>
 
 
 using namespace eprosima;
@@ -121,15 +123,15 @@ TEST(YamlReaderMonitorTest, is_valid_conf_with_status_and_topics)
     utils::Formatter error_msg;
     ASSERT_TRUE(conf.is_valid(error_msg));
 
-    ASSERT_TRUE(conf.producers["status"].enabled);
-    ASSERT_EQ(conf.producers["status"].period, 2000);
-    ASSERT_EQ(conf.consumers["status"].domain, 11);
-    ASSERT_EQ(conf.consumers["status"].topic_name, "DdsPipeStatus");
+    ASSERT_TRUE(conf.producers[ddspipe::core::STATUS_MONITOR_PRODUCER_ID].enabled);
+    ASSERT_EQ(conf.producers[ddspipe::core::STATUS_MONITOR_PRODUCER_ID].period, 2000);
+    ASSERT_EQ(conf.consumers[ddspipe::core::STATUS_MONITOR_PRODUCER_ID].domain, 11);
+    ASSERT_EQ(conf.consumers[ddspipe::core::STATUS_MONITOR_PRODUCER_ID].topic_name, "DdsPipeStatus");
 
-    ASSERT_TRUE(conf.producers["topics"].enabled);
-    ASSERT_EQ(conf.producers["topics"].period, 3000);
-    ASSERT_EQ(conf.consumers["topics"].domain, 10);
-    ASSERT_EQ(conf.consumers["topics"].topic_name, "DdsPipeTopics");
+    ASSERT_TRUE(conf.producers[ddspipe::core::TOPICS_MONITOR_PRODUCER_ID].enabled);
+    ASSERT_EQ(conf.producers[ddspipe::core::TOPICS_MONITOR_PRODUCER_ID].period, 3000);
+    ASSERT_EQ(conf.consumers[ddspipe::core::TOPICS_MONITOR_PRODUCER_ID].domain, 10);
+    ASSERT_EQ(conf.consumers[ddspipe::core::TOPICS_MONITOR_PRODUCER_ID].topic_name, "DdsPipeTopics");
 }
 
 int main(

@@ -50,7 +50,7 @@ void Monitor::monitor_status()
 
     // Register the Status Monitor Producer
     auto status_producer = ddspipe::core::StatusMonitorProducer::get_instance();
-    status_producer->init(configuration_.producers.at("status"));
+    status_producer->init(configuration_.producers.at(STATUS_MONITOR_PRODUCER_ID));
 
     // Register the type
     fastdds::dds::TypeSupport type(new MonitoringStatusPubSubType());
@@ -58,10 +58,10 @@ void Monitor::monitor_status()
     // Register the consumers
     status_producer->register_consumer(std::make_unique<ddspipe::core::LogMonitorConsumer<MonitoringStatus>>());
 
-    if (configuration_.consumers.count("status") > 0)
+    if (configuration_.consumers.count(STATUS_MONITOR_PRODUCER_ID) > 0)
     {
         status_producer->register_consumer(std::make_unique<ddspipe::core::DdsMonitorConsumer<MonitoringStatus>>(
-                    configuration_.consumers.at("status"), registry_, type));
+                    configuration_.consumers.at(STATUS_MONITOR_PRODUCER_ID), registry_, type));
     }
 
     register_producer_(status_producer);
@@ -73,7 +73,7 @@ void Monitor::monitor_topics()
 
     // Register the Topics Monitor Producer
     auto topics_producer = ddspipe::core::TopicsMonitorProducer::get_instance();
-    topics_producer->init(configuration_.producers.at("topics"));
+    topics_producer->init(configuration_.producers.at(TOPICS_MONITOR_PRODUCER_ID));
 
     // Register the type
     fastdds::dds::TypeSupport type(new MonitoringTopicsPubSubType());
@@ -81,10 +81,10 @@ void Monitor::monitor_topics()
     // Register the consumers
     topics_producer->register_consumer(std::make_unique<ddspipe::core::LogMonitorConsumer<MonitoringTopics>>());
 
-    if (configuration_.consumers.count("topics") > 0)
+    if (configuration_.consumers.count(TOPICS_MONITOR_PRODUCER_ID) > 0)
     {
         topics_producer->register_consumer(std::make_unique<ddspipe::core::DdsMonitorConsumer<MonitoringTopics>>(
-                    configuration_.consumers.at("topics"), registry_, type));
+                    configuration_.consumers.at(TOPICS_MONITOR_PRODUCER_ID), registry_, type));
     }
 
     register_producer_(topics_producer);

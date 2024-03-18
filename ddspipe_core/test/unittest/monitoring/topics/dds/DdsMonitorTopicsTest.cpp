@@ -53,17 +53,17 @@ public:
     {
         // Initialize the Monitor
         ddspipe::core::MonitorConfiguration configuration;
-        configuration.producers["topics"].enabled = true;
-        configuration.producers["topics"].period = test::monitor::PERIOD_MS;
-        configuration.consumers["topics"].domain = test::monitor::DOMAIN;
-        configuration.consumers["topics"].topic_name = test::monitor::TOPIC_NAME;
+        configuration.producers[ddspipe::core::TOPICS_MONITOR_PRODUCER_ID].enabled = true;
+        configuration.producers[ddspipe::core::TOPICS_MONITOR_PRODUCER_ID].period = test::monitor::PERIOD_MS;
+        configuration.consumers[ddspipe::core::TOPICS_MONITOR_PRODUCER_ID].domain = test::monitor::DOMAIN;
+        configuration.consumers[ddspipe::core::TOPICS_MONITOR_PRODUCER_ID].topic_name = test::monitor::TOPIC_NAME;
 
         utils::Formatter error_msg;
         ASSERT_TRUE(configuration.is_valid(error_msg));
 
         monitor_ = std::make_unique<ddspipe::core::Monitor>(configuration);
 
-        if (configuration.producers["topics"].enabled)
+        if (configuration.producers[ddspipe::core::TOPICS_MONITOR_PRODUCER_ID].enabled)
         {
             monitor_->monitor_topics();
         }

@@ -105,6 +105,10 @@ void CommonReader::on_data_available(
 {
     logInfo(DDSPIPE_DDS_READER, "On data available in reader in " << participant_id_ << " for topic " << topic_ << ".");
 
+    // The CommonReader notifies the reception of a message to the Monitor when a on_data_available event is received.
+    // An on_data_available event can be received with more than one message, but figuring out the number of messages
+    // received is not possible with the current API. Thus, the Monitor will be notified once for each on_data_available
+    // and the number of messages received will be slightly inaccurate.
     monitor_msg_rx(topic_, participant_id_);
 
     on_data_available_();

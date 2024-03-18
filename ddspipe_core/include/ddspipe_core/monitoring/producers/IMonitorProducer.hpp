@@ -35,7 +35,7 @@ class IMonitorProducer
 public:
 
     /**
-     * @brief Virtual metohd to produce and consume data.
+     * @brief Virtual method to produce and consume data.
      */
     DDSPIPE_CORE_DllAPI
     virtual void produce_and_consume() = 0;
