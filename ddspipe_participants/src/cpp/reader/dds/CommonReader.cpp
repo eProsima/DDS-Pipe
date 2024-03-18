@@ -128,7 +128,7 @@ void CommonReader::on_inconsistent_topic(
 {
     logWarning(DDSPIPE_DDS_READER,
             "TOPIC_MISMATCH_TYPE | Reader " << *this <<
-                            " found a remote Writer with same topic name but incompatible type");
+            " found a remote Writer with same topic name but incompatible type");
 }
 
 CommonReader::CommonReader(
