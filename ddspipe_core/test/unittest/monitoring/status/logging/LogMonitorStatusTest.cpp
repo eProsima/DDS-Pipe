@@ -48,7 +48,7 @@ public:
         utils::Log::SetVerbosity(log_conf.verbosity);
 
         utils::Log::RegisterConsumer(
-                std::make_unique<utils::StdLogConsumer>(&log_conf));
+            std::make_unique<utils::StdLogConsumer>(&log_conf));
 
         // Initialize the Monitor
         ddspipe::core::MonitorConfiguration monitor_conf;
