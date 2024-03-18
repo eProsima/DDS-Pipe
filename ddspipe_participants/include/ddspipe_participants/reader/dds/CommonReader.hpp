@@ -24,6 +24,7 @@
 #include <fastdds/dds/subscriber/qos/DataReaderQos.hpp>
 #include <fastdds/dds/subscriber/Subscriber.hpp>
 #include <fastdds/dds/topic/Topic.hpp>
+#include <fastdds/dds/topic/TopicListener.hpp>
 
 #include <ddspipe_core/types/data/RtpsPayloadData.hpp>
 #include <ddspipe_core/types/dds/Guid.hpp>
@@ -45,7 +46,7 @@ namespace dds {
  *
  * @warning This object is not RAII and must be initialized before used.
  */
-class CommonReader : public BaseReader, public fastdds::dds::DataReaderListener
+class CommonReader : public BaseReader, public fastdds::dds::DataReaderListener, public fastdds::dds::TopicListener
 {
 public:
 
@@ -72,6 +73,18 @@ public:
 
     virtual void on_data_available(
             fastdds::dds::DataReader* reader);
+
+    virtual void on_sample_lost(
+            fastdds::dds::DataReader* reader,
+            const fastdds::dds::SampleLostStatus& status);
+
+    virtual void on_requested_incompatible_qos(
+            fastdds::dds::DataReader* reader,
+            const fastdds::dds::RequestedIncompatibleQosStatus& status);
+
+    virtual void on_inconsistent_topic(
+            fastdds::dds::Topic* topic,
+            fastdds::dds::InconsistentTopicStatus status);
 
 protected:
 

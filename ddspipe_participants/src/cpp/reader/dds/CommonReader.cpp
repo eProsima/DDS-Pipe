@@ -106,6 +106,31 @@ void CommonReader::on_data_available(
     on_data_available_();
 }
 
+void CommonReader::on_sample_lost(
+        fastdds::dds::DataReader* reader,
+        const fastdds::dds::SampleLostStatus& status)
+{
+    logWarning(DDSPIPE_DDS_READER,
+            "SAMPLE_LOST | On reader " << *this << " a data sample was lost and will not be received");
+}
+
+void CommonReader::on_requested_incompatible_qos(
+        fastdds::dds::DataReader* reader,
+        const fastdds::dds::RequestedIncompatibleQosStatus& status)
+{
+    logWarning(DDSPIPE_DDS_READER,
+            "TOPIC_MISMATCH_QOS | Reader " << *this << " found a remote Writer with incompatible QoS");
+}
+
+void CommonReader::on_inconsistent_topic(
+        fastdds::dds::Topic* topic,
+        fastdds::dds::InconsistentTopicStatus status)
+{
+    logWarning(DDSPIPE_DDS_READER,
+            "TOPIC_MISMATCH_TYPE | Reader " << *this <<
+            " found a remote Writer with same topic name but incompatible type");
+}
+
 CommonReader::CommonReader(
         const ParticipantId& participant_id,
         const DdsTopic& topic,
