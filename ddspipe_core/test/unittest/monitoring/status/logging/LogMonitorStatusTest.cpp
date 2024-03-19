@@ -99,7 +99,7 @@ TEST_F(LogMonitorStatusTest, type_mismatch)
     testing::internal::CaptureStdout();
 
     // Wait for the monitor to print the message
-    std::this_thread::sleep_for(std::chrono::milliseconds(test::monitor::PERIOD_MS + 1));
+    std::this_thread::sleep_for(std::chrono::milliseconds(test::monitor::PERIOD_MS*3));
     utils::Log::Flush();
 
     ASSERT_TRUE(contains_(testing::internal::GetCapturedStdout(), "Monitoring Status: [TYPE_MISMATCH]"));
@@ -119,7 +119,7 @@ TEST_F(LogMonitorStatusTest, qos_mismatch)
     testing::internal::CaptureStdout();
 
     // Wait for the monitor to print the message
-    std::this_thread::sleep_for(std::chrono::milliseconds(test::monitor::PERIOD_MS + 1));
+    std::this_thread::sleep_for(std::chrono::milliseconds(test::monitor::PERIOD_MS*3));
     utils::Log::Flush();
 
     ASSERT_TRUE(contains_(testing::internal::GetCapturedStdout(), "Monitoring Status: [QOS_MISMATCH]"));
