@@ -15,8 +15,14 @@
 #include <cpp_utils/Log.hpp>
 #include <cpp_utils/memory/Heritable.hpp>
 
+#include <ddspipe_core/configuration/DdsPublishingConfiguration.hpp>
+#include <ddspipe_core/configuration/MonitorConfiguration.hpp>
+#include <ddspipe_core/configuration/MonitorProducerConfiguration.hpp>
 #include <ddspipe_core/configuration/RoutesConfiguration.hpp>
 #include <ddspipe_core/configuration/TopicRoutesConfiguration.hpp>
+#include <ddspipe_core/monitoring/producers/StatusMonitorProducer.hpp>
+#include <ddspipe_core/monitoring/producers/TopicsMonitorProducer.hpp>
+#include <ddspipe_core/types/dds/DomainId.hpp>
 #include <ddspipe_core/types/topic/dds/DdsTopic.hpp>
 #include <ddspipe_core/types/topic/dds/DistributedTopic.hpp>
 #include <ddspipe_participants/xml/XmlHandler.hpp>
@@ -206,6 +212,92 @@ core::TopicRoutesConfiguration YamlReader::get(
 {
     core::TopicRoutesConfiguration object;
     fill<core::TopicRoutesConfiguration>(object, yml, version);
+    return object;
+}
+
+/*************************
+ * Monitor Configuration  *
+ **************************/
+
+template <>
+DDSPIPE_YAML_DllAPI
+void YamlReader::fill(
+        core::MonitorConfiguration& object,
+        const Yaml& yml,
+        const YamlReaderVersion version)
+{
+    core::types::DomainIdType domain = 0;
+
+    // Optional domain
+    if (is_tag_present(yml, MONITOR_DOMAIN_TAG))
+    {
+        domain = get<int>(yml, MONITOR_DOMAIN_TAG, version);
+    }
+
+    /////
+    // Get optional monitor status tag
+    if (YamlReader::is_tag_present(yml, MONITOR_STATUS_TAG))
+    {
+        object.producers[core::STATUS_MONITOR_PRODUCER_ID] = YamlReader::get<core::MonitorProducerConfiguration>(yml,
+                        MONITOR_STATUS_TAG,
+                        version);
+        object.consumers[core::STATUS_MONITOR_PRODUCER_ID].domain = domain;
+        YamlReader::fill<core::DdsPublishingConfiguration>(object.consumers[core::STATUS_MONITOR_PRODUCER_ID],
+                get_value_in_tag(yml, MONITOR_STATUS_TAG), version);
+    }
+
+    /////
+    // Get optional monitor topics tag
+    if (YamlReader::is_tag_present(yml, MONITOR_TOPICS_TAG))
+    {
+        object.producers[core::TOPICS_MONITOR_PRODUCER_ID] = YamlReader::get<core::MonitorProducerConfiguration>(yml,
+                        MONITOR_TOPICS_TAG,
+                        version);
+        object.consumers[core::TOPICS_MONITOR_PRODUCER_ID].domain = domain;
+        YamlReader::fill<core::DdsPublishingConfiguration>(object.consumers[core::TOPICS_MONITOR_PRODUCER_ID],
+                get_value_in_tag(yml, MONITOR_TOPICS_TAG), version);
+    }
+}
+
+template <>
+DDSPIPE_YAML_DllAPI
+core::MonitorConfiguration YamlReader::get(
+        const Yaml& yml,
+        const YamlReaderVersion version)
+{
+    core::MonitorConfiguration object;
+    fill<core::MonitorConfiguration>(object, yml, version);
+    return object;
+}
+
+template <>
+DDSPIPE_YAML_DllAPI
+void YamlReader::fill(
+        core::MonitorProducerConfiguration& object,
+        const Yaml& yml,
+        const YamlReaderVersion version)
+{
+    // Optional enable
+    if (is_tag_present(yml, MONITOR_ENABLE_TAG))
+    {
+        object.enabled = get<bool>(yml, MONITOR_ENABLE_TAG, version);
+    }
+
+    // Optional period
+    if (is_tag_present(yml, MONITOR_PERIOD_TAG))
+    {
+        object.period = get_positive_double(yml, MONITOR_PERIOD_TAG);
+    }
+}
+
+template <>
+DDSPIPE_YAML_DllAPI
+core::MonitorProducerConfiguration YamlReader::get(
+        const Yaml& yml,
+        const YamlReaderVersion version)
+{
+    core::MonitorProducerConfiguration object;
+    fill<core::MonitorProducerConfiguration>(object, yml, version);
     return object;
 }
 

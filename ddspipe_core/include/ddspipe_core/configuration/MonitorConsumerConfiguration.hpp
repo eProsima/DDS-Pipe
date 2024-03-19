@@ -1,4 +1,4 @@
-// Copyright 2021 Proyectos y Sistemas de Mantenimiento SL (eProsima).
+// Copyright 2024 Proyectos y Sistemas de Mantenimiento SL (eProsima).
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,37 +12,33 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-
 #pragma once
 
+#include <ddspipe_core/configuration/DdsPublishingConfiguration.hpp>
 #include <ddspipe_core/library/library_dll.h>
-#include <ddspipe_core/types/topic/TopicInternalTypeDiscriminator.hpp>
 
 namespace eprosima {
 namespace ddspipe {
 namespace core {
 
 /**
- * @brief TODO
+ * Configuration structure encapsulating the configuration of a \c MonitorConsumer instance.
  */
-
-class IRoutingData
+struct MonitorConsumerConfiguration : public DdsPublishingConfiguration
 {
-
-public:
-
-    /**
-     * @brief Virtual dtor to allow inheritance.
-     */
-    DDSPIPE_CORE_DllAPI
-    virtual ~IRoutingData() = default;
+    /////////////////////////
+    // METHODS
+    /////////////////////////
 
     /**
-     * This refers to an internal used identifier that declares which kind of data type is going to be
-     * transmitted in this ITopic inside the core.
+     * @brief Check if the configuration is valid.
+     *
+     * @param error_msg The error message to be filled if the configuration is not valid.
+     * @return \c true if the configuration is valid, \c false otherwise.
      */
     DDSPIPE_CORE_DllAPI
-    virtual types::TopicInternalTypeDiscriminator internal_type_discriminator() const noexcept = 0;
+    bool is_valid(
+            utils::Formatter& error_msg) const noexcept override;
 };
 
 } /* namespace core */

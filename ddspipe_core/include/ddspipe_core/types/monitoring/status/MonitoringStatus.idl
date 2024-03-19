@@ -1,0 +1,9 @@
+struct MonitoringErrorStatus {
+    boolean type_mismatch;
+    boolean qos_mismatch;
+};
+
+struct MonitoringStatus {
+    MonitoringErrorStatus error_status;
+    boolean has_errors;
+};

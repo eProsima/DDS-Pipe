@@ -1,0 +1,22 @@
+struct DdsTopicData
+{
+  string participant_id;
+  unsigned long msgs_lost;
+  unsigned long msgs_received;
+  double msg_rx_rate;
+};
+
+struct DdsTopic
+{
+  string name;
+  string type_name;
+  boolean type_discovered;
+  boolean type_mismatch;
+  boolean qos_mismatch;
+  sequence<DdsTopicData> data;
+};
+
+struct MonitoringTopics
+{
+  sequence<DdsTopic> topics;
+};
