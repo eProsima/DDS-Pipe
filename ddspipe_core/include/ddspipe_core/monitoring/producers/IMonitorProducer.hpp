@@ -35,6 +35,12 @@ class IMonitorProducer
 public:
 
     /**
+     * @brief Virtual method to clear the consumers.
+     */
+    DDSPIPE_CORE_DllAPI
+    virtual void clear_consumers() = 0;
+
+    /**
      * @brief Virtual method to produce and consume data.
      */
     DDSPIPE_CORE_DllAPI

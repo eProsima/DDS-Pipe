@@ -44,6 +44,18 @@ Monitor::Monitor(
 {
 }
 
+Monitor::~Monitor()
+{
+    events_.clear();
+
+    for (auto& producer : producers_)
+    {
+        producer->clear_consumers();
+    }
+
+    producers_.clear();
+}
+
 void Monitor::monitor_status()
 {
     logInfo(DDSPIPE_MONITOR, "MONITOR | Registering Status Monitor Producer.");
@@ -95,10 +107,11 @@ void Monitor::register_producer_(
 {
     logInfo(DDSPIPE_MONITOR, "MONITOR | Registering producer " << producer << ".");
 
+    producers_.push_back(producer);
+
     std::function<void()> periodic_callback = [producer]()
             {
-                producer->produce();
-                producer->consume();
+                producer->produce_and_consume();
             };
 
     const auto duration = utils::Duration_ms(static_cast<int>(producer->period));

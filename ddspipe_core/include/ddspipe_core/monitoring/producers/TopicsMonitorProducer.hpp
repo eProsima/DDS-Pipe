@@ -119,6 +119,12 @@ public:
             std::unique_ptr<IMonitorConsumer<MonitoringTopics>> consumer);
 
     /**
+     * @brief Remove all consumers.
+     */
+    DDSPIPE_CORE_DllAPI
+    void clear_consumers() override;
+
+    /**
      * @brief Produce and consume the \c MonitoringTopics.
      *
      * Produces a \c MonitoringTopics with the data gathered and consumes it.

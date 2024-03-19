@@ -42,19 +42,28 @@ public:
      *
      * @param configuration The \c MonitorConfiguration to initialize the \c Monitor.
      */
+    DDSPIPE_CORE_DllAPI
     Monitor(
             const MonitorConfiguration& configuration);
+
+    /**
+     * Destruct the \c Monitor.
+     */
+    DDSPIPE_CORE_DllAPI
+    virtual ~Monitor();
 
     /**
      * @brief Monitorize the DdsPipe status.
      *
      * The DdsPipe's status is monitored by the \c StatusMonitorProducer, which produces the \c MonitoringStatus.
      */
+    DDSPIPE_CORE_DllAPI
     virtual void monitor_status();
 
     /**
      * Monitorize the topics.
      */
+    DDSPIPE_CORE_DllAPI
     virtual void monitor_topics();
 
 protected:
@@ -69,6 +78,9 @@ protected:
 
     // Configuration of the Monitor.
     MonitorConfiguration configuration_;
+
+    // Producers that produce monitored data.
+    std::vector<IMonitorProducer*> producers_;
 
     // Events that trigger the consumption of monitored data every period.
     std::vector<std::unique_ptr<utils::event::PeriodicEventHandler>> events_;

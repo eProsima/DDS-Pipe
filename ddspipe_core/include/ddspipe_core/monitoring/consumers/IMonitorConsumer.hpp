@@ -34,6 +34,9 @@ class IMonitorConsumer
 {
 public:
 
+    IMonitorConsumer() = default;
+    virtual ~IMonitorConsumer() = default;
+
     /**
      * @brief Virtual method that consumes the data.
      *

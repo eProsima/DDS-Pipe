@@ -52,9 +52,20 @@ void StatusMonitorProducer::register_consumer(
         return;
     }
 
+    std::lock_guard<std::mutex> lock(mutex_);
+
     logInfo(DDSPIPE_MONITOR, "MONITOR | Registering consumer " << consumer->get_name() << " on StatusMonitorProducer.");
 
     consumers_.push_back(std::move(consumer));
+}
+
+void StatusMonitorProducer::clear_consumers()
+{
+    std::lock_guard<std::mutex> lock(mutex_);
+
+    logInfo(DDSPIPE_MONITOR, "MONITOR | Removing consumers from StatusMonitorProducer.");
+
+    consumers_.clear();
 }
 
 void StatusMonitorProducer::produce_and_consume()

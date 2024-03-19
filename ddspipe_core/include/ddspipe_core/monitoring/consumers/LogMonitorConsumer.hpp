@@ -32,6 +32,9 @@ class LogMonitorConsumer : public IMonitorConsumer<T>
 {
 public:
 
+    LogMonitorConsumer() = default;
+    virtual ~LogMonitorConsumer() = default;
+
     /**
      * @brief Consume data by publishing it on \c topic_.
      *

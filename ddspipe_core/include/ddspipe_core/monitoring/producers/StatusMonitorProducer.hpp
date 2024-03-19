@@ -92,6 +92,12 @@ public:
             std::unique_ptr<IMonitorConsumer<MonitoringStatus>> consumer);
 
     /**
+     * @brief Remove all consumers.
+     */
+    DDSPIPE_CORE_DllAPI
+    void clear_consumers() override;
+
+    /**
      * @brief Produce and consume the \c MonitoringStatus.
      *
      * Produces a \c MonitoringStatus with the data gathered and consumes it.

@@ -57,7 +57,7 @@ public:
      * @brief Destroy the Fast-DDS entities.
      */
     DDSPIPE_CORE_DllAPI
-    ~DdsMonitorConsumer();
+    virtual ~DdsMonitorConsumer();
 
     /**
      * @brief Consume data by publishing it on \c topic_.

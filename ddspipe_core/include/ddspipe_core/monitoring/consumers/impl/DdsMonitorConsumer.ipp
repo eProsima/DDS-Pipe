@@ -75,13 +75,13 @@ DdsMonitorConsumer<T>::DdsMonitorConsumer(
 template <typename T>
 DdsMonitorConsumer<T>::~DdsMonitorConsumer()
 {
-    if (writer_ != nullptr)
-    {
-        publisher_->delete_datawriter(writer_);
-    }
-
     if (publisher_ != nullptr)
     {
+        if (writer_ != nullptr)
+        {
+            publisher_->delete_datawriter(writer_);
+        }
+
         participant_->delete_publisher(publisher_);
     }
 
