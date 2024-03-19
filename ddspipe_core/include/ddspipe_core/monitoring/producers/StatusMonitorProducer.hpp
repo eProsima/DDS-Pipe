@@ -58,6 +58,8 @@ class StatusMonitorProducer : public MonitorProducer
 {
 public:
 
+    virtual ~StatusMonitorProducer() = default;
+
     /**
      * @brief Initialize the instance of the \c StatusMonitorProducer.
      *

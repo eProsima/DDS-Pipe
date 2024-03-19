@@ -34,6 +34,8 @@ class MonitorProducer : public IMonitorProducer
 {
 public:
 
+    virtual ~MonitorProducer() = default;
+
     /**
      * @brief Virtual method that initializes a producer with a given configuration.
      *

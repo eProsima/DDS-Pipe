@@ -85,6 +85,8 @@ class TopicsMonitorProducer : public MonitorProducer
 {
 public:
 
+    virtual ~TopicsMonitorProducer() = default;
+
     /**
      * @brief Initialize the instance of the \c TopicsMonitorProducer.
      *
