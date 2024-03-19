@@ -16,36 +16,40 @@
 # Interface PayloadPool Test #
 ##############################
 
-set(TEST_NAME PayloadPoolTest)
+# Temporarily disabled due to a Windows compilation error not finding the GMock library
+if (NOT MSVC)
 
-set(TEST_SOURCES
-        PayloadPoolTest.cpp
-        ${PROJECT_SOURCE_DIR}/src/cpp/efficiency/payload/PayloadPool.cpp
-        ${PROJECT_SOURCE_DIR}/src/cpp/types/dds/Payload.cpp
-    )
+    set(TEST_NAME PayloadPoolTest)
 
-set(TEST_LIST
-        reserve
-        release
-        reserve_and_release_counter
-        is_clean
-        get_payload_cache_change
-        get_payload_from_src_cache_change
-        release_payload_cache_change
-    )
+    set(TEST_SOURCES
+            PayloadPoolTest.cpp
+            ${PROJECT_SOURCE_DIR}/src/cpp/efficiency/payload/PayloadPool.cpp
+            ${PROJECT_SOURCE_DIR}/src/cpp/types/dds/Payload.cpp
+        )
 
-set(TEST_EXTRA_LIBRARIES
-        fastcdr
-        fastrtps
-        cpp_utils
-    )
+    set(TEST_LIST
+            reserve
+            release
+            reserve_and_release_counter
+            is_clean
+            get_payload_cache_change
+            get_payload_from_src_cache_change
+            release_payload_cache_change
+        )
 
-add_unittest_executable(
-        "${TEST_NAME}"
-        "${TEST_SOURCES}"
-        "${TEST_LIST}"
-        "${TEST_EXTRA_LIBRARIES}"
-    )
+    set(TEST_EXTRA_LIBRARIES
+            fastcdr
+            fastrtps
+            cpp_utils
+        )
+
+    add_unittest_executable(
+            "${TEST_NAME}"
+            "${TEST_SOURCES}"
+            "${TEST_LIST}"
+            "${TEST_EXTRA_LIBRARIES}"
+        )
+endif()
 
 ########################
 # Map PayloadPool Test #
