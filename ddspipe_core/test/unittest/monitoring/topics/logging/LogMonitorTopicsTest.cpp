@@ -117,7 +117,7 @@ TEST_F(LogMonitorTopicsTest, msgs_received)
     ASSERT_TRUE(contains_(testing::internal::GetCapturedStdout(),
             "Monitoring Topics: [Topic Name: MonitoredTopic, Type Name: MonitoredTopicType, Type Discovered: "
             "false, Type Mismatch: false, QoS Mismatch: false, Data: [Participant ID: MonitoredParticipant, "
-            "Messages Received: 1, Messages Lost: 0, Message Reception Rate: 10; ]; ]"));
+            "Messages Received: 1, Messages Lost: 0, Message Reception Rate: 2; ]; ]"));
 }
 
 /**
