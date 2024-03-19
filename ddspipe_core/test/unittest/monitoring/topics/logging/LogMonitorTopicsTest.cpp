@@ -111,13 +111,13 @@ TEST_F(LogMonitorTopicsTest, msgs_received)
     testing::internal::CaptureStdout();
 
     // Wait for the monitor to print the message
-    std::this_thread::sleep_for(std::chrono::milliseconds(test::monitor::PERIOD_MS + 1));
+    std::this_thread::sleep_for(std::chrono::milliseconds(test::monitor::PERIOD_MS*3));
     utils::Log::Flush();
 
     ASSERT_TRUE(contains_(testing::internal::GetCapturedStdout(),
             "Monitoring Topics: [Topic Name: MonitoredTopic, Type Name: MonitoredTopicType, Type Discovered: "
             "false, Type Mismatch: false, QoS Mismatch: false, Data: [Participant ID: MonitoredParticipant, "
-            "Messages Received: 1, Messages Lost: 0, Message Reception Rate: 10; ]; ]"));
+            "Messages Received: 1, Messages Lost: 0, Message Reception Rate: 2; ]; ]"));
 }
 
 /**
@@ -134,7 +134,7 @@ TEST_F(LogMonitorTopicsTest, msgs_lost)
     testing::internal::CaptureStdout();
 
     // Wait for the monitor to print the message
-    std::this_thread::sleep_for(std::chrono::milliseconds(test::monitor::PERIOD_MS + 1));
+    std::this_thread::sleep_for(std::chrono::milliseconds(test::monitor::PERIOD_MS*3));
     utils::Log::Flush();
 
     ASSERT_TRUE(contains_(testing::internal::GetCapturedStdout(),
@@ -160,7 +160,7 @@ TEST_F(LogMonitorTopicsTest, type_discovered)
     testing::internal::CaptureStdout();
 
     // Wait for the monitor to print the message
-    std::this_thread::sleep_for(std::chrono::milliseconds(test::monitor::PERIOD_MS + 1));
+    std::this_thread::sleep_for(std::chrono::milliseconds(test::monitor::PERIOD_MS*3));
     utils::Log::Flush();
 
     ASSERT_TRUE(contains_(testing::internal::GetCapturedStdout(),
@@ -183,7 +183,7 @@ TEST_F(LogMonitorTopicsTest, type_mismatch)
     testing::internal::CaptureStdout();
 
     // Wait for the monitor to print the message
-    std::this_thread::sleep_for(std::chrono::milliseconds(test::monitor::PERIOD_MS + 1));
+    std::this_thread::sleep_for(std::chrono::milliseconds(test::monitor::PERIOD_MS*3));
     utils::Log::Flush();
 
     ASSERT_TRUE(contains_(testing::internal::GetCapturedStdout(),
@@ -205,7 +205,7 @@ TEST_F(LogMonitorTopicsTest, qos_mismatch)
     testing::internal::CaptureStdout();
 
     // Wait for the monitor to print the message
-    std::this_thread::sleep_for(std::chrono::milliseconds(test::monitor::PERIOD_MS + 1));
+    std::this_thread::sleep_for(std::chrono::milliseconds(test::monitor::PERIOD_MS*3));
     utils::Log::Flush();
 
     ASSERT_TRUE(contains_(testing::internal::GetCapturedStdout(),

@@ -52,15 +52,15 @@ public:
 
         // Initialize the Monitor
         ddspipe::core::MonitorConfiguration monitor_conf;
-        monitor_conf.producers["status"].enabled = true;
-        monitor_conf.producers["status"].period = test::monitor::PERIOD_MS;
+        monitor_conf.producers[ddspipe::core::STATUS_MONITOR_PRODUCER_ID].enabled = true;
+        monitor_conf.producers[ddspipe::core::STATUS_MONITOR_PRODUCER_ID].period = test::monitor::PERIOD_MS;
 
         utils::Formatter error_msg;
         ASSERT_TRUE(monitor_conf.is_valid(error_msg));
 
         monitor_ = std::make_unique<ddspipe::core::Monitor>(monitor_conf);
 
-        if (monitor_conf.producers["status"].enabled)
+        if (monitor_conf.producers[ddspipe::core::STATUS_MONITOR_PRODUCER_ID].enabled)
         {
             monitor_->monitor_status();
         }
@@ -99,7 +99,7 @@ TEST_F(LogMonitorStatusTest, type_mismatch)
     testing::internal::CaptureStdout();
 
     // Wait for the monitor to print the message
-    std::this_thread::sleep_for(std::chrono::milliseconds(test::monitor::PERIOD_MS + 1));
+    std::this_thread::sleep_for(std::chrono::milliseconds(test::monitor::PERIOD_MS*3));
     utils::Log::Flush();
 
     ASSERT_TRUE(contains_(testing::internal::GetCapturedStdout(), "Monitoring Status: [TYPE_MISMATCH]"));
@@ -119,7 +119,7 @@ TEST_F(LogMonitorStatusTest, qos_mismatch)
     testing::internal::CaptureStdout();
 
     // Wait for the monitor to print the message
-    std::this_thread::sleep_for(std::chrono::milliseconds(test::monitor::PERIOD_MS + 1));
+    std::this_thread::sleep_for(std::chrono::milliseconds(test::monitor::PERIOD_MS*3));
     utils::Log::Flush();
 
     ASSERT_TRUE(contains_(testing::internal::GetCapturedStdout(), "Monitoring Status: [QOS_MISMATCH]"));

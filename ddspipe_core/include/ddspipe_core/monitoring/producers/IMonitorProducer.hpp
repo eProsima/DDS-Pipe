@@ -34,6 +34,9 @@ class IMonitorProducer
 {
 public:
 
+    IMonitorProducer() = default;
+    virtual ~IMonitorProducer() = default;
+
     /**
      * @brief Virtual method to clear the consumers.
      */
@@ -62,14 +65,6 @@ public:
      * @brief Attribute that represents the period at which the producer should consume data.
      */
     double period = 1000;
-
-protected:
-
-    // Since producers are singletons, they should be self-constructible.
-    IMonitorProducer() = default;
-
-    // Since producers are singletons, they should be self-destructible.
-    ~IMonitorProducer() = default;
 };
 
 } // namespace core
