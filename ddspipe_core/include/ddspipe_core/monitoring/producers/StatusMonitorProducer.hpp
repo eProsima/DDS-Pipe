@@ -149,6 +149,7 @@ protected:
     static std::unique_ptr<StatusMonitorProducer> instance_;
 
     // Mutex to protect the StatusMonitorProducer.
+    DDSPIPE_CORE_DllAPI
     static std::mutex mutex_;
 
     // The produced data.

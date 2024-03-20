@@ -72,7 +72,7 @@ Guid Guid::new_unique_guid()
     for (unsigned int i = 0; i < fastrtps::rtps::EntityId_t::size; i++)
     {
         new_guid.entityId.value[i] = numer % denom;
-        numer = std::floor(numer / denom);
+        numer = static_cast<unsigned int>(std::floor(numer / denom));
     }
 
     return new_guid;

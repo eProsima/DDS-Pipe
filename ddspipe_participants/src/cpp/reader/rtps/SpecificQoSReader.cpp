@@ -57,7 +57,7 @@ void SpecificQoSReader::fill_received_data_(
             DDSPIPE_SpecificQoSReader,
             "Set QoS " << data_to_fill.writer_qos << " for data from " << data_to_fill.source_guid << ".");
     }
-    catch (const utils::InconsistencyException& e)
+    catch (const utils::InconsistencyException&)
     {
         // Get a message from a writer not in database, this is an error.
         // Remove data and make as it has not been received.
