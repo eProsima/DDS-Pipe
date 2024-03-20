@@ -20,17 +20,21 @@ namespace eprosima {
 namespace ddspipe {
 namespace core {
 
+std::mutex TopicsMonitorProducer::mutex_;
 std::unique_ptr<TopicsMonitorProducer> TopicsMonitorProducer::instance_ = nullptr;
-
 
 void TopicsMonitorProducer::init_instance(
         std::unique_ptr<TopicsMonitorProducer> instance)
 {
+    std::lock_guard<std::mutex> lock(mutex_);
+
     instance_ = std::move(instance);
 }
 
 TopicsMonitorProducer* TopicsMonitorProducer::get_instance()
 {
+    std::lock_guard<std::mutex> lock(mutex_);
+
     if (instance_ == nullptr)
     {
         instance_ = std::make_unique<TopicsMonitorProducer>();

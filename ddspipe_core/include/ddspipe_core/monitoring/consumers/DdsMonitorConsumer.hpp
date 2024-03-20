@@ -47,7 +47,6 @@ public:
      * @param registry Contains the DDS Participants to avoid creating multiple participants on the same domain.
      * @param type TypeSupport of the data to be published.
      */
-    DDSPIPE_CORE_DllAPI
     DdsMonitorConsumer(
             const DdsPublishingConfiguration& configuration,
             DdsMonitorParticipantRegistry& registry,
@@ -56,7 +55,6 @@ public:
     /**
      * @brief Destroy the Fast-DDS entities.
      */
-    DDSPIPE_CORE_DllAPI
     virtual ~DdsMonitorConsumer();
 
     /**
@@ -64,7 +62,6 @@ public:
      *
      * @param data Pointer to the data to be consumed.
      */
-    DDSPIPE_CORE_DllAPI
     void consume(
             const T& data) const override;
 
@@ -73,7 +70,6 @@ public:
      *
      * @return Name of the consumer.
      */
-    DDSPIPE_CORE_DllAPI
     std::string get_name() const override;
 
 protected:

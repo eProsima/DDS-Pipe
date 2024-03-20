@@ -42,7 +42,6 @@ public:
      *
      * @param data Pointer to the data to be consumed.
      */
-    DDSPIPE_CORE_DllAPI
     virtual void consume(
             const T& data) const = 0;
 
@@ -51,7 +50,6 @@ public:
      *
      * @return Name of the consumer.
      */
-    DDSPIPE_CORE_DllAPI
     virtual std::string get_name() const = 0;
 };
 

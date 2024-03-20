@@ -34,6 +34,9 @@ class MonitorProducer : public IMonitorProducer
 {
 public:
 
+    /**
+     * @brief Destroy the \c MonitorProducer.
+     */
     virtual ~MonitorProducer() = default;
 
     /**

@@ -85,6 +85,9 @@ class TopicsMonitorProducer : public MonitorProducer
 {
 public:
 
+    /**
+     * @brief Destroy the \c TopicsMonitorProducer.
+     */
     virtual ~TopicsMonitorProducer() = default;
 
     /**
@@ -230,7 +233,7 @@ protected:
     static std::unique_ptr<TopicsMonitorProducer> instance_;
 
     // Mutex to protect the TopicsMonitorProducer.
-    mutable std::mutex mutex_;
+    static std::mutex mutex_;
 
     // The produced data.
     MonitoringTopics data_;
