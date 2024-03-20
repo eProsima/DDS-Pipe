@@ -73,6 +73,7 @@ protected:
      *
      * @param producer The \c producer to register.
      */
+    DDSPIPE_CORE_DllAPI
     void register_producer_(
             IMonitorProducer* producer);
 

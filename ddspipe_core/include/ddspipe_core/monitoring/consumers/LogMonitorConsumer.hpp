@@ -40,7 +40,6 @@ public:
      *
      * @param data Pointer to the data to be consumed.
      */
-    DDSPIPE_CORE_DllAPI
     void consume(
             const T& data) const override;
 
@@ -49,7 +48,6 @@ public:
      *
      * @return Name of the consumer.
      */
-    DDSPIPE_CORE_DllAPI
     std::string get_name() const override;
 };
 
