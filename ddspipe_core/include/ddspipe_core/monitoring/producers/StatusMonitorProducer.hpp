@@ -58,6 +58,9 @@ class StatusMonitorProducer : public MonitorProducer
 {
 public:
 
+    /**
+     * @brief Destroy the \c StatusMonitorProducer.
+     */
     virtual ~StatusMonitorProducer() = default;
 
     /**
@@ -146,7 +149,7 @@ protected:
     static std::unique_ptr<StatusMonitorProducer> instance_;
 
     // Mutex to protect the StatusMonitorProducer.
-    mutable std::mutex mutex_;
+    static std::mutex mutex_;
 
     // The produced data.
     MonitoringStatus data_;

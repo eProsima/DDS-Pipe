@@ -21,17 +21,22 @@ namespace ddspipe {
 namespace core {
 
 
+std::mutex StatusMonitorProducer::mutex_;
 std::unique_ptr<StatusMonitorProducer> StatusMonitorProducer::instance_ = nullptr;
 
 
 void StatusMonitorProducer::init_instance(
         std::unique_ptr<StatusMonitorProducer> instance)
 {
+    std::lock_guard<std::mutex> lock(mutex_);
+
     instance_ = std::move(instance);
 }
 
 StatusMonitorProducer* StatusMonitorProducer::get_instance()
 {
+    std::lock_guard<std::mutex> lock(mutex_);
+
     if (instance_ == nullptr)
     {
         instance_ = std::make_unique<StatusMonitorProducer>();
