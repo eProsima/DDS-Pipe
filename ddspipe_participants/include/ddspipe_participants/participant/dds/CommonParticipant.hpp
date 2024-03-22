@@ -106,6 +106,10 @@ public:
     // LISTENER METHODS
     /////////////////////////
 
+    virtual void on_participant_discovery(
+            fastdds::dds::DomainParticipant* participant,
+            fastrtps::rtps::ParticipantDiscoveryInfo&& info) override;
+
     virtual void on_subscriber_discovery(
             fastdds::dds::DomainParticipant* participant,
             fastrtps::rtps::ReaderDiscoveryInfo&& info) override;
