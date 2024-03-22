@@ -43,6 +43,24 @@ TopicsMonitorProducer* TopicsMonitorProducer::get_instance()
     return instance_.get();
 }
 
+void TopicsMonitorProducer::enable()
+{
+    std::lock_guard<std::mutex> lock(mutex_);
+
+    logInfo(DDSPIPE_MONITOR, "MONITOR | Enabling TopicsMonitorProducer.");
+
+    enabled_ = true;
+}
+
+void TopicsMonitorProducer::disable()
+{
+    std::lock_guard<std::mutex> lock(mutex_);
+
+    logInfo(DDSPIPE_MONITOR, "MONITOR | Disabling TopicsMonitorProducer.");
+
+    enabled_ = false;
+}
+
 void TopicsMonitorProducer::register_consumer(
         std::unique_ptr<IMonitorConsumer<MonitoringTopics>> consumer)
 {
@@ -111,6 +129,20 @@ void TopicsMonitorProducer::consume()
     std::lock_guard<std::mutex> lock(mutex_);
 
     consume_nts_();
+}
+
+void TopicsMonitorProducer::clear_data()
+{
+    // Take the lock to prevent clearing the data while it's being saved
+    std::lock_guard<std::mutex> lock(mutex_);
+
+    logInfo(DDSPIPE_MONITOR, "MONITOR | Clearing the data.");
+
+    topic_data_.clear();
+    participant_data_.clear();
+    types_discovered_.clear();
+
+    data_.topics().clear();
 }
 
 void TopicsMonitorProducer::msgs_received(
