@@ -43,6 +43,7 @@ EchoParticipant::EchoParticipant(
                 this->echo_discovery(endpoint_discovered);
             });
 
+        // Register in Discovery DB a callback to be notified each time an endpoint is updated
         discovery_database->add_endpoint_updated_callback(
             [this](const core::types::Endpoint& endpoint_updated)
             {
@@ -63,7 +64,13 @@ void EchoParticipant::echo_discovery(
 void EchoParticipant::echo_updated(
         core::types::Endpoint endpoint_updated) const noexcept
 {
-    if (!endpoint_updated.active)
+    if (endpoint_updated.active)
+    {
+        logUser(
+            DDSPIPE_ECHO_DISCOVERY,
+            "Endpoint updated: " << endpoint_updated << ".");
+    }
+    else
     {
         logUser(
             DDSPIPE_ECHO_DISCOVERY,
