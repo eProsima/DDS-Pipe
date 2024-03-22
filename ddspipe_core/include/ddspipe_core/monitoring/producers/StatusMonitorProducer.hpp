@@ -85,6 +85,18 @@ public:
     static StatusMonitorProducer* get_instance();
 
     /**
+     * @brief Enable the \c StatusMonitorProducer.
+     */
+    DDSPIPE_CORE_DllAPI
+    void enable() override;
+
+    /**
+     * @brief Disable the \c StatusMonitorProducer.
+     */
+    DDSPIPE_CORE_DllAPI
+    void disable() override;
+
+    /**
      * @brief Register a consumer.
      *
      * The consumer can be any class that implements the \c IMonitorConsumer interface as long as it is a template class
@@ -125,6 +137,16 @@ public:
      */
     DDSPIPE_CORE_DllAPI
     void consume() override;
+
+    ///////////////////
+    // Data methods ///
+    ///////////////////
+
+    /**
+     * @brief Clear the data gathered.
+     */
+    DDSPIPE_CORE_DllAPI
+    void clear_data() override;
 
     /**
      * @brief Add an error to the \c MonitoringStatus.

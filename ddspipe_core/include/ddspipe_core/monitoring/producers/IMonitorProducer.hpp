@@ -34,14 +34,41 @@ class IMonitorProducer
 {
 public:
 
+    /**
+     * @brief Construct the \c IMonitorProducer.
+     */
+    DDSPIPE_CORE_DllAPI
     IMonitorProducer() = default;
+
+    /**
+     * @brief Destroy the \c IMonitorProducer.
+     */
+    DDSPIPE_CORE_DllAPI
     virtual ~IMonitorProducer() = default;
+
+    /**
+     * @brief Virtual method to enable the producer.
+     */
+    DDSPIPE_CORE_DllAPI
+    virtual void enable() = 0;
+
+    /**
+     * @brief Virtual method to disable the producer.
+     */
+    DDSPIPE_CORE_DllAPI
+    virtual void disable() = 0;
 
     /**
      * @brief Virtual method to clear the consumers.
      */
     DDSPIPE_CORE_DllAPI
     virtual void clear_consumers() = 0;
+
+    /**
+     * @brief Virtual method to clear the data gathered by the producer.
+     */
+    DDSPIPE_CORE_DllAPI
+    virtual void clear_data() = 0;
 
     /**
      * @brief Virtual method to produce and consume data.

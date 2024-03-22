@@ -50,7 +50,9 @@ Monitor::~Monitor()
 
     for (auto& producer : producers_)
     {
+        producer->disable();
         producer->clear_consumers();
+        producer->clear_data();
     }
 
     producers_.clear();

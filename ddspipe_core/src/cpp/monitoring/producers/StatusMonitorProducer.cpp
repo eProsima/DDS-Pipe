@@ -30,6 +30,12 @@ void StatusMonitorProducer::init_instance(
 {
     std::lock_guard<std::mutex> lock(mutex_);
 
+    if (instance_ != nullptr)
+    {
+        logWarning(DDSPIPE_MONITOR, "MONITOR | StatusMonitorProducer instance is already initialized.");
+        return;
+    }
+
     instance_ = std::move(instance);
 }
 
@@ -43,6 +49,24 @@ StatusMonitorProducer* StatusMonitorProducer::get_instance()
     }
 
     return instance_.get();
+}
+
+void StatusMonitorProducer::enable()
+{
+    std::lock_guard<std::mutex> lock(mutex_);
+
+    logInfo(DDSPIPE_MONITOR, "MONITOR | Enabling StatusMonitorProducer.");
+
+    enabled_ = true;
+}
+
+void StatusMonitorProducer::disable()
+{
+    std::lock_guard<std::mutex> lock(mutex_);
+
+    logInfo(DDSPIPE_MONITOR, "MONITOR | Disabling StatusMonitorProducer.");
+
+    enabled_ = false;
 }
 
 void StatusMonitorProducer::register_consumer(
@@ -117,6 +141,20 @@ void StatusMonitorProducer::consume()
     std::lock_guard<std::mutex> lock(mutex_);
 
     consume_nts_();
+}
+
+void StatusMonitorProducer::clear_data()
+{
+    std::lock_guard<std::mutex> lock(mutex_);
+
+    logInfo(DDSPIPE_MONITOR, "MONITOR | Clearing StatusMonitorProducer data.");
+
+    error_status_.type_mismatch(false);
+    error_status_.qos_mismatch(false);
+    has_errors_ = false;
+
+    data_.error_status(error_status_);
+    data_.has_errors(has_errors_);
 }
 
 void StatusMonitorProducer::add_error_to_status(
