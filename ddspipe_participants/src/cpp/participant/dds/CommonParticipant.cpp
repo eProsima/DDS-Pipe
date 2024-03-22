@@ -214,6 +214,36 @@ std::shared_ptr<core::IReader> CommonParticipant::create_reader(
     }
 }
 
+void CommonParticipant::on_participant_discovery(
+        fastdds::dds::DomainParticipant* participant,
+        fastrtps::rtps::ParticipantDiscoveryInfo&& info)
+{
+    if (info.info.m_guid.guidPrefix != participant->guid().guidPrefix)
+    {
+        if (info.status == fastrtps::rtps::ParticipantDiscoveryInfo::DISCOVERED_PARTICIPANT)
+        {
+            logInfo(DDSPIPE_DISCOVERY,
+                    "Found in Participant " << configuration_->id << " new Participant " << info.info.m_guid << ".");
+        }
+        else if (info.status == fastrtps::rtps::ParticipantDiscoveryInfo::CHANGED_QOS_PARTICIPANT)
+        {
+            logInfo(DDSPIPE_DISCOVERY, "Participant " << info.info.m_guid << " changed QoS.");
+        }
+        else if (info.status == fastrtps::rtps::ParticipantDiscoveryInfo::REMOVED_PARTICIPANT)
+        {
+            logInfo(DDSPIPE_DISCOVERY, "Participant " << info.info.m_guid << " removed.");
+        }
+        else if (info.status == fastrtps::rtps::ParticipantDiscoveryInfo::DROPPED_PARTICIPANT)
+        {
+            logInfo(DDSPIPE_DISCOVERY, "Participant " << info.info.m_guid << " dropped.");
+        }
+        else if (info.status == fastrtps::rtps::ParticipantDiscoveryInfo::IGNORED_PARTICIPANT)
+        {
+            logInfo(DDSPIPE_DISCOVERY, "Participant " << info.info.m_guid << " ignored.");
+        }
+    }
+}
+
 void CommonParticipant::on_subscriber_discovery(
         fastdds::dds::DomainParticipant*,
         fastrtps::rtps::ReaderDiscoveryInfo&& info)
@@ -232,17 +262,30 @@ void CommonParticipant::on_subscriber_discovery(
     // If new endpoint discovered
     if (info.status == fastrtps::rtps::ReaderDiscoveryInfo::DISCOVERY_STATUS::DISCOVERED_READER)
     {
+        logInfo(DDSPIPE_DISCOVERY,
+                "Found in Participant " << configuration_->id << " new Reader " << info.info.guid() << ".");
+
         // TODO check logic because if an endpoint is lost by liveliness it may be inserted again when already in database
         this->discovery_database_->add_endpoint(info_reader);
     }
     else if (info.status == fastrtps::rtps::ReaderDiscoveryInfo::DISCOVERY_STATUS::CHANGED_QOS_READER)
     {
+        logInfo(DDSPIPE_DISCOVERY, "Reader " << info.info.guid() << " changed TopicQoS.");
+
         this->discovery_database_->update_endpoint(info_reader);
     }
-    else
+    else if (info.status == fastrtps::rtps::ReaderDiscoveryInfo::REMOVED_READER)
     {
+        logInfo(DDSPIPE_DISCOVERY, "Reader " << info.info.guid() << " removed.");
+
         info_reader.active = false;
         this->discovery_database_->update_endpoint(info_reader);
+    }
+    else if (info.status == fastrtps::rtps::ReaderDiscoveryInfo::IGNORED_READER)
+    {
+        logInfo(DDSPIPE_DISCOVERY, "Reader " << info.info.guid() << " ignored.");
+
+        // Do not notify discovery database (design choice that might be changed in the future)
     }
 }
 
@@ -264,12 +307,30 @@ void CommonParticipant::on_publisher_discovery(
     // If new endpoint discovered
     if (info.status == fastrtps::rtps::WriterDiscoveryInfo::DISCOVERY_STATUS::DISCOVERED_WRITER)
     {
+        logInfo(DDSPIPE_DISCOVERY,
+                "Found in Participant " << configuration_->id << " new Writer " << info.info.guid() << ".");
+
         // TODO check logic because if an endpoint is lost by liveliness it may be inserted again when already in database
         this->discovery_database_->add_endpoint(info_writer);
     }
-    else
+    else if (info.status == fastrtps::rtps::WriterDiscoveryInfo::CHANGED_QOS_WRITER)
     {
+        logInfo(DDSPIPE_DISCOVERY, "Writer " << info.info.guid() << " changed TopicQoS.");
+
         this->discovery_database_->update_endpoint(info_writer);
+    }
+    else if (info.status == fastrtps::rtps::WriterDiscoveryInfo::REMOVED_WRITER)
+    {
+        logInfo(DDSPIPE_DISCOVERY, "Writer " << info.info.guid() << " removed.");
+
+        info_writer.active = false;
+        this->discovery_database_->update_endpoint(info_writer);
+    }
+    else if (info.status == fastrtps::rtps::WriterDiscoveryInfo::IGNORED_WRITER)
+    {
+        logInfo(DDSPIPE_DISCOVERY, "Writer " << info.info.guid() << " ignored.");
+
+        // Do not notify discovery database (design choice that might be changed in the future)
     }
 }
 

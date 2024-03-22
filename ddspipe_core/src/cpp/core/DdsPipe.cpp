@@ -93,11 +93,11 @@ DdsPipe::~DdsPipe()
     // Stop Discovery Database
     discovery_database_->stop();
 
-    // Disable thread pool
-    thread_pool_->disable();
-
     // Stop all communications
     disable();
+
+    // Disable thread pool
+    thread_pool_->disable();
 
     // Destroy Bridges, so Writers and Readers are destroyed before the Databases
     bridges_.clear();

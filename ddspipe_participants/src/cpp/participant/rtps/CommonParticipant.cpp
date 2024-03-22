@@ -99,9 +99,13 @@ void CommonParticipant::onParticipantDiscovery(
         {
             logInfo(DDSPIPE_DISCOVERY, "Participant " << info.info.m_guid << " removed.");
         }
-        else
+        else if (info.status == fastrtps::rtps::ParticipantDiscoveryInfo::DROPPED_PARTICIPANT)
         {
             logInfo(DDSPIPE_DISCOVERY, "Participant " << info.info.m_guid << " dropped.");
+        }
+        else if (info.status == fastrtps::rtps::ParticipantDiscoveryInfo::IGNORED_PARTICIPANT)
+        {
+            logInfo(DDSPIPE_DISCOVERY, "Participant " << info.info.m_guid << " ignored.");
         }
     }
 }
@@ -135,12 +139,11 @@ void CommonParticipant::onReaderDiscovery(
             info_reader.active = false;
             this->discovery_database_->update_endpoint(info_reader);
         }
-        else
+        else if (info.status == fastrtps::rtps::ReaderDiscoveryInfo::IGNORED_READER)
         {
-            logInfo(DDSPIPE_DISCOVERY, "Reader " << info.info.guid() << " dropped.");
+            logInfo(DDSPIPE_DISCOVERY, "Reader " << info.info.guid() << " ignored.");
 
-            info_reader.active = false;
-            this->discovery_database_->update_endpoint(info_reader);
+            // Do not notify discovery database (design choice that might be changed in the future)
         }
     }
 }
@@ -174,12 +177,11 @@ void CommonParticipant::onWriterDiscovery(
             info_writer.active = false;
             this->discovery_database_->update_endpoint(info_writer);
         }
-        else
+        else if (info.status == fastrtps::rtps::WriterDiscoveryInfo::IGNORED_WRITER)
         {
-            logInfo(DDSPIPE_DISCOVERY, "Writer " << info.info.guid() << " dropped.");
+            logInfo(DDSPIPE_DISCOVERY, "Writer " << info.info.guid() << " ignored.");
 
-            info_writer.active = false;
-            this->discovery_database_->update_endpoint(info_writer);
+            // Do not notify discovery database (design choice that might be changed in the future)
         }
     }
 }
