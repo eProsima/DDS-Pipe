@@ -30,6 +30,12 @@ void StatusMonitorProducer::init_instance(
 {
     std::lock_guard<std::mutex> lock(mutex_);
 
+    if (instance_ != nullptr)
+    {
+        logWarning(DDSPIPE_MONITOR, "MONITOR | StatusMonitorProducer instance is already initialized.");
+        return;
+    }
+
     instance_ = std::move(instance);
 }
 
