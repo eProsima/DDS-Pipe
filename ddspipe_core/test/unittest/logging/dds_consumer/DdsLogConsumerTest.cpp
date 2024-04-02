@@ -44,6 +44,8 @@
     #include <ddspipe_core/types/logging/v2/LogEntryTypeObject.h>
 #endif // if FASTRTPS_VERSION_MAJOR < 2 || (FASTRTPS_VERSION_MAJOR == 2 && FASTRTPS_VERSION_MINOR < 13)
 
+#include "../constants.hpp"
+
 using namespace eprosima;
 using namespace eprosima::fastdds::dds;
 
@@ -55,9 +57,9 @@ public:
     {
         // Create the participant
         DomainParticipantQos pqos;
-        pqos.name("DdsLogParticipantTest");
+        pqos.name(test::logging::PARTICIPANT_ID);
 
-        participant_ = DomainParticipantFactory::get_instance()->create_participant(DOMAIN, pqos);
+        participant_ = DomainParticipantFactory::get_instance()->create_participant(test::logging::DOMAIN, pqos);
 
         ASSERT_NE(participant_, nullptr);
 
@@ -72,22 +74,12 @@ public:
         ASSERT_NE(subscriber, nullptr);
 
         // Create the topic
-        TopicQos tqos = TOPIC_QOS_DEFAULT;
-        tqos.reliability().kind = BEST_EFFORT_RELIABILITY_QOS;
-        tqos.durability().kind = VOLATILE_DURABILITY_QOS;
-
-        Topic* topic = participant_->create_topic(TOPIC_NAME, type.get_type_name(), tqos);
+        Topic* topic = participant_->create_topic(test::logging::TOPIC_NAME, type.get_type_name(), TOPIC_QOS_DEFAULT);
 
         ASSERT_NE(topic, nullptr);
 
         // Create the reader
-        DataReaderQos rqos = DATAREADER_QOS_DEFAULT;
-
-        rqos.data_sharing().automatic();
-        rqos.reliability().kind = BEST_EFFORT_RELIABILITY_QOS;
-        rqos.durability().kind = VOLATILE_DURABILITY_QOS;
-
-        reader_ = subscriber->create_datareader(topic, rqos);
+        reader_ = subscriber->create_datareader(topic, DATAREADER_QOS_DEFAULT);
 
         ASSERT_NE(reader_, nullptr);
     }
@@ -102,9 +94,6 @@ public:
     }
 
 protected:
-
-    const ddspipe::core::types::DomainIdType DOMAIN{84};
-    const std::string TOPIC_NAME{"DdsLogsTopic"};
 
     DomainParticipant* participant_ = nullptr;
     DataReader* reader_ = nullptr;
@@ -123,8 +112,8 @@ TEST_F(DdsLogConsumerTest, publish_logs)
     // Configure the Log
     ddspipe::core::DdsPipeLogConfiguration log_configuration;
     log_configuration.publish.enable = true;
-    log_configuration.publish.domain = DOMAIN;
-    log_configuration.publish.topic_name = TOPIC_NAME;
+    log_configuration.publish.domain = test::logging::DOMAIN;
+    log_configuration.publish.topic_name = test::logging::TOPIC_NAME;
 
     // Filter out every log except ours
     log_configuration.verbosity = utils::VerbosityKind::Info;
@@ -153,7 +142,7 @@ TEST_F(DdsLogConsumerTest, publish_logs)
         utils::Log::Flush();
 
         // Wait for the subscriber to receive the message
-        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        ASSERT_TRUE(reader_->wait_for_unread_message(test::logging::MAX_WAITING_TIME));
 
         // Verify that the content of the LogEntry published by the Log is correct
         ASSERT_EQ(reader_->take_next_sample(&entry, &info), ReturnCode_t::RETCODE_OK);
@@ -171,7 +160,7 @@ TEST_F(DdsLogConsumerTest, publish_logs)
         utils::Log::Flush();
 
         // Wait for the subscriber to receive the message
-        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        ASSERT_TRUE(reader_->wait_for_unread_message(test::logging::MAX_WAITING_TIME));
 
         // Verify that the content of the LogEntry published by the Log is correct
         ASSERT_EQ(reader_->take_next_sample(&entry, &info), ReturnCode_t::RETCODE_OK);
@@ -189,7 +178,7 @@ TEST_F(DdsLogConsumerTest, publish_logs)
         utils::Log::Flush();
 
         // Wait for the subscriber to receive the message
-        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        ASSERT_TRUE(reader_->wait_for_unread_message(test::logging::MAX_WAITING_TIME));
 
         // Verify that the content of the LogEntry published by the Log is correct
         ASSERT_EQ(reader_->take_next_sample(&entry, &info), ReturnCode_t::RETCODE_OK);
@@ -217,8 +206,8 @@ TEST_F(DdsLogConsumerTest, dont_publish_logs)
     // Configure the Log
     ddspipe::core::DdsPipeLogConfiguration log_configuration;
     log_configuration.publish.enable = false;
-    log_configuration.publish.domain = DOMAIN;
-    log_configuration.publish.topic_name = TOPIC_NAME;
+    log_configuration.publish.domain = test::logging::DOMAIN;
+    log_configuration.publish.topic_name = test::logging::TOPIC_NAME;
 
     // Filter out every log except ours
     log_configuration.verbosity = utils::VerbosityKind::Info;
@@ -247,7 +236,7 @@ TEST_F(DdsLogConsumerTest, dont_publish_logs)
         utils::Log::Flush();
 
         // Wait for the subscriber to receive the message
-        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        ASSERT_FALSE(reader_->wait_for_unread_message(test::logging::MAX_WAITING_TIME));
 
         // Verify that the content of the LogEntry published by the Log is correct
         ASSERT_EQ(reader_->take_next_sample(&entry, &info), ReturnCode_t::RETCODE_NO_DATA);
@@ -259,7 +248,7 @@ TEST_F(DdsLogConsumerTest, dont_publish_logs)
         utils::Log::Flush();
 
         // Wait for the subscriber to receive the message
-        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        ASSERT_FALSE(reader_->wait_for_unread_message(test::logging::MAX_WAITING_TIME));
 
         // Verify that the content of the LogEntry published by the Log is correct
         ASSERT_EQ(reader_->take_next_sample(&entry, &info), ReturnCode_t::RETCODE_NO_DATA);
@@ -271,7 +260,7 @@ TEST_F(DdsLogConsumerTest, dont_publish_logs)
         utils::Log::Flush();
 
         // Wait for the subscriber to receive the message
-        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        ASSERT_FALSE(reader_->wait_for_unread_message(test::logging::MAX_WAITING_TIME));
 
         // Verify that the content of the LogEntry published by the Log is correct
         ASSERT_EQ(reader_->take_next_sample(&entry, &info), ReturnCode_t::RETCODE_NO_DATA);
