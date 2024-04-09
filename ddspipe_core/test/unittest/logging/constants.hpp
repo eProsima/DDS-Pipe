@@ -27,31 +27,20 @@
 #include <ddspipe_core/types/participant/ParticipantId.hpp>
 
 namespace test {
-namespace monitor {
+namespace logging {
 
 using namespace eprosima;
 using namespace eprosima::ddspipe::core::types;
 
-// Period at which the Monitor should log data.
-constexpr std::uint32_t PERIOD_MS = 500;
-constexpr double PERIOD_SECS = (double) PERIOD_MS / 1000;
-
 // Maximum time to wait for a sample to arrive.
-const auto MAX_WAITING_TIME = fastrtps::Duration_t(PERIOD_SECS * 3);
+const auto MAX_WAITING_TIME = fastrtps::Duration_t(1);
 
 // The domain and topic the Monitor should publish its data in.
 constexpr DomainIdType DOMAIN = 84;
-const std::string TOPIC_NAME = "DdsMonitoringTopicsTestTopic";
+const std::string TOPIC_NAME = "DdsLoggingTestTopic";
 
 // The id of participant subscribed to the Monitor's topic.
-const ParticipantId PARTICIPANT_ID = "MonitorTopicsTestParticipant";
+const ParticipantId PARTICIPANT_ID = "LoggingTestParticipant";
 
-// The fake topic the test will use to call the macros.
-const std::string MOCK_TOPIC_NAME = "MonitoredTopic";
-const std::string MOCK_TYPE_NAME = "MonitoredTopicType";
-
-// The fake participant the test will use to call the macros.
-const ParticipantId MOCK_PARTICIPANT_ID = "MonitoredParticipant";
-
-} // namespace monitor
+} // namespace logging
 } // namespace test
