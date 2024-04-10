@@ -88,13 +88,33 @@ public:
     DDSPIPE_CORE_DllAPI
     void disable() noexcept override;
 
-    // TODO
+    /**
+     * Create a new endpoint in the bridge.
+     *
+     * It will call either \c create_writer_and_its_tracks_nts_ or \c create_reader_and_its_track_nts_ depending on the
+     * \c discovered_endpoint_kind.
+     *
+     * @param participant_id: The id of the participant who is creating the endpoint.
+     * @param discovered_endpoint_kind: The kind of endpoint that has been discovered.
+     *
+     * Thread safe.
+     */
     DDSPIPE_CORE_DllAPI
     void create_endpoint(
             const types::ParticipantId& participant_id,
             const types::EndpointKind& discovered_endpoint_kind);
 
-    // TODO
+    /**
+     * Remove an endpoint from the bridge.
+     *
+     * It will call either \c remove_writer_and_its_tracks_nts_ or \c remove_reader_and_its_track_nts_ depending on the
+     * \c removed_endpoint_kind.
+     *
+     * @param participant_id: The id of the participant who is removing the endpoint.
+     * @param removed_endpoint_kind: The kind of endpoint that has been removed.
+     *
+     * Thread safe.
+     */
     DDSPIPE_CORE_DllAPI
     void remove_endpoint(
             const types::ParticipantId& participant_id,
@@ -105,7 +125,7 @@ protected:
     /**
      * Create an IWriter for the new participant.
      * Create the IReaders in the IWriter's route.
-     * Create the Tracks of the IReaderes with the IWriter.
+     * Create the Tracks of the IReaders with the IWriter.
      *
      * @param participant_id: The id of the participant who is creating the writer.
      *
@@ -127,8 +147,8 @@ protected:
             const types::ParticipantId& participant_id);
 
     /**
-     * Remove the IWriter from all the Tracks in the bridge.
-     * Remove the IReaders and Tracks that don't have any IWriters.
+     * Remove the IWriter from all the Tracks.
+     * Remove the IReaders and Tracks without IWriters.
      *
      * @param participant_id: The id of the participant who is removing the writer.
      */
@@ -136,35 +156,45 @@ protected:
             const types::ParticipantId& participant_id) noexcept;
 
     /**
-     * Remove the IReader and its Track from the bridge.
-     * Remove the IWriters that don't belong to a Track.
+     * Remove the IReader and its Track.
+     * Remove the IWriters that no longer belong to a Track.
      *
      * @param participant_id: The id of the participant who is removing the reader.
      */
     void remove_reader_and_its_track_nts_(
             const types::ParticipantId& participant_id) noexcept;
 
-    // TODO
+    /**
+     * @brief Create a Track for an IReader and its IWriters.
+     *
+     * @param id: The id of the participant who is creating the track.
+     * @param reader: The IReader of the track.
+     * @param writers: The IWriters of the track.
+     */
     void create_track_nts_(
             const types::ParticipantId& id,
             const std::shared_ptr<IReader>& reader,
             std::map<types::ParticipantId, std::shared_ptr<IWriter>>& writers);
 
-    // TODO
+    /**
+     * @brief Create an IWriter for a participant in the topic.
+     *
+     * A tailored Topic is created for the participant, depending on the QoS configured for it.
+     *
+     * @param participant_id: The id of the participant who is creating the writer.
+     */
     std::shared_ptr<core::IWriter> create_writer_nts_(
             const types::ParticipantId& participant_id);
 
-    // TODO
+    /**
+     * @brief Create an IReader for a participant in the topic.
+     *
+     * A tailored Topic is created for the participant, depending on the QoS configured for it.
+     *
+     * @param participant_id: The id of the participant who is creating the reader.
+     */
     std::shared_ptr<core::IReader> create_reader_nts_(
             const types::ParticipantId& participant_id);
-
-    // TODO
-    std::set<types::ParticipantId> readers_in_writers_route_nts_(
-            const types::ParticipantId& writer_id);
-
-    // TODO
-    std::set<types::ParticipantId> writers_in_readers_route_nts_(
-            const types::ParticipantId& reader_id);
 
     /**
      * @brief Impose the Topic QoS that have been pre-configured for a participant.
@@ -182,8 +212,8 @@ protected:
     utils::Heritable<types::DistributedTopic> topic_;
 
     //! Routes associated to the Topic.
-    RoutesConfiguration::RoutesMap routes_of_readers_;
-    RoutesConfiguration::RoutesMap routes_of_writers_;
+    RoutesConfiguration::RoutesMap writers_in_route_;
+    RoutesConfiguration::RoutesMap readers_in_route_;
 
     //! Topics that explicitally set a QoS attribute for this participant.
     std::vector<types::ManualTopic> manual_topics_;

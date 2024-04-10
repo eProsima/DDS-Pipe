@@ -160,7 +160,7 @@ RoutesConfiguration::RoutesMap RoutesConfiguration::routes_of_writers(
 
         if (routes_it != routes.end())
         {
-            // The reader has a route. Add only the writers in the route.
+            // The reader has a route. Add the reader to the route of the writers in its route.
             for (const auto& writer_id : routes_it->second)
             {
                 writers_routes[writer_id].insert(reader_id);
@@ -168,7 +168,7 @@ RoutesConfiguration::RoutesMap RoutesConfiguration::routes_of_writers(
         }
         else
         {
-            // The reader doesn't have a route. Add every writer (+ itself if repeater).
+            // The reader doesn't have a route. Add the reader to the route of every writer (+ itself if repeater).
             for (const auto& it : participant_ids)
             {
                 const auto& writer_id = it.first;
