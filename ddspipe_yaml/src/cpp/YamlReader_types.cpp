@@ -375,14 +375,9 @@ bool YamlValidator::validate<DiscoveryServerConnectionAddress>(
     std::set<TagType> tags{
         COLLECTION_ADDRESSES_TAG};
 
-    switch (version)
+    if (version != V_1_0)
     {
-        case V_1_0:
-            break;
-
-        default:
-            tags.insert(DISCOVERY_SERVER_GUID_PREFIX_TAG);
-            break;
+        tags.insert(DISCOVERY_SERVER_GUID_PREFIX_TAG);
     }
 
     return YamlValidator::validate_tags(yml, tags);
@@ -431,10 +426,27 @@ void YamlReader::fill(
 
 template <>
 DDSPIPE_YAML_DllAPI
+bool YamlValidator::validate<core::DdsPublishingConfiguration>(
+        const Yaml& yml,
+        const YamlReaderVersion& /* version */)
+{
+    const std::set<TagType> tags{
+        DDS_PUBLISHING_ENABLE_TAG,
+        DDS_PUBLISHING_DOMAIN_TAG,
+        DDS_PUBLISHING_TOPIC_NAME_TAG,
+        DDS_PUBLISHING_PUBLISH_TYPE_TAG};
+
+    return YamlValidator::validate_tags(yml, tags);
+}
+
+template <>
+DDSPIPE_YAML_DllAPI
 core::DdsPublishingConfiguration YamlReader::get(
         const Yaml& yml,
         const YamlReaderVersion version)
 {
+    YamlValidator::validate<core::DdsPublishingConfiguration>(yml, version);
+
     core::DdsPublishingConfiguration object;
     fill<core::DdsPublishingConfiguration>(object, yml, version);
     return object;
@@ -482,8 +494,7 @@ void YamlReader::fill(
     {
         if (get<bool>(yml, QOS_OWNERSHIP_TAG, version))
         {
-            object.ownership_qos.set_value(
-                ddspipe::core::types::OwnershipQosPolicyKind::EXCLUSIVE_OWNERSHIP_QOS);
+            object.ownership_qos.set_value(ddspipe::core::types::OwnershipQosPolicyKind::EXCLUSIVE_OWNERSHIP_QOS);
         }
         else
         {
@@ -590,6 +601,20 @@ void YamlReader::fill<utils::LogFilter>(
 
 template <>
 DDSPIPE_YAML_DllAPI
+bool YamlValidator::validate<utils::LogFilter>(
+        const Yaml& yml,
+        const YamlReaderVersion& /* version */)
+{
+    const std::set<TagType> tags{
+        LOG_FILTER_ERROR_TAG,
+        LOG_FILTER_WARNING_TAG,
+        LOG_FILTER_INFO_TAG};
+
+    return YamlValidator::validate_tags(yml, tags);
+}
+
+template <>
+DDSPIPE_YAML_DllAPI
 utils::LogFilter YamlReader::get(
         const Yaml& yml,
         const YamlReaderVersion version)
@@ -636,6 +661,21 @@ void YamlReader::fill(
     {
         fill<utils::LogFilter>(object.filter, get_value_in_tag(yml, LOG_FILTER_TAG), version);
     }
+}
+
+template <>
+DDSPIPE_YAML_DllAPI
+bool YamlValidator::validate<core::DdsPipeLogConfiguration>(
+        const Yaml& yml,
+        const YamlReaderVersion& /* version */)
+{
+    const std::set<TagType> tags{
+        LOG_PUBLISH_TAG,
+        LOG_STDOUT_TAG,
+        LOG_VERBOSITY_TAG,
+        LOG_FILTER_TAG};
+
+    return YamlValidator::validate_tags(yml, tags);
 }
 
 template <>
