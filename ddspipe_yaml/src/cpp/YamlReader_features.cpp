@@ -233,9 +233,9 @@ core::TopicRoutesConfiguration YamlReader::get(
     return object;
 }
 
-/*************************
- * Monitor Configuration  *
- **************************/
+/**************************
+* Monitor Configuration  *
+**************************/
 
 template <>
 DDSPIPE_YAML_DllAPI
@@ -279,6 +279,20 @@ void YamlReader::fill(
 
 template <>
 DDSPIPE_YAML_DllAPI
+bool YamlValidator::validate<core::MonitorConfiguration>(
+        const Yaml& yml,
+        const YamlReaderVersion& /* version */)
+{
+    const std::set<TagType> tags{
+        MONITOR_DOMAIN_TAG,
+        MONITOR_STATUS_TAG,
+        MONITOR_TOPICS_TAG};
+
+    return YamlValidator::validate_tags(yml, tags);
+}
+
+template <>
+DDSPIPE_YAML_DllAPI
 core::MonitorConfiguration YamlReader::get(
         const Yaml& yml,
         const YamlReaderVersion version)
@@ -306,6 +320,19 @@ void YamlReader::fill(
     {
         object.period = get_positive_double(yml, MONITOR_PERIOD_TAG);
     }
+}
+
+template <>
+DDSPIPE_YAML_DllAPI
+bool YamlValidator::validate<core::MonitorProducerConfiguration>(
+        const Yaml& yml,
+        const YamlReaderVersion& /* version */)
+{
+    const std::set<TagType> tags{
+        MONITOR_ENABLE_TAG,
+        MONITOR_PERIOD_TAG};
+
+    return YamlValidator::validate_tags(yml, tags);
 }
 
 template <>

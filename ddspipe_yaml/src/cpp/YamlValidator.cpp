@@ -34,7 +34,7 @@ bool YamlValidator::validate_tags(
                   utils::Formatter() << "The yml: <" << yml << "> is not a yaml object map.");
     }
 
-    // Check if there are any extra tags that are not in either list
+    // Check if there are any extra tags that are not in the list
     bool has_extra_tags = false;
 
     for (const auto& tag_it : yml)
