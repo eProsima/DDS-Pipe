@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#include <thread>
+
 #include <cpp_utils/testing/gtest_aux.hpp>
 #include <gtest/gtest.h>
 
@@ -60,6 +62,24 @@ public:
     }
 
 };
+
+void get_release(
+        FastPayloadPool& pool,
+        Payload& src_payload)
+{
+    eprosima::fastrtps::rtps::IPayloadPool* payload_owner =
+            static_cast<eprosima::fastrtps::rtps::IPayloadPool*>(&pool);
+    Payload dst_payload;
+    ASSERT_TRUE(pool.get_payload(src_payload, payload_owner, dst_payload));
+    ASSERT_TRUE(pool.release_payload(dst_payload));
+}
+
+void release(
+        FastPayloadPool& pool,
+        Payload& payload)
+{
+    ASSERT_TRUE(pool.release_payload(payload));
+}
 
 } /* namespace test */
 } /* namespace core */
@@ -318,6 +338,66 @@ TEST(FastPayloadPoolTest, release_payload_negative)
     pool_aux.get_payload(DEFAULT_SIZE, payload);
 
     ASSERT_THROW(pool.release_payload(payload), eprosima::utils::InconsistencyException);
+}
+
+/**
+ * Check that concurrent get and release payload operations are thread safe (verified when executed with TSAN).
+ *
+ * @note This test is actually not supposed to pass with the current implementation of \c FastPayloadPool , it is the
+ * user's responsability to provide thread safety for this particular case.
+ */
+/* TEST(FastPayloadPoolTest, concurrent_get_release)
+   {
+    // Repeat the test several times, as the detection of a data race is not deterministic
+    const unsigned int NUM_ITERATIONS = 50;
+
+    int i = 0;
+    while (i < NUM_ITERATIONS)
+    {
+        FastPayloadPool pool;
+        Payload payload;
+
+        ASSERT_TRUE(pool.get_payload(DEFAULT_SIZE, payload));
+
+        std::thread t1(test::get_release, std::ref(pool), std::ref(payload));
+
+        ASSERT_TRUE(pool.release_payload(payload));
+
+        t1.join();
+
+        i++;
+    }
+   } */
+
+/**
+ * Check that concurrent release payload operations are thread safe (verified when executed with TSAN).
+ */
+TEST(FastPayloadPoolTest, concurrent_release)
+{
+    // Repeat the test several times, as the detection of a data race is not deterministic
+    const unsigned int NUM_ITERATIONS = 50;
+
+    int i = 0;
+    while (i < NUM_ITERATIONS)
+    {
+        FastPayloadPool pool;
+        Payload payload;
+
+        ASSERT_TRUE(pool.get_payload(DEFAULT_SIZE, payload));
+
+        eprosima::fastrtps::rtps::IPayloadPool* payload_owner =
+                static_cast<eprosima::fastrtps::rtps::IPayloadPool*>(&pool);
+        Payload dst_payload;
+        ASSERT_TRUE(pool.get_payload(payload, payload_owner, dst_payload));
+
+        std::thread t1(test::release, std::ref(pool), std::ref(dst_payload));
+
+        ASSERT_TRUE(pool.release_payload(payload));
+
+        t1.join();
+
+        i++;
+    }
 }
 
 int main(
