@@ -22,17 +22,10 @@
 #include <ddspipe_core/monitoring/producers/StatusMonitorProducer.hpp>
 #include <ddspipe_core/monitoring/producers/TopicsMonitorProducer.hpp>
 
-#if FASTRTPS_VERSION_MAJOR < 2 || (FASTRTPS_VERSION_MAJOR == 2 && FASTRTPS_VERSION_MINOR < 13)
-    #include <ddspipe_core/types/monitoring/status/v1/MonitoringStatus.h>
-    #include <ddspipe_core/types/monitoring/status/v1/MonitoringStatusPubSubTypes.h>
-    #include <ddspipe_core/types/monitoring/topics/v1/MonitoringTopics.h>
-    #include <ddspipe_core/types/monitoring/topics/v1/MonitoringTopicsPubSubTypes.h>
-#else
-    #include <ddspipe_core/types/monitoring/status/v2/MonitoringStatus.h>
-    #include <ddspipe_core/types/monitoring/status/v2/MonitoringStatusPubSubTypes.h>
-    #include <ddspipe_core/types/monitoring/topics/v2/MonitoringTopics.h>
-    #include <ddspipe_core/types/monitoring/topics/v2/MonitoringTopicsPubSubTypes.h>
-#endif // if FASTRTPS_VERSION_MAJOR < 2 || (FASTRTPS_VERSION_MAJOR == 2 && FASTRTPS_VERSION_MINOR < 13)
+#include <ddspipe_core/types/monitoring/status/MonitoringStatus.hpp>
+#include <ddspipe_core/types/monitoring/status/MonitoringStatusPubSubTypes.h>
+#include <ddspipe_core/types/monitoring/topics/MonitoringTopics.hpp>
+#include <ddspipe_core/types/monitoring/topics/MonitoringTopicsPubSubTypes.h>
 
 namespace eprosima {
 namespace ddspipe {

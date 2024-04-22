@@ -23,12 +23,13 @@
 #include <fastdds/dds/domain/DomainParticipantFactory.hpp>
 #include <fastrtps/rtps/participant/RTPSParticipant.h>
 #include <fastrtps/rtps/RTPSDomain.h>
-#include <fastrtps/types/DynamicType.h>
-#include <fastrtps/types/DynamicTypePtr.h>
-#include <fastrtps/types/TypeObjectFactory.h>
+#include <fastdds/dds/xtypes/dynamic_types/DynamicType.hpp>
+// #include <fastrtps/types/TypeObjectFactory.h>
 #include <fastdds/rtps/transport/UDPv4TransportDescriptor.h>
 #include <fastdds/rtps/transport/shared_mem/SharedMemTransportDescriptor.h>
 #include <fastdds/rtps/attributes/RTPSParticipantAttributes.h>
+#include <fastdds/dds/xtypes/dynamic_types/DynamicTypeBuilder.hpp>
+#include <fastdds/dds/xtypes/dynamic_types/DynamicTypeBuilderFactory.hpp>
 #include <ddspipe_core/types/dynamic_types/types.hpp>
 
 #include <ddspipe_core/monitoring/producers/TopicsMonitorProducer.hpp>
@@ -45,7 +46,7 @@ namespace participants {
 
 using namespace eprosima::ddspipe::core;
 using namespace eprosima::ddspipe::core::types;
-using namespace eprosima::fastrtps::types;
+using namespace eprosima::fastdds::dds::xtypes;
 
 DynTypesParticipant::DynTypesParticipant(
         std::shared_ptr<SimpleParticipantConfiguration> participant_configuration,
@@ -94,85 +95,62 @@ std::shared_ptr<IReader> DynTypesParticipant::create_reader(
     return rtps::SimpleParticipant::create_reader(topic);
 }
 
-void DynTypesParticipant::on_type_discovery(
-        eprosima::fastdds::dds::DomainParticipant* /* participant */,
-        const fastrtps::rtps::SampleIdentity& /* request_sample_id */,
-        const fastrtps::string_255& /* topic */,
-        const fastrtps::types::TypeIdentifier* identifier,
-        const fastrtps::types::TypeObject* object,
-        fastrtps::types::DynamicType_ptr dyn_type)
+void DynTypesParticipant::on_data_reader_discovery(
+            fastdds::dds::DomainParticipant* participant,
+            fastrtps::rtps::ReaderDiscoveryInfo&& info,
+            bool&)
 {
-    if (nullptr != dyn_type)
+    // Get type information
+    const auto type_info = info.info.type_information().type_information;
+    on_type_discovery_(participant, type_info);
+}
+
+void DynTypesParticipant::on_data_writer_discovery(
+            fastdds::dds::DomainParticipant* participant,
+            fastrtps::rtps::WriterDiscoveryInfo&& info,
+            bool&)
+{
+    // Get type information
+    const auto type_info = info.info.type_information().type_information;
+    on_type_discovery_(participant, type_info);
+}
+
+void DynTypesParticipant::on_type_discovery_(
+            fastdds::dds::DomainParticipant* participant,
+            const fastdds::dds::xtypes::TypeInformation& type_info)
+{
+    // Get type information
+    fastdds::dds::xtypes::TypeObject dyn_type_object;
+    if (fastdds::dds::RETCODE_OK != fastdds::dds::DomainParticipantFactory::get_instance()->type_object_registry().get_type_object(
+            type_info.complete().typeid_with_size().type_id(),
+            dyn_type_object))
     {
-        // Register type obj in singleton factory
-        TypeObjectFactory::get_instance()->add_type_object(
-            dyn_type->get_name(), identifier, object);
+        // Error
+        return;
+    }
+
+    // Register discovered type
+    fastdds::dds::DynamicType::_ref_type dyn_type = fastdds::dds::DynamicTypeBuilderFactory::get_instance()->create_type_w_type_object(
+            dyn_type_object)->build();
+
+    // Request type object through TypeLookup if not present in factory, or if type building failed
+    if (!dyn_type)
+    {
+        //TODO: Return logWarning
+    }
+    else
+    {
         internal_notify_type_object_(dyn_type);
     }
 }
 
-void DynTypesParticipant::on_type_information_received(
-        eprosima::fastdds::dds::DomainParticipant* participant,
-        const fastrtps::string_255 /* topic_name */,
-        const fastrtps::string_255 type_name,
-        const fastrtps::types::TypeInformation& type_information)
-{
-    std::string type_name_ = type_name.to_string();
-    const TypeIdentifier* type_identifier = nullptr;
-    const TypeObject* type_object = nullptr;
-    DynamicType_ptr dynamic_type(nullptr);
-
-    // Check if complete identifier already present in factory
-    type_identifier = TypeObjectFactory::get_instance()->get_type_identifier(type_name_, true);
-    if (type_identifier)
-    {
-        type_object = TypeObjectFactory::get_instance()->get_type_object(type_name_, true);
-    }
-
-    // If complete not found, try with minimal
-    if (!type_object)
-    {
-        type_identifier = TypeObjectFactory::get_instance()->get_type_identifier(type_name_, false);
-        if (type_identifier)
-        {
-            type_object = TypeObjectFactory::get_instance()->get_type_object(type_name_, false);
-        }
-    }
-
-    // Build dynamic type if type identifier and object found in factory
-    if (type_identifier && type_object)
-    {
-        dynamic_type = TypeObjectFactory::get_instance()->build_dynamic_type(type_name_, type_identifier, type_object);
-    }
-
-    // Request type object through TypeLookup if not present in factory, or if type building failed
-    if (!dynamic_type)
-    {
-        std::function<void(const std::string&, const DynamicType_ptr)> callback(
-            [this]
-                (const std::string& /* type_name */, const DynamicType_ptr type)
-            {
-                this->internal_notify_type_object_(type);
-            });
-        // Registering type and creating reader
-        participant->register_remote_type(
-            type_information,
-            type_name_,
-            callback);
-    }
-    else
-    {
-        internal_notify_type_object_(dynamic_type);
-    }
-}
-
 void DynTypesParticipant::internal_notify_type_object_(
-        DynamicType_ptr dynamic_type)
+        fastdds::dds::DynamicType::_ref_type dynamic_type)
 {
     logInfo(DDSPIPE_DYNTYPES_PARTICIPANT,
             "Participant " << this->id() << " discovered type object " << dynamic_type->get_name());
 
-    monitor_type_discovered(dynamic_type->get_name());
+    monitor_type_discovered((dynamic_type->get_name()).to_string());
 
     // Create data containing Dynamic Type
     auto data = std::make_unique<DynamicTypeData>();
@@ -200,10 +178,6 @@ void DynTypesParticipant::initialize_internal_dds_participant_()
         "fastdds.application.metadata",
         configuration->app_metadata,
         "true");
-
-    // Set Type LookUp to ON
-    pqos.wire_protocol().builtin.typelookup_config.use_server = false;
-    pqos.wire_protocol().builtin.typelookup_config.use_client = true;
 
     // Configure Participant transports
     if (configuration->transport == core::types::TransportDescriptors::builtin)
