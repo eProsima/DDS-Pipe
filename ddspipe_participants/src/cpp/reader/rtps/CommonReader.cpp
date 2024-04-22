@@ -161,7 +161,7 @@ utils::ReturnCode CommonReader::take_nts_(
     // Check if there is data available
     if (!(rtps_reader_->get_unread_count() > 0))
     {
-        return utils::ReturnCode::RETCODE_NO_DATA;
+        return utils::ReturnCode::NO_DATA;
     }
 
     fastrtps::rtps::CacheChange_t* received_change = nullptr;
@@ -171,12 +171,12 @@ utils::ReturnCode CommonReader::take_nts_(
     if (!rtps_reader_->nextUntakenCache(&received_change, &wp))
     {
         // Error reading.
-        return utils::ReturnCode::RETCODE_ERROR;
+        return utils::ReturnCode::ERROR;
     }
 
     // If data received is not correct, discard it and remove it from history
     auto ret = is_data_correct_(received_change);
-    if (!ret)
+    if (ret != utils::ReturnCode::OK)
     {
         // Remove the change in the History and release it in the reader
         rtps_reader_->getHistory()->remove_change(received_change);
@@ -191,7 +191,7 @@ utils::ReturnCode CommonReader::take_nts_(
     // Remove the change in the History and release it in the reader
     rtps_reader_->getHistory()->remove_change(received_change);
 
-    return utils::ReturnCode::RETCODE_OK;
+    return utils::ReturnCode::OK;
 }
 
 RtpsPayloadData* CommonReader::create_data_(
@@ -517,7 +517,7 @@ utils::ReturnCode CommonReader::is_data_correct_(
         logWarning(DDSPIPE_RTPS_COMMONREADER_LISTENER,
                 "Error taking data without correct writer GUID.");
 
-        return utils::ReturnCode::RETCODE_ERROR;
+        return utils::ReturnCode::ERROR;
     }
 
     // Check that the data is consistent
@@ -529,11 +529,11 @@ utils::ReturnCode CommonReader::is_data_correct_(
             logWarning(DDSPIPE_RTPS_COMMONREADER_LISTENER,
                     "Error taking data with length " << received_change->serializedPayload.length << ".");
 
-            return utils::ReturnCode::RETCODE_ERROR;
+            return utils::ReturnCode::ERROR;
         }
     }
 
-    return utils::ReturnCode::RETCODE_OK;
+    return utils::ReturnCode::OK;
 }
 
 } /* namespace rtps */

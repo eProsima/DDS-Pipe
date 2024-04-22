@@ -34,15 +34,9 @@
 #include <ddspipe_core/logging/DdsLogConsumer.hpp>
 #include <ddspipe_core/types/dds/DomainId.hpp>
 
-#if FASTRTPS_VERSION_MAJOR < 2 || (FASTRTPS_VERSION_MAJOR == 2 && FASTRTPS_VERSION_MINOR < 13)
-    #include <ddspipe_core/types/logging/v1/LogEntry.h>
-    #include <ddspipe_core/types/logging/v1/LogEntryPubSubTypes.h>
-    #include <ddspipe_core/types/logging/v1/LogEntryTypeObject.h>
-#else
-    #include <ddspipe_core/types/logging/v2/LogEntry.h>
-    #include <ddspipe_core/types/logging/v2/LogEntryPubSubTypes.h>
-    #include <ddspipe_core/types/logging/v2/LogEntryTypeObject.h>
-#endif // if FASTRTPS_VERSION_MAJOR < 2 || (FASTRTPS_VERSION_MAJOR == 2 && FASTRTPS_VERSION_MINOR < 13)
+#include <ddspipe_core/types/logging/LogEntry.hpp>
+#include <ddspipe_core/types/logging/LogEntryPubSubTypes.h>
+#include <ddspipe_core/types/logging/LogEntryTypeObjectSupport.hpp>
 
 #include "../constants.hpp"
 
@@ -145,7 +139,7 @@ TEST_F(DdsLogConsumerTest, publish_logs)
         ASSERT_TRUE(reader_->wait_for_unread_message(test::logging::MAX_WAITING_TIME));
 
         // Verify that the content of the LogEntry published by the Log is correct
-        ASSERT_EQ(reader_->take_next_sample(&entry, &info), ReturnCode_t::RETCODE_OK);
+        ASSERT_EQ(reader_->take_next_sample(&entry, &info), RETCODE_OK);
         ASSERT_EQ(info.instance_state, ALIVE_INSTANCE_STATE);
 
         ASSERT_EQ(entry.event(), UNDEFINED);
@@ -163,7 +157,7 @@ TEST_F(DdsLogConsumerTest, publish_logs)
         ASSERT_TRUE(reader_->wait_for_unread_message(test::logging::MAX_WAITING_TIME));
 
         // Verify that the content of the LogEntry published by the Log is correct
-        ASSERT_EQ(reader_->take_next_sample(&entry, &info), ReturnCode_t::RETCODE_OK);
+        ASSERT_EQ(reader_->take_next_sample(&entry, &info), RETCODE_OK);
         ASSERT_EQ(info.instance_state, ALIVE_INSTANCE_STATE);
 
         ASSERT_EQ(entry.event(), UNDEFINED);
@@ -181,7 +175,7 @@ TEST_F(DdsLogConsumerTest, publish_logs)
         ASSERT_TRUE(reader_->wait_for_unread_message(test::logging::MAX_WAITING_TIME));
 
         // Verify that the content of the LogEntry published by the Log is correct
-        ASSERT_EQ(reader_->take_next_sample(&entry, &info), ReturnCode_t::RETCODE_OK);
+        ASSERT_EQ(reader_->take_next_sample(&entry, &info), RETCODE_OK);
         ASSERT_EQ(info.instance_state, ALIVE_INSTANCE_STATE);
 
         ASSERT_EQ(entry.event(), UNDEFINED);
@@ -239,7 +233,7 @@ TEST_F(DdsLogConsumerTest, dont_publish_logs)
         ASSERT_FALSE(reader_->wait_for_unread_message(test::logging::MAX_WAITING_TIME));
 
         // Verify that the content of the LogEntry published by the Log is correct
-        ASSERT_EQ(reader_->take_next_sample(&entry, &info), ReturnCode_t::RETCODE_NO_DATA);
+        ASSERT_EQ(reader_->take_next_sample(&entry, &info), RETCODE_NO_DATA);
     }
 
     // WARNING
@@ -251,7 +245,7 @@ TEST_F(DdsLogConsumerTest, dont_publish_logs)
         ASSERT_FALSE(reader_->wait_for_unread_message(test::logging::MAX_WAITING_TIME));
 
         // Verify that the content of the LogEntry published by the Log is correct
-        ASSERT_EQ(reader_->take_next_sample(&entry, &info), ReturnCode_t::RETCODE_NO_DATA);
+        ASSERT_EQ(reader_->take_next_sample(&entry, &info), RETCODE_NO_DATA);
     }
 
     // ERROR
@@ -263,7 +257,7 @@ TEST_F(DdsLogConsumerTest, dont_publish_logs)
         ASSERT_FALSE(reader_->wait_for_unread_message(test::logging::MAX_WAITING_TIME));
 
         // Verify that the content of the LogEntry published by the Log is correct
-        ASSERT_EQ(reader_->take_next_sample(&entry, &info), ReturnCode_t::RETCODE_NO_DATA);
+        ASSERT_EQ(reader_->take_next_sample(&entry, &info), RETCODE_NO_DATA);
     }
 
     utils::Log::ClearConsumers();

@@ -300,8 +300,8 @@ void RpcBridge::transmit_(
         RpcPayloadData& rpc_data = dynamic_cast<RpcPayloadData&>(*data);
 
 
-        // Will never return \c RETCODE_NO_DATA, otherwise would have finished before
-        if (!ret)
+        // Will never return \c NO_DATA, otherwise would have finished before
+        if (ret != utils::ReturnCode::OK)
         {
             // Error reading data
             logWarning(DDSPIPE_RPCBRIDGE,
@@ -351,7 +351,7 @@ void RpcBridge::transmit_(
 
                     ret = request_writers_[service_registry.first]->write(*data);
 
-                    if (!ret)
+                    if (ret != utils::ReturnCode::OK)
                     {
                         logWarning(DDSPIPE_RPCBRIDGE, "Error writting request in RpcBridge for service "
                                 << rpc_topic_ << ". Error code " << ret <<
@@ -408,7 +408,7 @@ void RpcBridge::transmit_(
 
                     ret = reply_writers_[registry_entry.first]->write(*data);
 
-                    if (!ret)
+                    if (ret != utils::ReturnCode::OK)
                     {
                         logWarning(DDSPIPE_RPCBRIDGE, "Error writting reply in RpcBridge for service "
                                 << rpc_topic_ << ". Error code " << ret << ".");

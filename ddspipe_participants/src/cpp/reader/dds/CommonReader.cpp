@@ -71,21 +71,12 @@ void CommonReader::init()
     // Create CommonReader
     // Listener must be set in creation as no callbacks should be missed
     // It is safe to do so here as object is already created and callbacks do not require anything set in this method
-    #if FASTRTPS_VERSION_MAJOR <= 2 && FASTRTPS_VERSION_MINOR < 12
-    reader_ = dds_subscriber_->create_datareader_with_payload_pool(
-        dds_topic_,
-        reckon_reader_qos_(),
-        payload_pool_,
-        nullptr,
-        eprosima::fastdds::dds::StatusMask::all());
-    #else
     reader_ = dds_subscriber_->create_datareader(
         dds_topic_,
         reckon_reader_qos_(),
         nullptr,
         eprosima::fastdds::dds::StatusMask::all(),
         payload_pool_);
-    #endif // if FASTRTPS_VERSION_MAJOR <= 2 && FASTRTPS_VERSION_MINOR < 13
 
     if (!reader_)
     {
@@ -178,7 +169,7 @@ utils::ReturnCode CommonReader::take_nts_(
     // Check if there is data available
     if (!(reader_->get_unread_count() > 0))
     {
-        return utils::ReturnCode::RETCODE_NO_DATA;
+        return utils::ReturnCode::NO_DATA;
     }
 
     std::unique_ptr<RtpsPayloadData> rtps_data;
@@ -206,7 +197,7 @@ utils::ReturnCode CommonReader::take_nts_(
     if (!rtps_data)
     {
         logError(DDSPIPE_DDS_READER, "The data taken by the reader is not valid.");
-        return utils::ReturnCode::RETCODE_ERROR;
+        return utils::ReturnCode::ERROR;
     }
 
     fill_received_data_(info, *rtps_data);
@@ -214,7 +205,7 @@ utils::ReturnCode CommonReader::take_nts_(
     // data is a unique_ptr; the memory will be handled correctly.
     data.reset(rtps_data.release());
 
-    return utils::ReturnCode::RETCODE_OK;
+    return utils::ReturnCode::OK;
 }
 
 void CommonReader::enable_nts_() noexcept

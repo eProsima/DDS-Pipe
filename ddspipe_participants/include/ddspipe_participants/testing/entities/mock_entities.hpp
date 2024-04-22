@@ -18,6 +18,7 @@
 #include <queue>
 
 #include <cpp_utils/memory/Heritable.hpp>
+#include <cpp_utils/ReturnCode.hpp>
 #include <cpp_utils/types/Atomicable.hpp>
 #include <cpp_utils/wait/CounterWaitHandler.hpp>
 

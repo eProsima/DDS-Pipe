@@ -14,7 +14,7 @@
 
 #pragma once
 
-#include <fastrtps/types/DynamicTypePtr.h>
+#include <fastdds/dds/xtypes/dynamic_types/DynamicType.hpp>
 
 #include <ddspipe_core/interface/IRoutingData.hpp>
 #include <ddspipe_core/library/library_dll.h>
@@ -35,7 +35,7 @@ struct DynamicTypeData : public core::IRoutingData
     DDSPIPE_CORE_DllAPI
     virtual types::TopicInternalTypeDiscriminator internal_type_discriminator() const noexcept override;
 
-    fastrtps::types::DynamicType_ptr dynamic_type{nullptr};
+    fastdds::dds::DynamicType::_ref_type dynamic_type{nullptr};
 };
 
 DDSPIPE_CORE_DllAPI

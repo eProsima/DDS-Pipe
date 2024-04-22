@@ -15,7 +15,7 @@
 #include <cpp_utils/file/file_utils.hpp>
 #include <cpp_utils/utils.hpp>
 
-#include <fastrtps/xmlparser/XMLParser.h>
+// #include <fastrtps/xmlparser/XMLParser.h>
 
 #include <ddspipe_participants/xml/XmlHandlerConfiguration.hpp>
 

@@ -18,6 +18,7 @@
 
 #include <cpp_utils/exception/UnsupportedException.hpp>
 #include <cpp_utils/Log.hpp>
+#include <cpp_utils/ReturnCode.hpp>
 
 #include <ddspipe_participants/reader/auxiliar/InternalReader.hpp>
 
@@ -71,14 +72,14 @@ utils::ReturnCode InternalReader::take_nts_(
     // There is no data pending sent
     if (data_to_send_.empty())
     {
-        return utils::ReturnCode::RETCODE_NO_DATA;
+        return utils::ReturnCode::NO_DATA;
     }
 
     // Move first data in queue to input
     data = std::move(data_to_send_.front());
     data_to_send_.pop();
 
-    return utils::ReturnCode::RETCODE_OK;
+    return utils::ReturnCode::OK;
 }
 
 } /* namespace participants */

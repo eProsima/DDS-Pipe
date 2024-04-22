@@ -13,6 +13,7 @@
 // limitations under the License.
 
 #include <cpp_utils/exception/UnsupportedException.hpp>
+#include <cpp_utils/ReturnCode.hpp>
 
 #include <ddspipe_participants/reader/auxiliar/BlankReader.hpp>
 
@@ -40,7 +41,7 @@ void BlankReader::unset_on_data_available_callback() noexcept
 utils::ReturnCode BlankReader::take(
         std::unique_ptr<core::IRoutingData>& /* data */) noexcept
 {
-    return utils::ReturnCode::RETCODE_NO_DATA;
+    return utils::ReturnCode::NO_DATA;
 }
 
 core::types::Guid BlankReader::guid() const

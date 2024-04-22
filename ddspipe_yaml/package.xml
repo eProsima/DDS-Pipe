@@ -18,7 +18,7 @@
 
   <depend>cmake_utils</depend>
   <depend>yamlcpp</depend>
-  <depend>fastrtps</depend>
+  <depend>fastdds</depend>
   <depend>cpp_utils</depend>
   <depend>ddspipe_core</depend>
   <depend>ddspipe_participants</depend>

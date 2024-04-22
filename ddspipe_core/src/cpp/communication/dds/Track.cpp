@@ -24,6 +24,8 @@
 
 #include <ddspipe_core/communication/dds/Track.hpp>
 
+#include <fastdds/dds/core/ReturnCode.hpp>
+
 namespace eprosima {
 namespace ddspipe {
 namespace core {
@@ -218,9 +220,9 @@ void Track::transmit_() noexcept
 
         // Get data received (send empty data to be created(allocated) in reader)
         std::unique_ptr<IRoutingData> data;
-        utils::ReturnCode ret = reader_->take(data);
+        auto ret = reader_->take(data);
 
-        if (ret == utils::ReturnCode::RETCODE_NO_DATA)
+        if (ret == utils::ReturnCode::NO_DATA)
         {
             // There is no more data; reduce the status by 1
             unsigned int previous_status = data_available_status_.fetch_sub(DataAvailableStatus::transmitting_data);
@@ -238,7 +240,7 @@ void Track::transmit_() noexcept
                 continue;
             }
         }
-        else if (!ret)
+        else if (ret != utils::ReturnCode::OK)
         {
             // Error reading data
             logWarning(DDSPIPE_TRACK, "Error taking data in Track " << topic_->serialize() << ". Error code " << ret
@@ -259,7 +261,7 @@ void Track::transmit_() noexcept
 
             ret = writer_it.second->write(*data);
 
-            if (!ret)
+            if (ret != utils::ReturnCode::OK)
             {
                 logWarning(
                     DDSPIPE_TRACK,

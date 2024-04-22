@@ -18,8 +18,7 @@
 
 #include <cpp_utils/Log.hpp>
 
-#include <fastrtps/types/DynamicType.h>
-#include <fastrtps/types/DynamicTypePtr.h>
+#include <fastdds/dds/xtypes/dynamic_types/DynamicType.hpp>
 
 #include <ddspipe_core/types/dynamic_types/schema.hpp>
 #include <ddspipe_core/types/dynamic_types/types.hpp>
@@ -60,10 +59,10 @@ utils::ReturnCode TypeObjectWriter::write_nts_(
             DDSPIPE_TYPEOBJECT_WRITER,
             "Error generating schema for type " << dynamic_type_data.dynamic_type->get_name()
                                                 << " : <" << e.what() << ">.");
-        return utils::ReturnCode::RETCODE_ERROR;
+        return utils::ReturnCode::ERROR;
     }
 
-    return utils::ReturnCode::RETCODE_OK;
+    return utils::ReturnCode::OK;
 }
 
 } /* namespace participants */

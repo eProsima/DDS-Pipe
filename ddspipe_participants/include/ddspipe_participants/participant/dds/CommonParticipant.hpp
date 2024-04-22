@@ -108,15 +108,18 @@ public:
 
     virtual void on_participant_discovery(
             fastdds::dds::DomainParticipant* participant,
-            fastrtps::rtps::ParticipantDiscoveryInfo&& info) override;
+            fastrtps::rtps::ParticipantDiscoveryInfo&& info,
+            bool& /*should_be_ignored*/) override;
 
-    virtual void on_subscriber_discovery(
+    virtual void on_data_reader_discovery(
             fastdds::dds::DomainParticipant* participant,
-            fastrtps::rtps::ReaderDiscoveryInfo&& info) override;
+            fastrtps::rtps::ReaderDiscoveryInfo&& info,
+            bool& /*should_be_ignored*/) override;
 
-    virtual void on_publisher_discovery(
+    virtual void on_data_writer_discovery(
             fastdds::dds::DomainParticipant* participant,
-            fastrtps::rtps::WriterDiscoveryInfo&& info) override;
+            fastrtps::rtps::WriterDiscoveryInfo&& info,
+            bool& /*should_be_ignored*/) override;
 
 protected:
 

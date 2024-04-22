@@ -16,6 +16,7 @@
 
 #include <mutex>
 
+#include <cpp_utils/ReturnCode.hpp>
 #include <cpp_utils/time/time_utils.hpp>
 
 #include <fastdds/rtps/rtps_fwd.h>
