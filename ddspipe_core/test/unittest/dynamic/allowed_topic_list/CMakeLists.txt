@@ -41,7 +41,7 @@ set(TEST_LIST
 
 set(TEST_EXTRA_LIBRARIES
         fastcdr
-        fastrtps
+        fastdds
         cpp_utils
     )
 

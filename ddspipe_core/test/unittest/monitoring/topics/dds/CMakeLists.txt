@@ -26,7 +26,7 @@ file(
     )
 
 # Exclude types' files depending on the Fast DDS version
-if ("${fastrtps_VERSION}" VERSION_LESS 2.13)
+if ("${fastdds_VERSION}" VERSION_LESS 3.0.0)
     list(FILTER LIBRARY_SOURCES EXCLUDE REGEX "v2/")
 else()
     list(FILTER LIBRARY_SOURCES EXCLUDE REGEX "v1/")
@@ -47,7 +47,7 @@ set(TEST_LIST
 
 set(TEST_EXTRA_LIBRARIES
         fastcdr
-        fastrtps
+        fastdds
         cpp_utils
     )
 

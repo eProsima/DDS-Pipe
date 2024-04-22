@@ -15,6 +15,7 @@
 #include <cpp_utils/exception/UnsupportedException.hpp>
 #include <cpp_utils/Log.hpp>
 #include <cpp_utils/math/math_extension.hpp>
+#include <cpp_utils/ReturnCode.hpp>
 
 #include <ddspipe_participants/reader/auxiliar/BaseReader.hpp>
 #include <ddspipe_core/types/participant/ParticipantId.hpp>
@@ -121,7 +122,7 @@ utils::ReturnCode BaseReader::take(
     {
         logDevError(DDSPIPE_BASEREADER,
                 "Attempt to take data from disabled Reader in Participant " << participant_id_);
-        return utils::ReturnCode::RETCODE_NOT_ENABLED;
+        return utils::ReturnCode::NOT_ENABLED;
     }
 }
 

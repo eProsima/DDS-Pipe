@@ -18,7 +18,7 @@
 
 #pragma once
 
-#include <fastrtps/types/DynamicTypePtr.h>
+#include <fastdds/dds/xtypes/dynamic_types/DynamicType.hpp>
 
 #include <ddspipe_core/library/library_dll.h>
 
@@ -31,7 +31,7 @@ namespace idl {
 
 DDSPIPE_CORE_DllAPI
 std::string generate_idl_schema(
-        const fastrtps::types::DynamicType_ptr& dynamic_type);
+        const fastdds::dds::DynamicType::_ref_type& dynamic_type);
 
 } /* namespace idl */
 
@@ -39,7 +39,7 @@ namespace msg {
 
 DDSPIPE_CORE_DllAPI
 std::string generate_ros2_schema(
-        const fastrtps::types::DynamicType_ptr& dynamic_type);
+        const fastdds::dds::DynamicType::_ref_type& dynamic_type);
 
 } /* namespace msg */
 

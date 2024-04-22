@@ -173,7 +173,7 @@ utils::ReturnCode CommonWriter::write_nts_(
     // If still is not able to get a change, return an error code
     if (!new_change)
     {
-        return utils::ReturnCode::RETCODE_ERROR;
+        return utils::ReturnCode::ERROR;
     }
 
     logDebug(DDSPIPE_RTPS_COMMONWRITER,
@@ -185,7 +185,7 @@ utils::ReturnCode CommonWriter::write_nts_(
 
     // Fill cache change with specific data to send
     auto ret = fill_to_send_data_(new_change, write_params, rtps_data);
-    if (!ret)
+    if (ret != utils::ReturnCode::OK)
     {
         logError(DDSPIPE_RTPS_COMMONWRITER, "Error setting change to send.");
         return ret;
@@ -205,7 +205,7 @@ utils::ReturnCode CommonWriter::write_nts_(
     // At this point, write params is now the output of adding change
     fill_sent_data_(write_params, rtps_data);
 
-    return utils::ReturnCode::RETCODE_OK;
+    return utils::ReturnCode::OK;
 }
 
 utils::ReturnCode CommonWriter::fill_to_send_data_(
@@ -237,7 +237,7 @@ utils::ReturnCode CommonWriter::fill_to_send_data_(
                     (*to_send_change_to_fill)))
         {
             logDevError(DDSPIPE_RTPS_COMMONWRITER, "Error getting Payload.");
-            return utils::ReturnCode::RETCODE_ERROR;
+            return utils::ReturnCode::ERROR;
         }
     }
 
@@ -247,7 +247,7 @@ utils::ReturnCode CommonWriter::fill_to_send_data_(
     // Set source time stamp to be the original one
     to_send_params.source_timestamp(data.source_timestamp);
 
-    return utils::ReturnCode::RETCODE_OK;
+    return utils::ReturnCode::OK;
 }
 
 void CommonWriter::fill_sent_data_(

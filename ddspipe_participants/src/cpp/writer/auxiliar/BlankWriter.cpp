@@ -30,7 +30,7 @@ void BlankWriter::disable() noexcept
 utils::ReturnCode BlankWriter::write(
         core::IRoutingData& /* data */) noexcept
 {
-    return utils::ReturnCode::RETCODE_OK;
+    return utils::ReturnCode::OK;
 }
 
 } /* namespace participants */

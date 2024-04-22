@@ -14,13 +14,13 @@
 
 #include <memory>
 
-#include <cpp_utils/exception/InitializationException.hpp>
-
+#include <fastdds/dds/core/ReturnCode.hpp>
 #include <fastdds/dds/domain/DomainParticipantFactory.hpp>
-#include <fastrtps/xmlparser/XMLProfileManager.h>
+// #include <fastrtps/xmlparser/XMLProfileManager.h>
 
 #include <cpp_utils/Log.hpp>
 #include <cpp_utils/exception/ConfigurationException.hpp>
+#include <cpp_utils/exception/InitializationException.hpp>
 
 #include <ddspipe_participants/participant/dds/XmlParticipant.hpp>
 #include <ddspipe_participants/writer/auxiliar/BlankWriter.hpp>
@@ -32,9 +32,6 @@ namespace participants {
 namespace dds {
 
 
-using namespace eprosima::fastrtps::xmlparser;
-
-
 XmlParticipant::XmlParticipant(
         const std::shared_ptr<XmlParticipantConfiguration>& participant_configuration,
         const std::shared_ptr<core::PayloadPool>& payload_pool,
@@ -42,15 +39,15 @@ XmlParticipant::XmlParticipant(
     : CommonParticipant(participant_configuration, payload_pool, discovery_database)
     , xml_specific_configuration_(*reinterpret_cast<XmlParticipantConfiguration*>(configuration_.get()))
 {
-    // Replace the configuration's domain with the XML's domainId
-    eprosima::fastrtps::ParticipantAttributes attr;
+    // // Replace the configuration's domain with the XML's domainId
+    // eprosima::fastrtps::ParticipantAttributes attr;
 
-    if (xml_specific_configuration_.participant_profile.is_set() &&
-            XMLProfileManager::fillParticipantAttributes(xml_specific_configuration_.participant_profile
-                    .get_value(), attr) == XMLP_ret::XML_OK)
-    {
-        configuration_->domain = attr.domainId;
-    }
+    // if (xml_specific_configuration_.participant_profile.is_set() &&
+    //         XMLProfileManager::fillParticipantAttributes(xml_specific_configuration_.participant_profile
+    //                 .get_value(), attr) == XMLP_ret::XML_OK)
+    // {
+    //     configuration_->domain = attr.domainId;
+    // }
 }
 
 std::shared_ptr<core::IWriter> XmlParticipant::create_writer(
@@ -99,7 +96,7 @@ fastdds::dds::DomainParticipantQos XmlParticipant::reckon_participant_qos_() con
             qos
             );
 
-        if (res != fastrtps::types::ReturnCode_t::ReturnCodeValue::RETCODE_OK)
+        if (res != fastdds::dds::RETCODE_OK)
         {
             throw utils::ConfigurationException(STR_ENTRY
                           << "Participant profile <" << xml_specific_configuration_.participant_profile.get_value()

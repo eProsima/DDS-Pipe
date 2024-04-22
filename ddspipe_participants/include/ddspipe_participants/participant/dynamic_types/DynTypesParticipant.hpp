@@ -19,7 +19,10 @@
 #pragma once
 
 #include <fastdds/dds/domain/DomainParticipant.hpp>
+#include <fastdds/dds/domain/DomainParticipantFactory.hpp>
 #include <fastdds/dds/domain/DomainParticipantListener.hpp>
+
+#include <fastdds/dds/xtypes/type_representation/TypeObject.hpp>
 
 #include <ddspipe_participants/configuration/SimpleParticipantConfiguration.hpp>
 #include <ddspipe_participants/library/library_dll.h>
@@ -72,29 +75,29 @@ public:
             const core::ITopic& topic) override;
 
     DDSPIPE_PARTICIPANTS_DllAPI
-    void on_type_discovery(
-            eprosima::fastdds::dds::DomainParticipant* participant,
-            const eprosima::fastrtps::rtps::SampleIdentity& request_sample_id,
-            const eprosima::fastrtps::string_255& topic,
-            const eprosima::fastrtps::types::TypeIdentifier* identifier,
-            const eprosima::fastrtps::types::TypeObject* object,
-            eprosima::fastrtps::types::DynamicType_ptr dyn_type) override;
+    void on_data_reader_discovery(
+            fastdds::dds::DomainParticipant* participant,
+            fastrtps::rtps::ReaderDiscoveryInfo&& info,
+            bool& /*should_be_ignored*/) override;
 
     DDSPIPE_PARTICIPANTS_DllAPI
-    virtual void on_type_information_received(
-            eprosima::fastdds::dds::DomainParticipant* participant,
-            const eprosima::fastrtps::string_255 topic_name,
-            const eprosima::fastrtps::string_255 type_name,
-            const eprosima::fastrtps::types::TypeInformation& type_information) override;
+    void on_data_writer_discovery(
+            fastdds::dds::DomainParticipant* participant,
+            fastrtps::rtps::WriterDiscoveryInfo&& info,
+            bool& /*should_be_ignored*/) override;
 
 protected:
 
+    void on_type_discovery_(
+            fastdds::dds::DomainParticipant* participant,
+            const fastdds::dds::xtypes::TypeInformation& type_info);
+
     void internal_notify_type_object_(
-            eprosima::fastrtps::types::DynamicType_ptr dynamic_type);
+            fastdds::dds::DynamicType::_ref_type dynamic_type);
 
     void initialize_internal_dds_participant_();
 
-    eprosima::fastdds::dds::DomainParticipant* dds_participant_;
+    fastdds::dds::DomainParticipant* dds_participant_;
 
     //! Type Object Internal Reader
     std::shared_ptr<InternalReader> type_object_reader_;

@@ -16,6 +16,7 @@
 
 #include <cpp_utils/Log.hpp>
 
+#include <fastdds/dds/core/ReturnCode.hpp>
 #include <fastdds/dds/domain/DomainParticipantFactory.hpp>
 
 #include <ddspipe_core/types/dynamic_types/types.hpp>
@@ -90,7 +91,7 @@ void CommonParticipant::init()
         throw utils::InitializationException(STR_ENTRY << "Error creating DDS Participant " << id() << ".");
     }
 
-    if (dds_participant_->enable() != utils::ReturnCode::RETCODE_OK)
+    if (dds_participant_->enable() != fastdds::dds::RETCODE_OK)
     {
         throw utils::InitializationException(STR_ENTRY << "Error enabling DDS Participant " << id() << ".");
     }
@@ -216,7 +217,8 @@ std::shared_ptr<core::IReader> CommonParticipant::create_reader(
 
 void CommonParticipant::on_participant_discovery(
         fastdds::dds::DomainParticipant* participant,
-        fastrtps::rtps::ParticipantDiscoveryInfo&& info)
+        fastrtps::rtps::ParticipantDiscoveryInfo&& info,
+        bool&)
 {
     if (info.info.m_guid.guidPrefix != participant->guid().guidPrefix)
     {
@@ -244,9 +246,10 @@ void CommonParticipant::on_participant_discovery(
     }
 }
 
-void CommonParticipant::on_subscriber_discovery(
+void CommonParticipant::on_data_reader_discovery(
         fastdds::dds::DomainParticipant*,
-        fastrtps::rtps::ReaderDiscoveryInfo&& info)
+        fastrtps::rtps::ReaderDiscoveryInfo&& info,
+        bool&)
 {
     // If reader is from other participant, store it in discovery database
     if (detail::come_from_same_participant_(info.info.guid(), this->dds_participant_->guid()))
@@ -289,9 +292,10 @@ void CommonParticipant::on_subscriber_discovery(
     }
 }
 
-void CommonParticipant::on_publisher_discovery(
+void CommonParticipant::on_data_writer_discovery(
         fastdds::dds::DomainParticipant*,
-        fastrtps::rtps::WriterDiscoveryInfo&& info)
+        fastrtps::rtps::WriterDiscoveryInfo&& info,
+        bool&)
 {
     // If writer is from other participant, store it in discovery database
     if (detail::come_from_same_participant_(info.info.guid(), this->dds_participant_->guid()))
