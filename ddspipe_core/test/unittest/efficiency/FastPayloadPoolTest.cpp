@@ -341,18 +341,24 @@ TEST(FastPayloadPoolTest, release_payload_negative)
 }
 
 /**
- * Check that concurrent get and release payload operations are thread safe (verified when executed with TSAN).
+ * Check that, when the payload reference counter is 1, concurrent get and release payload operations are thread safe
+ * (verified when executed with TSAN).
+ *
+ * STEPS:
+ *  reserve payload
+ *  concurrently:
+ *    - get and release payload from spawned thread
+ *    - release payload from main thread
  *
  * @note This test is actually not supposed to pass with the current implementation of \c FastPayloadPool , it is the
- * user's responsability to provide thread safety for this particular case.
+ * user's responsibility to provide thread safety for this particular case.
  */
 /* TEST(FastPayloadPoolTest, concurrent_get_release)
    {
     // Repeat the test several times, as the detection of a data race is not deterministic
     const unsigned int NUM_ITERATIONS = 50;
 
-    int i = 0;
-    while (i < NUM_ITERATIONS)
+    for (unsigned int i = 0; i < NUM_ITERATIONS; i++)
     {
         FastPayloadPool pool;
         Payload payload;
@@ -364,21 +370,24 @@ TEST(FastPayloadPoolTest, release_payload_negative)
         ASSERT_TRUE(pool.release_payload(payload));
 
         t1.join();
-
-        i++;
     }
    } */
 
 /**
- * Check that concurrent release payload operations are thread safe (verified when executed with TSAN).
+ * Check that, when the payload reference counter is 1, concurrent release payload operations are thread safe (verified
+ * when executed with TSAN).
+ *
+ * STEPS:
+ *  reserve payload
+ *  get payload (increase reference counter to 2)
+ *  concurrently release payload from two threads (should release resources from the thread performing the second call)
  */
 TEST(FastPayloadPoolTest, concurrent_release)
 {
     // Repeat the test several times, as the detection of a data race is not deterministic
     const unsigned int NUM_ITERATIONS = 50;
 
-    int i = 0;
-    while (i < NUM_ITERATIONS)
+    for (unsigned int i = 0; i < NUM_ITERATIONS; i++)
     {
         FastPayloadPool pool;
         Payload payload;
@@ -395,8 +404,6 @@ TEST(FastPayloadPoolTest, concurrent_release)
         ASSERT_TRUE(pool.release_payload(payload));
 
         t1.join();
-
-        i++;
     }
 }
 

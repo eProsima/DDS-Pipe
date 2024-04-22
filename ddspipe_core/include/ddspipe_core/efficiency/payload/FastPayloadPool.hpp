@@ -45,9 +45,9 @@ typedef std::atomic<unsigned int> MetaInfoType;
  *
  * This is a thread safe lock free (except for one atomic check) implementation.
  *
- * @warning It is the user's responsability to assure that the sequence of \c get_payload and \c release_payload calls
+ * @warning It is the user's responsibility to ensure that the sequence of \c get_payload and \c release_payload calls
  * is performed in a thread safe way. Example: for a payload with a reference counter of 1, and two threads concurrently
- * performing a \c get_payload (+ posterior \c release_payload) and a \c release_payload operations (each of them on a
+ * performing \c get_payload (+ posterior \c release_payload) and \c release_payload operations (each of them on a
  * different thread), the user should guarantee that the \c get_payload call is performed before the \c release_payload
  * one.
  *

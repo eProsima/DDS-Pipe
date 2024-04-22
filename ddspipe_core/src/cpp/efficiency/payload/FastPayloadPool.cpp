@@ -87,10 +87,10 @@ bool FastPayloadPool::release_payload(
     reference_place--;
 
     // Remove reference
-    auto previous_ctr = reference_place->fetch_sub(1);
+    const auto prev_reference_counter = reference_place->fetch_sub(1);
 
     // In case it was the last reference, release payload
-    if (previous_ctr == 1)
+    if (prev_reference_counter == 1)
     {
         // Release payload
         // NOTE: There is no need to check as release cannot return false
