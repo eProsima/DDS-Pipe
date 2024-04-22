@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#include <thread>
+
 #include <cpp_utils/testing/gtest_aux.hpp>
 #include <gtest/gtest.h>
 
@@ -60,6 +62,24 @@ public:
     }
 
 };
+
+void get_release(
+        FastPayloadPool& pool,
+        Payload& src_payload)
+{
+    eprosima::fastrtps::rtps::IPayloadPool* payload_owner =
+            static_cast<eprosima::fastrtps::rtps::IPayloadPool*>(&pool);
+    Payload dst_payload;
+    ASSERT_TRUE(pool.get_payload(src_payload, payload_owner, dst_payload));
+    ASSERT_TRUE(pool.release_payload(dst_payload));
+}
+
+void release(
+        FastPayloadPool& pool,
+        Payload& payload)
+{
+    ASSERT_TRUE(pool.release_payload(payload));
+}
 
 } /* namespace test */
 } /* namespace core */
@@ -318,6 +338,73 @@ TEST(FastPayloadPoolTest, release_payload_negative)
     pool_aux.get_payload(DEFAULT_SIZE, payload);
 
     ASSERT_THROW(pool.release_payload(payload), eprosima::utils::InconsistencyException);
+}
+
+/**
+ * Check that, when the payload reference counter is 1, concurrent get and release payload operations are thread safe
+ * (verified when executed with TSAN).
+ *
+ * STEPS:
+ *  reserve payload
+ *  concurrently:
+ *    - get and release payload from spawned thread
+ *    - release payload from main thread
+ *
+ * @note This test is actually not supposed to pass with the current implementation of \c FastPayloadPool , it is the
+ * user's responsibility to provide thread safety for this particular case.
+ */
+/* TEST(FastPayloadPoolTest, concurrent_get_release)
+   {
+    // Repeat the test several times, as the detection of a data race is not deterministic
+    const unsigned int NUM_ITERATIONS = 50;
+
+    for (unsigned int i = 0; i < NUM_ITERATIONS; i++)
+    {
+        FastPayloadPool pool;
+        Payload payload;
+
+        ASSERT_TRUE(pool.get_payload(DEFAULT_SIZE, payload));
+
+        std::thread t1(test::get_release, std::ref(pool), std::ref(payload));
+
+        ASSERT_TRUE(pool.release_payload(payload));
+
+        t1.join();
+    }
+   } */
+
+/**
+ * Check that, when the payload reference counter is 1, concurrent release payload operations are thread safe (verified
+ * when executed with TSAN).
+ *
+ * STEPS:
+ *  reserve payload
+ *  get payload (increase reference counter to 2)
+ *  concurrently release payload from two threads (should release resources from the thread performing the second call)
+ */
+TEST(FastPayloadPoolTest, concurrent_release)
+{
+    // Repeat the test several times, as the detection of a data race is not deterministic
+    const unsigned int NUM_ITERATIONS = 50;
+
+    for (unsigned int i = 0; i < NUM_ITERATIONS; i++)
+    {
+        FastPayloadPool pool;
+        Payload payload;
+
+        ASSERT_TRUE(pool.get_payload(DEFAULT_SIZE, payload));
+
+        eprosima::fastrtps::rtps::IPayloadPool* payload_owner =
+                static_cast<eprosima::fastrtps::rtps::IPayloadPool*>(&pool);
+        Payload dst_payload;
+        ASSERT_TRUE(pool.get_payload(payload, payload_owner, dst_payload));
+
+        std::thread t1(test::release, std::ref(pool), std::ref(dst_payload));
+
+        ASSERT_TRUE(pool.release_payload(payload));
+
+        t1.join();
+    }
 }
 
 int main(

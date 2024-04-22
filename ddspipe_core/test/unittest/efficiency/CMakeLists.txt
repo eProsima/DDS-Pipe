@@ -104,6 +104,7 @@ set(TEST_LIST
         get_payload_from_src_negative
         release_payload
         release_payload_negative
+        concurrent_release
     )
 
 set(TEST_EXTRA_LIBRARIES
