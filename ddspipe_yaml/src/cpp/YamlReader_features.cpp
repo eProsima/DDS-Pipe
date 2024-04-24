@@ -14,7 +14,6 @@
 
 #include <set>
 
-#include <cpp_utils/Log.hpp>
 #include <cpp_utils/memory/Heritable.hpp>
 
 #include <ddspipe_core/configuration/DdsPublishingConfiguration.hpp>
