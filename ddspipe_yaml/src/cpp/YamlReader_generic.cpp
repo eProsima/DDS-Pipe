@@ -19,7 +19,6 @@
 
 #include <set>
 
-#include <cpp_utils/Log.hpp>
 #include <cpp_utils/time/time_utils.hpp>
 #include <cpp_utils/utils.hpp>
 

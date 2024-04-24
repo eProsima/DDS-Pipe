@@ -19,7 +19,6 @@
 
 #include <set>
 
-#include <cpp_utils/Log.hpp>
 #include <cpp_utils/utils.hpp>
 
 #include <ddspipe_core/types/dds/DomainId.hpp>
