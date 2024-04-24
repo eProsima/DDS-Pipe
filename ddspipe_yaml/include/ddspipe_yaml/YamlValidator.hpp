@@ -14,6 +14,8 @@
 
 #pragma once
 
+#include <set>
+
 #include <ddspipe_yaml/library/library_dll.h>
 #include <ddspipe_yaml/Yaml.hpp>
 #include <ddspipe_yaml/YamlReader.hpp>
@@ -22,18 +24,37 @@ namespace eprosima {
 namespace ddspipe {
 namespace yaml {
 
-// TODO
+/**
+ * @brief Yaml Validator
+ *
+ * This class is used to validate Yaml objects.
+ */
 class YamlValidator
 {
 public:
 
-    //! TODO
+    /**
+     * @brief Validate a Yaml object against a specific version.
+     *
+     * For each type, the function should call \c validate_tags with the maximum set of tags \c yml may contain.
+     *
+     * @tparam T Type of the object to validate.
+     * @param yml Yaml object to validate.
+     * @param version Version to validate against.
+     */
+    DDSPIPE_YAML_DllAPI
     template <typename T>
     static bool validate(
             const Yaml& yml,
             const YamlReaderVersion& version = YamlReaderVersion::LATEST);
 
-    //! TODO
+    /**
+     * @brief Ensure that all the tags in \c yml are in \c tags.
+     *
+     * @param yml Yaml object to validate.
+     * @param tags Set of tags to validate against.
+     */
+    DDSPIPE_YAML_DllAPI
     static bool validate_tags(
             const Yaml& yml,
             const std::set<TagType>& tags);

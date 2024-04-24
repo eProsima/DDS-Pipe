@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#include <set>
+
 #include <cpp_utils/Log.hpp>
 #include <cpp_utils/memory/Heritable.hpp>
 
@@ -67,7 +69,7 @@ bool YamlValidator::validate<participants::XmlHandlerConfiguration>(
         const Yaml& yml,
         const YamlReaderVersion& /* version */)
 {
-    const std::set<TagType> tags{
+    static const std::set<TagType> tags{
         XML_RAW_TAG,
         XML_FILES_TAG};
 
@@ -97,7 +99,7 @@ bool YamlValidator::validate<core::RoutesConfiguration>(
         const Yaml& yml,
         const YamlReaderVersion& /* version */)
 {
-    const std::set<TagType> tags{
+    static const std::set<TagType> tags{
         ROUTES_SRC_TAG,
         ROUTES_DST_TAG};
 
@@ -175,7 +177,7 @@ bool YamlValidator::validate<core::TopicRoutesConfiguration>(
         const Yaml& yml,
         const YamlReaderVersion& /* version */)
 {
-    const std::set<TagType> tags{
+    static const std::set<TagType> tags{
         TOPIC_NAME_TAG,
         TOPIC_TYPE_NAME_TAG,
         ROUTES_TAG};
@@ -283,7 +285,7 @@ bool YamlValidator::validate<core::MonitorConfiguration>(
         const Yaml& yml,
         const YamlReaderVersion& /* version */)
 {
-    const std::set<TagType> tags{
+    static const std::set<TagType> tags{
         MONITOR_DOMAIN_TAG,
         MONITOR_STATUS_TAG,
         MONITOR_TOPICS_TAG};
@@ -328,7 +330,7 @@ bool YamlValidator::validate<core::MonitorProducerConfiguration>(
         const Yaml& yml,
         const YamlReaderVersion& /* version */)
 {
-    const std::set<TagType> tags{
+    static const std::set<TagType> tags{
         MONITOR_ENABLE_TAG,
         MONITOR_PERIOD_TAG};
 
