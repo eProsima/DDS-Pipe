@@ -17,6 +17,8 @@
  *
  */
 
+#include <set>
+
 #include <cpp_utils/Log.hpp>
 #include <cpp_utils/memory/Heritable.hpp>
 #include <cpp_utils/utils.hpp>
@@ -158,7 +160,7 @@ bool YamlValidator::validate<GuidPrefix>(
         const Yaml& yml,
         const YamlReaderVersion& /* version */)
 {
-    const std::set<TagType> tags{
+    static const std::set<TagType> tags{
         DISCOVERY_SERVER_GUID_TAG,
         DISCOVERY_SERVER_ID_TAG,
         DISCOVERY_SERVER_ID_ROS_TAG};
@@ -214,7 +216,7 @@ bool YamlValidator::validate<Address>(
         const Yaml& yml,
         const YamlReaderVersion& /* version */)
 {
-    const std::set<TagType> tags{
+    static const std::set<TagType> tags{
         ADDRESS_IP_VERSION_TAG,
         ADDRESS_IP_TAG,
         ADDRESS_DNS_TAG,
@@ -430,7 +432,7 @@ bool YamlValidator::validate<core::DdsPublishingConfiguration>(
         const Yaml& yml,
         const YamlReaderVersion& /* version */)
 {
-    const std::set<TagType> tags{
+    static const std::set<TagType> tags{
         DDS_PUBLISHING_ENABLE_TAG,
         DDS_PUBLISHING_DOMAIN_TAG,
         DDS_PUBLISHING_TOPIC_NAME_TAG,
@@ -545,7 +547,7 @@ bool YamlValidator::validate<TopicQoS>(
         const Yaml& yml,
         const YamlReaderVersion& /* version */)
 {
-    const std::set<TagType> tags{
+    static const std::set<TagType> tags{
         QOS_TRANSIENT_TAG,
         QOS_RELIABLE_TAG,
         QOS_OWNERSHIP_TAG,
@@ -605,7 +607,7 @@ bool YamlValidator::validate<utils::LogFilter>(
         const Yaml& yml,
         const YamlReaderVersion& /* version */)
 {
-    const std::set<TagType> tags{
+    static const std::set<TagType> tags{
         LOG_FILTER_ERROR_TAG,
         LOG_FILTER_WARNING_TAG,
         LOG_FILTER_INFO_TAG};
@@ -669,7 +671,7 @@ bool YamlValidator::validate<core::DdsPipeLogConfiguration>(
         const Yaml& yml,
         const YamlReaderVersion& /* version */)
 {
-    const std::set<TagType> tags{
+    static const std::set<TagType> tags{
         LOG_PUBLISH_TAG,
         LOG_STDOUT_TAG,
         LOG_VERBOSITY_TAG,
@@ -713,7 +715,7 @@ bool YamlValidator::validate<DdsTopic>(
         const Yaml& yml,
         const YamlReaderVersion& /* version */)
 {
-    const std::set<TagType> tags{
+    static const std::set<TagType> tags{
         TOPIC_NAME_TAG,
         TOPIC_TYPE_NAME_TAG};
 
@@ -762,7 +764,7 @@ bool YamlValidator::validate<WildcardDdsFilterTopic>(
         const Yaml& yml,
         const YamlReaderVersion& /* version */)
 {
-    const std::set<TagType> tags{
+    static const std::set<TagType> tags{
         TOPIC_NAME_TAG,
         TOPIC_TYPE_NAME_TAG,
         TOPIC_QOS_TAG};
@@ -809,7 +811,7 @@ bool YamlValidator::validate<ManualTopic>(
         const Yaml& yml,
         const YamlReaderVersion& /* version */)
 {
-    const std::set<TagType> tags{
+    static const std::set<TagType> tags{
         TOPIC_NAME_TAG,
         TOPIC_TYPE_NAME_TAG,
         TOPIC_QOS_TAG,
@@ -947,7 +949,7 @@ bool YamlValidator::validate<TlsConfiguration>(
         const Yaml& yml,
         const YamlReaderVersion& /* version */)
 {
-    const std::set<TagType> tags{
+    static const std::set<TagType> tags{
         TLS_PRIVATE_KEY_TAG,
         TLS_PASSWORD_TAG,
         TLS_CA_TAG,

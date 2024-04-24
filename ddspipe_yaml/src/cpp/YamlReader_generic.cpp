@@ -17,6 +17,8 @@
  *
  */
 
+#include <set>
+
 #include <cpp_utils/Log.hpp>
 #include <cpp_utils/time/time_utils.hpp>
 #include <cpp_utils/utils.hpp>
@@ -297,7 +299,7 @@ bool YamlValidator::validate<utils::Timestamp>(
         const Yaml& yml,
         const YamlReaderVersion& /* version */)
 {
-    const std::set<TagType> tags{
+    static const std::set<TagType> tags{
         TIMESTAMP_DATETIME_FORMAT_TAG,
         TIMESTAMP_LOCAL_TAG,
         TIMESTAMP_DATETIME_TAG,

@@ -17,6 +17,8 @@
  *
  */
 
+#include <set>
+
 #include <cpp_utils/Log.hpp>
 #include <cpp_utils/utils.hpp>
 
@@ -69,7 +71,7 @@ bool YamlValidator::validate<participants::ParticipantConfiguration>(
         const Yaml& yml,
         const YamlReaderVersion& /* version */)
 {
-    const std::set<TagType> tags{
+    static const std::set<TagType> tags{
         PARTICIPANT_NAME_TAG,
         PARTICIPANT_KIND_TAG};
 
@@ -126,7 +128,7 @@ bool YamlValidator::validate<participants::EchoParticipantConfiguration>(
         const Yaml& yml,
         const YamlReaderVersion& /* version */)
 {
-    const std::set<TagType> tags{
+    static const std::set<TagType> tags{
         PARTICIPANT_NAME_TAG,
         PARTICIPANT_KIND_TAG,
         ECHO_DATA_TAG,
@@ -208,7 +210,7 @@ bool YamlValidator::validate<participants::SimpleParticipantConfiguration>(
         const Yaml& yml,
         const YamlReaderVersion& /* version */)
 {
-    const std::set<TagType> tags{
+    static const std::set<TagType> tags{
         PARTICIPANT_NAME_TAG,
         PARTICIPANT_KIND_TAG,
         DOMAIN_ID_TAG,
@@ -309,7 +311,7 @@ bool YamlValidator::validate<participants::DiscoveryServerParticipantConfigurati
         const Yaml& yml,
         const YamlReaderVersion& /* version */)
 {
-    const std::set<TagType> tags{
+    static const std::set<TagType> tags{
         PARTICIPANT_NAME_TAG,
         PARTICIPANT_KIND_TAG,
         DOMAIN_ID_TAG,
@@ -394,7 +396,7 @@ bool YamlValidator::validate<participants::InitialPeersParticipantConfiguration>
         const Yaml& yml,
         const YamlReaderVersion& /* version */)
 {
-    const std::set<TagType> tags{
+    static const std::set<TagType> tags{
         PARTICIPANT_NAME_TAG,
         PARTICIPANT_KIND_TAG,
         DOMAIN_ID_TAG,
@@ -445,7 +447,7 @@ bool YamlValidator::validate<participants::XmlParticipantConfiguration>(
         const Yaml& yml,
         const YamlReaderVersion& /* version */)
 {
-    const std::set<TagType> tags{
+    static const std::set<TagType> tags{
         PARTICIPANT_NAME_TAG,
         PARTICIPANT_KIND_TAG,
         DOMAIN_ID_TAG,
