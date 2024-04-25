@@ -57,7 +57,7 @@ public:
     DDSPIPE_YAML_DllAPI
     static bool validate_tags(
             const Yaml& yml,
-            const std::set<TagType>& tags);
+            const std::set<TagType>& valid_tags);
 };
 
 } /* namespace yaml */

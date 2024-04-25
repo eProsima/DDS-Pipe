@@ -26,7 +26,7 @@ namespace yaml {
 
 bool YamlValidator::validate_tags(
         const Yaml& yml,
-        const std::set<TagType>& tags)
+        const std::set<TagType>& valid_tags)
 {
     if (!yml.IsMap() && !yml.IsNull())
     {
@@ -35,20 +35,31 @@ bool YamlValidator::validate_tags(
     }
 
     // Check if there are any extra tags that are not in the list
-    bool has_extra_tags = false;
+    std::map<TagType, int> tags_count;
+    bool is_valid = true;
 
     for (const auto& tag_it : yml)
     {
         const auto& tag = tag_it.first.as<TagType>();
 
-        if (!tags.count(tag))
+        // Check if the tag is valid
+        if (!valid_tags.count(tag))
         {
             logWarning(DDSPIPE_YAML, "Tag <" << tag << "> is not a valid tag.");
-            has_extra_tags = true;
+            is_valid = false;
+        }
+
+        // Check if the tag is repeated
+        tags_count[tag]++;
+
+        if (tags_count[tag] > 1)
+        {
+            logWarning(DDSPIPE_YAML, "Tag <" << tag << "> is repeated.");
+            is_valid = false;
         }
     }
 
-    return !has_extra_tags;
+    return is_valid;
 }
 
 } /* namespace yaml */
