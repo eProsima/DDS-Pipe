@@ -34,32 +34,59 @@ bool YamlValidator::validate_tags(
                   utils::Formatter() << "The yml: <" << yml << "> is not a yaml object map.");
     }
 
-    // Check if there are any extra tags that are not in the list
+    // Check if there are repeated tags or extra tags that are not in valid_tags
     std::map<TagType, int> tags_count;
     bool is_valid = true;
 
     for (const auto& tag_it : yml)
     {
-        const auto& tag = tag_it.first.as<TagType>();
+        const auto& tag = tag_it.first;
+        const auto& tag_name = tag.as<TagType>();
 
         // Check if the tag is valid
-        if (!valid_tags.count(tag))
+        if (!valid_tags.count(tag_name))
         {
-            logWarning(DDSPIPE_YAML, "Tag <" << tag << "> is not a valid tag.");
+            logWarning(DDSPIPE_YAML, "Tag <" << tag_name << "> is not a valid tag (" << get_position_(tag) << ").");
             is_valid = false;
         }
 
         // Check if the tag is repeated
-        tags_count[tag]++;
+        tags_count[tag_name]++;
 
-        if (tags_count[tag] > 1)
+        if (tags_count[tag_name] > 1)
         {
-            logWarning(DDSPIPE_YAML, "Tag <" << tag << "> is repeated.");
+            logWarning(DDSPIPE_YAML, "Tag <" << tag_name << "> is repeated (" << get_position_(tag) << ").");
             is_valid = false;
         }
     }
 
     return is_valid;
+}
+
+std::string YamlValidator::get_position_(
+        const Yaml& yml)
+{
+    int line;
+    int column;
+
+    try
+    {
+        const auto& mark = yml.Mark();
+
+        if (mark.is_null())
+        {
+            return "unknown position";
+        }
+
+        line = mark.line + 1;
+        column = mark.column + 1;
+    }
+    catch (const std::exception& e)
+    {
+        return "unknown position";
+    }
+
+    return "line " + std::to_string(line) + ", column " + std::to_string(column);
 }
 
 } /* namespace yaml */
