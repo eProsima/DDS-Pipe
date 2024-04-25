@@ -58,6 +58,19 @@ public:
     static bool validate_tags(
             const Yaml& yml,
             const std::set<TagType>& valid_tags);
+
+protected:
+
+    /**
+     * @brief Get the position of the yaml node in the yaml file
+     *
+     * If the position is not available, it will return "unknown position"
+     *
+     * @param yml base yaml
+     * @return "line X, column Y"
+     */
+    static std::string get_position_(
+            const Yaml& yml);
 };
 
 } /* namespace yaml */
