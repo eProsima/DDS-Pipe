@@ -212,11 +212,11 @@ bool YamlValidator::validate<participants::SimpleParticipantConfiguration>(
     static const std::set<TagType> tags{
         PARTICIPANT_NAME_TAG,
         PARTICIPANT_KIND_TAG,
+        PARTICIPANT_QOS_TAG,
         DOMAIN_ID_TAG,
         WHITELIST_INTERFACES_TAG,
         TRANSPORT_DESCRIPTORS_TRANSPORT_TAG,
-        IGNORE_PARTICIPANT_FLAGS_TAG,
-        PARTICIPANT_QOS_TAG};
+        IGNORE_PARTICIPANT_FLAGS_TAG};
 
     return YamlValidator::validate_tags(yml, tags);
 }
@@ -270,10 +270,7 @@ void YamlReader::fill(
     // Optional TLS
     if (YamlReader::is_tag_present(yml, TLS_TAG))
     {
-        YamlReader::fill<TlsConfiguration>(
-            object.tls_configuration,
-            YamlReader::get_value_in_tag(yml, TLS_TAG),
-            version);
+        object.tls_configuration = YamlReader::get<TlsConfiguration>(yml, TLS_TAG, version);
     }
 
     // NOTE: The only field that change regarding the version is the GuidPrefix.
@@ -300,11 +297,10 @@ bool YamlValidator::validate<participants::DiscoveryServerParticipantConfigurati
     static const std::set<TagType> tags{
         PARTICIPANT_NAME_TAG,
         PARTICIPANT_KIND_TAG,
-        DOMAIN_ID_TAG,
+        PARTICIPANT_QOS_TAG,
         WHITELIST_INTERFACES_TAG,
         TRANSPORT_DESCRIPTORS_TRANSPORT_TAG,
         IGNORE_PARTICIPANT_FLAGS_TAG,
-        PARTICIPANT_QOS_TAG,
         LISTENING_ADDRESSES_TAG,
         CONNECTION_ADDRESSES_TAG,
         TLS_TAG,
@@ -362,10 +358,7 @@ void YamlReader::fill(
     // Optional TLS
     if (YamlReader::is_tag_present(yml, TLS_TAG))
     {
-        YamlReader::fill<TlsConfiguration>(
-            object.tls_configuration,
-            YamlReader::get_value_in_tag(yml, TLS_TAG),
-            version);
+        object.tls_configuration = YamlReader::get<TlsConfiguration>(yml, TLS_TAG, version);
     }
 
     // Optional Repeater
@@ -384,11 +377,10 @@ bool YamlValidator::validate<participants::InitialPeersParticipantConfiguration>
     static const std::set<TagType> tags{
         PARTICIPANT_NAME_TAG,
         PARTICIPANT_KIND_TAG,
-        DOMAIN_ID_TAG,
+        PARTICIPANT_QOS_TAG,
         WHITELIST_INTERFACES_TAG,
         TRANSPORT_DESCRIPTORS_TRANSPORT_TAG,
         IGNORE_PARTICIPANT_FLAGS_TAG,
-        PARTICIPANT_QOS_TAG,
         LISTENING_ADDRESSES_TAG,
         CONNECTION_ADDRESSES_TAG,
         TLS_TAG,
@@ -435,10 +427,6 @@ bool YamlValidator::validate<participants::XmlParticipantConfiguration>(
     static const std::set<TagType> tags{
         PARTICIPANT_NAME_TAG,
         PARTICIPANT_KIND_TAG,
-        DOMAIN_ID_TAG,
-        WHITELIST_INTERFACES_TAG,
-        TRANSPORT_DESCRIPTORS_TRANSPORT_TAG,
-        IGNORE_PARTICIPANT_FLAGS_TAG,
         PARTICIPANT_QOS_TAG,
         XML_PARTICIPANT_PROFILE_TAG};
 

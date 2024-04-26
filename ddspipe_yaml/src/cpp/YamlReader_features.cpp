@@ -161,6 +161,8 @@ core::RoutesConfiguration YamlReader::get(
         const Yaml& yml,
         const YamlReaderVersion version)
 {
+    // NOTE: The validation has to be done inside the fill method since the yml object is a list with the routes
+
     core::RoutesConfiguration object;
     fill<core::RoutesConfiguration>(object, yml, version);
     return object;
@@ -229,6 +231,8 @@ core::TopicRoutesConfiguration YamlReader::get(
         const Yaml& yml,
         const YamlReaderVersion version)
 {
+    // NOTE: The validation has to be done inside the fill method since the yml object is a list with the topic routes
+
     core::TopicRoutesConfiguration object;
     fill<core::TopicRoutesConfiguration>(object, yml, version);
     return object;
@@ -237,71 +241,6 @@ core::TopicRoutesConfiguration YamlReader::get(
 /**************************
 * Monitor Configuration  *
 **************************/
-
-template <>
-DDSPIPE_YAML_DllAPI
-void YamlReader::fill(
-        core::MonitorConfiguration& object,
-        const Yaml& yml,
-        const YamlReaderVersion version)
-{
-    core::types::DomainIdType domain = 0;
-
-    // Optional domain
-    if (is_tag_present(yml, MONITOR_DOMAIN_TAG))
-    {
-        domain = get<int>(yml, MONITOR_DOMAIN_TAG, version);
-    }
-
-    /////
-    // Get optional monitor status tag
-    if (YamlReader::is_tag_present(yml, MONITOR_STATUS_TAG))
-    {
-        object.producers[core::STATUS_MONITOR_PRODUCER_ID] = YamlReader::get<core::MonitorProducerConfiguration>(yml,
-                        MONITOR_STATUS_TAG,
-                        version);
-        object.consumers[core::STATUS_MONITOR_PRODUCER_ID].domain = domain;
-        YamlReader::fill<core::DdsPublishingConfiguration>(object.consumers[core::STATUS_MONITOR_PRODUCER_ID],
-                get_value_in_tag(yml, MONITOR_STATUS_TAG), version);
-    }
-
-    /////
-    // Get optional monitor topics tag
-    if (YamlReader::is_tag_present(yml, MONITOR_TOPICS_TAG))
-    {
-        object.producers[core::TOPICS_MONITOR_PRODUCER_ID] = YamlReader::get<core::MonitorProducerConfiguration>(yml,
-                        MONITOR_TOPICS_TAG,
-                        version);
-        object.consumers[core::TOPICS_MONITOR_PRODUCER_ID].domain = domain;
-        YamlReader::fill<core::DdsPublishingConfiguration>(object.consumers[core::TOPICS_MONITOR_PRODUCER_ID],
-                get_value_in_tag(yml, MONITOR_TOPICS_TAG), version);
-    }
-}
-
-template <>
-DDSPIPE_YAML_DllAPI
-bool YamlValidator::validate<core::MonitorConfiguration>(
-        const Yaml& yml,
-        const YamlReaderVersion& /* version */)
-{
-    static const std::set<TagType> tags{
-        MONITOR_DOMAIN_TAG,
-        MONITOR_STATUS_TAG,
-        MONITOR_TOPICS_TAG};
-
-    return YamlValidator::validate_tags(yml, tags);
-}
-
-template <>
-DDSPIPE_YAML_DllAPI
-core::MonitorConfiguration YamlReader::get(
-        const Yaml& yml,
-        const YamlReaderVersion version)
-{
-    core::MonitorConfiguration object;
-    fill<core::MonitorConfiguration>(object, yml, version);
-    return object;
-}
 
 template <>
 DDSPIPE_YAML_DllAPI
@@ -342,8 +281,93 @@ core::MonitorProducerConfiguration YamlReader::get(
         const Yaml& yml,
         const YamlReaderVersion version)
 {
+    YamlValidator::validate<core::MonitorProducerConfiguration>(yml, version);
+
     core::MonitorProducerConfiguration object;
     fill<core::MonitorProducerConfiguration>(object, yml, version);
+    return object;
+}
+
+template <>
+DDSPIPE_YAML_DllAPI
+void YamlReader::fill(
+        core::MonitorConfiguration& object,
+        const Yaml& yml,
+        const YamlReaderVersion version)
+{
+    core::types::DomainIdType domain = 0;
+
+    // Optional domain
+    if (is_tag_present(yml, MONITOR_DOMAIN_TAG))
+    {
+        domain = get<int>(yml, MONITOR_DOMAIN_TAG, version);
+    }
+
+    static const std::set<TagType> tags{
+        MONITOR_ENABLE_TAG,
+        MONITOR_PERIOD_TAG,
+        DDS_PUBLISHING_ENABLE_TAG,
+        DDS_PUBLISHING_DOMAIN_TAG,
+        DDS_PUBLISHING_TOPIC_NAME_TAG,
+        DDS_PUBLISHING_PUBLISH_TYPE_TAG};
+
+    /////
+    // Get optional monitor status tag
+    if (is_tag_present(yml, MONITOR_STATUS_TAG))
+    {
+        YamlValidator::validate_tags(yml[MONITOR_STATUS_TAG], tags);
+
+        // NOTE: Use fill instead of get to avoid throwing exceptions if tags are not present
+        fill<core::MonitorProducerConfiguration>(object.producers[core::STATUS_MONITOR_PRODUCER_ID],
+                get_value_in_tag(yml, MONITOR_STATUS_TAG), version);
+
+        // NOTE: Set the generic domain first so it can be overwritten by the specific domain if present
+        object.consumers[core::STATUS_MONITOR_PRODUCER_ID].domain = domain;
+        fill<core::DdsPublishingConfiguration>(object.consumers[core::STATUS_MONITOR_PRODUCER_ID],
+                get_value_in_tag(yml, MONITOR_STATUS_TAG), version);
+    }
+
+    /////
+    // Get optional monitor topics tag
+    if (is_tag_present(yml, MONITOR_TOPICS_TAG))
+    {
+        YamlValidator::validate_tags(yml[MONITOR_TOPICS_TAG], tags);
+
+        // NOTE: Use fill instead of get to avoid throwing exceptions if tags are not present
+        fill<core::MonitorProducerConfiguration>(object.producers[core::TOPICS_MONITOR_PRODUCER_ID],
+                get_value_in_tag(yml, MONITOR_TOPICS_TAG), version);
+
+        // NOTE: Set the generic domain first so it can be overwritten by the specific domain if present
+        object.consumers[core::TOPICS_MONITOR_PRODUCER_ID].domain = domain;
+        fill<core::DdsPublishingConfiguration>(object.consumers[core::TOPICS_MONITOR_PRODUCER_ID],
+                get_value_in_tag(yml, MONITOR_TOPICS_TAG), version);
+    }
+}
+
+template <>
+DDSPIPE_YAML_DllAPI
+bool YamlValidator::validate<core::MonitorConfiguration>(
+        const Yaml& yml,
+        const YamlReaderVersion& /* version */)
+{
+    static const std::set<TagType> tags{
+        MONITOR_DOMAIN_TAG,
+        MONITOR_STATUS_TAG,
+        MONITOR_TOPICS_TAG};
+
+    return YamlValidator::validate_tags(yml, tags);
+}
+
+template <>
+DDSPIPE_YAML_DllAPI
+core::MonitorConfiguration YamlReader::get(
+        const Yaml& yml,
+        const YamlReaderVersion version)
+{
+    YamlValidator::validate<core::MonitorConfiguration>(yml, version);
+
+    core::MonitorConfiguration object;
+    fill<core::MonitorConfiguration>(object, yml, version);
     return object;
 }
 
