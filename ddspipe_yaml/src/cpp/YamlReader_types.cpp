@@ -265,7 +265,7 @@ Address YamlReader::get<Address>(
     // If neither set, get default
     if (ip_set && domain_name_set)
     {
-        EPROSIMA_LOG_WARNING(ddspipe_YAML,
+        EPROSIMA_LOG_WARNING(DDSPIPE_YAML,
                 "Tag <" << ADDRESS_DNS_TAG << "> will not be used as <" << ADDRESS_IP_TAG << "> is set.");
         domain_name_set = false;
     }
@@ -580,7 +580,7 @@ TopicQoS YamlReader::get<TopicQoS>(
 
 template <>
 DDSPIPE_YAML_DllAPI
-void YamlReader::fill<utils::LogFilter>(
+void YamlReader::fill(
         utils::LogFilter& object,
         const Yaml& yml,
         const YamlReaderVersion version)
@@ -621,6 +621,8 @@ utils::LogFilter YamlReader::get(
         const Yaml& yml,
         const YamlReaderVersion version)
 {
+    YamlValidator::validate<utils::LogFilter>(yml, version);
+
     utils::LogFilter object;
     fill<utils::LogFilter>(object, yml, version);
     return object;
@@ -661,7 +663,7 @@ void YamlReader::fill(
     // Filter optional
     if (is_tag_present(yml, LOG_FILTER_TAG))
     {
-        fill<utils::LogFilter>(object.filter, get_value_in_tag(yml, LOG_FILTER_TAG), version);
+        object.filter = get<utils::LogFilter>(yml, LOG_FILTER_TAG, version);
     }
 }
 
@@ -686,6 +688,8 @@ core::DdsPipeLogConfiguration YamlReader::get(
         const Yaml& yml,
         const YamlReaderVersion version)
 {
+    YamlValidator::validate<core::DdsPipeLogConfiguration>(yml, version);
+
     core::DdsPipeLogConfiguration object;
     fill<core::DdsPipeLogConfiguration>(object, yml, version);
     return object;
@@ -794,7 +798,7 @@ void YamlReader::fill(
 {
     // Avoid calling YamlReader::get to avoid validation at a lower level
     WildcardDdsFilterTopic manual_topic;
-    YamlReader::fill<WildcardDdsFilterTopic>(manual_topic, yml, version);
+    fill<WildcardDdsFilterTopic>(manual_topic, yml, version);
 
     object.first = utils::Heritable<WildcardDdsFilterTopic>::make_heritable(manual_topic);
 

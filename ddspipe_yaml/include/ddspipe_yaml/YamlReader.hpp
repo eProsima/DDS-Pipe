@@ -14,6 +14,8 @@
 
 #pragma once
 
+#include <functional>
+
 #include <cpp_utils/types/Fuzzy.hpp>
 #include <cpp_utils/enum/EnumBuilder.hpp>
 
@@ -167,13 +169,31 @@ public:
             const Yaml& yml,
             const TagType& tag);
 
-    //! TODO comment
+    /**
+     * @brief Validate \c yml and build the object \c T
+     *
+     * This method calls \c get with the default validation function.
+     *
+     * @tparam T type of the object to build
+     * @param yml base yaml
+     * @param version configuration version
+     */
     template <typename T>
     static T get(
             const Yaml& yml,
             const YamlReaderVersion version);
 
-    //! Get element inside \c tag
+    /**
+     * @brief Extracts the sub-yaml from the \c tag and then builds the object \c T
+     *
+     * This method calls \c get_value_in_tag to extract the sub-yaml from the \c tag and then it calls \c get to build
+     * and validate the object \c T.
+     *
+     * @tparam T type of the object to build
+     * @param yml base yaml
+     * @param tag key to yaml containing the object
+     * @param version configuration version
+     */
     template <typename T>
     static T get(
             const Yaml& yml,
