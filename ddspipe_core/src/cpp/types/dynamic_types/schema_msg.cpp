@@ -66,7 +66,7 @@ std::string type_kind_to_str(
 fastdds::dds::DynamicType::_ref_type container_internal_type(
         const fastdds::dds::DynamicType::_ref_type& dyn_type)
 {
-    fastdds::dds::TypeDescriptor::_ref_type type_descriptor;
+    fastdds::dds::TypeDescriptor::_ref_type type_descriptor {fastdds::dds::traits<fastdds::dds::TypeDescriptor>::make_shared()};
     const auto ret = dyn_type->get_descriptor(type_descriptor);
     if (ret != fastdds::dds::RETCODE_OK)
     {
@@ -78,7 +78,7 @@ fastdds::dds::DynamicType::_ref_type container_internal_type(
 std::vector<uint32_t> array_size(
         const fastdds::dds::DynamicType::_ref_type& dyn_type)
 {
-    fastdds::dds::TypeDescriptor::_ref_type type_descriptor;
+    fastdds::dds::TypeDescriptor::_ref_type type_descriptor {fastdds::dds::traits<fastdds::dds::TypeDescriptor>::make_shared()};
     const auto ret = dyn_type->get_descriptor(type_descriptor);
     if (ret != fastdds::dds::RETCODE_OK)
     {
@@ -98,7 +98,7 @@ std::vector<std::pair<std::string, fastdds::dds::DynamicType::_ref_type>> get_me
     for (const auto& member : members)
     {
         fastdds::dds::ObjectName dyn_name = member.second->get_name();
-        fastdds::dds::MemberDescriptor::_ref_type member_descriptor;
+        fastdds::dds::MemberDescriptor::_ref_type member_descriptor {fastdds::dds::traits<fastdds::dds::MemberDescriptor>::make_shared()};
         const auto ret = member.second->get_descriptor(member_descriptor);
         if (ret != fastdds::dds::RETCODE_OK)
         {

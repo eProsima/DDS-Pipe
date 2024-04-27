@@ -80,12 +80,23 @@ eprosima::fastdds::dds::DynamicType::_ref_type get_dynamic_type( // traits<epros
     register_map_struct_type_objects();
 
     auto type_name = to_string(type);
-    eprosima::fastdds::dds::xtypes::TypeObjectPair type_objects;
-    const auto ret = eprosima::fastdds::dds::DomainParticipantFactory::get_instance()->type_object_registry().get_type_objects(
-                type_name,
-                type_objects);
+    fastdds::dds::xtypes::TypeInformation type_information;
+    if (fastdds::dds::RETCODE_OK != fastdds::dds::DomainParticipantFactory::get_instance()->type_object_registry().get_type_information(
+            type_name,
+            type_information))
+    {
+        return nullptr;
+    }
+        fastdds::dds::xtypes::TypeIdentifier type_id;
+        type_id = type_information.complete().typeid_with_size().type_id();
 
-    if (ret != eprosima::fastdds::dds::RETCODE_OK)
+        fastdds::dds::xtypes::TypeObject type_obj;
+        if (fastdds::dds::RETCODE_OK == fastdds::dds::DomainParticipantFactory::get_instance()->type_object_registry().get_type_object(
+                type_id,
+                type_obj))
+    }
+
+    else
     {
         throw eprosima::utils::InconsistencyException("No Type Object");
     }
