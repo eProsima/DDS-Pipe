@@ -16,7 +16,7 @@
  * @file types.cpp
  */
 
-#include <fastrtps/types/TypeObjectFactory.h>
+#include <fastdds/dds/xtypes/type_representation/TypeObject.hpp>
 
 #include <ddspipe_core/types/dynamic_types/types.hpp>
 

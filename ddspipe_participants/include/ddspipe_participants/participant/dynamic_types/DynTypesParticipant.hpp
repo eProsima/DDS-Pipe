@@ -90,7 +90,8 @@ protected:
 
     void on_type_discovery_(
             fastdds::dds::DomainParticipant* participant,
-            const fastdds::dds::xtypes::TypeInformation& type_info);
+            const fastdds::dds::xtypes::TypeInformation& type_info,
+            const std::string& type_name);
 
     void internal_notify_type_object_(
             fastdds::dds::DynamicType::_ref_type dynamic_type);
