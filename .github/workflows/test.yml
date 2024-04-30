@@ -59,6 +59,18 @@ on:
   workflow_dispatch:
     inputs:
 
+      custom_version_build:
+        description: >
+          Use the custom version build from eProsima-CI.
+          If set to false, the workflow will run the tests for Fast DDS v2 and v3.
+        required: true
+        type: choice
+        default: 'custom'
+        options:
+          - custom
+          - v2
+          - v3
+
       dependencies_artifact_postfix:
         description: 'Postfix name to add to artifact name to download dependencies. This is use to download a specific artifact version from eProsima-CI.'
         required: true
@@ -73,6 +85,7 @@ on:
 
 env:
   code_packages_names: 'ddspipe_core ddspipe_yaml ddspipe_participants'
+  default_custom_version_build: 'v2'
   default_dependencies_artifact_postfix: '_nightly'
 
 jobs:
@@ -107,6 +120,7 @@ jobs:
           os: ${{ matrix.os }}
           cmake_build_type: ${{ matrix.cmake_build_type }}
           target_workspace: ${{ env.workspace_dependencies }}
+          custom_version_build: ${{ github.event.inputs.custom_version_build || env.default_custom_version_build }}
           dependencies_artifact_postfix: ${{ github.event.inputs.dependencies_artifact_postfix || env.default_dependencies_artifact_postfix }}
           secret_token: ${{ secrets.GITHUB_TOKEN }}
 
@@ -168,6 +182,7 @@ jobs:
         with:
           os: ${{ matrix.os }}
           cmake_build_type: ${{ matrix.cmake_build_type }}
+          custom_version_build: ${{ github.event.inputs.custom_version_build || env.default_custom_version_build }}
           dependencies_artifact_postfix: ${{ github.event.inputs.dependencies_artifact_postfix || env.default_dependencies_artifact_postfix }}
           secret_token: ${{ secrets.GITHUB_TOKEN }}
 
@@ -198,6 +213,7 @@ jobs:
         with:
           os: ubuntu-22.04
           cmake_build_type: Release
+          custom_version_build: ${{ github.event.inputs.custom_version_build || env.default_custom_version_build }}
           dependencies_artifact_postfix: ${{ github.event.inputs.dependencies_artifact_postfix || env.default_dependencies_artifact_postfix }}
           secret_token: ${{ secrets.GITHUB_TOKEN }}
 
@@ -225,6 +241,7 @@ jobs:
         with:
           os: ubuntu-22.04
           cmake_build_type: Release
+          custom_version_build: ${{ github.event.inputs.custom_version_build || env.default_custom_version_build }}
           dependencies_artifact_postfix: ${{ github.event.inputs.dependencies_artifact_postfix || env.default_dependencies_artifact_postfix }}
           secret_token: ${{ secrets.GITHUB_TOKEN }}
 
@@ -252,6 +269,7 @@ jobs:
         with:
           os: ubuntu-22.04
           cmake_build_type: Release
+          custom_version_build: ${{ github.event.inputs.custom_version_build || env.default_custom_version_build }}
           dependencies_artifact_postfix: ${{ github.event.inputs.dependencies_artifact_postfix || env.default_dependencies_artifact_postfix }}
           secret_token: ${{ secrets.GITHUB_TOKEN }}
 
@@ -281,6 +299,7 @@ jobs:
         with:
           os: ubuntu-22.04
           cmake_build_type: Release
+          custom_version_build: ${{ github.event.inputs.custom_version_build || env.default_custom_version_build }}
           dependencies_artifact_postfix: ${{ github.event.inputs.dependencies_artifact_postfix || env.default_dependencies_artifact_postfix }}
           secret_token: ${{ secrets.GITHUB_TOKEN }}
 
@@ -310,6 +329,7 @@ jobs:
         with:
           os: ubuntu-22.04
           cmake_build_type: Release
+          custom_version_build: ${{ github.event.inputs.custom_version_build || env.default_custom_version_build }}
           dependencies_artifact_postfix: ${{ github.event.inputs.dependencies_artifact_postfix || env.default_dependencies_artifact_postfix }}
           secret_token: ${{ secrets.GITHUB_TOKEN }}
 
