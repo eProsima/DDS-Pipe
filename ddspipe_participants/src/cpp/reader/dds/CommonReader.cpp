@@ -111,7 +111,10 @@ void CommonReader::on_data_available(
     // and the number of messages received will be slightly inaccurate.
     monitor_msg_rx(topic_, participant_id_);
 
-    on_data_available_();
+    if (enabled_)
+    {
+        on_data_available_();
+    }
 }
 
 void CommonReader::on_sample_lost(
@@ -216,12 +219,9 @@ utils::ReturnCode CommonReader::take_nts_(
 
 void CommonReader::enable_nts_() noexcept
 {
-    // If the topic is reliable, the reader will keep the samples received when it was disabled.
-    // However, if the topic is best_effort, the reader will discard the samples received when it was disabled.
-    if (topic_.topic_qos.is_reliable())
-    {
-        on_data_available_();
-    }
+    // Notify messages reception in case any were received while disabled
+    // NOTE: unlike in the RTPS case, samples received while disabled will be processed even if the topic is best_effort
+    on_data_available_();
 }
 
 fastdds::dds::SubscriberQos CommonReader::reckon_subscriber_qos_() const
