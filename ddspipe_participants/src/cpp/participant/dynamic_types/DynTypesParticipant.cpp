@@ -18,9 +18,13 @@
 
 #include <memory>
 
+#include <tuple>
+#include <unordered_set>
+
 #include <cpp_utils/Log.hpp>
 
 #include <fastdds/dds/domain/DomainParticipantFactory.hpp>
+#include <fastdds/dds/topic/TypeSupport.hpp>
 #include <fastdds/dds/xtypes/dynamic_types/DynamicType.hpp>
 #include <fastdds/dds/xtypes/dynamic_types/DynamicTypeBuilder.hpp>
 #include <fastdds/dds/xtypes/dynamic_types/DynamicTypeBuilderFactory.hpp>
@@ -102,7 +106,8 @@ void DynTypesParticipant::on_data_reader_discovery(
 {
     // Get type information
     const auto type_info = info.info.type_information().type_information;
-    on_type_discovery_(participant, type_info, info.info.typeName().to_string());
+    const auto type_name = info.info.typeName();
+    on_type_discovery_(participant, type_info, type_name);
 }
 
 void DynTypesParticipant::on_data_writer_discovery(
@@ -112,59 +117,74 @@ void DynTypesParticipant::on_data_writer_discovery(
 {
     // Get type information
     const auto type_info = info.info.type_information().type_information;
-    on_type_discovery_(participant, type_info, info.info.typeName().to_string());
+    const auto type_name = info.info.typeName();
+    on_type_discovery_(participant, type_info, type_name);
 }
 
 void DynTypesParticipant::on_type_discovery_(
             fastdds::dds::DomainParticipant* participant,
             const fastdds::dds::xtypes::TypeInformation& type_info,
-            const std::string& type_name)
+            const fastcdr::string_255& type_name)
 {
-    // Get type information
+    auto type_identifier = type_info.complete().typeid_with_size().type_id();
     fastdds::dds::xtypes::TypeObject dyn_type_object;
     if (fastdds::dds::RETCODE_OK != fastdds::dds::DomainParticipantFactory::get_instance()->type_object_registry().get_type_object(
-            type_info.complete().typeid_with_size().type_id(),
+            type_identifier,
             dyn_type_object))
     {
         // Error
         return;
     }
 
-    fastdds::dds::xtypes::TypeIdentifierSeq type_id_seq;
-    std::unordered_set<fastdds::dds::xtypes::TypeIdentfierWithSize> type_dependencies;
-    if (fastdds::dds::RETCODE_OK != fastdds::dds::DomainParticipantFactory::get_instance()->type_object_registry().get_type_dependencies(
-            type_id_seq,
-            type_dependencies))
-    {
-        return;
-    }
-
-    // // Napa: reregister as local
-    // if (fastdds::dds::RETCODE_OK != fastdds::dds::DomainParticipantFactory::get_instance()->type_object_registry().register_type_object(
-    //         type_name,
-    //         dyn_type_object.complete()))
-    // {
-    //     // Error
-    //     return;
-    // }
-
-    // Register discovered type
+    // TODO
     fastdds::dds::DynamicType::_ref_type dyn_type = fastdds::dds::DynamicTypeBuilderFactory::get_instance()->create_type_w_type_object(
-            dyn_type_object)->build();
-
-    // Request type object through TypeLookup if not present in factory, or if type building failed
+                dyn_type_object)->build();
     if (!dyn_type)
     {
         //TODO: Return logWarning
     }
     else
     {
-        internal_notify_type_object_(dyn_type);
+        fastdds::dds::TypeSupport dyn_type_support(new fastdds::dds::DynamicPubSubType(dyn_type));
+        dyn_type_support.register_type(participant);
+
+        // Save type_identifier and its associated tyme_name. NOTE: We assume each type_name corresponds to only one type_identifier
+        auto type_name_and_id = std::make_tuple(type_name, type_identifier);
+        internal_notify_type_object_(dyn_type, type_name_and_id);
     }
+
+    // // Register its dependencies
+    // for (const auto& type_id : type_dependencies)
+    // {
+    //     // Get type object
+    //     fastdds::dds::xtypes::TypeObject dyn_type_object;
+    //     if (fastdds::dds::RETCODE_OK != fastdds::dds::DomainParticipantFactory::get_instance()->type_object_registry().get_type_object(
+    //             type_id.type_id(),
+    //             dyn_type_object))
+    //     {
+    //         // Error
+    //         return;
+    //     }
+
+    //     // Register discovered type
+    //     fastdds::dds::DynamicType::_ref_type dyn_type = fastdds::dds::DynamicTypeBuilderFactory::get_instance()->create_type_w_type_object(
+    //             dyn_type_object)->build();
+
+    //     // Request type object through TypeLookup if not present in factory, or if type building failed
+    //     if (!dyn_type)
+    //     {
+    //         //TODO: Return logWarning
+    //     }
+    //     else
+    //     {
+    //         internal_notify_type_object_(dyn_type);
+    //     }
+    // }
 }
 
 void DynTypesParticipant::internal_notify_type_object_(
-        fastdds::dds::DynamicType::_ref_type dynamic_type)
+        fastdds::dds::DynamicType::_ref_type dynamic_type,
+        const std::tuple<fastcdr::string_255, fastdds::dds::xtypes::TypeIdentifier>& type_name_and_id)
 {
     logInfo(DDSPIPE_DYNTYPES_PARTICIPANT,
             "Participant " << this->id() << " discovered type object " << dynamic_type->get_name());
@@ -174,7 +194,7 @@ void DynTypesParticipant::internal_notify_type_object_(
     // Create data containing Dynamic Type
     auto data = std::make_unique<DynamicTypeData>();
     data->dynamic_type = dynamic_type; // TODO: add constructor with param
-    // data->type_information = type_information;
+    data->type_ids_tuple = type_name_and_id;
 
     // Insert new data in internal reader queue
     type_object_reader_->simulate_data_reception(std::move(data));
