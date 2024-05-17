@@ -308,7 +308,7 @@ void DiscoveryDatabase::queue_processing_thread_routine_() noexcept
                 lock,
                 [&]
                 {
-                    return !entities_to_process_.BothEmpty() || exit_.load();
+                    return !entities_to_process_.both_empty() || exit_.load();
                 });
 
             if (exit_.load())
@@ -326,17 +326,17 @@ void DiscoveryDatabase::push_item_to_queue_(
 {
     {
         std::lock_guard<std::mutex> lock(entities_to_process_cv_mutex_);
-        entities_to_process_.Push(item);
+        entities_to_process_.push(item);
     }
     entities_to_process_cv_.notify_one();
 }
 
 void DiscoveryDatabase::process_queue_() noexcept
 {
-    entities_to_process_.Swap();
-    while (!entities_to_process_.Empty())
+    entities_to_process_.swap();
+    while (!entities_to_process_.empty())
     {
-        std::tuple<DatabaseOperation, Endpoint> queue_item = entities_to_process_.Front();
+        std::tuple<DatabaseOperation, Endpoint> queue_item = entities_to_process_.front();
         DatabaseOperation db_operation = std::get<0>(queue_item);
         Endpoint entity = std::get<1>(queue_item);
         try
@@ -359,7 +359,7 @@ void DiscoveryDatabase::process_queue_() noexcept
             logDevError(DDSPIPE_DISCOVERY_DATABASE,
                     "Error processing database operations queue:" << e.what() << ".");
         }
-        entities_to_process_.Pop();
+        entities_to_process_.pop();
     }
 }
 

@@ -51,7 +51,7 @@ utils::ReturnCode TypeObjectWriter::write_nts_(
     // Add schema
     try
     {
-        schema_handler_->add_schema(dynamic_type_data.dynamic_type);
+        schema_handler_->add_schema(dynamic_type_data.dynamic_type, dynamic_type_data.type_ids_tuple);
     }
     catch (const utils::Exception& e)
     {

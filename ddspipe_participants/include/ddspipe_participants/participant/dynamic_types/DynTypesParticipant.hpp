@@ -91,10 +91,11 @@ protected:
     void on_type_discovery_(
             fastdds::dds::DomainParticipant* participant,
             const fastdds::dds::xtypes::TypeInformation& type_info,
-            const std::string& type_name);
+            const fastcdr::string_255& type_name);
 
     void internal_notify_type_object_(
-            fastdds::dds::DynamicType::_ref_type dynamic_type);
+            fastdds::dds::DynamicType::_ref_type dynamic_type,
+            const std::tuple<fastcdr::string_255, fastdds::dds::xtypes::TypeIdentifier>& type_name_and_id);
 
     void initialize_internal_dds_participant_();
 

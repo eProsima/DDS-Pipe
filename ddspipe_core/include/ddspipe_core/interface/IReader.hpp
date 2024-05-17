@@ -16,7 +16,7 @@
 
 #include <functional>
 
-#include <fastrtps/utils/TimedMutex.hpp>
+#include <fastdds/utils/TimedMutex.hpp>
 
 #include <cpp_utils/ReturnCode.hpp>
 

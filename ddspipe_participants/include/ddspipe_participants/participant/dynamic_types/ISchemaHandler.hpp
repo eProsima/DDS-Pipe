@@ -18,6 +18,10 @@
 
 #pragma once
 
+#include <tuple>
+
+#include <fastcdr/cdr/fixed_size_string.hpp>
+
 #include <fastdds/dds/xtypes/dynamic_types/DynamicType.hpp>
 
 #include <ddspipe_core/types/data/RtpsPayloadData.hpp>
@@ -35,7 +39,8 @@ class ISchemaHandler
 public:
 
     virtual void add_schema(
-            const fastdds::dds::DynamicType::_ref_type& dynamic_type) = 0;
+            const fastdds::dds::DynamicType::_ref_type& dynamic_type,
+            const std::tuple<fastcdr::string_255, fastdds::dds::xtypes::TypeIdentifier>& type_ids_tuple) = 0;
 
     virtual void add_data(
             const core::types::DdsTopic& topic,
