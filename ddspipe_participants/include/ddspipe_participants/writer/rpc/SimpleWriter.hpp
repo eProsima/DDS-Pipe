@@ -16,7 +16,7 @@
 
 #include <fastdds/rtps/rtps_fwd.h>
 #include <fastrtps/rtps/attributes/HistoryAttributes.h>
-#include <fastrtps/attributes/TopicAttributes.h>
+#include <fastdds/rtps/attributes/TopicAttributes.h>
 #include <fastrtps/qos/WriterQos.h>
 #include <fastrtps/rtps/history/WriterHistory.h>
 #include <fastrtps/rtps/attributes/WriterAttributes.h>

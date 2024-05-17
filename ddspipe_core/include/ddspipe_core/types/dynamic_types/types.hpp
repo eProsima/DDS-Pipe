@@ -14,6 +14,10 @@
 
 #pragma once
 
+#include <tuple>
+
+#include <fastcdr/cdr/fixed_size_string.hpp>
+
 #include <fastdds/dds/xtypes/dynamic_types/DynamicType.hpp>
 #include <fastdds/dds/xtypes/type_representation/TypeObject.hpp>
 
@@ -37,6 +41,8 @@ struct DynamicTypeData : public core::IRoutingData
     virtual types::TopicInternalTypeDiscriminator internal_type_discriminator() const noexcept override;
 
     fastdds::dds::DynamicType::_ref_type dynamic_type{nullptr};
+
+    std::tuple<fastcdr::string_255, fastdds::dds::xtypes::TypeIdentifier> type_ids_tuple{};
 
     // fastdds::dds::xtypes::TypeInformation type_information{};
 };
