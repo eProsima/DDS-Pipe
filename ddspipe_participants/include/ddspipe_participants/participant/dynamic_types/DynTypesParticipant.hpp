@@ -39,7 +39,7 @@ namespace participants {
  *
  * TODO: separate these 2 participants
  */
-class DynTypesParticipant : public rtps::SimpleParticipant, public eprosima::fastdds::dds::DomainParticipantListener
+class DynTypesParticipant : public rtps::SimpleParticipant
 {
 public:
 
@@ -75,31 +75,25 @@ public:
             const core::ITopic& topic) override;
 
     DDSPIPE_PARTICIPANTS_DllAPI
-    void on_data_reader_discovery(
-            fastdds::dds::DomainParticipant* participant,
-            fastrtps::rtps::ReaderDiscoveryInfo&& info,
-            bool& /*should_be_ignored*/) override;
+    void onReaderDiscovery(
+            fastrtps::rtps::RTPSParticipant* participant,
+            fastrtps::rtps::ReaderDiscoveryInfo&& info) override;
 
     DDSPIPE_PARTICIPANTS_DllAPI
-    void on_data_writer_discovery(
-            fastdds::dds::DomainParticipant* participant,
-            fastrtps::rtps::WriterDiscoveryInfo&& info,
-            bool& /*should_be_ignored*/) override;
+    void onWriterDiscovery(
+            fastrtps::rtps::RTPSParticipant* participant,
+            fastrtps::rtps::WriterDiscoveryInfo&& info) override;
 
 protected:
 
     void on_type_discovery_(
-            fastdds::dds::DomainParticipant* participant,
+            fastrtps::rtps::RTPSParticipant* participant,
             const fastdds::dds::xtypes::TypeInformation& type_info,
             const fastcdr::string_255& type_name);
 
     void internal_notify_type_object_(
             fastdds::dds::DynamicType::_ref_type dynamic_type,
             const std::tuple<fastcdr::string_255, fastdds::dds::xtypes::TypeIdentifier>& type_name_and_id);
-
-    void initialize_internal_dds_participant_();
-
-    fastdds::dds::DomainParticipant* dds_participant_;
 
     //! Type Object Internal Reader
     std::shared_ptr<InternalReader> type_object_reader_;
