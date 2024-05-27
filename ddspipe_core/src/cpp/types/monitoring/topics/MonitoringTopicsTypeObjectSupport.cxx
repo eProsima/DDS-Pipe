@@ -38,27 +38,20 @@
 
 using namespace eprosima::fastdds::dds::xtypes;
 
-void register_MonitoringTopics_type_objects()
+// TypeIdentifier is returned by reference: dependent structures/unions are registered in this same method
+void register_DdsTopicData_type_identifier(
+        TypeIdentifierPair& type_ids_DdsTopicData)
 {
-    static std::once_flag once_flag;
-    std::call_once(once_flag, []()
-            {
-                register_DdsTopicData_type_identifier();
 
-                register_DdsTopic_type_identifier();
-
-                register_MonitoringTopics_type_identifier();
-
-            });
-}
-
-void register_DdsTopicData_type_identifier()
-{
+    ReturnCode_t return_code_DdsTopicData {eprosima::fastdds::dds::RETCODE_OK};
+    return_code_DdsTopicData =
+        eprosima::fastdds::dds::DomainParticipantFactory::get_instance()->type_object_registry().get_type_identifiers(
+        "DdsTopicData", type_ids_DdsTopicData);
+    if (eprosima::fastdds::dds::RETCODE_OK != return_code_DdsTopicData)
     {
         StructTypeFlag struct_flags_DdsTopicData = TypeObjectUtils::build_struct_type_flag(eprosima::fastdds::dds::xtypes::ExtensibilityKind::NOT_APPLIED,
                 false, false);
-        ReturnCode_t return_code_DdsTopicData;
-        TypeIdentifierPair type_ids_DdsTopicData;
+        static_cast<void>(return_code_DdsTopicData);
         QualifiedTypeName type_name_DdsTopicData = "DdsTopicData";
         eprosima::fastcdr::optional<AppliedBuiltinTypeAnnotations> type_ann_builtin_DdsTopicData;
         eprosima::fastcdr::optional<AppliedAnnotationSeq> ann_custom_DdsTopicData;
@@ -67,92 +60,67 @@ void register_DdsTopicData_type_identifier()
         header_DdsTopicData = TypeObjectUtils::build_complete_struct_header(TypeIdentifier(), detail_DdsTopicData);
         CompleteStructMemberSeq member_seq_DdsTopicData;
         {
-            return_code_DdsTopicData =
+            TypeIdentifierPair type_ids_participant_id;
+            ReturnCode_t return_code_participant_id {eprosima::fastdds::dds::RETCODE_OK};
+            return_code_participant_id =
                 eprosima::fastdds::dds::DomainParticipantFactory::get_instance()->type_object_registry().get_type_identifiers(
-                "anonymous_string_unbounded", type_ids_DdsTopicData);
+                "anonymous_string_unbounded", type_ids_participant_id);
 
-            if (return_code_DdsTopicData != eprosima::fastdds::dds::RETCODE_OK)
+            if (eprosima::fastdds::dds::RETCODE_OK != return_code_participant_id)
             {
-                std::string type_id_kind_anonymous_string_unbounded("TI_STRING8_SMALL");
-                if (type_id_kind_anonymous_string_unbounded == "TI_STRING8_SMALL")
                 {
                     SBound bound = 0;
                     StringSTypeDefn string_sdefn = TypeObjectUtils::build_string_s_type_defn(bound);
                     if (eprosima::fastdds::dds::RETCODE_BAD_PARAMETER ==
                             TypeObjectUtils::build_and_register_s_string_type_identifier(string_sdefn,
-                            "anonymous_string_unbounded"))
+                            "anonymous_string_unbounded", type_ids_participant_id))
                     {
                         EPROSIMA_LOG_ERROR(XTYPES_TYPE_REPRESENTATION,
                             "anonymous_string_unbounded already registered in TypeObjectRegistry for a different type.");
                     }
-                }
-                else if (type_id_kind_anonymous_string_unbounded == "TI_STRING8_LARGE")
-                {
-                    LBound bound = 255;
-                    StringLTypeDefn string_ldefn = TypeObjectUtils::build_string_l_type_defn(bound);
-                    if (eprosima::fastdds::dds::RETCODE_BAD_PARAMETER ==
-                            TypeObjectUtils::build_and_register_l_string_type_identifier(string_ldefn,
-                            "anonymous_string_unbounded"))
-                    {
-                        EPROSIMA_LOG_ERROR(XTYPES_TYPE_REPRESENTATION,
-                            "anonymous_string_unbounded already registered in TypeObjectRegistry for a different type.");
-                    }
-                }
-                else
-                {
-                    EPROSIMA_LOG_ERROR(XTYPES_TYPE_REPRESENTATION,
-                                "anonymous_string_unbounded: Unknown String kind.");
-                    return;
-                }
-                return_code_DdsTopicData =
-                    eprosima::fastdds::dds::DomainParticipantFactory::get_instance()->type_object_registry().get_type_identifiers(
-                    "anonymous_string_unbounded", type_ids_DdsTopicData);
-                if (return_code_DdsTopicData != eprosima::fastdds::dds::RETCODE_OK)
-                {
-                    EPROSIMA_LOG_ERROR(XTYPES_TYPE_REPRESENTATION,
-                                "anonymous_string_unbounded: Given String TypeIdentifier unknown to TypeObjectRegistry.");
-                    return;
                 }
             }
             StructMemberFlag member_flags_participant_id = TypeObjectUtils::build_struct_member_flag(eprosima::fastdds::dds::xtypes::TryConstructKind::NOT_APPLIED,
                     false, false, false, false);
             CommonStructMember common_participant_id;
             MemberId member_id_participant_id = 0x00000000;
-            if (EK_COMPLETE == type_ids_DdsTopicData.type_identifier1()._d() || TK_NONE == type_ids_DdsTopicData.type_identifier2()._d() ||
-                    (TI_PLAIN_SEQUENCE_SMALL == type_ids_DdsTopicData.type_identifier1()._d() &&
-                    EK_COMPLETE == type_ids_DdsTopicData.type_identifier1().seq_sdefn().header().equiv_kind()) ||
-                    (TI_PLAIN_SEQUENCE_LARGE == type_ids_DdsTopicData.type_identifier1()._d() &&
-                    EK_COMPLETE == type_ids_DdsTopicData.type_identifier1().seq_ldefn().header().equiv_kind()) ||
-                    (TI_PLAIN_ARRAY_SMALL == type_ids_DdsTopicData.type_identifier1()._d() &&
-                    EK_COMPLETE == type_ids_DdsTopicData.type_identifier1().array_sdefn().header().equiv_kind()) ||
-                    (TI_PLAIN_ARRAY_LARGE == type_ids_DdsTopicData.type_identifier1()._d() &&
-                    EK_COMPLETE == type_ids_DdsTopicData.type_identifier1().array_ldefn().header().equiv_kind()) ||
-                    (TI_PLAIN_MAP_SMALL == type_ids_DdsTopicData.type_identifier1()._d() &&
-                    (EK_COMPLETE == type_ids_DdsTopicData.type_identifier1().map_sdefn().header().equiv_kind() ||
-                    EK_COMPLETE == type_ids_DdsTopicData.type_identifier1().map_sdefn().key_identifier()->_d())) ||
-                    (TI_PLAIN_MAP_LARGE == type_ids_DdsTopicData.type_identifier1()._d() &&
-                    (EK_COMPLETE == type_ids_DdsTopicData.type_identifier1().map_ldefn().header().equiv_kind() ||
-                    EK_COMPLETE == type_ids_DdsTopicData.type_identifier1().map_ldefn().key_identifier()->_d())))
+            if (EK_COMPLETE == type_ids_participant_id.type_identifier1()._d() || TK_NONE == type_ids_participant_id.type_identifier2()._d() ||
+                    (TI_PLAIN_SEQUENCE_SMALL == type_ids_participant_id.type_identifier1()._d() &&
+                    EK_COMPLETE == type_ids_participant_id.type_identifier1().seq_sdefn().header().equiv_kind()) ||
+                    (TI_PLAIN_SEQUENCE_LARGE == type_ids_participant_id.type_identifier1()._d() &&
+                    EK_COMPLETE == type_ids_participant_id.type_identifier1().seq_ldefn().header().equiv_kind()) ||
+                    (TI_PLAIN_ARRAY_SMALL == type_ids_participant_id.type_identifier1()._d() &&
+                    EK_COMPLETE == type_ids_participant_id.type_identifier1().array_sdefn().header().equiv_kind()) ||
+                    (TI_PLAIN_ARRAY_LARGE == type_ids_participant_id.type_identifier1()._d() &&
+                    EK_COMPLETE == type_ids_participant_id.type_identifier1().array_ldefn().header().equiv_kind()) ||
+                    (TI_PLAIN_MAP_SMALL == type_ids_participant_id.type_identifier1()._d() &&
+                    (EK_COMPLETE == type_ids_participant_id.type_identifier1().map_sdefn().header().equiv_kind() ||
+                    EK_COMPLETE == type_ids_participant_id.type_identifier1().map_sdefn().key_identifier()->_d())) ||
+                    (TI_PLAIN_MAP_LARGE == type_ids_participant_id.type_identifier1()._d() &&
+                    (EK_COMPLETE == type_ids_participant_id.type_identifier1().map_ldefn().header().equiv_kind() ||
+                    EK_COMPLETE == type_ids_participant_id.type_identifier1().map_ldefn().key_identifier()->_d())))
             {
-                common_participant_id = TypeObjectUtils::build_common_struct_member(member_id_participant_id, member_flags_participant_id, type_ids_DdsTopicData.type_identifier1());
+                common_participant_id = TypeObjectUtils::build_common_struct_member(member_id_participant_id,
+                        member_flags_participant_id, type_ids_participant_id.type_identifier1());
             }
-            else if (EK_COMPLETE == type_ids_DdsTopicData.type_identifier2()._d() ||
-                    (TI_PLAIN_SEQUENCE_SMALL == type_ids_DdsTopicData.type_identifier2()._d() &&
-                    EK_COMPLETE == type_ids_DdsTopicData.type_identifier2().seq_sdefn().header().equiv_kind()) ||
-                    (TI_PLAIN_SEQUENCE_LARGE == type_ids_DdsTopicData.type_identifier2()._d() &&
-                    EK_COMPLETE == type_ids_DdsTopicData.type_identifier2().seq_ldefn().header().equiv_kind()) ||
-                    (TI_PLAIN_ARRAY_SMALL == type_ids_DdsTopicData.type_identifier2()._d() &&
-                    EK_COMPLETE == type_ids_DdsTopicData.type_identifier2().array_sdefn().header().equiv_kind()) ||
-                    (TI_PLAIN_ARRAY_LARGE == type_ids_DdsTopicData.type_identifier2()._d() &&
-                    EK_COMPLETE == type_ids_DdsTopicData.type_identifier2().array_ldefn().header().equiv_kind()) ||
-                    (TI_PLAIN_MAP_SMALL == type_ids_DdsTopicData.type_identifier2()._d() &&
-                    (EK_COMPLETE == type_ids_DdsTopicData.type_identifier2().map_sdefn().header().equiv_kind() ||
-                    EK_COMPLETE == type_ids_DdsTopicData.type_identifier2().map_sdefn().key_identifier()->_d())) ||
-                    (TI_PLAIN_MAP_LARGE == type_ids_DdsTopicData.type_identifier2()._d() &&
-                    (EK_COMPLETE == type_ids_DdsTopicData.type_identifier2().map_ldefn().header().equiv_kind() ||
-                    EK_COMPLETE == type_ids_DdsTopicData.type_identifier2().map_ldefn().key_identifier()->_d())))
+            else if (EK_COMPLETE == type_ids_participant_id.type_identifier2()._d() ||
+                    (TI_PLAIN_SEQUENCE_SMALL == type_ids_participant_id.type_identifier2()._d() &&
+                    EK_COMPLETE == type_ids_participant_id.type_identifier2().seq_sdefn().header().equiv_kind()) ||
+                    (TI_PLAIN_SEQUENCE_LARGE == type_ids_participant_id.type_identifier2()._d() &&
+                    EK_COMPLETE == type_ids_participant_id.type_identifier2().seq_ldefn().header().equiv_kind()) ||
+                    (TI_PLAIN_ARRAY_SMALL == type_ids_participant_id.type_identifier2()._d() &&
+                    EK_COMPLETE == type_ids_participant_id.type_identifier2().array_sdefn().header().equiv_kind()) ||
+                    (TI_PLAIN_ARRAY_LARGE == type_ids_participant_id.type_identifier2()._d() &&
+                    EK_COMPLETE == type_ids_participant_id.type_identifier2().array_ldefn().header().equiv_kind()) ||
+                    (TI_PLAIN_MAP_SMALL == type_ids_participant_id.type_identifier2()._d() &&
+                    (EK_COMPLETE == type_ids_participant_id.type_identifier2().map_sdefn().header().equiv_kind() ||
+                    EK_COMPLETE == type_ids_participant_id.type_identifier2().map_sdefn().key_identifier()->_d())) ||
+                    (TI_PLAIN_MAP_LARGE == type_ids_participant_id.type_identifier2()._d() &&
+                    (EK_COMPLETE == type_ids_participant_id.type_identifier2().map_ldefn().header().equiv_kind() ||
+                    EK_COMPLETE == type_ids_participant_id.type_identifier2().map_ldefn().key_identifier()->_d())))
             {
-                common_participant_id = TypeObjectUtils::build_common_struct_member(member_id_participant_id, member_flags_participant_id, type_ids_DdsTopicData.type_identifier2());
+                common_participant_id = TypeObjectUtils::build_common_struct_member(member_id_participant_id,
+                        member_flags_participant_id, type_ids_participant_id.type_identifier2());
             }
             else
             {
@@ -168,11 +136,13 @@ void register_DdsTopicData_type_identifier()
             TypeObjectUtils::add_complete_struct_member(member_seq_DdsTopicData, member_participant_id);
         }
         {
-            return_code_DdsTopicData =
+            TypeIdentifierPair type_ids_msgs_lost;
+            ReturnCode_t return_code_msgs_lost {eprosima::fastdds::dds::RETCODE_OK};
+            return_code_msgs_lost =
                 eprosima::fastdds::dds::DomainParticipantFactory::get_instance()->type_object_registry().get_type_identifiers(
-                "_uint32_t", type_ids_DdsTopicData);
+                "_uint32_t", type_ids_msgs_lost);
 
-            if (return_code_DdsTopicData != eprosima::fastdds::dds::RETCODE_OK)
+            if (eprosima::fastdds::dds::RETCODE_OK != return_code_msgs_lost)
             {
                 EPROSIMA_LOG_ERROR(XTYPES_TYPE_REPRESENTATION,
                         "msgs_lost Structure member TypeIdentifier unknown to TypeObjectRegistry.");
@@ -182,41 +152,43 @@ void register_DdsTopicData_type_identifier()
                     false, false, false, false);
             CommonStructMember common_msgs_lost;
             MemberId member_id_msgs_lost = 0x00000001;
-            if (EK_COMPLETE == type_ids_DdsTopicData.type_identifier1()._d() || TK_NONE == type_ids_DdsTopicData.type_identifier2()._d() ||
-                    (TI_PLAIN_SEQUENCE_SMALL == type_ids_DdsTopicData.type_identifier1()._d() &&
-                    EK_COMPLETE == type_ids_DdsTopicData.type_identifier1().seq_sdefn().header().equiv_kind()) ||
-                    (TI_PLAIN_SEQUENCE_LARGE == type_ids_DdsTopicData.type_identifier1()._d() &&
-                    EK_COMPLETE == type_ids_DdsTopicData.type_identifier1().seq_ldefn().header().equiv_kind()) ||
-                    (TI_PLAIN_ARRAY_SMALL == type_ids_DdsTopicData.type_identifier1()._d() &&
-                    EK_COMPLETE == type_ids_DdsTopicData.type_identifier1().array_sdefn().header().equiv_kind()) ||
-                    (TI_PLAIN_ARRAY_LARGE == type_ids_DdsTopicData.type_identifier1()._d() &&
-                    EK_COMPLETE == type_ids_DdsTopicData.type_identifier1().array_ldefn().header().equiv_kind()) ||
-                    (TI_PLAIN_MAP_SMALL == type_ids_DdsTopicData.type_identifier1()._d() &&
-                    (EK_COMPLETE == type_ids_DdsTopicData.type_identifier1().map_sdefn().header().equiv_kind() ||
-                    EK_COMPLETE == type_ids_DdsTopicData.type_identifier1().map_sdefn().key_identifier()->_d())) ||
-                    (TI_PLAIN_MAP_LARGE == type_ids_DdsTopicData.type_identifier1()._d() &&
-                    (EK_COMPLETE == type_ids_DdsTopicData.type_identifier1().map_ldefn().header().equiv_kind() ||
-                    EK_COMPLETE == type_ids_DdsTopicData.type_identifier1().map_ldefn().key_identifier()->_d())))
+            if (EK_COMPLETE == type_ids_msgs_lost.type_identifier1()._d() || TK_NONE == type_ids_msgs_lost.type_identifier2()._d() ||
+                    (TI_PLAIN_SEQUENCE_SMALL == type_ids_msgs_lost.type_identifier1()._d() &&
+                    EK_COMPLETE == type_ids_msgs_lost.type_identifier1().seq_sdefn().header().equiv_kind()) ||
+                    (TI_PLAIN_SEQUENCE_LARGE == type_ids_msgs_lost.type_identifier1()._d() &&
+                    EK_COMPLETE == type_ids_msgs_lost.type_identifier1().seq_ldefn().header().equiv_kind()) ||
+                    (TI_PLAIN_ARRAY_SMALL == type_ids_msgs_lost.type_identifier1()._d() &&
+                    EK_COMPLETE == type_ids_msgs_lost.type_identifier1().array_sdefn().header().equiv_kind()) ||
+                    (TI_PLAIN_ARRAY_LARGE == type_ids_msgs_lost.type_identifier1()._d() &&
+                    EK_COMPLETE == type_ids_msgs_lost.type_identifier1().array_ldefn().header().equiv_kind()) ||
+                    (TI_PLAIN_MAP_SMALL == type_ids_msgs_lost.type_identifier1()._d() &&
+                    (EK_COMPLETE == type_ids_msgs_lost.type_identifier1().map_sdefn().header().equiv_kind() ||
+                    EK_COMPLETE == type_ids_msgs_lost.type_identifier1().map_sdefn().key_identifier()->_d())) ||
+                    (TI_PLAIN_MAP_LARGE == type_ids_msgs_lost.type_identifier1()._d() &&
+                    (EK_COMPLETE == type_ids_msgs_lost.type_identifier1().map_ldefn().header().equiv_kind() ||
+                    EK_COMPLETE == type_ids_msgs_lost.type_identifier1().map_ldefn().key_identifier()->_d())))
             {
-                common_msgs_lost = TypeObjectUtils::build_common_struct_member(member_id_msgs_lost, member_flags_msgs_lost, type_ids_DdsTopicData.type_identifier1());
+                common_msgs_lost = TypeObjectUtils::build_common_struct_member(member_id_msgs_lost,
+                        member_flags_msgs_lost, type_ids_msgs_lost.type_identifier1());
             }
-            else if (EK_COMPLETE == type_ids_DdsTopicData.type_identifier2()._d() ||
-                    (TI_PLAIN_SEQUENCE_SMALL == type_ids_DdsTopicData.type_identifier2()._d() &&
-                    EK_COMPLETE == type_ids_DdsTopicData.type_identifier2().seq_sdefn().header().equiv_kind()) ||
-                    (TI_PLAIN_SEQUENCE_LARGE == type_ids_DdsTopicData.type_identifier2()._d() &&
-                    EK_COMPLETE == type_ids_DdsTopicData.type_identifier2().seq_ldefn().header().equiv_kind()) ||
-                    (TI_PLAIN_ARRAY_SMALL == type_ids_DdsTopicData.type_identifier2()._d() &&
-                    EK_COMPLETE == type_ids_DdsTopicData.type_identifier2().array_sdefn().header().equiv_kind()) ||
-                    (TI_PLAIN_ARRAY_LARGE == type_ids_DdsTopicData.type_identifier2()._d() &&
-                    EK_COMPLETE == type_ids_DdsTopicData.type_identifier2().array_ldefn().header().equiv_kind()) ||
-                    (TI_PLAIN_MAP_SMALL == type_ids_DdsTopicData.type_identifier2()._d() &&
-                    (EK_COMPLETE == type_ids_DdsTopicData.type_identifier2().map_sdefn().header().equiv_kind() ||
-                    EK_COMPLETE == type_ids_DdsTopicData.type_identifier2().map_sdefn().key_identifier()->_d())) ||
-                    (TI_PLAIN_MAP_LARGE == type_ids_DdsTopicData.type_identifier2()._d() &&
-                    (EK_COMPLETE == type_ids_DdsTopicData.type_identifier2().map_ldefn().header().equiv_kind() ||
-                    EK_COMPLETE == type_ids_DdsTopicData.type_identifier2().map_ldefn().key_identifier()->_d())))
+            else if (EK_COMPLETE == type_ids_msgs_lost.type_identifier2()._d() ||
+                    (TI_PLAIN_SEQUENCE_SMALL == type_ids_msgs_lost.type_identifier2()._d() &&
+                    EK_COMPLETE == type_ids_msgs_lost.type_identifier2().seq_sdefn().header().equiv_kind()) ||
+                    (TI_PLAIN_SEQUENCE_LARGE == type_ids_msgs_lost.type_identifier2()._d() &&
+                    EK_COMPLETE == type_ids_msgs_lost.type_identifier2().seq_ldefn().header().equiv_kind()) ||
+                    (TI_PLAIN_ARRAY_SMALL == type_ids_msgs_lost.type_identifier2()._d() &&
+                    EK_COMPLETE == type_ids_msgs_lost.type_identifier2().array_sdefn().header().equiv_kind()) ||
+                    (TI_PLAIN_ARRAY_LARGE == type_ids_msgs_lost.type_identifier2()._d() &&
+                    EK_COMPLETE == type_ids_msgs_lost.type_identifier2().array_ldefn().header().equiv_kind()) ||
+                    (TI_PLAIN_MAP_SMALL == type_ids_msgs_lost.type_identifier2()._d() &&
+                    (EK_COMPLETE == type_ids_msgs_lost.type_identifier2().map_sdefn().header().equiv_kind() ||
+                    EK_COMPLETE == type_ids_msgs_lost.type_identifier2().map_sdefn().key_identifier()->_d())) ||
+                    (TI_PLAIN_MAP_LARGE == type_ids_msgs_lost.type_identifier2()._d() &&
+                    (EK_COMPLETE == type_ids_msgs_lost.type_identifier2().map_ldefn().header().equiv_kind() ||
+                    EK_COMPLETE == type_ids_msgs_lost.type_identifier2().map_ldefn().key_identifier()->_d())))
             {
-                common_msgs_lost = TypeObjectUtils::build_common_struct_member(member_id_msgs_lost, member_flags_msgs_lost, type_ids_DdsTopicData.type_identifier2());
+                common_msgs_lost = TypeObjectUtils::build_common_struct_member(member_id_msgs_lost,
+                        member_flags_msgs_lost, type_ids_msgs_lost.type_identifier2());
             }
             else
             {
@@ -232,11 +204,13 @@ void register_DdsTopicData_type_identifier()
             TypeObjectUtils::add_complete_struct_member(member_seq_DdsTopicData, member_msgs_lost);
         }
         {
-            return_code_DdsTopicData =
+            TypeIdentifierPair type_ids_msgs_received;
+            ReturnCode_t return_code_msgs_received {eprosima::fastdds::dds::RETCODE_OK};
+            return_code_msgs_received =
                 eprosima::fastdds::dds::DomainParticipantFactory::get_instance()->type_object_registry().get_type_identifiers(
-                "_uint32_t", type_ids_DdsTopicData);
+                "_uint32_t", type_ids_msgs_received);
 
-            if (return_code_DdsTopicData != eprosima::fastdds::dds::RETCODE_OK)
+            if (eprosima::fastdds::dds::RETCODE_OK != return_code_msgs_received)
             {
                 EPROSIMA_LOG_ERROR(XTYPES_TYPE_REPRESENTATION,
                         "msgs_received Structure member TypeIdentifier unknown to TypeObjectRegistry.");
@@ -246,41 +220,43 @@ void register_DdsTopicData_type_identifier()
                     false, false, false, false);
             CommonStructMember common_msgs_received;
             MemberId member_id_msgs_received = 0x00000002;
-            if (EK_COMPLETE == type_ids_DdsTopicData.type_identifier1()._d() || TK_NONE == type_ids_DdsTopicData.type_identifier2()._d() ||
-                    (TI_PLAIN_SEQUENCE_SMALL == type_ids_DdsTopicData.type_identifier1()._d() &&
-                    EK_COMPLETE == type_ids_DdsTopicData.type_identifier1().seq_sdefn().header().equiv_kind()) ||
-                    (TI_PLAIN_SEQUENCE_LARGE == type_ids_DdsTopicData.type_identifier1()._d() &&
-                    EK_COMPLETE == type_ids_DdsTopicData.type_identifier1().seq_ldefn().header().equiv_kind()) ||
-                    (TI_PLAIN_ARRAY_SMALL == type_ids_DdsTopicData.type_identifier1()._d() &&
-                    EK_COMPLETE == type_ids_DdsTopicData.type_identifier1().array_sdefn().header().equiv_kind()) ||
-                    (TI_PLAIN_ARRAY_LARGE == type_ids_DdsTopicData.type_identifier1()._d() &&
-                    EK_COMPLETE == type_ids_DdsTopicData.type_identifier1().array_ldefn().header().equiv_kind()) ||
-                    (TI_PLAIN_MAP_SMALL == type_ids_DdsTopicData.type_identifier1()._d() &&
-                    (EK_COMPLETE == type_ids_DdsTopicData.type_identifier1().map_sdefn().header().equiv_kind() ||
-                    EK_COMPLETE == type_ids_DdsTopicData.type_identifier1().map_sdefn().key_identifier()->_d())) ||
-                    (TI_PLAIN_MAP_LARGE == type_ids_DdsTopicData.type_identifier1()._d() &&
-                    (EK_COMPLETE == type_ids_DdsTopicData.type_identifier1().map_ldefn().header().equiv_kind() ||
-                    EK_COMPLETE == type_ids_DdsTopicData.type_identifier1().map_ldefn().key_identifier()->_d())))
+            if (EK_COMPLETE == type_ids_msgs_received.type_identifier1()._d() || TK_NONE == type_ids_msgs_received.type_identifier2()._d() ||
+                    (TI_PLAIN_SEQUENCE_SMALL == type_ids_msgs_received.type_identifier1()._d() &&
+                    EK_COMPLETE == type_ids_msgs_received.type_identifier1().seq_sdefn().header().equiv_kind()) ||
+                    (TI_PLAIN_SEQUENCE_LARGE == type_ids_msgs_received.type_identifier1()._d() &&
+                    EK_COMPLETE == type_ids_msgs_received.type_identifier1().seq_ldefn().header().equiv_kind()) ||
+                    (TI_PLAIN_ARRAY_SMALL == type_ids_msgs_received.type_identifier1()._d() &&
+                    EK_COMPLETE == type_ids_msgs_received.type_identifier1().array_sdefn().header().equiv_kind()) ||
+                    (TI_PLAIN_ARRAY_LARGE == type_ids_msgs_received.type_identifier1()._d() &&
+                    EK_COMPLETE == type_ids_msgs_received.type_identifier1().array_ldefn().header().equiv_kind()) ||
+                    (TI_PLAIN_MAP_SMALL == type_ids_msgs_received.type_identifier1()._d() &&
+                    (EK_COMPLETE == type_ids_msgs_received.type_identifier1().map_sdefn().header().equiv_kind() ||
+                    EK_COMPLETE == type_ids_msgs_received.type_identifier1().map_sdefn().key_identifier()->_d())) ||
+                    (TI_PLAIN_MAP_LARGE == type_ids_msgs_received.type_identifier1()._d() &&
+                    (EK_COMPLETE == type_ids_msgs_received.type_identifier1().map_ldefn().header().equiv_kind() ||
+                    EK_COMPLETE == type_ids_msgs_received.type_identifier1().map_ldefn().key_identifier()->_d())))
             {
-                common_msgs_received = TypeObjectUtils::build_common_struct_member(member_id_msgs_received, member_flags_msgs_received, type_ids_DdsTopicData.type_identifier1());
+                common_msgs_received = TypeObjectUtils::build_common_struct_member(member_id_msgs_received,
+                        member_flags_msgs_received, type_ids_msgs_received.type_identifier1());
             }
-            else if (EK_COMPLETE == type_ids_DdsTopicData.type_identifier2()._d() ||
-                    (TI_PLAIN_SEQUENCE_SMALL == type_ids_DdsTopicData.type_identifier2()._d() &&
-                    EK_COMPLETE == type_ids_DdsTopicData.type_identifier2().seq_sdefn().header().equiv_kind()) ||
-                    (TI_PLAIN_SEQUENCE_LARGE == type_ids_DdsTopicData.type_identifier2()._d() &&
-                    EK_COMPLETE == type_ids_DdsTopicData.type_identifier2().seq_ldefn().header().equiv_kind()) ||
-                    (TI_PLAIN_ARRAY_SMALL == type_ids_DdsTopicData.type_identifier2()._d() &&
-                    EK_COMPLETE == type_ids_DdsTopicData.type_identifier2().array_sdefn().header().equiv_kind()) ||
-                    (TI_PLAIN_ARRAY_LARGE == type_ids_DdsTopicData.type_identifier2()._d() &&
-                    EK_COMPLETE == type_ids_DdsTopicData.type_identifier2().array_ldefn().header().equiv_kind()) ||
-                    (TI_PLAIN_MAP_SMALL == type_ids_DdsTopicData.type_identifier2()._d() &&
-                    (EK_COMPLETE == type_ids_DdsTopicData.type_identifier2().map_sdefn().header().equiv_kind() ||
-                    EK_COMPLETE == type_ids_DdsTopicData.type_identifier2().map_sdefn().key_identifier()->_d())) ||
-                    (TI_PLAIN_MAP_LARGE == type_ids_DdsTopicData.type_identifier2()._d() &&
-                    (EK_COMPLETE == type_ids_DdsTopicData.type_identifier2().map_ldefn().header().equiv_kind() ||
-                    EK_COMPLETE == type_ids_DdsTopicData.type_identifier2().map_ldefn().key_identifier()->_d())))
+            else if (EK_COMPLETE == type_ids_msgs_received.type_identifier2()._d() ||
+                    (TI_PLAIN_SEQUENCE_SMALL == type_ids_msgs_received.type_identifier2()._d() &&
+                    EK_COMPLETE == type_ids_msgs_received.type_identifier2().seq_sdefn().header().equiv_kind()) ||
+                    (TI_PLAIN_SEQUENCE_LARGE == type_ids_msgs_received.type_identifier2()._d() &&
+                    EK_COMPLETE == type_ids_msgs_received.type_identifier2().seq_ldefn().header().equiv_kind()) ||
+                    (TI_PLAIN_ARRAY_SMALL == type_ids_msgs_received.type_identifier2()._d() &&
+                    EK_COMPLETE == type_ids_msgs_received.type_identifier2().array_sdefn().header().equiv_kind()) ||
+                    (TI_PLAIN_ARRAY_LARGE == type_ids_msgs_received.type_identifier2()._d() &&
+                    EK_COMPLETE == type_ids_msgs_received.type_identifier2().array_ldefn().header().equiv_kind()) ||
+                    (TI_PLAIN_MAP_SMALL == type_ids_msgs_received.type_identifier2()._d() &&
+                    (EK_COMPLETE == type_ids_msgs_received.type_identifier2().map_sdefn().header().equiv_kind() ||
+                    EK_COMPLETE == type_ids_msgs_received.type_identifier2().map_sdefn().key_identifier()->_d())) ||
+                    (TI_PLAIN_MAP_LARGE == type_ids_msgs_received.type_identifier2()._d() &&
+                    (EK_COMPLETE == type_ids_msgs_received.type_identifier2().map_ldefn().header().equiv_kind() ||
+                    EK_COMPLETE == type_ids_msgs_received.type_identifier2().map_ldefn().key_identifier()->_d())))
             {
-                common_msgs_received = TypeObjectUtils::build_common_struct_member(member_id_msgs_received, member_flags_msgs_received, type_ids_DdsTopicData.type_identifier2());
+                common_msgs_received = TypeObjectUtils::build_common_struct_member(member_id_msgs_received,
+                        member_flags_msgs_received, type_ids_msgs_received.type_identifier2());
             }
             else
             {
@@ -296,11 +272,13 @@ void register_DdsTopicData_type_identifier()
             TypeObjectUtils::add_complete_struct_member(member_seq_DdsTopicData, member_msgs_received);
         }
         {
-            return_code_DdsTopicData =
+            TypeIdentifierPair type_ids_msg_rx_rate;
+            ReturnCode_t return_code_msg_rx_rate {eprosima::fastdds::dds::RETCODE_OK};
+            return_code_msg_rx_rate =
                 eprosima::fastdds::dds::DomainParticipantFactory::get_instance()->type_object_registry().get_type_identifiers(
-                "_double", type_ids_DdsTopicData);
+                "_double", type_ids_msg_rx_rate);
 
-            if (return_code_DdsTopicData != eprosima::fastdds::dds::RETCODE_OK)
+            if (eprosima::fastdds::dds::RETCODE_OK != return_code_msg_rx_rate)
             {
                 EPROSIMA_LOG_ERROR(XTYPES_TYPE_REPRESENTATION,
                         "msg_rx_rate Structure member TypeIdentifier unknown to TypeObjectRegistry.");
@@ -310,41 +288,43 @@ void register_DdsTopicData_type_identifier()
                     false, false, false, false);
             CommonStructMember common_msg_rx_rate;
             MemberId member_id_msg_rx_rate = 0x00000003;
-            if (EK_COMPLETE == type_ids_DdsTopicData.type_identifier1()._d() || TK_NONE == type_ids_DdsTopicData.type_identifier2()._d() ||
-                    (TI_PLAIN_SEQUENCE_SMALL == type_ids_DdsTopicData.type_identifier1()._d() &&
-                    EK_COMPLETE == type_ids_DdsTopicData.type_identifier1().seq_sdefn().header().equiv_kind()) ||
-                    (TI_PLAIN_SEQUENCE_LARGE == type_ids_DdsTopicData.type_identifier1()._d() &&
-                    EK_COMPLETE == type_ids_DdsTopicData.type_identifier1().seq_ldefn().header().equiv_kind()) ||
-                    (TI_PLAIN_ARRAY_SMALL == type_ids_DdsTopicData.type_identifier1()._d() &&
-                    EK_COMPLETE == type_ids_DdsTopicData.type_identifier1().array_sdefn().header().equiv_kind()) ||
-                    (TI_PLAIN_ARRAY_LARGE == type_ids_DdsTopicData.type_identifier1()._d() &&
-                    EK_COMPLETE == type_ids_DdsTopicData.type_identifier1().array_ldefn().header().equiv_kind()) ||
-                    (TI_PLAIN_MAP_SMALL == type_ids_DdsTopicData.type_identifier1()._d() &&
-                    (EK_COMPLETE == type_ids_DdsTopicData.type_identifier1().map_sdefn().header().equiv_kind() ||
-                    EK_COMPLETE == type_ids_DdsTopicData.type_identifier1().map_sdefn().key_identifier()->_d())) ||
-                    (TI_PLAIN_MAP_LARGE == type_ids_DdsTopicData.type_identifier1()._d() &&
-                    (EK_COMPLETE == type_ids_DdsTopicData.type_identifier1().map_ldefn().header().equiv_kind() ||
-                    EK_COMPLETE == type_ids_DdsTopicData.type_identifier1().map_ldefn().key_identifier()->_d())))
+            if (EK_COMPLETE == type_ids_msg_rx_rate.type_identifier1()._d() || TK_NONE == type_ids_msg_rx_rate.type_identifier2()._d() ||
+                    (TI_PLAIN_SEQUENCE_SMALL == type_ids_msg_rx_rate.type_identifier1()._d() &&
+                    EK_COMPLETE == type_ids_msg_rx_rate.type_identifier1().seq_sdefn().header().equiv_kind()) ||
+                    (TI_PLAIN_SEQUENCE_LARGE == type_ids_msg_rx_rate.type_identifier1()._d() &&
+                    EK_COMPLETE == type_ids_msg_rx_rate.type_identifier1().seq_ldefn().header().equiv_kind()) ||
+                    (TI_PLAIN_ARRAY_SMALL == type_ids_msg_rx_rate.type_identifier1()._d() &&
+                    EK_COMPLETE == type_ids_msg_rx_rate.type_identifier1().array_sdefn().header().equiv_kind()) ||
+                    (TI_PLAIN_ARRAY_LARGE == type_ids_msg_rx_rate.type_identifier1()._d() &&
+                    EK_COMPLETE == type_ids_msg_rx_rate.type_identifier1().array_ldefn().header().equiv_kind()) ||
+                    (TI_PLAIN_MAP_SMALL == type_ids_msg_rx_rate.type_identifier1()._d() &&
+                    (EK_COMPLETE == type_ids_msg_rx_rate.type_identifier1().map_sdefn().header().equiv_kind() ||
+                    EK_COMPLETE == type_ids_msg_rx_rate.type_identifier1().map_sdefn().key_identifier()->_d())) ||
+                    (TI_PLAIN_MAP_LARGE == type_ids_msg_rx_rate.type_identifier1()._d() &&
+                    (EK_COMPLETE == type_ids_msg_rx_rate.type_identifier1().map_ldefn().header().equiv_kind() ||
+                    EK_COMPLETE == type_ids_msg_rx_rate.type_identifier1().map_ldefn().key_identifier()->_d())))
             {
-                common_msg_rx_rate = TypeObjectUtils::build_common_struct_member(member_id_msg_rx_rate, member_flags_msg_rx_rate, type_ids_DdsTopicData.type_identifier1());
+                common_msg_rx_rate = TypeObjectUtils::build_common_struct_member(member_id_msg_rx_rate,
+                        member_flags_msg_rx_rate, type_ids_msg_rx_rate.type_identifier1());
             }
-            else if (EK_COMPLETE == type_ids_DdsTopicData.type_identifier2()._d() ||
-                    (TI_PLAIN_SEQUENCE_SMALL == type_ids_DdsTopicData.type_identifier2()._d() &&
-                    EK_COMPLETE == type_ids_DdsTopicData.type_identifier2().seq_sdefn().header().equiv_kind()) ||
-                    (TI_PLAIN_SEQUENCE_LARGE == type_ids_DdsTopicData.type_identifier2()._d() &&
-                    EK_COMPLETE == type_ids_DdsTopicData.type_identifier2().seq_ldefn().header().equiv_kind()) ||
-                    (TI_PLAIN_ARRAY_SMALL == type_ids_DdsTopicData.type_identifier2()._d() &&
-                    EK_COMPLETE == type_ids_DdsTopicData.type_identifier2().array_sdefn().header().equiv_kind()) ||
-                    (TI_PLAIN_ARRAY_LARGE == type_ids_DdsTopicData.type_identifier2()._d() &&
-                    EK_COMPLETE == type_ids_DdsTopicData.type_identifier2().array_ldefn().header().equiv_kind()) ||
-                    (TI_PLAIN_MAP_SMALL == type_ids_DdsTopicData.type_identifier2()._d() &&
-                    (EK_COMPLETE == type_ids_DdsTopicData.type_identifier2().map_sdefn().header().equiv_kind() ||
-                    EK_COMPLETE == type_ids_DdsTopicData.type_identifier2().map_sdefn().key_identifier()->_d())) ||
-                    (TI_PLAIN_MAP_LARGE == type_ids_DdsTopicData.type_identifier2()._d() &&
-                    (EK_COMPLETE == type_ids_DdsTopicData.type_identifier2().map_ldefn().header().equiv_kind() ||
-                    EK_COMPLETE == type_ids_DdsTopicData.type_identifier2().map_ldefn().key_identifier()->_d())))
+            else if (EK_COMPLETE == type_ids_msg_rx_rate.type_identifier2()._d() ||
+                    (TI_PLAIN_SEQUENCE_SMALL == type_ids_msg_rx_rate.type_identifier2()._d() &&
+                    EK_COMPLETE == type_ids_msg_rx_rate.type_identifier2().seq_sdefn().header().equiv_kind()) ||
+                    (TI_PLAIN_SEQUENCE_LARGE == type_ids_msg_rx_rate.type_identifier2()._d() &&
+                    EK_COMPLETE == type_ids_msg_rx_rate.type_identifier2().seq_ldefn().header().equiv_kind()) ||
+                    (TI_PLAIN_ARRAY_SMALL == type_ids_msg_rx_rate.type_identifier2()._d() &&
+                    EK_COMPLETE == type_ids_msg_rx_rate.type_identifier2().array_sdefn().header().equiv_kind()) ||
+                    (TI_PLAIN_ARRAY_LARGE == type_ids_msg_rx_rate.type_identifier2()._d() &&
+                    EK_COMPLETE == type_ids_msg_rx_rate.type_identifier2().array_ldefn().header().equiv_kind()) ||
+                    (TI_PLAIN_MAP_SMALL == type_ids_msg_rx_rate.type_identifier2()._d() &&
+                    (EK_COMPLETE == type_ids_msg_rx_rate.type_identifier2().map_sdefn().header().equiv_kind() ||
+                    EK_COMPLETE == type_ids_msg_rx_rate.type_identifier2().map_sdefn().key_identifier()->_d())) ||
+                    (TI_PLAIN_MAP_LARGE == type_ids_msg_rx_rate.type_identifier2()._d() &&
+                    (EK_COMPLETE == type_ids_msg_rx_rate.type_identifier2().map_ldefn().header().equiv_kind() ||
+                    EK_COMPLETE == type_ids_msg_rx_rate.type_identifier2().map_ldefn().key_identifier()->_d())))
             {
-                common_msg_rx_rate = TypeObjectUtils::build_common_struct_member(member_id_msg_rx_rate, member_flags_msg_rx_rate, type_ids_DdsTopicData.type_identifier2());
+                common_msg_rx_rate = TypeObjectUtils::build_common_struct_member(member_id_msg_rx_rate,
+                        member_flags_msg_rx_rate, type_ids_msg_rx_rate.type_identifier2());
             }
             else
             {
@@ -361,29 +341,27 @@ void register_DdsTopicData_type_identifier()
         }
         CompleteStructType struct_type_DdsTopicData = TypeObjectUtils::build_complete_struct_type(struct_flags_DdsTopicData, header_DdsTopicData, member_seq_DdsTopicData);
         if (eprosima::fastdds::dds::RETCODE_BAD_PARAMETER ==
-                TypeObjectUtils::build_and_register_struct_type_object(struct_type_DdsTopicData, type_name_DdsTopicData.to_string()))
+                TypeObjectUtils::build_and_register_struct_type_object(struct_type_DdsTopicData, type_name_DdsTopicData.to_string(), type_ids_DdsTopicData))
         {
             EPROSIMA_LOG_ERROR(XTYPES_TYPE_REPRESENTATION,
                     "DdsTopicData already registered in TypeObjectRegistry for a different type.");
         }
-        return_code_DdsTopicData =
-            eprosima::fastdds::dds::DomainParticipantFactory::get_instance()->type_object_registry().get_type_identifiers(
-            "DdsTopicData", type_ids_DdsTopicData);
-        if (return_code_DdsTopicData != eprosima::fastdds::dds::RETCODE_OK)
-        {
-            EPROSIMA_LOG_ERROR(XTYPES_TYPE_REPRESENTATION,
-                        "DdsTopicData: Given Struct TypeIdentifier unknown to TypeObjectRegistry.");
-            return;
-        }
     }
 }
-void register_DdsTopic_type_identifier()
+// TypeIdentifier is returned by reference: dependent structures/unions are registered in this same method
+void register_DdsTopic_type_identifier(
+        TypeIdentifierPair& type_ids_DdsTopic)
 {
+
+    ReturnCode_t return_code_DdsTopic {eprosima::fastdds::dds::RETCODE_OK};
+    return_code_DdsTopic =
+        eprosima::fastdds::dds::DomainParticipantFactory::get_instance()->type_object_registry().get_type_identifiers(
+        "DdsTopic", type_ids_DdsTopic);
+    if (eprosima::fastdds::dds::RETCODE_OK != return_code_DdsTopic)
     {
         StructTypeFlag struct_flags_DdsTopic = TypeObjectUtils::build_struct_type_flag(eprosima::fastdds::dds::xtypes::ExtensibilityKind::NOT_APPLIED,
                 false, false);
-        ReturnCode_t return_code_DdsTopic;
-        TypeIdentifierPair type_ids_DdsTopic;
+        static_cast<void>(return_code_DdsTopic);
         QualifiedTypeName type_name_DdsTopic = "DdsTopic";
         eprosima::fastcdr::optional<AppliedBuiltinTypeAnnotations> type_ann_builtin_DdsTopic;
         eprosima::fastcdr::optional<AppliedAnnotationSeq> ann_custom_DdsTopic;
@@ -392,92 +370,67 @@ void register_DdsTopic_type_identifier()
         header_DdsTopic = TypeObjectUtils::build_complete_struct_header(TypeIdentifier(), detail_DdsTopic);
         CompleteStructMemberSeq member_seq_DdsTopic;
         {
-            return_code_DdsTopic =
+            TypeIdentifierPair type_ids_name;
+            ReturnCode_t return_code_name {eprosima::fastdds::dds::RETCODE_OK};
+            return_code_name =
                 eprosima::fastdds::dds::DomainParticipantFactory::get_instance()->type_object_registry().get_type_identifiers(
-                "anonymous_string_unbounded", type_ids_DdsTopic);
+                "anonymous_string_unbounded", type_ids_name);
 
-            if (return_code_DdsTopic != eprosima::fastdds::dds::RETCODE_OK)
+            if (eprosima::fastdds::dds::RETCODE_OK != return_code_name)
             {
-                std::string type_id_kind_anonymous_string_unbounded("TI_STRING8_SMALL");
-                if (type_id_kind_anonymous_string_unbounded == "TI_STRING8_SMALL")
                 {
                     SBound bound = 0;
                     StringSTypeDefn string_sdefn = TypeObjectUtils::build_string_s_type_defn(bound);
                     if (eprosima::fastdds::dds::RETCODE_BAD_PARAMETER ==
                             TypeObjectUtils::build_and_register_s_string_type_identifier(string_sdefn,
-                            "anonymous_string_unbounded"))
+                            "anonymous_string_unbounded", type_ids_name))
                     {
                         EPROSIMA_LOG_ERROR(XTYPES_TYPE_REPRESENTATION,
                             "anonymous_string_unbounded already registered in TypeObjectRegistry for a different type.");
                     }
-                }
-                else if (type_id_kind_anonymous_string_unbounded == "TI_STRING8_LARGE")
-                {
-                    LBound bound = 255;
-                    StringLTypeDefn string_ldefn = TypeObjectUtils::build_string_l_type_defn(bound);
-                    if (eprosima::fastdds::dds::RETCODE_BAD_PARAMETER ==
-                            TypeObjectUtils::build_and_register_l_string_type_identifier(string_ldefn,
-                            "anonymous_string_unbounded"))
-                    {
-                        EPROSIMA_LOG_ERROR(XTYPES_TYPE_REPRESENTATION,
-                            "anonymous_string_unbounded already registered in TypeObjectRegistry for a different type.");
-                    }
-                }
-                else
-                {
-                    EPROSIMA_LOG_ERROR(XTYPES_TYPE_REPRESENTATION,
-                                "anonymous_string_unbounded: Unknown String kind.");
-                    return;
-                }
-                return_code_DdsTopic =
-                    eprosima::fastdds::dds::DomainParticipantFactory::get_instance()->type_object_registry().get_type_identifiers(
-                    "anonymous_string_unbounded", type_ids_DdsTopic);
-                if (return_code_DdsTopic != eprosima::fastdds::dds::RETCODE_OK)
-                {
-                    EPROSIMA_LOG_ERROR(XTYPES_TYPE_REPRESENTATION,
-                                "anonymous_string_unbounded: Given String TypeIdentifier unknown to TypeObjectRegistry.");
-                    return;
                 }
             }
             StructMemberFlag member_flags_name = TypeObjectUtils::build_struct_member_flag(eprosima::fastdds::dds::xtypes::TryConstructKind::NOT_APPLIED,
                     false, false, false, false);
             CommonStructMember common_name;
             MemberId member_id_name = 0x00000000;
-            if (EK_COMPLETE == type_ids_DdsTopic.type_identifier1()._d() || TK_NONE == type_ids_DdsTopic.type_identifier2()._d() ||
-                    (TI_PLAIN_SEQUENCE_SMALL == type_ids_DdsTopic.type_identifier1()._d() &&
-                    EK_COMPLETE == type_ids_DdsTopic.type_identifier1().seq_sdefn().header().equiv_kind()) ||
-                    (TI_PLAIN_SEQUENCE_LARGE == type_ids_DdsTopic.type_identifier1()._d() &&
-                    EK_COMPLETE == type_ids_DdsTopic.type_identifier1().seq_ldefn().header().equiv_kind()) ||
-                    (TI_PLAIN_ARRAY_SMALL == type_ids_DdsTopic.type_identifier1()._d() &&
-                    EK_COMPLETE == type_ids_DdsTopic.type_identifier1().array_sdefn().header().equiv_kind()) ||
-                    (TI_PLAIN_ARRAY_LARGE == type_ids_DdsTopic.type_identifier1()._d() &&
-                    EK_COMPLETE == type_ids_DdsTopic.type_identifier1().array_ldefn().header().equiv_kind()) ||
-                    (TI_PLAIN_MAP_SMALL == type_ids_DdsTopic.type_identifier1()._d() &&
-                    (EK_COMPLETE == type_ids_DdsTopic.type_identifier1().map_sdefn().header().equiv_kind() ||
-                    EK_COMPLETE == type_ids_DdsTopic.type_identifier1().map_sdefn().key_identifier()->_d())) ||
-                    (TI_PLAIN_MAP_LARGE == type_ids_DdsTopic.type_identifier1()._d() &&
-                    (EK_COMPLETE == type_ids_DdsTopic.type_identifier1().map_ldefn().header().equiv_kind() ||
-                    EK_COMPLETE == type_ids_DdsTopic.type_identifier1().map_ldefn().key_identifier()->_d())))
+            if (EK_COMPLETE == type_ids_name.type_identifier1()._d() || TK_NONE == type_ids_name.type_identifier2()._d() ||
+                    (TI_PLAIN_SEQUENCE_SMALL == type_ids_name.type_identifier1()._d() &&
+                    EK_COMPLETE == type_ids_name.type_identifier1().seq_sdefn().header().equiv_kind()) ||
+                    (TI_PLAIN_SEQUENCE_LARGE == type_ids_name.type_identifier1()._d() &&
+                    EK_COMPLETE == type_ids_name.type_identifier1().seq_ldefn().header().equiv_kind()) ||
+                    (TI_PLAIN_ARRAY_SMALL == type_ids_name.type_identifier1()._d() &&
+                    EK_COMPLETE == type_ids_name.type_identifier1().array_sdefn().header().equiv_kind()) ||
+                    (TI_PLAIN_ARRAY_LARGE == type_ids_name.type_identifier1()._d() &&
+                    EK_COMPLETE == type_ids_name.type_identifier1().array_ldefn().header().equiv_kind()) ||
+                    (TI_PLAIN_MAP_SMALL == type_ids_name.type_identifier1()._d() &&
+                    (EK_COMPLETE == type_ids_name.type_identifier1().map_sdefn().header().equiv_kind() ||
+                    EK_COMPLETE == type_ids_name.type_identifier1().map_sdefn().key_identifier()->_d())) ||
+                    (TI_PLAIN_MAP_LARGE == type_ids_name.type_identifier1()._d() &&
+                    (EK_COMPLETE == type_ids_name.type_identifier1().map_ldefn().header().equiv_kind() ||
+                    EK_COMPLETE == type_ids_name.type_identifier1().map_ldefn().key_identifier()->_d())))
             {
-                common_name = TypeObjectUtils::build_common_struct_member(member_id_name, member_flags_name, type_ids_DdsTopic.type_identifier1());
+                common_name = TypeObjectUtils::build_common_struct_member(member_id_name,
+                        member_flags_name, type_ids_name.type_identifier1());
             }
-            else if (EK_COMPLETE == type_ids_DdsTopic.type_identifier2()._d() ||
-                    (TI_PLAIN_SEQUENCE_SMALL == type_ids_DdsTopic.type_identifier2()._d() &&
-                    EK_COMPLETE == type_ids_DdsTopic.type_identifier2().seq_sdefn().header().equiv_kind()) ||
-                    (TI_PLAIN_SEQUENCE_LARGE == type_ids_DdsTopic.type_identifier2()._d() &&
-                    EK_COMPLETE == type_ids_DdsTopic.type_identifier2().seq_ldefn().header().equiv_kind()) ||
-                    (TI_PLAIN_ARRAY_SMALL == type_ids_DdsTopic.type_identifier2()._d() &&
-                    EK_COMPLETE == type_ids_DdsTopic.type_identifier2().array_sdefn().header().equiv_kind()) ||
-                    (TI_PLAIN_ARRAY_LARGE == type_ids_DdsTopic.type_identifier2()._d() &&
-                    EK_COMPLETE == type_ids_DdsTopic.type_identifier2().array_ldefn().header().equiv_kind()) ||
-                    (TI_PLAIN_MAP_SMALL == type_ids_DdsTopic.type_identifier2()._d() &&
-                    (EK_COMPLETE == type_ids_DdsTopic.type_identifier2().map_sdefn().header().equiv_kind() ||
-                    EK_COMPLETE == type_ids_DdsTopic.type_identifier2().map_sdefn().key_identifier()->_d())) ||
-                    (TI_PLAIN_MAP_LARGE == type_ids_DdsTopic.type_identifier2()._d() &&
-                    (EK_COMPLETE == type_ids_DdsTopic.type_identifier2().map_ldefn().header().equiv_kind() ||
-                    EK_COMPLETE == type_ids_DdsTopic.type_identifier2().map_ldefn().key_identifier()->_d())))
+            else if (EK_COMPLETE == type_ids_name.type_identifier2()._d() ||
+                    (TI_PLAIN_SEQUENCE_SMALL == type_ids_name.type_identifier2()._d() &&
+                    EK_COMPLETE == type_ids_name.type_identifier2().seq_sdefn().header().equiv_kind()) ||
+                    (TI_PLAIN_SEQUENCE_LARGE == type_ids_name.type_identifier2()._d() &&
+                    EK_COMPLETE == type_ids_name.type_identifier2().seq_ldefn().header().equiv_kind()) ||
+                    (TI_PLAIN_ARRAY_SMALL == type_ids_name.type_identifier2()._d() &&
+                    EK_COMPLETE == type_ids_name.type_identifier2().array_sdefn().header().equiv_kind()) ||
+                    (TI_PLAIN_ARRAY_LARGE == type_ids_name.type_identifier2()._d() &&
+                    EK_COMPLETE == type_ids_name.type_identifier2().array_ldefn().header().equiv_kind()) ||
+                    (TI_PLAIN_MAP_SMALL == type_ids_name.type_identifier2()._d() &&
+                    (EK_COMPLETE == type_ids_name.type_identifier2().map_sdefn().header().equiv_kind() ||
+                    EK_COMPLETE == type_ids_name.type_identifier2().map_sdefn().key_identifier()->_d())) ||
+                    (TI_PLAIN_MAP_LARGE == type_ids_name.type_identifier2()._d() &&
+                    (EK_COMPLETE == type_ids_name.type_identifier2().map_ldefn().header().equiv_kind() ||
+                    EK_COMPLETE == type_ids_name.type_identifier2().map_ldefn().key_identifier()->_d())))
             {
-                common_name = TypeObjectUtils::build_common_struct_member(member_id_name, member_flags_name, type_ids_DdsTopic.type_identifier2());
+                common_name = TypeObjectUtils::build_common_struct_member(member_id_name,
+                        member_flags_name, type_ids_name.type_identifier2());
             }
             else
             {
@@ -493,92 +446,67 @@ void register_DdsTopic_type_identifier()
             TypeObjectUtils::add_complete_struct_member(member_seq_DdsTopic, member_name);
         }
         {
-            return_code_DdsTopic =
+            TypeIdentifierPair type_ids_type_name;
+            ReturnCode_t return_code_type_name {eprosima::fastdds::dds::RETCODE_OK};
+            return_code_type_name =
                 eprosima::fastdds::dds::DomainParticipantFactory::get_instance()->type_object_registry().get_type_identifiers(
-                "anonymous_string_unbounded", type_ids_DdsTopic);
+                "anonymous_string_unbounded", type_ids_type_name);
 
-            if (return_code_DdsTopic != eprosima::fastdds::dds::RETCODE_OK)
+            if (eprosima::fastdds::dds::RETCODE_OK != return_code_type_name)
             {
-                std::string type_id_kind_anonymous_string_unbounded("TI_STRING8_SMALL");
-                if (type_id_kind_anonymous_string_unbounded == "TI_STRING8_SMALL")
                 {
                     SBound bound = 0;
                     StringSTypeDefn string_sdefn = TypeObjectUtils::build_string_s_type_defn(bound);
                     if (eprosima::fastdds::dds::RETCODE_BAD_PARAMETER ==
                             TypeObjectUtils::build_and_register_s_string_type_identifier(string_sdefn,
-                            "anonymous_string_unbounded"))
+                            "anonymous_string_unbounded", type_ids_type_name))
                     {
                         EPROSIMA_LOG_ERROR(XTYPES_TYPE_REPRESENTATION,
                             "anonymous_string_unbounded already registered in TypeObjectRegistry for a different type.");
                     }
-                }
-                else if (type_id_kind_anonymous_string_unbounded == "TI_STRING8_LARGE")
-                {
-                    LBound bound = 255;
-                    StringLTypeDefn string_ldefn = TypeObjectUtils::build_string_l_type_defn(bound);
-                    if (eprosima::fastdds::dds::RETCODE_BAD_PARAMETER ==
-                            TypeObjectUtils::build_and_register_l_string_type_identifier(string_ldefn,
-                            "anonymous_string_unbounded"))
-                    {
-                        EPROSIMA_LOG_ERROR(XTYPES_TYPE_REPRESENTATION,
-                            "anonymous_string_unbounded already registered in TypeObjectRegistry for a different type.");
-                    }
-                }
-                else
-                {
-                    EPROSIMA_LOG_ERROR(XTYPES_TYPE_REPRESENTATION,
-                                "anonymous_string_unbounded: Unknown String kind.");
-                    return;
-                }
-                return_code_DdsTopic =
-                    eprosima::fastdds::dds::DomainParticipantFactory::get_instance()->type_object_registry().get_type_identifiers(
-                    "anonymous_string_unbounded", type_ids_DdsTopic);
-                if (return_code_DdsTopic != eprosima::fastdds::dds::RETCODE_OK)
-                {
-                    EPROSIMA_LOG_ERROR(XTYPES_TYPE_REPRESENTATION,
-                                "anonymous_string_unbounded: Given String TypeIdentifier unknown to TypeObjectRegistry.");
-                    return;
                 }
             }
             StructMemberFlag member_flags_type_name = TypeObjectUtils::build_struct_member_flag(eprosima::fastdds::dds::xtypes::TryConstructKind::NOT_APPLIED,
                     false, false, false, false);
             CommonStructMember common_type_name;
             MemberId member_id_type_name = 0x00000001;
-            if (EK_COMPLETE == type_ids_DdsTopic.type_identifier1()._d() || TK_NONE == type_ids_DdsTopic.type_identifier2()._d() ||
-                    (TI_PLAIN_SEQUENCE_SMALL == type_ids_DdsTopic.type_identifier1()._d() &&
-                    EK_COMPLETE == type_ids_DdsTopic.type_identifier1().seq_sdefn().header().equiv_kind()) ||
-                    (TI_PLAIN_SEQUENCE_LARGE == type_ids_DdsTopic.type_identifier1()._d() &&
-                    EK_COMPLETE == type_ids_DdsTopic.type_identifier1().seq_ldefn().header().equiv_kind()) ||
-                    (TI_PLAIN_ARRAY_SMALL == type_ids_DdsTopic.type_identifier1()._d() &&
-                    EK_COMPLETE == type_ids_DdsTopic.type_identifier1().array_sdefn().header().equiv_kind()) ||
-                    (TI_PLAIN_ARRAY_LARGE == type_ids_DdsTopic.type_identifier1()._d() &&
-                    EK_COMPLETE == type_ids_DdsTopic.type_identifier1().array_ldefn().header().equiv_kind()) ||
-                    (TI_PLAIN_MAP_SMALL == type_ids_DdsTopic.type_identifier1()._d() &&
-                    (EK_COMPLETE == type_ids_DdsTopic.type_identifier1().map_sdefn().header().equiv_kind() ||
-                    EK_COMPLETE == type_ids_DdsTopic.type_identifier1().map_sdefn().key_identifier()->_d())) ||
-                    (TI_PLAIN_MAP_LARGE == type_ids_DdsTopic.type_identifier1()._d() &&
-                    (EK_COMPLETE == type_ids_DdsTopic.type_identifier1().map_ldefn().header().equiv_kind() ||
-                    EK_COMPLETE == type_ids_DdsTopic.type_identifier1().map_ldefn().key_identifier()->_d())))
+            if (EK_COMPLETE == type_ids_type_name.type_identifier1()._d() || TK_NONE == type_ids_type_name.type_identifier2()._d() ||
+                    (TI_PLAIN_SEQUENCE_SMALL == type_ids_type_name.type_identifier1()._d() &&
+                    EK_COMPLETE == type_ids_type_name.type_identifier1().seq_sdefn().header().equiv_kind()) ||
+                    (TI_PLAIN_SEQUENCE_LARGE == type_ids_type_name.type_identifier1()._d() &&
+                    EK_COMPLETE == type_ids_type_name.type_identifier1().seq_ldefn().header().equiv_kind()) ||
+                    (TI_PLAIN_ARRAY_SMALL == type_ids_type_name.type_identifier1()._d() &&
+                    EK_COMPLETE == type_ids_type_name.type_identifier1().array_sdefn().header().equiv_kind()) ||
+                    (TI_PLAIN_ARRAY_LARGE == type_ids_type_name.type_identifier1()._d() &&
+                    EK_COMPLETE == type_ids_type_name.type_identifier1().array_ldefn().header().equiv_kind()) ||
+                    (TI_PLAIN_MAP_SMALL == type_ids_type_name.type_identifier1()._d() &&
+                    (EK_COMPLETE == type_ids_type_name.type_identifier1().map_sdefn().header().equiv_kind() ||
+                    EK_COMPLETE == type_ids_type_name.type_identifier1().map_sdefn().key_identifier()->_d())) ||
+                    (TI_PLAIN_MAP_LARGE == type_ids_type_name.type_identifier1()._d() &&
+                    (EK_COMPLETE == type_ids_type_name.type_identifier1().map_ldefn().header().equiv_kind() ||
+                    EK_COMPLETE == type_ids_type_name.type_identifier1().map_ldefn().key_identifier()->_d())))
             {
-                common_type_name = TypeObjectUtils::build_common_struct_member(member_id_type_name, member_flags_type_name, type_ids_DdsTopic.type_identifier1());
+                common_type_name = TypeObjectUtils::build_common_struct_member(member_id_type_name,
+                        member_flags_type_name, type_ids_type_name.type_identifier1());
             }
-            else if (EK_COMPLETE == type_ids_DdsTopic.type_identifier2()._d() ||
-                    (TI_PLAIN_SEQUENCE_SMALL == type_ids_DdsTopic.type_identifier2()._d() &&
-                    EK_COMPLETE == type_ids_DdsTopic.type_identifier2().seq_sdefn().header().equiv_kind()) ||
-                    (TI_PLAIN_SEQUENCE_LARGE == type_ids_DdsTopic.type_identifier2()._d() &&
-                    EK_COMPLETE == type_ids_DdsTopic.type_identifier2().seq_ldefn().header().equiv_kind()) ||
-                    (TI_PLAIN_ARRAY_SMALL == type_ids_DdsTopic.type_identifier2()._d() &&
-                    EK_COMPLETE == type_ids_DdsTopic.type_identifier2().array_sdefn().header().equiv_kind()) ||
-                    (TI_PLAIN_ARRAY_LARGE == type_ids_DdsTopic.type_identifier2()._d() &&
-                    EK_COMPLETE == type_ids_DdsTopic.type_identifier2().array_ldefn().header().equiv_kind()) ||
-                    (TI_PLAIN_MAP_SMALL == type_ids_DdsTopic.type_identifier2()._d() &&
-                    (EK_COMPLETE == type_ids_DdsTopic.type_identifier2().map_sdefn().header().equiv_kind() ||
-                    EK_COMPLETE == type_ids_DdsTopic.type_identifier2().map_sdefn().key_identifier()->_d())) ||
-                    (TI_PLAIN_MAP_LARGE == type_ids_DdsTopic.type_identifier2()._d() &&
-                    (EK_COMPLETE == type_ids_DdsTopic.type_identifier2().map_ldefn().header().equiv_kind() ||
-                    EK_COMPLETE == type_ids_DdsTopic.type_identifier2().map_ldefn().key_identifier()->_d())))
+            else if (EK_COMPLETE == type_ids_type_name.type_identifier2()._d() ||
+                    (TI_PLAIN_SEQUENCE_SMALL == type_ids_type_name.type_identifier2()._d() &&
+                    EK_COMPLETE == type_ids_type_name.type_identifier2().seq_sdefn().header().equiv_kind()) ||
+                    (TI_PLAIN_SEQUENCE_LARGE == type_ids_type_name.type_identifier2()._d() &&
+                    EK_COMPLETE == type_ids_type_name.type_identifier2().seq_ldefn().header().equiv_kind()) ||
+                    (TI_PLAIN_ARRAY_SMALL == type_ids_type_name.type_identifier2()._d() &&
+                    EK_COMPLETE == type_ids_type_name.type_identifier2().array_sdefn().header().equiv_kind()) ||
+                    (TI_PLAIN_ARRAY_LARGE == type_ids_type_name.type_identifier2()._d() &&
+                    EK_COMPLETE == type_ids_type_name.type_identifier2().array_ldefn().header().equiv_kind()) ||
+                    (TI_PLAIN_MAP_SMALL == type_ids_type_name.type_identifier2()._d() &&
+                    (EK_COMPLETE == type_ids_type_name.type_identifier2().map_sdefn().header().equiv_kind() ||
+                    EK_COMPLETE == type_ids_type_name.type_identifier2().map_sdefn().key_identifier()->_d())) ||
+                    (TI_PLAIN_MAP_LARGE == type_ids_type_name.type_identifier2()._d() &&
+                    (EK_COMPLETE == type_ids_type_name.type_identifier2().map_ldefn().header().equiv_kind() ||
+                    EK_COMPLETE == type_ids_type_name.type_identifier2().map_ldefn().key_identifier()->_d())))
             {
-                common_type_name = TypeObjectUtils::build_common_struct_member(member_id_type_name, member_flags_type_name, type_ids_DdsTopic.type_identifier2());
+                common_type_name = TypeObjectUtils::build_common_struct_member(member_id_type_name,
+                        member_flags_type_name, type_ids_type_name.type_identifier2());
             }
             else
             {
@@ -594,11 +522,13 @@ void register_DdsTopic_type_identifier()
             TypeObjectUtils::add_complete_struct_member(member_seq_DdsTopic, member_type_name);
         }
         {
-            return_code_DdsTopic =
+            TypeIdentifierPair type_ids_type_discovered;
+            ReturnCode_t return_code_type_discovered {eprosima::fastdds::dds::RETCODE_OK};
+            return_code_type_discovered =
                 eprosima::fastdds::dds::DomainParticipantFactory::get_instance()->type_object_registry().get_type_identifiers(
-                "_bool", type_ids_DdsTopic);
+                "_bool", type_ids_type_discovered);
 
-            if (return_code_DdsTopic != eprosima::fastdds::dds::RETCODE_OK)
+            if (eprosima::fastdds::dds::RETCODE_OK != return_code_type_discovered)
             {
                 EPROSIMA_LOG_ERROR(XTYPES_TYPE_REPRESENTATION,
                         "type_discovered Structure member TypeIdentifier unknown to TypeObjectRegistry.");
@@ -608,41 +538,43 @@ void register_DdsTopic_type_identifier()
                     false, false, false, false);
             CommonStructMember common_type_discovered;
             MemberId member_id_type_discovered = 0x00000002;
-            if (EK_COMPLETE == type_ids_DdsTopic.type_identifier1()._d() || TK_NONE == type_ids_DdsTopic.type_identifier2()._d() ||
-                    (TI_PLAIN_SEQUENCE_SMALL == type_ids_DdsTopic.type_identifier1()._d() &&
-                    EK_COMPLETE == type_ids_DdsTopic.type_identifier1().seq_sdefn().header().equiv_kind()) ||
-                    (TI_PLAIN_SEQUENCE_LARGE == type_ids_DdsTopic.type_identifier1()._d() &&
-                    EK_COMPLETE == type_ids_DdsTopic.type_identifier1().seq_ldefn().header().equiv_kind()) ||
-                    (TI_PLAIN_ARRAY_SMALL == type_ids_DdsTopic.type_identifier1()._d() &&
-                    EK_COMPLETE == type_ids_DdsTopic.type_identifier1().array_sdefn().header().equiv_kind()) ||
-                    (TI_PLAIN_ARRAY_LARGE == type_ids_DdsTopic.type_identifier1()._d() &&
-                    EK_COMPLETE == type_ids_DdsTopic.type_identifier1().array_ldefn().header().equiv_kind()) ||
-                    (TI_PLAIN_MAP_SMALL == type_ids_DdsTopic.type_identifier1()._d() &&
-                    (EK_COMPLETE == type_ids_DdsTopic.type_identifier1().map_sdefn().header().equiv_kind() ||
-                    EK_COMPLETE == type_ids_DdsTopic.type_identifier1().map_sdefn().key_identifier()->_d())) ||
-                    (TI_PLAIN_MAP_LARGE == type_ids_DdsTopic.type_identifier1()._d() &&
-                    (EK_COMPLETE == type_ids_DdsTopic.type_identifier1().map_ldefn().header().equiv_kind() ||
-                    EK_COMPLETE == type_ids_DdsTopic.type_identifier1().map_ldefn().key_identifier()->_d())))
+            if (EK_COMPLETE == type_ids_type_discovered.type_identifier1()._d() || TK_NONE == type_ids_type_discovered.type_identifier2()._d() ||
+                    (TI_PLAIN_SEQUENCE_SMALL == type_ids_type_discovered.type_identifier1()._d() &&
+                    EK_COMPLETE == type_ids_type_discovered.type_identifier1().seq_sdefn().header().equiv_kind()) ||
+                    (TI_PLAIN_SEQUENCE_LARGE == type_ids_type_discovered.type_identifier1()._d() &&
+                    EK_COMPLETE == type_ids_type_discovered.type_identifier1().seq_ldefn().header().equiv_kind()) ||
+                    (TI_PLAIN_ARRAY_SMALL == type_ids_type_discovered.type_identifier1()._d() &&
+                    EK_COMPLETE == type_ids_type_discovered.type_identifier1().array_sdefn().header().equiv_kind()) ||
+                    (TI_PLAIN_ARRAY_LARGE == type_ids_type_discovered.type_identifier1()._d() &&
+                    EK_COMPLETE == type_ids_type_discovered.type_identifier1().array_ldefn().header().equiv_kind()) ||
+                    (TI_PLAIN_MAP_SMALL == type_ids_type_discovered.type_identifier1()._d() &&
+                    (EK_COMPLETE == type_ids_type_discovered.type_identifier1().map_sdefn().header().equiv_kind() ||
+                    EK_COMPLETE == type_ids_type_discovered.type_identifier1().map_sdefn().key_identifier()->_d())) ||
+                    (TI_PLAIN_MAP_LARGE == type_ids_type_discovered.type_identifier1()._d() &&
+                    (EK_COMPLETE == type_ids_type_discovered.type_identifier1().map_ldefn().header().equiv_kind() ||
+                    EK_COMPLETE == type_ids_type_discovered.type_identifier1().map_ldefn().key_identifier()->_d())))
             {
-                common_type_discovered = TypeObjectUtils::build_common_struct_member(member_id_type_discovered, member_flags_type_discovered, type_ids_DdsTopic.type_identifier1());
+                common_type_discovered = TypeObjectUtils::build_common_struct_member(member_id_type_discovered,
+                        member_flags_type_discovered, type_ids_type_discovered.type_identifier1());
             }
-            else if (EK_COMPLETE == type_ids_DdsTopic.type_identifier2()._d() ||
-                    (TI_PLAIN_SEQUENCE_SMALL == type_ids_DdsTopic.type_identifier2()._d() &&
-                    EK_COMPLETE == type_ids_DdsTopic.type_identifier2().seq_sdefn().header().equiv_kind()) ||
-                    (TI_PLAIN_SEQUENCE_LARGE == type_ids_DdsTopic.type_identifier2()._d() &&
-                    EK_COMPLETE == type_ids_DdsTopic.type_identifier2().seq_ldefn().header().equiv_kind()) ||
-                    (TI_PLAIN_ARRAY_SMALL == type_ids_DdsTopic.type_identifier2()._d() &&
-                    EK_COMPLETE == type_ids_DdsTopic.type_identifier2().array_sdefn().header().equiv_kind()) ||
-                    (TI_PLAIN_ARRAY_LARGE == type_ids_DdsTopic.type_identifier2()._d() &&
-                    EK_COMPLETE == type_ids_DdsTopic.type_identifier2().array_ldefn().header().equiv_kind()) ||
-                    (TI_PLAIN_MAP_SMALL == type_ids_DdsTopic.type_identifier2()._d() &&
-                    (EK_COMPLETE == type_ids_DdsTopic.type_identifier2().map_sdefn().header().equiv_kind() ||
-                    EK_COMPLETE == type_ids_DdsTopic.type_identifier2().map_sdefn().key_identifier()->_d())) ||
-                    (TI_PLAIN_MAP_LARGE == type_ids_DdsTopic.type_identifier2()._d() &&
-                    (EK_COMPLETE == type_ids_DdsTopic.type_identifier2().map_ldefn().header().equiv_kind() ||
-                    EK_COMPLETE == type_ids_DdsTopic.type_identifier2().map_ldefn().key_identifier()->_d())))
+            else if (EK_COMPLETE == type_ids_type_discovered.type_identifier2()._d() ||
+                    (TI_PLAIN_SEQUENCE_SMALL == type_ids_type_discovered.type_identifier2()._d() &&
+                    EK_COMPLETE == type_ids_type_discovered.type_identifier2().seq_sdefn().header().equiv_kind()) ||
+                    (TI_PLAIN_SEQUENCE_LARGE == type_ids_type_discovered.type_identifier2()._d() &&
+                    EK_COMPLETE == type_ids_type_discovered.type_identifier2().seq_ldefn().header().equiv_kind()) ||
+                    (TI_PLAIN_ARRAY_SMALL == type_ids_type_discovered.type_identifier2()._d() &&
+                    EK_COMPLETE == type_ids_type_discovered.type_identifier2().array_sdefn().header().equiv_kind()) ||
+                    (TI_PLAIN_ARRAY_LARGE == type_ids_type_discovered.type_identifier2()._d() &&
+                    EK_COMPLETE == type_ids_type_discovered.type_identifier2().array_ldefn().header().equiv_kind()) ||
+                    (TI_PLAIN_MAP_SMALL == type_ids_type_discovered.type_identifier2()._d() &&
+                    (EK_COMPLETE == type_ids_type_discovered.type_identifier2().map_sdefn().header().equiv_kind() ||
+                    EK_COMPLETE == type_ids_type_discovered.type_identifier2().map_sdefn().key_identifier()->_d())) ||
+                    (TI_PLAIN_MAP_LARGE == type_ids_type_discovered.type_identifier2()._d() &&
+                    (EK_COMPLETE == type_ids_type_discovered.type_identifier2().map_ldefn().header().equiv_kind() ||
+                    EK_COMPLETE == type_ids_type_discovered.type_identifier2().map_ldefn().key_identifier()->_d())))
             {
-                common_type_discovered = TypeObjectUtils::build_common_struct_member(member_id_type_discovered, member_flags_type_discovered, type_ids_DdsTopic.type_identifier2());
+                common_type_discovered = TypeObjectUtils::build_common_struct_member(member_id_type_discovered,
+                        member_flags_type_discovered, type_ids_type_discovered.type_identifier2());
             }
             else
             {
@@ -658,11 +590,13 @@ void register_DdsTopic_type_identifier()
             TypeObjectUtils::add_complete_struct_member(member_seq_DdsTopic, member_type_discovered);
         }
         {
-            return_code_DdsTopic =
+            TypeIdentifierPair type_ids_type_mismatch;
+            ReturnCode_t return_code_type_mismatch {eprosima::fastdds::dds::RETCODE_OK};
+            return_code_type_mismatch =
                 eprosima::fastdds::dds::DomainParticipantFactory::get_instance()->type_object_registry().get_type_identifiers(
-                "_bool", type_ids_DdsTopic);
+                "_bool", type_ids_type_mismatch);
 
-            if (return_code_DdsTopic != eprosima::fastdds::dds::RETCODE_OK)
+            if (eprosima::fastdds::dds::RETCODE_OK != return_code_type_mismatch)
             {
                 EPROSIMA_LOG_ERROR(XTYPES_TYPE_REPRESENTATION,
                         "type_mismatch Structure member TypeIdentifier unknown to TypeObjectRegistry.");
@@ -672,41 +606,43 @@ void register_DdsTopic_type_identifier()
                     false, false, false, false);
             CommonStructMember common_type_mismatch;
             MemberId member_id_type_mismatch = 0x00000003;
-            if (EK_COMPLETE == type_ids_DdsTopic.type_identifier1()._d() || TK_NONE == type_ids_DdsTopic.type_identifier2()._d() ||
-                    (TI_PLAIN_SEQUENCE_SMALL == type_ids_DdsTopic.type_identifier1()._d() &&
-                    EK_COMPLETE == type_ids_DdsTopic.type_identifier1().seq_sdefn().header().equiv_kind()) ||
-                    (TI_PLAIN_SEQUENCE_LARGE == type_ids_DdsTopic.type_identifier1()._d() &&
-                    EK_COMPLETE == type_ids_DdsTopic.type_identifier1().seq_ldefn().header().equiv_kind()) ||
-                    (TI_PLAIN_ARRAY_SMALL == type_ids_DdsTopic.type_identifier1()._d() &&
-                    EK_COMPLETE == type_ids_DdsTopic.type_identifier1().array_sdefn().header().equiv_kind()) ||
-                    (TI_PLAIN_ARRAY_LARGE == type_ids_DdsTopic.type_identifier1()._d() &&
-                    EK_COMPLETE == type_ids_DdsTopic.type_identifier1().array_ldefn().header().equiv_kind()) ||
-                    (TI_PLAIN_MAP_SMALL == type_ids_DdsTopic.type_identifier1()._d() &&
-                    (EK_COMPLETE == type_ids_DdsTopic.type_identifier1().map_sdefn().header().equiv_kind() ||
-                    EK_COMPLETE == type_ids_DdsTopic.type_identifier1().map_sdefn().key_identifier()->_d())) ||
-                    (TI_PLAIN_MAP_LARGE == type_ids_DdsTopic.type_identifier1()._d() &&
-                    (EK_COMPLETE == type_ids_DdsTopic.type_identifier1().map_ldefn().header().equiv_kind() ||
-                    EK_COMPLETE == type_ids_DdsTopic.type_identifier1().map_ldefn().key_identifier()->_d())))
+            if (EK_COMPLETE == type_ids_type_mismatch.type_identifier1()._d() || TK_NONE == type_ids_type_mismatch.type_identifier2()._d() ||
+                    (TI_PLAIN_SEQUENCE_SMALL == type_ids_type_mismatch.type_identifier1()._d() &&
+                    EK_COMPLETE == type_ids_type_mismatch.type_identifier1().seq_sdefn().header().equiv_kind()) ||
+                    (TI_PLAIN_SEQUENCE_LARGE == type_ids_type_mismatch.type_identifier1()._d() &&
+                    EK_COMPLETE == type_ids_type_mismatch.type_identifier1().seq_ldefn().header().equiv_kind()) ||
+                    (TI_PLAIN_ARRAY_SMALL == type_ids_type_mismatch.type_identifier1()._d() &&
+                    EK_COMPLETE == type_ids_type_mismatch.type_identifier1().array_sdefn().header().equiv_kind()) ||
+                    (TI_PLAIN_ARRAY_LARGE == type_ids_type_mismatch.type_identifier1()._d() &&
+                    EK_COMPLETE == type_ids_type_mismatch.type_identifier1().array_ldefn().header().equiv_kind()) ||
+                    (TI_PLAIN_MAP_SMALL == type_ids_type_mismatch.type_identifier1()._d() &&
+                    (EK_COMPLETE == type_ids_type_mismatch.type_identifier1().map_sdefn().header().equiv_kind() ||
+                    EK_COMPLETE == type_ids_type_mismatch.type_identifier1().map_sdefn().key_identifier()->_d())) ||
+                    (TI_PLAIN_MAP_LARGE == type_ids_type_mismatch.type_identifier1()._d() &&
+                    (EK_COMPLETE == type_ids_type_mismatch.type_identifier1().map_ldefn().header().equiv_kind() ||
+                    EK_COMPLETE == type_ids_type_mismatch.type_identifier1().map_ldefn().key_identifier()->_d())))
             {
-                common_type_mismatch = TypeObjectUtils::build_common_struct_member(member_id_type_mismatch, member_flags_type_mismatch, type_ids_DdsTopic.type_identifier1());
+                common_type_mismatch = TypeObjectUtils::build_common_struct_member(member_id_type_mismatch,
+                        member_flags_type_mismatch, type_ids_type_mismatch.type_identifier1());
             }
-            else if (EK_COMPLETE == type_ids_DdsTopic.type_identifier2()._d() ||
-                    (TI_PLAIN_SEQUENCE_SMALL == type_ids_DdsTopic.type_identifier2()._d() &&
-                    EK_COMPLETE == type_ids_DdsTopic.type_identifier2().seq_sdefn().header().equiv_kind()) ||
-                    (TI_PLAIN_SEQUENCE_LARGE == type_ids_DdsTopic.type_identifier2()._d() &&
-                    EK_COMPLETE == type_ids_DdsTopic.type_identifier2().seq_ldefn().header().equiv_kind()) ||
-                    (TI_PLAIN_ARRAY_SMALL == type_ids_DdsTopic.type_identifier2()._d() &&
-                    EK_COMPLETE == type_ids_DdsTopic.type_identifier2().array_sdefn().header().equiv_kind()) ||
-                    (TI_PLAIN_ARRAY_LARGE == type_ids_DdsTopic.type_identifier2()._d() &&
-                    EK_COMPLETE == type_ids_DdsTopic.type_identifier2().array_ldefn().header().equiv_kind()) ||
-                    (TI_PLAIN_MAP_SMALL == type_ids_DdsTopic.type_identifier2()._d() &&
-                    (EK_COMPLETE == type_ids_DdsTopic.type_identifier2().map_sdefn().header().equiv_kind() ||
-                    EK_COMPLETE == type_ids_DdsTopic.type_identifier2().map_sdefn().key_identifier()->_d())) ||
-                    (TI_PLAIN_MAP_LARGE == type_ids_DdsTopic.type_identifier2()._d() &&
-                    (EK_COMPLETE == type_ids_DdsTopic.type_identifier2().map_ldefn().header().equiv_kind() ||
-                    EK_COMPLETE == type_ids_DdsTopic.type_identifier2().map_ldefn().key_identifier()->_d())))
+            else if (EK_COMPLETE == type_ids_type_mismatch.type_identifier2()._d() ||
+                    (TI_PLAIN_SEQUENCE_SMALL == type_ids_type_mismatch.type_identifier2()._d() &&
+                    EK_COMPLETE == type_ids_type_mismatch.type_identifier2().seq_sdefn().header().equiv_kind()) ||
+                    (TI_PLAIN_SEQUENCE_LARGE == type_ids_type_mismatch.type_identifier2()._d() &&
+                    EK_COMPLETE == type_ids_type_mismatch.type_identifier2().seq_ldefn().header().equiv_kind()) ||
+                    (TI_PLAIN_ARRAY_SMALL == type_ids_type_mismatch.type_identifier2()._d() &&
+                    EK_COMPLETE == type_ids_type_mismatch.type_identifier2().array_sdefn().header().equiv_kind()) ||
+                    (TI_PLAIN_ARRAY_LARGE == type_ids_type_mismatch.type_identifier2()._d() &&
+                    EK_COMPLETE == type_ids_type_mismatch.type_identifier2().array_ldefn().header().equiv_kind()) ||
+                    (TI_PLAIN_MAP_SMALL == type_ids_type_mismatch.type_identifier2()._d() &&
+                    (EK_COMPLETE == type_ids_type_mismatch.type_identifier2().map_sdefn().header().equiv_kind() ||
+                    EK_COMPLETE == type_ids_type_mismatch.type_identifier2().map_sdefn().key_identifier()->_d())) ||
+                    (TI_PLAIN_MAP_LARGE == type_ids_type_mismatch.type_identifier2()._d() &&
+                    (EK_COMPLETE == type_ids_type_mismatch.type_identifier2().map_ldefn().header().equiv_kind() ||
+                    EK_COMPLETE == type_ids_type_mismatch.type_identifier2().map_ldefn().key_identifier()->_d())))
             {
-                common_type_mismatch = TypeObjectUtils::build_common_struct_member(member_id_type_mismatch, member_flags_type_mismatch, type_ids_DdsTopic.type_identifier2());
+                common_type_mismatch = TypeObjectUtils::build_common_struct_member(member_id_type_mismatch,
+                        member_flags_type_mismatch, type_ids_type_mismatch.type_identifier2());
             }
             else
             {
@@ -722,11 +658,13 @@ void register_DdsTopic_type_identifier()
             TypeObjectUtils::add_complete_struct_member(member_seq_DdsTopic, member_type_mismatch);
         }
         {
-            return_code_DdsTopic =
+            TypeIdentifierPair type_ids_qos_mismatch;
+            ReturnCode_t return_code_qos_mismatch {eprosima::fastdds::dds::RETCODE_OK};
+            return_code_qos_mismatch =
                 eprosima::fastdds::dds::DomainParticipantFactory::get_instance()->type_object_registry().get_type_identifiers(
-                "_bool", type_ids_DdsTopic);
+                "_bool", type_ids_qos_mismatch);
 
-            if (return_code_DdsTopic != eprosima::fastdds::dds::RETCODE_OK)
+            if (eprosima::fastdds::dds::RETCODE_OK != return_code_qos_mismatch)
             {
                 EPROSIMA_LOG_ERROR(XTYPES_TYPE_REPRESENTATION,
                         "qos_mismatch Structure member TypeIdentifier unknown to TypeObjectRegistry.");
@@ -736,41 +674,43 @@ void register_DdsTopic_type_identifier()
                     false, false, false, false);
             CommonStructMember common_qos_mismatch;
             MemberId member_id_qos_mismatch = 0x00000004;
-            if (EK_COMPLETE == type_ids_DdsTopic.type_identifier1()._d() || TK_NONE == type_ids_DdsTopic.type_identifier2()._d() ||
-                    (TI_PLAIN_SEQUENCE_SMALL == type_ids_DdsTopic.type_identifier1()._d() &&
-                    EK_COMPLETE == type_ids_DdsTopic.type_identifier1().seq_sdefn().header().equiv_kind()) ||
-                    (TI_PLAIN_SEQUENCE_LARGE == type_ids_DdsTopic.type_identifier1()._d() &&
-                    EK_COMPLETE == type_ids_DdsTopic.type_identifier1().seq_ldefn().header().equiv_kind()) ||
-                    (TI_PLAIN_ARRAY_SMALL == type_ids_DdsTopic.type_identifier1()._d() &&
-                    EK_COMPLETE == type_ids_DdsTopic.type_identifier1().array_sdefn().header().equiv_kind()) ||
-                    (TI_PLAIN_ARRAY_LARGE == type_ids_DdsTopic.type_identifier1()._d() &&
-                    EK_COMPLETE == type_ids_DdsTopic.type_identifier1().array_ldefn().header().equiv_kind()) ||
-                    (TI_PLAIN_MAP_SMALL == type_ids_DdsTopic.type_identifier1()._d() &&
-                    (EK_COMPLETE == type_ids_DdsTopic.type_identifier1().map_sdefn().header().equiv_kind() ||
-                    EK_COMPLETE == type_ids_DdsTopic.type_identifier1().map_sdefn().key_identifier()->_d())) ||
-                    (TI_PLAIN_MAP_LARGE == type_ids_DdsTopic.type_identifier1()._d() &&
-                    (EK_COMPLETE == type_ids_DdsTopic.type_identifier1().map_ldefn().header().equiv_kind() ||
-                    EK_COMPLETE == type_ids_DdsTopic.type_identifier1().map_ldefn().key_identifier()->_d())))
+            if (EK_COMPLETE == type_ids_qos_mismatch.type_identifier1()._d() || TK_NONE == type_ids_qos_mismatch.type_identifier2()._d() ||
+                    (TI_PLAIN_SEQUENCE_SMALL == type_ids_qos_mismatch.type_identifier1()._d() &&
+                    EK_COMPLETE == type_ids_qos_mismatch.type_identifier1().seq_sdefn().header().equiv_kind()) ||
+                    (TI_PLAIN_SEQUENCE_LARGE == type_ids_qos_mismatch.type_identifier1()._d() &&
+                    EK_COMPLETE == type_ids_qos_mismatch.type_identifier1().seq_ldefn().header().equiv_kind()) ||
+                    (TI_PLAIN_ARRAY_SMALL == type_ids_qos_mismatch.type_identifier1()._d() &&
+                    EK_COMPLETE == type_ids_qos_mismatch.type_identifier1().array_sdefn().header().equiv_kind()) ||
+                    (TI_PLAIN_ARRAY_LARGE == type_ids_qos_mismatch.type_identifier1()._d() &&
+                    EK_COMPLETE == type_ids_qos_mismatch.type_identifier1().array_ldefn().header().equiv_kind()) ||
+                    (TI_PLAIN_MAP_SMALL == type_ids_qos_mismatch.type_identifier1()._d() &&
+                    (EK_COMPLETE == type_ids_qos_mismatch.type_identifier1().map_sdefn().header().equiv_kind() ||
+                    EK_COMPLETE == type_ids_qos_mismatch.type_identifier1().map_sdefn().key_identifier()->_d())) ||
+                    (TI_PLAIN_MAP_LARGE == type_ids_qos_mismatch.type_identifier1()._d() &&
+                    (EK_COMPLETE == type_ids_qos_mismatch.type_identifier1().map_ldefn().header().equiv_kind() ||
+                    EK_COMPLETE == type_ids_qos_mismatch.type_identifier1().map_ldefn().key_identifier()->_d())))
             {
-                common_qos_mismatch = TypeObjectUtils::build_common_struct_member(member_id_qos_mismatch, member_flags_qos_mismatch, type_ids_DdsTopic.type_identifier1());
+                common_qos_mismatch = TypeObjectUtils::build_common_struct_member(member_id_qos_mismatch,
+                        member_flags_qos_mismatch, type_ids_qos_mismatch.type_identifier1());
             }
-            else if (EK_COMPLETE == type_ids_DdsTopic.type_identifier2()._d() ||
-                    (TI_PLAIN_SEQUENCE_SMALL == type_ids_DdsTopic.type_identifier2()._d() &&
-                    EK_COMPLETE == type_ids_DdsTopic.type_identifier2().seq_sdefn().header().equiv_kind()) ||
-                    (TI_PLAIN_SEQUENCE_LARGE == type_ids_DdsTopic.type_identifier2()._d() &&
-                    EK_COMPLETE == type_ids_DdsTopic.type_identifier2().seq_ldefn().header().equiv_kind()) ||
-                    (TI_PLAIN_ARRAY_SMALL == type_ids_DdsTopic.type_identifier2()._d() &&
-                    EK_COMPLETE == type_ids_DdsTopic.type_identifier2().array_sdefn().header().equiv_kind()) ||
-                    (TI_PLAIN_ARRAY_LARGE == type_ids_DdsTopic.type_identifier2()._d() &&
-                    EK_COMPLETE == type_ids_DdsTopic.type_identifier2().array_ldefn().header().equiv_kind()) ||
-                    (TI_PLAIN_MAP_SMALL == type_ids_DdsTopic.type_identifier2()._d() &&
-                    (EK_COMPLETE == type_ids_DdsTopic.type_identifier2().map_sdefn().header().equiv_kind() ||
-                    EK_COMPLETE == type_ids_DdsTopic.type_identifier2().map_sdefn().key_identifier()->_d())) ||
-                    (TI_PLAIN_MAP_LARGE == type_ids_DdsTopic.type_identifier2()._d() &&
-                    (EK_COMPLETE == type_ids_DdsTopic.type_identifier2().map_ldefn().header().equiv_kind() ||
-                    EK_COMPLETE == type_ids_DdsTopic.type_identifier2().map_ldefn().key_identifier()->_d())))
+            else if (EK_COMPLETE == type_ids_qos_mismatch.type_identifier2()._d() ||
+                    (TI_PLAIN_SEQUENCE_SMALL == type_ids_qos_mismatch.type_identifier2()._d() &&
+                    EK_COMPLETE == type_ids_qos_mismatch.type_identifier2().seq_sdefn().header().equiv_kind()) ||
+                    (TI_PLAIN_SEQUENCE_LARGE == type_ids_qos_mismatch.type_identifier2()._d() &&
+                    EK_COMPLETE == type_ids_qos_mismatch.type_identifier2().seq_ldefn().header().equiv_kind()) ||
+                    (TI_PLAIN_ARRAY_SMALL == type_ids_qos_mismatch.type_identifier2()._d() &&
+                    EK_COMPLETE == type_ids_qos_mismatch.type_identifier2().array_sdefn().header().equiv_kind()) ||
+                    (TI_PLAIN_ARRAY_LARGE == type_ids_qos_mismatch.type_identifier2()._d() &&
+                    EK_COMPLETE == type_ids_qos_mismatch.type_identifier2().array_ldefn().header().equiv_kind()) ||
+                    (TI_PLAIN_MAP_SMALL == type_ids_qos_mismatch.type_identifier2()._d() &&
+                    (EK_COMPLETE == type_ids_qos_mismatch.type_identifier2().map_sdefn().header().equiv_kind() ||
+                    EK_COMPLETE == type_ids_qos_mismatch.type_identifier2().map_sdefn().key_identifier()->_d())) ||
+                    (TI_PLAIN_MAP_LARGE == type_ids_qos_mismatch.type_identifier2()._d() &&
+                    (EK_COMPLETE == type_ids_qos_mismatch.type_identifier2().map_ldefn().header().equiv_kind() ||
+                    EK_COMPLETE == type_ids_qos_mismatch.type_identifier2().map_ldefn().key_identifier()->_d())))
             {
-                common_qos_mismatch = TypeObjectUtils::build_common_struct_member(member_id_qos_mismatch, member_flags_qos_mismatch, type_ids_DdsTopic.type_identifier2());
+                common_qos_mismatch = TypeObjectUtils::build_common_struct_member(member_id_qos_mismatch,
+                        member_flags_qos_mismatch, type_ids_qos_mismatch.type_identifier2());
             }
             else
             {
@@ -786,377 +726,58 @@ void register_DdsTopic_type_identifier()
             TypeObjectUtils::add_complete_struct_member(member_seq_DdsTopic, member_qos_mismatch);
         }
         {
-            return_code_DdsTopic =
+            TypeIdentifierPair type_ids_data;
+            ReturnCode_t return_code_data {eprosima::fastdds::dds::RETCODE_OK};
+            return_code_data =
                 eprosima::fastdds::dds::DomainParticipantFactory::get_instance()->type_object_registry().get_type_identifiers(
-                "anonymous_sequence_DdsTopicData_unbounded", type_ids_DdsTopic);
+                "anonymous_sequence_DdsTopicData_unbounded", type_ids_data);
 
-            if (return_code_DdsTopic != eprosima::fastdds::dds::RETCODE_OK)
+            if (eprosima::fastdds::dds::RETCODE_OK != return_code_data)
             {
-                return_code_DdsTopic =
+                return_code_data =
                     eprosima::fastdds::dds::DomainParticipantFactory::get_instance()->type_object_registry().get_type_identifiers(
-                    "DdsTopicData", type_ids_DdsTopic);
+                    "DdsTopicData", type_ids_data);
 
-                if (return_code_DdsTopic != eprosima::fastdds::dds::RETCODE_OK)
+                if (eprosima::fastdds::dds::RETCODE_OK != return_code_data)
                 {
-                    {
-                        StructTypeFlag struct_flags_DdsTopicData = TypeObjectUtils::build_struct_type_flag(eprosima::fastdds::dds::xtypes::ExtensibilityKind::NOT_APPLIED,
-                                false, false);
-                        ReturnCode_t return_code_DdsTopicData;
-                        TypeIdentifierPair type_ids_DdsTopicData;
-                        QualifiedTypeName type_name_DdsTopicData = "DdsTopicData";
-                        eprosima::fastcdr::optional<AppliedBuiltinTypeAnnotations> type_ann_builtin_DdsTopicData;
-                        eprosima::fastcdr::optional<AppliedAnnotationSeq> ann_custom_DdsTopicData;
-                        CompleteTypeDetail detail_DdsTopicData = TypeObjectUtils::build_complete_type_detail(type_ann_builtin_DdsTopicData, ann_custom_DdsTopicData, type_name_DdsTopicData.to_string());
-                        CompleteStructHeader header_DdsTopicData;
-                        header_DdsTopicData = TypeObjectUtils::build_complete_struct_header(TypeIdentifier(), detail_DdsTopicData);
-                        CompleteStructMemberSeq member_seq_DdsTopicData;
-                        {
-                            return_code_DdsTopicData =
-                                eprosima::fastdds::dds::DomainParticipantFactory::get_instance()->type_object_registry().get_type_identifiers(
-                                "anonymous_string_unbounded", type_ids_DdsTopicData);
-
-                            if (return_code_DdsTopicData != eprosima::fastdds::dds::RETCODE_OK)
-                            {
-                                std::string type_id_kind_anonymous_string_unbounded("TI_STRING8_SMALL");
-                                if (type_id_kind_anonymous_string_unbounded == "TI_STRING8_SMALL")
-                                {
-                                    SBound bound = 0;
-                                    StringSTypeDefn string_sdefn = TypeObjectUtils::build_string_s_type_defn(bound);
-                                    if (eprosima::fastdds::dds::RETCODE_BAD_PARAMETER ==
-                                            TypeObjectUtils::build_and_register_s_string_type_identifier(string_sdefn,
-                                            "anonymous_string_unbounded"))
-                                    {
-                                        EPROSIMA_LOG_ERROR(XTYPES_TYPE_REPRESENTATION,
-                                            "anonymous_string_unbounded already registered in TypeObjectRegistry for a different type.");
-                                    }
-                                }
-                                else if (type_id_kind_anonymous_string_unbounded == "TI_STRING8_LARGE")
-                                {
-                                    LBound bound = 255;
-                                    StringLTypeDefn string_ldefn = TypeObjectUtils::build_string_l_type_defn(bound);
-                                    if (eprosima::fastdds::dds::RETCODE_BAD_PARAMETER ==
-                                            TypeObjectUtils::build_and_register_l_string_type_identifier(string_ldefn,
-                                            "anonymous_string_unbounded"))
-                                    {
-                                        EPROSIMA_LOG_ERROR(XTYPES_TYPE_REPRESENTATION,
-                                            "anonymous_string_unbounded already registered in TypeObjectRegistry for a different type.");
-                                    }
-                                }
-                                else
-                                {
-                                    EPROSIMA_LOG_ERROR(XTYPES_TYPE_REPRESENTATION,
-                                                "anonymous_string_unbounded: Unknown String kind.");
-                                    return;
-                                }
-                                return_code_DdsTopicData =
-                                    eprosima::fastdds::dds::DomainParticipantFactory::get_instance()->type_object_registry().get_type_identifiers(
-                                    "anonymous_string_unbounded", type_ids_DdsTopicData);
-                                if (return_code_DdsTopicData != eprosima::fastdds::dds::RETCODE_OK)
-                                {
-                                    EPROSIMA_LOG_ERROR(XTYPES_TYPE_REPRESENTATION,
-                                                "anonymous_string_unbounded: Given String TypeIdentifier unknown to TypeObjectRegistry.");
-                                    return;
-                                }
-                            }
-                            StructMemberFlag member_flags_participant_id = TypeObjectUtils::build_struct_member_flag(eprosima::fastdds::dds::xtypes::TryConstructKind::NOT_APPLIED,
-                                    false, false, false, false);
-                            CommonStructMember common_participant_id;
-                            MemberId member_id_participant_id = 0x00000000;
-                            if (EK_COMPLETE == type_ids_DdsTopicData.type_identifier1()._d() || TK_NONE == type_ids_DdsTopicData.type_identifier2()._d() ||
-                                    (TI_PLAIN_SEQUENCE_SMALL == type_ids_DdsTopicData.type_identifier1()._d() &&
-                                    EK_COMPLETE == type_ids_DdsTopicData.type_identifier1().seq_sdefn().header().equiv_kind()) ||
-                                    (TI_PLAIN_SEQUENCE_LARGE == type_ids_DdsTopicData.type_identifier1()._d() &&
-                                    EK_COMPLETE == type_ids_DdsTopicData.type_identifier1().seq_ldefn().header().equiv_kind()) ||
-                                    (TI_PLAIN_ARRAY_SMALL == type_ids_DdsTopicData.type_identifier1()._d() &&
-                                    EK_COMPLETE == type_ids_DdsTopicData.type_identifier1().array_sdefn().header().equiv_kind()) ||
-                                    (TI_PLAIN_ARRAY_LARGE == type_ids_DdsTopicData.type_identifier1()._d() &&
-                                    EK_COMPLETE == type_ids_DdsTopicData.type_identifier1().array_ldefn().header().equiv_kind()) ||
-                                    (TI_PLAIN_MAP_SMALL == type_ids_DdsTopicData.type_identifier1()._d() &&
-                                    (EK_COMPLETE == type_ids_DdsTopicData.type_identifier1().map_sdefn().header().equiv_kind() ||
-                                    EK_COMPLETE == type_ids_DdsTopicData.type_identifier1().map_sdefn().key_identifier()->_d())) ||
-                                    (TI_PLAIN_MAP_LARGE == type_ids_DdsTopicData.type_identifier1()._d() &&
-                                    (EK_COMPLETE == type_ids_DdsTopicData.type_identifier1().map_ldefn().header().equiv_kind() ||
-                                    EK_COMPLETE == type_ids_DdsTopicData.type_identifier1().map_ldefn().key_identifier()->_d())))
-                            {
-                                common_participant_id = TypeObjectUtils::build_common_struct_member(member_id_participant_id, member_flags_participant_id, type_ids_DdsTopicData.type_identifier1());
-                            }
-                            else if (EK_COMPLETE == type_ids_DdsTopicData.type_identifier2()._d() ||
-                                    (TI_PLAIN_SEQUENCE_SMALL == type_ids_DdsTopicData.type_identifier2()._d() &&
-                                    EK_COMPLETE == type_ids_DdsTopicData.type_identifier2().seq_sdefn().header().equiv_kind()) ||
-                                    (TI_PLAIN_SEQUENCE_LARGE == type_ids_DdsTopicData.type_identifier2()._d() &&
-                                    EK_COMPLETE == type_ids_DdsTopicData.type_identifier2().seq_ldefn().header().equiv_kind()) ||
-                                    (TI_PLAIN_ARRAY_SMALL == type_ids_DdsTopicData.type_identifier2()._d() &&
-                                    EK_COMPLETE == type_ids_DdsTopicData.type_identifier2().array_sdefn().header().equiv_kind()) ||
-                                    (TI_PLAIN_ARRAY_LARGE == type_ids_DdsTopicData.type_identifier2()._d() &&
-                                    EK_COMPLETE == type_ids_DdsTopicData.type_identifier2().array_ldefn().header().equiv_kind()) ||
-                                    (TI_PLAIN_MAP_SMALL == type_ids_DdsTopicData.type_identifier2()._d() &&
-                                    (EK_COMPLETE == type_ids_DdsTopicData.type_identifier2().map_sdefn().header().equiv_kind() ||
-                                    EK_COMPLETE == type_ids_DdsTopicData.type_identifier2().map_sdefn().key_identifier()->_d())) ||
-                                    (TI_PLAIN_MAP_LARGE == type_ids_DdsTopicData.type_identifier2()._d() &&
-                                    (EK_COMPLETE == type_ids_DdsTopicData.type_identifier2().map_ldefn().header().equiv_kind() ||
-                                    EK_COMPLETE == type_ids_DdsTopicData.type_identifier2().map_ldefn().key_identifier()->_d())))
-                            {
-                                common_participant_id = TypeObjectUtils::build_common_struct_member(member_id_participant_id, member_flags_participant_id, type_ids_DdsTopicData.type_identifier2());
-                            }
-                            else
-                            {
-                                EPROSIMA_LOG_ERROR(XTYPES_TYPE_REPRESENTATION,
-                                        "Structure participant_id member TypeIdentifier inconsistent.");
-                                return;
-                            }
-                            MemberName name_participant_id = "participant_id";
-                            eprosima::fastcdr::optional<AppliedBuiltinMemberAnnotations> member_ann_builtin_participant_id;
-                            ann_custom_DdsTopicData.reset();
-                            CompleteMemberDetail detail_participant_id = TypeObjectUtils::build_complete_member_detail(name_participant_id, member_ann_builtin_participant_id, ann_custom_DdsTopicData);
-                            CompleteStructMember member_participant_id = TypeObjectUtils::build_complete_struct_member(common_participant_id, detail_participant_id);
-                            TypeObjectUtils::add_complete_struct_member(member_seq_DdsTopicData, member_participant_id);
-                        }
-                        {
-                            return_code_DdsTopicData =
-                                eprosima::fastdds::dds::DomainParticipantFactory::get_instance()->type_object_registry().get_type_identifiers(
-                                "_uint32_t", type_ids_DdsTopicData);
-
-                            if (return_code_DdsTopicData != eprosima::fastdds::dds::RETCODE_OK)
-                            {
-                                EPROSIMA_LOG_ERROR(XTYPES_TYPE_REPRESENTATION,
-                                        "msgs_lost Structure member TypeIdentifier unknown to TypeObjectRegistry.");
-                                return;
-                            }
-                            StructMemberFlag member_flags_msgs_lost = TypeObjectUtils::build_struct_member_flag(eprosima::fastdds::dds::xtypes::TryConstructKind::NOT_APPLIED,
-                                    false, false, false, false);
-                            CommonStructMember common_msgs_lost;
-                            MemberId member_id_msgs_lost = 0x00000001;
-                            if (EK_COMPLETE == type_ids_DdsTopicData.type_identifier1()._d() || TK_NONE == type_ids_DdsTopicData.type_identifier2()._d() ||
-                                    (TI_PLAIN_SEQUENCE_SMALL == type_ids_DdsTopicData.type_identifier1()._d() &&
-                                    EK_COMPLETE == type_ids_DdsTopicData.type_identifier1().seq_sdefn().header().equiv_kind()) ||
-                                    (TI_PLAIN_SEQUENCE_LARGE == type_ids_DdsTopicData.type_identifier1()._d() &&
-                                    EK_COMPLETE == type_ids_DdsTopicData.type_identifier1().seq_ldefn().header().equiv_kind()) ||
-                                    (TI_PLAIN_ARRAY_SMALL == type_ids_DdsTopicData.type_identifier1()._d() &&
-                                    EK_COMPLETE == type_ids_DdsTopicData.type_identifier1().array_sdefn().header().equiv_kind()) ||
-                                    (TI_PLAIN_ARRAY_LARGE == type_ids_DdsTopicData.type_identifier1()._d() &&
-                                    EK_COMPLETE == type_ids_DdsTopicData.type_identifier1().array_ldefn().header().equiv_kind()) ||
-                                    (TI_PLAIN_MAP_SMALL == type_ids_DdsTopicData.type_identifier1()._d() &&
-                                    (EK_COMPLETE == type_ids_DdsTopicData.type_identifier1().map_sdefn().header().equiv_kind() ||
-                                    EK_COMPLETE == type_ids_DdsTopicData.type_identifier1().map_sdefn().key_identifier()->_d())) ||
-                                    (TI_PLAIN_MAP_LARGE == type_ids_DdsTopicData.type_identifier1()._d() &&
-                                    (EK_COMPLETE == type_ids_DdsTopicData.type_identifier1().map_ldefn().header().equiv_kind() ||
-                                    EK_COMPLETE == type_ids_DdsTopicData.type_identifier1().map_ldefn().key_identifier()->_d())))
-                            {
-                                common_msgs_lost = TypeObjectUtils::build_common_struct_member(member_id_msgs_lost, member_flags_msgs_lost, type_ids_DdsTopicData.type_identifier1());
-                            }
-                            else if (EK_COMPLETE == type_ids_DdsTopicData.type_identifier2()._d() ||
-                                    (TI_PLAIN_SEQUENCE_SMALL == type_ids_DdsTopicData.type_identifier2()._d() &&
-                                    EK_COMPLETE == type_ids_DdsTopicData.type_identifier2().seq_sdefn().header().equiv_kind()) ||
-                                    (TI_PLAIN_SEQUENCE_LARGE == type_ids_DdsTopicData.type_identifier2()._d() &&
-                                    EK_COMPLETE == type_ids_DdsTopicData.type_identifier2().seq_ldefn().header().equiv_kind()) ||
-                                    (TI_PLAIN_ARRAY_SMALL == type_ids_DdsTopicData.type_identifier2()._d() &&
-                                    EK_COMPLETE == type_ids_DdsTopicData.type_identifier2().array_sdefn().header().equiv_kind()) ||
-                                    (TI_PLAIN_ARRAY_LARGE == type_ids_DdsTopicData.type_identifier2()._d() &&
-                                    EK_COMPLETE == type_ids_DdsTopicData.type_identifier2().array_ldefn().header().equiv_kind()) ||
-                                    (TI_PLAIN_MAP_SMALL == type_ids_DdsTopicData.type_identifier2()._d() &&
-                                    (EK_COMPLETE == type_ids_DdsTopicData.type_identifier2().map_sdefn().header().equiv_kind() ||
-                                    EK_COMPLETE == type_ids_DdsTopicData.type_identifier2().map_sdefn().key_identifier()->_d())) ||
-                                    (TI_PLAIN_MAP_LARGE == type_ids_DdsTopicData.type_identifier2()._d() &&
-                                    (EK_COMPLETE == type_ids_DdsTopicData.type_identifier2().map_ldefn().header().equiv_kind() ||
-                                    EK_COMPLETE == type_ids_DdsTopicData.type_identifier2().map_ldefn().key_identifier()->_d())))
-                            {
-                                common_msgs_lost = TypeObjectUtils::build_common_struct_member(member_id_msgs_lost, member_flags_msgs_lost, type_ids_DdsTopicData.type_identifier2());
-                            }
-                            else
-                            {
-                                EPROSIMA_LOG_ERROR(XTYPES_TYPE_REPRESENTATION,
-                                        "Structure msgs_lost member TypeIdentifier inconsistent.");
-                                return;
-                            }
-                            MemberName name_msgs_lost = "msgs_lost";
-                            eprosima::fastcdr::optional<AppliedBuiltinMemberAnnotations> member_ann_builtin_msgs_lost;
-                            ann_custom_DdsTopicData.reset();
-                            CompleteMemberDetail detail_msgs_lost = TypeObjectUtils::build_complete_member_detail(name_msgs_lost, member_ann_builtin_msgs_lost, ann_custom_DdsTopicData);
-                            CompleteStructMember member_msgs_lost = TypeObjectUtils::build_complete_struct_member(common_msgs_lost, detail_msgs_lost);
-                            TypeObjectUtils::add_complete_struct_member(member_seq_DdsTopicData, member_msgs_lost);
-                        }
-                        {
-                            return_code_DdsTopicData =
-                                eprosima::fastdds::dds::DomainParticipantFactory::get_instance()->type_object_registry().get_type_identifiers(
-                                "_uint32_t", type_ids_DdsTopicData);
-
-                            if (return_code_DdsTopicData != eprosima::fastdds::dds::RETCODE_OK)
-                            {
-                                EPROSIMA_LOG_ERROR(XTYPES_TYPE_REPRESENTATION,
-                                        "msgs_received Structure member TypeIdentifier unknown to TypeObjectRegistry.");
-                                return;
-                            }
-                            StructMemberFlag member_flags_msgs_received = TypeObjectUtils::build_struct_member_flag(eprosima::fastdds::dds::xtypes::TryConstructKind::NOT_APPLIED,
-                                    false, false, false, false);
-                            CommonStructMember common_msgs_received;
-                            MemberId member_id_msgs_received = 0x00000002;
-                            if (EK_COMPLETE == type_ids_DdsTopicData.type_identifier1()._d() || TK_NONE == type_ids_DdsTopicData.type_identifier2()._d() ||
-                                    (TI_PLAIN_SEQUENCE_SMALL == type_ids_DdsTopicData.type_identifier1()._d() &&
-                                    EK_COMPLETE == type_ids_DdsTopicData.type_identifier1().seq_sdefn().header().equiv_kind()) ||
-                                    (TI_PLAIN_SEQUENCE_LARGE == type_ids_DdsTopicData.type_identifier1()._d() &&
-                                    EK_COMPLETE == type_ids_DdsTopicData.type_identifier1().seq_ldefn().header().equiv_kind()) ||
-                                    (TI_PLAIN_ARRAY_SMALL == type_ids_DdsTopicData.type_identifier1()._d() &&
-                                    EK_COMPLETE == type_ids_DdsTopicData.type_identifier1().array_sdefn().header().equiv_kind()) ||
-                                    (TI_PLAIN_ARRAY_LARGE == type_ids_DdsTopicData.type_identifier1()._d() &&
-                                    EK_COMPLETE == type_ids_DdsTopicData.type_identifier1().array_ldefn().header().equiv_kind()) ||
-                                    (TI_PLAIN_MAP_SMALL == type_ids_DdsTopicData.type_identifier1()._d() &&
-                                    (EK_COMPLETE == type_ids_DdsTopicData.type_identifier1().map_sdefn().header().equiv_kind() ||
-                                    EK_COMPLETE == type_ids_DdsTopicData.type_identifier1().map_sdefn().key_identifier()->_d())) ||
-                                    (TI_PLAIN_MAP_LARGE == type_ids_DdsTopicData.type_identifier1()._d() &&
-                                    (EK_COMPLETE == type_ids_DdsTopicData.type_identifier1().map_ldefn().header().equiv_kind() ||
-                                    EK_COMPLETE == type_ids_DdsTopicData.type_identifier1().map_ldefn().key_identifier()->_d())))
-                            {
-                                common_msgs_received = TypeObjectUtils::build_common_struct_member(member_id_msgs_received, member_flags_msgs_received, type_ids_DdsTopicData.type_identifier1());
-                            }
-                            else if (EK_COMPLETE == type_ids_DdsTopicData.type_identifier2()._d() ||
-                                    (TI_PLAIN_SEQUENCE_SMALL == type_ids_DdsTopicData.type_identifier2()._d() &&
-                                    EK_COMPLETE == type_ids_DdsTopicData.type_identifier2().seq_sdefn().header().equiv_kind()) ||
-                                    (TI_PLAIN_SEQUENCE_LARGE == type_ids_DdsTopicData.type_identifier2()._d() &&
-                                    EK_COMPLETE == type_ids_DdsTopicData.type_identifier2().seq_ldefn().header().equiv_kind()) ||
-                                    (TI_PLAIN_ARRAY_SMALL == type_ids_DdsTopicData.type_identifier2()._d() &&
-                                    EK_COMPLETE == type_ids_DdsTopicData.type_identifier2().array_sdefn().header().equiv_kind()) ||
-                                    (TI_PLAIN_ARRAY_LARGE == type_ids_DdsTopicData.type_identifier2()._d() &&
-                                    EK_COMPLETE == type_ids_DdsTopicData.type_identifier2().array_ldefn().header().equiv_kind()) ||
-                                    (TI_PLAIN_MAP_SMALL == type_ids_DdsTopicData.type_identifier2()._d() &&
-                                    (EK_COMPLETE == type_ids_DdsTopicData.type_identifier2().map_sdefn().header().equiv_kind() ||
-                                    EK_COMPLETE == type_ids_DdsTopicData.type_identifier2().map_sdefn().key_identifier()->_d())) ||
-                                    (TI_PLAIN_MAP_LARGE == type_ids_DdsTopicData.type_identifier2()._d() &&
-                                    (EK_COMPLETE == type_ids_DdsTopicData.type_identifier2().map_ldefn().header().equiv_kind() ||
-                                    EK_COMPLETE == type_ids_DdsTopicData.type_identifier2().map_ldefn().key_identifier()->_d())))
-                            {
-                                common_msgs_received = TypeObjectUtils::build_common_struct_member(member_id_msgs_received, member_flags_msgs_received, type_ids_DdsTopicData.type_identifier2());
-                            }
-                            else
-                            {
-                                EPROSIMA_LOG_ERROR(XTYPES_TYPE_REPRESENTATION,
-                                        "Structure msgs_received member TypeIdentifier inconsistent.");
-                                return;
-                            }
-                            MemberName name_msgs_received = "msgs_received";
-                            eprosima::fastcdr::optional<AppliedBuiltinMemberAnnotations> member_ann_builtin_msgs_received;
-                            ann_custom_DdsTopicData.reset();
-                            CompleteMemberDetail detail_msgs_received = TypeObjectUtils::build_complete_member_detail(name_msgs_received, member_ann_builtin_msgs_received, ann_custom_DdsTopicData);
-                            CompleteStructMember member_msgs_received = TypeObjectUtils::build_complete_struct_member(common_msgs_received, detail_msgs_received);
-                            TypeObjectUtils::add_complete_struct_member(member_seq_DdsTopicData, member_msgs_received);
-                        }
-                        {
-                            return_code_DdsTopicData =
-                                eprosima::fastdds::dds::DomainParticipantFactory::get_instance()->type_object_registry().get_type_identifiers(
-                                "_double", type_ids_DdsTopicData);
-
-                            if (return_code_DdsTopicData != eprosima::fastdds::dds::RETCODE_OK)
-                            {
-                                EPROSIMA_LOG_ERROR(XTYPES_TYPE_REPRESENTATION,
-                                        "msg_rx_rate Structure member TypeIdentifier unknown to TypeObjectRegistry.");
-                                return;
-                            }
-                            StructMemberFlag member_flags_msg_rx_rate = TypeObjectUtils::build_struct_member_flag(eprosima::fastdds::dds::xtypes::TryConstructKind::NOT_APPLIED,
-                                    false, false, false, false);
-                            CommonStructMember common_msg_rx_rate;
-                            MemberId member_id_msg_rx_rate = 0x00000003;
-                            if (EK_COMPLETE == type_ids_DdsTopicData.type_identifier1()._d() || TK_NONE == type_ids_DdsTopicData.type_identifier2()._d() ||
-                                    (TI_PLAIN_SEQUENCE_SMALL == type_ids_DdsTopicData.type_identifier1()._d() &&
-                                    EK_COMPLETE == type_ids_DdsTopicData.type_identifier1().seq_sdefn().header().equiv_kind()) ||
-                                    (TI_PLAIN_SEQUENCE_LARGE == type_ids_DdsTopicData.type_identifier1()._d() &&
-                                    EK_COMPLETE == type_ids_DdsTopicData.type_identifier1().seq_ldefn().header().equiv_kind()) ||
-                                    (TI_PLAIN_ARRAY_SMALL == type_ids_DdsTopicData.type_identifier1()._d() &&
-                                    EK_COMPLETE == type_ids_DdsTopicData.type_identifier1().array_sdefn().header().equiv_kind()) ||
-                                    (TI_PLAIN_ARRAY_LARGE == type_ids_DdsTopicData.type_identifier1()._d() &&
-                                    EK_COMPLETE == type_ids_DdsTopicData.type_identifier1().array_ldefn().header().equiv_kind()) ||
-                                    (TI_PLAIN_MAP_SMALL == type_ids_DdsTopicData.type_identifier1()._d() &&
-                                    (EK_COMPLETE == type_ids_DdsTopicData.type_identifier1().map_sdefn().header().equiv_kind() ||
-                                    EK_COMPLETE == type_ids_DdsTopicData.type_identifier1().map_sdefn().key_identifier()->_d())) ||
-                                    (TI_PLAIN_MAP_LARGE == type_ids_DdsTopicData.type_identifier1()._d() &&
-                                    (EK_COMPLETE == type_ids_DdsTopicData.type_identifier1().map_ldefn().header().equiv_kind() ||
-                                    EK_COMPLETE == type_ids_DdsTopicData.type_identifier1().map_ldefn().key_identifier()->_d())))
-                            {
-                                common_msg_rx_rate = TypeObjectUtils::build_common_struct_member(member_id_msg_rx_rate, member_flags_msg_rx_rate, type_ids_DdsTopicData.type_identifier1());
-                            }
-                            else if (EK_COMPLETE == type_ids_DdsTopicData.type_identifier2()._d() ||
-                                    (TI_PLAIN_SEQUENCE_SMALL == type_ids_DdsTopicData.type_identifier2()._d() &&
-                                    EK_COMPLETE == type_ids_DdsTopicData.type_identifier2().seq_sdefn().header().equiv_kind()) ||
-                                    (TI_PLAIN_SEQUENCE_LARGE == type_ids_DdsTopicData.type_identifier2()._d() &&
-                                    EK_COMPLETE == type_ids_DdsTopicData.type_identifier2().seq_ldefn().header().equiv_kind()) ||
-                                    (TI_PLAIN_ARRAY_SMALL == type_ids_DdsTopicData.type_identifier2()._d() &&
-                                    EK_COMPLETE == type_ids_DdsTopicData.type_identifier2().array_sdefn().header().equiv_kind()) ||
-                                    (TI_PLAIN_ARRAY_LARGE == type_ids_DdsTopicData.type_identifier2()._d() &&
-                                    EK_COMPLETE == type_ids_DdsTopicData.type_identifier2().array_ldefn().header().equiv_kind()) ||
-                                    (TI_PLAIN_MAP_SMALL == type_ids_DdsTopicData.type_identifier2()._d() &&
-                                    (EK_COMPLETE == type_ids_DdsTopicData.type_identifier2().map_sdefn().header().equiv_kind() ||
-                                    EK_COMPLETE == type_ids_DdsTopicData.type_identifier2().map_sdefn().key_identifier()->_d())) ||
-                                    (TI_PLAIN_MAP_LARGE == type_ids_DdsTopicData.type_identifier2()._d() &&
-                                    (EK_COMPLETE == type_ids_DdsTopicData.type_identifier2().map_ldefn().header().equiv_kind() ||
-                                    EK_COMPLETE == type_ids_DdsTopicData.type_identifier2().map_ldefn().key_identifier()->_d())))
-                            {
-                                common_msg_rx_rate = TypeObjectUtils::build_common_struct_member(member_id_msg_rx_rate, member_flags_msg_rx_rate, type_ids_DdsTopicData.type_identifier2());
-                            }
-                            else
-                            {
-                                EPROSIMA_LOG_ERROR(XTYPES_TYPE_REPRESENTATION,
-                                        "Structure msg_rx_rate member TypeIdentifier inconsistent.");
-                                return;
-                            }
-                            MemberName name_msg_rx_rate = "msg_rx_rate";
-                            eprosima::fastcdr::optional<AppliedBuiltinMemberAnnotations> member_ann_builtin_msg_rx_rate;
-                            ann_custom_DdsTopicData.reset();
-                            CompleteMemberDetail detail_msg_rx_rate = TypeObjectUtils::build_complete_member_detail(name_msg_rx_rate, member_ann_builtin_msg_rx_rate, ann_custom_DdsTopicData);
-                            CompleteStructMember member_msg_rx_rate = TypeObjectUtils::build_complete_struct_member(common_msg_rx_rate, detail_msg_rx_rate);
-                            TypeObjectUtils::add_complete_struct_member(member_seq_DdsTopicData, member_msg_rx_rate);
-                        }
-                        CompleteStructType struct_type_DdsTopicData = TypeObjectUtils::build_complete_struct_type(struct_flags_DdsTopicData, header_DdsTopicData, member_seq_DdsTopicData);
-                        if (eprosima::fastdds::dds::RETCODE_BAD_PARAMETER ==
-                                TypeObjectUtils::build_and_register_struct_type_object(struct_type_DdsTopicData, type_name_DdsTopicData.to_string()))
-                        {
-                            EPROSIMA_LOG_ERROR(XTYPES_TYPE_REPRESENTATION,
-                                    "DdsTopicData already registered in TypeObjectRegistry for a different type.");
-                        }
-                        return_code_DdsTopicData =
-                            eprosima::fastdds::dds::DomainParticipantFactory::get_instance()->type_object_registry().get_type_identifiers(
-                            "DdsTopicData", type_ids_DdsTopicData);
-                        if (return_code_DdsTopicData != eprosima::fastdds::dds::RETCODE_OK)
-                        {
-                            EPROSIMA_LOG_ERROR(XTYPES_TYPE_REPRESENTATION,
-                                        "DdsTopicData: Given Struct TypeIdentifier unknown to TypeObjectRegistry.");
-                            return;
-                        }
-                    }
+                ::register_DdsTopicData_type_identifier(type_ids_data);
                 }
                 TypeIdentifier* element_identifier_anonymous_sequence_DdsTopicData_unbounded {nullptr};
-                if (EK_COMPLETE == type_ids_DdsTopic.type_identifier1()._d() || TK_NONE == type_ids_DdsTopic.type_identifier2()._d() ||
-                        (TI_PLAIN_SEQUENCE_SMALL == type_ids_DdsTopic.type_identifier1()._d() &&
-                        EK_COMPLETE == type_ids_DdsTopic.type_identifier1().seq_sdefn().header().equiv_kind()) ||
-                        (TI_PLAIN_SEQUENCE_LARGE == type_ids_DdsTopic.type_identifier1()._d() &&
-                        EK_COMPLETE == type_ids_DdsTopic.type_identifier1().seq_ldefn().header().equiv_kind()) ||
-                        (TI_PLAIN_ARRAY_SMALL == type_ids_DdsTopic.type_identifier1()._d() &&
-                        EK_COMPLETE == type_ids_DdsTopic.type_identifier1().array_sdefn().header().equiv_kind()) ||
-                        (TI_PLAIN_ARRAY_LARGE == type_ids_DdsTopic.type_identifier1()._d() &&
-                        EK_COMPLETE == type_ids_DdsTopic.type_identifier1().array_ldefn().header().equiv_kind()) ||
-                        (TI_PLAIN_MAP_SMALL == type_ids_DdsTopic.type_identifier1()._d() &&
-                        (EK_COMPLETE == type_ids_DdsTopic.type_identifier1().map_sdefn().header().equiv_kind() ||
-                        EK_COMPLETE == type_ids_DdsTopic.type_identifier1().map_sdefn().key_identifier()->_d())) ||
-                        (TI_PLAIN_MAP_LARGE == type_ids_DdsTopic.type_identifier1()._d() &&
-                        (EK_COMPLETE == type_ids_DdsTopic.type_identifier1().map_ldefn().header().equiv_kind() ||
-                        EK_COMPLETE == type_ids_DdsTopic.type_identifier1().map_ldefn().key_identifier()->_d())))
+                if (EK_COMPLETE == type_ids_data.type_identifier1()._d() || TK_NONE == type_ids_data.type_identifier2()._d() ||
+                        (TI_PLAIN_SEQUENCE_SMALL == type_ids_data.type_identifier1()._d() &&
+                        EK_COMPLETE == type_ids_data.type_identifier1().seq_sdefn().header().equiv_kind()) ||
+                        (TI_PLAIN_SEQUENCE_LARGE == type_ids_data.type_identifier1()._d() &&
+                        EK_COMPLETE == type_ids_data.type_identifier1().seq_ldefn().header().equiv_kind()) ||
+                        (TI_PLAIN_ARRAY_SMALL == type_ids_data.type_identifier1()._d() &&
+                        EK_COMPLETE == type_ids_data.type_identifier1().array_sdefn().header().equiv_kind()) ||
+                        (TI_PLAIN_ARRAY_LARGE == type_ids_data.type_identifier1()._d() &&
+                        EK_COMPLETE == type_ids_data.type_identifier1().array_ldefn().header().equiv_kind()) ||
+                        (TI_PLAIN_MAP_SMALL == type_ids_data.type_identifier1()._d() &&
+                        (EK_COMPLETE == type_ids_data.type_identifier1().map_sdefn().header().equiv_kind() ||
+                        EK_COMPLETE == type_ids_data.type_identifier1().map_sdefn().key_identifier()->_d())) ||
+                        (TI_PLAIN_MAP_LARGE == type_ids_data.type_identifier1()._d() &&
+                        (EK_COMPLETE == type_ids_data.type_identifier1().map_ldefn().header().equiv_kind() ||
+                        EK_COMPLETE == type_ids_data.type_identifier1().map_ldefn().key_identifier()->_d())))
                 {
-                    element_identifier_anonymous_sequence_DdsTopicData_unbounded = new TypeIdentifier(type_ids_DdsTopic.type_identifier1());
+                    element_identifier_anonymous_sequence_DdsTopicData_unbounded = new TypeIdentifier(type_ids_data.type_identifier1());
                 }
-                else if (EK_COMPLETE == type_ids_DdsTopic.type_identifier2()._d() ||
-                        (TI_PLAIN_SEQUENCE_SMALL == type_ids_DdsTopic.type_identifier2()._d() &&
-                        EK_COMPLETE == type_ids_DdsTopic.type_identifier2().seq_sdefn().header().equiv_kind()) ||
-                        (TI_PLAIN_SEQUENCE_LARGE == type_ids_DdsTopic.type_identifier2()._d() &&
-                        EK_COMPLETE == type_ids_DdsTopic.type_identifier2().seq_ldefn().header().equiv_kind()) ||
-                        (TI_PLAIN_ARRAY_SMALL == type_ids_DdsTopic.type_identifier2()._d() &&
-                        EK_COMPLETE == type_ids_DdsTopic.type_identifier2().array_sdefn().header().equiv_kind()) ||
-                        (TI_PLAIN_ARRAY_LARGE == type_ids_DdsTopic.type_identifier2()._d() &&
-                        EK_COMPLETE == type_ids_DdsTopic.type_identifier2().array_ldefn().header().equiv_kind()) ||
-                        (TI_PLAIN_MAP_SMALL == type_ids_DdsTopic.type_identifier2()._d() &&
-                        (EK_COMPLETE == type_ids_DdsTopic.type_identifier2().map_sdefn().header().equiv_kind() ||
-                        EK_COMPLETE == type_ids_DdsTopic.type_identifier2().map_sdefn().key_identifier()->_d())) ||
-                        (TI_PLAIN_MAP_LARGE == type_ids_DdsTopic.type_identifier2()._d() &&
-                        (EK_COMPLETE == type_ids_DdsTopic.type_identifier2().map_ldefn().header().equiv_kind() ||
-                        EK_COMPLETE == type_ids_DdsTopic.type_identifier2().map_ldefn().key_identifier()->_d())))
+                else if (EK_COMPLETE == type_ids_data.type_identifier2()._d() ||
+                        (TI_PLAIN_SEQUENCE_SMALL == type_ids_data.type_identifier2()._d() &&
+                        EK_COMPLETE == type_ids_data.type_identifier2().seq_sdefn().header().equiv_kind()) ||
+                        (TI_PLAIN_SEQUENCE_LARGE == type_ids_data.type_identifier2()._d() &&
+                        EK_COMPLETE == type_ids_data.type_identifier2().seq_ldefn().header().equiv_kind()) ||
+                        (TI_PLAIN_ARRAY_SMALL == type_ids_data.type_identifier2()._d() &&
+                        EK_COMPLETE == type_ids_data.type_identifier2().array_sdefn().header().equiv_kind()) ||
+                        (TI_PLAIN_ARRAY_LARGE == type_ids_data.type_identifier2()._d() &&
+                        EK_COMPLETE == type_ids_data.type_identifier2().array_ldefn().header().equiv_kind()) ||
+                        (TI_PLAIN_MAP_SMALL == type_ids_data.type_identifier2()._d() &&
+                        (EK_COMPLETE == type_ids_data.type_identifier2().map_sdefn().header().equiv_kind() ||
+                        EK_COMPLETE == type_ids_data.type_identifier2().map_sdefn().key_identifier()->_d())) ||
+                        (TI_PLAIN_MAP_LARGE == type_ids_data.type_identifier2()._d() &&
+                        (EK_COMPLETE == type_ids_data.type_identifier2().map_ldefn().header().equiv_kind() ||
+                        EK_COMPLETE == type_ids_data.type_identifier2().map_ldefn().key_identifier()->_d())))
                 {
-                    element_identifier_anonymous_sequence_DdsTopicData_unbounded = new TypeIdentifier(type_ids_DdsTopic.type_identifier2());
+                    element_identifier_anonymous_sequence_DdsTopicData_unbounded = new TypeIdentifier(type_ids_data.type_identifier2());
                 }
                 else
                 {
@@ -1165,86 +786,65 @@ void register_DdsTopic_type_identifier()
                     return;
                 }
                 EquivalenceKind equiv_kind_anonymous_sequence_DdsTopicData_unbounded = EK_COMPLETE;
-                if (TK_NONE == type_ids_DdsTopic.type_identifier2()._d())
+                if (TK_NONE == type_ids_data.type_identifier2()._d())
                 {
                     equiv_kind_anonymous_sequence_DdsTopicData_unbounded = EK_BOTH;
                 }
                 CollectionElementFlag element_flags_anonymous_sequence_DdsTopicData_unbounded = 0;
                 PlainCollectionHeader header_anonymous_sequence_DdsTopicData_unbounded = TypeObjectUtils::build_plain_collection_header(equiv_kind_anonymous_sequence_DdsTopicData_unbounded, element_flags_anonymous_sequence_DdsTopicData_unbounded);
-                std::string type_id_kind_anonymous_sequence_DdsTopicData_unbounded("TI_PLAIN_SEQUENCE_SMALL");
-                if (type_id_kind_anonymous_sequence_DdsTopicData_unbounded == "TI_PLAIN_SEQUENCE_SMALL")
                 {
                     SBound bound = 0;
                     PlainSequenceSElemDefn seq_sdefn = TypeObjectUtils::build_plain_sequence_s_elem_defn(header_anonymous_sequence_DdsTopicData_unbounded, bound,
                                 eprosima::fastcdr::external<TypeIdentifier>(element_identifier_anonymous_sequence_DdsTopicData_unbounded));
                     if (eprosima::fastdds::dds::RETCODE_BAD_PARAMETER ==
-                            TypeObjectUtils::build_and_register_s_sequence_type_identifier(seq_sdefn, "anonymous_sequence_DdsTopicData_unbounded"))
+                            TypeObjectUtils::build_and_register_s_sequence_type_identifier(seq_sdefn, "anonymous_sequence_DdsTopicData_unbounded", type_ids_data))
                     {
                         EPROSIMA_LOG_ERROR(XTYPES_TYPE_REPRESENTATION,
                             "anonymous_sequence_DdsTopicData_unbounded already registered in TypeObjectRegistry for a different type.");
                     }
-                }
-                else
-                {
-                    LBound bound = 0;
-                    PlainSequenceLElemDefn seq_ldefn = TypeObjectUtils::build_plain_sequence_l_elem_defn(header_anonymous_sequence_DdsTopicData_unbounded, bound,
-                                eprosima::fastcdr::external<TypeIdentifier>(element_identifier_anonymous_sequence_DdsTopicData_unbounded));
-                    if (eprosima::fastdds::dds::RETCODE_BAD_PARAMETER ==
-                            TypeObjectUtils::build_and_register_l_sequence_type_identifier(seq_ldefn, "anonymous_sequence_DdsTopicData_unbounded"))
-                    {
-                        EPROSIMA_LOG_ERROR(XTYPES_TYPE_REPRESENTATION,
-                            "anonymous_sequence_DdsTopicData_unbounded already registered in TypeObjectRegistry for a different type.");
-                    }
-                }
-                return_code_DdsTopic =
-                    eprosima::fastdds::dds::DomainParticipantFactory::get_instance()->type_object_registry().get_type_identifiers(
-                    "anonymous_sequence_DdsTopicData_unbounded", type_ids_DdsTopic);
-                if (return_code_DdsTopic != eprosima::fastdds::dds::RETCODE_OK)
-                {
-                    EPROSIMA_LOG_ERROR(XTYPES_TYPE_REPRESENTATION,
-                                "anonymous_sequence_DdsTopicData_unbounded: Given Sequence TypeIdentifier unknown to TypeObjectRegistry.");
-                    return;
                 }
             }
             StructMemberFlag member_flags_data = TypeObjectUtils::build_struct_member_flag(eprosima::fastdds::dds::xtypes::TryConstructKind::NOT_APPLIED,
                     false, false, false, false);
             CommonStructMember common_data;
             MemberId member_id_data = 0x00000005;
-            if (EK_COMPLETE == type_ids_DdsTopic.type_identifier1()._d() || TK_NONE == type_ids_DdsTopic.type_identifier2()._d() ||
-                    (TI_PLAIN_SEQUENCE_SMALL == type_ids_DdsTopic.type_identifier1()._d() &&
-                    EK_COMPLETE == type_ids_DdsTopic.type_identifier1().seq_sdefn().header().equiv_kind()) ||
-                    (TI_PLAIN_SEQUENCE_LARGE == type_ids_DdsTopic.type_identifier1()._d() &&
-                    EK_COMPLETE == type_ids_DdsTopic.type_identifier1().seq_ldefn().header().equiv_kind()) ||
-                    (TI_PLAIN_ARRAY_SMALL == type_ids_DdsTopic.type_identifier1()._d() &&
-                    EK_COMPLETE == type_ids_DdsTopic.type_identifier1().array_sdefn().header().equiv_kind()) ||
-                    (TI_PLAIN_ARRAY_LARGE == type_ids_DdsTopic.type_identifier1()._d() &&
-                    EK_COMPLETE == type_ids_DdsTopic.type_identifier1().array_ldefn().header().equiv_kind()) ||
-                    (TI_PLAIN_MAP_SMALL == type_ids_DdsTopic.type_identifier1()._d() &&
-                    (EK_COMPLETE == type_ids_DdsTopic.type_identifier1().map_sdefn().header().equiv_kind() ||
-                    EK_COMPLETE == type_ids_DdsTopic.type_identifier1().map_sdefn().key_identifier()->_d())) ||
-                    (TI_PLAIN_MAP_LARGE == type_ids_DdsTopic.type_identifier1()._d() &&
-                    (EK_COMPLETE == type_ids_DdsTopic.type_identifier1().map_ldefn().header().equiv_kind() ||
-                    EK_COMPLETE == type_ids_DdsTopic.type_identifier1().map_ldefn().key_identifier()->_d())))
+            if (EK_COMPLETE == type_ids_data.type_identifier1()._d() || TK_NONE == type_ids_data.type_identifier2()._d() ||
+                    (TI_PLAIN_SEQUENCE_SMALL == type_ids_data.type_identifier1()._d() &&
+                    EK_COMPLETE == type_ids_data.type_identifier1().seq_sdefn().header().equiv_kind()) ||
+                    (TI_PLAIN_SEQUENCE_LARGE == type_ids_data.type_identifier1()._d() &&
+                    EK_COMPLETE == type_ids_data.type_identifier1().seq_ldefn().header().equiv_kind()) ||
+                    (TI_PLAIN_ARRAY_SMALL == type_ids_data.type_identifier1()._d() &&
+                    EK_COMPLETE == type_ids_data.type_identifier1().array_sdefn().header().equiv_kind()) ||
+                    (TI_PLAIN_ARRAY_LARGE == type_ids_data.type_identifier1()._d() &&
+                    EK_COMPLETE == type_ids_data.type_identifier1().array_ldefn().header().equiv_kind()) ||
+                    (TI_PLAIN_MAP_SMALL == type_ids_data.type_identifier1()._d() &&
+                    (EK_COMPLETE == type_ids_data.type_identifier1().map_sdefn().header().equiv_kind() ||
+                    EK_COMPLETE == type_ids_data.type_identifier1().map_sdefn().key_identifier()->_d())) ||
+                    (TI_PLAIN_MAP_LARGE == type_ids_data.type_identifier1()._d() &&
+                    (EK_COMPLETE == type_ids_data.type_identifier1().map_ldefn().header().equiv_kind() ||
+                    EK_COMPLETE == type_ids_data.type_identifier1().map_ldefn().key_identifier()->_d())))
             {
-                common_data = TypeObjectUtils::build_common_struct_member(member_id_data, member_flags_data, type_ids_DdsTopic.type_identifier1());
+                common_data = TypeObjectUtils::build_common_struct_member(member_id_data,
+                        member_flags_data, type_ids_data.type_identifier1());
             }
-            else if (EK_COMPLETE == type_ids_DdsTopic.type_identifier2()._d() ||
-                    (TI_PLAIN_SEQUENCE_SMALL == type_ids_DdsTopic.type_identifier2()._d() &&
-                    EK_COMPLETE == type_ids_DdsTopic.type_identifier2().seq_sdefn().header().equiv_kind()) ||
-                    (TI_PLAIN_SEQUENCE_LARGE == type_ids_DdsTopic.type_identifier2()._d() &&
-                    EK_COMPLETE == type_ids_DdsTopic.type_identifier2().seq_ldefn().header().equiv_kind()) ||
-                    (TI_PLAIN_ARRAY_SMALL == type_ids_DdsTopic.type_identifier2()._d() &&
-                    EK_COMPLETE == type_ids_DdsTopic.type_identifier2().array_sdefn().header().equiv_kind()) ||
-                    (TI_PLAIN_ARRAY_LARGE == type_ids_DdsTopic.type_identifier2()._d() &&
-                    EK_COMPLETE == type_ids_DdsTopic.type_identifier2().array_ldefn().header().equiv_kind()) ||
-                    (TI_PLAIN_MAP_SMALL == type_ids_DdsTopic.type_identifier2()._d() &&
-                    (EK_COMPLETE == type_ids_DdsTopic.type_identifier2().map_sdefn().header().equiv_kind() ||
-                    EK_COMPLETE == type_ids_DdsTopic.type_identifier2().map_sdefn().key_identifier()->_d())) ||
-                    (TI_PLAIN_MAP_LARGE == type_ids_DdsTopic.type_identifier2()._d() &&
-                    (EK_COMPLETE == type_ids_DdsTopic.type_identifier2().map_ldefn().header().equiv_kind() ||
-                    EK_COMPLETE == type_ids_DdsTopic.type_identifier2().map_ldefn().key_identifier()->_d())))
+            else if (EK_COMPLETE == type_ids_data.type_identifier2()._d() ||
+                    (TI_PLAIN_SEQUENCE_SMALL == type_ids_data.type_identifier2()._d() &&
+                    EK_COMPLETE == type_ids_data.type_identifier2().seq_sdefn().header().equiv_kind()) ||
+                    (TI_PLAIN_SEQUENCE_LARGE == type_ids_data.type_identifier2()._d() &&
+                    EK_COMPLETE == type_ids_data.type_identifier2().seq_ldefn().header().equiv_kind()) ||
+                    (TI_PLAIN_ARRAY_SMALL == type_ids_data.type_identifier2()._d() &&
+                    EK_COMPLETE == type_ids_data.type_identifier2().array_sdefn().header().equiv_kind()) ||
+                    (TI_PLAIN_ARRAY_LARGE == type_ids_data.type_identifier2()._d() &&
+                    EK_COMPLETE == type_ids_data.type_identifier2().array_ldefn().header().equiv_kind()) ||
+                    (TI_PLAIN_MAP_SMALL == type_ids_data.type_identifier2()._d() &&
+                    (EK_COMPLETE == type_ids_data.type_identifier2().map_sdefn().header().equiv_kind() ||
+                    EK_COMPLETE == type_ids_data.type_identifier2().map_sdefn().key_identifier()->_d())) ||
+                    (TI_PLAIN_MAP_LARGE == type_ids_data.type_identifier2()._d() &&
+                    (EK_COMPLETE == type_ids_data.type_identifier2().map_ldefn().header().equiv_kind() ||
+                    EK_COMPLETE == type_ids_data.type_identifier2().map_ldefn().key_identifier()->_d())))
             {
-                common_data = TypeObjectUtils::build_common_struct_member(member_id_data, member_flags_data, type_ids_DdsTopic.type_identifier2());
+                common_data = TypeObjectUtils::build_common_struct_member(member_id_data,
+                        member_flags_data, type_ids_data.type_identifier2());
             }
             else
             {
@@ -1261,29 +861,27 @@ void register_DdsTopic_type_identifier()
         }
         CompleteStructType struct_type_DdsTopic = TypeObjectUtils::build_complete_struct_type(struct_flags_DdsTopic, header_DdsTopic, member_seq_DdsTopic);
         if (eprosima::fastdds::dds::RETCODE_BAD_PARAMETER ==
-                TypeObjectUtils::build_and_register_struct_type_object(struct_type_DdsTopic, type_name_DdsTopic.to_string()))
+                TypeObjectUtils::build_and_register_struct_type_object(struct_type_DdsTopic, type_name_DdsTopic.to_string(), type_ids_DdsTopic))
         {
             EPROSIMA_LOG_ERROR(XTYPES_TYPE_REPRESENTATION,
                     "DdsTopic already registered in TypeObjectRegistry for a different type.");
         }
-        return_code_DdsTopic =
-            eprosima::fastdds::dds::DomainParticipantFactory::get_instance()->type_object_registry().get_type_identifiers(
-            "DdsTopic", type_ids_DdsTopic);
-        if (return_code_DdsTopic != eprosima::fastdds::dds::RETCODE_OK)
-        {
-            EPROSIMA_LOG_ERROR(XTYPES_TYPE_REPRESENTATION,
-                        "DdsTopic: Given Struct TypeIdentifier unknown to TypeObjectRegistry.");
-            return;
-        }
     }
 }
-void register_MonitoringTopics_type_identifier()
+// TypeIdentifier is returned by reference: dependent structures/unions are registered in this same method
+void register_MonitoringTopics_type_identifier(
+        TypeIdentifierPair& type_ids_MonitoringTopics)
 {
+
+    ReturnCode_t return_code_MonitoringTopics {eprosima::fastdds::dds::RETCODE_OK};
+    return_code_MonitoringTopics =
+        eprosima::fastdds::dds::DomainParticipantFactory::get_instance()->type_object_registry().get_type_identifiers(
+        "MonitoringTopics", type_ids_MonitoringTopics);
+    if (eprosima::fastdds::dds::RETCODE_OK != return_code_MonitoringTopics)
     {
         StructTypeFlag struct_flags_MonitoringTopics = TypeObjectUtils::build_struct_type_flag(eprosima::fastdds::dds::xtypes::ExtensibilityKind::NOT_APPLIED,
                 false, false);
-        ReturnCode_t return_code_MonitoringTopics;
-        TypeIdentifierPair type_ids_MonitoringTopics;
+        static_cast<void>(return_code_MonitoringTopics);
         QualifiedTypeName type_name_MonitoringTopics = "MonitoringTopics";
         eprosima::fastcdr::optional<AppliedBuiltinTypeAnnotations> type_ann_builtin_MonitoringTopics;
         eprosima::fastcdr::optional<AppliedAnnotationSeq> ann_custom_MonitoringTopics;
@@ -1292,952 +890,58 @@ void register_MonitoringTopics_type_identifier()
         header_MonitoringTopics = TypeObjectUtils::build_complete_struct_header(TypeIdentifier(), detail_MonitoringTopics);
         CompleteStructMemberSeq member_seq_MonitoringTopics;
         {
-            return_code_MonitoringTopics =
+            TypeIdentifierPair type_ids_topics;
+            ReturnCode_t return_code_topics {eprosima::fastdds::dds::RETCODE_OK};
+            return_code_topics =
                 eprosima::fastdds::dds::DomainParticipantFactory::get_instance()->type_object_registry().get_type_identifiers(
-                "anonymous_sequence_DdsTopic_unbounded", type_ids_MonitoringTopics);
+                "anonymous_sequence_DdsTopic_unbounded", type_ids_topics);
 
-            if (return_code_MonitoringTopics != eprosima::fastdds::dds::RETCODE_OK)
+            if (eprosima::fastdds::dds::RETCODE_OK != return_code_topics)
             {
-                return_code_MonitoringTopics =
+                return_code_topics =
                     eprosima::fastdds::dds::DomainParticipantFactory::get_instance()->type_object_registry().get_type_identifiers(
-                    "DdsTopic", type_ids_MonitoringTopics);
+                    "DdsTopic", type_ids_topics);
 
-                if (return_code_MonitoringTopics != eprosima::fastdds::dds::RETCODE_OK)
+                if (eprosima::fastdds::dds::RETCODE_OK != return_code_topics)
                 {
-                    {
-                        StructTypeFlag struct_flags_DdsTopic = TypeObjectUtils::build_struct_type_flag(eprosima::fastdds::dds::xtypes::ExtensibilityKind::NOT_APPLIED,
-                                false, false);
-                        ReturnCode_t return_code_DdsTopic;
-                        TypeIdentifierPair type_ids_DdsTopic;
-                        QualifiedTypeName type_name_DdsTopic = "DdsTopic";
-                        eprosima::fastcdr::optional<AppliedBuiltinTypeAnnotations> type_ann_builtin_DdsTopic;
-                        eprosima::fastcdr::optional<AppliedAnnotationSeq> ann_custom_DdsTopic;
-                        CompleteTypeDetail detail_DdsTopic = TypeObjectUtils::build_complete_type_detail(type_ann_builtin_DdsTopic, ann_custom_DdsTopic, type_name_DdsTopic.to_string());
-                        CompleteStructHeader header_DdsTopic;
-                        header_DdsTopic = TypeObjectUtils::build_complete_struct_header(TypeIdentifier(), detail_DdsTopic);
-                        CompleteStructMemberSeq member_seq_DdsTopic;
-                        {
-                            return_code_DdsTopic =
-                                eprosima::fastdds::dds::DomainParticipantFactory::get_instance()->type_object_registry().get_type_identifiers(
-                                "anonymous_string_unbounded", type_ids_DdsTopic);
-
-                            if (return_code_DdsTopic != eprosima::fastdds::dds::RETCODE_OK)
-                            {
-                                std::string type_id_kind_anonymous_string_unbounded("TI_STRING8_SMALL");
-                                if (type_id_kind_anonymous_string_unbounded == "TI_STRING8_SMALL")
-                                {
-                                    SBound bound = 0;
-                                    StringSTypeDefn string_sdefn = TypeObjectUtils::build_string_s_type_defn(bound);
-                                    if (eprosima::fastdds::dds::RETCODE_BAD_PARAMETER ==
-                                            TypeObjectUtils::build_and_register_s_string_type_identifier(string_sdefn,
-                                            "anonymous_string_unbounded"))
-                                    {
-                                        EPROSIMA_LOG_ERROR(XTYPES_TYPE_REPRESENTATION,
-                                            "anonymous_string_unbounded already registered in TypeObjectRegistry for a different type.");
-                                    }
-                                }
-                                else if (type_id_kind_anonymous_string_unbounded == "TI_STRING8_LARGE")
-                                {
-                                    LBound bound = 255;
-                                    StringLTypeDefn string_ldefn = TypeObjectUtils::build_string_l_type_defn(bound);
-                                    if (eprosima::fastdds::dds::RETCODE_BAD_PARAMETER ==
-                                            TypeObjectUtils::build_and_register_l_string_type_identifier(string_ldefn,
-                                            "anonymous_string_unbounded"))
-                                    {
-                                        EPROSIMA_LOG_ERROR(XTYPES_TYPE_REPRESENTATION,
-                                            "anonymous_string_unbounded already registered in TypeObjectRegistry for a different type.");
-                                    }
-                                }
-                                else
-                                {
-                                    EPROSIMA_LOG_ERROR(XTYPES_TYPE_REPRESENTATION,
-                                                "anonymous_string_unbounded: Unknown String kind.");
-                                    return;
-                                }
-                                return_code_DdsTopic =
-                                    eprosima::fastdds::dds::DomainParticipantFactory::get_instance()->type_object_registry().get_type_identifiers(
-                                    "anonymous_string_unbounded", type_ids_DdsTopic);
-                                if (return_code_DdsTopic != eprosima::fastdds::dds::RETCODE_OK)
-                                {
-                                    EPROSIMA_LOG_ERROR(XTYPES_TYPE_REPRESENTATION,
-                                                "anonymous_string_unbounded: Given String TypeIdentifier unknown to TypeObjectRegistry.");
-                                    return;
-                                }
-                            }
-                            StructMemberFlag member_flags_name = TypeObjectUtils::build_struct_member_flag(eprosima::fastdds::dds::xtypes::TryConstructKind::NOT_APPLIED,
-                                    false, false, false, false);
-                            CommonStructMember common_name;
-                            MemberId member_id_name = 0x00000000;
-                            if (EK_COMPLETE == type_ids_DdsTopic.type_identifier1()._d() || TK_NONE == type_ids_DdsTopic.type_identifier2()._d() ||
-                                    (TI_PLAIN_SEQUENCE_SMALL == type_ids_DdsTopic.type_identifier1()._d() &&
-                                    EK_COMPLETE == type_ids_DdsTopic.type_identifier1().seq_sdefn().header().equiv_kind()) ||
-                                    (TI_PLAIN_SEQUENCE_LARGE == type_ids_DdsTopic.type_identifier1()._d() &&
-                                    EK_COMPLETE == type_ids_DdsTopic.type_identifier1().seq_ldefn().header().equiv_kind()) ||
-                                    (TI_PLAIN_ARRAY_SMALL == type_ids_DdsTopic.type_identifier1()._d() &&
-                                    EK_COMPLETE == type_ids_DdsTopic.type_identifier1().array_sdefn().header().equiv_kind()) ||
-                                    (TI_PLAIN_ARRAY_LARGE == type_ids_DdsTopic.type_identifier1()._d() &&
-                                    EK_COMPLETE == type_ids_DdsTopic.type_identifier1().array_ldefn().header().equiv_kind()) ||
-                                    (TI_PLAIN_MAP_SMALL == type_ids_DdsTopic.type_identifier1()._d() &&
-                                    (EK_COMPLETE == type_ids_DdsTopic.type_identifier1().map_sdefn().header().equiv_kind() ||
-                                    EK_COMPLETE == type_ids_DdsTopic.type_identifier1().map_sdefn().key_identifier()->_d())) ||
-                                    (TI_PLAIN_MAP_LARGE == type_ids_DdsTopic.type_identifier1()._d() &&
-                                    (EK_COMPLETE == type_ids_DdsTopic.type_identifier1().map_ldefn().header().equiv_kind() ||
-                                    EK_COMPLETE == type_ids_DdsTopic.type_identifier1().map_ldefn().key_identifier()->_d())))
-                            {
-                                common_name = TypeObjectUtils::build_common_struct_member(member_id_name, member_flags_name, type_ids_DdsTopic.type_identifier1());
-                            }
-                            else if (EK_COMPLETE == type_ids_DdsTopic.type_identifier2()._d() ||
-                                    (TI_PLAIN_SEQUENCE_SMALL == type_ids_DdsTopic.type_identifier2()._d() &&
-                                    EK_COMPLETE == type_ids_DdsTopic.type_identifier2().seq_sdefn().header().equiv_kind()) ||
-                                    (TI_PLAIN_SEQUENCE_LARGE == type_ids_DdsTopic.type_identifier2()._d() &&
-                                    EK_COMPLETE == type_ids_DdsTopic.type_identifier2().seq_ldefn().header().equiv_kind()) ||
-                                    (TI_PLAIN_ARRAY_SMALL == type_ids_DdsTopic.type_identifier2()._d() &&
-                                    EK_COMPLETE == type_ids_DdsTopic.type_identifier2().array_sdefn().header().equiv_kind()) ||
-                                    (TI_PLAIN_ARRAY_LARGE == type_ids_DdsTopic.type_identifier2()._d() &&
-                                    EK_COMPLETE == type_ids_DdsTopic.type_identifier2().array_ldefn().header().equiv_kind()) ||
-                                    (TI_PLAIN_MAP_SMALL == type_ids_DdsTopic.type_identifier2()._d() &&
-                                    (EK_COMPLETE == type_ids_DdsTopic.type_identifier2().map_sdefn().header().equiv_kind() ||
-                                    EK_COMPLETE == type_ids_DdsTopic.type_identifier2().map_sdefn().key_identifier()->_d())) ||
-                                    (TI_PLAIN_MAP_LARGE == type_ids_DdsTopic.type_identifier2()._d() &&
-                                    (EK_COMPLETE == type_ids_DdsTopic.type_identifier2().map_ldefn().header().equiv_kind() ||
-                                    EK_COMPLETE == type_ids_DdsTopic.type_identifier2().map_ldefn().key_identifier()->_d())))
-                            {
-                                common_name = TypeObjectUtils::build_common_struct_member(member_id_name, member_flags_name, type_ids_DdsTopic.type_identifier2());
-                            }
-                            else
-                            {
-                                EPROSIMA_LOG_ERROR(XTYPES_TYPE_REPRESENTATION,
-                                        "Structure name member TypeIdentifier inconsistent.");
-                                return;
-                            }
-                            MemberName name_name = "name";
-                            eprosima::fastcdr::optional<AppliedBuiltinMemberAnnotations> member_ann_builtin_name;
-                            ann_custom_DdsTopic.reset();
-                            CompleteMemberDetail detail_name = TypeObjectUtils::build_complete_member_detail(name_name, member_ann_builtin_name, ann_custom_DdsTopic);
-                            CompleteStructMember member_name = TypeObjectUtils::build_complete_struct_member(common_name, detail_name);
-                            TypeObjectUtils::add_complete_struct_member(member_seq_DdsTopic, member_name);
-                        }
-                        {
-                            return_code_DdsTopic =
-                                eprosima::fastdds::dds::DomainParticipantFactory::get_instance()->type_object_registry().get_type_identifiers(
-                                "anonymous_string_unbounded", type_ids_DdsTopic);
-
-                            if (return_code_DdsTopic != eprosima::fastdds::dds::RETCODE_OK)
-                            {
-                                std::string type_id_kind_anonymous_string_unbounded("TI_STRING8_SMALL");
-                                if (type_id_kind_anonymous_string_unbounded == "TI_STRING8_SMALL")
-                                {
-                                    SBound bound = 0;
-                                    StringSTypeDefn string_sdefn = TypeObjectUtils::build_string_s_type_defn(bound);
-                                    if (eprosima::fastdds::dds::RETCODE_BAD_PARAMETER ==
-                                            TypeObjectUtils::build_and_register_s_string_type_identifier(string_sdefn,
-                                            "anonymous_string_unbounded"))
-                                    {
-                                        EPROSIMA_LOG_ERROR(XTYPES_TYPE_REPRESENTATION,
-                                            "anonymous_string_unbounded already registered in TypeObjectRegistry for a different type.");
-                                    }
-                                }
-                                else if (type_id_kind_anonymous_string_unbounded == "TI_STRING8_LARGE")
-                                {
-                                    LBound bound = 255;
-                                    StringLTypeDefn string_ldefn = TypeObjectUtils::build_string_l_type_defn(bound);
-                                    if (eprosima::fastdds::dds::RETCODE_BAD_PARAMETER ==
-                                            TypeObjectUtils::build_and_register_l_string_type_identifier(string_ldefn,
-                                            "anonymous_string_unbounded"))
-                                    {
-                                        EPROSIMA_LOG_ERROR(XTYPES_TYPE_REPRESENTATION,
-                                            "anonymous_string_unbounded already registered in TypeObjectRegistry for a different type.");
-                                    }
-                                }
-                                else
-                                {
-                                    EPROSIMA_LOG_ERROR(XTYPES_TYPE_REPRESENTATION,
-                                                "anonymous_string_unbounded: Unknown String kind.");
-                                    return;
-                                }
-                                return_code_DdsTopic =
-                                    eprosima::fastdds::dds::DomainParticipantFactory::get_instance()->type_object_registry().get_type_identifiers(
-                                    "anonymous_string_unbounded", type_ids_DdsTopic);
-                                if (return_code_DdsTopic != eprosima::fastdds::dds::RETCODE_OK)
-                                {
-                                    EPROSIMA_LOG_ERROR(XTYPES_TYPE_REPRESENTATION,
-                                                "anonymous_string_unbounded: Given String TypeIdentifier unknown to TypeObjectRegistry.");
-                                    return;
-                                }
-                            }
-                            StructMemberFlag member_flags_type_name = TypeObjectUtils::build_struct_member_flag(eprosima::fastdds::dds::xtypes::TryConstructKind::NOT_APPLIED,
-                                    false, false, false, false);
-                            CommonStructMember common_type_name;
-                            MemberId member_id_type_name = 0x00000001;
-                            if (EK_COMPLETE == type_ids_DdsTopic.type_identifier1()._d() || TK_NONE == type_ids_DdsTopic.type_identifier2()._d() ||
-                                    (TI_PLAIN_SEQUENCE_SMALL == type_ids_DdsTopic.type_identifier1()._d() &&
-                                    EK_COMPLETE == type_ids_DdsTopic.type_identifier1().seq_sdefn().header().equiv_kind()) ||
-                                    (TI_PLAIN_SEQUENCE_LARGE == type_ids_DdsTopic.type_identifier1()._d() &&
-                                    EK_COMPLETE == type_ids_DdsTopic.type_identifier1().seq_ldefn().header().equiv_kind()) ||
-                                    (TI_PLAIN_ARRAY_SMALL == type_ids_DdsTopic.type_identifier1()._d() &&
-                                    EK_COMPLETE == type_ids_DdsTopic.type_identifier1().array_sdefn().header().equiv_kind()) ||
-                                    (TI_PLAIN_ARRAY_LARGE == type_ids_DdsTopic.type_identifier1()._d() &&
-                                    EK_COMPLETE == type_ids_DdsTopic.type_identifier1().array_ldefn().header().equiv_kind()) ||
-                                    (TI_PLAIN_MAP_SMALL == type_ids_DdsTopic.type_identifier1()._d() &&
-                                    (EK_COMPLETE == type_ids_DdsTopic.type_identifier1().map_sdefn().header().equiv_kind() ||
-                                    EK_COMPLETE == type_ids_DdsTopic.type_identifier1().map_sdefn().key_identifier()->_d())) ||
-                                    (TI_PLAIN_MAP_LARGE == type_ids_DdsTopic.type_identifier1()._d() &&
-                                    (EK_COMPLETE == type_ids_DdsTopic.type_identifier1().map_ldefn().header().equiv_kind() ||
-                                    EK_COMPLETE == type_ids_DdsTopic.type_identifier1().map_ldefn().key_identifier()->_d())))
-                            {
-                                common_type_name = TypeObjectUtils::build_common_struct_member(member_id_type_name, member_flags_type_name, type_ids_DdsTopic.type_identifier1());
-                            }
-                            else if (EK_COMPLETE == type_ids_DdsTopic.type_identifier2()._d() ||
-                                    (TI_PLAIN_SEQUENCE_SMALL == type_ids_DdsTopic.type_identifier2()._d() &&
-                                    EK_COMPLETE == type_ids_DdsTopic.type_identifier2().seq_sdefn().header().equiv_kind()) ||
-                                    (TI_PLAIN_SEQUENCE_LARGE == type_ids_DdsTopic.type_identifier2()._d() &&
-                                    EK_COMPLETE == type_ids_DdsTopic.type_identifier2().seq_ldefn().header().equiv_kind()) ||
-                                    (TI_PLAIN_ARRAY_SMALL == type_ids_DdsTopic.type_identifier2()._d() &&
-                                    EK_COMPLETE == type_ids_DdsTopic.type_identifier2().array_sdefn().header().equiv_kind()) ||
-                                    (TI_PLAIN_ARRAY_LARGE == type_ids_DdsTopic.type_identifier2()._d() &&
-                                    EK_COMPLETE == type_ids_DdsTopic.type_identifier2().array_ldefn().header().equiv_kind()) ||
-                                    (TI_PLAIN_MAP_SMALL == type_ids_DdsTopic.type_identifier2()._d() &&
-                                    (EK_COMPLETE == type_ids_DdsTopic.type_identifier2().map_sdefn().header().equiv_kind() ||
-                                    EK_COMPLETE == type_ids_DdsTopic.type_identifier2().map_sdefn().key_identifier()->_d())) ||
-                                    (TI_PLAIN_MAP_LARGE == type_ids_DdsTopic.type_identifier2()._d() &&
-                                    (EK_COMPLETE == type_ids_DdsTopic.type_identifier2().map_ldefn().header().equiv_kind() ||
-                                    EK_COMPLETE == type_ids_DdsTopic.type_identifier2().map_ldefn().key_identifier()->_d())))
-                            {
-                                common_type_name = TypeObjectUtils::build_common_struct_member(member_id_type_name, member_flags_type_name, type_ids_DdsTopic.type_identifier2());
-                            }
-                            else
-                            {
-                                EPROSIMA_LOG_ERROR(XTYPES_TYPE_REPRESENTATION,
-                                        "Structure type_name member TypeIdentifier inconsistent.");
-                                return;
-                            }
-                            MemberName name_type_name = "type_name";
-                            eprosima::fastcdr::optional<AppliedBuiltinMemberAnnotations> member_ann_builtin_type_name;
-                            ann_custom_DdsTopic.reset();
-                            CompleteMemberDetail detail_type_name = TypeObjectUtils::build_complete_member_detail(name_type_name, member_ann_builtin_type_name, ann_custom_DdsTopic);
-                            CompleteStructMember member_type_name = TypeObjectUtils::build_complete_struct_member(common_type_name, detail_type_name);
-                            TypeObjectUtils::add_complete_struct_member(member_seq_DdsTopic, member_type_name);
-                        }
-                        {
-                            return_code_DdsTopic =
-                                eprosima::fastdds::dds::DomainParticipantFactory::get_instance()->type_object_registry().get_type_identifiers(
-                                "_bool", type_ids_DdsTopic);
-
-                            if (return_code_DdsTopic != eprosima::fastdds::dds::RETCODE_OK)
-                            {
-                                EPROSIMA_LOG_ERROR(XTYPES_TYPE_REPRESENTATION,
-                                        "type_discovered Structure member TypeIdentifier unknown to TypeObjectRegistry.");
-                                return;
-                            }
-                            StructMemberFlag member_flags_type_discovered = TypeObjectUtils::build_struct_member_flag(eprosima::fastdds::dds::xtypes::TryConstructKind::NOT_APPLIED,
-                                    false, false, false, false);
-                            CommonStructMember common_type_discovered;
-                            MemberId member_id_type_discovered = 0x00000002;
-                            if (EK_COMPLETE == type_ids_DdsTopic.type_identifier1()._d() || TK_NONE == type_ids_DdsTopic.type_identifier2()._d() ||
-                                    (TI_PLAIN_SEQUENCE_SMALL == type_ids_DdsTopic.type_identifier1()._d() &&
-                                    EK_COMPLETE == type_ids_DdsTopic.type_identifier1().seq_sdefn().header().equiv_kind()) ||
-                                    (TI_PLAIN_SEQUENCE_LARGE == type_ids_DdsTopic.type_identifier1()._d() &&
-                                    EK_COMPLETE == type_ids_DdsTopic.type_identifier1().seq_ldefn().header().equiv_kind()) ||
-                                    (TI_PLAIN_ARRAY_SMALL == type_ids_DdsTopic.type_identifier1()._d() &&
-                                    EK_COMPLETE == type_ids_DdsTopic.type_identifier1().array_sdefn().header().equiv_kind()) ||
-                                    (TI_PLAIN_ARRAY_LARGE == type_ids_DdsTopic.type_identifier1()._d() &&
-                                    EK_COMPLETE == type_ids_DdsTopic.type_identifier1().array_ldefn().header().equiv_kind()) ||
-                                    (TI_PLAIN_MAP_SMALL == type_ids_DdsTopic.type_identifier1()._d() &&
-                                    (EK_COMPLETE == type_ids_DdsTopic.type_identifier1().map_sdefn().header().equiv_kind() ||
-                                    EK_COMPLETE == type_ids_DdsTopic.type_identifier1().map_sdefn().key_identifier()->_d())) ||
-                                    (TI_PLAIN_MAP_LARGE == type_ids_DdsTopic.type_identifier1()._d() &&
-                                    (EK_COMPLETE == type_ids_DdsTopic.type_identifier1().map_ldefn().header().equiv_kind() ||
-                                    EK_COMPLETE == type_ids_DdsTopic.type_identifier1().map_ldefn().key_identifier()->_d())))
-                            {
-                                common_type_discovered = TypeObjectUtils::build_common_struct_member(member_id_type_discovered, member_flags_type_discovered, type_ids_DdsTopic.type_identifier1());
-                            }
-                            else if (EK_COMPLETE == type_ids_DdsTopic.type_identifier2()._d() ||
-                                    (TI_PLAIN_SEQUENCE_SMALL == type_ids_DdsTopic.type_identifier2()._d() &&
-                                    EK_COMPLETE == type_ids_DdsTopic.type_identifier2().seq_sdefn().header().equiv_kind()) ||
-                                    (TI_PLAIN_SEQUENCE_LARGE == type_ids_DdsTopic.type_identifier2()._d() &&
-                                    EK_COMPLETE == type_ids_DdsTopic.type_identifier2().seq_ldefn().header().equiv_kind()) ||
-                                    (TI_PLAIN_ARRAY_SMALL == type_ids_DdsTopic.type_identifier2()._d() &&
-                                    EK_COMPLETE == type_ids_DdsTopic.type_identifier2().array_sdefn().header().equiv_kind()) ||
-                                    (TI_PLAIN_ARRAY_LARGE == type_ids_DdsTopic.type_identifier2()._d() &&
-                                    EK_COMPLETE == type_ids_DdsTopic.type_identifier2().array_ldefn().header().equiv_kind()) ||
-                                    (TI_PLAIN_MAP_SMALL == type_ids_DdsTopic.type_identifier2()._d() &&
-                                    (EK_COMPLETE == type_ids_DdsTopic.type_identifier2().map_sdefn().header().equiv_kind() ||
-                                    EK_COMPLETE == type_ids_DdsTopic.type_identifier2().map_sdefn().key_identifier()->_d())) ||
-                                    (TI_PLAIN_MAP_LARGE == type_ids_DdsTopic.type_identifier2()._d() &&
-                                    (EK_COMPLETE == type_ids_DdsTopic.type_identifier2().map_ldefn().header().equiv_kind() ||
-                                    EK_COMPLETE == type_ids_DdsTopic.type_identifier2().map_ldefn().key_identifier()->_d())))
-                            {
-                                common_type_discovered = TypeObjectUtils::build_common_struct_member(member_id_type_discovered, member_flags_type_discovered, type_ids_DdsTopic.type_identifier2());
-                            }
-                            else
-                            {
-                                EPROSIMA_LOG_ERROR(XTYPES_TYPE_REPRESENTATION,
-                                        "Structure type_discovered member TypeIdentifier inconsistent.");
-                                return;
-                            }
-                            MemberName name_type_discovered = "type_discovered";
-                            eprosima::fastcdr::optional<AppliedBuiltinMemberAnnotations> member_ann_builtin_type_discovered;
-                            ann_custom_DdsTopic.reset();
-                            CompleteMemberDetail detail_type_discovered = TypeObjectUtils::build_complete_member_detail(name_type_discovered, member_ann_builtin_type_discovered, ann_custom_DdsTopic);
-                            CompleteStructMember member_type_discovered = TypeObjectUtils::build_complete_struct_member(common_type_discovered, detail_type_discovered);
-                            TypeObjectUtils::add_complete_struct_member(member_seq_DdsTopic, member_type_discovered);
-                        }
-                        {
-                            return_code_DdsTopic =
-                                eprosima::fastdds::dds::DomainParticipantFactory::get_instance()->type_object_registry().get_type_identifiers(
-                                "_bool", type_ids_DdsTopic);
-
-                            if (return_code_DdsTopic != eprosima::fastdds::dds::RETCODE_OK)
-                            {
-                                EPROSIMA_LOG_ERROR(XTYPES_TYPE_REPRESENTATION,
-                                        "type_mismatch Structure member TypeIdentifier unknown to TypeObjectRegistry.");
-                                return;
-                            }
-                            StructMemberFlag member_flags_type_mismatch = TypeObjectUtils::build_struct_member_flag(eprosima::fastdds::dds::xtypes::TryConstructKind::NOT_APPLIED,
-                                    false, false, false, false);
-                            CommonStructMember common_type_mismatch;
-                            MemberId member_id_type_mismatch = 0x00000003;
-                            if (EK_COMPLETE == type_ids_DdsTopic.type_identifier1()._d() || TK_NONE == type_ids_DdsTopic.type_identifier2()._d() ||
-                                    (TI_PLAIN_SEQUENCE_SMALL == type_ids_DdsTopic.type_identifier1()._d() &&
-                                    EK_COMPLETE == type_ids_DdsTopic.type_identifier1().seq_sdefn().header().equiv_kind()) ||
-                                    (TI_PLAIN_SEQUENCE_LARGE == type_ids_DdsTopic.type_identifier1()._d() &&
-                                    EK_COMPLETE == type_ids_DdsTopic.type_identifier1().seq_ldefn().header().equiv_kind()) ||
-                                    (TI_PLAIN_ARRAY_SMALL == type_ids_DdsTopic.type_identifier1()._d() &&
-                                    EK_COMPLETE == type_ids_DdsTopic.type_identifier1().array_sdefn().header().equiv_kind()) ||
-                                    (TI_PLAIN_ARRAY_LARGE == type_ids_DdsTopic.type_identifier1()._d() &&
-                                    EK_COMPLETE == type_ids_DdsTopic.type_identifier1().array_ldefn().header().equiv_kind()) ||
-                                    (TI_PLAIN_MAP_SMALL == type_ids_DdsTopic.type_identifier1()._d() &&
-                                    (EK_COMPLETE == type_ids_DdsTopic.type_identifier1().map_sdefn().header().equiv_kind() ||
-                                    EK_COMPLETE == type_ids_DdsTopic.type_identifier1().map_sdefn().key_identifier()->_d())) ||
-                                    (TI_PLAIN_MAP_LARGE == type_ids_DdsTopic.type_identifier1()._d() &&
-                                    (EK_COMPLETE == type_ids_DdsTopic.type_identifier1().map_ldefn().header().equiv_kind() ||
-                                    EK_COMPLETE == type_ids_DdsTopic.type_identifier1().map_ldefn().key_identifier()->_d())))
-                            {
-                                common_type_mismatch = TypeObjectUtils::build_common_struct_member(member_id_type_mismatch, member_flags_type_mismatch, type_ids_DdsTopic.type_identifier1());
-                            }
-                            else if (EK_COMPLETE == type_ids_DdsTopic.type_identifier2()._d() ||
-                                    (TI_PLAIN_SEQUENCE_SMALL == type_ids_DdsTopic.type_identifier2()._d() &&
-                                    EK_COMPLETE == type_ids_DdsTopic.type_identifier2().seq_sdefn().header().equiv_kind()) ||
-                                    (TI_PLAIN_SEQUENCE_LARGE == type_ids_DdsTopic.type_identifier2()._d() &&
-                                    EK_COMPLETE == type_ids_DdsTopic.type_identifier2().seq_ldefn().header().equiv_kind()) ||
-                                    (TI_PLAIN_ARRAY_SMALL == type_ids_DdsTopic.type_identifier2()._d() &&
-                                    EK_COMPLETE == type_ids_DdsTopic.type_identifier2().array_sdefn().header().equiv_kind()) ||
-                                    (TI_PLAIN_ARRAY_LARGE == type_ids_DdsTopic.type_identifier2()._d() &&
-                                    EK_COMPLETE == type_ids_DdsTopic.type_identifier2().array_ldefn().header().equiv_kind()) ||
-                                    (TI_PLAIN_MAP_SMALL == type_ids_DdsTopic.type_identifier2()._d() &&
-                                    (EK_COMPLETE == type_ids_DdsTopic.type_identifier2().map_sdefn().header().equiv_kind() ||
-                                    EK_COMPLETE == type_ids_DdsTopic.type_identifier2().map_sdefn().key_identifier()->_d())) ||
-                                    (TI_PLAIN_MAP_LARGE == type_ids_DdsTopic.type_identifier2()._d() &&
-                                    (EK_COMPLETE == type_ids_DdsTopic.type_identifier2().map_ldefn().header().equiv_kind() ||
-                                    EK_COMPLETE == type_ids_DdsTopic.type_identifier2().map_ldefn().key_identifier()->_d())))
-                            {
-                                common_type_mismatch = TypeObjectUtils::build_common_struct_member(member_id_type_mismatch, member_flags_type_mismatch, type_ids_DdsTopic.type_identifier2());
-                            }
-                            else
-                            {
-                                EPROSIMA_LOG_ERROR(XTYPES_TYPE_REPRESENTATION,
-                                        "Structure type_mismatch member TypeIdentifier inconsistent.");
-                                return;
-                            }
-                            MemberName name_type_mismatch = "type_mismatch";
-                            eprosima::fastcdr::optional<AppliedBuiltinMemberAnnotations> member_ann_builtin_type_mismatch;
-                            ann_custom_DdsTopic.reset();
-                            CompleteMemberDetail detail_type_mismatch = TypeObjectUtils::build_complete_member_detail(name_type_mismatch, member_ann_builtin_type_mismatch, ann_custom_DdsTopic);
-                            CompleteStructMember member_type_mismatch = TypeObjectUtils::build_complete_struct_member(common_type_mismatch, detail_type_mismatch);
-                            TypeObjectUtils::add_complete_struct_member(member_seq_DdsTopic, member_type_mismatch);
-                        }
-                        {
-                            return_code_DdsTopic =
-                                eprosima::fastdds::dds::DomainParticipantFactory::get_instance()->type_object_registry().get_type_identifiers(
-                                "_bool", type_ids_DdsTopic);
-
-                            if (return_code_DdsTopic != eprosima::fastdds::dds::RETCODE_OK)
-                            {
-                                EPROSIMA_LOG_ERROR(XTYPES_TYPE_REPRESENTATION,
-                                        "qos_mismatch Structure member TypeIdentifier unknown to TypeObjectRegistry.");
-                                return;
-                            }
-                            StructMemberFlag member_flags_qos_mismatch = TypeObjectUtils::build_struct_member_flag(eprosima::fastdds::dds::xtypes::TryConstructKind::NOT_APPLIED,
-                                    false, false, false, false);
-                            CommonStructMember common_qos_mismatch;
-                            MemberId member_id_qos_mismatch = 0x00000004;
-                            if (EK_COMPLETE == type_ids_DdsTopic.type_identifier1()._d() || TK_NONE == type_ids_DdsTopic.type_identifier2()._d() ||
-                                    (TI_PLAIN_SEQUENCE_SMALL == type_ids_DdsTopic.type_identifier1()._d() &&
-                                    EK_COMPLETE == type_ids_DdsTopic.type_identifier1().seq_sdefn().header().equiv_kind()) ||
-                                    (TI_PLAIN_SEQUENCE_LARGE == type_ids_DdsTopic.type_identifier1()._d() &&
-                                    EK_COMPLETE == type_ids_DdsTopic.type_identifier1().seq_ldefn().header().equiv_kind()) ||
-                                    (TI_PLAIN_ARRAY_SMALL == type_ids_DdsTopic.type_identifier1()._d() &&
-                                    EK_COMPLETE == type_ids_DdsTopic.type_identifier1().array_sdefn().header().equiv_kind()) ||
-                                    (TI_PLAIN_ARRAY_LARGE == type_ids_DdsTopic.type_identifier1()._d() &&
-                                    EK_COMPLETE == type_ids_DdsTopic.type_identifier1().array_ldefn().header().equiv_kind()) ||
-                                    (TI_PLAIN_MAP_SMALL == type_ids_DdsTopic.type_identifier1()._d() &&
-                                    (EK_COMPLETE == type_ids_DdsTopic.type_identifier1().map_sdefn().header().equiv_kind() ||
-                                    EK_COMPLETE == type_ids_DdsTopic.type_identifier1().map_sdefn().key_identifier()->_d())) ||
-                                    (TI_PLAIN_MAP_LARGE == type_ids_DdsTopic.type_identifier1()._d() &&
-                                    (EK_COMPLETE == type_ids_DdsTopic.type_identifier1().map_ldefn().header().equiv_kind() ||
-                                    EK_COMPLETE == type_ids_DdsTopic.type_identifier1().map_ldefn().key_identifier()->_d())))
-                            {
-                                common_qos_mismatch = TypeObjectUtils::build_common_struct_member(member_id_qos_mismatch, member_flags_qos_mismatch, type_ids_DdsTopic.type_identifier1());
-                            }
-                            else if (EK_COMPLETE == type_ids_DdsTopic.type_identifier2()._d() ||
-                                    (TI_PLAIN_SEQUENCE_SMALL == type_ids_DdsTopic.type_identifier2()._d() &&
-                                    EK_COMPLETE == type_ids_DdsTopic.type_identifier2().seq_sdefn().header().equiv_kind()) ||
-                                    (TI_PLAIN_SEQUENCE_LARGE == type_ids_DdsTopic.type_identifier2()._d() &&
-                                    EK_COMPLETE == type_ids_DdsTopic.type_identifier2().seq_ldefn().header().equiv_kind()) ||
-                                    (TI_PLAIN_ARRAY_SMALL == type_ids_DdsTopic.type_identifier2()._d() &&
-                                    EK_COMPLETE == type_ids_DdsTopic.type_identifier2().array_sdefn().header().equiv_kind()) ||
-                                    (TI_PLAIN_ARRAY_LARGE == type_ids_DdsTopic.type_identifier2()._d() &&
-                                    EK_COMPLETE == type_ids_DdsTopic.type_identifier2().array_ldefn().header().equiv_kind()) ||
-                                    (TI_PLAIN_MAP_SMALL == type_ids_DdsTopic.type_identifier2()._d() &&
-                                    (EK_COMPLETE == type_ids_DdsTopic.type_identifier2().map_sdefn().header().equiv_kind() ||
-                                    EK_COMPLETE == type_ids_DdsTopic.type_identifier2().map_sdefn().key_identifier()->_d())) ||
-                                    (TI_PLAIN_MAP_LARGE == type_ids_DdsTopic.type_identifier2()._d() &&
-                                    (EK_COMPLETE == type_ids_DdsTopic.type_identifier2().map_ldefn().header().equiv_kind() ||
-                                    EK_COMPLETE == type_ids_DdsTopic.type_identifier2().map_ldefn().key_identifier()->_d())))
-                            {
-                                common_qos_mismatch = TypeObjectUtils::build_common_struct_member(member_id_qos_mismatch, member_flags_qos_mismatch, type_ids_DdsTopic.type_identifier2());
-                            }
-                            else
-                            {
-                                EPROSIMA_LOG_ERROR(XTYPES_TYPE_REPRESENTATION,
-                                        "Structure qos_mismatch member TypeIdentifier inconsistent.");
-                                return;
-                            }
-                            MemberName name_qos_mismatch = "qos_mismatch";
-                            eprosima::fastcdr::optional<AppliedBuiltinMemberAnnotations> member_ann_builtin_qos_mismatch;
-                            ann_custom_DdsTopic.reset();
-                            CompleteMemberDetail detail_qos_mismatch = TypeObjectUtils::build_complete_member_detail(name_qos_mismatch, member_ann_builtin_qos_mismatch, ann_custom_DdsTopic);
-                            CompleteStructMember member_qos_mismatch = TypeObjectUtils::build_complete_struct_member(common_qos_mismatch, detail_qos_mismatch);
-                            TypeObjectUtils::add_complete_struct_member(member_seq_DdsTopic, member_qos_mismatch);
-                        }
-                        {
-                            return_code_DdsTopic =
-                                eprosima::fastdds::dds::DomainParticipantFactory::get_instance()->type_object_registry().get_type_identifiers(
-                                "anonymous_sequence_DdsTopicData_unbounded", type_ids_DdsTopic);
-
-                            if (return_code_DdsTopic != eprosima::fastdds::dds::RETCODE_OK)
-                            {
-                                return_code_DdsTopic =
-                                    eprosima::fastdds::dds::DomainParticipantFactory::get_instance()->type_object_registry().get_type_identifiers(
-                                    "DdsTopicData", type_ids_DdsTopic);
-
-                                if (return_code_DdsTopic != eprosima::fastdds::dds::RETCODE_OK)
-                                {
-                                    {
-                                        StructTypeFlag struct_flags_DdsTopicData = TypeObjectUtils::build_struct_type_flag(eprosima::fastdds::dds::xtypes::ExtensibilityKind::NOT_APPLIED,
-                                                false, false);
-                                        ReturnCode_t return_code_DdsTopicData;
-                                        TypeIdentifierPair type_ids_DdsTopicData;
-                                        QualifiedTypeName type_name_DdsTopicData = "DdsTopicData";
-                                        eprosima::fastcdr::optional<AppliedBuiltinTypeAnnotations> type_ann_builtin_DdsTopicData;
-                                        eprosima::fastcdr::optional<AppliedAnnotationSeq> ann_custom_DdsTopicData;
-                                        CompleteTypeDetail detail_DdsTopicData = TypeObjectUtils::build_complete_type_detail(type_ann_builtin_DdsTopicData, ann_custom_DdsTopicData, type_name_DdsTopicData.to_string());
-                                        CompleteStructHeader header_DdsTopicData;
-                                        header_DdsTopicData = TypeObjectUtils::build_complete_struct_header(TypeIdentifier(), detail_DdsTopicData);
-                                        CompleteStructMemberSeq member_seq_DdsTopicData;
-                                        {
-                                            return_code_DdsTopicData =
-                                                eprosima::fastdds::dds::DomainParticipantFactory::get_instance()->type_object_registry().get_type_identifiers(
-                                                "anonymous_string_unbounded", type_ids_DdsTopicData);
-
-                                            if (return_code_DdsTopicData != eprosima::fastdds::dds::RETCODE_OK)
-                                            {
-                                                std::string type_id_kind_anonymous_string_unbounded("TI_STRING8_SMALL");
-                                                if (type_id_kind_anonymous_string_unbounded == "TI_STRING8_SMALL")
-                                                {
-                                                    SBound bound = 0;
-                                                    StringSTypeDefn string_sdefn = TypeObjectUtils::build_string_s_type_defn(bound);
-                                                    if (eprosima::fastdds::dds::RETCODE_BAD_PARAMETER ==
-                                                            TypeObjectUtils::build_and_register_s_string_type_identifier(string_sdefn,
-                                                            "anonymous_string_unbounded"))
-                                                    {
-                                                        EPROSIMA_LOG_ERROR(XTYPES_TYPE_REPRESENTATION,
-                                                            "anonymous_string_unbounded already registered in TypeObjectRegistry for a different type.");
-                                                    }
-                                                }
-                                                else if (type_id_kind_anonymous_string_unbounded == "TI_STRING8_LARGE")
-                                                {
-                                                    LBound bound = 255;
-                                                    StringLTypeDefn string_ldefn = TypeObjectUtils::build_string_l_type_defn(bound);
-                                                    if (eprosima::fastdds::dds::RETCODE_BAD_PARAMETER ==
-                                                            TypeObjectUtils::build_and_register_l_string_type_identifier(string_ldefn,
-                                                            "anonymous_string_unbounded"))
-                                                    {
-                                                        EPROSIMA_LOG_ERROR(XTYPES_TYPE_REPRESENTATION,
-                                                            "anonymous_string_unbounded already registered in TypeObjectRegistry for a different type.");
-                                                    }
-                                                }
-                                                else
-                                                {
-                                                    EPROSIMA_LOG_ERROR(XTYPES_TYPE_REPRESENTATION,
-                                                                "anonymous_string_unbounded: Unknown String kind.");
-                                                    return;
-                                                }
-                                                return_code_DdsTopicData =
-                                                    eprosima::fastdds::dds::DomainParticipantFactory::get_instance()->type_object_registry().get_type_identifiers(
-                                                    "anonymous_string_unbounded", type_ids_DdsTopicData);
-                                                if (return_code_DdsTopicData != eprosima::fastdds::dds::RETCODE_OK)
-                                                {
-                                                    EPROSIMA_LOG_ERROR(XTYPES_TYPE_REPRESENTATION,
-                                                                "anonymous_string_unbounded: Given String TypeIdentifier unknown to TypeObjectRegistry.");
-                                                    return;
-                                                }
-                                            }
-                                            StructMemberFlag member_flags_participant_id = TypeObjectUtils::build_struct_member_flag(eprosima::fastdds::dds::xtypes::TryConstructKind::NOT_APPLIED,
-                                                    false, false, false, false);
-                                            CommonStructMember common_participant_id;
-                                            MemberId member_id_participant_id = 0x00000000;
-                                            if (EK_COMPLETE == type_ids_DdsTopicData.type_identifier1()._d() || TK_NONE == type_ids_DdsTopicData.type_identifier2()._d() ||
-                                                    (TI_PLAIN_SEQUENCE_SMALL == type_ids_DdsTopicData.type_identifier1()._d() &&
-                                                    EK_COMPLETE == type_ids_DdsTopicData.type_identifier1().seq_sdefn().header().equiv_kind()) ||
-                                                    (TI_PLAIN_SEQUENCE_LARGE == type_ids_DdsTopicData.type_identifier1()._d() &&
-                                                    EK_COMPLETE == type_ids_DdsTopicData.type_identifier1().seq_ldefn().header().equiv_kind()) ||
-                                                    (TI_PLAIN_ARRAY_SMALL == type_ids_DdsTopicData.type_identifier1()._d() &&
-                                                    EK_COMPLETE == type_ids_DdsTopicData.type_identifier1().array_sdefn().header().equiv_kind()) ||
-                                                    (TI_PLAIN_ARRAY_LARGE == type_ids_DdsTopicData.type_identifier1()._d() &&
-                                                    EK_COMPLETE == type_ids_DdsTopicData.type_identifier1().array_ldefn().header().equiv_kind()) ||
-                                                    (TI_PLAIN_MAP_SMALL == type_ids_DdsTopicData.type_identifier1()._d() &&
-                                                    (EK_COMPLETE == type_ids_DdsTopicData.type_identifier1().map_sdefn().header().equiv_kind() ||
-                                                    EK_COMPLETE == type_ids_DdsTopicData.type_identifier1().map_sdefn().key_identifier()->_d())) ||
-                                                    (TI_PLAIN_MAP_LARGE == type_ids_DdsTopicData.type_identifier1()._d() &&
-                                                    (EK_COMPLETE == type_ids_DdsTopicData.type_identifier1().map_ldefn().header().equiv_kind() ||
-                                                    EK_COMPLETE == type_ids_DdsTopicData.type_identifier1().map_ldefn().key_identifier()->_d())))
-                                            {
-                                                common_participant_id = TypeObjectUtils::build_common_struct_member(member_id_participant_id, member_flags_participant_id, type_ids_DdsTopicData.type_identifier1());
-                                            }
-                                            else if (EK_COMPLETE == type_ids_DdsTopicData.type_identifier2()._d() ||
-                                                    (TI_PLAIN_SEQUENCE_SMALL == type_ids_DdsTopicData.type_identifier2()._d() &&
-                                                    EK_COMPLETE == type_ids_DdsTopicData.type_identifier2().seq_sdefn().header().equiv_kind()) ||
-                                                    (TI_PLAIN_SEQUENCE_LARGE == type_ids_DdsTopicData.type_identifier2()._d() &&
-                                                    EK_COMPLETE == type_ids_DdsTopicData.type_identifier2().seq_ldefn().header().equiv_kind()) ||
-                                                    (TI_PLAIN_ARRAY_SMALL == type_ids_DdsTopicData.type_identifier2()._d() &&
-                                                    EK_COMPLETE == type_ids_DdsTopicData.type_identifier2().array_sdefn().header().equiv_kind()) ||
-                                                    (TI_PLAIN_ARRAY_LARGE == type_ids_DdsTopicData.type_identifier2()._d() &&
-                                                    EK_COMPLETE == type_ids_DdsTopicData.type_identifier2().array_ldefn().header().equiv_kind()) ||
-                                                    (TI_PLAIN_MAP_SMALL == type_ids_DdsTopicData.type_identifier2()._d() &&
-                                                    (EK_COMPLETE == type_ids_DdsTopicData.type_identifier2().map_sdefn().header().equiv_kind() ||
-                                                    EK_COMPLETE == type_ids_DdsTopicData.type_identifier2().map_sdefn().key_identifier()->_d())) ||
-                                                    (TI_PLAIN_MAP_LARGE == type_ids_DdsTopicData.type_identifier2()._d() &&
-                                                    (EK_COMPLETE == type_ids_DdsTopicData.type_identifier2().map_ldefn().header().equiv_kind() ||
-                                                    EK_COMPLETE == type_ids_DdsTopicData.type_identifier2().map_ldefn().key_identifier()->_d())))
-                                            {
-                                                common_participant_id = TypeObjectUtils::build_common_struct_member(member_id_participant_id, member_flags_participant_id, type_ids_DdsTopicData.type_identifier2());
-                                            }
-                                            else
-                                            {
-                                                EPROSIMA_LOG_ERROR(XTYPES_TYPE_REPRESENTATION,
-                                                        "Structure participant_id member TypeIdentifier inconsistent.");
-                                                return;
-                                            }
-                                            MemberName name_participant_id = "participant_id";
-                                            eprosima::fastcdr::optional<AppliedBuiltinMemberAnnotations> member_ann_builtin_participant_id;
-                                            ann_custom_DdsTopicData.reset();
-                                            CompleteMemberDetail detail_participant_id = TypeObjectUtils::build_complete_member_detail(name_participant_id, member_ann_builtin_participant_id, ann_custom_DdsTopicData);
-                                            CompleteStructMember member_participant_id = TypeObjectUtils::build_complete_struct_member(common_participant_id, detail_participant_id);
-                                            TypeObjectUtils::add_complete_struct_member(member_seq_DdsTopicData, member_participant_id);
-                                        }
-                                        {
-                                            return_code_DdsTopicData =
-                                                eprosima::fastdds::dds::DomainParticipantFactory::get_instance()->type_object_registry().get_type_identifiers(
-                                                "_uint32_t", type_ids_DdsTopicData);
-
-                                            if (return_code_DdsTopicData != eprosima::fastdds::dds::RETCODE_OK)
-                                            {
-                                                EPROSIMA_LOG_ERROR(XTYPES_TYPE_REPRESENTATION,
-                                                        "msgs_lost Structure member TypeIdentifier unknown to TypeObjectRegistry.");
-                                                return;
-                                            }
-                                            StructMemberFlag member_flags_msgs_lost = TypeObjectUtils::build_struct_member_flag(eprosima::fastdds::dds::xtypes::TryConstructKind::NOT_APPLIED,
-                                                    false, false, false, false);
-                                            CommonStructMember common_msgs_lost;
-                                            MemberId member_id_msgs_lost = 0x00000001;
-                                            if (EK_COMPLETE == type_ids_DdsTopicData.type_identifier1()._d() || TK_NONE == type_ids_DdsTopicData.type_identifier2()._d() ||
-                                                    (TI_PLAIN_SEQUENCE_SMALL == type_ids_DdsTopicData.type_identifier1()._d() &&
-                                                    EK_COMPLETE == type_ids_DdsTopicData.type_identifier1().seq_sdefn().header().equiv_kind()) ||
-                                                    (TI_PLAIN_SEQUENCE_LARGE == type_ids_DdsTopicData.type_identifier1()._d() &&
-                                                    EK_COMPLETE == type_ids_DdsTopicData.type_identifier1().seq_ldefn().header().equiv_kind()) ||
-                                                    (TI_PLAIN_ARRAY_SMALL == type_ids_DdsTopicData.type_identifier1()._d() &&
-                                                    EK_COMPLETE == type_ids_DdsTopicData.type_identifier1().array_sdefn().header().equiv_kind()) ||
-                                                    (TI_PLAIN_ARRAY_LARGE == type_ids_DdsTopicData.type_identifier1()._d() &&
-                                                    EK_COMPLETE == type_ids_DdsTopicData.type_identifier1().array_ldefn().header().equiv_kind()) ||
-                                                    (TI_PLAIN_MAP_SMALL == type_ids_DdsTopicData.type_identifier1()._d() &&
-                                                    (EK_COMPLETE == type_ids_DdsTopicData.type_identifier1().map_sdefn().header().equiv_kind() ||
-                                                    EK_COMPLETE == type_ids_DdsTopicData.type_identifier1().map_sdefn().key_identifier()->_d())) ||
-                                                    (TI_PLAIN_MAP_LARGE == type_ids_DdsTopicData.type_identifier1()._d() &&
-                                                    (EK_COMPLETE == type_ids_DdsTopicData.type_identifier1().map_ldefn().header().equiv_kind() ||
-                                                    EK_COMPLETE == type_ids_DdsTopicData.type_identifier1().map_ldefn().key_identifier()->_d())))
-                                            {
-                                                common_msgs_lost = TypeObjectUtils::build_common_struct_member(member_id_msgs_lost, member_flags_msgs_lost, type_ids_DdsTopicData.type_identifier1());
-                                            }
-                                            else if (EK_COMPLETE == type_ids_DdsTopicData.type_identifier2()._d() ||
-                                                    (TI_PLAIN_SEQUENCE_SMALL == type_ids_DdsTopicData.type_identifier2()._d() &&
-                                                    EK_COMPLETE == type_ids_DdsTopicData.type_identifier2().seq_sdefn().header().equiv_kind()) ||
-                                                    (TI_PLAIN_SEQUENCE_LARGE == type_ids_DdsTopicData.type_identifier2()._d() &&
-                                                    EK_COMPLETE == type_ids_DdsTopicData.type_identifier2().seq_ldefn().header().equiv_kind()) ||
-                                                    (TI_PLAIN_ARRAY_SMALL == type_ids_DdsTopicData.type_identifier2()._d() &&
-                                                    EK_COMPLETE == type_ids_DdsTopicData.type_identifier2().array_sdefn().header().equiv_kind()) ||
-                                                    (TI_PLAIN_ARRAY_LARGE == type_ids_DdsTopicData.type_identifier2()._d() &&
-                                                    EK_COMPLETE == type_ids_DdsTopicData.type_identifier2().array_ldefn().header().equiv_kind()) ||
-                                                    (TI_PLAIN_MAP_SMALL == type_ids_DdsTopicData.type_identifier2()._d() &&
-                                                    (EK_COMPLETE == type_ids_DdsTopicData.type_identifier2().map_sdefn().header().equiv_kind() ||
-                                                    EK_COMPLETE == type_ids_DdsTopicData.type_identifier2().map_sdefn().key_identifier()->_d())) ||
-                                                    (TI_PLAIN_MAP_LARGE == type_ids_DdsTopicData.type_identifier2()._d() &&
-                                                    (EK_COMPLETE == type_ids_DdsTopicData.type_identifier2().map_ldefn().header().equiv_kind() ||
-                                                    EK_COMPLETE == type_ids_DdsTopicData.type_identifier2().map_ldefn().key_identifier()->_d())))
-                                            {
-                                                common_msgs_lost = TypeObjectUtils::build_common_struct_member(member_id_msgs_lost, member_flags_msgs_lost, type_ids_DdsTopicData.type_identifier2());
-                                            }
-                                            else
-                                            {
-                                                EPROSIMA_LOG_ERROR(XTYPES_TYPE_REPRESENTATION,
-                                                        "Structure msgs_lost member TypeIdentifier inconsistent.");
-                                                return;
-                                            }
-                                            MemberName name_msgs_lost = "msgs_lost";
-                                            eprosima::fastcdr::optional<AppliedBuiltinMemberAnnotations> member_ann_builtin_msgs_lost;
-                                            ann_custom_DdsTopicData.reset();
-                                            CompleteMemberDetail detail_msgs_lost = TypeObjectUtils::build_complete_member_detail(name_msgs_lost, member_ann_builtin_msgs_lost, ann_custom_DdsTopicData);
-                                            CompleteStructMember member_msgs_lost = TypeObjectUtils::build_complete_struct_member(common_msgs_lost, detail_msgs_lost);
-                                            TypeObjectUtils::add_complete_struct_member(member_seq_DdsTopicData, member_msgs_lost);
-                                        }
-                                        {
-                                            return_code_DdsTopicData =
-                                                eprosima::fastdds::dds::DomainParticipantFactory::get_instance()->type_object_registry().get_type_identifiers(
-                                                "_uint32_t", type_ids_DdsTopicData);
-
-                                            if (return_code_DdsTopicData != eprosima::fastdds::dds::RETCODE_OK)
-                                            {
-                                                EPROSIMA_LOG_ERROR(XTYPES_TYPE_REPRESENTATION,
-                                                        "msgs_received Structure member TypeIdentifier unknown to TypeObjectRegistry.");
-                                                return;
-                                            }
-                                            StructMemberFlag member_flags_msgs_received = TypeObjectUtils::build_struct_member_flag(eprosima::fastdds::dds::xtypes::TryConstructKind::NOT_APPLIED,
-                                                    false, false, false, false);
-                                            CommonStructMember common_msgs_received;
-                                            MemberId member_id_msgs_received = 0x00000002;
-                                            if (EK_COMPLETE == type_ids_DdsTopicData.type_identifier1()._d() || TK_NONE == type_ids_DdsTopicData.type_identifier2()._d() ||
-                                                    (TI_PLAIN_SEQUENCE_SMALL == type_ids_DdsTopicData.type_identifier1()._d() &&
-                                                    EK_COMPLETE == type_ids_DdsTopicData.type_identifier1().seq_sdefn().header().equiv_kind()) ||
-                                                    (TI_PLAIN_SEQUENCE_LARGE == type_ids_DdsTopicData.type_identifier1()._d() &&
-                                                    EK_COMPLETE == type_ids_DdsTopicData.type_identifier1().seq_ldefn().header().equiv_kind()) ||
-                                                    (TI_PLAIN_ARRAY_SMALL == type_ids_DdsTopicData.type_identifier1()._d() &&
-                                                    EK_COMPLETE == type_ids_DdsTopicData.type_identifier1().array_sdefn().header().equiv_kind()) ||
-                                                    (TI_PLAIN_ARRAY_LARGE == type_ids_DdsTopicData.type_identifier1()._d() &&
-                                                    EK_COMPLETE == type_ids_DdsTopicData.type_identifier1().array_ldefn().header().equiv_kind()) ||
-                                                    (TI_PLAIN_MAP_SMALL == type_ids_DdsTopicData.type_identifier1()._d() &&
-                                                    (EK_COMPLETE == type_ids_DdsTopicData.type_identifier1().map_sdefn().header().equiv_kind() ||
-                                                    EK_COMPLETE == type_ids_DdsTopicData.type_identifier1().map_sdefn().key_identifier()->_d())) ||
-                                                    (TI_PLAIN_MAP_LARGE == type_ids_DdsTopicData.type_identifier1()._d() &&
-                                                    (EK_COMPLETE == type_ids_DdsTopicData.type_identifier1().map_ldefn().header().equiv_kind() ||
-                                                    EK_COMPLETE == type_ids_DdsTopicData.type_identifier1().map_ldefn().key_identifier()->_d())))
-                                            {
-                                                common_msgs_received = TypeObjectUtils::build_common_struct_member(member_id_msgs_received, member_flags_msgs_received, type_ids_DdsTopicData.type_identifier1());
-                                            }
-                                            else if (EK_COMPLETE == type_ids_DdsTopicData.type_identifier2()._d() ||
-                                                    (TI_PLAIN_SEQUENCE_SMALL == type_ids_DdsTopicData.type_identifier2()._d() &&
-                                                    EK_COMPLETE == type_ids_DdsTopicData.type_identifier2().seq_sdefn().header().equiv_kind()) ||
-                                                    (TI_PLAIN_SEQUENCE_LARGE == type_ids_DdsTopicData.type_identifier2()._d() &&
-                                                    EK_COMPLETE == type_ids_DdsTopicData.type_identifier2().seq_ldefn().header().equiv_kind()) ||
-                                                    (TI_PLAIN_ARRAY_SMALL == type_ids_DdsTopicData.type_identifier2()._d() &&
-                                                    EK_COMPLETE == type_ids_DdsTopicData.type_identifier2().array_sdefn().header().equiv_kind()) ||
-                                                    (TI_PLAIN_ARRAY_LARGE == type_ids_DdsTopicData.type_identifier2()._d() &&
-                                                    EK_COMPLETE == type_ids_DdsTopicData.type_identifier2().array_ldefn().header().equiv_kind()) ||
-                                                    (TI_PLAIN_MAP_SMALL == type_ids_DdsTopicData.type_identifier2()._d() &&
-                                                    (EK_COMPLETE == type_ids_DdsTopicData.type_identifier2().map_sdefn().header().equiv_kind() ||
-                                                    EK_COMPLETE == type_ids_DdsTopicData.type_identifier2().map_sdefn().key_identifier()->_d())) ||
-                                                    (TI_PLAIN_MAP_LARGE == type_ids_DdsTopicData.type_identifier2()._d() &&
-                                                    (EK_COMPLETE == type_ids_DdsTopicData.type_identifier2().map_ldefn().header().equiv_kind() ||
-                                                    EK_COMPLETE == type_ids_DdsTopicData.type_identifier2().map_ldefn().key_identifier()->_d())))
-                                            {
-                                                common_msgs_received = TypeObjectUtils::build_common_struct_member(member_id_msgs_received, member_flags_msgs_received, type_ids_DdsTopicData.type_identifier2());
-                                            }
-                                            else
-                                            {
-                                                EPROSIMA_LOG_ERROR(XTYPES_TYPE_REPRESENTATION,
-                                                        "Structure msgs_received member TypeIdentifier inconsistent.");
-                                                return;
-                                            }
-                                            MemberName name_msgs_received = "msgs_received";
-                                            eprosima::fastcdr::optional<AppliedBuiltinMemberAnnotations> member_ann_builtin_msgs_received;
-                                            ann_custom_DdsTopicData.reset();
-                                            CompleteMemberDetail detail_msgs_received = TypeObjectUtils::build_complete_member_detail(name_msgs_received, member_ann_builtin_msgs_received, ann_custom_DdsTopicData);
-                                            CompleteStructMember member_msgs_received = TypeObjectUtils::build_complete_struct_member(common_msgs_received, detail_msgs_received);
-                                            TypeObjectUtils::add_complete_struct_member(member_seq_DdsTopicData, member_msgs_received);
-                                        }
-                                        {
-                                            return_code_DdsTopicData =
-                                                eprosima::fastdds::dds::DomainParticipantFactory::get_instance()->type_object_registry().get_type_identifiers(
-                                                "_double", type_ids_DdsTopicData);
-
-                                            if (return_code_DdsTopicData != eprosima::fastdds::dds::RETCODE_OK)
-                                            {
-                                                EPROSIMA_LOG_ERROR(XTYPES_TYPE_REPRESENTATION,
-                                                        "msg_rx_rate Structure member TypeIdentifier unknown to TypeObjectRegistry.");
-                                                return;
-                                            }
-                                            StructMemberFlag member_flags_msg_rx_rate = TypeObjectUtils::build_struct_member_flag(eprosima::fastdds::dds::xtypes::TryConstructKind::NOT_APPLIED,
-                                                    false, false, false, false);
-                                            CommonStructMember common_msg_rx_rate;
-                                            MemberId member_id_msg_rx_rate = 0x00000003;
-                                            if (EK_COMPLETE == type_ids_DdsTopicData.type_identifier1()._d() || TK_NONE == type_ids_DdsTopicData.type_identifier2()._d() ||
-                                                    (TI_PLAIN_SEQUENCE_SMALL == type_ids_DdsTopicData.type_identifier1()._d() &&
-                                                    EK_COMPLETE == type_ids_DdsTopicData.type_identifier1().seq_sdefn().header().equiv_kind()) ||
-                                                    (TI_PLAIN_SEQUENCE_LARGE == type_ids_DdsTopicData.type_identifier1()._d() &&
-                                                    EK_COMPLETE == type_ids_DdsTopicData.type_identifier1().seq_ldefn().header().equiv_kind()) ||
-                                                    (TI_PLAIN_ARRAY_SMALL == type_ids_DdsTopicData.type_identifier1()._d() &&
-                                                    EK_COMPLETE == type_ids_DdsTopicData.type_identifier1().array_sdefn().header().equiv_kind()) ||
-                                                    (TI_PLAIN_ARRAY_LARGE == type_ids_DdsTopicData.type_identifier1()._d() &&
-                                                    EK_COMPLETE == type_ids_DdsTopicData.type_identifier1().array_ldefn().header().equiv_kind()) ||
-                                                    (TI_PLAIN_MAP_SMALL == type_ids_DdsTopicData.type_identifier1()._d() &&
-                                                    (EK_COMPLETE == type_ids_DdsTopicData.type_identifier1().map_sdefn().header().equiv_kind() ||
-                                                    EK_COMPLETE == type_ids_DdsTopicData.type_identifier1().map_sdefn().key_identifier()->_d())) ||
-                                                    (TI_PLAIN_MAP_LARGE == type_ids_DdsTopicData.type_identifier1()._d() &&
-                                                    (EK_COMPLETE == type_ids_DdsTopicData.type_identifier1().map_ldefn().header().equiv_kind() ||
-                                                    EK_COMPLETE == type_ids_DdsTopicData.type_identifier1().map_ldefn().key_identifier()->_d())))
-                                            {
-                                                common_msg_rx_rate = TypeObjectUtils::build_common_struct_member(member_id_msg_rx_rate, member_flags_msg_rx_rate, type_ids_DdsTopicData.type_identifier1());
-                                            }
-                                            else if (EK_COMPLETE == type_ids_DdsTopicData.type_identifier2()._d() ||
-                                                    (TI_PLAIN_SEQUENCE_SMALL == type_ids_DdsTopicData.type_identifier2()._d() &&
-                                                    EK_COMPLETE == type_ids_DdsTopicData.type_identifier2().seq_sdefn().header().equiv_kind()) ||
-                                                    (TI_PLAIN_SEQUENCE_LARGE == type_ids_DdsTopicData.type_identifier2()._d() &&
-                                                    EK_COMPLETE == type_ids_DdsTopicData.type_identifier2().seq_ldefn().header().equiv_kind()) ||
-                                                    (TI_PLAIN_ARRAY_SMALL == type_ids_DdsTopicData.type_identifier2()._d() &&
-                                                    EK_COMPLETE == type_ids_DdsTopicData.type_identifier2().array_sdefn().header().equiv_kind()) ||
-                                                    (TI_PLAIN_ARRAY_LARGE == type_ids_DdsTopicData.type_identifier2()._d() &&
-                                                    EK_COMPLETE == type_ids_DdsTopicData.type_identifier2().array_ldefn().header().equiv_kind()) ||
-                                                    (TI_PLAIN_MAP_SMALL == type_ids_DdsTopicData.type_identifier2()._d() &&
-                                                    (EK_COMPLETE == type_ids_DdsTopicData.type_identifier2().map_sdefn().header().equiv_kind() ||
-                                                    EK_COMPLETE == type_ids_DdsTopicData.type_identifier2().map_sdefn().key_identifier()->_d())) ||
-                                                    (TI_PLAIN_MAP_LARGE == type_ids_DdsTopicData.type_identifier2()._d() &&
-                                                    (EK_COMPLETE == type_ids_DdsTopicData.type_identifier2().map_ldefn().header().equiv_kind() ||
-                                                    EK_COMPLETE == type_ids_DdsTopicData.type_identifier2().map_ldefn().key_identifier()->_d())))
-                                            {
-                                                common_msg_rx_rate = TypeObjectUtils::build_common_struct_member(member_id_msg_rx_rate, member_flags_msg_rx_rate, type_ids_DdsTopicData.type_identifier2());
-                                            }
-                                            else
-                                            {
-                                                EPROSIMA_LOG_ERROR(XTYPES_TYPE_REPRESENTATION,
-                                                        "Structure msg_rx_rate member TypeIdentifier inconsistent.");
-                                                return;
-                                            }
-                                            MemberName name_msg_rx_rate = "msg_rx_rate";
-                                            eprosima::fastcdr::optional<AppliedBuiltinMemberAnnotations> member_ann_builtin_msg_rx_rate;
-                                            ann_custom_DdsTopicData.reset();
-                                            CompleteMemberDetail detail_msg_rx_rate = TypeObjectUtils::build_complete_member_detail(name_msg_rx_rate, member_ann_builtin_msg_rx_rate, ann_custom_DdsTopicData);
-                                            CompleteStructMember member_msg_rx_rate = TypeObjectUtils::build_complete_struct_member(common_msg_rx_rate, detail_msg_rx_rate);
-                                            TypeObjectUtils::add_complete_struct_member(member_seq_DdsTopicData, member_msg_rx_rate);
-                                        }
-                                        CompleteStructType struct_type_DdsTopicData = TypeObjectUtils::build_complete_struct_type(struct_flags_DdsTopicData, header_DdsTopicData, member_seq_DdsTopicData);
-                                        if (eprosima::fastdds::dds::RETCODE_BAD_PARAMETER ==
-                                                TypeObjectUtils::build_and_register_struct_type_object(struct_type_DdsTopicData, type_name_DdsTopicData.to_string()))
-                                        {
-                                            EPROSIMA_LOG_ERROR(XTYPES_TYPE_REPRESENTATION,
-                                                    "DdsTopicData already registered in TypeObjectRegistry for a different type.");
-                                        }
-                                        return_code_DdsTopicData =
-                                            eprosima::fastdds::dds::DomainParticipantFactory::get_instance()->type_object_registry().get_type_identifiers(
-                                            "DdsTopicData", type_ids_DdsTopicData);
-                                        if (return_code_DdsTopicData != eprosima::fastdds::dds::RETCODE_OK)
-                                        {
-                                            EPROSIMA_LOG_ERROR(XTYPES_TYPE_REPRESENTATION,
-                                                        "DdsTopicData: Given Struct TypeIdentifier unknown to TypeObjectRegistry.");
-                                            return;
-                                        }
-                                    }
-                                }
-                                TypeIdentifier* element_identifier_anonymous_sequence_DdsTopicData_unbounded {nullptr};
-                                if (EK_COMPLETE == type_ids_DdsTopic.type_identifier1()._d() || TK_NONE == type_ids_DdsTopic.type_identifier2()._d() ||
-                                        (TI_PLAIN_SEQUENCE_SMALL == type_ids_DdsTopic.type_identifier1()._d() &&
-                                        EK_COMPLETE == type_ids_DdsTopic.type_identifier1().seq_sdefn().header().equiv_kind()) ||
-                                        (TI_PLAIN_SEQUENCE_LARGE == type_ids_DdsTopic.type_identifier1()._d() &&
-                                        EK_COMPLETE == type_ids_DdsTopic.type_identifier1().seq_ldefn().header().equiv_kind()) ||
-                                        (TI_PLAIN_ARRAY_SMALL == type_ids_DdsTopic.type_identifier1()._d() &&
-                                        EK_COMPLETE == type_ids_DdsTopic.type_identifier1().array_sdefn().header().equiv_kind()) ||
-                                        (TI_PLAIN_ARRAY_LARGE == type_ids_DdsTopic.type_identifier1()._d() &&
-                                        EK_COMPLETE == type_ids_DdsTopic.type_identifier1().array_ldefn().header().equiv_kind()) ||
-                                        (TI_PLAIN_MAP_SMALL == type_ids_DdsTopic.type_identifier1()._d() &&
-                                        (EK_COMPLETE == type_ids_DdsTopic.type_identifier1().map_sdefn().header().equiv_kind() ||
-                                        EK_COMPLETE == type_ids_DdsTopic.type_identifier1().map_sdefn().key_identifier()->_d())) ||
-                                        (TI_PLAIN_MAP_LARGE == type_ids_DdsTopic.type_identifier1()._d() &&
-                                        (EK_COMPLETE == type_ids_DdsTopic.type_identifier1().map_ldefn().header().equiv_kind() ||
-                                        EK_COMPLETE == type_ids_DdsTopic.type_identifier1().map_ldefn().key_identifier()->_d())))
-                                {
-                                    element_identifier_anonymous_sequence_DdsTopicData_unbounded = new TypeIdentifier(type_ids_DdsTopic.type_identifier1());
-                                }
-                                else if (EK_COMPLETE == type_ids_DdsTopic.type_identifier2()._d() ||
-                                        (TI_PLAIN_SEQUENCE_SMALL == type_ids_DdsTopic.type_identifier2()._d() &&
-                                        EK_COMPLETE == type_ids_DdsTopic.type_identifier2().seq_sdefn().header().equiv_kind()) ||
-                                        (TI_PLAIN_SEQUENCE_LARGE == type_ids_DdsTopic.type_identifier2()._d() &&
-                                        EK_COMPLETE == type_ids_DdsTopic.type_identifier2().seq_ldefn().header().equiv_kind()) ||
-                                        (TI_PLAIN_ARRAY_SMALL == type_ids_DdsTopic.type_identifier2()._d() &&
-                                        EK_COMPLETE == type_ids_DdsTopic.type_identifier2().array_sdefn().header().equiv_kind()) ||
-                                        (TI_PLAIN_ARRAY_LARGE == type_ids_DdsTopic.type_identifier2()._d() &&
-                                        EK_COMPLETE == type_ids_DdsTopic.type_identifier2().array_ldefn().header().equiv_kind()) ||
-                                        (TI_PLAIN_MAP_SMALL == type_ids_DdsTopic.type_identifier2()._d() &&
-                                        (EK_COMPLETE == type_ids_DdsTopic.type_identifier2().map_sdefn().header().equiv_kind() ||
-                                        EK_COMPLETE == type_ids_DdsTopic.type_identifier2().map_sdefn().key_identifier()->_d())) ||
-                                        (TI_PLAIN_MAP_LARGE == type_ids_DdsTopic.type_identifier2()._d() &&
-                                        (EK_COMPLETE == type_ids_DdsTopic.type_identifier2().map_ldefn().header().equiv_kind() ||
-                                        EK_COMPLETE == type_ids_DdsTopic.type_identifier2().map_ldefn().key_identifier()->_d())))
-                                {
-                                    element_identifier_anonymous_sequence_DdsTopicData_unbounded = new TypeIdentifier(type_ids_DdsTopic.type_identifier2());
-                                }
-                                else
-                                {
-                                    EPROSIMA_LOG_ERROR(XTYPES_TYPE_REPRESENTATION,
-                                        "Sequence element TypeIdentifier inconsistent.");
-                                    return;
-                                }
-                                EquivalenceKind equiv_kind_anonymous_sequence_DdsTopicData_unbounded = EK_COMPLETE;
-                                if (TK_NONE == type_ids_DdsTopic.type_identifier2()._d())
-                                {
-                                    equiv_kind_anonymous_sequence_DdsTopicData_unbounded = EK_BOTH;
-                                }
-                                CollectionElementFlag element_flags_anonymous_sequence_DdsTopicData_unbounded = 0;
-                                PlainCollectionHeader header_anonymous_sequence_DdsTopicData_unbounded = TypeObjectUtils::build_plain_collection_header(equiv_kind_anonymous_sequence_DdsTopicData_unbounded, element_flags_anonymous_sequence_DdsTopicData_unbounded);
-                                std::string type_id_kind_anonymous_sequence_DdsTopicData_unbounded("TI_PLAIN_SEQUENCE_SMALL");
-                                if (type_id_kind_anonymous_sequence_DdsTopicData_unbounded == "TI_PLAIN_SEQUENCE_SMALL")
-                                {
-                                    SBound bound = 0;
-                                    PlainSequenceSElemDefn seq_sdefn = TypeObjectUtils::build_plain_sequence_s_elem_defn(header_anonymous_sequence_DdsTopicData_unbounded, bound,
-                                                eprosima::fastcdr::external<TypeIdentifier>(element_identifier_anonymous_sequence_DdsTopicData_unbounded));
-                                    if (eprosima::fastdds::dds::RETCODE_BAD_PARAMETER ==
-                                            TypeObjectUtils::build_and_register_s_sequence_type_identifier(seq_sdefn, "anonymous_sequence_DdsTopicData_unbounded"))
-                                    {
-                                        EPROSIMA_LOG_ERROR(XTYPES_TYPE_REPRESENTATION,
-                                            "anonymous_sequence_DdsTopicData_unbounded already registered in TypeObjectRegistry for a different type.");
-                                    }
-                                }
-                                else
-                                {
-                                    LBound bound = 0;
-                                    PlainSequenceLElemDefn seq_ldefn = TypeObjectUtils::build_plain_sequence_l_elem_defn(header_anonymous_sequence_DdsTopicData_unbounded, bound,
-                                                eprosima::fastcdr::external<TypeIdentifier>(element_identifier_anonymous_sequence_DdsTopicData_unbounded));
-                                    if (eprosima::fastdds::dds::RETCODE_BAD_PARAMETER ==
-                                            TypeObjectUtils::build_and_register_l_sequence_type_identifier(seq_ldefn, "anonymous_sequence_DdsTopicData_unbounded"))
-                                    {
-                                        EPROSIMA_LOG_ERROR(XTYPES_TYPE_REPRESENTATION,
-                                            "anonymous_sequence_DdsTopicData_unbounded already registered in TypeObjectRegistry for a different type.");
-                                    }
-                                }
-                                return_code_DdsTopic =
-                                    eprosima::fastdds::dds::DomainParticipantFactory::get_instance()->type_object_registry().get_type_identifiers(
-                                    "anonymous_sequence_DdsTopicData_unbounded", type_ids_DdsTopic);
-                                if (return_code_DdsTopic != eprosima::fastdds::dds::RETCODE_OK)
-                                {
-                                    EPROSIMA_LOG_ERROR(XTYPES_TYPE_REPRESENTATION,
-                                                "anonymous_sequence_DdsTopicData_unbounded: Given Sequence TypeIdentifier unknown to TypeObjectRegistry.");
-                                    return;
-                                }
-                            }
-                            StructMemberFlag member_flags_data = TypeObjectUtils::build_struct_member_flag(eprosima::fastdds::dds::xtypes::TryConstructKind::NOT_APPLIED,
-                                    false, false, false, false);
-                            CommonStructMember common_data;
-                            MemberId member_id_data = 0x00000005;
-                            if (EK_COMPLETE == type_ids_DdsTopic.type_identifier1()._d() || TK_NONE == type_ids_DdsTopic.type_identifier2()._d() ||
-                                    (TI_PLAIN_SEQUENCE_SMALL == type_ids_DdsTopic.type_identifier1()._d() &&
-                                    EK_COMPLETE == type_ids_DdsTopic.type_identifier1().seq_sdefn().header().equiv_kind()) ||
-                                    (TI_PLAIN_SEQUENCE_LARGE == type_ids_DdsTopic.type_identifier1()._d() &&
-                                    EK_COMPLETE == type_ids_DdsTopic.type_identifier1().seq_ldefn().header().equiv_kind()) ||
-                                    (TI_PLAIN_ARRAY_SMALL == type_ids_DdsTopic.type_identifier1()._d() &&
-                                    EK_COMPLETE == type_ids_DdsTopic.type_identifier1().array_sdefn().header().equiv_kind()) ||
-                                    (TI_PLAIN_ARRAY_LARGE == type_ids_DdsTopic.type_identifier1()._d() &&
-                                    EK_COMPLETE == type_ids_DdsTopic.type_identifier1().array_ldefn().header().equiv_kind()) ||
-                                    (TI_PLAIN_MAP_SMALL == type_ids_DdsTopic.type_identifier1()._d() &&
-                                    (EK_COMPLETE == type_ids_DdsTopic.type_identifier1().map_sdefn().header().equiv_kind() ||
-                                    EK_COMPLETE == type_ids_DdsTopic.type_identifier1().map_sdefn().key_identifier()->_d())) ||
-                                    (TI_PLAIN_MAP_LARGE == type_ids_DdsTopic.type_identifier1()._d() &&
-                                    (EK_COMPLETE == type_ids_DdsTopic.type_identifier1().map_ldefn().header().equiv_kind() ||
-                                    EK_COMPLETE == type_ids_DdsTopic.type_identifier1().map_ldefn().key_identifier()->_d())))
-                            {
-                                common_data = TypeObjectUtils::build_common_struct_member(member_id_data, member_flags_data, type_ids_DdsTopic.type_identifier1());
-                            }
-                            else if (EK_COMPLETE == type_ids_DdsTopic.type_identifier2()._d() ||
-                                    (TI_PLAIN_SEQUENCE_SMALL == type_ids_DdsTopic.type_identifier2()._d() &&
-                                    EK_COMPLETE == type_ids_DdsTopic.type_identifier2().seq_sdefn().header().equiv_kind()) ||
-                                    (TI_PLAIN_SEQUENCE_LARGE == type_ids_DdsTopic.type_identifier2()._d() &&
-                                    EK_COMPLETE == type_ids_DdsTopic.type_identifier2().seq_ldefn().header().equiv_kind()) ||
-                                    (TI_PLAIN_ARRAY_SMALL == type_ids_DdsTopic.type_identifier2()._d() &&
-                                    EK_COMPLETE == type_ids_DdsTopic.type_identifier2().array_sdefn().header().equiv_kind()) ||
-                                    (TI_PLAIN_ARRAY_LARGE == type_ids_DdsTopic.type_identifier2()._d() &&
-                                    EK_COMPLETE == type_ids_DdsTopic.type_identifier2().array_ldefn().header().equiv_kind()) ||
-                                    (TI_PLAIN_MAP_SMALL == type_ids_DdsTopic.type_identifier2()._d() &&
-                                    (EK_COMPLETE == type_ids_DdsTopic.type_identifier2().map_sdefn().header().equiv_kind() ||
-                                    EK_COMPLETE == type_ids_DdsTopic.type_identifier2().map_sdefn().key_identifier()->_d())) ||
-                                    (TI_PLAIN_MAP_LARGE == type_ids_DdsTopic.type_identifier2()._d() &&
-                                    (EK_COMPLETE == type_ids_DdsTopic.type_identifier2().map_ldefn().header().equiv_kind() ||
-                                    EK_COMPLETE == type_ids_DdsTopic.type_identifier2().map_ldefn().key_identifier()->_d())))
-                            {
-                                common_data = TypeObjectUtils::build_common_struct_member(member_id_data, member_flags_data, type_ids_DdsTopic.type_identifier2());
-                            }
-                            else
-                            {
-                                EPROSIMA_LOG_ERROR(XTYPES_TYPE_REPRESENTATION,
-                                        "Structure data member TypeIdentifier inconsistent.");
-                                return;
-                            }
-                            MemberName name_data = "data";
-                            eprosima::fastcdr::optional<AppliedBuiltinMemberAnnotations> member_ann_builtin_data;
-                            ann_custom_DdsTopic.reset();
-                            CompleteMemberDetail detail_data = TypeObjectUtils::build_complete_member_detail(name_data, member_ann_builtin_data, ann_custom_DdsTopic);
-                            CompleteStructMember member_data = TypeObjectUtils::build_complete_struct_member(common_data, detail_data);
-                            TypeObjectUtils::add_complete_struct_member(member_seq_DdsTopic, member_data);
-                        }
-                        CompleteStructType struct_type_DdsTopic = TypeObjectUtils::build_complete_struct_type(struct_flags_DdsTopic, header_DdsTopic, member_seq_DdsTopic);
-                        if (eprosima::fastdds::dds::RETCODE_BAD_PARAMETER ==
-                                TypeObjectUtils::build_and_register_struct_type_object(struct_type_DdsTopic, type_name_DdsTopic.to_string()))
-                        {
-                            EPROSIMA_LOG_ERROR(XTYPES_TYPE_REPRESENTATION,
-                                    "DdsTopic already registered in TypeObjectRegistry for a different type.");
-                        }
-                        return_code_DdsTopic =
-                            eprosima::fastdds::dds::DomainParticipantFactory::get_instance()->type_object_registry().get_type_identifiers(
-                            "DdsTopic", type_ids_DdsTopic);
-                        if (return_code_DdsTopic != eprosima::fastdds::dds::RETCODE_OK)
-                        {
-                            EPROSIMA_LOG_ERROR(XTYPES_TYPE_REPRESENTATION,
-                                        "DdsTopic: Given Struct TypeIdentifier unknown to TypeObjectRegistry.");
-                            return;
-                        }
-                    }
+                ::register_DdsTopic_type_identifier(type_ids_topics);
                 }
                 TypeIdentifier* element_identifier_anonymous_sequence_DdsTopic_unbounded {nullptr};
-                if (EK_COMPLETE == type_ids_MonitoringTopics.type_identifier1()._d() || TK_NONE == type_ids_MonitoringTopics.type_identifier2()._d() ||
-                        (TI_PLAIN_SEQUENCE_SMALL == type_ids_MonitoringTopics.type_identifier1()._d() &&
-                        EK_COMPLETE == type_ids_MonitoringTopics.type_identifier1().seq_sdefn().header().equiv_kind()) ||
-                        (TI_PLAIN_SEQUENCE_LARGE == type_ids_MonitoringTopics.type_identifier1()._d() &&
-                        EK_COMPLETE == type_ids_MonitoringTopics.type_identifier1().seq_ldefn().header().equiv_kind()) ||
-                        (TI_PLAIN_ARRAY_SMALL == type_ids_MonitoringTopics.type_identifier1()._d() &&
-                        EK_COMPLETE == type_ids_MonitoringTopics.type_identifier1().array_sdefn().header().equiv_kind()) ||
-                        (TI_PLAIN_ARRAY_LARGE == type_ids_MonitoringTopics.type_identifier1()._d() &&
-                        EK_COMPLETE == type_ids_MonitoringTopics.type_identifier1().array_ldefn().header().equiv_kind()) ||
-                        (TI_PLAIN_MAP_SMALL == type_ids_MonitoringTopics.type_identifier1()._d() &&
-                        (EK_COMPLETE == type_ids_MonitoringTopics.type_identifier1().map_sdefn().header().equiv_kind() ||
-                        EK_COMPLETE == type_ids_MonitoringTopics.type_identifier1().map_sdefn().key_identifier()->_d())) ||
-                        (TI_PLAIN_MAP_LARGE == type_ids_MonitoringTopics.type_identifier1()._d() &&
-                        (EK_COMPLETE == type_ids_MonitoringTopics.type_identifier1().map_ldefn().header().equiv_kind() ||
-                        EK_COMPLETE == type_ids_MonitoringTopics.type_identifier1().map_ldefn().key_identifier()->_d())))
+                if (EK_COMPLETE == type_ids_topics.type_identifier1()._d() || TK_NONE == type_ids_topics.type_identifier2()._d() ||
+                        (TI_PLAIN_SEQUENCE_SMALL == type_ids_topics.type_identifier1()._d() &&
+                        EK_COMPLETE == type_ids_topics.type_identifier1().seq_sdefn().header().equiv_kind()) ||
+                        (TI_PLAIN_SEQUENCE_LARGE == type_ids_topics.type_identifier1()._d() &&
+                        EK_COMPLETE == type_ids_topics.type_identifier1().seq_ldefn().header().equiv_kind()) ||
+                        (TI_PLAIN_ARRAY_SMALL == type_ids_topics.type_identifier1()._d() &&
+                        EK_COMPLETE == type_ids_topics.type_identifier1().array_sdefn().header().equiv_kind()) ||
+                        (TI_PLAIN_ARRAY_LARGE == type_ids_topics.type_identifier1()._d() &&
+                        EK_COMPLETE == type_ids_topics.type_identifier1().array_ldefn().header().equiv_kind()) ||
+                        (TI_PLAIN_MAP_SMALL == type_ids_topics.type_identifier1()._d() &&
+                        (EK_COMPLETE == type_ids_topics.type_identifier1().map_sdefn().header().equiv_kind() ||
+                        EK_COMPLETE == type_ids_topics.type_identifier1().map_sdefn().key_identifier()->_d())) ||
+                        (TI_PLAIN_MAP_LARGE == type_ids_topics.type_identifier1()._d() &&
+                        (EK_COMPLETE == type_ids_topics.type_identifier1().map_ldefn().header().equiv_kind() ||
+                        EK_COMPLETE == type_ids_topics.type_identifier1().map_ldefn().key_identifier()->_d())))
                 {
-                    element_identifier_anonymous_sequence_DdsTopic_unbounded = new TypeIdentifier(type_ids_MonitoringTopics.type_identifier1());
+                    element_identifier_anonymous_sequence_DdsTopic_unbounded = new TypeIdentifier(type_ids_topics.type_identifier1());
                 }
-                else if (EK_COMPLETE == type_ids_MonitoringTopics.type_identifier2()._d() ||
-                        (TI_PLAIN_SEQUENCE_SMALL == type_ids_MonitoringTopics.type_identifier2()._d() &&
-                        EK_COMPLETE == type_ids_MonitoringTopics.type_identifier2().seq_sdefn().header().equiv_kind()) ||
-                        (TI_PLAIN_SEQUENCE_LARGE == type_ids_MonitoringTopics.type_identifier2()._d() &&
-                        EK_COMPLETE == type_ids_MonitoringTopics.type_identifier2().seq_ldefn().header().equiv_kind()) ||
-                        (TI_PLAIN_ARRAY_SMALL == type_ids_MonitoringTopics.type_identifier2()._d() &&
-                        EK_COMPLETE == type_ids_MonitoringTopics.type_identifier2().array_sdefn().header().equiv_kind()) ||
-                        (TI_PLAIN_ARRAY_LARGE == type_ids_MonitoringTopics.type_identifier2()._d() &&
-                        EK_COMPLETE == type_ids_MonitoringTopics.type_identifier2().array_ldefn().header().equiv_kind()) ||
-                        (TI_PLAIN_MAP_SMALL == type_ids_MonitoringTopics.type_identifier2()._d() &&
-                        (EK_COMPLETE == type_ids_MonitoringTopics.type_identifier2().map_sdefn().header().equiv_kind() ||
-                        EK_COMPLETE == type_ids_MonitoringTopics.type_identifier2().map_sdefn().key_identifier()->_d())) ||
-                        (TI_PLAIN_MAP_LARGE == type_ids_MonitoringTopics.type_identifier2()._d() &&
-                        (EK_COMPLETE == type_ids_MonitoringTopics.type_identifier2().map_ldefn().header().equiv_kind() ||
-                        EK_COMPLETE == type_ids_MonitoringTopics.type_identifier2().map_ldefn().key_identifier()->_d())))
+                else if (EK_COMPLETE == type_ids_topics.type_identifier2()._d() ||
+                        (TI_PLAIN_SEQUENCE_SMALL == type_ids_topics.type_identifier2()._d() &&
+                        EK_COMPLETE == type_ids_topics.type_identifier2().seq_sdefn().header().equiv_kind()) ||
+                        (TI_PLAIN_SEQUENCE_LARGE == type_ids_topics.type_identifier2()._d() &&
+                        EK_COMPLETE == type_ids_topics.type_identifier2().seq_ldefn().header().equiv_kind()) ||
+                        (TI_PLAIN_ARRAY_SMALL == type_ids_topics.type_identifier2()._d() &&
+                        EK_COMPLETE == type_ids_topics.type_identifier2().array_sdefn().header().equiv_kind()) ||
+                        (TI_PLAIN_ARRAY_LARGE == type_ids_topics.type_identifier2()._d() &&
+                        EK_COMPLETE == type_ids_topics.type_identifier2().array_ldefn().header().equiv_kind()) ||
+                        (TI_PLAIN_MAP_SMALL == type_ids_topics.type_identifier2()._d() &&
+                        (EK_COMPLETE == type_ids_topics.type_identifier2().map_sdefn().header().equiv_kind() ||
+                        EK_COMPLETE == type_ids_topics.type_identifier2().map_sdefn().key_identifier()->_d())) ||
+                        (TI_PLAIN_MAP_LARGE == type_ids_topics.type_identifier2()._d() &&
+                        (EK_COMPLETE == type_ids_topics.type_identifier2().map_ldefn().header().equiv_kind() ||
+                        EK_COMPLETE == type_ids_topics.type_identifier2().map_ldefn().key_identifier()->_d())))
                 {
-                    element_identifier_anonymous_sequence_DdsTopic_unbounded = new TypeIdentifier(type_ids_MonitoringTopics.type_identifier2());
+                    element_identifier_anonymous_sequence_DdsTopic_unbounded = new TypeIdentifier(type_ids_topics.type_identifier2());
                 }
                 else
                 {
@@ -2246,86 +950,65 @@ void register_MonitoringTopics_type_identifier()
                     return;
                 }
                 EquivalenceKind equiv_kind_anonymous_sequence_DdsTopic_unbounded = EK_COMPLETE;
-                if (TK_NONE == type_ids_MonitoringTopics.type_identifier2()._d())
+                if (TK_NONE == type_ids_topics.type_identifier2()._d())
                 {
                     equiv_kind_anonymous_sequence_DdsTopic_unbounded = EK_BOTH;
                 }
                 CollectionElementFlag element_flags_anonymous_sequence_DdsTopic_unbounded = 0;
                 PlainCollectionHeader header_anonymous_sequence_DdsTopic_unbounded = TypeObjectUtils::build_plain_collection_header(equiv_kind_anonymous_sequence_DdsTopic_unbounded, element_flags_anonymous_sequence_DdsTopic_unbounded);
-                std::string type_id_kind_anonymous_sequence_DdsTopic_unbounded("TI_PLAIN_SEQUENCE_SMALL");
-                if (type_id_kind_anonymous_sequence_DdsTopic_unbounded == "TI_PLAIN_SEQUENCE_SMALL")
                 {
                     SBound bound = 0;
                     PlainSequenceSElemDefn seq_sdefn = TypeObjectUtils::build_plain_sequence_s_elem_defn(header_anonymous_sequence_DdsTopic_unbounded, bound,
                                 eprosima::fastcdr::external<TypeIdentifier>(element_identifier_anonymous_sequence_DdsTopic_unbounded));
                     if (eprosima::fastdds::dds::RETCODE_BAD_PARAMETER ==
-                            TypeObjectUtils::build_and_register_s_sequence_type_identifier(seq_sdefn, "anonymous_sequence_DdsTopic_unbounded"))
+                            TypeObjectUtils::build_and_register_s_sequence_type_identifier(seq_sdefn, "anonymous_sequence_DdsTopic_unbounded", type_ids_topics))
                     {
                         EPROSIMA_LOG_ERROR(XTYPES_TYPE_REPRESENTATION,
                             "anonymous_sequence_DdsTopic_unbounded already registered in TypeObjectRegistry for a different type.");
                     }
-                }
-                else
-                {
-                    LBound bound = 0;
-                    PlainSequenceLElemDefn seq_ldefn = TypeObjectUtils::build_plain_sequence_l_elem_defn(header_anonymous_sequence_DdsTopic_unbounded, bound,
-                                eprosima::fastcdr::external<TypeIdentifier>(element_identifier_anonymous_sequence_DdsTopic_unbounded));
-                    if (eprosima::fastdds::dds::RETCODE_BAD_PARAMETER ==
-                            TypeObjectUtils::build_and_register_l_sequence_type_identifier(seq_ldefn, "anonymous_sequence_DdsTopic_unbounded"))
-                    {
-                        EPROSIMA_LOG_ERROR(XTYPES_TYPE_REPRESENTATION,
-                            "anonymous_sequence_DdsTopic_unbounded already registered in TypeObjectRegistry for a different type.");
-                    }
-                }
-                return_code_MonitoringTopics =
-                    eprosima::fastdds::dds::DomainParticipantFactory::get_instance()->type_object_registry().get_type_identifiers(
-                    "anonymous_sequence_DdsTopic_unbounded", type_ids_MonitoringTopics);
-                if (return_code_MonitoringTopics != eprosima::fastdds::dds::RETCODE_OK)
-                {
-                    EPROSIMA_LOG_ERROR(XTYPES_TYPE_REPRESENTATION,
-                                "anonymous_sequence_DdsTopic_unbounded: Given Sequence TypeIdentifier unknown to TypeObjectRegistry.");
-                    return;
                 }
             }
             StructMemberFlag member_flags_topics = TypeObjectUtils::build_struct_member_flag(eprosima::fastdds::dds::xtypes::TryConstructKind::NOT_APPLIED,
                     false, false, false, false);
             CommonStructMember common_topics;
             MemberId member_id_topics = 0x00000000;
-            if (EK_COMPLETE == type_ids_MonitoringTopics.type_identifier1()._d() || TK_NONE == type_ids_MonitoringTopics.type_identifier2()._d() ||
-                    (TI_PLAIN_SEQUENCE_SMALL == type_ids_MonitoringTopics.type_identifier1()._d() &&
-                    EK_COMPLETE == type_ids_MonitoringTopics.type_identifier1().seq_sdefn().header().equiv_kind()) ||
-                    (TI_PLAIN_SEQUENCE_LARGE == type_ids_MonitoringTopics.type_identifier1()._d() &&
-                    EK_COMPLETE == type_ids_MonitoringTopics.type_identifier1().seq_ldefn().header().equiv_kind()) ||
-                    (TI_PLAIN_ARRAY_SMALL == type_ids_MonitoringTopics.type_identifier1()._d() &&
-                    EK_COMPLETE == type_ids_MonitoringTopics.type_identifier1().array_sdefn().header().equiv_kind()) ||
-                    (TI_PLAIN_ARRAY_LARGE == type_ids_MonitoringTopics.type_identifier1()._d() &&
-                    EK_COMPLETE == type_ids_MonitoringTopics.type_identifier1().array_ldefn().header().equiv_kind()) ||
-                    (TI_PLAIN_MAP_SMALL == type_ids_MonitoringTopics.type_identifier1()._d() &&
-                    (EK_COMPLETE == type_ids_MonitoringTopics.type_identifier1().map_sdefn().header().equiv_kind() ||
-                    EK_COMPLETE == type_ids_MonitoringTopics.type_identifier1().map_sdefn().key_identifier()->_d())) ||
-                    (TI_PLAIN_MAP_LARGE == type_ids_MonitoringTopics.type_identifier1()._d() &&
-                    (EK_COMPLETE == type_ids_MonitoringTopics.type_identifier1().map_ldefn().header().equiv_kind() ||
-                    EK_COMPLETE == type_ids_MonitoringTopics.type_identifier1().map_ldefn().key_identifier()->_d())))
+            if (EK_COMPLETE == type_ids_topics.type_identifier1()._d() || TK_NONE == type_ids_topics.type_identifier2()._d() ||
+                    (TI_PLAIN_SEQUENCE_SMALL == type_ids_topics.type_identifier1()._d() &&
+                    EK_COMPLETE == type_ids_topics.type_identifier1().seq_sdefn().header().equiv_kind()) ||
+                    (TI_PLAIN_SEQUENCE_LARGE == type_ids_topics.type_identifier1()._d() &&
+                    EK_COMPLETE == type_ids_topics.type_identifier1().seq_ldefn().header().equiv_kind()) ||
+                    (TI_PLAIN_ARRAY_SMALL == type_ids_topics.type_identifier1()._d() &&
+                    EK_COMPLETE == type_ids_topics.type_identifier1().array_sdefn().header().equiv_kind()) ||
+                    (TI_PLAIN_ARRAY_LARGE == type_ids_topics.type_identifier1()._d() &&
+                    EK_COMPLETE == type_ids_topics.type_identifier1().array_ldefn().header().equiv_kind()) ||
+                    (TI_PLAIN_MAP_SMALL == type_ids_topics.type_identifier1()._d() &&
+                    (EK_COMPLETE == type_ids_topics.type_identifier1().map_sdefn().header().equiv_kind() ||
+                    EK_COMPLETE == type_ids_topics.type_identifier1().map_sdefn().key_identifier()->_d())) ||
+                    (TI_PLAIN_MAP_LARGE == type_ids_topics.type_identifier1()._d() &&
+                    (EK_COMPLETE == type_ids_topics.type_identifier1().map_ldefn().header().equiv_kind() ||
+                    EK_COMPLETE == type_ids_topics.type_identifier1().map_ldefn().key_identifier()->_d())))
             {
-                common_topics = TypeObjectUtils::build_common_struct_member(member_id_topics, member_flags_topics, type_ids_MonitoringTopics.type_identifier1());
+                common_topics = TypeObjectUtils::build_common_struct_member(member_id_topics,
+                        member_flags_topics, type_ids_topics.type_identifier1());
             }
-            else if (EK_COMPLETE == type_ids_MonitoringTopics.type_identifier2()._d() ||
-                    (TI_PLAIN_SEQUENCE_SMALL == type_ids_MonitoringTopics.type_identifier2()._d() &&
-                    EK_COMPLETE == type_ids_MonitoringTopics.type_identifier2().seq_sdefn().header().equiv_kind()) ||
-                    (TI_PLAIN_SEQUENCE_LARGE == type_ids_MonitoringTopics.type_identifier2()._d() &&
-                    EK_COMPLETE == type_ids_MonitoringTopics.type_identifier2().seq_ldefn().header().equiv_kind()) ||
-                    (TI_PLAIN_ARRAY_SMALL == type_ids_MonitoringTopics.type_identifier2()._d() &&
-                    EK_COMPLETE == type_ids_MonitoringTopics.type_identifier2().array_sdefn().header().equiv_kind()) ||
-                    (TI_PLAIN_ARRAY_LARGE == type_ids_MonitoringTopics.type_identifier2()._d() &&
-                    EK_COMPLETE == type_ids_MonitoringTopics.type_identifier2().array_ldefn().header().equiv_kind()) ||
-                    (TI_PLAIN_MAP_SMALL == type_ids_MonitoringTopics.type_identifier2()._d() &&
-                    (EK_COMPLETE == type_ids_MonitoringTopics.type_identifier2().map_sdefn().header().equiv_kind() ||
-                    EK_COMPLETE == type_ids_MonitoringTopics.type_identifier2().map_sdefn().key_identifier()->_d())) ||
-                    (TI_PLAIN_MAP_LARGE == type_ids_MonitoringTopics.type_identifier2()._d() &&
-                    (EK_COMPLETE == type_ids_MonitoringTopics.type_identifier2().map_ldefn().header().equiv_kind() ||
-                    EK_COMPLETE == type_ids_MonitoringTopics.type_identifier2().map_ldefn().key_identifier()->_d())))
+            else if (EK_COMPLETE == type_ids_topics.type_identifier2()._d() ||
+                    (TI_PLAIN_SEQUENCE_SMALL == type_ids_topics.type_identifier2()._d() &&
+                    EK_COMPLETE == type_ids_topics.type_identifier2().seq_sdefn().header().equiv_kind()) ||
+                    (TI_PLAIN_SEQUENCE_LARGE == type_ids_topics.type_identifier2()._d() &&
+                    EK_COMPLETE == type_ids_topics.type_identifier2().seq_ldefn().header().equiv_kind()) ||
+                    (TI_PLAIN_ARRAY_SMALL == type_ids_topics.type_identifier2()._d() &&
+                    EK_COMPLETE == type_ids_topics.type_identifier2().array_sdefn().header().equiv_kind()) ||
+                    (TI_PLAIN_ARRAY_LARGE == type_ids_topics.type_identifier2()._d() &&
+                    EK_COMPLETE == type_ids_topics.type_identifier2().array_ldefn().header().equiv_kind()) ||
+                    (TI_PLAIN_MAP_SMALL == type_ids_topics.type_identifier2()._d() &&
+                    (EK_COMPLETE == type_ids_topics.type_identifier2().map_sdefn().header().equiv_kind() ||
+                    EK_COMPLETE == type_ids_topics.type_identifier2().map_sdefn().key_identifier()->_d())) ||
+                    (TI_PLAIN_MAP_LARGE == type_ids_topics.type_identifier2()._d() &&
+                    (EK_COMPLETE == type_ids_topics.type_identifier2().map_ldefn().header().equiv_kind() ||
+                    EK_COMPLETE == type_ids_topics.type_identifier2().map_ldefn().key_identifier()->_d())))
             {
-                common_topics = TypeObjectUtils::build_common_struct_member(member_id_topics, member_flags_topics, type_ids_MonitoringTopics.type_identifier2());
+                common_topics = TypeObjectUtils::build_common_struct_member(member_id_topics,
+                        member_flags_topics, type_ids_topics.type_identifier2());
             }
             else
             {
@@ -2342,19 +1025,10 @@ void register_MonitoringTopics_type_identifier()
         }
         CompleteStructType struct_type_MonitoringTopics = TypeObjectUtils::build_complete_struct_type(struct_flags_MonitoringTopics, header_MonitoringTopics, member_seq_MonitoringTopics);
         if (eprosima::fastdds::dds::RETCODE_BAD_PARAMETER ==
-                TypeObjectUtils::build_and_register_struct_type_object(struct_type_MonitoringTopics, type_name_MonitoringTopics.to_string()))
+                TypeObjectUtils::build_and_register_struct_type_object(struct_type_MonitoringTopics, type_name_MonitoringTopics.to_string(), type_ids_MonitoringTopics))
         {
             EPROSIMA_LOG_ERROR(XTYPES_TYPE_REPRESENTATION,
                     "MonitoringTopics already registered in TypeObjectRegistry for a different type.");
-        }
-        return_code_MonitoringTopics =
-            eprosima::fastdds::dds::DomainParticipantFactory::get_instance()->type_object_registry().get_type_identifiers(
-            "MonitoringTopics", type_ids_MonitoringTopics);
-        if (return_code_MonitoringTopics != eprosima::fastdds::dds::RETCODE_OK)
-        {
-            EPROSIMA_LOG_ERROR(XTYPES_TYPE_REPRESENTATION,
-                        "MonitoringTopics: Given Struct TypeIdentifier unknown to TypeObjectRegistry.");
-            return;
         }
     }
 }

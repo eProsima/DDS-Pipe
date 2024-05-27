@@ -219,9 +219,10 @@ bool MonitoringErrorStatusPubSubType::getKey(
     return true;
 }
 
-void MonitoringErrorStatusPubSubType::register_type_object_representation() const
+void MonitoringErrorStatusPubSubType::register_type_object_representation()
 {
-    register_MonitoringStatus_type_objects();
+    eprosima::fastdds::dds::xtypes::TypeIdentifierPair type_ids;
+    register_MonitoringErrorStatus_type_identifier(type_ids);
 }
 
 MonitoringStatusPubSubType::MonitoringStatusPubSubType()
@@ -412,9 +413,10 @@ bool MonitoringStatusPubSubType::getKey(
     return true;
 }
 
-void MonitoringStatusPubSubType::register_type_object_representation() const
+void MonitoringStatusPubSubType::register_type_object_representation()
 {
-    register_MonitoringStatus_type_objects();
+    eprosima::fastdds::dds::xtypes::TypeIdentifierPair type_ids;
+    register_MonitoringStatus_type_identifier(type_ids);
 }
 
 
