@@ -219,9 +219,10 @@ bool DdsTopicDataPubSubType::getKey(
     return true;
 }
 
-void DdsTopicDataPubSubType::register_type_object_representation() const
+void DdsTopicDataPubSubType::register_type_object_representation()
 {
-    register_MonitoringTopics_type_objects();
+    eprosima::fastdds::dds::xtypes::TypeIdentifierPair type_ids;
+    register_DdsTopicData_type_identifier(type_ids);
 }
 
 DdsTopicPubSubType::DdsTopicPubSubType()
@@ -412,9 +413,10 @@ bool DdsTopicPubSubType::getKey(
     return true;
 }
 
-void DdsTopicPubSubType::register_type_object_representation() const
+void DdsTopicPubSubType::register_type_object_representation()
 {
-    register_MonitoringTopics_type_objects();
+    eprosima::fastdds::dds::xtypes::TypeIdentifierPair type_ids;
+    register_DdsTopic_type_identifier(type_ids);
 }
 
 MonitoringTopicsPubSubType::MonitoringTopicsPubSubType()
@@ -605,9 +607,10 @@ bool MonitoringTopicsPubSubType::getKey(
     return true;
 }
 
-void MonitoringTopicsPubSubType::register_type_object_representation() const
+void MonitoringTopicsPubSubType::register_type_object_representation()
 {
-    register_MonitoringTopics_type_objects();
+    eprosima::fastdds::dds::xtypes::TypeIdentifierPair type_ids;
+    register_MonitoringTopics_type_identifier(type_ids);
 }
 
 

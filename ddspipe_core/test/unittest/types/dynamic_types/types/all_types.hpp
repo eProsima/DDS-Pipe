@@ -80,28 +80,28 @@ eprosima::fastdds::dds::DynamicType::_ref_type get_dynamic_type( // traits<epros
     register_map_struct_type_objects();
 
     auto type_name = to_string(type);
-    fastdds::dds::xtypes::TypeInformation type_information;
-    if (fastdds::dds::RETCODE_OK != fastdds::dds::DomainParticipantFactory::get_instance()->type_object_registry().get_type_information(
+    eprosima::fastdds::dds::xtypes::TypeInformation type_information;
+    if (eprosima::fastdds::dds::RETCODE_OK != eprosima::fastdds::dds::DomainParticipantFactory::get_instance()->type_object_registry().get_type_information(
             type_name,
             type_information))
     {
         return nullptr;
     }
-        fastdds::dds::xtypes::TypeIdentifier type_id;
+        eprosima::fastdds::dds::xtypes::TypeIdentifier type_id;
         type_id = type_information.complete().typeid_with_size().type_id();
 
-        fastdds::dds::xtypes::TypeObject type_obj;
-        if (fastdds::dds::RETCODE_OK == fastdds::dds::DomainParticipantFactory::get_instance()->type_object_registry().get_type_object(
+        eprosima::fastdds::dds::xtypes::TypeObject type_obj;
+        if (eprosima::fastdds::dds::RETCODE_OK == eprosima::fastdds::dds::DomainParticipantFactory::get_instance()->type_object_registry().get_type_object(
                 type_id,
                 type_obj))
+    {
+        return eprosima::fastdds::dds::DynamicTypeBuilderFactory::get_instance()->create_type_w_type_object(type_obj)->build();
     }
 
     else
     {
         throw eprosima::utils::InconsistencyException("No Type Object");
     }
-
-    return eprosima::fastdds::dds::DynamicTypeBuilderFactory::get_instance()->create_type_w_type_object(type_objects.complete_type_object)->build();
 }
 
 } /* namespace test */
