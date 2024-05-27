@@ -219,9 +219,10 @@ bool LogEntryPubSubType::getKey(
     return true;
 }
 
-void LogEntryPubSubType::register_type_object_representation() const
+void LogEntryPubSubType::register_type_object_representation()
 {
-    register_LogEntry_type_objects();
+    eprosima::fastdds::dds::xtypes::TypeIdentifierPair type_ids;
+    register_LogEntry_type_identifier(type_ids);
 }
 
 

@@ -38,25 +38,20 @@
 
 using namespace eprosima::fastdds::dds::xtypes;
 
-void register_MonitoringStatus_type_objects()
+// TypeIdentifier is returned by reference: dependent structures/unions are registered in this same method
+void register_MonitoringErrorStatus_type_identifier(
+        TypeIdentifierPair& type_ids_MonitoringErrorStatus)
 {
-    static std::once_flag once_flag;
-    std::call_once(once_flag, []()
-            {
-                register_MonitoringErrorStatus_type_identifier();
 
-                register_MonitoringStatus_type_identifier();
-
-            });
-}
-
-void register_MonitoringErrorStatus_type_identifier()
-{
+    ReturnCode_t return_code_MonitoringErrorStatus {eprosima::fastdds::dds::RETCODE_OK};
+    return_code_MonitoringErrorStatus =
+        eprosima::fastdds::dds::DomainParticipantFactory::get_instance()->type_object_registry().get_type_identifiers(
+        "MonitoringErrorStatus", type_ids_MonitoringErrorStatus);
+    if (eprosima::fastdds::dds::RETCODE_OK != return_code_MonitoringErrorStatus)
     {
         StructTypeFlag struct_flags_MonitoringErrorStatus = TypeObjectUtils::build_struct_type_flag(eprosima::fastdds::dds::xtypes::ExtensibilityKind::NOT_APPLIED,
                 false, false);
-        ReturnCode_t return_code_MonitoringErrorStatus;
-        TypeIdentifierPair type_ids_MonitoringErrorStatus;
+        static_cast<void>(return_code_MonitoringErrorStatus);
         QualifiedTypeName type_name_MonitoringErrorStatus = "MonitoringErrorStatus";
         eprosima::fastcdr::optional<AppliedBuiltinTypeAnnotations> type_ann_builtin_MonitoringErrorStatus;
         eprosima::fastcdr::optional<AppliedAnnotationSeq> ann_custom_MonitoringErrorStatus;
@@ -65,11 +60,13 @@ void register_MonitoringErrorStatus_type_identifier()
         header_MonitoringErrorStatus = TypeObjectUtils::build_complete_struct_header(TypeIdentifier(), detail_MonitoringErrorStatus);
         CompleteStructMemberSeq member_seq_MonitoringErrorStatus;
         {
-            return_code_MonitoringErrorStatus =
+            TypeIdentifierPair type_ids_type_mismatch;
+            ReturnCode_t return_code_type_mismatch {eprosima::fastdds::dds::RETCODE_OK};
+            return_code_type_mismatch =
                 eprosima::fastdds::dds::DomainParticipantFactory::get_instance()->type_object_registry().get_type_identifiers(
-                "_bool", type_ids_MonitoringErrorStatus);
+                "_bool", type_ids_type_mismatch);
 
-            if (return_code_MonitoringErrorStatus != eprosima::fastdds::dds::RETCODE_OK)
+            if (eprosima::fastdds::dds::RETCODE_OK != return_code_type_mismatch)
             {
                 EPROSIMA_LOG_ERROR(XTYPES_TYPE_REPRESENTATION,
                         "type_mismatch Structure member TypeIdentifier unknown to TypeObjectRegistry.");
@@ -79,41 +76,43 @@ void register_MonitoringErrorStatus_type_identifier()
                     false, false, false, false);
             CommonStructMember common_type_mismatch;
             MemberId member_id_type_mismatch = 0x00000000;
-            if (EK_COMPLETE == type_ids_MonitoringErrorStatus.type_identifier1()._d() || TK_NONE == type_ids_MonitoringErrorStatus.type_identifier2()._d() ||
-                    (TI_PLAIN_SEQUENCE_SMALL == type_ids_MonitoringErrorStatus.type_identifier1()._d() &&
-                    EK_COMPLETE == type_ids_MonitoringErrorStatus.type_identifier1().seq_sdefn().header().equiv_kind()) ||
-                    (TI_PLAIN_SEQUENCE_LARGE == type_ids_MonitoringErrorStatus.type_identifier1()._d() &&
-                    EK_COMPLETE == type_ids_MonitoringErrorStatus.type_identifier1().seq_ldefn().header().equiv_kind()) ||
-                    (TI_PLAIN_ARRAY_SMALL == type_ids_MonitoringErrorStatus.type_identifier1()._d() &&
-                    EK_COMPLETE == type_ids_MonitoringErrorStatus.type_identifier1().array_sdefn().header().equiv_kind()) ||
-                    (TI_PLAIN_ARRAY_LARGE == type_ids_MonitoringErrorStatus.type_identifier1()._d() &&
-                    EK_COMPLETE == type_ids_MonitoringErrorStatus.type_identifier1().array_ldefn().header().equiv_kind()) ||
-                    (TI_PLAIN_MAP_SMALL == type_ids_MonitoringErrorStatus.type_identifier1()._d() &&
-                    (EK_COMPLETE == type_ids_MonitoringErrorStatus.type_identifier1().map_sdefn().header().equiv_kind() ||
-                    EK_COMPLETE == type_ids_MonitoringErrorStatus.type_identifier1().map_sdefn().key_identifier()->_d())) ||
-                    (TI_PLAIN_MAP_LARGE == type_ids_MonitoringErrorStatus.type_identifier1()._d() &&
-                    (EK_COMPLETE == type_ids_MonitoringErrorStatus.type_identifier1().map_ldefn().header().equiv_kind() ||
-                    EK_COMPLETE == type_ids_MonitoringErrorStatus.type_identifier1().map_ldefn().key_identifier()->_d())))
+            if (EK_COMPLETE == type_ids_type_mismatch.type_identifier1()._d() || TK_NONE == type_ids_type_mismatch.type_identifier2()._d() ||
+                    (TI_PLAIN_SEQUENCE_SMALL == type_ids_type_mismatch.type_identifier1()._d() &&
+                    EK_COMPLETE == type_ids_type_mismatch.type_identifier1().seq_sdefn().header().equiv_kind()) ||
+                    (TI_PLAIN_SEQUENCE_LARGE == type_ids_type_mismatch.type_identifier1()._d() &&
+                    EK_COMPLETE == type_ids_type_mismatch.type_identifier1().seq_ldefn().header().equiv_kind()) ||
+                    (TI_PLAIN_ARRAY_SMALL == type_ids_type_mismatch.type_identifier1()._d() &&
+                    EK_COMPLETE == type_ids_type_mismatch.type_identifier1().array_sdefn().header().equiv_kind()) ||
+                    (TI_PLAIN_ARRAY_LARGE == type_ids_type_mismatch.type_identifier1()._d() &&
+                    EK_COMPLETE == type_ids_type_mismatch.type_identifier1().array_ldefn().header().equiv_kind()) ||
+                    (TI_PLAIN_MAP_SMALL == type_ids_type_mismatch.type_identifier1()._d() &&
+                    (EK_COMPLETE == type_ids_type_mismatch.type_identifier1().map_sdefn().header().equiv_kind() ||
+                    EK_COMPLETE == type_ids_type_mismatch.type_identifier1().map_sdefn().key_identifier()->_d())) ||
+                    (TI_PLAIN_MAP_LARGE == type_ids_type_mismatch.type_identifier1()._d() &&
+                    (EK_COMPLETE == type_ids_type_mismatch.type_identifier1().map_ldefn().header().equiv_kind() ||
+                    EK_COMPLETE == type_ids_type_mismatch.type_identifier1().map_ldefn().key_identifier()->_d())))
             {
-                common_type_mismatch = TypeObjectUtils::build_common_struct_member(member_id_type_mismatch, member_flags_type_mismatch, type_ids_MonitoringErrorStatus.type_identifier1());
+                common_type_mismatch = TypeObjectUtils::build_common_struct_member(member_id_type_mismatch,
+                        member_flags_type_mismatch, type_ids_type_mismatch.type_identifier1());
             }
-            else if (EK_COMPLETE == type_ids_MonitoringErrorStatus.type_identifier2()._d() ||
-                    (TI_PLAIN_SEQUENCE_SMALL == type_ids_MonitoringErrorStatus.type_identifier2()._d() &&
-                    EK_COMPLETE == type_ids_MonitoringErrorStatus.type_identifier2().seq_sdefn().header().equiv_kind()) ||
-                    (TI_PLAIN_SEQUENCE_LARGE == type_ids_MonitoringErrorStatus.type_identifier2()._d() &&
-                    EK_COMPLETE == type_ids_MonitoringErrorStatus.type_identifier2().seq_ldefn().header().equiv_kind()) ||
-                    (TI_PLAIN_ARRAY_SMALL == type_ids_MonitoringErrorStatus.type_identifier2()._d() &&
-                    EK_COMPLETE == type_ids_MonitoringErrorStatus.type_identifier2().array_sdefn().header().equiv_kind()) ||
-                    (TI_PLAIN_ARRAY_LARGE == type_ids_MonitoringErrorStatus.type_identifier2()._d() &&
-                    EK_COMPLETE == type_ids_MonitoringErrorStatus.type_identifier2().array_ldefn().header().equiv_kind()) ||
-                    (TI_PLAIN_MAP_SMALL == type_ids_MonitoringErrorStatus.type_identifier2()._d() &&
-                    (EK_COMPLETE == type_ids_MonitoringErrorStatus.type_identifier2().map_sdefn().header().equiv_kind() ||
-                    EK_COMPLETE == type_ids_MonitoringErrorStatus.type_identifier2().map_sdefn().key_identifier()->_d())) ||
-                    (TI_PLAIN_MAP_LARGE == type_ids_MonitoringErrorStatus.type_identifier2()._d() &&
-                    (EK_COMPLETE == type_ids_MonitoringErrorStatus.type_identifier2().map_ldefn().header().equiv_kind() ||
-                    EK_COMPLETE == type_ids_MonitoringErrorStatus.type_identifier2().map_ldefn().key_identifier()->_d())))
+            else if (EK_COMPLETE == type_ids_type_mismatch.type_identifier2()._d() ||
+                    (TI_PLAIN_SEQUENCE_SMALL == type_ids_type_mismatch.type_identifier2()._d() &&
+                    EK_COMPLETE == type_ids_type_mismatch.type_identifier2().seq_sdefn().header().equiv_kind()) ||
+                    (TI_PLAIN_SEQUENCE_LARGE == type_ids_type_mismatch.type_identifier2()._d() &&
+                    EK_COMPLETE == type_ids_type_mismatch.type_identifier2().seq_ldefn().header().equiv_kind()) ||
+                    (TI_PLAIN_ARRAY_SMALL == type_ids_type_mismatch.type_identifier2()._d() &&
+                    EK_COMPLETE == type_ids_type_mismatch.type_identifier2().array_sdefn().header().equiv_kind()) ||
+                    (TI_PLAIN_ARRAY_LARGE == type_ids_type_mismatch.type_identifier2()._d() &&
+                    EK_COMPLETE == type_ids_type_mismatch.type_identifier2().array_ldefn().header().equiv_kind()) ||
+                    (TI_PLAIN_MAP_SMALL == type_ids_type_mismatch.type_identifier2()._d() &&
+                    (EK_COMPLETE == type_ids_type_mismatch.type_identifier2().map_sdefn().header().equiv_kind() ||
+                    EK_COMPLETE == type_ids_type_mismatch.type_identifier2().map_sdefn().key_identifier()->_d())) ||
+                    (TI_PLAIN_MAP_LARGE == type_ids_type_mismatch.type_identifier2()._d() &&
+                    (EK_COMPLETE == type_ids_type_mismatch.type_identifier2().map_ldefn().header().equiv_kind() ||
+                    EK_COMPLETE == type_ids_type_mismatch.type_identifier2().map_ldefn().key_identifier()->_d())))
             {
-                common_type_mismatch = TypeObjectUtils::build_common_struct_member(member_id_type_mismatch, member_flags_type_mismatch, type_ids_MonitoringErrorStatus.type_identifier2());
+                common_type_mismatch = TypeObjectUtils::build_common_struct_member(member_id_type_mismatch,
+                        member_flags_type_mismatch, type_ids_type_mismatch.type_identifier2());
             }
             else
             {
@@ -129,11 +128,13 @@ void register_MonitoringErrorStatus_type_identifier()
             TypeObjectUtils::add_complete_struct_member(member_seq_MonitoringErrorStatus, member_type_mismatch);
         }
         {
-            return_code_MonitoringErrorStatus =
+            TypeIdentifierPair type_ids_qos_mismatch;
+            ReturnCode_t return_code_qos_mismatch {eprosima::fastdds::dds::RETCODE_OK};
+            return_code_qos_mismatch =
                 eprosima::fastdds::dds::DomainParticipantFactory::get_instance()->type_object_registry().get_type_identifiers(
-                "_bool", type_ids_MonitoringErrorStatus);
+                "_bool", type_ids_qos_mismatch);
 
-            if (return_code_MonitoringErrorStatus != eprosima::fastdds::dds::RETCODE_OK)
+            if (eprosima::fastdds::dds::RETCODE_OK != return_code_qos_mismatch)
             {
                 EPROSIMA_LOG_ERROR(XTYPES_TYPE_REPRESENTATION,
                         "qos_mismatch Structure member TypeIdentifier unknown to TypeObjectRegistry.");
@@ -143,41 +144,43 @@ void register_MonitoringErrorStatus_type_identifier()
                     false, false, false, false);
             CommonStructMember common_qos_mismatch;
             MemberId member_id_qos_mismatch = 0x00000001;
-            if (EK_COMPLETE == type_ids_MonitoringErrorStatus.type_identifier1()._d() || TK_NONE == type_ids_MonitoringErrorStatus.type_identifier2()._d() ||
-                    (TI_PLAIN_SEQUENCE_SMALL == type_ids_MonitoringErrorStatus.type_identifier1()._d() &&
-                    EK_COMPLETE == type_ids_MonitoringErrorStatus.type_identifier1().seq_sdefn().header().equiv_kind()) ||
-                    (TI_PLAIN_SEQUENCE_LARGE == type_ids_MonitoringErrorStatus.type_identifier1()._d() &&
-                    EK_COMPLETE == type_ids_MonitoringErrorStatus.type_identifier1().seq_ldefn().header().equiv_kind()) ||
-                    (TI_PLAIN_ARRAY_SMALL == type_ids_MonitoringErrorStatus.type_identifier1()._d() &&
-                    EK_COMPLETE == type_ids_MonitoringErrorStatus.type_identifier1().array_sdefn().header().equiv_kind()) ||
-                    (TI_PLAIN_ARRAY_LARGE == type_ids_MonitoringErrorStatus.type_identifier1()._d() &&
-                    EK_COMPLETE == type_ids_MonitoringErrorStatus.type_identifier1().array_ldefn().header().equiv_kind()) ||
-                    (TI_PLAIN_MAP_SMALL == type_ids_MonitoringErrorStatus.type_identifier1()._d() &&
-                    (EK_COMPLETE == type_ids_MonitoringErrorStatus.type_identifier1().map_sdefn().header().equiv_kind() ||
-                    EK_COMPLETE == type_ids_MonitoringErrorStatus.type_identifier1().map_sdefn().key_identifier()->_d())) ||
-                    (TI_PLAIN_MAP_LARGE == type_ids_MonitoringErrorStatus.type_identifier1()._d() &&
-                    (EK_COMPLETE == type_ids_MonitoringErrorStatus.type_identifier1().map_ldefn().header().equiv_kind() ||
-                    EK_COMPLETE == type_ids_MonitoringErrorStatus.type_identifier1().map_ldefn().key_identifier()->_d())))
+            if (EK_COMPLETE == type_ids_qos_mismatch.type_identifier1()._d() || TK_NONE == type_ids_qos_mismatch.type_identifier2()._d() ||
+                    (TI_PLAIN_SEQUENCE_SMALL == type_ids_qos_mismatch.type_identifier1()._d() &&
+                    EK_COMPLETE == type_ids_qos_mismatch.type_identifier1().seq_sdefn().header().equiv_kind()) ||
+                    (TI_PLAIN_SEQUENCE_LARGE == type_ids_qos_mismatch.type_identifier1()._d() &&
+                    EK_COMPLETE == type_ids_qos_mismatch.type_identifier1().seq_ldefn().header().equiv_kind()) ||
+                    (TI_PLAIN_ARRAY_SMALL == type_ids_qos_mismatch.type_identifier1()._d() &&
+                    EK_COMPLETE == type_ids_qos_mismatch.type_identifier1().array_sdefn().header().equiv_kind()) ||
+                    (TI_PLAIN_ARRAY_LARGE == type_ids_qos_mismatch.type_identifier1()._d() &&
+                    EK_COMPLETE == type_ids_qos_mismatch.type_identifier1().array_ldefn().header().equiv_kind()) ||
+                    (TI_PLAIN_MAP_SMALL == type_ids_qos_mismatch.type_identifier1()._d() &&
+                    (EK_COMPLETE == type_ids_qos_mismatch.type_identifier1().map_sdefn().header().equiv_kind() ||
+                    EK_COMPLETE == type_ids_qos_mismatch.type_identifier1().map_sdefn().key_identifier()->_d())) ||
+                    (TI_PLAIN_MAP_LARGE == type_ids_qos_mismatch.type_identifier1()._d() &&
+                    (EK_COMPLETE == type_ids_qos_mismatch.type_identifier1().map_ldefn().header().equiv_kind() ||
+                    EK_COMPLETE == type_ids_qos_mismatch.type_identifier1().map_ldefn().key_identifier()->_d())))
             {
-                common_qos_mismatch = TypeObjectUtils::build_common_struct_member(member_id_qos_mismatch, member_flags_qos_mismatch, type_ids_MonitoringErrorStatus.type_identifier1());
+                common_qos_mismatch = TypeObjectUtils::build_common_struct_member(member_id_qos_mismatch,
+                        member_flags_qos_mismatch, type_ids_qos_mismatch.type_identifier1());
             }
-            else if (EK_COMPLETE == type_ids_MonitoringErrorStatus.type_identifier2()._d() ||
-                    (TI_PLAIN_SEQUENCE_SMALL == type_ids_MonitoringErrorStatus.type_identifier2()._d() &&
-                    EK_COMPLETE == type_ids_MonitoringErrorStatus.type_identifier2().seq_sdefn().header().equiv_kind()) ||
-                    (TI_PLAIN_SEQUENCE_LARGE == type_ids_MonitoringErrorStatus.type_identifier2()._d() &&
-                    EK_COMPLETE == type_ids_MonitoringErrorStatus.type_identifier2().seq_ldefn().header().equiv_kind()) ||
-                    (TI_PLAIN_ARRAY_SMALL == type_ids_MonitoringErrorStatus.type_identifier2()._d() &&
-                    EK_COMPLETE == type_ids_MonitoringErrorStatus.type_identifier2().array_sdefn().header().equiv_kind()) ||
-                    (TI_PLAIN_ARRAY_LARGE == type_ids_MonitoringErrorStatus.type_identifier2()._d() &&
-                    EK_COMPLETE == type_ids_MonitoringErrorStatus.type_identifier2().array_ldefn().header().equiv_kind()) ||
-                    (TI_PLAIN_MAP_SMALL == type_ids_MonitoringErrorStatus.type_identifier2()._d() &&
-                    (EK_COMPLETE == type_ids_MonitoringErrorStatus.type_identifier2().map_sdefn().header().equiv_kind() ||
-                    EK_COMPLETE == type_ids_MonitoringErrorStatus.type_identifier2().map_sdefn().key_identifier()->_d())) ||
-                    (TI_PLAIN_MAP_LARGE == type_ids_MonitoringErrorStatus.type_identifier2()._d() &&
-                    (EK_COMPLETE == type_ids_MonitoringErrorStatus.type_identifier2().map_ldefn().header().equiv_kind() ||
-                    EK_COMPLETE == type_ids_MonitoringErrorStatus.type_identifier2().map_ldefn().key_identifier()->_d())))
+            else if (EK_COMPLETE == type_ids_qos_mismatch.type_identifier2()._d() ||
+                    (TI_PLAIN_SEQUENCE_SMALL == type_ids_qos_mismatch.type_identifier2()._d() &&
+                    EK_COMPLETE == type_ids_qos_mismatch.type_identifier2().seq_sdefn().header().equiv_kind()) ||
+                    (TI_PLAIN_SEQUENCE_LARGE == type_ids_qos_mismatch.type_identifier2()._d() &&
+                    EK_COMPLETE == type_ids_qos_mismatch.type_identifier2().seq_ldefn().header().equiv_kind()) ||
+                    (TI_PLAIN_ARRAY_SMALL == type_ids_qos_mismatch.type_identifier2()._d() &&
+                    EK_COMPLETE == type_ids_qos_mismatch.type_identifier2().array_sdefn().header().equiv_kind()) ||
+                    (TI_PLAIN_ARRAY_LARGE == type_ids_qos_mismatch.type_identifier2()._d() &&
+                    EK_COMPLETE == type_ids_qos_mismatch.type_identifier2().array_ldefn().header().equiv_kind()) ||
+                    (TI_PLAIN_MAP_SMALL == type_ids_qos_mismatch.type_identifier2()._d() &&
+                    (EK_COMPLETE == type_ids_qos_mismatch.type_identifier2().map_sdefn().header().equiv_kind() ||
+                    EK_COMPLETE == type_ids_qos_mismatch.type_identifier2().map_sdefn().key_identifier()->_d())) ||
+                    (TI_PLAIN_MAP_LARGE == type_ids_qos_mismatch.type_identifier2()._d() &&
+                    (EK_COMPLETE == type_ids_qos_mismatch.type_identifier2().map_ldefn().header().equiv_kind() ||
+                    EK_COMPLETE == type_ids_qos_mismatch.type_identifier2().map_ldefn().key_identifier()->_d())))
             {
-                common_qos_mismatch = TypeObjectUtils::build_common_struct_member(member_id_qos_mismatch, member_flags_qos_mismatch, type_ids_MonitoringErrorStatus.type_identifier2());
+                common_qos_mismatch = TypeObjectUtils::build_common_struct_member(member_id_qos_mismatch,
+                        member_flags_qos_mismatch, type_ids_qos_mismatch.type_identifier2());
             }
             else
             {
@@ -194,29 +197,27 @@ void register_MonitoringErrorStatus_type_identifier()
         }
         CompleteStructType struct_type_MonitoringErrorStatus = TypeObjectUtils::build_complete_struct_type(struct_flags_MonitoringErrorStatus, header_MonitoringErrorStatus, member_seq_MonitoringErrorStatus);
         if (eprosima::fastdds::dds::RETCODE_BAD_PARAMETER ==
-                TypeObjectUtils::build_and_register_struct_type_object(struct_type_MonitoringErrorStatus, type_name_MonitoringErrorStatus.to_string()))
+                TypeObjectUtils::build_and_register_struct_type_object(struct_type_MonitoringErrorStatus, type_name_MonitoringErrorStatus.to_string(), type_ids_MonitoringErrorStatus))
         {
             EPROSIMA_LOG_ERROR(XTYPES_TYPE_REPRESENTATION,
                     "MonitoringErrorStatus already registered in TypeObjectRegistry for a different type.");
         }
-        return_code_MonitoringErrorStatus =
-            eprosima::fastdds::dds::DomainParticipantFactory::get_instance()->type_object_registry().get_type_identifiers(
-            "MonitoringErrorStatus", type_ids_MonitoringErrorStatus);
-        if (return_code_MonitoringErrorStatus != eprosima::fastdds::dds::RETCODE_OK)
-        {
-            EPROSIMA_LOG_ERROR(XTYPES_TYPE_REPRESENTATION,
-                        "MonitoringErrorStatus: Given Struct TypeIdentifier unknown to TypeObjectRegistry.");
-            return;
-        }
     }
 }
-void register_MonitoringStatus_type_identifier()
+// TypeIdentifier is returned by reference: dependent structures/unions are registered in this same method
+void register_MonitoringStatus_type_identifier(
+        TypeIdentifierPair& type_ids_MonitoringStatus)
 {
+
+    ReturnCode_t return_code_MonitoringStatus {eprosima::fastdds::dds::RETCODE_OK};
+    return_code_MonitoringStatus =
+        eprosima::fastdds::dds::DomainParticipantFactory::get_instance()->type_object_registry().get_type_identifiers(
+        "MonitoringStatus", type_ids_MonitoringStatus);
+    if (eprosima::fastdds::dds::RETCODE_OK != return_code_MonitoringStatus)
     {
         StructTypeFlag struct_flags_MonitoringStatus = TypeObjectUtils::build_struct_type_flag(eprosima::fastdds::dds::xtypes::ExtensibilityKind::NOT_APPLIED,
                 false, false);
-        ReturnCode_t return_code_MonitoringStatus;
-        TypeIdentifierPair type_ids_MonitoringStatus;
+        static_cast<void>(return_code_MonitoringStatus);
         QualifiedTypeName type_name_MonitoringStatus = "MonitoringStatus";
         eprosima::fastcdr::optional<AppliedBuiltinTypeAnnotations> type_ann_builtin_MonitoringStatus;
         eprosima::fastcdr::optional<AppliedAnnotationSeq> ann_custom_MonitoringStatus;
@@ -225,209 +226,57 @@ void register_MonitoringStatus_type_identifier()
         header_MonitoringStatus = TypeObjectUtils::build_complete_struct_header(TypeIdentifier(), detail_MonitoringStatus);
         CompleteStructMemberSeq member_seq_MonitoringStatus;
         {
-            return_code_MonitoringStatus =
+            TypeIdentifierPair type_ids_error_status;
+            ReturnCode_t return_code_error_status {eprosima::fastdds::dds::RETCODE_OK};
+            return_code_error_status =
                 eprosima::fastdds::dds::DomainParticipantFactory::get_instance()->type_object_registry().get_type_identifiers(
-                "MonitoringErrorStatus", type_ids_MonitoringStatus);
+                "MonitoringErrorStatus", type_ids_error_status);
 
-            if (return_code_MonitoringStatus != eprosima::fastdds::dds::RETCODE_OK)
+            if (eprosima::fastdds::dds::RETCODE_OK != return_code_error_status)
             {
-                {
-                    StructTypeFlag struct_flags_MonitoringErrorStatus = TypeObjectUtils::build_struct_type_flag(eprosima::fastdds::dds::xtypes::ExtensibilityKind::NOT_APPLIED,
-                            false, false);
-                    ReturnCode_t return_code_MonitoringErrorStatus;
-                    TypeIdentifierPair type_ids_MonitoringErrorStatus;
-                    QualifiedTypeName type_name_MonitoringErrorStatus = "MonitoringErrorStatus";
-                    eprosima::fastcdr::optional<AppliedBuiltinTypeAnnotations> type_ann_builtin_MonitoringErrorStatus;
-                    eprosima::fastcdr::optional<AppliedAnnotationSeq> ann_custom_MonitoringErrorStatus;
-                    CompleteTypeDetail detail_MonitoringErrorStatus = TypeObjectUtils::build_complete_type_detail(type_ann_builtin_MonitoringErrorStatus, ann_custom_MonitoringErrorStatus, type_name_MonitoringErrorStatus.to_string());
-                    CompleteStructHeader header_MonitoringErrorStatus;
-                    header_MonitoringErrorStatus = TypeObjectUtils::build_complete_struct_header(TypeIdentifier(), detail_MonitoringErrorStatus);
-                    CompleteStructMemberSeq member_seq_MonitoringErrorStatus;
-                    {
-                        return_code_MonitoringErrorStatus =
-                            eprosima::fastdds::dds::DomainParticipantFactory::get_instance()->type_object_registry().get_type_identifiers(
-                            "_bool", type_ids_MonitoringErrorStatus);
-
-                        if (return_code_MonitoringErrorStatus != eprosima::fastdds::dds::RETCODE_OK)
-                        {
-                            EPROSIMA_LOG_ERROR(XTYPES_TYPE_REPRESENTATION,
-                                    "type_mismatch Structure member TypeIdentifier unknown to TypeObjectRegistry.");
-                            return;
-                        }
-                        StructMemberFlag member_flags_type_mismatch = TypeObjectUtils::build_struct_member_flag(eprosima::fastdds::dds::xtypes::TryConstructKind::NOT_APPLIED,
-                                false, false, false, false);
-                        CommonStructMember common_type_mismatch;
-                        MemberId member_id_type_mismatch = 0x00000000;
-                        if (EK_COMPLETE == type_ids_MonitoringErrorStatus.type_identifier1()._d() || TK_NONE == type_ids_MonitoringErrorStatus.type_identifier2()._d() ||
-                                (TI_PLAIN_SEQUENCE_SMALL == type_ids_MonitoringErrorStatus.type_identifier1()._d() &&
-                                EK_COMPLETE == type_ids_MonitoringErrorStatus.type_identifier1().seq_sdefn().header().equiv_kind()) ||
-                                (TI_PLAIN_SEQUENCE_LARGE == type_ids_MonitoringErrorStatus.type_identifier1()._d() &&
-                                EK_COMPLETE == type_ids_MonitoringErrorStatus.type_identifier1().seq_ldefn().header().equiv_kind()) ||
-                                (TI_PLAIN_ARRAY_SMALL == type_ids_MonitoringErrorStatus.type_identifier1()._d() &&
-                                EK_COMPLETE == type_ids_MonitoringErrorStatus.type_identifier1().array_sdefn().header().equiv_kind()) ||
-                                (TI_PLAIN_ARRAY_LARGE == type_ids_MonitoringErrorStatus.type_identifier1()._d() &&
-                                EK_COMPLETE == type_ids_MonitoringErrorStatus.type_identifier1().array_ldefn().header().equiv_kind()) ||
-                                (TI_PLAIN_MAP_SMALL == type_ids_MonitoringErrorStatus.type_identifier1()._d() &&
-                                (EK_COMPLETE == type_ids_MonitoringErrorStatus.type_identifier1().map_sdefn().header().equiv_kind() ||
-                                EK_COMPLETE == type_ids_MonitoringErrorStatus.type_identifier1().map_sdefn().key_identifier()->_d())) ||
-                                (TI_PLAIN_MAP_LARGE == type_ids_MonitoringErrorStatus.type_identifier1()._d() &&
-                                (EK_COMPLETE == type_ids_MonitoringErrorStatus.type_identifier1().map_ldefn().header().equiv_kind() ||
-                                EK_COMPLETE == type_ids_MonitoringErrorStatus.type_identifier1().map_ldefn().key_identifier()->_d())))
-                        {
-                            common_type_mismatch = TypeObjectUtils::build_common_struct_member(member_id_type_mismatch, member_flags_type_mismatch, type_ids_MonitoringErrorStatus.type_identifier1());
-                        }
-                        else if (EK_COMPLETE == type_ids_MonitoringErrorStatus.type_identifier2()._d() ||
-                                (TI_PLAIN_SEQUENCE_SMALL == type_ids_MonitoringErrorStatus.type_identifier2()._d() &&
-                                EK_COMPLETE == type_ids_MonitoringErrorStatus.type_identifier2().seq_sdefn().header().equiv_kind()) ||
-                                (TI_PLAIN_SEQUENCE_LARGE == type_ids_MonitoringErrorStatus.type_identifier2()._d() &&
-                                EK_COMPLETE == type_ids_MonitoringErrorStatus.type_identifier2().seq_ldefn().header().equiv_kind()) ||
-                                (TI_PLAIN_ARRAY_SMALL == type_ids_MonitoringErrorStatus.type_identifier2()._d() &&
-                                EK_COMPLETE == type_ids_MonitoringErrorStatus.type_identifier2().array_sdefn().header().equiv_kind()) ||
-                                (TI_PLAIN_ARRAY_LARGE == type_ids_MonitoringErrorStatus.type_identifier2()._d() &&
-                                EK_COMPLETE == type_ids_MonitoringErrorStatus.type_identifier2().array_ldefn().header().equiv_kind()) ||
-                                (TI_PLAIN_MAP_SMALL == type_ids_MonitoringErrorStatus.type_identifier2()._d() &&
-                                (EK_COMPLETE == type_ids_MonitoringErrorStatus.type_identifier2().map_sdefn().header().equiv_kind() ||
-                                EK_COMPLETE == type_ids_MonitoringErrorStatus.type_identifier2().map_sdefn().key_identifier()->_d())) ||
-                                (TI_PLAIN_MAP_LARGE == type_ids_MonitoringErrorStatus.type_identifier2()._d() &&
-                                (EK_COMPLETE == type_ids_MonitoringErrorStatus.type_identifier2().map_ldefn().header().equiv_kind() ||
-                                EK_COMPLETE == type_ids_MonitoringErrorStatus.type_identifier2().map_ldefn().key_identifier()->_d())))
-                        {
-                            common_type_mismatch = TypeObjectUtils::build_common_struct_member(member_id_type_mismatch, member_flags_type_mismatch, type_ids_MonitoringErrorStatus.type_identifier2());
-                        }
-                        else
-                        {
-                            EPROSIMA_LOG_ERROR(XTYPES_TYPE_REPRESENTATION,
-                                    "Structure type_mismatch member TypeIdentifier inconsistent.");
-                            return;
-                        }
-                        MemberName name_type_mismatch = "type_mismatch";
-                        eprosima::fastcdr::optional<AppliedBuiltinMemberAnnotations> member_ann_builtin_type_mismatch;
-                        ann_custom_MonitoringErrorStatus.reset();
-                        CompleteMemberDetail detail_type_mismatch = TypeObjectUtils::build_complete_member_detail(name_type_mismatch, member_ann_builtin_type_mismatch, ann_custom_MonitoringErrorStatus);
-                        CompleteStructMember member_type_mismatch = TypeObjectUtils::build_complete_struct_member(common_type_mismatch, detail_type_mismatch);
-                        TypeObjectUtils::add_complete_struct_member(member_seq_MonitoringErrorStatus, member_type_mismatch);
-                    }
-                    {
-                        return_code_MonitoringErrorStatus =
-                            eprosima::fastdds::dds::DomainParticipantFactory::get_instance()->type_object_registry().get_type_identifiers(
-                            "_bool", type_ids_MonitoringErrorStatus);
-
-                        if (return_code_MonitoringErrorStatus != eprosima::fastdds::dds::RETCODE_OK)
-                        {
-                            EPROSIMA_LOG_ERROR(XTYPES_TYPE_REPRESENTATION,
-                                    "qos_mismatch Structure member TypeIdentifier unknown to TypeObjectRegistry.");
-                            return;
-                        }
-                        StructMemberFlag member_flags_qos_mismatch = TypeObjectUtils::build_struct_member_flag(eprosima::fastdds::dds::xtypes::TryConstructKind::NOT_APPLIED,
-                                false, false, false, false);
-                        CommonStructMember common_qos_mismatch;
-                        MemberId member_id_qos_mismatch = 0x00000001;
-                        if (EK_COMPLETE == type_ids_MonitoringErrorStatus.type_identifier1()._d() || TK_NONE == type_ids_MonitoringErrorStatus.type_identifier2()._d() ||
-                                (TI_PLAIN_SEQUENCE_SMALL == type_ids_MonitoringErrorStatus.type_identifier1()._d() &&
-                                EK_COMPLETE == type_ids_MonitoringErrorStatus.type_identifier1().seq_sdefn().header().equiv_kind()) ||
-                                (TI_PLAIN_SEQUENCE_LARGE == type_ids_MonitoringErrorStatus.type_identifier1()._d() &&
-                                EK_COMPLETE == type_ids_MonitoringErrorStatus.type_identifier1().seq_ldefn().header().equiv_kind()) ||
-                                (TI_PLAIN_ARRAY_SMALL == type_ids_MonitoringErrorStatus.type_identifier1()._d() &&
-                                EK_COMPLETE == type_ids_MonitoringErrorStatus.type_identifier1().array_sdefn().header().equiv_kind()) ||
-                                (TI_PLAIN_ARRAY_LARGE == type_ids_MonitoringErrorStatus.type_identifier1()._d() &&
-                                EK_COMPLETE == type_ids_MonitoringErrorStatus.type_identifier1().array_ldefn().header().equiv_kind()) ||
-                                (TI_PLAIN_MAP_SMALL == type_ids_MonitoringErrorStatus.type_identifier1()._d() &&
-                                (EK_COMPLETE == type_ids_MonitoringErrorStatus.type_identifier1().map_sdefn().header().equiv_kind() ||
-                                EK_COMPLETE == type_ids_MonitoringErrorStatus.type_identifier1().map_sdefn().key_identifier()->_d())) ||
-                                (TI_PLAIN_MAP_LARGE == type_ids_MonitoringErrorStatus.type_identifier1()._d() &&
-                                (EK_COMPLETE == type_ids_MonitoringErrorStatus.type_identifier1().map_ldefn().header().equiv_kind() ||
-                                EK_COMPLETE == type_ids_MonitoringErrorStatus.type_identifier1().map_ldefn().key_identifier()->_d())))
-                        {
-                            common_qos_mismatch = TypeObjectUtils::build_common_struct_member(member_id_qos_mismatch, member_flags_qos_mismatch, type_ids_MonitoringErrorStatus.type_identifier1());
-                        }
-                        else if (EK_COMPLETE == type_ids_MonitoringErrorStatus.type_identifier2()._d() ||
-                                (TI_PLAIN_SEQUENCE_SMALL == type_ids_MonitoringErrorStatus.type_identifier2()._d() &&
-                                EK_COMPLETE == type_ids_MonitoringErrorStatus.type_identifier2().seq_sdefn().header().equiv_kind()) ||
-                                (TI_PLAIN_SEQUENCE_LARGE == type_ids_MonitoringErrorStatus.type_identifier2()._d() &&
-                                EK_COMPLETE == type_ids_MonitoringErrorStatus.type_identifier2().seq_ldefn().header().equiv_kind()) ||
-                                (TI_PLAIN_ARRAY_SMALL == type_ids_MonitoringErrorStatus.type_identifier2()._d() &&
-                                EK_COMPLETE == type_ids_MonitoringErrorStatus.type_identifier2().array_sdefn().header().equiv_kind()) ||
-                                (TI_PLAIN_ARRAY_LARGE == type_ids_MonitoringErrorStatus.type_identifier2()._d() &&
-                                EK_COMPLETE == type_ids_MonitoringErrorStatus.type_identifier2().array_ldefn().header().equiv_kind()) ||
-                                (TI_PLAIN_MAP_SMALL == type_ids_MonitoringErrorStatus.type_identifier2()._d() &&
-                                (EK_COMPLETE == type_ids_MonitoringErrorStatus.type_identifier2().map_sdefn().header().equiv_kind() ||
-                                EK_COMPLETE == type_ids_MonitoringErrorStatus.type_identifier2().map_sdefn().key_identifier()->_d())) ||
-                                (TI_PLAIN_MAP_LARGE == type_ids_MonitoringErrorStatus.type_identifier2()._d() &&
-                                (EK_COMPLETE == type_ids_MonitoringErrorStatus.type_identifier2().map_ldefn().header().equiv_kind() ||
-                                EK_COMPLETE == type_ids_MonitoringErrorStatus.type_identifier2().map_ldefn().key_identifier()->_d())))
-                        {
-                            common_qos_mismatch = TypeObjectUtils::build_common_struct_member(member_id_qos_mismatch, member_flags_qos_mismatch, type_ids_MonitoringErrorStatus.type_identifier2());
-                        }
-                        else
-                        {
-                            EPROSIMA_LOG_ERROR(XTYPES_TYPE_REPRESENTATION,
-                                    "Structure qos_mismatch member TypeIdentifier inconsistent.");
-                            return;
-                        }
-                        MemberName name_qos_mismatch = "qos_mismatch";
-                        eprosima::fastcdr::optional<AppliedBuiltinMemberAnnotations> member_ann_builtin_qos_mismatch;
-                        ann_custom_MonitoringErrorStatus.reset();
-                        CompleteMemberDetail detail_qos_mismatch = TypeObjectUtils::build_complete_member_detail(name_qos_mismatch, member_ann_builtin_qos_mismatch, ann_custom_MonitoringErrorStatus);
-                        CompleteStructMember member_qos_mismatch = TypeObjectUtils::build_complete_struct_member(common_qos_mismatch, detail_qos_mismatch);
-                        TypeObjectUtils::add_complete_struct_member(member_seq_MonitoringErrorStatus, member_qos_mismatch);
-                    }
-                    CompleteStructType struct_type_MonitoringErrorStatus = TypeObjectUtils::build_complete_struct_type(struct_flags_MonitoringErrorStatus, header_MonitoringErrorStatus, member_seq_MonitoringErrorStatus);
-                    if (eprosima::fastdds::dds::RETCODE_BAD_PARAMETER ==
-                            TypeObjectUtils::build_and_register_struct_type_object(struct_type_MonitoringErrorStatus, type_name_MonitoringErrorStatus.to_string()))
-                    {
-                        EPROSIMA_LOG_ERROR(XTYPES_TYPE_REPRESENTATION,
-                                "MonitoringErrorStatus already registered in TypeObjectRegistry for a different type.");
-                    }
-                    return_code_MonitoringErrorStatus =
-                        eprosima::fastdds::dds::DomainParticipantFactory::get_instance()->type_object_registry().get_type_identifiers(
-                        "MonitoringErrorStatus", type_ids_MonitoringErrorStatus);
-                    if (return_code_MonitoringErrorStatus != eprosima::fastdds::dds::RETCODE_OK)
-                    {
-                        EPROSIMA_LOG_ERROR(XTYPES_TYPE_REPRESENTATION,
-                                    "MonitoringErrorStatus: Given Struct TypeIdentifier unknown to TypeObjectRegistry.");
-                        return;
-                    }
-                }
+            ::register_MonitoringErrorStatus_type_identifier(type_ids_error_status);
             }
             StructMemberFlag member_flags_error_status = TypeObjectUtils::build_struct_member_flag(eprosima::fastdds::dds::xtypes::TryConstructKind::NOT_APPLIED,
                     false, false, false, false);
             CommonStructMember common_error_status;
             MemberId member_id_error_status = 0x00000000;
-            if (EK_COMPLETE == type_ids_MonitoringStatus.type_identifier1()._d() || TK_NONE == type_ids_MonitoringStatus.type_identifier2()._d() ||
-                    (TI_PLAIN_SEQUENCE_SMALL == type_ids_MonitoringStatus.type_identifier1()._d() &&
-                    EK_COMPLETE == type_ids_MonitoringStatus.type_identifier1().seq_sdefn().header().equiv_kind()) ||
-                    (TI_PLAIN_SEQUENCE_LARGE == type_ids_MonitoringStatus.type_identifier1()._d() &&
-                    EK_COMPLETE == type_ids_MonitoringStatus.type_identifier1().seq_ldefn().header().equiv_kind()) ||
-                    (TI_PLAIN_ARRAY_SMALL == type_ids_MonitoringStatus.type_identifier1()._d() &&
-                    EK_COMPLETE == type_ids_MonitoringStatus.type_identifier1().array_sdefn().header().equiv_kind()) ||
-                    (TI_PLAIN_ARRAY_LARGE == type_ids_MonitoringStatus.type_identifier1()._d() &&
-                    EK_COMPLETE == type_ids_MonitoringStatus.type_identifier1().array_ldefn().header().equiv_kind()) ||
-                    (TI_PLAIN_MAP_SMALL == type_ids_MonitoringStatus.type_identifier1()._d() &&
-                    (EK_COMPLETE == type_ids_MonitoringStatus.type_identifier1().map_sdefn().header().equiv_kind() ||
-                    EK_COMPLETE == type_ids_MonitoringStatus.type_identifier1().map_sdefn().key_identifier()->_d())) ||
-                    (TI_PLAIN_MAP_LARGE == type_ids_MonitoringStatus.type_identifier1()._d() &&
-                    (EK_COMPLETE == type_ids_MonitoringStatus.type_identifier1().map_ldefn().header().equiv_kind() ||
-                    EK_COMPLETE == type_ids_MonitoringStatus.type_identifier1().map_ldefn().key_identifier()->_d())))
+            if (EK_COMPLETE == type_ids_error_status.type_identifier1()._d() || TK_NONE == type_ids_error_status.type_identifier2()._d() ||
+                    (TI_PLAIN_SEQUENCE_SMALL == type_ids_error_status.type_identifier1()._d() &&
+                    EK_COMPLETE == type_ids_error_status.type_identifier1().seq_sdefn().header().equiv_kind()) ||
+                    (TI_PLAIN_SEQUENCE_LARGE == type_ids_error_status.type_identifier1()._d() &&
+                    EK_COMPLETE == type_ids_error_status.type_identifier1().seq_ldefn().header().equiv_kind()) ||
+                    (TI_PLAIN_ARRAY_SMALL == type_ids_error_status.type_identifier1()._d() &&
+                    EK_COMPLETE == type_ids_error_status.type_identifier1().array_sdefn().header().equiv_kind()) ||
+                    (TI_PLAIN_ARRAY_LARGE == type_ids_error_status.type_identifier1()._d() &&
+                    EK_COMPLETE == type_ids_error_status.type_identifier1().array_ldefn().header().equiv_kind()) ||
+                    (TI_PLAIN_MAP_SMALL == type_ids_error_status.type_identifier1()._d() &&
+                    (EK_COMPLETE == type_ids_error_status.type_identifier1().map_sdefn().header().equiv_kind() ||
+                    EK_COMPLETE == type_ids_error_status.type_identifier1().map_sdefn().key_identifier()->_d())) ||
+                    (TI_PLAIN_MAP_LARGE == type_ids_error_status.type_identifier1()._d() &&
+                    (EK_COMPLETE == type_ids_error_status.type_identifier1().map_ldefn().header().equiv_kind() ||
+                    EK_COMPLETE == type_ids_error_status.type_identifier1().map_ldefn().key_identifier()->_d())))
             {
-                common_error_status = TypeObjectUtils::build_common_struct_member(member_id_error_status, member_flags_error_status, type_ids_MonitoringStatus.type_identifier1());
+                common_error_status = TypeObjectUtils::build_common_struct_member(member_id_error_status,
+                        member_flags_error_status, type_ids_error_status.type_identifier1());
             }
-            else if (EK_COMPLETE == type_ids_MonitoringStatus.type_identifier2()._d() ||
-                    (TI_PLAIN_SEQUENCE_SMALL == type_ids_MonitoringStatus.type_identifier2()._d() &&
-                    EK_COMPLETE == type_ids_MonitoringStatus.type_identifier2().seq_sdefn().header().equiv_kind()) ||
-                    (TI_PLAIN_SEQUENCE_LARGE == type_ids_MonitoringStatus.type_identifier2()._d() &&
-                    EK_COMPLETE == type_ids_MonitoringStatus.type_identifier2().seq_ldefn().header().equiv_kind()) ||
-                    (TI_PLAIN_ARRAY_SMALL == type_ids_MonitoringStatus.type_identifier2()._d() &&
-                    EK_COMPLETE == type_ids_MonitoringStatus.type_identifier2().array_sdefn().header().equiv_kind()) ||
-                    (TI_PLAIN_ARRAY_LARGE == type_ids_MonitoringStatus.type_identifier2()._d() &&
-                    EK_COMPLETE == type_ids_MonitoringStatus.type_identifier2().array_ldefn().header().equiv_kind()) ||
-                    (TI_PLAIN_MAP_SMALL == type_ids_MonitoringStatus.type_identifier2()._d() &&
-                    (EK_COMPLETE == type_ids_MonitoringStatus.type_identifier2().map_sdefn().header().equiv_kind() ||
-                    EK_COMPLETE == type_ids_MonitoringStatus.type_identifier2().map_sdefn().key_identifier()->_d())) ||
-                    (TI_PLAIN_MAP_LARGE == type_ids_MonitoringStatus.type_identifier2()._d() &&
-                    (EK_COMPLETE == type_ids_MonitoringStatus.type_identifier2().map_ldefn().header().equiv_kind() ||
-                    EK_COMPLETE == type_ids_MonitoringStatus.type_identifier2().map_ldefn().key_identifier()->_d())))
+            else if (EK_COMPLETE == type_ids_error_status.type_identifier2()._d() ||
+                    (TI_PLAIN_SEQUENCE_SMALL == type_ids_error_status.type_identifier2()._d() &&
+                    EK_COMPLETE == type_ids_error_status.type_identifier2().seq_sdefn().header().equiv_kind()) ||
+                    (TI_PLAIN_SEQUENCE_LARGE == type_ids_error_status.type_identifier2()._d() &&
+                    EK_COMPLETE == type_ids_error_status.type_identifier2().seq_ldefn().header().equiv_kind()) ||
+                    (TI_PLAIN_ARRAY_SMALL == type_ids_error_status.type_identifier2()._d() &&
+                    EK_COMPLETE == type_ids_error_status.type_identifier2().array_sdefn().header().equiv_kind()) ||
+                    (TI_PLAIN_ARRAY_LARGE == type_ids_error_status.type_identifier2()._d() &&
+                    EK_COMPLETE == type_ids_error_status.type_identifier2().array_ldefn().header().equiv_kind()) ||
+                    (TI_PLAIN_MAP_SMALL == type_ids_error_status.type_identifier2()._d() &&
+                    (EK_COMPLETE == type_ids_error_status.type_identifier2().map_sdefn().header().equiv_kind() ||
+                    EK_COMPLETE == type_ids_error_status.type_identifier2().map_sdefn().key_identifier()->_d())) ||
+                    (TI_PLAIN_MAP_LARGE == type_ids_error_status.type_identifier2()._d() &&
+                    (EK_COMPLETE == type_ids_error_status.type_identifier2().map_ldefn().header().equiv_kind() ||
+                    EK_COMPLETE == type_ids_error_status.type_identifier2().map_ldefn().key_identifier()->_d())))
             {
-                common_error_status = TypeObjectUtils::build_common_struct_member(member_id_error_status, member_flags_error_status, type_ids_MonitoringStatus.type_identifier2());
+                common_error_status = TypeObjectUtils::build_common_struct_member(member_id_error_status,
+                        member_flags_error_status, type_ids_error_status.type_identifier2());
             }
             else
             {
@@ -443,11 +292,13 @@ void register_MonitoringStatus_type_identifier()
             TypeObjectUtils::add_complete_struct_member(member_seq_MonitoringStatus, member_error_status);
         }
         {
-            return_code_MonitoringStatus =
+            TypeIdentifierPair type_ids_has_errors;
+            ReturnCode_t return_code_has_errors {eprosima::fastdds::dds::RETCODE_OK};
+            return_code_has_errors =
                 eprosima::fastdds::dds::DomainParticipantFactory::get_instance()->type_object_registry().get_type_identifiers(
-                "_bool", type_ids_MonitoringStatus);
+                "_bool", type_ids_has_errors);
 
-            if (return_code_MonitoringStatus != eprosima::fastdds::dds::RETCODE_OK)
+            if (eprosima::fastdds::dds::RETCODE_OK != return_code_has_errors)
             {
                 EPROSIMA_LOG_ERROR(XTYPES_TYPE_REPRESENTATION,
                         "has_errors Structure member TypeIdentifier unknown to TypeObjectRegistry.");
@@ -457,41 +308,43 @@ void register_MonitoringStatus_type_identifier()
                     false, false, false, false);
             CommonStructMember common_has_errors;
             MemberId member_id_has_errors = 0x00000001;
-            if (EK_COMPLETE == type_ids_MonitoringStatus.type_identifier1()._d() || TK_NONE == type_ids_MonitoringStatus.type_identifier2()._d() ||
-                    (TI_PLAIN_SEQUENCE_SMALL == type_ids_MonitoringStatus.type_identifier1()._d() &&
-                    EK_COMPLETE == type_ids_MonitoringStatus.type_identifier1().seq_sdefn().header().equiv_kind()) ||
-                    (TI_PLAIN_SEQUENCE_LARGE == type_ids_MonitoringStatus.type_identifier1()._d() &&
-                    EK_COMPLETE == type_ids_MonitoringStatus.type_identifier1().seq_ldefn().header().equiv_kind()) ||
-                    (TI_PLAIN_ARRAY_SMALL == type_ids_MonitoringStatus.type_identifier1()._d() &&
-                    EK_COMPLETE == type_ids_MonitoringStatus.type_identifier1().array_sdefn().header().equiv_kind()) ||
-                    (TI_PLAIN_ARRAY_LARGE == type_ids_MonitoringStatus.type_identifier1()._d() &&
-                    EK_COMPLETE == type_ids_MonitoringStatus.type_identifier1().array_ldefn().header().equiv_kind()) ||
-                    (TI_PLAIN_MAP_SMALL == type_ids_MonitoringStatus.type_identifier1()._d() &&
-                    (EK_COMPLETE == type_ids_MonitoringStatus.type_identifier1().map_sdefn().header().equiv_kind() ||
-                    EK_COMPLETE == type_ids_MonitoringStatus.type_identifier1().map_sdefn().key_identifier()->_d())) ||
-                    (TI_PLAIN_MAP_LARGE == type_ids_MonitoringStatus.type_identifier1()._d() &&
-                    (EK_COMPLETE == type_ids_MonitoringStatus.type_identifier1().map_ldefn().header().equiv_kind() ||
-                    EK_COMPLETE == type_ids_MonitoringStatus.type_identifier1().map_ldefn().key_identifier()->_d())))
+            if (EK_COMPLETE == type_ids_has_errors.type_identifier1()._d() || TK_NONE == type_ids_has_errors.type_identifier2()._d() ||
+                    (TI_PLAIN_SEQUENCE_SMALL == type_ids_has_errors.type_identifier1()._d() &&
+                    EK_COMPLETE == type_ids_has_errors.type_identifier1().seq_sdefn().header().equiv_kind()) ||
+                    (TI_PLAIN_SEQUENCE_LARGE == type_ids_has_errors.type_identifier1()._d() &&
+                    EK_COMPLETE == type_ids_has_errors.type_identifier1().seq_ldefn().header().equiv_kind()) ||
+                    (TI_PLAIN_ARRAY_SMALL == type_ids_has_errors.type_identifier1()._d() &&
+                    EK_COMPLETE == type_ids_has_errors.type_identifier1().array_sdefn().header().equiv_kind()) ||
+                    (TI_PLAIN_ARRAY_LARGE == type_ids_has_errors.type_identifier1()._d() &&
+                    EK_COMPLETE == type_ids_has_errors.type_identifier1().array_ldefn().header().equiv_kind()) ||
+                    (TI_PLAIN_MAP_SMALL == type_ids_has_errors.type_identifier1()._d() &&
+                    (EK_COMPLETE == type_ids_has_errors.type_identifier1().map_sdefn().header().equiv_kind() ||
+                    EK_COMPLETE == type_ids_has_errors.type_identifier1().map_sdefn().key_identifier()->_d())) ||
+                    (TI_PLAIN_MAP_LARGE == type_ids_has_errors.type_identifier1()._d() &&
+                    (EK_COMPLETE == type_ids_has_errors.type_identifier1().map_ldefn().header().equiv_kind() ||
+                    EK_COMPLETE == type_ids_has_errors.type_identifier1().map_ldefn().key_identifier()->_d())))
             {
-                common_has_errors = TypeObjectUtils::build_common_struct_member(member_id_has_errors, member_flags_has_errors, type_ids_MonitoringStatus.type_identifier1());
+                common_has_errors = TypeObjectUtils::build_common_struct_member(member_id_has_errors,
+                        member_flags_has_errors, type_ids_has_errors.type_identifier1());
             }
-            else if (EK_COMPLETE == type_ids_MonitoringStatus.type_identifier2()._d() ||
-                    (TI_PLAIN_SEQUENCE_SMALL == type_ids_MonitoringStatus.type_identifier2()._d() &&
-                    EK_COMPLETE == type_ids_MonitoringStatus.type_identifier2().seq_sdefn().header().equiv_kind()) ||
-                    (TI_PLAIN_SEQUENCE_LARGE == type_ids_MonitoringStatus.type_identifier2()._d() &&
-                    EK_COMPLETE == type_ids_MonitoringStatus.type_identifier2().seq_ldefn().header().equiv_kind()) ||
-                    (TI_PLAIN_ARRAY_SMALL == type_ids_MonitoringStatus.type_identifier2()._d() &&
-                    EK_COMPLETE == type_ids_MonitoringStatus.type_identifier2().array_sdefn().header().equiv_kind()) ||
-                    (TI_PLAIN_ARRAY_LARGE == type_ids_MonitoringStatus.type_identifier2()._d() &&
-                    EK_COMPLETE == type_ids_MonitoringStatus.type_identifier2().array_ldefn().header().equiv_kind()) ||
-                    (TI_PLAIN_MAP_SMALL == type_ids_MonitoringStatus.type_identifier2()._d() &&
-                    (EK_COMPLETE == type_ids_MonitoringStatus.type_identifier2().map_sdefn().header().equiv_kind() ||
-                    EK_COMPLETE == type_ids_MonitoringStatus.type_identifier2().map_sdefn().key_identifier()->_d())) ||
-                    (TI_PLAIN_MAP_LARGE == type_ids_MonitoringStatus.type_identifier2()._d() &&
-                    (EK_COMPLETE == type_ids_MonitoringStatus.type_identifier2().map_ldefn().header().equiv_kind() ||
-                    EK_COMPLETE == type_ids_MonitoringStatus.type_identifier2().map_ldefn().key_identifier()->_d())))
+            else if (EK_COMPLETE == type_ids_has_errors.type_identifier2()._d() ||
+                    (TI_PLAIN_SEQUENCE_SMALL == type_ids_has_errors.type_identifier2()._d() &&
+                    EK_COMPLETE == type_ids_has_errors.type_identifier2().seq_sdefn().header().equiv_kind()) ||
+                    (TI_PLAIN_SEQUENCE_LARGE == type_ids_has_errors.type_identifier2()._d() &&
+                    EK_COMPLETE == type_ids_has_errors.type_identifier2().seq_ldefn().header().equiv_kind()) ||
+                    (TI_PLAIN_ARRAY_SMALL == type_ids_has_errors.type_identifier2()._d() &&
+                    EK_COMPLETE == type_ids_has_errors.type_identifier2().array_sdefn().header().equiv_kind()) ||
+                    (TI_PLAIN_ARRAY_LARGE == type_ids_has_errors.type_identifier2()._d() &&
+                    EK_COMPLETE == type_ids_has_errors.type_identifier2().array_ldefn().header().equiv_kind()) ||
+                    (TI_PLAIN_MAP_SMALL == type_ids_has_errors.type_identifier2()._d() &&
+                    (EK_COMPLETE == type_ids_has_errors.type_identifier2().map_sdefn().header().equiv_kind() ||
+                    EK_COMPLETE == type_ids_has_errors.type_identifier2().map_sdefn().key_identifier()->_d())) ||
+                    (TI_PLAIN_MAP_LARGE == type_ids_has_errors.type_identifier2()._d() &&
+                    (EK_COMPLETE == type_ids_has_errors.type_identifier2().map_ldefn().header().equiv_kind() ||
+                    EK_COMPLETE == type_ids_has_errors.type_identifier2().map_ldefn().key_identifier()->_d())))
             {
-                common_has_errors = TypeObjectUtils::build_common_struct_member(member_id_has_errors, member_flags_has_errors, type_ids_MonitoringStatus.type_identifier2());
+                common_has_errors = TypeObjectUtils::build_common_struct_member(member_id_has_errors,
+                        member_flags_has_errors, type_ids_has_errors.type_identifier2());
             }
             else
             {
@@ -508,19 +361,10 @@ void register_MonitoringStatus_type_identifier()
         }
         CompleteStructType struct_type_MonitoringStatus = TypeObjectUtils::build_complete_struct_type(struct_flags_MonitoringStatus, header_MonitoringStatus, member_seq_MonitoringStatus);
         if (eprosima::fastdds::dds::RETCODE_BAD_PARAMETER ==
-                TypeObjectUtils::build_and_register_struct_type_object(struct_type_MonitoringStatus, type_name_MonitoringStatus.to_string()))
+                TypeObjectUtils::build_and_register_struct_type_object(struct_type_MonitoringStatus, type_name_MonitoringStatus.to_string(), type_ids_MonitoringStatus))
         {
             EPROSIMA_LOG_ERROR(XTYPES_TYPE_REPRESENTATION,
                     "MonitoringStatus already registered in TypeObjectRegistry for a different type.");
-        }
-        return_code_MonitoringStatus =
-            eprosima::fastdds::dds::DomainParticipantFactory::get_instance()->type_object_registry().get_type_identifiers(
-            "MonitoringStatus", type_ids_MonitoringStatus);
-        if (return_code_MonitoringStatus != eprosima::fastdds::dds::RETCODE_OK)
-        {
-            EPROSIMA_LOG_ERROR(XTYPES_TYPE_REPRESENTATION,
-                        "MonitoringStatus: Given Struct TypeIdentifier unknown to TypeObjectRegistry.");
-            return;
         }
     }
 }
