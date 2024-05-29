@@ -17,6 +17,8 @@
 #include <iostream>
 #include <string>
 
+#include <fastdds/dds/xtypes/type_representation/detail/dds_xtypes_typeobject.hpp>
+
 #include <cpp_utils/memory/Heritable.hpp>
 #include <cpp_utils/types/Fuzzy.hpp>
 
@@ -85,6 +87,9 @@ struct DdsTopic : public DistributedTopic
 
     //! Topic Type name
     std::string type_name{};
+
+    //! Type Identifiers (complete and minimal)
+    fastdds::dds::xtypes::TypeIdentifierPair type_ids;
 };
 
 } /* namespace types */
