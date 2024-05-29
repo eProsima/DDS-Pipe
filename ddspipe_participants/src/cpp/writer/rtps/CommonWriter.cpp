@@ -12,10 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-
 #include <fastrtps/rtps/RTPSDomain.h>
 #include <fastrtps/rtps/participant/RTPSParticipant.h>
 #include <fastrtps/rtps/common/CacheChange.h>
+
+#include <fastdds/dds/domain/DomainParticipantFactory.hpp>
 
 #include <cpp_utils/exception/InitializationException.hpp>
 #include <cpp_utils/Log.hpp>
@@ -397,6 +398,15 @@ fastrtps::TopicAttributes CommonWriter::reckon_topic_attributes_(
     // Set Topic attributes
     att.topicName = topic.m_topic_name;
     att.topicDataType = topic.type_name;
+
+    // Set TypeInformation of the discovered type
+    fastdds::dds::xtypes::TypeInformation type_info;
+    if (fastdds::dds::RETCODE_OK == fastdds::dds::DomainParticipantFactory::get_instance()->type_object_registry().get_type_information(
+                                    topic.type_ids,
+                                    type_info))
+    {
+        att.type_information = type_info;
+    }
 
     return att;
 }

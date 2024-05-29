@@ -15,6 +15,8 @@
 #include <fastrtps/rtps/RTPSDomain.h>
 #include <fastrtps/rtps/participant/RTPSParticipant.h>
 
+#include <fastdds/dds/domain/DomainParticipantFactory.hpp>
+
 #include <cpp_utils/exception/InitializationException.hpp>
 #include <cpp_utils/Log.hpp>
 
@@ -347,6 +349,15 @@ fastrtps::TopicAttributes CommonReader::reckon_topic_attributes_(
     // Set Topic history attributes
     att.historyQos.kind = eprosima::fastdds::dds::HistoryQosPolicyKind::KEEP_LAST_HISTORY_QOS;
     att.historyQos.depth = topic.topic_qos.history_depth;
+
+    // Set TypeInformation of the discovered type
+    fastdds::dds::xtypes::TypeInformation type_info;
+    if (fastdds::dds::RETCODE_OK == fastdds::dds::DomainParticipantFactory::get_instance()->type_object_registry().get_type_information(
+                                    topic.type_ids,
+                                    type_info))
+    {
+        att.type_information = type_info;
+    }
 
     return att;
 }

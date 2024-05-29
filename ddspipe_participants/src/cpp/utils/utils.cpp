@@ -61,6 +61,10 @@ core::types::Endpoint create_common_endpoint_from_info_(
     // Set Topic key
     endpoint.topic.topic_qos.keyed.set_value(info.info.topicKind() == eprosima::fastrtps::rtps::TopicKind_t::WITH_KEY);
 
+    // Set TypeIdentifier
+    endpoint.topic.type_ids.type_identifier1(info.info.type_information().type_information.complete().typeid_with_size().type_id());
+    endpoint.topic.type_ids.type_identifier2(info.info.type_information().type_information.minimal().typeid_with_size().type_id());
+
     // Parse Topic
     core::types::DdsTopic info_topic;
     endpoint.topic.m_topic_name = std::string(info.info.topicName());
