@@ -46,19 +46,18 @@ fastrtps::rtps::CacheChange_t* CacheChangePool::new_element_()
 void CacheChangePool::reset_element_(fastrtps::rtps::CacheChange_t* change)
 {
     // NOTE: This could be done by =operator but it is deleted, so it must be done field by field
-    change->kind = eprosima::fastrtps::rtps::ALIVE;
+    change->kind = fastrtps::rtps::ALIVE;
     change->sequenceNumber.high = 0;
     change->sequenceNumber.low = 0;
-    change->writerGUID = eprosima::fastrtps::rtps::c_Guid_Unknown;
+    change->writerGUID = fastrtps::rtps::c_Guid_Unknown;
     change->instanceHandle.clear();
     change->isRead = 0;
     change->sourceTimestamp.seconds(0);
     change->sourceTimestamp.fraction(0);
     change->writer_info.num_sent_submessages = 0;
     change->setFragmentSize(0);
-    change->inline_qos.pos = 0;
-    change->inline_qos.length = 0;
-    // TODO check if serialized payload requires to be reset
+    change->serializedPayload.empty();
+    change->inline_qos.empty();
 }
 
 } /* namespace core */
