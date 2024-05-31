@@ -43,7 +43,8 @@ fastrtps::rtps::CacheChange_t* CacheChangePool::new_element_()
     return new types::RouterCacheChange();
 }
 
-void CacheChangePool::reset_element_(fastrtps::rtps::CacheChange_t* change)
+void CacheChangePool::reset_element_(
+        fastrtps::rtps::CacheChange_t* change)
 {
     // NOTE: This could be done by =operator but it is deleted, so it must be done field by field
     change->kind = fastrtps::rtps::ALIVE;
