@@ -221,8 +221,7 @@ bool MonitoringErrorStatusPubSubType::getKey(
 
 void MonitoringErrorStatusPubSubType::register_type_object_representation()
 {
-    eprosima::fastdds::dds::xtypes::TypeIdentifierPair type_ids;
-    register_MonitoringErrorStatus_type_identifier(type_ids);
+    register_MonitoringErrorStatus_type_identifier(type_identifiers_);
 }
 
 MonitoringStatusPubSubType::MonitoringStatusPubSubType()
@@ -415,8 +414,7 @@ bool MonitoringStatusPubSubType::getKey(
 
 void MonitoringStatusPubSubType::register_type_object_representation()
 {
-    eprosima::fastdds::dds::xtypes::TypeIdentifierPair type_ids;
-    register_MonitoringStatus_type_identifier(type_ids);
+    register_MonitoringStatus_type_identifier(type_identifiers_);
 }
 
 

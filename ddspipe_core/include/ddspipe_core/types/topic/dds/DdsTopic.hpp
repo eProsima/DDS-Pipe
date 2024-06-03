@@ -81,6 +81,9 @@ struct DdsTopic : public DistributedTopic
             const std::string& type_name,
             utils::Formatter& error_msg) noexcept;
 
+    void set_type_ids(
+        const fastdds::dds::xtypes::TypeIdentifierPair& _type_ids) noexcept;
+
     /////////////////////////
     // VARIABLES
     /////////////////////////

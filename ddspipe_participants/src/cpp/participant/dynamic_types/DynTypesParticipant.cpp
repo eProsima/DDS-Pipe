@@ -34,8 +34,8 @@
 #include <fastdds/rtps/builtin/data/WriterProxyData.h>
 #include <fastdds/rtps/transport/shared_mem/SharedMemTransportDescriptor.h>
 #include <fastdds/rtps/transport/UDPv4TransportDescriptor.h>
-#include <fastrtps/rtps/participant/RTPSParticipant.h>
-#include <fastrtps/rtps/RTPSDomain.h>
+#include <fastdds/rtps/participant/RTPSParticipant.h>
+#include <fastdds/rtps/RTPSDomain.h>
 
 #include <ddspipe_core/monitoring/producers/TopicsMonitorProducer.hpp>
 #include <ddspipe_core/types/dynamic_types/types.hpp>

@@ -14,7 +14,7 @@
 
 #pragma once
 
-#include <fastrtps/rtps/common/Guid.h>
+#include <fastdds/rtps/common/Guid.h>
 
 #include <ddspipe_core/library/library_dll.h>
 #include <ddspipe_core/types/dds/GuidPrefix.hpp>

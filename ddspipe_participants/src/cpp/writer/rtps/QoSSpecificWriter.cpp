@@ -40,12 +40,12 @@ QoSSpecificWriter::QoSSpecificWriter(
 {
 }
 
-fastrtps::WriterQos QoSSpecificWriter::reckon_writer_qos_(
+fastdds::dds::WriterQos QoSSpecificWriter::reckon_writer_qos_(
         const SpecificEndpointQoS& specific_qos,
         const DdsTopic& topic) noexcept
 {
     // Get QoS from parent class
-    fastrtps::WriterQos qos = CommonWriter::reckon_writer_qos_(topic);
+    fastdds::dds::WriterQos qos = CommonWriter::reckon_writer_qos_(topic);
 
     // Set Partitions
     if (topic.topic_qos.has_partitions())

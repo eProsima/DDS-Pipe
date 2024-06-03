@@ -409,7 +409,8 @@ fastdds::dds::Topic* CommonParticipant::topic_related_(
                 new TopicDataType(
                     topic.type_name,
                     topic.topic_qos.keyed,
-                    payload_pool_))
+                    payload_pool_,
+                    topic.type_ids))
             );
     }
 

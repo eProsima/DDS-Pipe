@@ -16,7 +16,7 @@
 
 #include <fastdds/rtps/reader/ReaderDiscoveryInfo.h>
 #include <fastdds/rtps/writer/WriterDiscoveryInfo.h>
-#include <fastrtps/rtps/common/InstanceHandle.h>
+#include <fastdds/rtps/common/InstanceHandle.h>
 
 #include <ddspipe_core/dynamic/DiscoveryDatabase.hpp>
 #include <ddspipe_core/types/dds/Endpoint.hpp>

@@ -221,8 +221,7 @@ bool DdsTopicDataPubSubType::getKey(
 
 void DdsTopicDataPubSubType::register_type_object_representation()
 {
-    eprosima::fastdds::dds::xtypes::TypeIdentifierPair type_ids;
-    register_DdsTopicData_type_identifier(type_ids);
+    register_DdsTopicData_type_identifier(type_identifiers_);
 }
 
 DdsTopicPubSubType::DdsTopicPubSubType()
@@ -415,8 +414,7 @@ bool DdsTopicPubSubType::getKey(
 
 void DdsTopicPubSubType::register_type_object_representation()
 {
-    eprosima::fastdds::dds::xtypes::TypeIdentifierPair type_ids;
-    register_DdsTopic_type_identifier(type_ids);
+    register_DdsTopic_type_identifier(type_identifiers_);
 }
 
 MonitoringTopicsPubSubType::MonitoringTopicsPubSubType()
@@ -609,8 +607,7 @@ bool MonitoringTopicsPubSubType::getKey(
 
 void MonitoringTopicsPubSubType::register_type_object_representation()
 {
-    eprosima::fastdds::dds::xtypes::TypeIdentifierPair type_ids;
-    register_MonitoringTopics_type_identifier(type_ids);
+    register_MonitoringTopics_type_identifier(type_identifiers_);
 }
 
 

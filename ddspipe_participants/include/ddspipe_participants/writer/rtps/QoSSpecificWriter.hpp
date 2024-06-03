@@ -55,7 +55,7 @@ public:
 protected:
 
     //! Specific writer QoS to override (more or less) the CommonWriter qos
-    static fastrtps::WriterQos reckon_writer_qos_(
+    static fastdds::dds::WriterQos reckon_writer_qos_(
             const core::types::SpecificEndpointQoS& specific_qos,
             const core::types::DdsTopic& topic) noexcept;
 

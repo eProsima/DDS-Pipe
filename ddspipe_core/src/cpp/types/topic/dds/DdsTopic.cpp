@@ -111,6 +111,12 @@ bool DdsTopic::is_valid_dds_topic(
     return true;
 }
 
+void DdsTopic::set_type_ids(
+        const fastdds::dds::xtypes::TypeIdentifierPair& _type_ids) noexcept
+{
+    type_ids = _type_ids;
+}
+
 /////////////////////////
 // OPERATORS
 /////////////////////////
