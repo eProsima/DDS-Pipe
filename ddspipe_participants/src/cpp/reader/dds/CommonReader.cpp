@@ -181,9 +181,10 @@ utils::ReturnCode CommonReader::take_nts_(
         // If the payload owner is not set, rtps_data won't release the payload on destruction
         rtps_data->payload_owner = payload_pool_.get();
 
-        if (!ret)
+        if (ret != fastdds::dds::RETCODE_OK)
         {
             // There has been an error taking the data. Exit.
+            data.reset(rtps_data.release());
             return ret;
         }
     } while (!should_accept_sample_(info));

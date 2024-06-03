@@ -29,7 +29,8 @@ using eprosima::ddspipe::core::types::operator <<;
 TopicDataType::TopicDataType(
         const std::string& type_name,
         const bool keyed,
-        const std::shared_ptr<core::PayloadPool>& payload_pool)
+        const std::shared_ptr<core::PayloadPool>& payload_pool,
+        const fastdds::dds::xtypes::TypeIdentifierPair& type_ids)
     : type_name_(type_name)
     , keyed_(keyed)
     , payload_pool_(payload_pool)
@@ -37,10 +38,12 @@ TopicDataType::TopicDataType(
     // Set topic data
     m_typeSize = 4;
     m_isGetKeyDefined = keyed_;
-    auto_fill_type_information(false);
 
     // Set name
     setName(type_name_.c_str());
+
+    // Set Type Identifiers
+    type_identifiers_ = type_ids;
 }
 
 TopicDataType::~TopicDataType()
