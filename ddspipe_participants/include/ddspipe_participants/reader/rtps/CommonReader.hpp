@@ -20,13 +20,13 @@
 #include <cpp_utils/time/time_utils.hpp>
 
 #include <fastdds/rtps/rtps_fwd.h>
-#include <fastrtps/rtps/attributes/HistoryAttributes.h>
+#include <fastdds/rtps/attributes/HistoryAttributes.h>
 #include <fastdds/rtps/attributes/TopicAttributes.h>
-#include <fastrtps/qos/ReaderQos.h>
-#include <fastrtps/rtps/history/ReaderHistory.h>
-#include <fastrtps/rtps/attributes/ReaderAttributes.h>
-#include <fastrtps/rtps/reader/RTPSReader.h>
-#include <fastrtps/rtps/reader/ReaderListener.h>
+#include <fastdds/dds/subscriber/qos/ReaderQos.hpp>
+#include <fastdds/rtps/history/ReaderHistory.h>
+#include <fastdds/rtps/attributes/ReaderAttributes.h>
+#include <fastdds/rtps/reader/RTPSReader.h>
+#include <fastdds/rtps/reader/ReaderListener.h>
 #include <fastdds/utils/TimedMutex.hpp>
 
 #include <ddspipe_core/types/dds/Guid.hpp>
@@ -198,7 +198,7 @@ protected:
             const fastrtps::rtps::HistoryAttributes& history_attributes,
             const fastrtps::rtps::ReaderAttributes& reader_attributes,
             const fastrtps::TopicAttributes& topic_attributes,
-            const fastrtps::ReaderQos& reader_qos);
+            const fastdds::dds::ReaderQos& reader_qos);
 
     // Specific enable/disable do not need to be implemented
 
@@ -210,7 +210,7 @@ protected:
             const fastrtps::rtps::HistoryAttributes& history_attributes,
             const fastrtps::rtps::ReaderAttributes& reader_attributes,
             const fastrtps::TopicAttributes& topic_attributes,
-            const fastrtps::ReaderQos& reader_qos);
+            const fastdds::dds::ReaderQos& reader_qos);
 
     /**
      * @brief Return an allocated object
@@ -275,7 +275,7 @@ protected:
             const core::types::DdsTopic& topic) noexcept;
 
     //! Reader QoS to create RTPS Reader
-    static fastrtps::ReaderQos reckon_reader_qos_(
+    static fastdds::dds::ReaderQos reckon_reader_qos_(
             const core::types::DdsTopic& topic) noexcept;
 
     /////
@@ -326,7 +326,7 @@ protected:
     fastrtps::TopicAttributes topic_attributes_;
 
     //! Reader QoS to create the internal RTPS Reader.
-    fastrtps::ReaderQos reader_qos_;
+    fastdds::dds::ReaderQos reader_qos_;
 };
 
 } /* namespace rtps */

@@ -19,11 +19,11 @@
 #include <fastdds/rtps/rtps_fwd.h>
 #include <fastdds/rtps/attributes/HistoryAttributes.h>
 #include <fastdds/rtps/attributes/TopicAttributes.h>
-#include <fastrtps/qos/WriterQos.h>
-#include <fastrtps/rtps/history/WriterHistory.h>
-#include <fastrtps/rtps/attributes/WriterAttributes.h>
-#include <fastrtps/rtps/writer/RTPSWriter.h>
-#include <fastrtps/rtps/writer/WriterListener.h>
+#include <fastdds/dds/publisher/qos/WriterQos.hpp>
+#include <fastdds/rtps/history/WriterHistory.h>
+#include <fastdds/rtps/attributes/WriterAttributes.h>
+#include <fastdds/rtps/writer/RTPSWriter.h>
+#include <fastdds/rtps/writer/WriterListener.h>
 
 #include <ddspipe_core/types/participant/ParticipantId.hpp>
 #include <ddspipe_core/types/data/RtpsPayloadData.hpp>
@@ -161,7 +161,7 @@ protected:
             const fastrtps::rtps::HistoryAttributes& history_attributes,
             const fastrtps::rtps::WriterAttributes& writer_attributes,
             const fastrtps::TopicAttributes& topic_attributes,
-            const fastrtps::WriterQos& writer_qos,
+            const fastdds::dds::WriterQos& writer_qos,
             const utils::PoolConfiguration& pool_configuration);
 
     // Specific enable/disable do not need to be implemented
@@ -224,7 +224,7 @@ protected:
             const fastrtps::rtps::HistoryAttributes& history_attributes,
             const fastrtps::rtps::WriterAttributes& writer_attributes,
             const fastrtps::TopicAttributes& topic_attributes,
-            const fastrtps::WriterQos& writer_qos,
+            const fastdds::dds::WriterQos& writer_qos,
             const utils::PoolConfiguration& pool_configuration);
 
     /**
@@ -244,7 +244,7 @@ protected:
             const core::types::DdsTopic& topic) noexcept;
 
     //! QoS for RTPS Writer
-    static fastrtps::WriterQos reckon_writer_qos_(
+    static fastdds::dds::WriterQos reckon_writer_qos_(
             const core::types::DdsTopic& topic) noexcept;
 
     //! Cache Change Pool Configuration
@@ -290,7 +290,7 @@ protected:
     fastrtps::TopicAttributes topic_attributes_;
 
     //! Writer QoS to create the internal RTPS Writer.
-    fastrtps::WriterQos writer_qos_;
+    fastdds::dds::WriterQos writer_qos_;
 
     //! Pool Configuration to create the internal History.
     utils::PoolConfiguration pool_configuration_;

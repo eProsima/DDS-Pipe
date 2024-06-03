@@ -12,9 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include <fastrtps/rtps/RTPSDomain.h>
-#include <fastrtps/rtps/participant/RTPSParticipant.h>
-#include <fastrtps/rtps/common/CacheChange.h>
+#include <fastdds/rtps/RTPSDomain.h>
+#include <fastdds/rtps/participant/RTPSParticipant.h>
+#include <fastdds/rtps/common/CacheChange.h>
 
 #include <fastdds/dds/domain/DomainParticipantFactory.hpp>
 
@@ -48,7 +48,7 @@ CommonWriter::CommonWriter(
         const fastrtps::rtps::HistoryAttributes& history_attributes,
         const fastrtps::rtps::WriterAttributes& writer_attributes,
         const fastrtps::TopicAttributes& topic_attributes,
-        const fastrtps::WriterQos& writer_qos,
+        const fastdds::dds::WriterQos& writer_qos,
         const utils::PoolConfiguration& pool_configuration)
     : BaseWriter(participant_id, topic.topic_qos.max_tx_rate)
     , rtps_participant_(rtps_participant)
@@ -265,7 +265,7 @@ void CommonWriter::internal_entities_creation_(
         const fastrtps::rtps::HistoryAttributes& history_attributes,
         const fastrtps::rtps::WriterAttributes& writer_attributes,
         const fastrtps::TopicAttributes& topic_attributes,
-        const fastrtps::WriterQos& writer_qos,
+        const fastdds::dds::WriterQos& writer_qos,
         const utils::PoolConfiguration& pool_configuration)
 {
     // Copy writer attributes because fast needs it non const (do not ask why)
@@ -414,10 +414,10 @@ fastrtps::TopicAttributes CommonWriter::reckon_topic_attributes_(
     return att;
 }
 
-fastrtps::WriterQos CommonWriter::reckon_writer_qos_(
+fastdds::dds::WriterQos CommonWriter::reckon_writer_qos_(
         const core::types::DdsTopic& topic) noexcept
 {
-    fastrtps::WriterQos qos;
+    fastdds::dds::WriterQos qos;
 
     // Set Durability
     qos.m_durability.kind =

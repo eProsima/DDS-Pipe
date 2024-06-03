@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include <fastrtps/rtps/RTPSDomain.h>
-#include <fastrtps/rtps/participant/RTPSParticipant.h>
+#include <fastdds/rtps/RTPSDomain.h>
+#include <fastdds/rtps/participant/RTPSParticipant.h>
 
 #include <fastdds/dds/domain/DomainParticipantFactory.hpp>
 
@@ -44,7 +44,7 @@ CommonReader::CommonReader(
         const fastrtps::rtps::HistoryAttributes& history_attributes,
         const fastrtps::rtps::ReaderAttributes& reader_attributes,
         const fastrtps::TopicAttributes& topic_attributes,
-        const fastrtps::ReaderQos& reader_qos)
+        const fastdds::dds::ReaderQos& reader_qos)
     : BaseReader(participant_id, topic.topic_qos.max_rx_rate, topic.topic_qos.downsampling)
     , rtps_participant_(rtps_participant)
     , payload_pool_(payload_pool)
@@ -95,7 +95,7 @@ void CommonReader::internal_entities_creation_(
         const fastrtps::rtps::HistoryAttributes& history_attributes,
         const fastrtps::rtps::ReaderAttributes& reader_attributes,
         const fastrtps::TopicAttributes& topic_attributes,
-        const fastrtps::ReaderQos& reader_qos)
+        const fastdds::dds::ReaderQos& reader_qos)
 {
     // Copy reader attributes because fast needs it non const (do not ask why)
     fastrtps::rtps::ReaderAttributes non_const_reader_attributes = reader_attributes;
@@ -363,10 +363,10 @@ fastrtps::TopicAttributes CommonReader::reckon_topic_attributes_(
     return att;
 }
 
-fastrtps::ReaderQos CommonReader::reckon_reader_qos_(
+fastdds::dds::ReaderQos CommonReader::reckon_reader_qos_(
         const core::types::DdsTopic& topic) noexcept
 {
-    fastrtps::ReaderQos properties;
+    fastdds::dds::ReaderQos properties;
 
     // Set Durability
     properties.m_durability.kind =
