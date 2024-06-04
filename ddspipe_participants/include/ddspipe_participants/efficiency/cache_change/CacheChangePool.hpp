@@ -14,6 +14,7 @@
 
 #pragma once
 
+#include <fastdds/rtps/common/CacheChange.h>
 #include <fastdds/rtps/history/IChangePool.h>
 
 #include <cpp_utils/pool/UnboundedPool.hpp>

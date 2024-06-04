@@ -12,8 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include <efficiency/cache_change/CacheChangePool.hpp>
-#include <types/dds/RouterCacheChange.hpp>
+#include <fastrtps/rtps/common/Guid.h>
+#include <fastdds/rtps/common/ChangeKind_t.hpp>
+
+#include <ddspipe_participants/efficiency/cache_change/CacheChangePool.hpp>
+#include <ddspipe_participants/types/dds/RouterCacheChange.hpp>
 
 namespace eprosima {
 namespace ddspipe {
