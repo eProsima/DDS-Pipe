@@ -53,9 +53,12 @@ void InternalReader::simulate_data_reception(
     // Even if disabled, the data will be stored
     data_to_send_.push(std::move(data));
 
-    // Call on data available callback
-    // NOTE: Track should be already created (lambda set), otherwise data will not be processed until reader is enabled
-    on_data_available_();
+    if (enabled_)
+    {
+        // Call on data available callback
+        // NOTE: Track should be already created (lambda set), otherwise data will not be processed until reader is enabled
+        on_data_available_();
+    }
 }
 
 utils::ReturnCode InternalReader::take_nts_(
