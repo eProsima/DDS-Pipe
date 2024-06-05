@@ -12,8 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include <efficiency/cache_change/CacheChangePool.hpp>
-#include <types/dds/RouterCacheChange.hpp>
+#include <fastrtps/rtps/common/Guid.h>
+#include <fastdds/rtps/common/ChangeKind_t.hpp>
+
+#include <ddspipe_participants/efficiency/cache_change/CacheChangePool.hpp>
+#include <ddspipe_participants/types/dds/RouterCacheChange.hpp>
 
 namespace eprosima {
 namespace ddspipe {
@@ -41,6 +44,24 @@ bool CacheChangePool::release_cache(
 fastrtps::rtps::CacheChange_t* CacheChangePool::new_element_()
 {
     return new types::RouterCacheChange();
+}
+
+void CacheChangePool::reset_element_(
+        fastrtps::rtps::CacheChange_t* change)
+{
+    // NOTE: This could be done by =operator but it is deleted, so it must be done field by field
+    change->kind = fastrtps::rtps::ALIVE;
+    change->sequenceNumber.high = 0;
+    change->sequenceNumber.low = 0;
+    change->writerGUID = fastrtps::rtps::c_Guid_Unknown;
+    change->instanceHandle.clear();
+    change->isRead = 0;
+    change->sourceTimestamp.seconds(0);
+    change->sourceTimestamp.fraction(0);
+    change->writer_info.num_sent_submessages = 0;
+    change->setFragmentSize(0);
+    change->serializedPayload.empty();
+    change->inline_qos.empty();
 }
 
 } /* namespace core */
