@@ -187,7 +187,6 @@ utils::ReturnCode CommonReader::take_nts_(
         if (ret != fastdds::dds::RETCODE_OK)
         {
             // There has been an error taking the data. Exit.
-            data.reset(rtps_data.release());
             return ret;
         }
     } while (!should_accept_sample_(info));

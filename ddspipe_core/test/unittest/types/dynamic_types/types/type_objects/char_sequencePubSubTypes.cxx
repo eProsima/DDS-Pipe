@@ -219,9 +219,9 @@ bool char_sequencePubSubType::getKey(
     return true;
 }
 
-void char_sequencePubSubType::register_type_object_representation() const
+void char_sequencePubSubType::register_type_object_representation()
 {
-    register_char_sequence_type_objects();
+    register_char_sequence_type_identifier(type_identifiers_);
 }
 
 

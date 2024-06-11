@@ -12,11 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include <fastdds/rtps/RTPSDomain.h>
-#include <fastdds/rtps/participant/RTPSParticipant.h>
-#include <fastdds/rtps/common/CacheChange.h>
-
 #include <fastdds/dds/domain/DomainParticipantFactory.hpp>
+#include <fastdds/rtps/common/CacheChange.h>
+#include <fastdds/rtps/participant/RTPSParticipant.h>
+#include <fastdds/rtps/RTPSDomain.h>
 
 #include <cpp_utils/exception/InitializationException.hpp>
 #include <cpp_utils/Log.hpp>
@@ -24,10 +23,10 @@
 #include <cpp_utils/time/time_utils.hpp>
 
 #include <ddspipe_participants/efficiency/cache_change/CacheChangePool.hpp>
+#include <ddspipe_participants/types/dds/RouterCacheChange.hpp>
 #include <ddspipe_participants/writer/rtps/CommonWriter.hpp>
 #include <ddspipe_participants/writer/rtps/filter/RepeaterDataFilter.hpp>
 #include <ddspipe_participants/writer/rtps/filter/SelfDataFilter.hpp>
-#include <ddspipe_participants/types/dds/RouterCacheChange.hpp>
 
 namespace eprosima {
 namespace ddspipe {
@@ -403,12 +402,12 @@ fastrtps::TopicAttributes CommonWriter::reckon_topic_attributes_(
     att.topicDataType = topic.type_name;
 
     // Set TypeInformation of the discovered type
-    fastdds::dds::xtypes::TypeInformation type_info;
+    fastdds::dds::xtypes::TypeInformation type_information;
     if (fastdds::dds::RETCODE_OK == fastdds::dds::DomainParticipantFactory::get_instance()->type_object_registry().get_type_information(
                                     topic.type_ids,
-                                    type_info))
+                                    type_information))
     {
-        att.type_information = type_info;
+        att.type_information = type_information;
     }
 
     return att;

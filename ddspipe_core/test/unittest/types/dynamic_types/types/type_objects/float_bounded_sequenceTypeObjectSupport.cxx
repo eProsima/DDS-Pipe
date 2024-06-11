@@ -38,23 +38,19 @@
 
 using namespace eprosima::fastdds::dds::xtypes;
 
-void register_float_bounded_sequence_type_objects()
+// TypeIdentifier is returned by reference: dependent structures/unions are registered in this same method
+void register_float_bounded_sequence_type_identifier(
+        TypeIdentifierPair& type_ids_float_bounded_sequence)
 {
-    static std::once_flag once_flag;
-    std::call_once(once_flag, []()
-            {
-                register_float_bounded_sequence_type_identifier();
 
-            });
-}
-
-void register_float_bounded_sequence_type_identifier()
-{
+    ReturnCode_t return_code_float_bounded_sequence {eprosima::fastdds::dds::RETCODE_OK};
+    return_code_float_bounded_sequence =
+        eprosima::fastdds::dds::DomainParticipantFactory::get_instance()->type_object_registry().get_type_identifiers(
+        "float_bounded_sequence", type_ids_float_bounded_sequence);
+    if (eprosima::fastdds::dds::RETCODE_OK != return_code_float_bounded_sequence)
     {
         StructTypeFlag struct_flags_float_bounded_sequence = TypeObjectUtils::build_struct_type_flag(eprosima::fastdds::dds::xtypes::ExtensibilityKind::NOT_APPLIED,
                 false, false);
-        ReturnCode_t return_code_float_bounded_sequence;
-        TypeIdentifierPair type_ids_float_bounded_sequence;
         QualifiedTypeName type_name_float_bounded_sequence = "float_bounded_sequence";
         eprosima::fastcdr::optional<AppliedBuiltinTypeAnnotations> type_ann_builtin_float_bounded_sequence;
         eprosima::fastcdr::optional<AppliedAnnotationSeq> ann_custom_float_bounded_sequence;
@@ -63,151 +59,58 @@ void register_float_bounded_sequence_type_identifier()
         header_float_bounded_sequence = TypeObjectUtils::build_complete_struct_header(TypeIdentifier(), detail_float_bounded_sequence);
         CompleteStructMemberSeq member_seq_float_bounded_sequence;
         {
-            return_code_float_bounded_sequence =
+            TypeIdentifierPair type_ids_numbers;
+            ReturnCode_t return_code_numbers {eprosima::fastdds::dds::RETCODE_OK};
+            return_code_numbers =
                 eprosima::fastdds::dds::DomainParticipantFactory::get_instance()->type_object_registry().get_type_identifiers(
-                "anonymous_sequence_float_13", type_ids_float_bounded_sequence);
+                "anonymous_sequence_float_13", type_ids_numbers);
 
-            if (return_code_float_bounded_sequence != eprosima::fastdds::dds::RETCODE_OK)
+            if (eprosima::fastdds::dds::RETCODE_OK != return_code_numbers)
             {
-                return_code_float_bounded_sequence =
+                return_code_numbers =
                     eprosima::fastdds::dds::DomainParticipantFactory::get_instance()->type_object_registry().get_type_identifiers(
-                    "_float", type_ids_float_bounded_sequence);
+                    "_float", type_ids_numbers);
 
-                if (return_code_float_bounded_sequence != eprosima::fastdds::dds::RETCODE_OK)
+                if (eprosima::fastdds::dds::RETCODE_OK != return_code_numbers)
                 {
                     EPROSIMA_LOG_ERROR(XTYPES_TYPE_REPRESENTATION,
                             "Sequence element TypeIdentifier unknown to TypeObjectRegistry.");
                     return;
                 }
-                TypeIdentifier* element_identifier_anonymous_sequence_float_13 {nullptr};
-                if (EK_COMPLETE == type_ids_float_bounded_sequence.type_identifier1()._d() || TK_NONE == type_ids_float_bounded_sequence.type_identifier2()._d() ||
-                        (TI_PLAIN_SEQUENCE_SMALL == type_ids_float_bounded_sequence.type_identifier1()._d() &&
-                        EK_COMPLETE == type_ids_float_bounded_sequence.type_identifier1().seq_sdefn().header().equiv_kind()) ||
-                        (TI_PLAIN_SEQUENCE_LARGE == type_ids_float_bounded_sequence.type_identifier1()._d() &&
-                        EK_COMPLETE == type_ids_float_bounded_sequence.type_identifier1().seq_ldefn().header().equiv_kind()) ||
-                        (TI_PLAIN_ARRAY_SMALL == type_ids_float_bounded_sequence.type_identifier1()._d() &&
-                        EK_COMPLETE == type_ids_float_bounded_sequence.type_identifier1().array_sdefn().header().equiv_kind()) ||
-                        (TI_PLAIN_ARRAY_LARGE == type_ids_float_bounded_sequence.type_identifier1()._d() &&
-                        EK_COMPLETE == type_ids_float_bounded_sequence.type_identifier1().array_ldefn().header().equiv_kind()) ||
-                        (TI_PLAIN_MAP_SMALL == type_ids_float_bounded_sequence.type_identifier1()._d() &&
-                        (EK_COMPLETE == type_ids_float_bounded_sequence.type_identifier1().map_sdefn().header().equiv_kind() ||
-                        EK_COMPLETE == type_ids_float_bounded_sequence.type_identifier1().map_sdefn().key_identifier()->_d())) ||
-                        (TI_PLAIN_MAP_LARGE == type_ids_float_bounded_sequence.type_identifier1()._d() &&
-                        (EK_COMPLETE == type_ids_float_bounded_sequence.type_identifier1().map_ldefn().header().equiv_kind() ||
-                        EK_COMPLETE == type_ids_float_bounded_sequence.type_identifier1().map_ldefn().key_identifier()->_d())))
+                bool element_identifier_anonymous_sequence_float_13_ec {false};
+                TypeIdentifier* element_identifier_anonymous_sequence_float_13 {new TypeIdentifier(TypeObjectUtils::retrieve_complete_type_identifier(type_ids_numbers, element_identifier_anonymous_sequence_float_13_ec))};
+                if (!element_identifier_anonymous_sequence_float_13_ec)
                 {
-                    element_identifier_anonymous_sequence_float_13 = new TypeIdentifier(type_ids_float_bounded_sequence.type_identifier1());
-                }
-                else if (EK_COMPLETE == type_ids_float_bounded_sequence.type_identifier2()._d() ||
-                        (TI_PLAIN_SEQUENCE_SMALL == type_ids_float_bounded_sequence.type_identifier2()._d() &&
-                        EK_COMPLETE == type_ids_float_bounded_sequence.type_identifier2().seq_sdefn().header().equiv_kind()) ||
-                        (TI_PLAIN_SEQUENCE_LARGE == type_ids_float_bounded_sequence.type_identifier2()._d() &&
-                        EK_COMPLETE == type_ids_float_bounded_sequence.type_identifier2().seq_ldefn().header().equiv_kind()) ||
-                        (TI_PLAIN_ARRAY_SMALL == type_ids_float_bounded_sequence.type_identifier2()._d() &&
-                        EK_COMPLETE == type_ids_float_bounded_sequence.type_identifier2().array_sdefn().header().equiv_kind()) ||
-                        (TI_PLAIN_ARRAY_LARGE == type_ids_float_bounded_sequence.type_identifier2()._d() &&
-                        EK_COMPLETE == type_ids_float_bounded_sequence.type_identifier2().array_ldefn().header().equiv_kind()) ||
-                        (TI_PLAIN_MAP_SMALL == type_ids_float_bounded_sequence.type_identifier2()._d() &&
-                        (EK_COMPLETE == type_ids_float_bounded_sequence.type_identifier2().map_sdefn().header().equiv_kind() ||
-                        EK_COMPLETE == type_ids_float_bounded_sequence.type_identifier2().map_sdefn().key_identifier()->_d())) ||
-                        (TI_PLAIN_MAP_LARGE == type_ids_float_bounded_sequence.type_identifier2()._d() &&
-                        (EK_COMPLETE == type_ids_float_bounded_sequence.type_identifier2().map_ldefn().header().equiv_kind() ||
-                        EK_COMPLETE == type_ids_float_bounded_sequence.type_identifier2().map_ldefn().key_identifier()->_d())))
-                {
-                    element_identifier_anonymous_sequence_float_13 = new TypeIdentifier(type_ids_float_bounded_sequence.type_identifier2());
-                }
-                else
-                {
-                    EPROSIMA_LOG_ERROR(XTYPES_TYPE_REPRESENTATION,
-                        "Sequence element TypeIdentifier inconsistent.");
+                    EPROSIMA_LOG_ERROR(XTYPES_TYPE_REPRESENTATION, "Sequence element TypeIdentifier inconsistent.");
                     return;
                 }
                 EquivalenceKind equiv_kind_anonymous_sequence_float_13 = EK_COMPLETE;
-                if (TK_NONE == type_ids_float_bounded_sequence.type_identifier2()._d())
+                if (TK_NONE == type_ids_numbers.type_identifier2()._d())
                 {
                     equiv_kind_anonymous_sequence_float_13 = EK_BOTH;
                 }
                 CollectionElementFlag element_flags_anonymous_sequence_float_13 = 0;
                 PlainCollectionHeader header_anonymous_sequence_float_13 = TypeObjectUtils::build_plain_collection_header(equiv_kind_anonymous_sequence_float_13, element_flags_anonymous_sequence_float_13);
-                std::string type_id_kind_anonymous_sequence_float_13("TI_PLAIN_SEQUENCE_SMALL");
-                if (type_id_kind_anonymous_sequence_float_13 == "TI_PLAIN_SEQUENCE_SMALL")
                 {
                     SBound bound = static_cast<SBound>(13);
                     PlainSequenceSElemDefn seq_sdefn = TypeObjectUtils::build_plain_sequence_s_elem_defn(header_anonymous_sequence_float_13, bound,
                                 eprosima::fastcdr::external<TypeIdentifier>(element_identifier_anonymous_sequence_float_13));
                     if (eprosima::fastdds::dds::RETCODE_BAD_PARAMETER ==
-                            TypeObjectUtils::build_and_register_s_sequence_type_identifier(seq_sdefn, "anonymous_sequence_float_13"))
+                            TypeObjectUtils::build_and_register_s_sequence_type_identifier(seq_sdefn, "anonymous_sequence_float_13", type_ids_numbers))
                     {
                         EPROSIMA_LOG_ERROR(XTYPES_TYPE_REPRESENTATION,
                             "anonymous_sequence_float_13 already registered in TypeObjectRegistry for a different type.");
                     }
-                }
-                else
-                {
-                    LBound bound = 13;
-                    PlainSequenceLElemDefn seq_ldefn = TypeObjectUtils::build_plain_sequence_l_elem_defn(header_anonymous_sequence_float_13, bound,
-                                eprosima::fastcdr::external<TypeIdentifier>(element_identifier_anonymous_sequence_float_13));
-                    if (eprosima::fastdds::dds::RETCODE_BAD_PARAMETER ==
-                            TypeObjectUtils::build_and_register_l_sequence_type_identifier(seq_ldefn, "anonymous_sequence_float_13"))
-                    {
-                        EPROSIMA_LOG_ERROR(XTYPES_TYPE_REPRESENTATION,
-                            "anonymous_sequence_float_13 already registered in TypeObjectRegistry for a different type.");
-                    }
-                }
-                return_code_float_bounded_sequence =
-                    eprosima::fastdds::dds::DomainParticipantFactory::get_instance()->type_object_registry().get_type_identifiers(
-                    "anonymous_sequence_float_13", type_ids_float_bounded_sequence);
-                if (return_code_float_bounded_sequence != eprosima::fastdds::dds::RETCODE_OK)
-                {
-                    EPROSIMA_LOG_ERROR(XTYPES_TYPE_REPRESENTATION,
-                                "anonymous_sequence_float_13: Given Sequence TypeIdentifier unknown to TypeObjectRegistry.");
-                    return;
                 }
             }
             StructMemberFlag member_flags_numbers = TypeObjectUtils::build_struct_member_flag(eprosima::fastdds::dds::xtypes::TryConstructKind::NOT_APPLIED,
                     false, false, false, false);
-            CommonStructMember common_numbers;
             MemberId member_id_numbers = 0x00000000;
-            if (EK_COMPLETE == type_ids_float_bounded_sequence.type_identifier1()._d() || TK_NONE == type_ids_float_bounded_sequence.type_identifier2()._d() ||
-                    (TI_PLAIN_SEQUENCE_SMALL == type_ids_float_bounded_sequence.type_identifier1()._d() &&
-                    EK_COMPLETE == type_ids_float_bounded_sequence.type_identifier1().seq_sdefn().header().equiv_kind()) ||
-                    (TI_PLAIN_SEQUENCE_LARGE == type_ids_float_bounded_sequence.type_identifier1()._d() &&
-                    EK_COMPLETE == type_ids_float_bounded_sequence.type_identifier1().seq_ldefn().header().equiv_kind()) ||
-                    (TI_PLAIN_ARRAY_SMALL == type_ids_float_bounded_sequence.type_identifier1()._d() &&
-                    EK_COMPLETE == type_ids_float_bounded_sequence.type_identifier1().array_sdefn().header().equiv_kind()) ||
-                    (TI_PLAIN_ARRAY_LARGE == type_ids_float_bounded_sequence.type_identifier1()._d() &&
-                    EK_COMPLETE == type_ids_float_bounded_sequence.type_identifier1().array_ldefn().header().equiv_kind()) ||
-                    (TI_PLAIN_MAP_SMALL == type_ids_float_bounded_sequence.type_identifier1()._d() &&
-                    (EK_COMPLETE == type_ids_float_bounded_sequence.type_identifier1().map_sdefn().header().equiv_kind() ||
-                    EK_COMPLETE == type_ids_float_bounded_sequence.type_identifier1().map_sdefn().key_identifier()->_d())) ||
-                    (TI_PLAIN_MAP_LARGE == type_ids_float_bounded_sequence.type_identifier1()._d() &&
-                    (EK_COMPLETE == type_ids_float_bounded_sequence.type_identifier1().map_ldefn().header().equiv_kind() ||
-                    EK_COMPLETE == type_ids_float_bounded_sequence.type_identifier1().map_ldefn().key_identifier()->_d())))
+            bool common_numbers_ec {false};
+            CommonStructMember common_numbers {TypeObjectUtils::build_common_struct_member(member_id_numbers, member_flags_numbers, TypeObjectUtils::retrieve_complete_type_identifier(type_ids_numbers, common_numbers_ec))};
+            if (!common_numbers_ec)
             {
-                common_numbers = TypeObjectUtils::build_common_struct_member(member_id_numbers, member_flags_numbers, type_ids_float_bounded_sequence.type_identifier1());
-            }
-            else if (EK_COMPLETE == type_ids_float_bounded_sequence.type_identifier2()._d() ||
-                    (TI_PLAIN_SEQUENCE_SMALL == type_ids_float_bounded_sequence.type_identifier2()._d() &&
-                    EK_COMPLETE == type_ids_float_bounded_sequence.type_identifier2().seq_sdefn().header().equiv_kind()) ||
-                    (TI_PLAIN_SEQUENCE_LARGE == type_ids_float_bounded_sequence.type_identifier2()._d() &&
-                    EK_COMPLETE == type_ids_float_bounded_sequence.type_identifier2().seq_ldefn().header().equiv_kind()) ||
-                    (TI_PLAIN_ARRAY_SMALL == type_ids_float_bounded_sequence.type_identifier2()._d() &&
-                    EK_COMPLETE == type_ids_float_bounded_sequence.type_identifier2().array_sdefn().header().equiv_kind()) ||
-                    (TI_PLAIN_ARRAY_LARGE == type_ids_float_bounded_sequence.type_identifier2()._d() &&
-                    EK_COMPLETE == type_ids_float_bounded_sequence.type_identifier2().array_ldefn().header().equiv_kind()) ||
-                    (TI_PLAIN_MAP_SMALL == type_ids_float_bounded_sequence.type_identifier2()._d() &&
-                    (EK_COMPLETE == type_ids_float_bounded_sequence.type_identifier2().map_sdefn().header().equiv_kind() ||
-                    EK_COMPLETE == type_ids_float_bounded_sequence.type_identifier2().map_sdefn().key_identifier()->_d())) ||
-                    (TI_PLAIN_MAP_LARGE == type_ids_float_bounded_sequence.type_identifier2()._d() &&
-                    (EK_COMPLETE == type_ids_float_bounded_sequence.type_identifier2().map_ldefn().header().equiv_kind() ||
-                    EK_COMPLETE == type_ids_float_bounded_sequence.type_identifier2().map_ldefn().key_identifier()->_d())))
-            {
-                common_numbers = TypeObjectUtils::build_common_struct_member(member_id_numbers, member_flags_numbers, type_ids_float_bounded_sequence.type_identifier2());
-            }
-            else
-            {
-                EPROSIMA_LOG_ERROR(XTYPES_TYPE_REPRESENTATION,
-                        "Structure numbers member TypeIdentifier inconsistent.");
+                EPROSIMA_LOG_ERROR(XTYPES_TYPE_REPRESENTATION, "Structure numbers member TypeIdentifier inconsistent.");
                 return;
             }
             MemberName name_numbers = "numbers";
@@ -219,19 +122,10 @@ void register_float_bounded_sequence_type_identifier()
         }
         CompleteStructType struct_type_float_bounded_sequence = TypeObjectUtils::build_complete_struct_type(struct_flags_float_bounded_sequence, header_float_bounded_sequence, member_seq_float_bounded_sequence);
         if (eprosima::fastdds::dds::RETCODE_BAD_PARAMETER ==
-                TypeObjectUtils::build_and_register_struct_type_object(struct_type_float_bounded_sequence, type_name_float_bounded_sequence.to_string()))
+                TypeObjectUtils::build_and_register_struct_type_object(struct_type_float_bounded_sequence, type_name_float_bounded_sequence.to_string(), type_ids_float_bounded_sequence))
         {
             EPROSIMA_LOG_ERROR(XTYPES_TYPE_REPRESENTATION,
                     "float_bounded_sequence already registered in TypeObjectRegistry for a different type.");
-        }
-        return_code_float_bounded_sequence =
-            eprosima::fastdds::dds::DomainParticipantFactory::get_instance()->type_object_registry().get_type_identifiers(
-            "float_bounded_sequence", type_ids_float_bounded_sequence);
-        if (return_code_float_bounded_sequence != eprosima::fastdds::dds::RETCODE_OK)
-        {
-            EPROSIMA_LOG_ERROR(XTYPES_TYPE_REPRESENTATION,
-                        "float_bounded_sequence: Given Struct TypeIdentifier unknown to TypeObjectRegistry.");
-            return;
         }
     }
 }

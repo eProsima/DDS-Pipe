@@ -219,9 +219,9 @@ bool TheOtherObjectPubSubType::getKey(
     return true;
 }
 
-void TheOtherObjectPubSubType::register_type_object_representation() const
+void TheOtherObjectPubSubType::register_type_object_representation()
 {
-    register_basic_struct_type_objects();
+    register_TheOtherObject_type_identifier(type_identifiers_);
 }
 
 basic_structPubSubType::basic_structPubSubType()
@@ -412,9 +412,9 @@ bool basic_structPubSubType::getKey(
     return true;
 }
 
-void basic_structPubSubType::register_type_object_representation() const
+void basic_structPubSubType::register_type_object_representation()
 {
-    register_basic_struct_type_objects();
+    register_basic_struct_type_identifier(type_identifiers_);
 }
 
 

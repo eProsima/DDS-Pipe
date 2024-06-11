@@ -14,9 +14,14 @@
 
 #pragma once
 
-#include <fastdds/dds/topic/TopicDataType.hpp>
+#include <memory>
+#include <string>
+
 #include <fastdds/dds/core/ReturnCode.hpp>
 #include <fastdds/dds/domain/DomainParticipantFactory.hpp>
+#include <fastdds/dds/topic/TopicDataType.hpp>
+#include <fastdds/dds/xtypes/type_representation/detail/dds_xtypes_typeobject.hpp>
+#include <fastdds/rtps/common/SerializedPayload.h>
 
 #include <ddspipe_core/efficiency/payload/PayloadPool.hpp>
 #include <ddspipe_core/types/data/RtpsPayloadData.hpp>
@@ -38,10 +43,10 @@ public:
     //! Default constructor
     DDSPIPE_PARTICIPANTS_DllAPI
     TopicDataType(
-            const std::string& type_name,
-            const bool keyed,
             const std::shared_ptr<core::PayloadPool>& payload_pool,
-            const fastdds::dds::xtypes::TypeIdentifierPair& type_ids);
+            const std::string& type_name,
+            const fastdds::dds::xtypes::TypeIdentifierPair& type_ids,
+            const bool keyed);
 
     //! Default destructor
     DDSPIPE_PARTICIPANTS_DllAPI

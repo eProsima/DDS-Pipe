@@ -73,13 +73,13 @@ public:
     /////////////////////////
 
     DDSPIPE_PARTICIPANTS_DllAPI
-    virtual core::types::ParticipantId id() const noexcept override;
+    core::types::ParticipantId id() const noexcept override;
 
     DDSPIPE_PARTICIPANTS_DllAPI
-    virtual bool is_rtps_kind() const noexcept override;
+    bool is_rtps_kind() const noexcept override;
 
     DDSPIPE_PARTICIPANTS_DllAPI
-    virtual bool is_repeater() const noexcept override;
+    bool is_repeater() const noexcept override;
 
     DDSPIPE_PARTICIPANTS_DllAPI
     core::types::TopicQoS topic_qos() const noexcept override;
@@ -106,17 +106,17 @@ public:
     // LISTENER METHODS
     /////////////////////////
 
-    virtual void on_participant_discovery(
+    void on_participant_discovery(
             fastdds::dds::DomainParticipant* participant,
             fastrtps::rtps::ParticipantDiscoveryInfo&& info,
             bool& /*should_be_ignored*/) override;
 
-    virtual void on_data_reader_discovery(
+    void on_data_reader_discovery(
             fastdds::dds::DomainParticipant* participant,
             fastrtps::rtps::ReaderDiscoveryInfo&& info,
             bool& /*should_be_ignored*/) override;
 
-    virtual void on_data_writer_discovery(
+    void on_data_writer_discovery(
             fastdds::dds::DomainParticipant* participant,
             fastrtps::rtps::WriterDiscoveryInfo&& info,
             bool& /*should_be_ignored*/) override;

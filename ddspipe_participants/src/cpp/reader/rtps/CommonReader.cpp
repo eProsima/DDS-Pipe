@@ -352,12 +352,12 @@ fastrtps::TopicAttributes CommonReader::reckon_topic_attributes_(
     att.historyQos.depth = topic.topic_qos.history_depth;
 
     // Set TypeInformation of the discovered type
-    fastdds::dds::xtypes::TypeInformation type_info;
+    fastdds::dds::xtypes::TypeInformation type_information;
     if (fastdds::dds::RETCODE_OK == fastdds::dds::DomainParticipantFactory::get_instance()->type_object_registry().get_type_information(
                                     topic.type_ids,
-                                    type_info))
+                                    type_information))
     {
-        att.type_information = type_info;
+        att.type_information = type_information;
     }
 
     return att;

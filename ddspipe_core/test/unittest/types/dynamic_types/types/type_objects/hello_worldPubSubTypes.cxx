@@ -219,9 +219,9 @@ bool hello_worldPubSubType::getKey(
     return true;
 }
 
-void hello_worldPubSubType::register_type_object_representation() const
+void hello_worldPubSubType::register_type_object_representation()
 {
-    register_hello_world_type_objects();
+    register_hello_world_type_identifier(type_identifiers_);
 }
 
 

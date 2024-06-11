@@ -73,24 +73,19 @@ utils::ReturnCode BaseWriter::write(
 {
     std::lock_guard<std::recursive_mutex> lock(mutex_);
 
-    if (enabled_.load())
-    {
-        if (!should_send_sample_())
-        {
-            return utils::ReturnCode::OK;
-        }
-        else
-        {
-            return write_nts_(data);
-        }
-
-    }
-    else
+    if (!enabled_.load())
     {
         logDevError(DDSPIPE_BASEWRITER,
                 "Attempt to write data from disabled Writer in topic in Participant " << participant_id_);
         return utils::ReturnCode::NOT_ENABLED;
     }
+
+    if (!should_send_sample_())
+    {
+        return utils::ReturnCode::OK;
+    }
+
+    return write_nts_(data);
 }
 
 void BaseWriter::enable_() noexcept
