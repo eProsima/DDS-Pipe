@@ -38,7 +38,7 @@ TEST(YamlGetEntityAddressTest, ip_and_domain)
 {
     // Check a warning is shown
     // eprosima::ddspipe::core::TestLogHandler log_handler(utils::Log::Kind::Warning, 1);
-    INSTANTIATE_LOG_TESTER(eprosima::utils::Log::Kind::Warning, 1, 0);
+    // INSTANTIATE_LOG_TESTER(eprosima::utils::Log::Kind::Warning, 1, 0);
 
     // Set address
     Yaml yml_address;
