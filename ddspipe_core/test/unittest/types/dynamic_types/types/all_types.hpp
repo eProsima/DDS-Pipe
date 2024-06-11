@@ -30,22 +30,45 @@
 
 #include <fastdds/dds/core/ReturnCode.hpp>
 #include <fastdds/dds/domain/DomainParticipantFactory.hpp>
+#include <fastdds/dds/topic/TypeSupport.hpp>
 #include <fastdds/dds/xtypes/dynamic_types/DynamicType.hpp>
 #include <fastdds/dds/xtypes/dynamic_types/DynamicTypeBuilder.hpp>
 #include <fastdds/dds/xtypes/dynamic_types/DynamicTypeBuilderFactory.hpp>
 #include <fastdds/dds/xtypes/type_representation/TypeObject.hpp>
 
-#include "type_objects/hello_worldTypeObjectSupport.hpp"
-#include "type_objects/numeric_arrayTypeObjectSupport.hpp"
-#include "type_objects/char_sequenceTypeObjectSupport.hpp"
-#include "type_objects/basic_structTypeObjectSupport.hpp"
-#include "type_objects/basic_array_structTypeObjectSupport.hpp"
-#include "type_objects/float_bounded_sequenceTypeObjectSupport.hpp"
-#include "type_objects/arrays_and_sequencesTypeObjectSupport.hpp"
-#include "type_objects/complex_nested_arraysTypeObjectSupport.hpp"
-#include "type_objects/enum_structTypeObjectSupport.hpp"
-#include "type_objects/union_structTypeObjectSupport.hpp"
-#include "type_objects/map_structTypeObjectSupport.hpp"
+#include "type_objects/arrays_and_sequences.hpp"
+#include "type_objects/arrays_and_sequencesPubSubTypes.h"
+
+#include "type_objects/basic_array_struct.hpp"
+#include "type_objects/basic_array_structPubSubTypes.h"
+
+#include "type_objects/basic_struct.hpp"
+#include "type_objects/basic_structPubSubTypes.h"
+
+#include "type_objects/char_sequence.hpp"
+#include "type_objects/char_sequencePubSubTypes.h"
+
+#include "type_objects/complex_nested_arrays.hpp"
+#include "type_objects/complex_nested_arraysPubSubTypes.h"
+
+#include "type_objects/enum_struct.hpp"
+#include "type_objects/enum_structPubSubTypes.h"
+
+#include "type_objects/float_bounded_sequence.hpp"
+#include "type_objects/float_bounded_sequencePubSubTypes.h"
+
+#include "type_objects/hello_world.hpp"
+#include "type_objects/hello_worldPubSubTypes.h"
+
+#include "type_objects/map_struct.hpp"
+#include "type_objects/map_structPubSubTypes.h"
+
+#include "type_objects/numeric_array.hpp"
+#include "type_objects/numeric_arrayPubSubTypes.h"
+
+#include "type_objects/union_struct.hpp"
+#include "type_objects/union_structPubSubTypes.h"
+
 
 namespace test {
 
@@ -65,37 +88,51 @@ ENUMERATION_BUILDER(
     );
 
 eprosima::fastdds::dds::DynamicType::_ref_type get_dynamic_type( // traits<eprosima::fastdds::dds::DynamicType>::ref_type
-        SupportedType type)
+        SupportedType dyn_type)
 {
-    register_hello_world_type_objects();
-    register_numeric_array_type_objects();
-    register_char_sequence_type_objects();
-    register_basic_struct_type_objects();
-    register_basic_array_struct_type_objects();
-    register_float_bounded_sequence_type_objects();
-    register_arrays_and_sequences_type_objects();
-    register_complex_nested_arrays_type_objects();
-    register_enum_struct_type_objects();
-    register_union_struct_type_objects();
-    register_map_struct_type_objects();
+    // Register the type
+    eprosima::fastdds::dds::TypeSupport type_arrays_and_sequences(new arrays_and_sequencesPubSubType());
+    type_arrays_and_sequences->register_type_object_representation();
 
-    auto type_name = to_string(type);
-    eprosima::fastdds::dds::xtypes::TypeInformation type_information;
-    if (eprosima::fastdds::dds::RETCODE_OK != eprosima::fastdds::dds::DomainParticipantFactory::get_instance()->type_object_registry().get_type_information(
+    eprosima::fastdds::dds::TypeSupport type_basic_array_struct(new basic_array_structPubSubType());
+    type_basic_array_struct->register_type_object_representation();
+
+    eprosima::fastdds::dds::TypeSupport type_basic_struct(new basic_structPubSubType());
+    type_basic_struct->register_type_object_representation();
+
+    eprosima::fastdds::dds::TypeSupport type_complex_nested_arrays(new complex_nested_arraysPubSubType());
+    type_complex_nested_arrays->register_type_object_representation();
+
+    eprosima::fastdds::dds::TypeSupport type_char_sequence(new char_sequencePubSubType());
+    type_char_sequence->register_type_object_representation();
+
+    eprosima::fastdds::dds::TypeSupport type_enum_struct(new enum_structPubSubType());
+    type_enum_struct->register_type_object_representation();
+
+    eprosima::fastdds::dds::TypeSupport type_float_bounded_sequence(new float_bounded_sequencePubSubType());
+    type_float_bounded_sequence->register_type_object_representation();
+
+    eprosima::fastdds::dds::TypeSupport type_hello_world(new hello_worldPubSubType());
+    type_hello_world->register_type_object_representation();
+
+    eprosima::fastdds::dds::TypeSupport type_map_struct(new map_structPubSubType());
+    type_map_struct->register_type_object_representation();
+
+    eprosima::fastdds::dds::TypeSupport type_numeric_array(new numeric_arrayPubSubType());
+    type_numeric_array->register_type_object_representation();
+
+
+    eprosima::fastdds::dds::TypeSupport type_union_struct(new union_structPubSubType());
+    type_union_struct->register_type_object_representation();
+
+    auto type_name = to_string(dyn_type);
+
+    eprosima::fastdds::dds::xtypes::TypeObjectPair type_objs;
+    if (eprosima::fastdds::dds::RETCODE_OK == eprosima::fastdds::dds::DomainParticipantFactory::get_instance()->type_object_registry().get_type_objects(
             type_name,
-            type_information))
+            type_objs))
     {
-        return nullptr;
-    }
-        eprosima::fastdds::dds::xtypes::TypeIdentifier type_id;
-        type_id = type_information.complete().typeid_with_size().type_id();
-
-        eprosima::fastdds::dds::xtypes::TypeObject type_obj;
-        if (eprosima::fastdds::dds::RETCODE_OK == eprosima::fastdds::dds::DomainParticipantFactory::get_instance()->type_object_registry().get_type_object(
-                type_id,
-                type_obj))
-    {
-        return eprosima::fastdds::dds::DynamicTypeBuilderFactory::get_instance()->create_type_w_type_object(type_obj)->build();
+        return eprosima::fastdds::dds::DynamicTypeBuilderFactory::get_instance()->create_type_w_type_object(type_objs.complete_type_object)->build();
     }
 
     else

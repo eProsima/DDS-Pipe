@@ -19,12 +19,11 @@
 
 #include <cpp_utils/exception/UnsupportedException.hpp>
 #include <cpp_utils/Log.hpp>
+#include <cpp_utils/ReturnCode.hpp>
 #include <cpp_utils/thread_pool/pool/SlotThreadPool.hpp>
 #include <cpp_utils/thread_pool/task/TaskId.hpp>
 
 #include <ddspipe_core/communication/dds/Track.hpp>
-
-#include <fastdds/dds/core/ReturnCode.hpp>
 
 namespace eprosima {
 namespace ddspipe {

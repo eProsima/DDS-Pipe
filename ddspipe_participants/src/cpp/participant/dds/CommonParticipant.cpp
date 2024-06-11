@@ -407,10 +407,10 @@ fastdds::dds::Topic* CommonParticipant::topic_related_(
         dds_participant_->register_type(
             eprosima::fastdds::dds::TypeSupport(
                 new TopicDataType(
-                    topic.type_name,
-                    topic.topic_qos.keyed,
                     payload_pool_,
-                    topic.type_ids))
+                    topic.type_name,
+                    topic.type_ids,
+                    topic.topic_qos.keyed))
             );
     }
 

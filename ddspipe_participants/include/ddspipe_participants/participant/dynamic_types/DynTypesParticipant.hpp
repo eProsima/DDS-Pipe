@@ -18,11 +18,16 @@
 
 #pragma once
 
-#include <fastdds/dds/domain/DomainParticipant.hpp>
-#include <fastdds/dds/domain/DomainParticipantFactory.hpp>
-#include <fastdds/dds/domain/DomainParticipantListener.hpp>
+#include <memory>
 
-#include <fastdds/dds/xtypes/type_representation/TypeObject.hpp>
+#include <fastcdr/cdr/fixed_size_string.hpp>
+
+#include <fastdds/dds/domain/DomainParticipant.hpp>
+#include <fastdds/dds/xtypes/dynamic_types/DynamicType.hpp>
+#include <fastdds/dds/xtypes/type_representation/detail/dds_xtypes_typeobject.hpp>
+#include <fastdds/rtps/participant/RTPSParticipant.h>
+#include <fastdds/rtps/reader/ReaderDiscoveryInfo.h>
+#include <fastdds/rtps/writer/WriterDiscoveryInfo.h>
 
 #include <ddspipe_participants/configuration/SimpleParticipantConfiguration.hpp>
 #include <ddspipe_participants/library/library_dll.h>
@@ -34,8 +39,7 @@ namespace ddspipe {
 namespace participants {
 
 /**
- * This is an abomination Participant that is a Simple RTPS Participant with a built-in DDS Participant.
- * The DDS Part that is only used to read type objects and type lookup services.
+ * Simple RTPS Participant
  *
  * TODO: separate these 2 participants
  */
@@ -86,14 +90,9 @@ public:
 
 protected:
 
-    void on_type_discovery_(
-            fastrtps::rtps::RTPSParticipant* participant,
+    void notify_type_discovered_(
             const fastdds::dds::xtypes::TypeInformation& type_info,
             const fastcdr::string_255& type_name);
-
-    void internal_notify_type_object_(
-            fastdds::dds::DynamicType::_ref_type dynamic_type,
-            const std::tuple<fastcdr::string_255, fastdds::dds::xtypes::TypeIdentifier>& type_name_and_id);
 
     //! Type Object Internal Reader
     std::shared_ptr<InternalReader> type_object_reader_;

@@ -38,23 +38,76 @@
 
 using namespace eprosima::fastdds::dds::xtypes;
 
-void register_enum_struct_type_objects()
+void register_ColorEnum_type_identifier(
+        TypeIdentifierPair& type_ids_ColorEnum)
 {
-    static std::once_flag once_flag;
-    std::call_once(once_flag, []()
-            {
-                register_enum_struct_type_identifier();
-
-            });
-}
-
-void register_enum_struct_type_identifier()
+    ReturnCode_t return_code_ColorEnum {eprosima::fastdds::dds::RETCODE_OK};
+    return_code_ColorEnum =
+        eprosima::fastdds::dds::DomainParticipantFactory::get_instance()->type_object_registry().get_type_identifiers(
+        "ColorEnum", type_ids_ColorEnum);
+    if (eprosima::fastdds::dds::RETCODE_OK != return_code_ColorEnum)
+    {
+        EnumTypeFlag enum_flags_ColorEnum = 0;
+        BitBound bit_bound_ColorEnum = 32;
+        CommonEnumeratedHeader common_ColorEnum = TypeObjectUtils::build_common_enumerated_header(bit_bound_ColorEnum);
+        QualifiedTypeName type_name_ColorEnum = "ColorEnum";
+        eprosima::fastcdr::optional<AppliedBuiltinTypeAnnotations> type_ann_builtin_ColorEnum;
+        eprosima::fastcdr::optional<AppliedAnnotationSeq> ann_custom_ColorEnum;
+        CompleteTypeDetail detail_ColorEnum = TypeObjectUtils::build_complete_type_detail(type_ann_builtin_ColorEnum, ann_custom_ColorEnum, type_name_ColorEnum.to_string());
+        CompleteEnumeratedHeader header_ColorEnum = TypeObjectUtils::build_complete_enumerated_header(common_ColorEnum, detail_ColorEnum);
+        CompleteEnumeratedLiteralSeq literal_seq_ColorEnum;
+        {
+            EnumeratedLiteralFlag flags_RED = TypeObjectUtils::build_enumerated_literal_flag(false);
+            CommonEnumeratedLiteral common_RED = TypeObjectUtils::build_common_enumerated_literal(0, flags_RED);
+            eprosima::fastcdr::optional<AppliedBuiltinMemberAnnotations> member_ann_builtin_RED;
+            ann_custom_ColorEnum.reset();
+            MemberName name_RED = "RED";
+            CompleteMemberDetail detail_RED = TypeObjectUtils::build_complete_member_detail(name_RED, member_ann_builtin_RED, ann_custom_ColorEnum);
+            CompleteEnumeratedLiteral literal_RED = TypeObjectUtils::build_complete_enumerated_literal(common_RED, detail_RED);
+            TypeObjectUtils::add_complete_enumerated_literal(literal_seq_ColorEnum, literal_RED);
+        }
+        {
+            EnumeratedLiteralFlag flags_GREEN = TypeObjectUtils::build_enumerated_literal_flag(false);
+            CommonEnumeratedLiteral common_GREEN = TypeObjectUtils::build_common_enumerated_literal(1, flags_GREEN);
+            eprosima::fastcdr::optional<AppliedBuiltinMemberAnnotations> member_ann_builtin_GREEN;
+            ann_custom_ColorEnum.reset();
+            MemberName name_GREEN = "GREEN";
+            CompleteMemberDetail detail_GREEN = TypeObjectUtils::build_complete_member_detail(name_GREEN, member_ann_builtin_GREEN, ann_custom_ColorEnum);
+            CompleteEnumeratedLiteral literal_GREEN = TypeObjectUtils::build_complete_enumerated_literal(common_GREEN, detail_GREEN);
+            TypeObjectUtils::add_complete_enumerated_literal(literal_seq_ColorEnum, literal_GREEN);
+        }
+        {
+            EnumeratedLiteralFlag flags_BLUE = TypeObjectUtils::build_enumerated_literal_flag(false);
+            CommonEnumeratedLiteral common_BLUE = TypeObjectUtils::build_common_enumerated_literal(2, flags_BLUE);
+            eprosima::fastcdr::optional<AppliedBuiltinMemberAnnotations> member_ann_builtin_BLUE;
+            ann_custom_ColorEnum.reset();
+            MemberName name_BLUE = "BLUE";
+            CompleteMemberDetail detail_BLUE = TypeObjectUtils::build_complete_member_detail(name_BLUE, member_ann_builtin_BLUE, ann_custom_ColorEnum);
+            CompleteEnumeratedLiteral literal_BLUE = TypeObjectUtils::build_complete_enumerated_literal(common_BLUE, detail_BLUE);
+            TypeObjectUtils::add_complete_enumerated_literal(literal_seq_ColorEnum, literal_BLUE);
+        }
+        CompleteEnumeratedType enumerated_type_ColorEnum = TypeObjectUtils::build_complete_enumerated_type(enum_flags_ColorEnum, header_ColorEnum,
+                literal_seq_ColorEnum);
+        if (eprosima::fastdds::dds::RETCODE_BAD_PARAMETER ==
+                TypeObjectUtils::build_and_register_enumerated_type_object(enumerated_type_ColorEnum, type_name_ColorEnum.to_string(), type_ids_ColorEnum))
+        {
+            EPROSIMA_LOG_ERROR(XTYPES_TYPE_REPRESENTATION,
+                "ColorEnum already registered in TypeObjectRegistry for a different type.");
+        }
+    }
+}// TypeIdentifier is returned by reference: dependent structures/unions are registered in this same method
+void register_enum_struct_type_identifier(
+        TypeIdentifierPair& type_ids_enum_struct)
 {
+
+    ReturnCode_t return_code_enum_struct {eprosima::fastdds::dds::RETCODE_OK};
+    return_code_enum_struct =
+        eprosima::fastdds::dds::DomainParticipantFactory::get_instance()->type_object_registry().get_type_identifiers(
+        "enum_struct", type_ids_enum_struct);
+    if (eprosima::fastdds::dds::RETCODE_OK != return_code_enum_struct)
     {
         StructTypeFlag struct_flags_enum_struct = TypeObjectUtils::build_struct_type_flag(eprosima::fastdds::dds::xtypes::ExtensibilityKind::NOT_APPLIED,
                 false, false);
-        ReturnCode_t return_code_enum_struct;
-        TypeIdentifierPair type_ids_enum_struct;
         QualifiedTypeName type_name_enum_struct = "enum_struct";
         eprosima::fastcdr::optional<AppliedBuiltinTypeAnnotations> type_ann_builtin_enum_struct;
         eprosima::fastcdr::optional<AppliedAnnotationSeq> ann_custom_enum_struct;
@@ -63,11 +116,13 @@ void register_enum_struct_type_identifier()
         header_enum_struct = TypeObjectUtils::build_complete_struct_header(TypeIdentifier(), detail_enum_struct);
         CompleteStructMemberSeq member_seq_enum_struct;
         {
-            return_code_enum_struct =
+            TypeIdentifierPair type_ids_index;
+            ReturnCode_t return_code_index {eprosima::fastdds::dds::RETCODE_OK};
+            return_code_index =
                 eprosima::fastdds::dds::DomainParticipantFactory::get_instance()->type_object_registry().get_type_identifiers(
-                "_uint32_t", type_ids_enum_struct);
+                "_uint32_t", type_ids_index);
 
-            if (return_code_enum_struct != eprosima::fastdds::dds::RETCODE_OK)
+            if (eprosima::fastdds::dds::RETCODE_OK != return_code_index)
             {
                 EPROSIMA_LOG_ERROR(XTYPES_TYPE_REPRESENTATION,
                         "index Structure member TypeIdentifier unknown to TypeObjectRegistry.");
@@ -75,48 +130,12 @@ void register_enum_struct_type_identifier()
             }
             StructMemberFlag member_flags_index = TypeObjectUtils::build_struct_member_flag(eprosima::fastdds::dds::xtypes::TryConstructKind::NOT_APPLIED,
                     false, false, false, false);
-            CommonStructMember common_index;
             MemberId member_id_index = 0x00000000;
-            if (EK_COMPLETE == type_ids_enum_struct.type_identifier1()._d() || TK_NONE == type_ids_enum_struct.type_identifier2()._d() ||
-                    (TI_PLAIN_SEQUENCE_SMALL == type_ids_enum_struct.type_identifier1()._d() &&
-                    EK_COMPLETE == type_ids_enum_struct.type_identifier1().seq_sdefn().header().equiv_kind()) ||
-                    (TI_PLAIN_SEQUENCE_LARGE == type_ids_enum_struct.type_identifier1()._d() &&
-                    EK_COMPLETE == type_ids_enum_struct.type_identifier1().seq_ldefn().header().equiv_kind()) ||
-                    (TI_PLAIN_ARRAY_SMALL == type_ids_enum_struct.type_identifier1()._d() &&
-                    EK_COMPLETE == type_ids_enum_struct.type_identifier1().array_sdefn().header().equiv_kind()) ||
-                    (TI_PLAIN_ARRAY_LARGE == type_ids_enum_struct.type_identifier1()._d() &&
-                    EK_COMPLETE == type_ids_enum_struct.type_identifier1().array_ldefn().header().equiv_kind()) ||
-                    (TI_PLAIN_MAP_SMALL == type_ids_enum_struct.type_identifier1()._d() &&
-                    (EK_COMPLETE == type_ids_enum_struct.type_identifier1().map_sdefn().header().equiv_kind() ||
-                    EK_COMPLETE == type_ids_enum_struct.type_identifier1().map_sdefn().key_identifier()->_d())) ||
-                    (TI_PLAIN_MAP_LARGE == type_ids_enum_struct.type_identifier1()._d() &&
-                    (EK_COMPLETE == type_ids_enum_struct.type_identifier1().map_ldefn().header().equiv_kind() ||
-                    EK_COMPLETE == type_ids_enum_struct.type_identifier1().map_ldefn().key_identifier()->_d())))
+            bool common_index_ec {false};
+            CommonStructMember common_index {TypeObjectUtils::build_common_struct_member(member_id_index, member_flags_index, TypeObjectUtils::retrieve_complete_type_identifier(type_ids_index, common_index_ec))};
+            if (!common_index_ec)
             {
-                common_index = TypeObjectUtils::build_common_struct_member(member_id_index, member_flags_index, type_ids_enum_struct.type_identifier1());
-            }
-            else if (EK_COMPLETE == type_ids_enum_struct.type_identifier2()._d() ||
-                    (TI_PLAIN_SEQUENCE_SMALL == type_ids_enum_struct.type_identifier2()._d() &&
-                    EK_COMPLETE == type_ids_enum_struct.type_identifier2().seq_sdefn().header().equiv_kind()) ||
-                    (TI_PLAIN_SEQUENCE_LARGE == type_ids_enum_struct.type_identifier2()._d() &&
-                    EK_COMPLETE == type_ids_enum_struct.type_identifier2().seq_ldefn().header().equiv_kind()) ||
-                    (TI_PLAIN_ARRAY_SMALL == type_ids_enum_struct.type_identifier2()._d() &&
-                    EK_COMPLETE == type_ids_enum_struct.type_identifier2().array_sdefn().header().equiv_kind()) ||
-                    (TI_PLAIN_ARRAY_LARGE == type_ids_enum_struct.type_identifier2()._d() &&
-                    EK_COMPLETE == type_ids_enum_struct.type_identifier2().array_ldefn().header().equiv_kind()) ||
-                    (TI_PLAIN_MAP_SMALL == type_ids_enum_struct.type_identifier2()._d() &&
-                    (EK_COMPLETE == type_ids_enum_struct.type_identifier2().map_sdefn().header().equiv_kind() ||
-                    EK_COMPLETE == type_ids_enum_struct.type_identifier2().map_sdefn().key_identifier()->_d())) ||
-                    (TI_PLAIN_MAP_LARGE == type_ids_enum_struct.type_identifier2()._d() &&
-                    (EK_COMPLETE == type_ids_enum_struct.type_identifier2().map_ldefn().header().equiv_kind() ||
-                    EK_COMPLETE == type_ids_enum_struct.type_identifier2().map_ldefn().key_identifier()->_d())))
-            {
-                common_index = TypeObjectUtils::build_common_struct_member(member_id_index, member_flags_index, type_ids_enum_struct.type_identifier2());
-            }
-            else
-            {
-                EPROSIMA_LOG_ERROR(XTYPES_TYPE_REPRESENTATION,
-                        "Structure index member TypeIdentifier inconsistent.");
+                EPROSIMA_LOG_ERROR(XTYPES_TYPE_REPRESENTATION, "Structure index member TypeIdentifier inconsistent.");
                 return;
             }
             MemberName name_index = "index";
@@ -127,113 +146,24 @@ void register_enum_struct_type_identifier()
             TypeObjectUtils::add_complete_struct_member(member_seq_enum_struct, member_index);
         }
         {
-            return_code_enum_struct =
+            TypeIdentifierPair type_ids_enum_value;
+            ReturnCode_t return_code_enum_value {eprosima::fastdds::dds::RETCODE_OK};
+            return_code_enum_value =
                 eprosima::fastdds::dds::DomainParticipantFactory::get_instance()->type_object_registry().get_type_identifiers(
-                "ColorEnum", type_ids_enum_struct);
+                "ColorEnum", type_ids_enum_value);
 
-            if (return_code_enum_struct != eprosima::fastdds::dds::RETCODE_OK)
+            if (eprosima::fastdds::dds::RETCODE_OK != return_code_enum_value)
             {
-                EnumTypeFlag enum_flags_ColorEnum = 0;
-                BitBound bit_bound_ColorEnum = 32;
-                CommonEnumeratedHeader common_ColorEnum = TypeObjectUtils::build_common_enumerated_header(bit_bound_ColorEnum);
-                QualifiedTypeName type_name_ColorEnum = "ColorEnum";
-                eprosima::fastcdr::optional<AppliedBuiltinTypeAnnotations> type_ann_builtin_ColorEnum;
-                eprosima::fastcdr::optional<AppliedAnnotationSeq> ann_custom_ColorEnum;
-                CompleteTypeDetail detail_ColorEnum = TypeObjectUtils::build_complete_type_detail(type_ann_builtin_ColorEnum, ann_custom_ColorEnum, type_name_ColorEnum.to_string());
-                CompleteEnumeratedHeader header_ColorEnum = TypeObjectUtils::build_complete_enumerated_header(common_ColorEnum, detail_ColorEnum);
-                CompleteEnumeratedLiteralSeq literal_seq_ColorEnum;
-                {
-                    EnumeratedLiteralFlag flags_RED = TypeObjectUtils::build_enumerated_literal_flag(false);
-                    CommonEnumeratedLiteral common_RED = TypeObjectUtils::build_common_enumerated_literal(0, flags_RED);
-                    eprosima::fastcdr::optional<AppliedBuiltinMemberAnnotations> member_ann_builtin_RED;
-                    ann_custom_ColorEnum.reset();
-                    MemberName name_RED = "RED";
-                    CompleteMemberDetail detail_RED = TypeObjectUtils::build_complete_member_detail(name_RED, member_ann_builtin_RED, ann_custom_ColorEnum);
-                    CompleteEnumeratedLiteral literal_RED = TypeObjectUtils::build_complete_enumerated_literal(common_RED, detail_RED);
-                    TypeObjectUtils::add_complete_enumerated_literal(literal_seq_ColorEnum, literal_RED);
-                }
-                {
-                    EnumeratedLiteralFlag flags_GREEN = TypeObjectUtils::build_enumerated_literal_flag(false);
-                    CommonEnumeratedLiteral common_GREEN = TypeObjectUtils::build_common_enumerated_literal(1, flags_GREEN);
-                    eprosima::fastcdr::optional<AppliedBuiltinMemberAnnotations> member_ann_builtin_GREEN;
-                    ann_custom_ColorEnum.reset();
-                    MemberName name_GREEN = "GREEN";
-                    CompleteMemberDetail detail_GREEN = TypeObjectUtils::build_complete_member_detail(name_GREEN, member_ann_builtin_GREEN, ann_custom_ColorEnum);
-                    CompleteEnumeratedLiteral literal_GREEN = TypeObjectUtils::build_complete_enumerated_literal(common_GREEN, detail_GREEN);
-                    TypeObjectUtils::add_complete_enumerated_literal(literal_seq_ColorEnum, literal_GREEN);
-                }
-                {
-                    EnumeratedLiteralFlag flags_BLUE = TypeObjectUtils::build_enumerated_literal_flag(false);
-                    CommonEnumeratedLiteral common_BLUE = TypeObjectUtils::build_common_enumerated_literal(2, flags_BLUE);
-                    eprosima::fastcdr::optional<AppliedBuiltinMemberAnnotations> member_ann_builtin_BLUE;
-                    ann_custom_ColorEnum.reset();
-                    MemberName name_BLUE = "BLUE";
-                    CompleteMemberDetail detail_BLUE = TypeObjectUtils::build_complete_member_detail(name_BLUE, member_ann_builtin_BLUE, ann_custom_ColorEnum);
-                    CompleteEnumeratedLiteral literal_BLUE = TypeObjectUtils::build_complete_enumerated_literal(common_BLUE, detail_BLUE);
-                    TypeObjectUtils::add_complete_enumerated_literal(literal_seq_ColorEnum, literal_BLUE);
-                }
-                CompleteEnumeratedType enumerated_type_ColorEnum = TypeObjectUtils::build_complete_enumerated_type(enum_flags_ColorEnum, header_ColorEnum,
-                        literal_seq_ColorEnum);
-                if (eprosima::fastdds::dds::RETCODE_BAD_PARAMETER ==
-                        TypeObjectUtils::build_and_register_enumerated_type_object(enumerated_type_ColorEnum, type_name_ColorEnum.to_string()))
-                {
-                    EPROSIMA_LOG_ERROR(XTYPES_TYPE_REPRESENTATION,
-                        "ColorEnum already registered in TypeObjectRegistry for a different type.");
-                }
-                return_code_enum_struct =
-                    eprosima::fastdds::dds::DomainParticipantFactory::get_instance()->type_object_registry().get_type_identifiers(
-                    "ColorEnum", type_ids_enum_struct);
-                if (return_code_enum_struct != eprosima::fastdds::dds::RETCODE_OK)
-                {
-                    EPROSIMA_LOG_ERROR(XTYPES_TYPE_REPRESENTATION,
-                                "ColorEnum: Given Enum TypeIdentifier unknown to TypeObjectRegistry.");
-                    return;
-                }
+            ::register_ColorEnum_type_identifier(type_ids_enum_value);
             }
             StructMemberFlag member_flags_enum_value = TypeObjectUtils::build_struct_member_flag(eprosima::fastdds::dds::xtypes::TryConstructKind::NOT_APPLIED,
                     false, false, false, false);
-            CommonStructMember common_enum_value;
             MemberId member_id_enum_value = 0x00000001;
-            if (EK_COMPLETE == type_ids_enum_struct.type_identifier1()._d() || TK_NONE == type_ids_enum_struct.type_identifier2()._d() ||
-                    (TI_PLAIN_SEQUENCE_SMALL == type_ids_enum_struct.type_identifier1()._d() &&
-                    EK_COMPLETE == type_ids_enum_struct.type_identifier1().seq_sdefn().header().equiv_kind()) ||
-                    (TI_PLAIN_SEQUENCE_LARGE == type_ids_enum_struct.type_identifier1()._d() &&
-                    EK_COMPLETE == type_ids_enum_struct.type_identifier1().seq_ldefn().header().equiv_kind()) ||
-                    (TI_PLAIN_ARRAY_SMALL == type_ids_enum_struct.type_identifier1()._d() &&
-                    EK_COMPLETE == type_ids_enum_struct.type_identifier1().array_sdefn().header().equiv_kind()) ||
-                    (TI_PLAIN_ARRAY_LARGE == type_ids_enum_struct.type_identifier1()._d() &&
-                    EK_COMPLETE == type_ids_enum_struct.type_identifier1().array_ldefn().header().equiv_kind()) ||
-                    (TI_PLAIN_MAP_SMALL == type_ids_enum_struct.type_identifier1()._d() &&
-                    (EK_COMPLETE == type_ids_enum_struct.type_identifier1().map_sdefn().header().equiv_kind() ||
-                    EK_COMPLETE == type_ids_enum_struct.type_identifier1().map_sdefn().key_identifier()->_d())) ||
-                    (TI_PLAIN_MAP_LARGE == type_ids_enum_struct.type_identifier1()._d() &&
-                    (EK_COMPLETE == type_ids_enum_struct.type_identifier1().map_ldefn().header().equiv_kind() ||
-                    EK_COMPLETE == type_ids_enum_struct.type_identifier1().map_ldefn().key_identifier()->_d())))
+            bool common_enum_value_ec {false};
+            CommonStructMember common_enum_value {TypeObjectUtils::build_common_struct_member(member_id_enum_value, member_flags_enum_value, TypeObjectUtils::retrieve_complete_type_identifier(type_ids_enum_value, common_enum_value_ec))};
+            if (!common_enum_value_ec)
             {
-                common_enum_value = TypeObjectUtils::build_common_struct_member(member_id_enum_value, member_flags_enum_value, type_ids_enum_struct.type_identifier1());
-            }
-            else if (EK_COMPLETE == type_ids_enum_struct.type_identifier2()._d() ||
-                    (TI_PLAIN_SEQUENCE_SMALL == type_ids_enum_struct.type_identifier2()._d() &&
-                    EK_COMPLETE == type_ids_enum_struct.type_identifier2().seq_sdefn().header().equiv_kind()) ||
-                    (TI_PLAIN_SEQUENCE_LARGE == type_ids_enum_struct.type_identifier2()._d() &&
-                    EK_COMPLETE == type_ids_enum_struct.type_identifier2().seq_ldefn().header().equiv_kind()) ||
-                    (TI_PLAIN_ARRAY_SMALL == type_ids_enum_struct.type_identifier2()._d() &&
-                    EK_COMPLETE == type_ids_enum_struct.type_identifier2().array_sdefn().header().equiv_kind()) ||
-                    (TI_PLAIN_ARRAY_LARGE == type_ids_enum_struct.type_identifier2()._d() &&
-                    EK_COMPLETE == type_ids_enum_struct.type_identifier2().array_ldefn().header().equiv_kind()) ||
-                    (TI_PLAIN_MAP_SMALL == type_ids_enum_struct.type_identifier2()._d() &&
-                    (EK_COMPLETE == type_ids_enum_struct.type_identifier2().map_sdefn().header().equiv_kind() ||
-                    EK_COMPLETE == type_ids_enum_struct.type_identifier2().map_sdefn().key_identifier()->_d())) ||
-                    (TI_PLAIN_MAP_LARGE == type_ids_enum_struct.type_identifier2()._d() &&
-                    (EK_COMPLETE == type_ids_enum_struct.type_identifier2().map_ldefn().header().equiv_kind() ||
-                    EK_COMPLETE == type_ids_enum_struct.type_identifier2().map_ldefn().key_identifier()->_d())))
-            {
-                common_enum_value = TypeObjectUtils::build_common_struct_member(member_id_enum_value, member_flags_enum_value, type_ids_enum_struct.type_identifier2());
-            }
-            else
-            {
-                EPROSIMA_LOG_ERROR(XTYPES_TYPE_REPRESENTATION,
-                        "Structure enum_value member TypeIdentifier inconsistent.");
+                EPROSIMA_LOG_ERROR(XTYPES_TYPE_REPRESENTATION, "Structure enum_value member TypeIdentifier inconsistent.");
                 return;
             }
             MemberName name_enum_value = "enum_value";
@@ -245,19 +175,10 @@ void register_enum_struct_type_identifier()
         }
         CompleteStructType struct_type_enum_struct = TypeObjectUtils::build_complete_struct_type(struct_flags_enum_struct, header_enum_struct, member_seq_enum_struct);
         if (eprosima::fastdds::dds::RETCODE_BAD_PARAMETER ==
-                TypeObjectUtils::build_and_register_struct_type_object(struct_type_enum_struct, type_name_enum_struct.to_string()))
+                TypeObjectUtils::build_and_register_struct_type_object(struct_type_enum_struct, type_name_enum_struct.to_string(), type_ids_enum_struct))
         {
             EPROSIMA_LOG_ERROR(XTYPES_TYPE_REPRESENTATION,
                     "enum_struct already registered in TypeObjectRegistry for a different type.");
-        }
-        return_code_enum_struct =
-            eprosima::fastdds::dds::DomainParticipantFactory::get_instance()->type_object_registry().get_type_identifiers(
-            "enum_struct", type_ids_enum_struct);
-        if (return_code_enum_struct != eprosima::fastdds::dds::RETCODE_OK)
-        {
-            EPROSIMA_LOG_ERROR(XTYPES_TYPE_REPRESENTATION,
-                        "enum_struct: Given Struct TypeIdentifier unknown to TypeObjectRegistry.");
-            return;
         }
     }
 }

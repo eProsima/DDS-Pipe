@@ -38,23 +38,19 @@
 
 using namespace eprosima::fastdds::dds::xtypes;
 
-void register_map_struct_type_objects()
+// TypeIdentifier is returned by reference: dependent structures/unions are registered in this same method
+void register_map_struct_type_identifier(
+        TypeIdentifierPair& type_ids_map_struct)
 {
-    static std::once_flag once_flag;
-    std::call_once(once_flag, []()
-            {
-                register_map_struct_type_identifier();
 
-            });
-}
-
-void register_map_struct_type_identifier()
-{
+    ReturnCode_t return_code_map_struct {eprosima::fastdds::dds::RETCODE_OK};
+    return_code_map_struct =
+        eprosima::fastdds::dds::DomainParticipantFactory::get_instance()->type_object_registry().get_type_identifiers(
+        "map_struct", type_ids_map_struct);
+    if (eprosima::fastdds::dds::RETCODE_OK != return_code_map_struct)
     {
         StructTypeFlag struct_flags_map_struct = TypeObjectUtils::build_struct_type_flag(eprosima::fastdds::dds::xtypes::ExtensibilityKind::NOT_APPLIED,
                 false, false);
-        ReturnCode_t return_code_map_struct;
-        TypeIdentifierPair type_ids_map_struct;
         QualifiedTypeName type_name_map_struct = "map_struct";
         eprosima::fastcdr::optional<AppliedBuiltinTypeAnnotations> type_ann_builtin_map_struct;
         eprosima::fastcdr::optional<AppliedAnnotationSeq> ann_custom_map_struct;
@@ -63,150 +59,53 @@ void register_map_struct_type_identifier()
         header_map_struct = TypeObjectUtils::build_complete_struct_header(TypeIdentifier(), detail_map_struct);
         CompleteStructMemberSeq member_seq_map_struct;
         {
-            return_code_map_struct =
+            TypeIdentifierPair type_ids_my_map;
+            ReturnCode_t return_code_my_map {eprosima::fastdds::dds::RETCODE_OK};
+            return_code_my_map =
                 eprosima::fastdds::dds::DomainParticipantFactory::get_instance()->type_object_registry().get_type_identifiers(
-                "anonymous_map_anonymous_string_unbounded_bool_unbounded", type_ids_map_struct);
+                "anonymous_map_anonymous_string_unbounded_bool_unbounded", type_ids_my_map);
 
-            if (return_code_map_struct != eprosima::fastdds::dds::RETCODE_OK)
+            if (eprosima::fastdds::dds::RETCODE_OK != return_code_my_map)
             {
-                return_code_map_struct =
+                return_code_my_map =
                     eprosima::fastdds::dds::DomainParticipantFactory::get_instance()->type_object_registry().get_type_identifiers(
-                    "_bool", type_ids_map_struct);
+                    "_bool", type_ids_my_map);
 
-                if (return_code_map_struct != eprosima::fastdds::dds::RETCODE_OK)
+                if (eprosima::fastdds::dds::RETCODE_OK != return_code_my_map)
                 {
                     EPROSIMA_LOG_ERROR(XTYPES_TYPE_REPRESENTATION,
                             "Map element TypeIdentifier unknown to TypeObjectRegistry.");
                     return;
                 }
-                TypeIdentifier* element_identifier_anonymous_map_anonymous_string_unbounded_bool_unbounded {nullptr};
-                if (EK_COMPLETE == type_ids_map_struct.type_identifier1()._d() || TK_NONE == type_ids_map_struct.type_identifier2()._d() ||
-                        (TI_PLAIN_SEQUENCE_SMALL == type_ids_map_struct.type_identifier1()._d() &&
-                        EK_COMPLETE == type_ids_map_struct.type_identifier1().seq_sdefn().header().equiv_kind()) ||
-                        (TI_PLAIN_SEQUENCE_LARGE == type_ids_map_struct.type_identifier1()._d() &&
-                        EK_COMPLETE == type_ids_map_struct.type_identifier1().seq_ldefn().header().equiv_kind()) ||
-                        (TI_PLAIN_ARRAY_SMALL == type_ids_map_struct.type_identifier1()._d() &&
-                        EK_COMPLETE == type_ids_map_struct.type_identifier1().array_sdefn().header().equiv_kind()) ||
-                        (TI_PLAIN_ARRAY_LARGE == type_ids_map_struct.type_identifier1()._d() &&
-                        EK_COMPLETE == type_ids_map_struct.type_identifier1().array_ldefn().header().equiv_kind()) ||
-                        (TI_PLAIN_MAP_SMALL == type_ids_map_struct.type_identifier1()._d() &&
-                        (EK_COMPLETE == type_ids_map_struct.type_identifier1().map_sdefn().header().equiv_kind() ||
-                        EK_COMPLETE == type_ids_map_struct.type_identifier1().map_sdefn().key_identifier()->_d())) ||
-                        (TI_PLAIN_MAP_LARGE == type_ids_map_struct.type_identifier1()._d() &&
-                        (EK_COMPLETE == type_ids_map_struct.type_identifier1().map_ldefn().header().equiv_kind() ||
-                        EK_COMPLETE == type_ids_map_struct.type_identifier1().map_ldefn().key_identifier()->_d())))
-                {
-                    element_identifier_anonymous_map_anonymous_string_unbounded_bool_unbounded = new TypeIdentifier(type_ids_map_struct.type_identifier1());
-                }
-                else if (EK_COMPLETE == type_ids_map_struct.type_identifier2()._d() ||
-                        (TI_PLAIN_SEQUENCE_SMALL == type_ids_map_struct.type_identifier2()._d() &&
-                        EK_COMPLETE == type_ids_map_struct.type_identifier2().seq_sdefn().header().equiv_kind()) ||
-                        (TI_PLAIN_SEQUENCE_LARGE == type_ids_map_struct.type_identifier2()._d() &&
-                        EK_COMPLETE == type_ids_map_struct.type_identifier2().seq_ldefn().header().equiv_kind()) ||
-                        (TI_PLAIN_ARRAY_SMALL == type_ids_map_struct.type_identifier2()._d() &&
-                        EK_COMPLETE == type_ids_map_struct.type_identifier2().array_sdefn().header().equiv_kind()) ||
-                        (TI_PLAIN_ARRAY_LARGE == type_ids_map_struct.type_identifier2()._d() &&
-                        EK_COMPLETE == type_ids_map_struct.type_identifier2().array_ldefn().header().equiv_kind()) ||
-                        (TI_PLAIN_MAP_SMALL == type_ids_map_struct.type_identifier2()._d() &&
-                        (EK_COMPLETE == type_ids_map_struct.type_identifier2().map_sdefn().header().equiv_kind() ||
-                        EK_COMPLETE == type_ids_map_struct.type_identifier2().map_sdefn().key_identifier()->_d())) ||
-                        (TI_PLAIN_MAP_LARGE == type_ids_map_struct.type_identifier2()._d() &&
-                        (EK_COMPLETE == type_ids_map_struct.type_identifier2().map_ldefn().header().equiv_kind() ||
-                        EK_COMPLETE == type_ids_map_struct.type_identifier2().map_ldefn().key_identifier()->_d())))
-                {
-                    element_identifier_anonymous_map_anonymous_string_unbounded_bool_unbounded = new TypeIdentifier(type_ids_map_struct.type_identifier2());
-                }
-                else
+                bool element_identifier_anonymous_map_anonymous_string_unbounded_bool_unbounded_ec {false};
+                TypeIdentifier* element_identifier_anonymous_map_anonymous_string_unbounded_bool_unbounded {new TypeIdentifier(TypeObjectUtils::retrieve_complete_type_identifier(type_ids_my_map, element_identifier_anonymous_map_anonymous_string_unbounded_bool_unbounded_ec))};
+                if (!element_identifier_anonymous_map_anonymous_string_unbounded_bool_unbounded_ec)
                 {
                     EPROSIMA_LOG_ERROR(XTYPES_TYPE_REPRESENTATION,
                         "anonymous_map_anonymous_string_unbounded_bool_unbounded inconsistent element TypeIdentifier.");
                     return;
                 }
-                return_code_map_struct =
+                return_code_my_map =
                     eprosima::fastdds::dds::DomainParticipantFactory::get_instance()->type_object_registry().get_type_identifiers(
-                    "anonymous_string_unbounded", type_ids_map_struct);
+                    "anonymous_string_unbounded", type_ids_my_map);
 
-                if (return_code_map_struct != eprosima::fastdds::dds::RETCODE_OK)
+                if (eprosima::fastdds::dds::RETCODE_OK != return_code_my_map)
                 {
-                    std::string type_id_kind_anonymous_string_unbounded("TI_STRING8_SMALL");
-                    if (type_id_kind_anonymous_string_unbounded == "TI_STRING8_SMALL")
                     {
                         SBound bound = 0;
                         StringSTypeDefn string_sdefn = TypeObjectUtils::build_string_s_type_defn(bound);
                         if (eprosima::fastdds::dds::RETCODE_BAD_PARAMETER ==
                                 TypeObjectUtils::build_and_register_s_string_type_identifier(string_sdefn,
-                                "anonymous_string_unbounded"))
+                                "anonymous_string_unbounded", type_ids_my_map))
                         {
                             EPROSIMA_LOG_ERROR(XTYPES_TYPE_REPRESENTATION,
                                 "anonymous_string_unbounded already registered in TypeObjectRegistry for a different type.");
                         }
                     }
-                    else if (type_id_kind_anonymous_string_unbounded == "TI_STRING8_LARGE")
-                    {
-                        LBound bound = 255;
-                        StringLTypeDefn string_ldefn = TypeObjectUtils::build_string_l_type_defn(bound);
-                        if (eprosima::fastdds::dds::RETCODE_BAD_PARAMETER ==
-                                TypeObjectUtils::build_and_register_l_string_type_identifier(string_ldefn,
-                                "anonymous_string_unbounded"))
-                        {
-                            EPROSIMA_LOG_ERROR(XTYPES_TYPE_REPRESENTATION,
-                                "anonymous_string_unbounded already registered in TypeObjectRegistry for a different type.");
-                        }
-                    }
-                    else
-                    {
-                        EPROSIMA_LOG_ERROR(XTYPES_TYPE_REPRESENTATION,
-                                    "anonymous_string_unbounded: Unknown String kind.");
-                        return;
-                    }
-                    return_code_map_struct =
-                        eprosima::fastdds::dds::DomainParticipantFactory::get_instance()->type_object_registry().get_type_identifiers(
-                        "anonymous_string_unbounded", type_ids_map_struct);
-                    if (return_code_map_struct != eprosima::fastdds::dds::RETCODE_OK)
-                    {
-                        EPROSIMA_LOG_ERROR(XTYPES_TYPE_REPRESENTATION,
-                                    "anonymous_string_unbounded: Given String TypeIdentifier unknown to TypeObjectRegistry.");
-                        return;
-                    }
                 }
-                TypeIdentifier* key_identifier_anonymous_map_anonymous_string_unbounded_bool_unbounded {nullptr};
-                if (EK_COMPLETE == type_ids_map_struct.type_identifier1()._d() || TK_NONE == type_ids_map_struct.type_identifier2()._d() ||
-                        (TI_PLAIN_SEQUENCE_SMALL == type_ids_map_struct.type_identifier1()._d() &&
-                        EK_COMPLETE == type_ids_map_struct.type_identifier1().seq_sdefn().header().equiv_kind()) ||
-                        (TI_PLAIN_SEQUENCE_LARGE == type_ids_map_struct.type_identifier1()._d() &&
-                        EK_COMPLETE == type_ids_map_struct.type_identifier1().seq_ldefn().header().equiv_kind()) ||
-                        (TI_PLAIN_ARRAY_SMALL == type_ids_map_struct.type_identifier1()._d() &&
-                        EK_COMPLETE == type_ids_map_struct.type_identifier1().array_sdefn().header().equiv_kind()) ||
-                        (TI_PLAIN_ARRAY_LARGE == type_ids_map_struct.type_identifier1()._d() &&
-                        EK_COMPLETE == type_ids_map_struct.type_identifier1().array_ldefn().header().equiv_kind()) ||
-                        (TI_PLAIN_MAP_SMALL == type_ids_map_struct.type_identifier1()._d() &&
-                        (EK_COMPLETE == type_ids_map_struct.type_identifier1().map_sdefn().header().equiv_kind() ||
-                        EK_COMPLETE == type_ids_map_struct.type_identifier1().map_sdefn().key_identifier()->_d())) ||
-                        (TI_PLAIN_MAP_LARGE == type_ids_map_struct.type_identifier1()._d() &&
-                        (EK_COMPLETE == type_ids_map_struct.type_identifier1().map_ldefn().header().equiv_kind() ||
-                        EK_COMPLETE == type_ids_map_struct.type_identifier1().map_ldefn().key_identifier()->_d())))
-                {
-                    key_identifier_anonymous_map_anonymous_string_unbounded_bool_unbounded = new TypeIdentifier(type_ids_map_struct.type_identifier1());
-                }
-                else if (EK_COMPLETE == type_ids_map_struct.type_identifier2()._d() ||
-                        (TI_PLAIN_SEQUENCE_SMALL == type_ids_map_struct.type_identifier2()._d() &&
-                        EK_COMPLETE == type_ids_map_struct.type_identifier2().seq_sdefn().header().equiv_kind()) ||
-                        (TI_PLAIN_SEQUENCE_LARGE == type_ids_map_struct.type_identifier2()._d() &&
-                        EK_COMPLETE == type_ids_map_struct.type_identifier2().seq_ldefn().header().equiv_kind()) ||
-                        (TI_PLAIN_ARRAY_SMALL == type_ids_map_struct.type_identifier2()._d() &&
-                        EK_COMPLETE == type_ids_map_struct.type_identifier2().array_sdefn().header().equiv_kind()) ||
-                        (TI_PLAIN_ARRAY_LARGE == type_ids_map_struct.type_identifier2()._d() &&
-                        EK_COMPLETE == type_ids_map_struct.type_identifier2().array_ldefn().header().equiv_kind()) ||
-                        (TI_PLAIN_MAP_SMALL == type_ids_map_struct.type_identifier2()._d() &&
-                        (EK_COMPLETE == type_ids_map_struct.type_identifier2().map_sdefn().header().equiv_kind() ||
-                        EK_COMPLETE == type_ids_map_struct.type_identifier2().map_sdefn().key_identifier()->_d())) ||
-                        (TI_PLAIN_MAP_LARGE == type_ids_map_struct.type_identifier2()._d() &&
-                        (EK_COMPLETE == type_ids_map_struct.type_identifier2().map_ldefn().header().equiv_kind() ||
-                        EK_COMPLETE == type_ids_map_struct.type_identifier2().map_ldefn().key_identifier()->_d())))
-                {
-                    key_identifier_anonymous_map_anonymous_string_unbounded_bool_unbounded = new TypeIdentifier(type_ids_map_struct.type_identifier2());
-                }
-                else
+                bool key_identifier_anonymous_map_anonymous_string_unbounded_bool_unbounded_ec {false};
+                TypeIdentifier* key_identifier_anonymous_map_anonymous_string_unbounded_bool_unbounded {new TypeIdentifier(TypeObjectUtils::retrieve_complete_type_identifier(type_ids_my_map, key_identifier_anonymous_map_anonymous_string_unbounded_bool_unbounded_ec))};
+                if (!key_identifier_anonymous_map_anonymous_string_unbounded_bool_unbounded_ec)
                 {
                     EPROSIMA_LOG_ERROR(XTYPES_TYPE_REPRESENTATION,
                         "anonymous_map_anonymous_string_unbounded_bool_unbounded inconsistent key TypeIdentifier.");
@@ -226,87 +125,27 @@ void register_map_struct_type_identifier()
                 CollectionElementFlag element_flags_anonymous_map_anonymous_string_unbounded_bool_unbounded = 0;
                 CollectionElementFlag key_flags_anonymous_map_anonymous_string_unbounded_bool_unbounded = 0;
                 PlainCollectionHeader header_anonymous_map_anonymous_string_unbounded_bool_unbounded = TypeObjectUtils::build_plain_collection_header(equiv_kind_anonymous_map_anonymous_string_unbounded_bool_unbounded, element_flags_anonymous_map_anonymous_string_unbounded_bool_unbounded);
-                std::string type_id_kind_anonymous_map_anonymous_string_unbounded_bool_unbounded("TI_PLAIN_MAP_SMALL");
-                if (type_id_kind_anonymous_map_anonymous_string_unbounded_bool_unbounded == "TI_PLAIN_MAP_SMALL")
                 {
                     SBound bound = 0;
                     PlainMapSTypeDefn map_sdefn = TypeObjectUtils::build_plain_map_s_type_defn(header_anonymous_map_anonymous_string_unbounded_bool_unbounded, bound,
                                 eprosima::fastcdr::external<TypeIdentifier>(element_identifier_anonymous_map_anonymous_string_unbounded_bool_unbounded), key_flags_anonymous_map_anonymous_string_unbounded_bool_unbounded,
                                 eprosima::fastcdr::external<TypeIdentifier>(key_identifier_anonymous_map_anonymous_string_unbounded_bool_unbounded));
                     if (eprosima::fastdds::dds::RETCODE_BAD_PARAMETER ==
-                            TypeObjectUtils::build_and_register_s_map_type_identifier(map_sdefn, "anonymous_map_anonymous_string_unbounded_bool_unbounded"))
+                            TypeObjectUtils::build_and_register_s_map_type_identifier(map_sdefn, "anonymous_map_anonymous_string_unbounded_bool_unbounded", type_ids_my_map))
                     {
                         EPROSIMA_LOG_ERROR(XTYPES_TYPE_REPRESENTATION,
                             "anonymous_map_anonymous_string_unbounded_bool_unbounded already registered in TypeObjectRegistry for a different type.");
                     }
-                }
-                else
-                {
-                    LBound bound = 0;
-                    PlainMapLTypeDefn map_ldefn = TypeObjectUtils::build_plain_map_l_type_defn(header_anonymous_map_anonymous_string_unbounded_bool_unbounded, bound,
-                                eprosima::fastcdr::external<TypeIdentifier>(element_identifier_anonymous_map_anonymous_string_unbounded_bool_unbounded), key_flags_anonymous_map_anonymous_string_unbounded_bool_unbounded,
-                                eprosima::fastcdr::external<TypeIdentifier>(key_identifier_anonymous_map_anonymous_string_unbounded_bool_unbounded));
-                    if (eprosima::fastdds::dds::RETCODE_BAD_PARAMETER ==
-                            TypeObjectUtils::build_and_register_l_map_type_identifier(map_ldefn, "anonymous_map_anonymous_string_unbounded_bool_unbounded"))
-                    {
-                        EPROSIMA_LOG_ERROR(XTYPES_TYPE_REPRESENTATION,
-                            "anonymous_map_anonymous_string_unbounded_bool_unbounded already registered in TypeObjectRegistry for a different type.");
-                    }
-                }
-                return_code_map_struct =
-                    eprosima::fastdds::dds::DomainParticipantFactory::get_instance()->type_object_registry().get_type_identifiers(
-                    "anonymous_map_anonymous_string_unbounded_bool_unbounded", type_ids_map_struct);
-                if (return_code_map_struct != eprosima::fastdds::dds::RETCODE_OK)
-                {
-                    EPROSIMA_LOG_ERROR(XTYPES_TYPE_REPRESENTATION,
-                                "anonymous_map_anonymous_string_unbounded_bool_unbounded: Given Map TypeIdentifier unknown to TypeObjectRegistry.");
-                    return;
                 }
             }
             StructMemberFlag member_flags_my_map = TypeObjectUtils::build_struct_member_flag(eprosima::fastdds::dds::xtypes::TryConstructKind::NOT_APPLIED,
                     false, false, false, false);
-            CommonStructMember common_my_map;
             MemberId member_id_my_map = 0x00000000;
-            if (EK_COMPLETE == type_ids_map_struct.type_identifier1()._d() || TK_NONE == type_ids_map_struct.type_identifier2()._d() ||
-                    (TI_PLAIN_SEQUENCE_SMALL == type_ids_map_struct.type_identifier1()._d() &&
-                    EK_COMPLETE == type_ids_map_struct.type_identifier1().seq_sdefn().header().equiv_kind()) ||
-                    (TI_PLAIN_SEQUENCE_LARGE == type_ids_map_struct.type_identifier1()._d() &&
-                    EK_COMPLETE == type_ids_map_struct.type_identifier1().seq_ldefn().header().equiv_kind()) ||
-                    (TI_PLAIN_ARRAY_SMALL == type_ids_map_struct.type_identifier1()._d() &&
-                    EK_COMPLETE == type_ids_map_struct.type_identifier1().array_sdefn().header().equiv_kind()) ||
-                    (TI_PLAIN_ARRAY_LARGE == type_ids_map_struct.type_identifier1()._d() &&
-                    EK_COMPLETE == type_ids_map_struct.type_identifier1().array_ldefn().header().equiv_kind()) ||
-                    (TI_PLAIN_MAP_SMALL == type_ids_map_struct.type_identifier1()._d() &&
-                    (EK_COMPLETE == type_ids_map_struct.type_identifier1().map_sdefn().header().equiv_kind() ||
-                    EK_COMPLETE == type_ids_map_struct.type_identifier1().map_sdefn().key_identifier()->_d())) ||
-                    (TI_PLAIN_MAP_LARGE == type_ids_map_struct.type_identifier1()._d() &&
-                    (EK_COMPLETE == type_ids_map_struct.type_identifier1().map_ldefn().header().equiv_kind() ||
-                    EK_COMPLETE == type_ids_map_struct.type_identifier1().map_ldefn().key_identifier()->_d())))
+            bool common_my_map_ec {false};
+            CommonStructMember common_my_map {TypeObjectUtils::build_common_struct_member(member_id_my_map, member_flags_my_map, TypeObjectUtils::retrieve_complete_type_identifier(type_ids_my_map, common_my_map_ec))};
+            if (!common_my_map_ec)
             {
-                common_my_map = TypeObjectUtils::build_common_struct_member(member_id_my_map, member_flags_my_map, type_ids_map_struct.type_identifier1());
-            }
-            else if (EK_COMPLETE == type_ids_map_struct.type_identifier2()._d() ||
-                    (TI_PLAIN_SEQUENCE_SMALL == type_ids_map_struct.type_identifier2()._d() &&
-                    EK_COMPLETE == type_ids_map_struct.type_identifier2().seq_sdefn().header().equiv_kind()) ||
-                    (TI_PLAIN_SEQUENCE_LARGE == type_ids_map_struct.type_identifier2()._d() &&
-                    EK_COMPLETE == type_ids_map_struct.type_identifier2().seq_ldefn().header().equiv_kind()) ||
-                    (TI_PLAIN_ARRAY_SMALL == type_ids_map_struct.type_identifier2()._d() &&
-                    EK_COMPLETE == type_ids_map_struct.type_identifier2().array_sdefn().header().equiv_kind()) ||
-                    (TI_PLAIN_ARRAY_LARGE == type_ids_map_struct.type_identifier2()._d() &&
-                    EK_COMPLETE == type_ids_map_struct.type_identifier2().array_ldefn().header().equiv_kind()) ||
-                    (TI_PLAIN_MAP_SMALL == type_ids_map_struct.type_identifier2()._d() &&
-                    (EK_COMPLETE == type_ids_map_struct.type_identifier2().map_sdefn().header().equiv_kind() ||
-                    EK_COMPLETE == type_ids_map_struct.type_identifier2().map_sdefn().key_identifier()->_d())) ||
-                    (TI_PLAIN_MAP_LARGE == type_ids_map_struct.type_identifier2()._d() &&
-                    (EK_COMPLETE == type_ids_map_struct.type_identifier2().map_ldefn().header().equiv_kind() ||
-                    EK_COMPLETE == type_ids_map_struct.type_identifier2().map_ldefn().key_identifier()->_d())))
-            {
-                common_my_map = TypeObjectUtils::build_common_struct_member(member_id_my_map, member_flags_my_map, type_ids_map_struct.type_identifier2());
-            }
-            else
-            {
-                EPROSIMA_LOG_ERROR(XTYPES_TYPE_REPRESENTATION,
-                        "Structure my_map member TypeIdentifier inconsistent.");
+                EPROSIMA_LOG_ERROR(XTYPES_TYPE_REPRESENTATION, "Structure my_map member TypeIdentifier inconsistent.");
                 return;
             }
             MemberName name_my_map = "my_map";
@@ -318,19 +157,10 @@ void register_map_struct_type_identifier()
         }
         CompleteStructType struct_type_map_struct = TypeObjectUtils::build_complete_struct_type(struct_flags_map_struct, header_map_struct, member_seq_map_struct);
         if (eprosima::fastdds::dds::RETCODE_BAD_PARAMETER ==
-                TypeObjectUtils::build_and_register_struct_type_object(struct_type_map_struct, type_name_map_struct.to_string()))
+                TypeObjectUtils::build_and_register_struct_type_object(struct_type_map_struct, type_name_map_struct.to_string(), type_ids_map_struct))
         {
             EPROSIMA_LOG_ERROR(XTYPES_TYPE_REPRESENTATION,
                     "map_struct already registered in TypeObjectRegistry for a different type.");
-        }
-        return_code_map_struct =
-            eprosima::fastdds::dds::DomainParticipantFactory::get_instance()->type_object_registry().get_type_identifiers(
-            "map_struct", type_ids_map_struct);
-        if (return_code_map_struct != eprosima::fastdds::dds::RETCODE_OK)
-        {
-            EPROSIMA_LOG_ERROR(XTYPES_TYPE_REPRESENTATION,
-                        "map_struct: Given Struct TypeIdentifier unknown to TypeObjectRegistry.");
-            return;
         }
     }
 }

@@ -38,7 +38,7 @@ utils::ReturnCode XmlHandler::load_xml(
     // Load string if exist
     if (configuration.raw.is_set())
     {
-        fastdds::dds::ReturnCode_t ret = fastdds::dds::DomainParticipantFactory::get_instance()->load_XML_profiles_string(
+            ret = fastdds::dds::DomainParticipantFactory::get_instance()->load_XML_profiles_string(
             configuration.raw->c_str(),
             configuration.raw->size());
 
@@ -51,7 +51,7 @@ utils::ReturnCode XmlHandler::load_xml(
     // Load files
     for (const auto& file : configuration.files)
     {
-        fastdds::dds::ReturnCode_t ret = fastdds::dds::DomainParticipantFactory::get_instance()->load_XML_profiles_file(file);
+        ret = fastdds::dds::DomainParticipantFactory::get_instance()->load_XML_profiles_file(file);
 
         if (ret != fastdds::dds::RETCODE_OK)
         {

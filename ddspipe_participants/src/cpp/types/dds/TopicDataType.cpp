@@ -27,13 +27,13 @@ namespace dds {
 using eprosima::ddspipe::core::types::operator <<;
 
 TopicDataType::TopicDataType(
-        const std::string& type_name,
-        const bool keyed,
         const std::shared_ptr<core::PayloadPool>& payload_pool,
-        const fastdds::dds::xtypes::TypeIdentifierPair& type_ids)
-    : type_name_(type_name)
+        const std::string& type_name,
+        const fastdds::dds::xtypes::TypeIdentifierPair& type_ids,
+        const bool keyed)
+    : payload_pool_(payload_pool)
+    , type_name_(type_name)
     , keyed_(keyed)
-    , payload_pool_(payload_pool)
 {
     // Set topic data
     m_typeSize = 4;

@@ -219,9 +219,9 @@ bool enum_structPubSubType::getKey(
     return true;
 }
 
-void enum_structPubSubType::register_type_object_representation() const
+void enum_structPubSubType::register_type_object_representation()
 {
-    register_enum_struct_type_objects();
+    register_enum_struct_type_identifier(type_identifiers_);
 }
 
 

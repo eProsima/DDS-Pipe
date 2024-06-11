@@ -38,23 +38,19 @@
 
 using namespace eprosima::fastdds::dds::xtypes;
 
-void register_numeric_array_type_objects()
+// TypeIdentifier is returned by reference: dependent structures/unions are registered in this same method
+void register_numeric_array_type_identifier(
+        TypeIdentifierPair& type_ids_numeric_array)
 {
-    static std::once_flag once_flag;
-    std::call_once(once_flag, []()
-            {
-                register_numeric_array_type_identifier();
 
-            });
-}
-
-void register_numeric_array_type_identifier()
-{
+    ReturnCode_t return_code_numeric_array {eprosima::fastdds::dds::RETCODE_OK};
+    return_code_numeric_array =
+        eprosima::fastdds::dds::DomainParticipantFactory::get_instance()->type_object_registry().get_type_identifiers(
+        "numeric_array", type_ids_numeric_array);
+    if (eprosima::fastdds::dds::RETCODE_OK != return_code_numeric_array)
     {
         StructTypeFlag struct_flags_numeric_array = TypeObjectUtils::build_struct_type_flag(eprosima::fastdds::dds::xtypes::ExtensibilityKind::NOT_APPLIED,
                 false, false);
-        ReturnCode_t return_code_numeric_array;
-        TypeIdentifierPair type_ids_numeric_array;
         QualifiedTypeName type_name_numeric_array = "numeric_array";
         eprosima::fastcdr::optional<AppliedBuiltinTypeAnnotations> type_ann_builtin_numeric_array;
         eprosima::fastcdr::optional<AppliedAnnotationSeq> ann_custom_numeric_array;
@@ -63,74 +59,38 @@ void register_numeric_array_type_identifier()
         header_numeric_array = TypeObjectUtils::build_complete_struct_header(TypeIdentifier(), detail_numeric_array);
         CompleteStructMemberSeq member_seq_numeric_array;
         {
-            return_code_numeric_array =
+            TypeIdentifierPair type_ids_points;
+            ReturnCode_t return_code_points {eprosima::fastdds::dds::RETCODE_OK};
+            return_code_points =
                 eprosima::fastdds::dds::DomainParticipantFactory::get_instance()->type_object_registry().get_type_identifiers(
-                "anonymous_array_int32_t_3", type_ids_numeric_array);
+                "anonymous_array_int32_t_3", type_ids_points);
 
-            if (return_code_numeric_array != eprosima::fastdds::dds::RETCODE_OK)
+            if (eprosima::fastdds::dds::RETCODE_OK != return_code_points)
             {
-                return_code_numeric_array =
+                return_code_points =
                     eprosima::fastdds::dds::DomainParticipantFactory::get_instance()->type_object_registry().get_type_identifiers(
-                    "_int32_t", type_ids_numeric_array);
+                    "_int32_t", type_ids_points);
 
-                if (return_code_numeric_array != eprosima::fastdds::dds::RETCODE_OK)
+                if (eprosima::fastdds::dds::RETCODE_OK != return_code_points)
                 {
                     EPROSIMA_LOG_ERROR(XTYPES_TYPE_REPRESENTATION,
                             "Array element TypeIdentifier unknown to TypeObjectRegistry.");
                     return;
                 }
-                TypeIdentifier* element_identifier_anonymous_array_int32_t_3 {nullptr};
-                if (EK_COMPLETE == type_ids_numeric_array.type_identifier1()._d() || TK_NONE == type_ids_numeric_array.type_identifier2()._d() ||
-                        (TI_PLAIN_SEQUENCE_SMALL == type_ids_numeric_array.type_identifier1()._d() &&
-                        EK_COMPLETE == type_ids_numeric_array.type_identifier1().seq_sdefn().header().equiv_kind()) ||
-                        (TI_PLAIN_SEQUENCE_LARGE == type_ids_numeric_array.type_identifier1()._d() &&
-                        EK_COMPLETE == type_ids_numeric_array.type_identifier1().seq_ldefn().header().equiv_kind()) ||
-                        (TI_PLAIN_ARRAY_SMALL == type_ids_numeric_array.type_identifier1()._d() &&
-                        EK_COMPLETE == type_ids_numeric_array.type_identifier1().array_sdefn().header().equiv_kind()) ||
-                        (TI_PLAIN_ARRAY_LARGE == type_ids_numeric_array.type_identifier1()._d() &&
-                        EK_COMPLETE == type_ids_numeric_array.type_identifier1().array_ldefn().header().equiv_kind()) ||
-                        (TI_PLAIN_MAP_SMALL == type_ids_numeric_array.type_identifier1()._d() &&
-                        (EK_COMPLETE == type_ids_numeric_array.type_identifier1().map_sdefn().header().equiv_kind() ||
-                        EK_COMPLETE == type_ids_numeric_array.type_identifier1().map_sdefn().key_identifier()->_d())) ||
-                        (TI_PLAIN_MAP_LARGE == type_ids_numeric_array.type_identifier1()._d() &&
-                        (EK_COMPLETE == type_ids_numeric_array.type_identifier1().map_ldefn().header().equiv_kind() ||
-                        EK_COMPLETE == type_ids_numeric_array.type_identifier1().map_ldefn().key_identifier()->_d())))
+                bool element_identifier_anonymous_array_int32_t_3_ec {false};
+                TypeIdentifier* element_identifier_anonymous_array_int32_t_3 {new TypeIdentifier(TypeObjectUtils::retrieve_complete_type_identifier(type_ids_points, element_identifier_anonymous_array_int32_t_3_ec))};
+                if (!element_identifier_anonymous_array_int32_t_3_ec)
                 {
-                    element_identifier_anonymous_array_int32_t_3 = new TypeIdentifier(type_ids_numeric_array.type_identifier1());
-                }
-                else if (EK_COMPLETE == type_ids_numeric_array.type_identifier2()._d() ||
-                        (TI_PLAIN_SEQUENCE_SMALL == type_ids_numeric_array.type_identifier2()._d() &&
-                        EK_COMPLETE == type_ids_numeric_array.type_identifier2().seq_sdefn().header().equiv_kind()) ||
-                        (TI_PLAIN_SEQUENCE_LARGE == type_ids_numeric_array.type_identifier2()._d() &&
-                        EK_COMPLETE == type_ids_numeric_array.type_identifier2().seq_ldefn().header().equiv_kind()) ||
-                        (TI_PLAIN_ARRAY_SMALL == type_ids_numeric_array.type_identifier2()._d() &&
-                        EK_COMPLETE == type_ids_numeric_array.type_identifier2().array_sdefn().header().equiv_kind()) ||
-                        (TI_PLAIN_ARRAY_LARGE == type_ids_numeric_array.type_identifier2()._d() &&
-                        EK_COMPLETE == type_ids_numeric_array.type_identifier2().array_ldefn().header().equiv_kind()) ||
-                        (TI_PLAIN_MAP_SMALL == type_ids_numeric_array.type_identifier2()._d() &&
-                        (EK_COMPLETE == type_ids_numeric_array.type_identifier2().map_sdefn().header().equiv_kind() ||
-                        EK_COMPLETE == type_ids_numeric_array.type_identifier2().map_sdefn().key_identifier()->_d())) ||
-                        (TI_PLAIN_MAP_LARGE == type_ids_numeric_array.type_identifier2()._d() &&
-                        (EK_COMPLETE == type_ids_numeric_array.type_identifier2().map_ldefn().header().equiv_kind() ||
-                        EK_COMPLETE == type_ids_numeric_array.type_identifier2().map_ldefn().key_identifier()->_d())))
-                {
-                    element_identifier_anonymous_array_int32_t_3 = new TypeIdentifier(type_ids_numeric_array.type_identifier2());
-                }
-                else
-                {
-                    EPROSIMA_LOG_ERROR(XTYPES_TYPE_REPRESENTATION,
-                        "Array element TypeIdentifier inconsistent.");
+                    EPROSIMA_LOG_ERROR(XTYPES_TYPE_REPRESENTATION, "Array element TypeIdentifier inconsistent.");
                     return;
                 }
                 EquivalenceKind equiv_kind_anonymous_array_int32_t_3 = EK_COMPLETE;
-                if (TK_NONE == type_ids_numeric_array.type_identifier2()._d())
+                if (TK_NONE == type_ids_points.type_identifier2()._d())
                 {
                     equiv_kind_anonymous_array_int32_t_3 = EK_BOTH;
                 }
                 CollectionElementFlag element_flags_anonymous_array_int32_t_3 = 0;
                 PlainCollectionHeader header_anonymous_array_int32_t_3 = TypeObjectUtils::build_plain_collection_header(equiv_kind_anonymous_array_int32_t_3, element_flags_anonymous_array_int32_t_3);
-                std::string type_id_kind_anonymous_array_int32_t_3("TI_PLAIN_ARRAY_SMALL");
-                if (type_id_kind_anonymous_array_int32_t_3 == "TI_PLAIN_ARRAY_SMALL")
                 {
                     SBoundSeq array_bound_seq;
                         TypeObjectUtils::add_array_dimension(array_bound_seq, static_cast<SBound>(3));
@@ -138,80 +98,21 @@ void register_numeric_array_type_identifier()
                     PlainArraySElemDefn array_sdefn = TypeObjectUtils::build_plain_array_s_elem_defn(header_anonymous_array_int32_t_3, array_bound_seq,
                                 eprosima::fastcdr::external<TypeIdentifier>(element_identifier_anonymous_array_int32_t_3));
                     if (eprosima::fastdds::dds::RETCODE_BAD_PARAMETER ==
-                            TypeObjectUtils::build_and_register_s_array_type_identifier(array_sdefn, "anonymous_array_int32_t_3"))
+                            TypeObjectUtils::build_and_register_s_array_type_identifier(array_sdefn, "anonymous_array_int32_t_3", type_ids_points))
                     {
                         EPROSIMA_LOG_ERROR(XTYPES_TYPE_REPRESENTATION,
                             "anonymous_array_int32_t_3 already registered in TypeObjectRegistry for a different type.");
                     }
-                }
-                else
-                {
-                    LBoundSeq array_bound_seq;
-                        TypeObjectUtils::add_array_dimension(array_bound_seq, static_cast<LBound>(3));
-
-                    PlainArrayLElemDefn array_ldefn = TypeObjectUtils::build_plain_array_l_elem_defn(header_anonymous_array_int32_t_3, array_bound_seq,
-                                eprosima::fastcdr::external<TypeIdentifier>(element_identifier_anonymous_array_int32_t_3));
-                    if (eprosima::fastdds::dds::RETCODE_BAD_PARAMETER ==
-                            TypeObjectUtils::build_and_register_l_array_type_identifier(array_ldefn, "anonymous_array_int32_t_3"))
-                    {
-                        EPROSIMA_LOG_ERROR(XTYPES_TYPE_REPRESENTATION,
-                            "anonymous_array_int32_t_3 already registered in TypeObjectRegistry for a different type.");
-                    }
-                }
-                return_code_numeric_array =
-                    eprosima::fastdds::dds::DomainParticipantFactory::get_instance()->type_object_registry().get_type_identifiers(
-                    "anonymous_array_int32_t_3", type_ids_numeric_array);
-                if (return_code_numeric_array != eprosima::fastdds::dds::RETCODE_OK)
-                {
-                    EPROSIMA_LOG_ERROR(XTYPES_TYPE_REPRESENTATION,
-                                "anonymous_array_int32_t_3: Given Array TypeIdentifier unknown to TypeObjectRegistry.");
-                    return;
                 }
             }
             StructMemberFlag member_flags_points = TypeObjectUtils::build_struct_member_flag(eprosima::fastdds::dds::xtypes::TryConstructKind::NOT_APPLIED,
                     false, false, false, false);
-            CommonStructMember common_points;
             MemberId member_id_points = 0x00000000;
-            if (EK_COMPLETE == type_ids_numeric_array.type_identifier1()._d() || TK_NONE == type_ids_numeric_array.type_identifier2()._d() ||
-                    (TI_PLAIN_SEQUENCE_SMALL == type_ids_numeric_array.type_identifier1()._d() &&
-                    EK_COMPLETE == type_ids_numeric_array.type_identifier1().seq_sdefn().header().equiv_kind()) ||
-                    (TI_PLAIN_SEQUENCE_LARGE == type_ids_numeric_array.type_identifier1()._d() &&
-                    EK_COMPLETE == type_ids_numeric_array.type_identifier1().seq_ldefn().header().equiv_kind()) ||
-                    (TI_PLAIN_ARRAY_SMALL == type_ids_numeric_array.type_identifier1()._d() &&
-                    EK_COMPLETE == type_ids_numeric_array.type_identifier1().array_sdefn().header().equiv_kind()) ||
-                    (TI_PLAIN_ARRAY_LARGE == type_ids_numeric_array.type_identifier1()._d() &&
-                    EK_COMPLETE == type_ids_numeric_array.type_identifier1().array_ldefn().header().equiv_kind()) ||
-                    (TI_PLAIN_MAP_SMALL == type_ids_numeric_array.type_identifier1()._d() &&
-                    (EK_COMPLETE == type_ids_numeric_array.type_identifier1().map_sdefn().header().equiv_kind() ||
-                    EK_COMPLETE == type_ids_numeric_array.type_identifier1().map_sdefn().key_identifier()->_d())) ||
-                    (TI_PLAIN_MAP_LARGE == type_ids_numeric_array.type_identifier1()._d() &&
-                    (EK_COMPLETE == type_ids_numeric_array.type_identifier1().map_ldefn().header().equiv_kind() ||
-                    EK_COMPLETE == type_ids_numeric_array.type_identifier1().map_ldefn().key_identifier()->_d())))
+            bool common_points_ec {false};
+            CommonStructMember common_points {TypeObjectUtils::build_common_struct_member(member_id_points, member_flags_points, TypeObjectUtils::retrieve_complete_type_identifier(type_ids_points, common_points_ec))};
+            if (!common_points_ec)
             {
-                common_points = TypeObjectUtils::build_common_struct_member(member_id_points, member_flags_points, type_ids_numeric_array.type_identifier1());
-            }
-            else if (EK_COMPLETE == type_ids_numeric_array.type_identifier2()._d() ||
-                    (TI_PLAIN_SEQUENCE_SMALL == type_ids_numeric_array.type_identifier2()._d() &&
-                    EK_COMPLETE == type_ids_numeric_array.type_identifier2().seq_sdefn().header().equiv_kind()) ||
-                    (TI_PLAIN_SEQUENCE_LARGE == type_ids_numeric_array.type_identifier2()._d() &&
-                    EK_COMPLETE == type_ids_numeric_array.type_identifier2().seq_ldefn().header().equiv_kind()) ||
-                    (TI_PLAIN_ARRAY_SMALL == type_ids_numeric_array.type_identifier2()._d() &&
-                    EK_COMPLETE == type_ids_numeric_array.type_identifier2().array_sdefn().header().equiv_kind()) ||
-                    (TI_PLAIN_ARRAY_LARGE == type_ids_numeric_array.type_identifier2()._d() &&
-                    EK_COMPLETE == type_ids_numeric_array.type_identifier2().array_ldefn().header().equiv_kind()) ||
-                    (TI_PLAIN_MAP_SMALL == type_ids_numeric_array.type_identifier2()._d() &&
-                    (EK_COMPLETE == type_ids_numeric_array.type_identifier2().map_sdefn().header().equiv_kind() ||
-                    EK_COMPLETE == type_ids_numeric_array.type_identifier2().map_sdefn().key_identifier()->_d())) ||
-                    (TI_PLAIN_MAP_LARGE == type_ids_numeric_array.type_identifier2()._d() &&
-                    (EK_COMPLETE == type_ids_numeric_array.type_identifier2().map_ldefn().header().equiv_kind() ||
-                    EK_COMPLETE == type_ids_numeric_array.type_identifier2().map_ldefn().key_identifier()->_d())))
-            {
-                common_points = TypeObjectUtils::build_common_struct_member(member_id_points, member_flags_points, type_ids_numeric_array.type_identifier2());
-            }
-            else
-            {
-                EPROSIMA_LOG_ERROR(XTYPES_TYPE_REPRESENTATION,
-                        "Structure points member TypeIdentifier inconsistent.");
+                EPROSIMA_LOG_ERROR(XTYPES_TYPE_REPRESENTATION, "Structure points member TypeIdentifier inconsistent.");
                 return;
             }
             MemberName name_points = "points";
@@ -223,19 +124,10 @@ void register_numeric_array_type_identifier()
         }
         CompleteStructType struct_type_numeric_array = TypeObjectUtils::build_complete_struct_type(struct_flags_numeric_array, header_numeric_array, member_seq_numeric_array);
         if (eprosima::fastdds::dds::RETCODE_BAD_PARAMETER ==
-                TypeObjectUtils::build_and_register_struct_type_object(struct_type_numeric_array, type_name_numeric_array.to_string()))
+                TypeObjectUtils::build_and_register_struct_type_object(struct_type_numeric_array, type_name_numeric_array.to_string(), type_ids_numeric_array))
         {
             EPROSIMA_LOG_ERROR(XTYPES_TYPE_REPRESENTATION,
                     "numeric_array already registered in TypeObjectRegistry for a different type.");
-        }
-        return_code_numeric_array =
-            eprosima::fastdds::dds::DomainParticipantFactory::get_instance()->type_object_registry().get_type_identifiers(
-            "numeric_array", type_ids_numeric_array);
-        if (return_code_numeric_array != eprosima::fastdds::dds::RETCODE_OK)
-        {
-            EPROSIMA_LOG_ERROR(XTYPES_TYPE_REPRESENTATION,
-                        "numeric_array: Given Struct TypeIdentifier unknown to TypeObjectRegistry.");
-            return;
         }
     }
 }

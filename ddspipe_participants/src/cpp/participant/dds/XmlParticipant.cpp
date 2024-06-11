@@ -15,10 +15,8 @@
 #include <memory>
 
 #include <fastdds/dds/core/ReturnCode.hpp>
-#include <fastdds/dds/domain/DomainParticipant.hpp>
 #include <fastdds/dds/domain/DomainParticipantFactory.hpp>
-// #include <fastdds/dds/domain/qos/DomainParticipantExtendedQos.hpp>
-// #include <fastrtps/xmlparser/XMLProfileManager.h>
+#include <fastdds/dds/domain/qos/DomainParticipantExtendedQos.hpp>
 
 #include <cpp_utils/Log.hpp>
 #include <cpp_utils/exception/ConfigurationException.hpp>
@@ -41,15 +39,13 @@ XmlParticipant::XmlParticipant(
     : CommonParticipant(participant_configuration, payload_pool, discovery_database)
     , xml_specific_configuration_(*reinterpret_cast<XmlParticipantConfiguration*>(configuration_.get()))
 {
-    if (xml_specific_configuration_.participant_profile.is_set())
-    {
-        fastdds::dds::DomainParticipantExtendedQos extended_qos;
-        if (fastdds::dds::RETCODE_OK == fastdds::dds::DomainParticipantFactory::get_instance()->get_participant_extended_qos_from_profile(
+    fastdds::dds::DomainParticipantExtendedQos extended_qos;
+    if (xml_specific_configuration_.participant_profile.is_set() &&
+    fastdds::dds::RETCODE_OK == fastdds::dds::DomainParticipantFactory::get_instance()->get_participant_extended_qos_from_profile(
                 xml_specific_configuration_.participant_profile.get_value(),
                 extended_qos))
-        {
-            configuration_->domain = extended_qos.domainId();
-        }
+    {
+        configuration_->domain = extended_qos.domainId();
     }
 }
 
