@@ -219,9 +219,9 @@ bool map_structPubSubType::getKey(
     return true;
 }
 
-void map_structPubSubType::register_type_object_representation() const
+void map_structPubSubType::register_type_object_representation()
 {
-    register_map_struct_type_objects();
+    register_map_struct_type_identifier(type_identifiers_);
 }
 
 

@@ -219,9 +219,9 @@ bool union_structPubSubType::getKey(
     return true;
 }
 
-void union_structPubSubType::register_type_object_representation() const
+void union_structPubSubType::register_type_object_representation()
 {
-    register_union_struct_type_objects();
+    register_union_struct_type_identifier(type_identifiers_);
 }
 
 

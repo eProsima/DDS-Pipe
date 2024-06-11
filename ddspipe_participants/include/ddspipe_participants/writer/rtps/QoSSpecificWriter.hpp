@@ -14,6 +14,15 @@
 
 #pragma once
 
+#include <memory>
+
+#include <fastdds/dds/publisher/qos/WriterQos.hpp>
+#include <fastdds/rtps/participant/RTPSParticipant.h>
+
+#include <ddspipe_core/efficiency/payload/PayloadPool.hpp>
+#include <ddspipe_core/types/dds/SpecificEndpointQoS.hpp>
+#include <ddspipe_core/types/participant/ParticipantId.hpp>
+#include <ddspipe_core/types/topic/dds/DdsTopic.hpp>
 #include <ddspipe_participants/library/library_dll.h>
 #include <ddspipe_participants/writer/rtps/CommonWriter.hpp>
 

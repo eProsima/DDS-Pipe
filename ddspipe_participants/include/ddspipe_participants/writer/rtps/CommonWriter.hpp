@@ -14,19 +14,28 @@
 
 #pragma once
 
+#include <atomic>
+
+#include <cpp_utils/pool/IPool.hpp>
+#include <cpp_utils/ReturnCode.hpp>
 #include <cpp_utils/time/time_utils.hpp>
 
-#include <fastdds/rtps/rtps_fwd.h>
+#include <fastdds/dds/publisher/qos/WriterQos.hpp>
 #include <fastdds/rtps/attributes/HistoryAttributes.h>
 #include <fastdds/rtps/attributes/TopicAttributes.h>
-#include <fastdds/dds/publisher/qos/WriterQos.hpp>
-#include <fastdds/rtps/history/WriterHistory.h>
 #include <fastdds/rtps/attributes/WriterAttributes.h>
+#include <fastdds/rtps/common/CacheChange.h>
+#include <fastdds/rtps/common/WriteParams.h>
+#include <fastdds/rtps/history/WriterHistory.h>
+#include <fastdds/rtps/participant/RTPSParticipant.h>
+#include <fastdds/rtps/rtps_fwd.h>
 #include <fastdds/rtps/writer/RTPSWriter.h>
 #include <fastdds/rtps/writer/WriterListener.h>
 
-#include <ddspipe_core/types/participant/ParticipantId.hpp>
+#include <ddspipe_core/efficiency/payload/PayloadPool.hpp>
+#include <ddspipe_core/interface/IRoutingData.hpp>
 #include <ddspipe_core/types/data/RtpsPayloadData.hpp>
+#include <ddspipe_core/types/participant/ParticipantId.hpp>
 #include <ddspipe_core/types/topic/dds/DdsTopic.hpp>
 
 #include <ddspipe_participants/library/library_dll.h>

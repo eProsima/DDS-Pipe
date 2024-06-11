@@ -219,9 +219,9 @@ bool numeric_arrayPubSubType::getKey(
     return true;
 }
 
-void numeric_arrayPubSubType::register_type_object_representation() const
+void numeric_arrayPubSubType::register_type_object_representation()
 {
-    register_numeric_array_type_objects();
+    register_numeric_array_type_identifier(type_identifiers_);
 }
 
 

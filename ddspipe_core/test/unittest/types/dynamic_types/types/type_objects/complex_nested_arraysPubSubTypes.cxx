@@ -219,9 +219,9 @@ bool ThirdLevelElementPubSubType::getKey(
     return true;
 }
 
-void ThirdLevelElementPubSubType::register_type_object_representation() const
+void ThirdLevelElementPubSubType::register_type_object_representation()
 {
-    register_complex_nested_arrays_type_objects();
+    register_ThirdLevelElement_type_identifier(type_identifiers_);
 }
 
 SecondLevelElementPubSubType::SecondLevelElementPubSubType()
@@ -412,9 +412,9 @@ bool SecondLevelElementPubSubType::getKey(
     return true;
 }
 
-void SecondLevelElementPubSubType::register_type_object_representation() const
+void SecondLevelElementPubSubType::register_type_object_representation()
 {
-    register_complex_nested_arrays_type_objects();
+    register_SecondLevelElement_type_identifier(type_identifiers_);
 }
 
 FirstLevelElementPubSubType::FirstLevelElementPubSubType()
@@ -605,9 +605,9 @@ bool FirstLevelElementPubSubType::getKey(
     return true;
 }
 
-void FirstLevelElementPubSubType::register_type_object_representation() const
+void FirstLevelElementPubSubType::register_type_object_representation()
 {
-    register_complex_nested_arrays_type_objects();
+    register_FirstLevelElement_type_identifier(type_identifiers_);
 }
 
 complex_nested_arraysPubSubType::complex_nested_arraysPubSubType()
@@ -798,9 +798,9 @@ bool complex_nested_arraysPubSubType::getKey(
     return true;
 }
 
-void complex_nested_arraysPubSubType::register_type_object_representation() const
+void complex_nested_arraysPubSubType::register_type_object_representation()
 {
-    register_complex_nested_arrays_type_objects();
+    register_complex_nested_arrays_type_identifier(type_identifiers_);
 }
 
 

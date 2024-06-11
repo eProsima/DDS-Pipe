@@ -18,24 +18,16 @@
 
 #include <memory>
 
-#include <tuple>
-#include <unordered_set>
-
-#include <cpp_utils/Log.hpp>
-
 #include <fastdds/dds/domain/DomainParticipantFactory.hpp>
-#include <fastdds/dds/topic/TypeSupport.hpp>
-#include <fastdds/dds/xtypes/dynamic_types/DynamicType.hpp>
 #include <fastdds/dds/xtypes/dynamic_types/DynamicTypeBuilder.hpp>
 #include <fastdds/dds/xtypes/dynamic_types/DynamicTypeBuilderFactory.hpp>
 #include <fastdds/dds/xtypes/type_representation/TypeObject.hpp>
 #include <fastdds/rtps/attributes/RTPSParticipantAttributes.h>
 #include <fastdds/rtps/builtin/data/ReaderProxyData.h>
 #include <fastdds/rtps/builtin/data/WriterProxyData.h>
-#include <fastdds/rtps/transport/shared_mem/SharedMemTransportDescriptor.h>
-#include <fastdds/rtps/transport/UDPv4TransportDescriptor.h>
-#include <fastdds/rtps/participant/RTPSParticipant.h>
 #include <fastdds/rtps/RTPSDomain.h>
+
+#include <cpp_utils/Log.hpp>
 
 #include <ddspipe_core/monitoring/producers/TopicsMonitorProducer.hpp>
 #include <ddspipe_core/types/dynamic_types/types.hpp>
@@ -103,11 +95,14 @@ void DynTypesParticipant::onReaderDiscovery(
             fastrtps::rtps::ReaderDiscoveryInfo&& info)
 {
     fastrtps::rtps::ReaderProxyData proxy_copy(info.info);
+
     // Get type information
     const auto type_info = proxy_copy.type_information().type_information;
     const auto type_name = proxy_copy.typeName();
+
     rtps::CommonParticipant::onReaderDiscovery(participant, std::move(info));
-    on_type_discovery_(participant, type_info, type_name);
+
+    notify_type_discovered_(type_info, type_name);
 }
 
 void DynTypesParticipant::onWriterDiscovery(
@@ -115,55 +110,53 @@ void DynTypesParticipant::onWriterDiscovery(
             fastrtps::rtps::WriterDiscoveryInfo&& info)
 {
     fastrtps::rtps::WriterProxyData proxy_copy(info.info);
+
     // Get type information
     const auto type_info = proxy_copy.type_information().type_information;
     const auto type_name = proxy_copy.typeName();
+
     rtps::CommonParticipant::onWriterDiscovery(participant, std::move(info));
-    on_type_discovery_(participant, type_info, type_name);
+
+    notify_type_discovered_(type_info, type_name);
 }
 
-void DynTypesParticipant::on_type_discovery_(
-            fastrtps::rtps::RTPSParticipant* participant,
+void DynTypesParticipant::notify_type_discovered_(
             const fastdds::dds::xtypes::TypeInformation& type_info,
             const fastcdr::string_255& type_name)
 {
-    auto type_identifier = type_info.complete().typeid_with_size().type_id();
+    const auto type_identifier = type_info.complete().typeid_with_size().type_id();
     fastdds::dds::xtypes::TypeObject dyn_type_object;
     if (fastdds::dds::RETCODE_OK != fastdds::dds::DomainParticipantFactory::get_instance()->type_object_registry().get_type_object(
             type_identifier,
             dyn_type_object))
     {
+        logWarning(DDSPIPE_DYNTYPES_PARTICIPANT,
+            "Failed to get type object of " << type_name << "type");
         return;
     }
 
-    // TODO
+    // Create Dynamic Type
     fastdds::dds::DynamicType::_ref_type dyn_type = fastdds::dds::DynamicTypeBuilderFactory::get_instance()->create_type_w_type_object(
                 dyn_type_object)->build();
     if (!dyn_type)
     {
+        logWarning(DDSPIPE_DYNTYPES_PARTICIPANT,
+            "Failed to create Dynamic Type " << type_name);
         return;
     }
-    else
-    {
-        // Save type_identifier and its associated tyme_name. NOTE: We assume each type_name corresponds to only one type_identifier
-        auto type_name_and_id = std::make_tuple(type_name, type_identifier);
-        internal_notify_type_object_(dyn_type, type_name_and_id);
-    }
-}
 
-void DynTypesParticipant::internal_notify_type_object_(
-        fastdds::dds::DynamicType::_ref_type dynamic_type,
-        const std::tuple<fastcdr::string_255, fastdds::dds::xtypes::TypeIdentifier>& type_name_and_id)
-{
+    // Notify type_identifier and its associated tyme_name.
+    // NOTE: We assume each type_name corresponds to only one type_identifier
     logInfo(DDSPIPE_DYNTYPES_PARTICIPANT,
-            "Participant " << this->id() << " discovered type object " << dynamic_type->get_name());
+            "Participant " << this->id() << " discovered type object " << dyn_type->get_name());
 
-    monitor_type_discovered((dynamic_type->get_name()).to_string());
+    monitor_type_discovered(type_name.to_string());
 
     // Create data containing Dynamic Type
     auto data = std::make_unique<DynamicTypeData>();
-    data->dynamic_type = dynamic_type; // TODO: add constructor with param
-    data->type_ids_tuple = type_name_and_id;
+    data->dynamic_type = dyn_type; // TODO: add constructor with param
+    data->type_name = type_name;
+    data->type_id = type_identifier;
 
     // Insert new data in internal reader queue
     type_object_reader_->simulate_data_reception(std::move(data));

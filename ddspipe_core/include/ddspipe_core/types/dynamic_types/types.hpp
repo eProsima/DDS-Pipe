@@ -14,17 +14,15 @@
 
 #pragma once
 
-#include <tuple>
-
 #include <fastcdr/cdr/fixed_size_string.hpp>
 
 #include <fastdds/dds/xtypes/dynamic_types/DynamicType.hpp>
-#include <fastdds/dds/xtypes/type_representation/TypeObject.hpp>
+#include <fastdds/dds/xtypes/type_representation/detail/dds_xtypes_typeobject.hpp>
 
 #include <ddspipe_core/interface/IRoutingData.hpp>
 #include <ddspipe_core/library/library_dll.h>
-#include <ddspipe_core/types/topic/TopicInternalTypeDiscriminator.hpp>
 #include <ddspipe_core/types/topic/dds/DdsTopic.hpp>
+#include <ddspipe_core/types/topic/TopicInternalTypeDiscriminator.hpp>
 
 namespace eprosima {
 namespace ddspipe {
@@ -42,9 +40,9 @@ struct DynamicTypeData : public core::IRoutingData
 
     fastdds::dds::DynamicType::_ref_type dynamic_type{nullptr};
 
-    std::tuple<fastcdr::string_255, fastdds::dds::xtypes::TypeIdentifier> type_ids_tuple{};
+    fastcdr::string_255 type_name{};
 
-    // fastdds::dds::xtypes::TypeInformation type_information{};
+    fastdds::dds::xtypes::TypeIdentifier type_id{};
 };
 
 DDSPIPE_CORE_DllAPI

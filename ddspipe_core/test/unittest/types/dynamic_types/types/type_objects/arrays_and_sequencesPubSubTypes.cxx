@@ -219,9 +219,9 @@ bool AnInternalObjectPubSubType::getKey(
     return true;
 }
 
-void AnInternalObjectPubSubType::register_type_object_representation() const
+void AnInternalObjectPubSubType::register_type_object_representation()
 {
-    register_arrays_and_sequences_type_objects();
+    register_AnInternalObject_type_identifier(type_identifiers_);
 }
 
 arrays_and_sequencesPubSubType::arrays_and_sequencesPubSubType()
@@ -412,9 +412,9 @@ bool arrays_and_sequencesPubSubType::getKey(
     return true;
 }
 
-void arrays_and_sequencesPubSubType::register_type_object_representation() const
+void arrays_and_sequencesPubSubType::register_type_object_representation()
 {
-    register_arrays_and_sequences_type_objects();
+    register_arrays_and_sequences_type_identifier(type_identifiers_);
 }
 
 
