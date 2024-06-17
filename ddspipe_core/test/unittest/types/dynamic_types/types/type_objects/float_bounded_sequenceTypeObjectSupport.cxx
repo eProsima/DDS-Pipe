@@ -49,7 +49,7 @@ void register_float_bounded_sequence_type_identifier(
         "float_bounded_sequence", type_ids_float_bounded_sequence);
     if (eprosima::fastdds::dds::RETCODE_OK != return_code_float_bounded_sequence)
     {
-        StructTypeFlag struct_flags_float_bounded_sequence = TypeObjectUtils::build_struct_type_flag(eprosima::fastdds::dds::xtypes::ExtensibilityKind::NOT_APPLIED,
+        StructTypeFlag struct_flags_float_bounded_sequence = TypeObjectUtils::build_struct_type_flag(eprosima::fastdds::dds::xtypes::ExtensibilityKind::APPENDABLE,
                 false, false);
         QualifiedTypeName type_name_float_bounded_sequence = "float_bounded_sequence";
         eprosima::fastcdr::optional<AppliedBuiltinTypeAnnotations> type_ann_builtin_float_bounded_sequence;
@@ -103,7 +103,7 @@ void register_float_bounded_sequence_type_identifier(
                     }
                 }
             }
-            StructMemberFlag member_flags_numbers = TypeObjectUtils::build_struct_member_flag(eprosima::fastdds::dds::xtypes::TryConstructKind::NOT_APPLIED,
+            StructMemberFlag member_flags_numbers = TypeObjectUtils::build_struct_member_flag(eprosima::fastdds::dds::xtypes::TryConstructFailAction::DISCARD,
                     false, false, false, false);
             MemberId member_id_numbers = 0x00000000;
             bool common_numbers_ec {false};

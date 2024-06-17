@@ -106,9 +106,8 @@ void register_LogEntry_type_identifier(
         "LogEntry", type_ids_LogEntry);
     if (eprosima::fastdds::dds::RETCODE_OK != return_code_LogEntry)
     {
-        StructTypeFlag struct_flags_LogEntry = TypeObjectUtils::build_struct_type_flag(eprosima::fastdds::dds::xtypes::ExtensibilityKind::NOT_APPLIED,
+        StructTypeFlag struct_flags_LogEntry = TypeObjectUtils::build_struct_type_flag(eprosima::fastdds::dds::xtypes::ExtensibilityKind::APPENDABLE,
                 false, false);
-        static_cast<void>(return_code_LogEntry);
         QualifiedTypeName type_name_LogEntry = "LogEntry";
         eprosima::fastcdr::optional<AppliedBuiltinTypeAnnotations> type_ann_builtin_LogEntry;
         eprosima::fastcdr::optional<AppliedAnnotationSeq> ann_custom_LogEntry;
@@ -129,7 +128,7 @@ void register_LogEntry_type_identifier(
                         "event Structure member TypeIdentifier unknown to TypeObjectRegistry.");
                 return;
             }
-            StructMemberFlag member_flags_event = TypeObjectUtils::build_struct_member_flag(eprosima::fastdds::dds::xtypes::TryConstructKind::NOT_APPLIED,
+            StructMemberFlag member_flags_event = TypeObjectUtils::build_struct_member_flag(eprosima::fastdds::dds::xtypes::TryConstructFailAction::DISCARD,
                     false, false, true, false);
             MemberId member_id_event = 0x00000000;
             bool common_event_ec {false};
@@ -170,7 +169,7 @@ void register_LogEntry_type_identifier(
             {
             ::register_Kind_type_identifier(type_ids_kind);
             }
-            StructMemberFlag member_flags_kind = TypeObjectUtils::build_struct_member_flag(eprosima::fastdds::dds::xtypes::TryConstructKind::NOT_APPLIED,
+            StructMemberFlag member_flags_kind = TypeObjectUtils::build_struct_member_flag(eprosima::fastdds::dds::xtypes::TryConstructFailAction::DISCARD,
                     false, false, false, false);
             MemberId member_id_kind = 0x00000001;
             bool common_kind_ec {false};
@@ -208,7 +207,7 @@ void register_LogEntry_type_identifier(
                     }
                 }
             }
-            StructMemberFlag member_flags_category = TypeObjectUtils::build_struct_member_flag(eprosima::fastdds::dds::xtypes::TryConstructKind::NOT_APPLIED,
+            StructMemberFlag member_flags_category = TypeObjectUtils::build_struct_member_flag(eprosima::fastdds::dds::xtypes::TryConstructFailAction::DISCARD,
                     false, false, false, false);
             MemberId member_id_category = 0x00000002;
             bool common_category_ec {false};
@@ -246,7 +245,7 @@ void register_LogEntry_type_identifier(
                     }
                 }
             }
-            StructMemberFlag member_flags_message = TypeObjectUtils::build_struct_member_flag(eprosima::fastdds::dds::xtypes::TryConstructKind::NOT_APPLIED,
+            StructMemberFlag member_flags_message = TypeObjectUtils::build_struct_member_flag(eprosima::fastdds::dds::xtypes::TryConstructFailAction::DISCARD,
                     false, false, false, false);
             MemberId member_id_message = 0x00000003;
             bool common_message_ec {false};
@@ -284,7 +283,7 @@ void register_LogEntry_type_identifier(
                     }
                 }
             }
-            StructMemberFlag member_flags_timestamp = TypeObjectUtils::build_struct_member_flag(eprosima::fastdds::dds::xtypes::TryConstructKind::NOT_APPLIED,
+            StructMemberFlag member_flags_timestamp = TypeObjectUtils::build_struct_member_flag(eprosima::fastdds::dds::xtypes::TryConstructFailAction::DISCARD,
                     false, false, false, false);
             MemberId member_id_timestamp = 0x00000004;
             bool common_timestamp_ec {false};

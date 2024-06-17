@@ -49,7 +49,7 @@ void register_TheOtherObject_type_identifier(
         "TheOtherObject", type_ids_TheOtherObject);
     if (eprosima::fastdds::dds::RETCODE_OK != return_code_TheOtherObject)
     {
-        StructTypeFlag struct_flags_TheOtherObject = TypeObjectUtils::build_struct_type_flag(eprosima::fastdds::dds::xtypes::ExtensibilityKind::NOT_APPLIED,
+        StructTypeFlag struct_flags_TheOtherObject = TypeObjectUtils::build_struct_type_flag(eprosima::fastdds::dds::xtypes::ExtensibilityKind::APPENDABLE,
                 false, false);
         QualifiedTypeName type_name_TheOtherObject = "TheOtherObject";
         eprosima::fastcdr::optional<AppliedBuiltinTypeAnnotations> type_ann_builtin_TheOtherObject;
@@ -71,7 +71,7 @@ void register_TheOtherObject_type_identifier(
                         "some_num Structure member TypeIdentifier unknown to TypeObjectRegistry.");
                 return;
             }
-            StructMemberFlag member_flags_some_num = TypeObjectUtils::build_struct_member_flag(eprosima::fastdds::dds::xtypes::TryConstructKind::NOT_APPLIED,
+            StructMemberFlag member_flags_some_num = TypeObjectUtils::build_struct_member_flag(eprosima::fastdds::dds::xtypes::TryConstructFailAction::DISCARD,
                     false, false, false, false);
             MemberId member_id_some_num = 0x00000000;
             bool common_some_num_ec {false};
@@ -108,7 +108,7 @@ void register_basic_struct_type_identifier(
         "basic_struct", type_ids_basic_struct);
     if (eprosima::fastdds::dds::RETCODE_OK != return_code_basic_struct)
     {
-        StructTypeFlag struct_flags_basic_struct = TypeObjectUtils::build_struct_type_flag(eprosima::fastdds::dds::xtypes::ExtensibilityKind::NOT_APPLIED,
+        StructTypeFlag struct_flags_basic_struct = TypeObjectUtils::build_struct_type_flag(eprosima::fastdds::dds::xtypes::ExtensibilityKind::APPENDABLE,
                 false, false);
         QualifiedTypeName type_name_basic_struct = "basic_struct";
         eprosima::fastcdr::optional<AppliedBuiltinTypeAnnotations> type_ann_builtin_basic_struct;
@@ -128,7 +128,7 @@ void register_basic_struct_type_identifier(
             {
             ::register_TheOtherObject_type_identifier(type_ids_sub_struct);
             }
-            StructMemberFlag member_flags_sub_struct = TypeObjectUtils::build_struct_member_flag(eprosima::fastdds::dds::xtypes::TryConstructKind::NOT_APPLIED,
+            StructMemberFlag member_flags_sub_struct = TypeObjectUtils::build_struct_member_flag(eprosima::fastdds::dds::xtypes::TryConstructFailAction::DISCARD,
                     false, false, false, false);
             MemberId member_id_sub_struct = 0x00000000;
             bool common_sub_struct_ec {false};

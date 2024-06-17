@@ -49,9 +49,8 @@ void register_DdsTopicData_type_identifier(
         "DdsTopicData", type_ids_DdsTopicData);
     if (eprosima::fastdds::dds::RETCODE_OK != return_code_DdsTopicData)
     {
-        StructTypeFlag struct_flags_DdsTopicData = TypeObjectUtils::build_struct_type_flag(eprosima::fastdds::dds::xtypes::ExtensibilityKind::NOT_APPLIED,
+        StructTypeFlag struct_flags_DdsTopicData = TypeObjectUtils::build_struct_type_flag(eprosima::fastdds::dds::xtypes::ExtensibilityKind::APPENDABLE,
                 false, false);
-        static_cast<void>(return_code_DdsTopicData);
         QualifiedTypeName type_name_DdsTopicData = "DdsTopicData";
         eprosima::fastcdr::optional<AppliedBuiltinTypeAnnotations> type_ann_builtin_DdsTopicData;
         eprosima::fastcdr::optional<AppliedAnnotationSeq> ann_custom_DdsTopicData;
@@ -80,7 +79,7 @@ void register_DdsTopicData_type_identifier(
                     }
                 }
             }
-            StructMemberFlag member_flags_participant_id = TypeObjectUtils::build_struct_member_flag(eprosima::fastdds::dds::xtypes::TryConstructKind::NOT_APPLIED,
+            StructMemberFlag member_flags_participant_id = TypeObjectUtils::build_struct_member_flag(eprosima::fastdds::dds::xtypes::TryConstructFailAction::DISCARD,
                     false, false, false, false);
             MemberId member_id_participant_id = 0x00000000;
             bool common_participant_id_ec {false};
@@ -110,7 +109,7 @@ void register_DdsTopicData_type_identifier(
                         "msgs_lost Structure member TypeIdentifier unknown to TypeObjectRegistry.");
                 return;
             }
-            StructMemberFlag member_flags_msgs_lost = TypeObjectUtils::build_struct_member_flag(eprosima::fastdds::dds::xtypes::TryConstructKind::NOT_APPLIED,
+            StructMemberFlag member_flags_msgs_lost = TypeObjectUtils::build_struct_member_flag(eprosima::fastdds::dds::xtypes::TryConstructFailAction::DISCARD,
                     false, false, false, false);
             MemberId member_id_msgs_lost = 0x00000001;
             bool common_msgs_lost_ec {false};
@@ -140,7 +139,7 @@ void register_DdsTopicData_type_identifier(
                         "msgs_received Structure member TypeIdentifier unknown to TypeObjectRegistry.");
                 return;
             }
-            StructMemberFlag member_flags_msgs_received = TypeObjectUtils::build_struct_member_flag(eprosima::fastdds::dds::xtypes::TryConstructKind::NOT_APPLIED,
+            StructMemberFlag member_flags_msgs_received = TypeObjectUtils::build_struct_member_flag(eprosima::fastdds::dds::xtypes::TryConstructFailAction::DISCARD,
                     false, false, false, false);
             MemberId member_id_msgs_received = 0x00000002;
             bool common_msgs_received_ec {false};
@@ -170,7 +169,7 @@ void register_DdsTopicData_type_identifier(
                         "msg_rx_rate Structure member TypeIdentifier unknown to TypeObjectRegistry.");
                 return;
             }
-            StructMemberFlag member_flags_msg_rx_rate = TypeObjectUtils::build_struct_member_flag(eprosima::fastdds::dds::xtypes::TryConstructKind::NOT_APPLIED,
+            StructMemberFlag member_flags_msg_rx_rate = TypeObjectUtils::build_struct_member_flag(eprosima::fastdds::dds::xtypes::TryConstructFailAction::DISCARD,
                     false, false, false, false);
             MemberId member_id_msg_rx_rate = 0x00000003;
             bool common_msg_rx_rate_ec {false};
@@ -207,9 +206,8 @@ void register_DdsTopic_type_identifier(
         "DdsTopic", type_ids_DdsTopic);
     if (eprosima::fastdds::dds::RETCODE_OK != return_code_DdsTopic)
     {
-        StructTypeFlag struct_flags_DdsTopic = TypeObjectUtils::build_struct_type_flag(eprosima::fastdds::dds::xtypes::ExtensibilityKind::NOT_APPLIED,
+        StructTypeFlag struct_flags_DdsTopic = TypeObjectUtils::build_struct_type_flag(eprosima::fastdds::dds::xtypes::ExtensibilityKind::APPENDABLE,
                 false, false);
-        static_cast<void>(return_code_DdsTopic);
         QualifiedTypeName type_name_DdsTopic = "DdsTopic";
         eprosima::fastcdr::optional<AppliedBuiltinTypeAnnotations> type_ann_builtin_DdsTopic;
         eprosima::fastcdr::optional<AppliedAnnotationSeq> ann_custom_DdsTopic;
@@ -238,7 +236,7 @@ void register_DdsTopic_type_identifier(
                     }
                 }
             }
-            StructMemberFlag member_flags_name = TypeObjectUtils::build_struct_member_flag(eprosima::fastdds::dds::xtypes::TryConstructKind::NOT_APPLIED,
+            StructMemberFlag member_flags_name = TypeObjectUtils::build_struct_member_flag(eprosima::fastdds::dds::xtypes::TryConstructFailAction::DISCARD,
                     false, false, false, false);
             MemberId member_id_name = 0x00000000;
             bool common_name_ec {false};
@@ -276,7 +274,7 @@ void register_DdsTopic_type_identifier(
                     }
                 }
             }
-            StructMemberFlag member_flags_type_name = TypeObjectUtils::build_struct_member_flag(eprosima::fastdds::dds::xtypes::TryConstructKind::NOT_APPLIED,
+            StructMemberFlag member_flags_type_name = TypeObjectUtils::build_struct_member_flag(eprosima::fastdds::dds::xtypes::TryConstructFailAction::DISCARD,
                     false, false, false, false);
             MemberId member_id_type_name = 0x00000001;
             bool common_type_name_ec {false};
@@ -306,7 +304,7 @@ void register_DdsTopic_type_identifier(
                         "type_discovered Structure member TypeIdentifier unknown to TypeObjectRegistry.");
                 return;
             }
-            StructMemberFlag member_flags_type_discovered = TypeObjectUtils::build_struct_member_flag(eprosima::fastdds::dds::xtypes::TryConstructKind::NOT_APPLIED,
+            StructMemberFlag member_flags_type_discovered = TypeObjectUtils::build_struct_member_flag(eprosima::fastdds::dds::xtypes::TryConstructFailAction::DISCARD,
                     false, false, false, false);
             MemberId member_id_type_discovered = 0x00000002;
             bool common_type_discovered_ec {false};
@@ -336,7 +334,7 @@ void register_DdsTopic_type_identifier(
                         "type_mismatch Structure member TypeIdentifier unknown to TypeObjectRegistry.");
                 return;
             }
-            StructMemberFlag member_flags_type_mismatch = TypeObjectUtils::build_struct_member_flag(eprosima::fastdds::dds::xtypes::TryConstructKind::NOT_APPLIED,
+            StructMemberFlag member_flags_type_mismatch = TypeObjectUtils::build_struct_member_flag(eprosima::fastdds::dds::xtypes::TryConstructFailAction::DISCARD,
                     false, false, false, false);
             MemberId member_id_type_mismatch = 0x00000003;
             bool common_type_mismatch_ec {false};
@@ -366,7 +364,7 @@ void register_DdsTopic_type_identifier(
                         "qos_mismatch Structure member TypeIdentifier unknown to TypeObjectRegistry.");
                 return;
             }
-            StructMemberFlag member_flags_qos_mismatch = TypeObjectUtils::build_struct_member_flag(eprosima::fastdds::dds::xtypes::TryConstructKind::NOT_APPLIED,
+            StructMemberFlag member_flags_qos_mismatch = TypeObjectUtils::build_struct_member_flag(eprosima::fastdds::dds::xtypes::TryConstructFailAction::DISCARD,
                     false, false, false, false);
             MemberId member_id_qos_mismatch = 0x00000004;
             bool common_qos_mismatch_ec {false};
@@ -426,7 +424,7 @@ void register_DdsTopic_type_identifier(
                     }
                 }
             }
-            StructMemberFlag member_flags_data = TypeObjectUtils::build_struct_member_flag(eprosima::fastdds::dds::xtypes::TryConstructKind::NOT_APPLIED,
+            StructMemberFlag member_flags_data = TypeObjectUtils::build_struct_member_flag(eprosima::fastdds::dds::xtypes::TryConstructFailAction::DISCARD,
                     false, false, false, false);
             MemberId member_id_data = 0x00000005;
             bool common_data_ec {false};
@@ -463,9 +461,8 @@ void register_MonitoringTopics_type_identifier(
         "MonitoringTopics", type_ids_MonitoringTopics);
     if (eprosima::fastdds::dds::RETCODE_OK != return_code_MonitoringTopics)
     {
-        StructTypeFlag struct_flags_MonitoringTopics = TypeObjectUtils::build_struct_type_flag(eprosima::fastdds::dds::xtypes::ExtensibilityKind::NOT_APPLIED,
+        StructTypeFlag struct_flags_MonitoringTopics = TypeObjectUtils::build_struct_type_flag(eprosima::fastdds::dds::xtypes::ExtensibilityKind::APPENDABLE,
                 false, false);
-        static_cast<void>(return_code_MonitoringTopics);
         QualifiedTypeName type_name_MonitoringTopics = "MonitoringTopics";
         eprosima::fastcdr::optional<AppliedBuiltinTypeAnnotations> type_ann_builtin_MonitoringTopics;
         eprosima::fastcdr::optional<AppliedAnnotationSeq> ann_custom_MonitoringTopics;
@@ -516,7 +513,7 @@ void register_MonitoringTopics_type_identifier(
                     }
                 }
             }
-            StructMemberFlag member_flags_topics = TypeObjectUtils::build_struct_member_flag(eprosima::fastdds::dds::xtypes::TryConstructKind::NOT_APPLIED,
+            StructMemberFlag member_flags_topics = TypeObjectUtils::build_struct_member_flag(eprosima::fastdds::dds::xtypes::TryConstructFailAction::DISCARD,
                     false, false, false, false);
             MemberId member_id_topics = 0x00000000;
             bool common_topics_ec {false};
