@@ -49,7 +49,7 @@ void register_map_struct_type_identifier(
         "map_struct", type_ids_map_struct);
     if (eprosima::fastdds::dds::RETCODE_OK != return_code_map_struct)
     {
-        StructTypeFlag struct_flags_map_struct = TypeObjectUtils::build_struct_type_flag(eprosima::fastdds::dds::xtypes::ExtensibilityKind::NOT_APPLIED,
+        StructTypeFlag struct_flags_map_struct = TypeObjectUtils::build_struct_type_flag(eprosima::fastdds::dds::xtypes::ExtensibilityKind::APPENDABLE,
                 false, false);
         QualifiedTypeName type_name_map_struct = "map_struct";
         eprosima::fastcdr::optional<AppliedBuiltinTypeAnnotations> type_ann_builtin_map_struct;
@@ -138,7 +138,7 @@ void register_map_struct_type_identifier(
                     }
                 }
             }
-            StructMemberFlag member_flags_my_map = TypeObjectUtils::build_struct_member_flag(eprosima::fastdds::dds::xtypes::TryConstructKind::NOT_APPLIED,
+            StructMemberFlag member_flags_my_map = TypeObjectUtils::build_struct_member_flag(eprosima::fastdds::dds::xtypes::TryConstructFailAction::DISCARD,
                     false, false, false, false);
             MemberId member_id_my_map = 0x00000000;
             bool common_my_map_ec {false};

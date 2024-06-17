@@ -49,7 +49,7 @@ void register_ThirdLevelElement_type_identifier(
         "ThirdLevelElement", type_ids_ThirdLevelElement);
     if (eprosima::fastdds::dds::RETCODE_OK != return_code_ThirdLevelElement)
     {
-        StructTypeFlag struct_flags_ThirdLevelElement = TypeObjectUtils::build_struct_type_flag(eprosima::fastdds::dds::xtypes::ExtensibilityKind::NOT_APPLIED,
+        StructTypeFlag struct_flags_ThirdLevelElement = TypeObjectUtils::build_struct_type_flag(eprosima::fastdds::dds::xtypes::ExtensibilityKind::APPENDABLE,
                 false, false);
         QualifiedTypeName type_name_ThirdLevelElement = "ThirdLevelElement";
         eprosima::fastcdr::optional<AppliedBuiltinTypeAnnotations> type_ann_builtin_ThirdLevelElement;
@@ -71,7 +71,7 @@ void register_ThirdLevelElement_type_identifier(
                         "x Structure member TypeIdentifier unknown to TypeObjectRegistry.");
                 return;
             }
-            StructMemberFlag member_flags_x = TypeObjectUtils::build_struct_member_flag(eprosima::fastdds::dds::xtypes::TryConstructKind::NOT_APPLIED,
+            StructMemberFlag member_flags_x = TypeObjectUtils::build_struct_member_flag(eprosima::fastdds::dds::xtypes::TryConstructFailAction::DISCARD,
                     false, false, false, false);
             MemberId member_id_x = 0x00000000;
             bool common_x_ec {false};
@@ -101,7 +101,7 @@ void register_ThirdLevelElement_type_identifier(
                         "y Structure member TypeIdentifier unknown to TypeObjectRegistry.");
                 return;
             }
-            StructMemberFlag member_flags_y = TypeObjectUtils::build_struct_member_flag(eprosima::fastdds::dds::xtypes::TryConstructKind::NOT_APPLIED,
+            StructMemberFlag member_flags_y = TypeObjectUtils::build_struct_member_flag(eprosima::fastdds::dds::xtypes::TryConstructFailAction::DISCARD,
                     false, false, false, false);
             MemberId member_id_y = 0x00000001;
             bool common_y_ec {false};
@@ -138,7 +138,7 @@ void register_SecondLevelElement_type_identifier(
         "SecondLevelElement", type_ids_SecondLevelElement);
     if (eprosima::fastdds::dds::RETCODE_OK != return_code_SecondLevelElement)
     {
-        StructTypeFlag struct_flags_SecondLevelElement = TypeObjectUtils::build_struct_type_flag(eprosima::fastdds::dds::xtypes::ExtensibilityKind::NOT_APPLIED,
+        StructTypeFlag struct_flags_SecondLevelElement = TypeObjectUtils::build_struct_type_flag(eprosima::fastdds::dds::xtypes::ExtensibilityKind::APPENDABLE,
                 false, false);
         QualifiedTypeName type_name_SecondLevelElement = "SecondLevelElement";
         eprosima::fastcdr::optional<AppliedBuiltinTypeAnnotations> type_ann_builtin_SecondLevelElement;
@@ -158,7 +158,7 @@ void register_SecondLevelElement_type_identifier(
             {
             ::register_ThirdLevelElement_type_identifier(type_ids_an_element_alone);
             }
-            StructMemberFlag member_flags_an_element_alone = TypeObjectUtils::build_struct_member_flag(eprosima::fastdds::dds::xtypes::TryConstructKind::NOT_APPLIED,
+            StructMemberFlag member_flags_an_element_alone = TypeObjectUtils::build_struct_member_flag(eprosima::fastdds::dds::xtypes::TryConstructFailAction::DISCARD,
                     false, false, false, false);
             MemberId member_id_an_element_alone = 0x00000000;
             bool common_an_element_alone_ec {false};
@@ -218,7 +218,7 @@ void register_SecondLevelElement_type_identifier(
                     }
                 }
             }
-            StructMemberFlag member_flags_a_limited_other_value = TypeObjectUtils::build_struct_member_flag(eprosima::fastdds::dds::xtypes::TryConstructKind::NOT_APPLIED,
+            StructMemberFlag member_flags_a_limited_other_value = TypeObjectUtils::build_struct_member_flag(eprosima::fastdds::dds::xtypes::TryConstructFailAction::DISCARD,
                     false, false, false, false);
             MemberId member_id_a_limited_other_value = 0x00000001;
             bool common_a_limited_other_value_ec {false};
@@ -255,7 +255,7 @@ void register_FirstLevelElement_type_identifier(
         "FirstLevelElement", type_ids_FirstLevelElement);
     if (eprosima::fastdds::dds::RETCODE_OK != return_code_FirstLevelElement)
     {
-        StructTypeFlag struct_flags_FirstLevelElement = TypeObjectUtils::build_struct_type_flag(eprosima::fastdds::dds::xtypes::ExtensibilityKind::NOT_APPLIED,
+        StructTypeFlag struct_flags_FirstLevelElement = TypeObjectUtils::build_struct_type_flag(eprosima::fastdds::dds::xtypes::ExtensibilityKind::APPENDABLE,
                 false, false);
         QualifiedTypeName type_name_FirstLevelElement = "FirstLevelElement";
         eprosima::fastcdr::optional<AppliedBuiltinTypeAnnotations> type_ann_builtin_FirstLevelElement;
@@ -285,7 +285,7 @@ void register_FirstLevelElement_type_identifier(
                     }
                 }
             }
-            StructMemberFlag member_flags_useless_name = TypeObjectUtils::build_struct_member_flag(eprosima::fastdds::dds::xtypes::TryConstructKind::NOT_APPLIED,
+            StructMemberFlag member_flags_useless_name = TypeObjectUtils::build_struct_member_flag(eprosima::fastdds::dds::xtypes::TryConstructFailAction::DISCARD,
                     false, false, false, false);
             MemberId member_id_useless_name = 0x00000000;
             bool common_useless_name_ec {false};
@@ -345,7 +345,7 @@ void register_FirstLevelElement_type_identifier(
                     }
                 }
             }
-            StructMemberFlag member_flags_sub = TypeObjectUtils::build_struct_member_flag(eprosima::fastdds::dds::xtypes::TryConstructKind::NOT_APPLIED,
+            StructMemberFlag member_flags_sub = TypeObjectUtils::build_struct_member_flag(eprosima::fastdds::dds::xtypes::TryConstructFailAction::DISCARD,
                     false, false, false, false);
             MemberId member_id_sub = 0x00000001;
             bool common_sub_ec {false};
@@ -373,7 +373,7 @@ void register_FirstLevelElement_type_identifier(
             {
             ::register_ThirdLevelElement_type_identifier(type_ids_an_element_alone);
             }
-            StructMemberFlag member_flags_an_element_alone = TypeObjectUtils::build_struct_member_flag(eprosima::fastdds::dds::xtypes::TryConstructKind::NOT_APPLIED,
+            StructMemberFlag member_flags_an_element_alone = TypeObjectUtils::build_struct_member_flag(eprosima::fastdds::dds::xtypes::TryConstructFailAction::DISCARD,
                     false, false, false, false);
             MemberId member_id_an_element_alone = 0x00000002;
             bool common_an_element_alone_ec {false};
@@ -410,7 +410,7 @@ void register_complex_nested_arrays_type_identifier(
         "complex_nested_arrays", type_ids_complex_nested_arrays);
     if (eprosima::fastdds::dds::RETCODE_OK != return_code_complex_nested_arrays)
     {
-        StructTypeFlag struct_flags_complex_nested_arrays = TypeObjectUtils::build_struct_type_flag(eprosima::fastdds::dds::xtypes::ExtensibilityKind::NOT_APPLIED,
+        StructTypeFlag struct_flags_complex_nested_arrays = TypeObjectUtils::build_struct_type_flag(eprosima::fastdds::dds::xtypes::ExtensibilityKind::APPENDABLE,
                 false, false);
         QualifiedTypeName type_name_complex_nested_arrays = "complex_nested_arrays";
         eprosima::fastcdr::optional<AppliedBuiltinTypeAnnotations> type_ann_builtin_complex_nested_arrays;
@@ -464,7 +464,7 @@ void register_complex_nested_arrays_type_identifier(
                     }
                 }
             }
-            StructMemberFlag member_flags_array_of_elements = TypeObjectUtils::build_struct_member_flag(eprosima::fastdds::dds::xtypes::TryConstructKind::NOT_APPLIED,
+            StructMemberFlag member_flags_array_of_elements = TypeObjectUtils::build_struct_member_flag(eprosima::fastdds::dds::xtypes::TryConstructFailAction::DISCARD,
                     false, false, false, false);
             MemberId member_id_array_of_elements = 0x00000000;
             bool common_array_of_elements_ec {false};
