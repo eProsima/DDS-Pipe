@@ -17,6 +17,7 @@
 
 #include <cpp_utils/exception/InitializationException.hpp>
 #include <cpp_utils/Log.hpp>
+#include <cpp_utils/qos/qos_utils.hpp>
 
 #include <ddspipe_core/interface/IRoutingData.hpp>
 #include <ddspipe_core/monitoring/producers/StatusMonitorProducer.hpp>
@@ -447,10 +448,11 @@ void CommonReader::onReaderMatched(
 
 void CommonReader::on_requested_incompatible_qos(
         fastrtps::rtps::RTPSReader*,
-        eprosima::fastdds::dds::PolicyMask qos) noexcept
+        fastdds::dds::PolicyMask qos) noexcept
 {
     logWarning(DDSPIPE_RTPS_COMMONREADER_LISTENER,
-            "TOPIC_MISMATCH_QOS | Reader " << *this << " found a remote Writer with incompatible QoS: " << qos);
+            "TOPIC_MISMATCH_QOS | Reader " << *this << " found a remote Writer with incompatible QoS: " <<
+            utils::qos_policy_mask_to_string(qos));
 
     monitor_qos_mismatch(topic_);
     monitor_error("QOS_MISMATCH");
