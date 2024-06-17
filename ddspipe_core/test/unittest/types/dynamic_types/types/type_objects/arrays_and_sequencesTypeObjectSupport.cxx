@@ -49,7 +49,7 @@ void register_AnInternalObject_type_identifier(
         "AnInternalObject", type_ids_AnInternalObject);
     if (eprosima::fastdds::dds::RETCODE_OK != return_code_AnInternalObject)
     {
-        StructTypeFlag struct_flags_AnInternalObject = TypeObjectUtils::build_struct_type_flag(eprosima::fastdds::dds::xtypes::ExtensibilityKind::NOT_APPLIED,
+        StructTypeFlag struct_flags_AnInternalObject = TypeObjectUtils::build_struct_type_flag(eprosima::fastdds::dds::xtypes::ExtensibilityKind::APPENDABLE,
                 false, false);
         QualifiedTypeName type_name_AnInternalObject = "AnInternalObject";
         eprosima::fastcdr::optional<AppliedBuiltinTypeAnnotations> type_ann_builtin_AnInternalObject;
@@ -71,7 +71,7 @@ void register_AnInternalObject_type_identifier(
                         "x Structure member TypeIdentifier unknown to TypeObjectRegistry.");
                 return;
             }
-            StructMemberFlag member_flags_x = TypeObjectUtils::build_struct_member_flag(eprosima::fastdds::dds::xtypes::TryConstructKind::NOT_APPLIED,
+            StructMemberFlag member_flags_x = TypeObjectUtils::build_struct_member_flag(eprosima::fastdds::dds::xtypes::TryConstructFailAction::DISCARD,
                     false, false, false, false);
             MemberId member_id_x = 0x00000000;
             bool common_x_ec {false};
@@ -101,7 +101,7 @@ void register_AnInternalObject_type_identifier(
                         "positive Structure member TypeIdentifier unknown to TypeObjectRegistry.");
                 return;
             }
-            StructMemberFlag member_flags_positive = TypeObjectUtils::build_struct_member_flag(eprosima::fastdds::dds::xtypes::TryConstructKind::NOT_APPLIED,
+            StructMemberFlag member_flags_positive = TypeObjectUtils::build_struct_member_flag(eprosima::fastdds::dds::xtypes::TryConstructFailAction::DISCARD,
                     false, false, false, false);
             MemberId member_id_positive = 0x00000001;
             bool common_positive_ec {false};
@@ -138,7 +138,7 @@ void register_arrays_and_sequences_type_identifier(
         "arrays_and_sequences", type_ids_arrays_and_sequences);
     if (eprosima::fastdds::dds::RETCODE_OK != return_code_arrays_and_sequences)
     {
-        StructTypeFlag struct_flags_arrays_and_sequences = TypeObjectUtils::build_struct_type_flag(eprosima::fastdds::dds::xtypes::ExtensibilityKind::NOT_APPLIED,
+        StructTypeFlag struct_flags_arrays_and_sequences = TypeObjectUtils::build_struct_type_flag(eprosima::fastdds::dds::xtypes::ExtensibilityKind::APPENDABLE,
                 false, false);
         QualifiedTypeName type_name_arrays_and_sequences = "arrays_and_sequences";
         eprosima::fastcdr::optional<AppliedBuiltinTypeAnnotations> type_ann_builtin_arrays_and_sequences;
@@ -190,7 +190,7 @@ void register_arrays_and_sequences_type_identifier(
                     }
                 }
             }
-            StructMemberFlag member_flags_unlimited_vector = TypeObjectUtils::build_struct_member_flag(eprosima::fastdds::dds::xtypes::TryConstructKind::NOT_APPLIED,
+            StructMemberFlag member_flags_unlimited_vector = TypeObjectUtils::build_struct_member_flag(eprosima::fastdds::dds::xtypes::TryConstructFailAction::DISCARD,
                     false, false, false, false);
             MemberId member_id_unlimited_vector = 0x00000000;
             bool common_unlimited_vector_ec {false};
@@ -250,7 +250,7 @@ void register_arrays_and_sequences_type_identifier(
                     }
                 }
             }
-            StructMemberFlag member_flags_limited_vector = TypeObjectUtils::build_struct_member_flag(eprosima::fastdds::dds::xtypes::TryConstructKind::NOT_APPLIED,
+            StructMemberFlag member_flags_limited_vector = TypeObjectUtils::build_struct_member_flag(eprosima::fastdds::dds::xtypes::TryConstructFailAction::DISCARD,
                     false, false, false, false);
             MemberId member_id_limited_vector = 0x00000001;
             bool common_limited_vector_ec {false};
@@ -312,7 +312,7 @@ void register_arrays_and_sequences_type_identifier(
                     }
                 }
             }
-            StructMemberFlag member_flags_limited_array = TypeObjectUtils::build_struct_member_flag(eprosima::fastdds::dds::xtypes::TryConstructKind::NOT_APPLIED,
+            StructMemberFlag member_flags_limited_array = TypeObjectUtils::build_struct_member_flag(eprosima::fastdds::dds::xtypes::TryConstructFailAction::DISCARD,
                     false, false, false, false);
             MemberId member_id_limited_array = 0x00000002;
             bool common_limited_array_ec {false};

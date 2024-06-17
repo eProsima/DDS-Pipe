@@ -49,9 +49,8 @@ void register_MonitoringErrorStatus_type_identifier(
         "MonitoringErrorStatus", type_ids_MonitoringErrorStatus);
     if (eprosima::fastdds::dds::RETCODE_OK != return_code_MonitoringErrorStatus)
     {
-        StructTypeFlag struct_flags_MonitoringErrorStatus = TypeObjectUtils::build_struct_type_flag(eprosima::fastdds::dds::xtypes::ExtensibilityKind::NOT_APPLIED,
+        StructTypeFlag struct_flags_MonitoringErrorStatus = TypeObjectUtils::build_struct_type_flag(eprosima::fastdds::dds::xtypes::ExtensibilityKind::APPENDABLE,
                 false, false);
-        static_cast<void>(return_code_MonitoringErrorStatus);
         QualifiedTypeName type_name_MonitoringErrorStatus = "MonitoringErrorStatus";
         eprosima::fastcdr::optional<AppliedBuiltinTypeAnnotations> type_ann_builtin_MonitoringErrorStatus;
         eprosima::fastcdr::optional<AppliedAnnotationSeq> ann_custom_MonitoringErrorStatus;
@@ -72,7 +71,7 @@ void register_MonitoringErrorStatus_type_identifier(
                         "type_mismatch Structure member TypeIdentifier unknown to TypeObjectRegistry.");
                 return;
             }
-            StructMemberFlag member_flags_type_mismatch = TypeObjectUtils::build_struct_member_flag(eprosima::fastdds::dds::xtypes::TryConstructKind::NOT_APPLIED,
+            StructMemberFlag member_flags_type_mismatch = TypeObjectUtils::build_struct_member_flag(eprosima::fastdds::dds::xtypes::TryConstructFailAction::DISCARD,
                     false, false, false, false);
             MemberId member_id_type_mismatch = 0x00000000;
             bool common_type_mismatch_ec {false};
@@ -102,7 +101,7 @@ void register_MonitoringErrorStatus_type_identifier(
                         "qos_mismatch Structure member TypeIdentifier unknown to TypeObjectRegistry.");
                 return;
             }
-            StructMemberFlag member_flags_qos_mismatch = TypeObjectUtils::build_struct_member_flag(eprosima::fastdds::dds::xtypes::TryConstructKind::NOT_APPLIED,
+            StructMemberFlag member_flags_qos_mismatch = TypeObjectUtils::build_struct_member_flag(eprosima::fastdds::dds::xtypes::TryConstructFailAction::DISCARD,
                     false, false, false, false);
             MemberId member_id_qos_mismatch = 0x00000001;
             bool common_qos_mismatch_ec {false};
@@ -139,9 +138,8 @@ void register_MonitoringStatus_type_identifier(
         "MonitoringStatus", type_ids_MonitoringStatus);
     if (eprosima::fastdds::dds::RETCODE_OK != return_code_MonitoringStatus)
     {
-        StructTypeFlag struct_flags_MonitoringStatus = TypeObjectUtils::build_struct_type_flag(eprosima::fastdds::dds::xtypes::ExtensibilityKind::NOT_APPLIED,
+        StructTypeFlag struct_flags_MonitoringStatus = TypeObjectUtils::build_struct_type_flag(eprosima::fastdds::dds::xtypes::ExtensibilityKind::APPENDABLE,
                 false, false);
-        static_cast<void>(return_code_MonitoringStatus);
         QualifiedTypeName type_name_MonitoringStatus = "MonitoringStatus";
         eprosima::fastcdr::optional<AppliedBuiltinTypeAnnotations> type_ann_builtin_MonitoringStatus;
         eprosima::fastcdr::optional<AppliedAnnotationSeq> ann_custom_MonitoringStatus;
@@ -160,7 +158,7 @@ void register_MonitoringStatus_type_identifier(
             {
             ::register_MonitoringErrorStatus_type_identifier(type_ids_error_status);
             }
-            StructMemberFlag member_flags_error_status = TypeObjectUtils::build_struct_member_flag(eprosima::fastdds::dds::xtypes::TryConstructKind::NOT_APPLIED,
+            StructMemberFlag member_flags_error_status = TypeObjectUtils::build_struct_member_flag(eprosima::fastdds::dds::xtypes::TryConstructFailAction::DISCARD,
                     false, false, false, false);
             MemberId member_id_error_status = 0x00000000;
             bool common_error_status_ec {false};
@@ -190,7 +188,7 @@ void register_MonitoringStatus_type_identifier(
                         "has_errors Structure member TypeIdentifier unknown to TypeObjectRegistry.");
                 return;
             }
-            StructMemberFlag member_flags_has_errors = TypeObjectUtils::build_struct_member_flag(eprosima::fastdds::dds::xtypes::TryConstructKind::NOT_APPLIED,
+            StructMemberFlag member_flags_has_errors = TypeObjectUtils::build_struct_member_flag(eprosima::fastdds::dds::xtypes::TryConstructFailAction::DISCARD,
                     false, false, false, false);
             MemberId member_id_has_errors = 0x00000001;
             bool common_has_errors_ec {false};

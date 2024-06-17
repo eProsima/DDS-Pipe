@@ -106,7 +106,7 @@ void register_enum_struct_type_identifier(
         "enum_struct", type_ids_enum_struct);
     if (eprosima::fastdds::dds::RETCODE_OK != return_code_enum_struct)
     {
-        StructTypeFlag struct_flags_enum_struct = TypeObjectUtils::build_struct_type_flag(eprosima::fastdds::dds::xtypes::ExtensibilityKind::NOT_APPLIED,
+        StructTypeFlag struct_flags_enum_struct = TypeObjectUtils::build_struct_type_flag(eprosima::fastdds::dds::xtypes::ExtensibilityKind::APPENDABLE,
                 false, false);
         QualifiedTypeName type_name_enum_struct = "enum_struct";
         eprosima::fastcdr::optional<AppliedBuiltinTypeAnnotations> type_ann_builtin_enum_struct;
@@ -128,7 +128,7 @@ void register_enum_struct_type_identifier(
                         "index Structure member TypeIdentifier unknown to TypeObjectRegistry.");
                 return;
             }
-            StructMemberFlag member_flags_index = TypeObjectUtils::build_struct_member_flag(eprosima::fastdds::dds::xtypes::TryConstructKind::NOT_APPLIED,
+            StructMemberFlag member_flags_index = TypeObjectUtils::build_struct_member_flag(eprosima::fastdds::dds::xtypes::TryConstructFailAction::DISCARD,
                     false, false, false, false);
             MemberId member_id_index = 0x00000000;
             bool common_index_ec {false};
@@ -156,7 +156,7 @@ void register_enum_struct_type_identifier(
             {
             ::register_ColorEnum_type_identifier(type_ids_enum_value);
             }
-            StructMemberFlag member_flags_enum_value = TypeObjectUtils::build_struct_member_flag(eprosima::fastdds::dds::xtypes::TryConstructKind::NOT_APPLIED,
+            StructMemberFlag member_flags_enum_value = TypeObjectUtils::build_struct_member_flag(eprosima::fastdds::dds::xtypes::TryConstructFailAction::DISCARD,
                     false, false, false, false);
             MemberId member_id_enum_value = 0x00000001;
             bool common_enum_value_ec {false};

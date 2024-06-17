@@ -49,7 +49,7 @@ void register_char_sequence_type_identifier(
         "char_sequence", type_ids_char_sequence);
     if (eprosima::fastdds::dds::RETCODE_OK != return_code_char_sequence)
     {
-        StructTypeFlag struct_flags_char_sequence = TypeObjectUtils::build_struct_type_flag(eprosima::fastdds::dds::xtypes::ExtensibilityKind::NOT_APPLIED,
+        StructTypeFlag struct_flags_char_sequence = TypeObjectUtils::build_struct_type_flag(eprosima::fastdds::dds::xtypes::ExtensibilityKind::APPENDABLE,
                 false, false);
         QualifiedTypeName type_name_char_sequence = "char_sequence";
         eprosima::fastcdr::optional<AppliedBuiltinTypeAnnotations> type_ann_builtin_char_sequence;
@@ -103,7 +103,7 @@ void register_char_sequence_type_identifier(
                     }
                 }
             }
-            StructMemberFlag member_flags_chars = TypeObjectUtils::build_struct_member_flag(eprosima::fastdds::dds::xtypes::TryConstructKind::NOT_APPLIED,
+            StructMemberFlag member_flags_chars = TypeObjectUtils::build_struct_member_flag(eprosima::fastdds::dds::xtypes::TryConstructFailAction::DISCARD,
                     false, false, false, false);
             MemberId member_id_chars = 0x00000000;
             bool common_chars_ec {false};

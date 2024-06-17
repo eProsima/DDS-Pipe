@@ -49,7 +49,7 @@ void register_numeric_array_type_identifier(
         "numeric_array", type_ids_numeric_array);
     if (eprosima::fastdds::dds::RETCODE_OK != return_code_numeric_array)
     {
-        StructTypeFlag struct_flags_numeric_array = TypeObjectUtils::build_struct_type_flag(eprosima::fastdds::dds::xtypes::ExtensibilityKind::NOT_APPLIED,
+        StructTypeFlag struct_flags_numeric_array = TypeObjectUtils::build_struct_type_flag(eprosima::fastdds::dds::xtypes::ExtensibilityKind::APPENDABLE,
                 false, false);
         QualifiedTypeName type_name_numeric_array = "numeric_array";
         eprosima::fastcdr::optional<AppliedBuiltinTypeAnnotations> type_ann_builtin_numeric_array;
@@ -105,7 +105,7 @@ void register_numeric_array_type_identifier(
                     }
                 }
             }
-            StructMemberFlag member_flags_points = TypeObjectUtils::build_struct_member_flag(eprosima::fastdds::dds::xtypes::TryConstructKind::NOT_APPLIED,
+            StructMemberFlag member_flags_points = TypeObjectUtils::build_struct_member_flag(eprosima::fastdds::dds::xtypes::TryConstructFailAction::DISCARD,
                     false, false, false, false);
             MemberId member_id_points = 0x00000000;
             bool common_points_ec {false};

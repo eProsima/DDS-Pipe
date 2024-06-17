@@ -49,7 +49,7 @@ void register_TheOtherObjectInArray_type_identifier(
         "TheOtherObjectInArray", type_ids_TheOtherObjectInArray);
     if (eprosima::fastdds::dds::RETCODE_OK != return_code_TheOtherObjectInArray)
     {
-        StructTypeFlag struct_flags_TheOtherObjectInArray = TypeObjectUtils::build_struct_type_flag(eprosima::fastdds::dds::xtypes::ExtensibilityKind::NOT_APPLIED,
+        StructTypeFlag struct_flags_TheOtherObjectInArray = TypeObjectUtils::build_struct_type_flag(eprosima::fastdds::dds::xtypes::ExtensibilityKind::APPENDABLE,
                 false, false);
         QualifiedTypeName type_name_TheOtherObjectInArray = "TheOtherObjectInArray";
         eprosima::fastcdr::optional<AppliedBuiltinTypeAnnotations> type_ann_builtin_TheOtherObjectInArray;
@@ -71,7 +71,7 @@ void register_TheOtherObjectInArray_type_identifier(
                         "some_num Structure member TypeIdentifier unknown to TypeObjectRegistry.");
                 return;
             }
-            StructMemberFlag member_flags_some_num = TypeObjectUtils::build_struct_member_flag(eprosima::fastdds::dds::xtypes::TryConstructKind::NOT_APPLIED,
+            StructMemberFlag member_flags_some_num = TypeObjectUtils::build_struct_member_flag(eprosima::fastdds::dds::xtypes::TryConstructFailAction::DISCARD,
                     false, false, false, false);
             MemberId member_id_some_num = 0x00000000;
             bool common_some_num_ec {false};
@@ -101,7 +101,7 @@ void register_TheOtherObjectInArray_type_identifier(
                         "positive Structure member TypeIdentifier unknown to TypeObjectRegistry.");
                 return;
             }
-            StructMemberFlag member_flags_positive = TypeObjectUtils::build_struct_member_flag(eprosima::fastdds::dds::xtypes::TryConstructKind::NOT_APPLIED,
+            StructMemberFlag member_flags_positive = TypeObjectUtils::build_struct_member_flag(eprosima::fastdds::dds::xtypes::TryConstructFailAction::DISCARD,
                     false, false, false, false);
             MemberId member_id_positive = 0x00000001;
             bool common_positive_ec {false};
@@ -138,7 +138,7 @@ void register_basic_array_struct_type_identifier(
         "basic_array_struct", type_ids_basic_array_struct);
     if (eprosima::fastdds::dds::RETCODE_OK != return_code_basic_array_struct)
     {
-        StructTypeFlag struct_flags_basic_array_struct = TypeObjectUtils::build_struct_type_flag(eprosima::fastdds::dds::xtypes::ExtensibilityKind::NOT_APPLIED,
+        StructTypeFlag struct_flags_basic_array_struct = TypeObjectUtils::build_struct_type_flag(eprosima::fastdds::dds::xtypes::ExtensibilityKind::APPENDABLE,
                 false, false);
         QualifiedTypeName type_name_basic_array_struct = "basic_array_struct";
         eprosima::fastcdr::optional<AppliedBuiltinTypeAnnotations> type_ann_builtin_basic_array_struct;
@@ -160,7 +160,7 @@ void register_basic_array_struct_type_identifier(
                         "index Structure member TypeIdentifier unknown to TypeObjectRegistry.");
                 return;
             }
-            StructMemberFlag member_flags_index = TypeObjectUtils::build_struct_member_flag(eprosima::fastdds::dds::xtypes::TryConstructKind::NOT_APPLIED,
+            StructMemberFlag member_flags_index = TypeObjectUtils::build_struct_member_flag(eprosima::fastdds::dds::xtypes::TryConstructFailAction::DISCARD,
                     false, false, false, false);
             MemberId member_id_index = 0x00000000;
             bool common_index_ec {false};
@@ -222,7 +222,7 @@ void register_basic_array_struct_type_identifier(
                     }
                 }
             }
-            StructMemberFlag member_flags_sub_structs = TypeObjectUtils::build_struct_member_flag(eprosima::fastdds::dds::xtypes::TryConstructKind::NOT_APPLIED,
+            StructMemberFlag member_flags_sub_structs = TypeObjectUtils::build_struct_member_flag(eprosima::fastdds::dds::xtypes::TryConstructFailAction::DISCARD,
                     false, false, false, false);
             MemberId member_id_sub_structs = 0x00000001;
             bool common_sub_structs_ec {false};
