@@ -156,6 +156,13 @@ utils::ReturnCode CommonWriter::write_nts_(
 {
     auto& rtps_data = dynamic_cast<RtpsPayloadData&>(data);
 
+    if (rtps_history_->isFull())
+    {
+        // Remove the oldest cache change when the max history size is reached.
+        // NOTE: This should be done as a first step, otherwise the creation of a new change would fail.
+        rtps_history_->remove_min_change();
+    }
+
     // Take new Change from history
     fastrtps::rtps::CacheChange_t* new_change;
 
@@ -189,12 +196,6 @@ utils::ReturnCode CommonWriter::write_nts_(
     {
         logError(DDSPIPE_RTPS_COMMONWRITER, "Error setting change to send.");
         return ret;
-    }
-
-    if (rtps_history_->isFull())
-    {
-        // Remove the oldest cache change when the max history size is reached.
-        rtps_history_->remove_min_change();
     }
 
     // Send data by adding it to CommonWriter History
