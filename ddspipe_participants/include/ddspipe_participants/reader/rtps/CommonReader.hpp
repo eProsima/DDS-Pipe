@@ -121,7 +121,7 @@ public:
     DDSPIPE_PARTICIPANTS_DllAPI
     void on_requested_incompatible_qos(
             fastrtps::rtps::RTPSReader*,
-            eprosima::fastdds::dds::PolicyMask qos) noexcept override;
+            fastdds::dds::PolicyMask qos) noexcept override;
 
     /**
      * This method is called when the reader detects that one or more samples have been lost.

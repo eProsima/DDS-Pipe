@@ -19,6 +19,7 @@
 
 #include <cpp_utils/exception/InitializationException.hpp>
 #include <cpp_utils/Log.hpp>
+#include <cpp_utils/qos/qos_utils.hpp>
 #include <cpp_utils/time/time_utils.hpp>
 
 #include <ddspipe_participants/efficiency/cache_change/CacheChangePool.hpp>
@@ -138,10 +139,11 @@ void CommonWriter::onWriterChangeReceivedByAll(
 
 void CommonWriter::on_offered_incompatible_qos(
         fastrtps::rtps::RTPSWriter*,
-        eprosima::fastdds::dds::PolicyMask qos) noexcept
+        fastdds::dds::PolicyMask qos) noexcept
 {
     logWarning(DDSPIPE_RTPS_COMMONWRITER_LISTENER,
-            "Writer " << *this << " found a remote Reader with incompatible QoS: " << qos);
+            "Writer " << *this << " found a remote Reader with incompatible QoS: " <<
+            utils::qos_policy_mask_to_string(qos));
 }
 
 bool CommonWriter::come_from_this_participant_(
