@@ -76,7 +76,7 @@ public:
     DDSPIPE_CORE_DllAPI
     bool get_payload(
             uint32_t size,
-            types::Payload& payload) override;
+            eprosima::fastrtps::rtps::SerializedPayload_t& payload) override;
 
     /**
      * Reserve in \c target_payload the payload in \c src_payload .
@@ -95,9 +95,8 @@ public:
      */
     DDSPIPE_CORE_DllAPI
     bool get_payload(
-            const types::Payload& src_payload,
-            IPayloadPool*& data_owner,
-            types::Payload& target_payload) override;
+            const eprosima::fastrtps::rtps::SerializedPayload_t& src_payload,
+            eprosima::fastrtps::rtps::SerializedPayload_t& payload) override;
 
     /**
      * Release a payload that has been reserved from this pool.
@@ -113,7 +112,7 @@ public:
      */
     DDSPIPE_CORE_DllAPI
     bool release_payload(
-            types::Payload& payload) override;
+            eprosima::fastrtps::rtps::SerializedPayload_t& payload) override;
 
 protected:
 
@@ -132,7 +131,7 @@ protected:
     DDSPIPE_CORE_DllAPI
     virtual bool reserve_(
             uint32_t size,
-            types::Payload& payload) override;
+            eprosima::fastrtps::rtps::SerializedPayload_t& payload) override;
 
     /**
      * @brief Reimplement parent \c release_ method
@@ -146,7 +145,7 @@ protected:
      */
     DDSPIPE_CORE_DllAPI
     virtual bool release_(
-            types::Payload& payload) override;
+            eprosima::fastrtps::rtps::SerializedPayload_t& payload) override;
 };
 
 } /* namespace core */

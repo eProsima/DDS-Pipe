@@ -51,15 +51,15 @@ public:
     }
 
     uint64_t reference_count(
-            const Payload& payload)
+            const eprosima::fastrtps::rtps::SerializedPayload_t& payload)
     {
         return reserved_payloads_[payload.data];
     }
 
     void clean_all(
-            std::vector<Payload>& payloads)
+            std::vector<eprosima::fastrtps::rtps::SerializedPayload_t>& payloads)
     {
-        for (Payload& payload : payloads)
+        for (eprosima::fastrtps::rtps::SerializedPayload_t& payload : payloads)
         {
             release_payload(payload);
         }
@@ -88,7 +88,7 @@ TEST(MapPayloadPoolTest, get_payload)
     // Get N different pointers
     {
         test::MockMapPayloadPool pool;
-        std::vector<Payload> payloads(TEST_NUMBER);
+        std::vector<eprosima::fastrtps::rtps::SerializedPayload_t> payloads(TEST_NUMBER);
 
         for (unsigned int i = 0; i < TEST_NUMBER; i++)
         {
@@ -106,7 +106,7 @@ TEST(MapPayloadPoolTest, get_payload)
     // fail reserve memory
     {
         test::MockMapPayloadPool pool;
-        Payload payload;
+        eprosima::fastrtps::rtps::SerializedPayload_t payload;
 
         ASSERT_FALSE(pool.get_payload(0, payload));
     }
@@ -130,12 +130,12 @@ TEST(MapPayloadPoolTest, get_payload_from_src)
     eprosima::fastrtps::rtps::IPayloadPool* pool = new test::MockMapPayloadPool(); // Requires to be ptr to pass it to get_payload
     test::MockMapPayloadPool* pool_ = static_cast<test::MockMapPayloadPool*>(pool);
 
-    Payload payload0;
-    Payload payload1;
-    Payload payload2;
-    Payload payload3;
-    Payload payload4;
-    Payload payload5;
+    eprosima::fastrtps::rtps::SerializedPayload_t payload0;
+    eprosima::fastrtps::rtps::SerializedPayload_t payload1;
+    eprosima::fastrtps::rtps::SerializedPayload_t payload2;
+    eprosima::fastrtps::rtps::SerializedPayload_t payload3;
+    eprosima::fastrtps::rtps::SerializedPayload_t payload4;
+    eprosima::fastrtps::rtps::SerializedPayload_t payload5;
 
     // get payload0
     ASSERT_TRUE(pool_->get_payload(DEFAULT_SIZE, payload0));
@@ -143,14 +143,14 @@ TEST(MapPayloadPoolTest, get_payload_from_src)
     ASSERT_EQ(pool_->reference_count(payload0), 1u);
 
     // get payload1 from src payload0
-    ASSERT_TRUE(pool_->get_payload(payload0, pool, payload1));
+    ASSERT_TRUE(pool_->get_payload(payload0, payload1));
     ASSERT_EQ(pool_->pointers_stored(), 1u);
     ASSERT_EQ(pool_->reference_count(payload1), 2u);
     ASSERT_EQ(payload1.max_size, payload0.max_size);
     ASSERT_EQ(payload1.data, payload0.data);
 
     // get payload2 from src payload1
-    ASSERT_TRUE(pool_->get_payload(payload1, pool, payload2));
+    ASSERT_TRUE(pool_->get_payload(payload1, payload2));
     ASSERT_EQ(pool_->pointers_stored(), 1u);
     ASSERT_EQ(pool_->reference_count(payload2), 3u);
     ASSERT_EQ(payload2.max_size, payload0.max_size);
@@ -162,7 +162,7 @@ TEST(MapPayloadPoolTest, get_payload_from_src)
     ASSERT_EQ(pool_->reference_count(payload2), 2u);
 
     // get payload3 from src payload1
-    ASSERT_TRUE(pool_->get_payload(payload1, pool, payload3));
+    ASSERT_TRUE(pool_->get_payload(payload1, payload3));
     ASSERT_EQ(pool_->pointers_stored(), 1u);
     ASSERT_EQ(pool_->reference_count(payload3), 3u);
     ASSERT_EQ(payload3.max_size, payload1.max_size);
@@ -175,7 +175,7 @@ TEST(MapPayloadPoolTest, get_payload_from_src)
     ASSERT_EQ(pool_->reference_count(payload4), 1u);
 
     // get payload5 from src payload4
-    ASSERT_TRUE(pool_->get_payload(payload4, pool, payload5));
+    ASSERT_TRUE(pool_->get_payload(payload4, payload5));
     ASSERT_EQ(pool_->pointers_stored(), 2u);
     ASSERT_EQ(pool_->reference_count(payload1), 3u);
     ASSERT_EQ(pool_->reference_count(payload5), 2u);
@@ -214,8 +214,8 @@ TEST(MapPayloadPoolTest, get_payload_from_src_no_owner)
     eprosima::fastrtps::rtps::IPayloadPool* pool_aux = new test::MockMapPayloadPool(); // Requires to be ptr to pass it to get_payload
     test::MockMapPayloadPool* pool_aux_ = static_cast<test::MockMapPayloadPool*>(pool_aux);
 
-    Payload payload_src;
-    Payload payload_target;
+    eprosima::fastrtps::rtps::SerializedPayload_t payload_src;
+    eprosima::fastrtps::rtps::SerializedPayload_t payload_target;
 
     // get payload aux from pool aux
     pool_aux_->get_payload(DEFAULT_SIZE, payload_src);
@@ -223,7 +223,7 @@ TEST(MapPayloadPoolTest, get_payload_from_src_no_owner)
     ASSERT_EQ(pool_->pointers_stored(), 0u);
 
     // get payload from src payload aux
-    ASSERT_TRUE(pool_->get_payload(payload_src, pool_aux, payload_target));
+    ASSERT_TRUE(pool_->get_payload(payload_src, payload_target));
     ASSERT_EQ(pool_->pointers_stored(), 1u);
 
     // release payload aux from pool aux
@@ -243,48 +243,22 @@ TEST(MapPayloadPoolTest, get_payload_from_src_no_owner)
  * Check negative cases for get_payload from source
  *
  * CASES:
- *  The source says the owner is the same pool, but is not
  *  Source has size 0 and different owner
  */
 TEST(MapPayloadPoolTest, get_payload_from_src_negative)
 {
-    // The source says the owner is the same pool, but is not
-    {
-        // 1 log error expected
-        INSTANTIATE_LOG_TESTER(eprosima::utils::Log::Kind::Error, 1, 1);
-
-        eprosima::fastrtps::rtps::IPayloadPool* pool = new test::MockMapPayloadPool(); // Requires to be ptr to pass it to get_payload
-        test::MockMapPayloadPool* pool_ = static_cast<test::MockMapPayloadPool*>(pool);
-        test::MockMapPayloadPool pool_aux;
-
-        Payload payload_src;
-        Payload payload_target;
-
-        // Get payload for source
-        pool_aux.get_payload(DEFAULT_SIZE, payload_src);
-
-        // In a different pool, try to source it as if it was from same pool
-        ASSERT_THROW(pool_->get_payload(payload_src, pool, payload_target), eprosima::utils::InconsistencyException);
-
-        // END : release payload
-        pool_aux.release_payload(payload_src);
-
-        delete pool;
-    }
-
     // Source has size 0 and different owner
     {
         eprosima::fastrtps::rtps::IPayloadPool* pool = new test::MockMapPayloadPool(); // Requires to be ptr to pass it to get_payload
         test::MockMapPayloadPool* pool_ = static_cast<test::MockMapPayloadPool*>(pool);
         eprosima::fastrtps::rtps::IPayloadPool* pool_aux = nullptr; // nullptr
 
-        Payload payload_src;
-        Payload payload_target;
+        eprosima::fastrtps::rtps::SerializedPayload_t payload_src;
+        eprosima::fastrtps::rtps::SerializedPayload_t payload_target;
 
         ASSERT_FALSE(
             pool_->get_payload(
                 payload_src,
-                pool_aux,
                 payload_target));
 
         delete pool;
@@ -305,7 +279,7 @@ TEST(MapPayloadPoolTest, release_payload)
 {
     eprosima::fastrtps::rtps::IPayloadPool* pool = new test::MockMapPayloadPool(); // Requires to be ptr to pass it to get_payload
     test::MockMapPayloadPool* pool_ = static_cast<test::MockMapPayloadPool*>(pool);
-    std::vector<Payload> payloads(TEST_NUMBER);
+    std::vector<eprosima::fastrtps::rtps::SerializedPayload_t> payloads(TEST_NUMBER);
 
     // get first payload
     pool_->get_payload(DEFAULT_SIZE, payloads[0]);
@@ -313,7 +287,7 @@ TEST(MapPayloadPoolTest, release_payload)
     // get N-1 payloads from first
     for (unsigned int i = 1; i < TEST_NUMBER; i++)
     {
-        pool_->get_payload(payloads[0], pool, payloads[i]);
+        pool_->get_payload(payloads[0], payloads[i]);
         ASSERT_EQ(pool_->reference_count(payloads[0]), i + 1) << i;
     }
 
@@ -327,7 +301,7 @@ TEST(MapPayloadPoolTest, release_payload)
     // get N-2 more payloads from first
     for (unsigned int i = 2; i < TEST_NUMBER; i++)
     {
-        pool_->get_payload(payloads[0], pool, payloads[i]);
+        pool_->get_payload(payloads[0], payloads[i]);
         ASSERT_EQ(pool_->reference_count(payloads[0]), i + 1) << i;
     }
 
@@ -358,7 +332,7 @@ TEST(MapPayloadPoolTest, release_payload_negative)
 
     test::MockMapPayloadPool pool;
     test::MockMapPayloadPool pool_aux;
-    Payload payload;
+    eprosima::fastrtps::rtps::SerializedPayload_t payload;
 
     pool_aux.get_payload(DEFAULT_SIZE, payload);
 

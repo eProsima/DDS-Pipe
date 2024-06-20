@@ -14,7 +14,6 @@
 
 #pragma once
 
-#include <fastdds/rtps/rtps_fwd.h>
 #include <fastdds/rtps/attributes/HistoryAttributes.h>
 #include <fastdds/rtps/attributes/TopicAttributes.h>
 #include <fastdds/dds/publisher/qos/WriterQos.hpp>
