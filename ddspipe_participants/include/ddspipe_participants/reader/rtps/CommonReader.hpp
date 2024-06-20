@@ -19,7 +19,6 @@
 #include <cpp_utils/ReturnCode.hpp>
 #include <cpp_utils/time/time_utils.hpp>
 
-#include <fastdds/rtps/rtps_fwd.h>
 #include <fastdds/rtps/attributes/HistoryAttributes.h>
 #include <fastdds/rtps/attributes/TopicAttributes.h>
 #include <fastdds/dds/subscriber/qos/ReaderQos.hpp>
@@ -96,7 +95,7 @@ public:
      * @param [in] change new change received
      */
     DDSPIPE_PARTICIPANTS_DllAPI
-    void onNewCacheChangeAdded(
+    void on_new_cache_change_added(
             fastrtps::rtps::RTPSReader*,
             const fastrtps::rtps::CacheChange_t* const change) noexcept override;
 
@@ -109,9 +108,9 @@ public:
      * @param [in] info information about the matched Writer
      */
     DDSPIPE_PARTICIPANTS_DllAPI
-    void onReaderMatched(
+    void on_reader_matched(
             fastrtps::rtps::RTPSReader*,
-            fastrtps::rtps::MatchingInfo& info) noexcept override;
+            const fastrtps::rtps::MatchingInfo& info) noexcept override;
 
     /**
      * This method is called when a new Writer is discovered, with a Topic that

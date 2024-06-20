@@ -92,7 +92,8 @@ std::shared_ptr<IReader> DynTypesParticipant::create_reader(
 
 void DynTypesParticipant::onReaderDiscovery(
             fastrtps::rtps::RTPSParticipant* participant,
-            fastrtps::rtps::ReaderDiscoveryInfo&& info)
+            fastrtps::rtps::ReaderDiscoveryInfo&& info,
+            bool& should_be_ignored)
 {
     fastrtps::rtps::ReaderProxyData proxy_copy(info.info);
 
@@ -100,14 +101,15 @@ void DynTypesParticipant::onReaderDiscovery(
     const auto type_info = proxy_copy.type_information().type_information;
     const auto type_name = proxy_copy.typeName();
 
-    rtps::CommonParticipant::onReaderDiscovery(participant, std::move(info));
+    rtps::CommonParticipant::onReaderDiscovery(participant, std::move(info), should_be_ignored);
 
     notify_type_discovered_(type_info, type_name);
 }
 
 void DynTypesParticipant::onWriterDiscovery(
             fastrtps::rtps::RTPSParticipant* participant,
-            fastrtps::rtps::WriterDiscoveryInfo&& info)
+            fastrtps::rtps::WriterDiscoveryInfo&& info,
+            bool& should_be_ignored)
 {
     fastrtps::rtps::WriterProxyData proxy_copy(info.info);
 
@@ -115,7 +117,7 @@ void DynTypesParticipant::onWriterDiscovery(
     const auto type_info = proxy_copy.type_information().type_information;
     const auto type_name = proxy_copy.typeName();
 
-    rtps::CommonParticipant::onWriterDiscovery(participant, std::move(info));
+    rtps::CommonParticipant::onWriterDiscovery(participant, std::move(info), should_be_ignored);
 
     notify_type_discovered_(type_info, type_name);
 }

@@ -82,7 +82,8 @@ void CommonParticipant::init()
 
 void CommonParticipant::onParticipantDiscovery(
         fastrtps::rtps::RTPSParticipant* participant,
-        fastrtps::rtps::ParticipantDiscoveryInfo&& info)
+        fastrtps::rtps::ParticipantDiscoveryInfo&& info,
+        bool&)
 {
     if (info.info.m_guid.guidPrefix != participant->getGuid().guidPrefix)
     {
@@ -112,7 +113,8 @@ void CommonParticipant::onParticipantDiscovery(
 
 void CommonParticipant::onReaderDiscovery(
         fastrtps::rtps::RTPSParticipant* participant,
-        fastrtps::rtps::ReaderDiscoveryInfo&& info)
+        fastrtps::rtps::ReaderDiscoveryInfo&& info,
+        bool&)
 {
     if (info.info.guid().guidPrefix != participant->getGuid().guidPrefix)
     {
@@ -150,7 +152,8 @@ void CommonParticipant::onReaderDiscovery(
 
 void CommonParticipant::onWriterDiscovery(
         fastrtps::rtps::RTPSParticipant* participant,
-        fastrtps::rtps::WriterDiscoveryInfo&& info)
+        fastrtps::rtps::WriterDiscoveryInfo&& info,
+        bool&)
 {
     if (info.info.guid().guidPrefix != participant->getGuid().guidPrefix)
     {

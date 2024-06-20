@@ -43,7 +43,7 @@ MapPayloadPool::~MapPayloadPool()
 
 bool MapPayloadPool::get_payload(
         uint32_t size,
-        Payload& payload)
+        eprosima::fastrtps::rtps::SerializedPayload_t& payload)
 {
     // Reserve new payload
     if (!reserve_(size, payload))
@@ -51,23 +51,21 @@ bool MapPayloadPool::get_payload(
         return false;
     }
     payload.max_size = size;
+    payload.payload_owner = this;
 
     // Store this payload in map
-    {
-        std::lock_guard<std::mutex> lock(reserved_payloads_mutex_);
-        reserved_payloads_[payload.data] = 1;
-    }
+    std::lock_guard<std::mutex> lock(reserved_payloads_mutex_);
+    reserved_payloads_[payload.data] = 1;
 
     return true;
 }
 
 bool MapPayloadPool::get_payload(
-        const Payload& src_payload,
-        IPayloadPool*& data_owner,
-        Payload& target_payload)
+        const eprosima::fastrtps::rtps::SerializedPayload_t& src_payload,
+        eprosima::fastrtps::rtps::SerializedPayload_t& target_payload)
 {
     // If we are not the owner, create a new payload. Else, reference the existing one
-    if (data_owner != this)
+    if (src_payload.payload_owner != this)
     {
         // Store space for payload
         if (!get_payload(src_payload.max_size, target_payload))
@@ -98,12 +96,13 @@ bool MapPayloadPool::get_payload(
         target_payload.data = src_payload.data;
         target_payload.length = src_payload.length;
         target_payload.max_size = src_payload.max_size;
+        target_payload.payload_owner = this;
     }
     return true;
 }
 
 bool MapPayloadPool::release_payload(
-        Payload& payload)
+        eprosima::fastrtps::rtps::SerializedPayload_t& payload)
 {
     std::lock_guard<std::mutex> lock(reserved_payloads_mutex_);
 
@@ -134,6 +133,7 @@ bool MapPayloadPool::release_payload(
     payload.length = 0;
     payload.pos = 0;
     payload.max_size = 0;
+    payload.payload_owner = nullptr;
     payload.data = nullptr;
 
     return true;

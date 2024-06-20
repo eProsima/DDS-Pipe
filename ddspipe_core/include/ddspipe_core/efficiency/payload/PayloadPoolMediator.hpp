@@ -137,7 +137,7 @@ public:
     DDSPIPE_CORE_DllAPI
     virtual bool get_payload(
             uint32_t size,
-            fastrtps::rtps::CacheChange_t& cache_change) override;
+            eprosima::fastrtps::rtps::SerializedPayload_t& payload) override;
 
     /**
      * @brief redirect the call to the \c release_payload in the \c payload_pool.
@@ -151,9 +151,8 @@ public:
      */
     DDSPIPE_CORE_DllAPI
     virtual bool get_payload(
-            fastrtps::rtps::SerializedPayload_t& data,
-            fastrtps::rtps::IPayloadPool*& data_owner,
-            fastrtps::rtps::CacheChange_t& cache_change) override;
+            const eprosima::fastrtps::rtps::SerializedPayload_t& src_payload,
+            eprosima::fastrtps::rtps::SerializedPayload_t& target_payload) override;
 
     /**
      * @brief redirect the call to the \c release_payload in the \c payload_pool.
@@ -164,7 +163,7 @@ public:
      */
     DDSPIPE_CORE_DllAPI
     virtual bool release_payload(
-            fastrtps::rtps::CacheChange_t& cache_change) override;
+            eprosima::fastrtps::rtps::SerializedPayload_t& payload) override;
 
 protected:
 
@@ -172,7 +171,7 @@ protected:
     std::mutex mutex_;
 
     //! A pointer to the payload_ we want to write down in the PayloadPool.
-    types::Payload* payload_;
+    eprosima::fastrtps::rtps::SerializedPayload_t* payload_;
 
     //! The \c PayloadPool the \c PayloadPoolMediator is mediating for.
     const std::shared_ptr<PayloadPool>& payload_pool_;
