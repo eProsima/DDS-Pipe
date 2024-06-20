@@ -28,7 +28,6 @@
 #include <fastdds/rtps/common/WriteParams.h>
 #include <fastdds/rtps/history/WriterHistory.h>
 #include <fastdds/rtps/participant/RTPSParticipant.h>
-#include <fastdds/rtps/rtps_fwd.h>
 #include <fastdds/rtps/writer/RTPSWriter.h>
 #include <fastdds/rtps/writer/WriterListener.h>
 

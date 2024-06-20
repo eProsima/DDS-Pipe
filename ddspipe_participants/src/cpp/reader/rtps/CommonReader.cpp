@@ -67,7 +67,7 @@ CommonReader::~CommonReader()
     if (rtps_reader_)
     {
         // Unset listener before destruction (not necessary in principle, but just in case)
-        rtps_reader_->setListener(nullptr);
+        rtps_reader_->set_listener(nullptr);
         fastrtps::rtps::RTPSDomain::removeRTPSReader(rtps_reader_);
     }
 
@@ -121,7 +121,7 @@ void CommonReader::internal_entities_creation_(
 
     // Set listener after entity creation to avoid SEGFAULT (produced when callback using rtps_reader_ is
     // invoked before the variable is fully set)
-    rtps_reader_->setListener(this);
+    rtps_reader_->set_listener(this);
 
     // Register reader with topic
     if (!rtps_participant_->registerReader(rtps_reader_, topic_attributes, reader_qos))
@@ -165,11 +165,9 @@ utils::ReturnCode CommonReader::take_nts_(
         return utils::ReturnCode::NO_DATA;
     }
 
-    fastrtps::rtps::CacheChange_t* received_change = nullptr;
-    fastrtps::rtps::WriterProxy* wp = nullptr;
-
     // Read first change of the history
-    if (!rtps_reader_->nextUntakenCache(&received_change, &wp))
+    auto received_change = rtps_reader_->next_untaken_cache();
+    if (!received_change)
     {
         // Error reading.
         return utils::ReturnCode::ERROR;
@@ -180,7 +178,7 @@ utils::ReturnCode CommonReader::take_nts_(
     if (ret != utils::ReturnCode::OK)
     {
         // Remove the change in the History and release it in the reader
-        rtps_reader_->getHistory()->remove_change(received_change);
+        rtps_reader_->get_history()->remove_change(received_change);
         return ret;
     }
 
@@ -190,7 +188,7 @@ utils::ReturnCode CommonReader::take_nts_(
     data.reset(data_ptr);
 
     // Remove the change in the History and release it in the reader
-    rtps_reader_->getHistory()->remove_change(received_change);
+    rtps_reader_->get_history()->remove_change(received_change);
 
     return utils::ReturnCode::OK;
 }
@@ -217,12 +215,8 @@ void CommonReader::fill_received_data_(
     // NOTE: in case of keyed topics an empty payload is possible
     if (received_change.serializedPayload.length > 0)
     {
-        eprosima::fastrtps::rtps::IPayloadPool* payload_owner =
-                const_cast<eprosima::fastrtps::rtps::IPayloadPool*>(received_change.payload_owner());
-
         payload_pool_->get_payload(
             received_change.serializedPayload,
-            payload_owner,
             data_to_fill.payload);
 
         data_to_fill.payload_owner = payload_pool_.get();
@@ -315,7 +309,7 @@ fastrtps::rtps::ReaderAttributes CommonReader::reckon_reader_attributes_(
         att.endpoint.topicKind = eprosima::fastrtps::rtps::WITH_KEY;
 
         // If the topic has a key, request inline qos (containing the instance handle)
-        att.expectsInlineQos = true;
+        att.expects_inline_qos = true;
     }
     else
     {
@@ -391,7 +385,7 @@ fastdds::dds::ReaderQos CommonReader::reckon_reader_qos_(
     return properties;
 }
 
-void CommonReader::onNewCacheChangeAdded(
+void CommonReader::on_new_cache_change_added(
         fastrtps::rtps::RTPSReader* reader,
         const fastrtps::rtps::CacheChange_t* const change) noexcept
 {
@@ -413,7 +407,7 @@ void CommonReader::onNewCacheChangeAdded(
             // Remove received change if the CommonReader is disbled and the topic is not reliable
             if (!topic_.topic_qos.is_reliable())
             {
-                reader->getHistory()->remove_change((fastrtps::rtps::CacheChange_t*)change);
+                reader->get_history()->remove_change((fastrtps::rtps::CacheChange_t*)change);
                 logDebug(DDSPIPE_RTPS_COMMONREADER_LISTENER,
                         "Change removed from history");
             }
@@ -431,13 +425,13 @@ void CommonReader::onNewCacheChangeAdded(
         // WARNING: Removing an unacceptable change here is valid given that Fast-DDS internal reader's mutex is locked.
         // If the mutex wasn't locked, the track's transmit thread could take an unacceptable sample before it gets
         // deleted here.
-        reader->getHistory()->remove_change((fastrtps::rtps::CacheChange_t*)change);
+        reader->get_history()->remove_change((fastrtps::rtps::CacheChange_t*)change);
     }
 }
 
-void CommonReader::onReaderMatched(
+void CommonReader::on_reader_matched(
         fastrtps::rtps::RTPSReader*,
-        fastrtps::rtps::MatchingInfo& info) noexcept
+        const fastrtps::rtps::MatchingInfo& info) noexcept
 {
     if (!come_from_this_participant_(info.remoteEndpointGuid))
     {

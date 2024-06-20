@@ -73,25 +73,22 @@ fastdds::dds::ReturnCode_t PayloadPoolMediator::write(
 
 bool PayloadPoolMediator::get_payload(
         uint32_t size,
-        fastrtps::rtps::CacheChange_t& cache_change)
+        eprosima::fastrtps::rtps::SerializedPayload_t& payload)
 {
-    fastrtps::rtps::IPayloadPool* payload_owner{payload_pool_.get()};
-
-    return get_payload(*payload_, payload_owner, cache_change);
+    return get_payload(*payload_, payload);
 }
 
 bool PayloadPoolMediator::get_payload(
-        fastrtps::rtps::SerializedPayload_t& data,
-        fastrtps::rtps::IPayloadPool*& data_owner,
-        fastrtps::rtps::CacheChange_t& cache_change)
+        const eprosima::fastrtps::rtps::SerializedPayload_t& src_payload,
+        eprosima::fastrtps::rtps::SerializedPayload_t& target_payload)
 {
-    return payload_pool_->get_payload(data, data_owner, cache_change);
+    return payload_pool_->get_payload(src_payload, target_payload);
 }
 
 bool PayloadPoolMediator::release_payload(
-        fastrtps::rtps::CacheChange_t& cache_change)
+        eprosima::fastrtps::rtps::SerializedPayload_t& payload)
 {
-    return payload_pool_->release_payload(cache_change);
+    return payload_pool_->release_payload(payload);
 }
 
 } /* namespace core */

@@ -86,10 +86,7 @@ bool TopicDataType::deserialize(
     DataType* target_payload = static_cast<DataType*>(data);
 
     // Get data and store it in PayloadPool
-    eprosima::fastrtps::rtps::IPayloadPool* payload_owner =
-            static_cast<eprosima::fastrtps::rtps::IPayloadPool*>(payload_pool_.get());
-
-    payload_pool_->get_payload(*src_payload, payload_owner, target_payload->payload);
+    payload_pool_->get_payload(*src_payload, target_payload->payload);
 
     return true;
 }

@@ -18,7 +18,6 @@
 
 #include <fastdds/rtps/participant/ParticipantDiscoveryInfo.h>
 #include <fastdds/rtps/reader/ReaderDiscoveryInfo.h>
-#include <fastdds/rtps/rtps_fwd.h>
 #include <fastdds/rtps/writer/WriterDiscoveryInfo.h>
 #include <fastdds/rtps/attributes/RTPSParticipantAttributes.h>
 #include <fastdds/rtps/participant/RTPSParticipantListener.h>
@@ -129,7 +128,8 @@ public:
     DDSPIPE_PARTICIPANTS_DllAPI
     virtual void onParticipantDiscovery(
             fastrtps::rtps::RTPSParticipant* participant,
-            fastrtps::rtps::ParticipantDiscoveryInfo&& info) override;
+            fastrtps::rtps::ParticipantDiscoveryInfo&& info,
+            bool& /*should_be_ignored*/) override;
 
     /**
      * @brief Override method from \c RTPSParticipantListener .
@@ -139,7 +139,8 @@ public:
     DDSPIPE_PARTICIPANTS_DllAPI
     virtual void onReaderDiscovery(
             fastrtps::rtps::RTPSParticipant* participant,
-            fastrtps::rtps::ReaderDiscoveryInfo&& info) override;
+            fastrtps::rtps::ReaderDiscoveryInfo&& info,
+            bool& /*should_be_ignored*/) override;
 
     /**
      * @brief Override method from \c RTPSParticipantListener .
@@ -149,7 +150,8 @@ public:
     DDSPIPE_PARTICIPANTS_DllAPI
     virtual void onWriterDiscovery(
             fastrtps::rtps::RTPSParticipant* participant,
-            fastrtps::rtps::WriterDiscoveryInfo&& info) override;
+            fastrtps::rtps::WriterDiscoveryInfo&& info,
+            bool& /*should_be_ignored*/) override;
 
     //////////////////
     // STATIC METHODS

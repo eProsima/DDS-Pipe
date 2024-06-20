@@ -230,11 +230,9 @@ utils::ReturnCode CommonWriter::fill_to_send_data_(
     // Get the Payload without copy only if it has length
     if (data.payload.length > 0)
     {
-        eprosima::fastrtps::rtps::IPayloadPool* payload_owner = payload_pool_.get();
         if (!payload_pool_->get_payload(
-                    const_cast<core::types::Payload&>(data.payload),
-                    payload_owner,
-                    (*to_send_change_to_fill)))
+                    const_cast<fastrtps::rtps::SerializedPayload_t&>(data.payload),
+                    (to_send_change_to_fill->serializedPayload)))
         {
             logDevError(DDSPIPE_RTPS_COMMONWRITER, "Error getting Payload.");
             return utils::ReturnCode::ERROR;
