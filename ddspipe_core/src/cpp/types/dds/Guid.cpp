@@ -29,21 +29,21 @@ Guid::Guid(
 }
 
 Guid::Guid(
-        const fastrtps::rtps::GUID_t& x)
+        const fastdds::rtps::GUID_t& x)
 {
     guidPrefix = x.guidPrefix;
     entityId = x.entityId;
 }
 
 Guid::Guid(
-        fastrtps::rtps::GUID_t&& x)
+        fastdds::rtps::GUID_t&& x)
 {
     guidPrefix = std::move(x.guidPrefix);
     entityId = std::move(x.entityId);
 }
 
 Guid& Guid::operator = (
-        const fastrtps::rtps::GUID_t& other) noexcept
+        const fastdds::rtps::GUID_t& other) noexcept
 {
     this->guidPrefix = other.guidPrefix;
     this->entityId = other.entityId;
@@ -53,7 +53,7 @@ Guid& Guid::operator = (
 bool Guid::is_valid() const noexcept
 {
     return guid_prefix().is_valid() &&
-           entityId != eprosima::fastrtps::rtps::EntityId_t::unknown();
+           entityId != eprosima::fastdds::rtps::EntityId_t::unknown();
 }
 
 GuidPrefix Guid::guid_prefix() const noexcept
@@ -69,7 +69,7 @@ Guid Guid::new_unique_guid()
     Guid new_guid;
     unsigned int numer = ++current_unique_value;
     unsigned int denom = 256;
-    for (unsigned int i = 0; i < fastrtps::rtps::EntityId_t::size; i++)
+    for (unsigned int i = 0; i < fastdds::rtps::EntityId_t::size; i++)
     {
         new_guid.entityId.value[i] = numer % denom;
         numer = static_cast<unsigned int>(std::floor(numer / denom));

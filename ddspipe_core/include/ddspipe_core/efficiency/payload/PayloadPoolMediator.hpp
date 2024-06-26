@@ -39,7 +39,7 @@ namespace core {
  * This class works as a mediator between the \c FastPayloadPool and the DataWriter's write functions, to avoid making
  * the extra copy.
  */
-class PayloadPoolMediator : public fastrtps::rtps::IPayloadPool
+class PayloadPoolMediator : public fastdds::rtps::IPayloadPool
 {
 public:
 
@@ -97,7 +97,7 @@ public:
     bool write(
             fastdds::dds::DataWriter* writer,
             types::RtpsPayloadData* data,
-            fastrtps::rtps::WriteParams& params);
+            fastdds::rtps::WriteParams& params);
 
     /**
      * @brief write \c data with a \c writer with a \c handle but avoiding copying the \c data from and to the same
@@ -122,7 +122,7 @@ public:
     fastdds::dds::ReturnCode_t write(
             fastdds::dds::DataWriter* writer,
             types::RtpsPayloadData* data,
-            const fastrtps::rtps::InstanceHandle_t& handle);
+            const fastdds::rtps::InstanceHandle_t& handle);
 
     /**
      * Instead of reserving a block of memory of \c size in the \c payload_pool, we can redirect the call to
@@ -137,7 +137,7 @@ public:
     DDSPIPE_CORE_DllAPI
     virtual bool get_payload(
             uint32_t size,
-            eprosima::fastrtps::rtps::SerializedPayload_t& payload) override;
+            eprosima::fastdds::rtps::SerializedPayload_t& payload) override;
 
     /**
      * @brief redirect the call to the \c release_payload in the \c payload_pool.
@@ -151,8 +151,8 @@ public:
      */
     DDSPIPE_CORE_DllAPI
     virtual bool get_payload(
-            const eprosima::fastrtps::rtps::SerializedPayload_t& src_payload,
-            eprosima::fastrtps::rtps::SerializedPayload_t& target_payload) override;
+            const eprosima::fastdds::rtps::SerializedPayload_t& src_payload,
+            eprosima::fastdds::rtps::SerializedPayload_t& target_payload) override;
 
     /**
      * @brief redirect the call to the \c release_payload in the \c payload_pool.
@@ -163,7 +163,7 @@ public:
      */
     DDSPIPE_CORE_DllAPI
     virtual bool release_payload(
-            eprosima::fastrtps::rtps::SerializedPayload_t& payload) override;
+            eprosima::fastdds::rtps::SerializedPayload_t& payload) override;
 
 protected:
 
@@ -171,7 +171,7 @@ protected:
     std::mutex mutex_;
 
     //! A pointer to the payload_ we want to write down in the PayloadPool.
-    eprosima::fastrtps::rtps::SerializedPayload_t* payload_;
+    eprosima::fastdds::rtps::SerializedPayload_t* payload_;
 
     //! The \c PayloadPool the \c PayloadPoolMediator is mediating for.
     const std::shared_ptr<PayloadPool>& payload_pool_;

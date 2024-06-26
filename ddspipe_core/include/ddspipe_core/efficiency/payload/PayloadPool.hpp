@@ -38,7 +38,7 @@ namespace core {
  * Then, this payload will be moved to the Track. As the payload is already in the pool, there will be no copy.
  * Finally, the payload will be moved to every Writer that has to send the data (ideally without copy).
  */
-class PayloadPool : public eprosima::fastrtps::rtps::IPayloadPool
+class PayloadPool : public eprosima::fastdds::rtps::IPayloadPool
 {
 public:
 
@@ -73,7 +73,7 @@ public:
     // DDSPIPE_CORE_DllAPI
     // virtual bool get_payload(
     //         uint32_t size,
-    //         eprosima::fastrtps::rtps::SerializedPayload_t& payload) override; // TODO add noexcept once is implemented
+    //         eprosima::fastdds::rtps::SerializedPayload_t& payload) override; // TODO add noexcept once is implemented
 
     // /**
     //  * @brief Assign to \c payload the \c data payload.
@@ -96,8 +96,8 @@ public:
     //  */
     // DDSPIPE_CORE_DllAPI
     // virtual bool get_payload(
-    //         eprosima::fastrtps::rtps::SerializedPayload_t& data,
-    //         eprosima::fastrtps::rtps::SerializedPayload_t& payload) override; // TODO add noexcept once is implemented
+    //         eprosima::fastdds::rtps::SerializedPayload_t& data,
+    //         eprosima::fastdds::rtps::SerializedPayload_t& payload) override; // TODO add noexcept once is implemented
 
     // /**
     //  * @brief Release the data from the serialized \c payload .
@@ -116,7 +116,7 @@ public:
     //  */
     // DDSPIPE_CORE_DllAPI
     // virtual bool release_payload(
-    //         eprosima::fastrtps::rtps::SerializedPayload_t& payload) override; // TODO add noexcept once is implemented
+    //         eprosima::fastdds::rtps::SerializedPayload_t& payload) override; // TODO add noexcept once is implemented
 
     // ///
     // DDSPIPE PART
@@ -209,7 +209,7 @@ protected:
     DDSPIPE_CORE_DllAPI
     virtual bool reserve_(
             uint32_t size,
-            eprosima::fastrtps::rtps::SerializedPayload_t& payload);
+            eprosima::fastdds::rtps::SerializedPayload_t& payload);
 
     /**
      * @brief Free a memory space.
@@ -225,7 +225,7 @@ protected:
      */
     DDSPIPE_CORE_DllAPI
     virtual bool release_(
-            eprosima::fastrtps::rtps::SerializedPayload_t& payload);
+            eprosima::fastdds::rtps::SerializedPayload_t& payload);
 
     //! Increase \c reserve_count_
     DDSPIPE_CORE_DllAPI

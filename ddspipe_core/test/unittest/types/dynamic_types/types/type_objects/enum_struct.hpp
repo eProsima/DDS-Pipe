@@ -53,7 +53,7 @@
  * @brief This class represents the enumeration ColorEnum defined by the user in the IDL file.
  * @ingroup enum_struct
  */
-enum class ColorEnum : uint32_t
+enum class ColorEnum : int32_t
 {
     RED,
     GREEN,

@@ -31,7 +31,7 @@ namespace core {
  *
  * TODO: implement this class as an IPool (or having an internal pool), without being force to be unbounded.
  */
-class CacheChangePool : public fastrtps::rtps::IChangePool, public utils::UnboundedPool<fastrtps::rtps::CacheChange_t>
+class CacheChangePool : public fastdds::rtps::IChangePool, public utils::UnboundedPool<fastdds::rtps::CacheChange_t>
 {
 public:
 
@@ -46,17 +46,17 @@ public:
             utils::PoolConfiguration configuration);
 
     //! Call UnboundedPool::reserve
-    bool reserve_cache(
-            fastrtps::rtps::CacheChange_t*& cache_change) override;
+    virtual bool reserve_cache(
+            fastdds::rtps::CacheChange_t*& cache_change) override;
 
     //! Call UnboundedPool::release
-    bool release_cache(
-            fastrtps::rtps::CacheChange_t* cache_change) override;
+    virtual bool release_cache(
+            fastdds::rtps::CacheChange_t* cache_change) override;
 
 protected:
 
     //! Override the UnboundedPool::create_element method to create a RouterCacheChange object.
-    fastrtps::rtps::CacheChange_t* new_element_() override;
+    virtual fastdds::rtps::CacheChange_t* new_element_() override;
 
     //! Override the IPool::reset_element_ method to reset the CacheChange as a new object.
     void reset_element_(

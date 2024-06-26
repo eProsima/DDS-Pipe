@@ -91,11 +91,11 @@ std::shared_ptr<IReader> DynTypesParticipant::create_reader(
 }
 
 void DynTypesParticipant::onReaderDiscovery(
-            fastrtps::rtps::RTPSParticipant* participant,
-            fastrtps::rtps::ReaderDiscoveryInfo&& info,
+            fastdds::rtps::RTPSParticipant* participant,
+            fastdds::rtps::ReaderDiscoveryInfo&& info,
             bool& should_be_ignored)
 {
-    fastrtps::rtps::ReaderProxyData proxy_copy(info.info);
+    fastdds::rtps::ReaderProxyData proxy_copy(info.info);
 
     // Get type information
     const auto type_info = proxy_copy.type_information().type_information;
@@ -107,11 +107,11 @@ void DynTypesParticipant::onReaderDiscovery(
 }
 
 void DynTypesParticipant::onWriterDiscovery(
-            fastrtps::rtps::RTPSParticipant* participant,
-            fastrtps::rtps::WriterDiscoveryInfo&& info,
+            fastdds::rtps::RTPSParticipant* participant,
+            fastdds::rtps::WriterDiscoveryInfo&& info,
             bool& should_be_ignored)
 {
-    fastrtps::rtps::WriterProxyData proxy_copy(info.info);
+    fastdds::rtps::WriterProxyData proxy_copy(info.info);
 
     // Get type information
     const auto type_info = proxy_copy.type_information().type_information;

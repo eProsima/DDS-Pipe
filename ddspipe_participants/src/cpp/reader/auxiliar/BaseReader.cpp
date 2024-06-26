@@ -191,7 +191,7 @@ core::types::Guid BaseReader::guid() const
     throw utils::UnsupportedException("guid method not allowed for non RTPS readers.");
 }
 
-fastrtps::RecursiveTimedMutex& BaseReader::get_rtps_mutex() const
+fastdds::RecursiveTimedMutex& BaseReader::get_rtps_mutex() const
 {
     throw utils::UnsupportedException("get_rtps_mutex method not allowed for non RTPS readers.");
 }

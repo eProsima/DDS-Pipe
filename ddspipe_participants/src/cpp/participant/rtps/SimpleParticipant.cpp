@@ -40,12 +40,12 @@ SimpleParticipant::SimpleParticipant(
 {
 }
 
-fastrtps::rtps::RTPSParticipantAttributes
+fastdds::rtps::RTPSParticipantAttributes
 SimpleParticipant::reckon_participant_attributes_(
         const SimpleParticipantConfiguration* configuration)
 {
     // Use default as base attributes
-    fastrtps::rtps::RTPSParticipantAttributes params = CommonParticipant::reckon_participant_attributes_(configuration);
+    fastdds::rtps::RTPSParticipantAttributes params = CommonParticipant::reckon_participant_attributes_(configuration);
 
     // Configure Participant transports
     if (configuration->transport == core::types::TransportDescriptors::builtin)
@@ -85,25 +85,25 @@ SimpleParticipant::reckon_participant_attributes_(
     {
         case core::types::IgnoreParticipantFlags::no_filter:
             params.builtin.discovery_config.ignoreParticipantFlags =
-                    eprosima::fastrtps::rtps::ParticipantFilteringFlags_t::NO_FILTER;
+                    eprosima::fastdds::rtps::ParticipantFilteringFlags::NO_FILTER;
             break;
         case core::types::IgnoreParticipantFlags::filter_different_host:
             params.builtin.discovery_config.ignoreParticipantFlags =
-                    eprosima::fastrtps::rtps::ParticipantFilteringFlags_t::FILTER_DIFFERENT_HOST;
+                    eprosima::fastdds::rtps::ParticipantFilteringFlags::FILTER_DIFFERENT_HOST;
             break;
         case core::types::IgnoreParticipantFlags::filter_different_process:
             params.builtin.discovery_config.ignoreParticipantFlags =
-                    eprosima::fastrtps::rtps::ParticipantFilteringFlags_t::FILTER_DIFFERENT_PROCESS;
+                    eprosima::fastdds::rtps::ParticipantFilteringFlags::FILTER_DIFFERENT_PROCESS;
             break;
         case core::types::IgnoreParticipantFlags::filter_same_process:
             params.builtin.discovery_config.ignoreParticipantFlags =
-                    eprosima::fastrtps::rtps::ParticipantFilteringFlags_t::FILTER_SAME_PROCESS;
+                    eprosima::fastdds::rtps::ParticipantFilteringFlags::FILTER_SAME_PROCESS;
             break;
         case core::types::IgnoreParticipantFlags::filter_different_and_same_process:
             params.builtin.discovery_config.ignoreParticipantFlags =
-                    static_cast<eprosima::fastrtps::rtps::ParticipantFilteringFlags_t>(
-                eprosima::fastrtps::rtps::ParticipantFilteringFlags_t::FILTER_DIFFERENT_PROCESS |
-                eprosima::fastrtps::rtps::ParticipantFilteringFlags_t::FILTER_SAME_PROCESS);
+                    static_cast<eprosima::fastdds::rtps::ParticipantFilteringFlags>(
+                eprosima::fastdds::rtps::ParticipantFilteringFlags::FILTER_DIFFERENT_PROCESS |
+                eprosima::fastdds::rtps::ParticipantFilteringFlags::FILTER_SAME_PROCESS);
             break;
         default:
             break;

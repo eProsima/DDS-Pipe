@@ -28,7 +28,7 @@ using namespace eprosima::ddspipe::core::types;
 
 bool CopyPayloadPool::get_payload(
         uint32_t size,
-        eprosima::fastrtps::rtps::SerializedPayload_t& payload)
+        eprosima::fastdds::rtps::SerializedPayload_t& payload)
 {
     reserve_(size, payload);
     payload.max_size = size;
@@ -38,8 +38,8 @@ bool CopyPayloadPool::get_payload(
 }
 
 bool CopyPayloadPool::get_payload(
-        const eprosima::fastrtps::rtps::SerializedPayload_t& src_payload,
-        eprosima::fastrtps::rtps::SerializedPayload_t& target_payload)
+        const eprosima::fastdds::rtps::SerializedPayload_t& src_payload,
+        eprosima::fastdds::rtps::SerializedPayload_t& target_payload)
 {
     if (!get_payload(src_payload.max_size, target_payload))
     {

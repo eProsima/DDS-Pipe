@@ -280,13 +280,13 @@ bool Address::operator ==(
 bool Address::is_ipv4_correct(
         const IpType& ip) noexcept
 {
-    return eprosima::fastrtps::rtps::IPLocator::isIPv4(ip);
+    return eprosima::fastdds::rtps::IPLocator::isIPv4(ip);
 }
 
 bool Address::is_ipv6_correct(
         const IpType& ip) noexcept
 {
-    return eprosima::fastrtps::rtps::IPLocator::isIPv6(ip);
+    return eprosima::fastdds::rtps::IPLocator::isIPv6(ip);
 }
 
 PortType Address::default_port() noexcept
@@ -328,7 +328,7 @@ IpType Address::resolve_dns(
         IpVersion ip_version)
 {
     std::pair<std::set<std::string>, std::set<std::string>> dns_response =
-            fastrtps::rtps::IPLocator::resolveNameDNS(domain);
+            fastdds::rtps::IPLocator::resolveNameDNS(domain);
 
     if (ip_version == IpVersion::v4)
     {
@@ -370,7 +370,7 @@ std::pair<IpType, IpVersion> Address::resolve_dns(
         DomainType domain)
 {
     std::pair<std::set<std::string>, std::set<std::string>> dns_response =
-            fastrtps::rtps::IPLocator::resolveNameDNS(domain);
+            fastdds::rtps::IPLocator::resolveNameDNS(domain);
 
     if (dns_response.first.empty())
     {

@@ -25,12 +25,12 @@ namespace core {
 namespace types {
 
 //! Unique Id of every Endpoint
-class Guid : public fastrtps::rtps::GUID_t
+class Guid : public fastdds::rtps::GUID_t
 {
 public:
 
     //! Using parent constructors
-    using fastrtps::rtps::GUID_t::GUID_t;
+    using fastdds::rtps::GUID_t::GUID_t;
 
     //! Default constructor
     DDSPIPE_CORE_DllAPI
@@ -44,17 +44,17 @@ public:
     //! Copy constructor
     DDSPIPE_CORE_DllAPI
     Guid(
-            const fastrtps::rtps::GUID_t& x);
+            const fastdds::rtps::GUID_t& x);
 
     //! Move constructor
     DDSPIPE_CORE_DllAPI
     Guid(
-            fastrtps::rtps::GUID_t&& x);
+            fastdds::rtps::GUID_t&& x);
 
     //! Equal operator (inherited from GUID_t)
     DDSPIPE_CORE_DllAPI
     Guid& operator = (
-            const fastrtps::rtps::GUID_t& other) noexcept;
+            const fastdds::rtps::GUID_t& other) noexcept;
 
     /**
      * Whether the guid is a valid one
