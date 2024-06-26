@@ -271,7 +271,7 @@ void RpcBridge::transmit_(
     while (true)
     {
         {
-            std::lock_guard<eprosima::fastrtps::RecursiveTimedMutex> lock(reader->get_rtps_mutex());
+            std::lock_guard<eprosima::fastdds::RecursiveTimedMutex> lock(reader->get_rtps_mutex());
 
             if (!enabled_ || !(reader->get_unread_count() > 0))
             {
@@ -359,7 +359,7 @@ void RpcBridge::transmit_(
                         continue;
                     }
 
-                    eprosima::fastrtps::rtps::SequenceNumber_t sequence_number =
+                    eprosima::fastdds::rtps::SequenceNumber_t sequence_number =
                             rpc_data.sent_sequence_number;
                     // Add entry to registry associated to the transmission of this request through this proxy client.
                     service_registry.second->add(

@@ -27,8 +27,8 @@
 #include "float_bounded_sequenceCdrAux.hpp"
 #include "float_bounded_sequenceTypeObjectSupport.hpp"
 
-using SerializedPayload_t = eprosima::fastrtps::rtps::SerializedPayload_t;
-using InstanceHandle_t = eprosima::fastrtps::rtps::InstanceHandle_t;
+using SerializedPayload_t = eprosima::fastdds::rtps::SerializedPayload_t;
+using InstanceHandle_t = eprosima::fastdds::rtps::InstanceHandle_t;
 using DataRepresentationId_t = eprosima::fastdds::dds::DataRepresentationId_t;
 
 float_bounded_sequencePubSubType::float_bounded_sequencePubSubType()
@@ -57,11 +57,11 @@ float_bounded_sequencePubSubType::~float_bounded_sequencePubSubType()
 }
 
 bool float_bounded_sequencePubSubType::serialize(
-        void* data,
+        const void* const data,
         SerializedPayload_t* payload,
         DataRepresentationId_t data_representation)
 {
-    float_bounded_sequence* p_type = static_cast<float_bounded_sequence*>(data);
+    const float_bounded_sequence* p_type = static_cast<const float_bounded_sequence*>(data);
 
     // Object that manages the raw buffer.
     eprosima::fastcdr::FastBuffer fastbuffer(reinterpret_cast<char*>(payload->data), payload->max_size);
@@ -133,7 +133,7 @@ bool float_bounded_sequencePubSubType::deserialize(
 }
 
 std::function<uint32_t()> float_bounded_sequencePubSubType::getSerializedSizeProvider(
-        void* data,
+        const void* const data,
         DataRepresentationId_t data_representation)
 {
     return [data, data_representation]() -> uint32_t
@@ -150,7 +150,7 @@ std::function<uint32_t()> float_bounded_sequencePubSubType::getSerializedSizePro
                        eprosima::fastcdr::CdrVersion::XCDRv1 :eprosima::fastcdr::CdrVersion::XCDRv2);
                    size_t current_alignment {0};
                    return static_cast<uint32_t>(calculator.calculate_serialized_size(
-                               *static_cast<float_bounded_sequence*>(data), current_alignment)) +
+                               *static_cast<const float_bounded_sequence*>(data), current_alignment)) +
                            4u /*encapsulation*/;
                }
                catch (eprosima::fastcdr::exception::Exception& /*exception*/)
@@ -173,7 +173,7 @@ void float_bounded_sequencePubSubType::deleteData(
 }
 
 bool float_bounded_sequencePubSubType::getKey(
-        void* data,
+        const void* const data,
         InstanceHandle_t* handle,
         bool force_md5)
 {
@@ -182,7 +182,7 @@ bool float_bounded_sequencePubSubType::getKey(
         return false;
     }
 
-    float_bounded_sequence* p_type = static_cast<float_bounded_sequence*>(data);
+    const float_bounded_sequence* p_type = static_cast<const float_bounded_sequence*>(data);
 
     // Object that manages the raw buffer.
     eprosima::fastcdr::FastBuffer fastbuffer(reinterpret_cast<char*>(m_keyBuffer),

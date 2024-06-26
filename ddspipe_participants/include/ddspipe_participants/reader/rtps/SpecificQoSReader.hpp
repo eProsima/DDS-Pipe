@@ -51,7 +51,7 @@ public:
             const core::types::ParticipantId& participant_id,
             const core::types::DdsTopic& topic,
             const std::shared_ptr<core::PayloadPool>& payload_pool,
-            fastrtps::rtps::RTPSParticipant* rtps_participant,
+            fastdds::rtps::RTPSParticipant* rtps_participant,
             const std::shared_ptr<core::DiscoveryDatabase>& discovery_database);
 
 protected:
@@ -60,7 +60,7 @@ protected:
      * Specializes \c CommonReader method and set the QoS of the data received.
      */
     virtual void fill_received_data_(
-            const fastrtps::rtps::CacheChange_t& received_change,
+            const fastdds::rtps::CacheChange_t& received_change,
             core::types::RtpsPayloadData& data_to_fill) const noexcept override;
 
 

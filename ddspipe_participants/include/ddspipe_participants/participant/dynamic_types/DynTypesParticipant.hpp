@@ -80,14 +80,14 @@ public:
 
     DDSPIPE_PARTICIPANTS_DllAPI
     void onReaderDiscovery(
-            fastrtps::rtps::RTPSParticipant* participant,
-            fastrtps::rtps::ReaderDiscoveryInfo&& info,
+            fastdds::rtps::RTPSParticipant* participant,
+            fastdds::rtps::ReaderDiscoveryInfo&& info,
             bool& should_be_ignored) override;
 
     DDSPIPE_PARTICIPANTS_DllAPI
     void onWriterDiscovery(
-            fastrtps::rtps::RTPSParticipant* participant,
-            fastrtps::rtps::WriterDiscoveryInfo&& info,
+            fastdds::rtps::RTPSParticipant* participant,
+            fastdds::rtps::WriterDiscoveryInfo&& info,
             bool& should_be_ignored) override;
 
 protected:

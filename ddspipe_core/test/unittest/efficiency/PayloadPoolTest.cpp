@@ -35,14 +35,14 @@ using ::testing::Invoke;
 using ::testing::Return;
 
 namespace eprosima {
-namespace fastrtps {
+namespace fastdds {
 namespace rtps {
 
 /*
  * WORKAROUND:
  * This definition is needed due to googletest-distribution (1.11.0) requires to every class used inside ASSERT macro
  * to have the operator << defined in SAME namespace than the class.
- * In our case, Payload is defined as eprosima::fastrtps::rtps::SerializedPayload_t but redefined as
+ * In our case, Payload is defined as eprosima::fastdds::rtps::SerializedPayload_t but redefined as
  * eprosima::ddspipe::core::types::Payload and the operator << is defined in eprosima::ddspipe::core::types
  * Thus, gtest could not find this definition (arising a very messy and cryptic compilation error).
  * This definition corrects that problem.
@@ -54,11 +54,11 @@ void PrintTo(
         const SerializedPayload_t&,
         std::ostream* os)
 {
-    *os << "::eprosima::fastrtps::rtps::SerializedPayload_t";
+    *os << "::eprosima::fastdds::rtps::SerializedPayload_t";
 }
 
 } /* namespace rtps */
-} /* namespace fastrtps */
+} /* namespace fastdds */
 } /* namespace eprosima */
 
 namespace eprosima {
@@ -88,7 +88,7 @@ public:
     MOCK_METHOD(
         bool,
         get_payload,
-        (uint32_t size, eprosima::fastrtps::rtps::SerializedPayload_t& target_payload),
+        (uint32_t size, eprosima::fastdds::rtps::SerializedPayload_t& target_payload),
         (override));
 
     MOCK_METHOD(
@@ -96,14 +96,14 @@ public:
         get_payload,
         (
             const Payload& src_payload,
-            eprosima::fastrtps::rtps::SerializedPayload_t& target_payload
+            eprosima::fastdds::rtps::SerializedPayload_t& target_payload
         ),
         (override));
 
     MOCK_METHOD(
         bool,
         release_payload,
-        (eprosima::fastrtps::rtps::SerializedPayload_t& target_payload),
+        (eprosima::fastdds::rtps::SerializedPayload_t& target_payload),
         (override));
 };
 
@@ -319,7 +319,7 @@ TEST(PayloadPoolTest, is_clean)
     ASSERT_TRUE(pool.is_clean());
 
     // reserve and not clean
-    eprosima::fastrtps::rtps::CacheChange_t cc;
+    eprosima::fastdds::rtps::CacheChange_t cc;
     pool.reserve_(sizeof(PayloadUnit), cc.serializedPayload);
     ASSERT_FALSE(pool.is_clean());
 
@@ -340,7 +340,7 @@ TEST(PayloadPoolTest, is_clean)
 //     // get_payload for payload goes ok
 //     {
 //         test::MockPayloadPool pool;
-//         eprosima::fastrtps::rtps::CacheChange_t cc;
+//         eprosima::fastdds::rtps::CacheChange_t cc;
 
 //         EXPECT_CALL(pool, get_payload(_, _)).Times(1).WillOnce(Return(true));
 
@@ -353,7 +353,7 @@ TEST(PayloadPoolTest, is_clean)
 //     // get_payload for payload goes ok
 //     {
 //         test::MockPayloadPool pool;
-//         eprosima::fastrtps::rtps::CacheChange_t cc;
+//         eprosima::fastdds::rtps::CacheChange_t cc;
 
 //         EXPECT_CALL(pool, get_payload(_, _)).Times(1).WillOnce(Return(false));
 
@@ -373,9 +373,9 @@ TEST(PayloadPoolTest, is_clean)
 //     // get_payload for payload goes ok
 //     {
 //         test::MockPayloadPool pool;
-//         eprosima::fastrtps::rtps::CacheChange_t target;
+//         eprosima::fastdds::rtps::CacheChange_t target;
 //         Payload source;
-//         eprosima::fastrtps::rtps::IPayloadPool* aux_pool;
+//         eprosima::fastdds::rtps::IPayloadPool* aux_pool;
 
 //         EXPECT_CALL(pool, get_payload(_, _, _)).Times(1).WillOnce(Return(true));
 
@@ -397,9 +397,9 @@ TEST(PayloadPoolTest, is_clean)
 //     // get_payload for payload fails
 //     {
 //         test::MockPayloadPool pool;
-//         eprosima::fastrtps::rtps::CacheChange_t target;
+//         eprosima::fastdds::rtps::CacheChange_t target;
 //         Payload source;
-//         eprosima::fastrtps::rtps::IPayloadPool* aux_pool;
+//         eprosima::fastdds::rtps::IPayloadPool* aux_pool;
 
 //         EXPECT_CALL(pool, get_payload(_, _, _)).Times(1).WillOnce(Return(false));
 
@@ -419,7 +419,7 @@ TEST(PayloadPoolTest, is_clean)
 //     // this ownership release ok
 //     {
 //         test::MockPayloadPool pool;
-//         eprosima::fastrtps::rtps::CacheChange_t cc;
+//         eprosima::fastdds::rtps::CacheChange_t cc;
 
 //         // ownership must be this pool
 //         cc.payload_owner(&pool);
@@ -444,7 +444,7 @@ TEST(PayloadPoolTest, is_clean)
 //         INSTANTIATE_LOG_TESTER(eprosima::utils::Log::Kind::Error, 1, 1);
 
 //         test::MockPayloadPool pool;
-//         eprosima::fastrtps::rtps::CacheChange_t cc;
+//         eprosima::fastdds::rtps::CacheChange_t cc;
 //         cc.payload_owner(nullptr);
 
 //         EXPECT_THROW(pool.release_payload(cc), eprosima::utils::InconsistencyException);
@@ -453,7 +453,7 @@ TEST(PayloadPoolTest, is_clean)
 //     // this ownership release fail
 //     {
 //         test::MockPayloadPool pool;
-//         eprosima::fastrtps::rtps::CacheChange_t cc;
+//         eprosima::fastdds::rtps::CacheChange_t cc;
 
 //         // ownership must be this pool
 //         cc.payload_owner(&pool);

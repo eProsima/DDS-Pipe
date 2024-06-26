@@ -44,41 +44,41 @@ TEST(GuidTest, is_valid)
     // Unknown guid invalid
     {
         Guid invalid_guid_1(
-            eprosima::fastrtps::rtps::GuidPrefix_t::unknown(),
-            eprosima::fastrtps::rtps::EntityId_t::unknown());
+            eprosima::fastdds::rtps::GuidPrefix_t::unknown(),
+            eprosima::fastdds::rtps::EntityId_t::unknown());
         ASSERT_FALSE(invalid_guid_1.is_valid());
 
         Guid invalid_guid_2(
-            eprosima::fastrtps::rtps::GUID_t::unknown().guidPrefix,
-            eprosima::fastrtps::rtps::GUID_t::unknown().entityId);
+            eprosima::fastdds::rtps::GUID_t::unknown().guidPrefix,
+            eprosima::fastdds::rtps::GUID_t::unknown().entityId);
         ASSERT_FALSE(invalid_guid_2.is_valid());
     }
 
     // GuidPrefix invalid
     {
         Guid invalid_guid(
-            eprosima::fastrtps::rtps::GuidPrefix_t(), // Invalid GuidPrefix
-            eprosima::fastrtps::rtps::EntityId_t(1)); // Valid EntityId
+            eprosima::fastdds::rtps::GuidPrefix_t(), // Invalid GuidPrefix
+            eprosima::fastdds::rtps::EntityId_t(1)); // Valid EntityId
         ASSERT_FALSE(invalid_guid.is_valid());
     }
 
     // EntityId invalid
     {
-        eprosima::fastrtps::rtps::GuidPrefix_t guid_prefix;
+        eprosima::fastdds::rtps::GuidPrefix_t guid_prefix;
         std::istringstream("44.53.00.5f.45.50.52.4f.53.49.4d.41") >> guid_prefix;
         Guid valid_guid(
             guid_prefix,                             // Valid GuidPrefix
-            eprosima::fastrtps::rtps::EntityId_t()); // Invalid EntityId
+            eprosima::fastdds::rtps::EntityId_t()); // Invalid EntityId
         ASSERT_FALSE(valid_guid.is_valid());
     }
 
     // Constrcutor with valid value
     {
-        eprosima::fastrtps::rtps::GuidPrefix_t guid_prefix;
+        eprosima::fastdds::rtps::GuidPrefix_t guid_prefix;
         std::istringstream("44.53.00.5f.45.50.52.4f.53.49.4d.41") >> guid_prefix;
         Guid valid_guid(
             guid_prefix,                              // Valid GuidPrefix
-            eprosima::fastrtps::rtps::EntityId_t(1)); // Valid EntityId
+            eprosima::fastdds::rtps::EntityId_t(1)); // Valid EntityId
         ASSERT_TRUE(valid_guid.is_valid());
     }
 }

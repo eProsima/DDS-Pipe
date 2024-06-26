@@ -48,7 +48,7 @@ bool PayloadPoolMediator::write(
 bool PayloadPoolMediator::write(
         fastdds::dds::DataWriter* writer,
         types::RtpsPayloadData* data,
-        fastrtps::rtps::WriteParams& params)
+        fastdds::rtps::WriteParams& params)
 {
     // Lock the mutex_ to ensure that the payload hasn't changed when we retrieve it in get_payload.
     std::lock_guard<std::mutex> lock(mutex_);
@@ -61,7 +61,7 @@ bool PayloadPoolMediator::write(
 fastdds::dds::ReturnCode_t PayloadPoolMediator::write(
         fastdds::dds::DataWriter* writer,
         types::RtpsPayloadData* data,
-        const fastrtps::rtps::InstanceHandle_t& handle)
+        const fastdds::rtps::InstanceHandle_t& handle)
 {
     // Lock the mutex_ to ensure that the payload hasn't changed when we retrieve it in get_payload.
     std::lock_guard<std::mutex> lock(mutex_);
@@ -73,20 +73,20 @@ fastdds::dds::ReturnCode_t PayloadPoolMediator::write(
 
 bool PayloadPoolMediator::get_payload(
         uint32_t size,
-        eprosima::fastrtps::rtps::SerializedPayload_t& payload)
+        eprosima::fastdds::rtps::SerializedPayload_t& payload)
 {
     return get_payload(*payload_, payload);
 }
 
 bool PayloadPoolMediator::get_payload(
-        const eprosima::fastrtps::rtps::SerializedPayload_t& src_payload,
-        eprosima::fastrtps::rtps::SerializedPayload_t& target_payload)
+        const eprosima::fastdds::rtps::SerializedPayload_t& src_payload,
+        eprosima::fastdds::rtps::SerializedPayload_t& target_payload)
 {
     return payload_pool_->get_payload(src_payload, target_payload);
 }
 
 bool PayloadPoolMediator::release_payload(
-        eprosima::fastrtps::rtps::SerializedPayload_t& payload)
+        eprosima::fastdds::rtps::SerializedPayload_t& payload)
 {
     return payload_pool_->release_payload(payload);
 }

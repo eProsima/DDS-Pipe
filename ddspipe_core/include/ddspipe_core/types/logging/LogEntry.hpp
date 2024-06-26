@@ -59,7 +59,7 @@ const int32_t TOPIC_MISMATCH_QOS = 0x10000003;
  * @brief This class represents the enumeration Kind defined by the user in the IDL file.
  * @ingroup LogEntry
  */
-enum class Kind : uint32_t
+enum class Kind : int32_t
 {
     Info,
     Warning,

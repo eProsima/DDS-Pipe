@@ -49,7 +49,7 @@ namespace rtps {
  */
 class CommonParticipant
     : public core::IParticipant
-    , public fastrtps::rtps::RTPSParticipantListener
+    , public fastdds::rtps::RTPSParticipantListener
 {
 public:
 
@@ -127,8 +127,8 @@ public:
      */
     DDSPIPE_PARTICIPANTS_DllAPI
     virtual void onParticipantDiscovery(
-            fastrtps::rtps::RTPSParticipant* participant,
-            fastrtps::rtps::ParticipantDiscoveryInfo&& info,
+            fastdds::rtps::RTPSParticipant* participant,
+            fastdds::rtps::ParticipantDiscoveryInfo&& info,
             bool& /*should_be_ignored*/) override;
 
     /**
@@ -138,8 +138,8 @@ public:
      */
     DDSPIPE_PARTICIPANTS_DllAPI
     virtual void onReaderDiscovery(
-            fastrtps::rtps::RTPSParticipant* participant,
-            fastrtps::rtps::ReaderDiscoveryInfo&& info,
+            fastdds::rtps::RTPSParticipant* participant,
+            fastdds::rtps::ReaderDiscoveryInfo&& info,
             bool& /*should_be_ignored*/) override;
 
     /**
@@ -149,8 +149,8 @@ public:
      */
     DDSPIPE_PARTICIPANTS_DllAPI
     virtual void onWriterDiscovery(
-            fastrtps::rtps::RTPSParticipant* participant,
-            fastrtps::rtps::WriterDiscoveryInfo&& info,
+            fastdds::rtps::RTPSParticipant* participant,
+            fastdds::rtps::WriterDiscoveryInfo&& info,
             bool& /*should_be_ignored*/) override;
 
     //////////////////
@@ -189,14 +189,14 @@ protected:
             const std::shared_ptr<core::PayloadPool>& payload_pool,
             const std::shared_ptr<core::DiscoveryDatabase>& discovery_database,
             const core::types::DomainId& domain_id,
-            const fastrtps::rtps::RTPSParticipantAttributes& participant_attributes);
+            const fastdds::rtps::RTPSParticipantAttributes& participant_attributes);
 
     /**
      * @brief Auxiliary method to create the internal RTPS participant.
      */
     void create_participant_(
             const core::types::DomainId& domain,
-            const fastrtps::rtps::RTPSParticipantAttributes& participant_attributes);
+            const fastdds::rtps::RTPSParticipantAttributes& participant_attributes);
 
     /////
     // RTPS specific methods
@@ -206,7 +206,7 @@ protected:
      *
      * @note This method must be specialized from inherit classes.
      */
-    static fastrtps::rtps::RTPSParticipantAttributes reckon_participant_attributes_(
+    static fastdds::rtps::RTPSParticipantAttributes reckon_participant_attributes_(
             const ParticipantConfiguration* participant_configuration);
 
     /////
@@ -222,13 +222,13 @@ protected:
     const std::shared_ptr<core::DiscoveryDatabase> discovery_database_;
 
     //! Internal RTPS Participant
-    eprosima::fastrtps::rtps::RTPSParticipant* rtps_participant_;
+    eprosima::fastdds::rtps::RTPSParticipant* rtps_participant_;
 
     //! Domain Id to create the internal RTPS Participant.
     core::types::DomainId domain_id_;
 
     //! Participant attributes to create the internal RTPS Participant.
-    fastrtps::rtps::RTPSParticipantAttributes participant_attributes_;
+    fastdds::rtps::RTPSParticipantAttributes participant_attributes_;
 };
 
 } /* namespace rtps */

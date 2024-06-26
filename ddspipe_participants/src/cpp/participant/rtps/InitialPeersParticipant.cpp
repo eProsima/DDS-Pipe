@@ -39,11 +39,11 @@ InitialPeersParticipant::InitialPeersParticipant(
 {
 }
 
-fastrtps::rtps::RTPSParticipantAttributes InitialPeersParticipant::reckon_participant_attributes_(
+fastdds::rtps::RTPSParticipantAttributes InitialPeersParticipant::reckon_participant_attributes_(
         const InitialPeersParticipantConfiguration* configuration)
 {
     // Use default as base attributes
-    fastrtps::rtps::RTPSParticipantAttributes params = CommonParticipant::reckon_participant_attributes_(configuration);
+    fastdds::rtps::RTPSParticipantAttributes params = CommonParticipant::reckon_participant_attributes_(configuration);
 
     // Auxiliary variable to save characters and improve readability
     const auto& tls_config = configuration->tls_configuration;
@@ -156,21 +156,21 @@ fastrtps::rtps::RTPSParticipantAttributes InitialPeersParticipant::reckon_partic
 
         // For any, UDP or TCP
         // Create Locator
-        eprosima::fastrtps::rtps::Locator_t locator;
+        eprosima::fastdds::rtps::Locator_t locator;
         locator.kind = address.get_locator_kind();
 
         // IP
         if (address.is_ipv4())
         {
-            eprosima::fastrtps::rtps::IPLocator::setIPv4(locator, address.ip());
+            eprosima::fastdds::rtps::IPLocator::setIPv4(locator, address.ip());
         }
         else
         {
-            eprosima::fastrtps::rtps::IPLocator::setIPv6(locator, address.ip());
+            eprosima::fastdds::rtps::IPLocator::setIPv6(locator, address.ip());
         }
 
         // Set Logical port for every locator
-        eprosima::fastrtps::rtps::IPLocator::setPhysicalPort(locator, address.port());
+        eprosima::fastdds::rtps::IPLocator::setPhysicalPort(locator, address.port());
 
         // In TCP case, set Physical port
         if (address.is_tcp())
@@ -181,8 +181,8 @@ fastrtps::rtps::RTPSParticipantAttributes InitialPeersParticipant::reckon_partic
             // port announced is equal to the internal port.
             // If external port is defined, announced port is external port. This is the one clients,
             // should try to connect, which should match network router public port.
-            eprosima::fastrtps::rtps::IPLocator::setPhysicalPort(locator, address.external_port());
-            eprosima::fastrtps::rtps::IPLocator::setLogicalPort(locator, 0);
+            eprosima::fastdds::rtps::IPLocator::setPhysicalPort(locator, address.external_port());
+            eprosima::fastdds::rtps::IPLocator::setLogicalPort(locator, 0);
         }
 
         // Add listening address to builtin
@@ -207,7 +207,7 @@ fastrtps::rtps::RTPSParticipantAttributes InitialPeersParticipant::reckon_partic
         }
 
         // Create Locator for connection initial peers
-        eprosima::fastrtps::rtps::Locator_t locator;
+        eprosima::fastdds::rtps::Locator_t locator;
 
         // KIND
         locator.kind = connection_address.get_locator_kind();
@@ -229,15 +229,15 @@ fastrtps::rtps::RTPSParticipantAttributes InitialPeersParticipant::reckon_partic
         // IP
         if (connection_address.is_ipv4())
         {
-            eprosima::fastrtps::rtps::IPLocator::setIPv4(locator, connection_address.ip());
+            eprosima::fastdds::rtps::IPLocator::setIPv4(locator, connection_address.ip());
         }
         else
         {
-            eprosima::fastrtps::rtps::IPLocator::setIPv6(locator, connection_address.ip());
+            eprosima::fastdds::rtps::IPLocator::setIPv6(locator, connection_address.ip());
         }
 
         // Set Physical port for every locator
-        eprosima::fastrtps::rtps::IPLocator::setPhysicalPort(locator, connection_address.port());
+        eprosima::fastdds::rtps::IPLocator::setPhysicalPort(locator, connection_address.port());
 
         // TCP client side
         // Initial peer physical port must match server's public port. If server specified an external port,
@@ -246,7 +246,7 @@ fastrtps::rtps::RTPSParticipantAttributes InitialPeersParticipant::reckon_partic
         // In TCP case, set Logical port
         if (connection_address.is_tcp())
         {
-            eprosima::fastrtps::rtps::IPLocator::setLogicalPort(locator, 0);
+            eprosima::fastdds::rtps::IPLocator::setLogicalPort(locator, 0);
         }
 
         // Add it to builtin
@@ -322,14 +322,14 @@ fastrtps::rtps::RTPSParticipantAttributes InitialPeersParticipant::reckon_partic
     {
         if (has_connection_udp_ipv4)
         {
-            eprosima::fastrtps::rtps::Locator_t locator;
+            eprosima::fastdds::rtps::Locator_t locator;
             locator.kind = LOCATOR_KIND_UDPv4;
             params.builtin.metatrafficUnicastLocatorList.push_back(locator);
         }
 
         if (has_connection_udp_ipv6)
         {
-            eprosima::fastrtps::rtps::Locator_t locator;
+            eprosima::fastdds::rtps::Locator_t locator;
             locator.kind = LOCATOR_KIND_UDPv6;
             params.builtin.metatrafficUnicastLocatorList.push_back(locator);
         }

@@ -55,7 +55,7 @@ public:
             const core::types::ParticipantId& participant_id,
             const core::types::DdsTopic& topic,
             const std::shared_ptr<core::PayloadPool>& payload_pool,
-            fastrtps::rtps::RTPSParticipant* rtps_participant,
+            fastdds::rtps::RTPSParticipant* rtps_participant,
             const bool repeater = false);
 
     /**
@@ -102,7 +102,7 @@ protected:
     core::types::DdsTopic topic_;
 
     //! Reference to RTPS Participant.
-    fastrtps::rtps::RTPSParticipant* rtps_participant_;
+    fastdds::rtps::RTPSParticipant* rtps_participant_;
 
     //! Whether this Writer is a repeater.
     bool repeater_;

@@ -31,7 +31,7 @@ SimpleReader::SimpleReader(
         const core::types::ParticipantId& participant_id,
         const core::types::DdsTopic& topic,
         const std::shared_ptr<core::PayloadPool>& payload_pool,
-        fastrtps::rtps::RTPSParticipant* rtps_participant)
+        fastdds::rtps::RTPSParticipant* rtps_participant)
     : CommonReader(
         participant_id, topic, payload_pool, rtps_participant,
         reckon_history_attributes_(topic),
@@ -44,14 +44,14 @@ SimpleReader::SimpleReader(
 
 //! Override Parent method to create an RPC data type.
 core::types::RtpsPayloadData* SimpleReader::create_data_(
-        const fastrtps::rtps::CacheChange_t& received_change) const noexcept
+        const fastdds::rtps::CacheChange_t& received_change) const noexcept
 {
     return new core::types::RpcPayloadData();
 }
 
 //! Override Parent method to fill fields exclusive from RPC.
 void SimpleReader::fill_received_data_(
-        const fastrtps::rtps::CacheChange_t& received_change,
+        const fastdds::rtps::CacheChange_t& received_change,
         core::types::RtpsPayloadData& data_to_fill) const noexcept
 {
     CommonReader::fill_received_data_(received_change, data_to_fill);
