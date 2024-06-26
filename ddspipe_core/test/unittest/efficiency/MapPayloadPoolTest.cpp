@@ -51,15 +51,15 @@ public:
     }
 
     uint64_t reference_count(
-            const eprosima::fastrtps::rtps::SerializedPayload_t& payload)
+            const eprosima::fastdds::rtps::SerializedPayload_t& payload)
     {
         return reserved_payloads_[payload.data];
     }
 
     void clean_all(
-            std::vector<eprosima::fastrtps::rtps::SerializedPayload_t>& payloads)
+            std::vector<eprosima::fastdds::rtps::SerializedPayload_t>& payloads)
     {
-        for (eprosima::fastrtps::rtps::SerializedPayload_t& payload : payloads)
+        for (eprosima::fastdds::rtps::SerializedPayload_t& payload : payloads)
         {
             release_payload(payload);
         }
@@ -88,7 +88,7 @@ TEST(MapPayloadPoolTest, get_payload)
     // Get N different pointers
     {
         test::MockMapPayloadPool pool;
-        std::vector<eprosima::fastrtps::rtps::SerializedPayload_t> payloads(TEST_NUMBER);
+        std::vector<eprosima::fastdds::rtps::SerializedPayload_t> payloads(TEST_NUMBER);
 
         for (unsigned int i = 0; i < TEST_NUMBER; i++)
         {
@@ -106,7 +106,7 @@ TEST(MapPayloadPoolTest, get_payload)
     // fail reserve memory
     {
         test::MockMapPayloadPool pool;
-        eprosima::fastrtps::rtps::SerializedPayload_t payload;
+        eprosima::fastdds::rtps::SerializedPayload_t payload;
 
         ASSERT_FALSE(pool.get_payload(0, payload));
     }
@@ -127,15 +127,15 @@ TEST(MapPayloadPoolTest, get_payload)
  */
 TEST(MapPayloadPoolTest, get_payload_from_src)
 {
-    eprosima::fastrtps::rtps::IPayloadPool* pool = new test::MockMapPayloadPool(); // Requires to be ptr to pass it to get_payload
+    eprosima::fastdds::rtps::IPayloadPool* pool = new test::MockMapPayloadPool(); // Requires to be ptr to pass it to get_payload
     test::MockMapPayloadPool* pool_ = static_cast<test::MockMapPayloadPool*>(pool);
 
-    eprosima::fastrtps::rtps::SerializedPayload_t payload0;
-    eprosima::fastrtps::rtps::SerializedPayload_t payload1;
-    eprosima::fastrtps::rtps::SerializedPayload_t payload2;
-    eprosima::fastrtps::rtps::SerializedPayload_t payload3;
-    eprosima::fastrtps::rtps::SerializedPayload_t payload4;
-    eprosima::fastrtps::rtps::SerializedPayload_t payload5;
+    eprosima::fastdds::rtps::SerializedPayload_t payload0;
+    eprosima::fastdds::rtps::SerializedPayload_t payload1;
+    eprosima::fastdds::rtps::SerializedPayload_t payload2;
+    eprosima::fastdds::rtps::SerializedPayload_t payload3;
+    eprosima::fastdds::rtps::SerializedPayload_t payload4;
+    eprosima::fastdds::rtps::SerializedPayload_t payload5;
 
     // get payload0
     ASSERT_TRUE(pool_->get_payload(DEFAULT_SIZE, payload0));
@@ -209,13 +209,13 @@ TEST(MapPayloadPoolTest, get_payload_from_src_no_owner)
 {
     // Each pool has a IPayloadPool and a MockMapPayloadPool so it can be called to get_payload from source
     // and specific methods from mock
-    eprosima::fastrtps::rtps::IPayloadPool* pool = new test::MockMapPayloadPool(); // Requires to be ptr to pass it to get_payload
+    eprosima::fastdds::rtps::IPayloadPool* pool = new test::MockMapPayloadPool(); // Requires to be ptr to pass it to get_payload
     test::MockMapPayloadPool* pool_ = static_cast<test::MockMapPayloadPool*>(pool);
-    eprosima::fastrtps::rtps::IPayloadPool* pool_aux = new test::MockMapPayloadPool(); // Requires to be ptr to pass it to get_payload
+    eprosima::fastdds::rtps::IPayloadPool* pool_aux = new test::MockMapPayloadPool(); // Requires to be ptr to pass it to get_payload
     test::MockMapPayloadPool* pool_aux_ = static_cast<test::MockMapPayloadPool*>(pool_aux);
 
-    eprosima::fastrtps::rtps::SerializedPayload_t payload_src;
-    eprosima::fastrtps::rtps::SerializedPayload_t payload_target;
+    eprosima::fastdds::rtps::SerializedPayload_t payload_src;
+    eprosima::fastdds::rtps::SerializedPayload_t payload_target;
 
     // get payload aux from pool aux
     pool_aux_->get_payload(DEFAULT_SIZE, payload_src);
@@ -249,12 +249,12 @@ TEST(MapPayloadPoolTest, get_payload_from_src_negative)
 {
     // Source has size 0 and different owner
     {
-        eprosima::fastrtps::rtps::IPayloadPool* pool = new test::MockMapPayloadPool(); // Requires to be ptr to pass it to get_payload
+        eprosima::fastdds::rtps::IPayloadPool* pool = new test::MockMapPayloadPool(); // Requires to be ptr to pass it to get_payload
         test::MockMapPayloadPool* pool_ = static_cast<test::MockMapPayloadPool*>(pool);
-        eprosima::fastrtps::rtps::IPayloadPool* pool_aux = nullptr; // nullptr
+        eprosima::fastdds::rtps::IPayloadPool* pool_aux = nullptr; // nullptr
 
-        eprosima::fastrtps::rtps::SerializedPayload_t payload_src;
-        eprosima::fastrtps::rtps::SerializedPayload_t payload_target;
+        eprosima::fastdds::rtps::SerializedPayload_t payload_src;
+        eprosima::fastdds::rtps::SerializedPayload_t payload_target;
 
         ASSERT_FALSE(
             pool_->get_payload(
@@ -277,9 +277,9 @@ TEST(MapPayloadPoolTest, get_payload_from_src_negative)
  */
 TEST(MapPayloadPoolTest, release_payload)
 {
-    eprosima::fastrtps::rtps::IPayloadPool* pool = new test::MockMapPayloadPool(); // Requires to be ptr to pass it to get_payload
+    eprosima::fastdds::rtps::IPayloadPool* pool = new test::MockMapPayloadPool(); // Requires to be ptr to pass it to get_payload
     test::MockMapPayloadPool* pool_ = static_cast<test::MockMapPayloadPool*>(pool);
-    std::vector<eprosima::fastrtps::rtps::SerializedPayload_t> payloads(TEST_NUMBER);
+    std::vector<eprosima::fastdds::rtps::SerializedPayload_t> payloads(TEST_NUMBER);
 
     // get first payload
     pool_->get_payload(DEFAULT_SIZE, payloads[0]);
@@ -332,7 +332,7 @@ TEST(MapPayloadPoolTest, release_payload_negative)
 
     test::MockMapPayloadPool pool;
     test::MockMapPayloadPool pool_aux;
-    eprosima::fastrtps::rtps::SerializedPayload_t payload;
+    eprosima::fastdds::rtps::SerializedPayload_t payload;
 
     pool_aux.get_payload(DEFAULT_SIZE, payload);
 

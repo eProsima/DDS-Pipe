@@ -42,7 +42,7 @@ public:
 
 protected:
 
-    static fastrtps::rtps::RTPSParticipantAttributes reckon_participant_attributes_(
+    static fastdds::rtps::RTPSParticipantAttributes reckon_participant_attributes_(
             const InitialPeersParticipantConfiguration* configuration);
 
 };

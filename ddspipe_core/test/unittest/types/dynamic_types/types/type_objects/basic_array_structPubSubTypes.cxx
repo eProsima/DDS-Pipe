@@ -27,8 +27,8 @@
 #include "basic_array_structCdrAux.hpp"
 #include "basic_array_structTypeObjectSupport.hpp"
 
-using SerializedPayload_t = eprosima::fastrtps::rtps::SerializedPayload_t;
-using InstanceHandle_t = eprosima::fastrtps::rtps::InstanceHandle_t;
+using SerializedPayload_t = eprosima::fastdds::rtps::SerializedPayload_t;
+using InstanceHandle_t = eprosima::fastdds::rtps::InstanceHandle_t;
 using DataRepresentationId_t = eprosima::fastdds::dds::DataRepresentationId_t;
 
 TheOtherObjectInArrayPubSubType::TheOtherObjectInArrayPubSubType()
@@ -57,11 +57,11 @@ TheOtherObjectInArrayPubSubType::~TheOtherObjectInArrayPubSubType()
 }
 
 bool TheOtherObjectInArrayPubSubType::serialize(
-        void* data,
+        const void* const data,
         SerializedPayload_t* payload,
         DataRepresentationId_t data_representation)
 {
-    TheOtherObjectInArray* p_type = static_cast<TheOtherObjectInArray*>(data);
+    const TheOtherObjectInArray* p_type = static_cast<const TheOtherObjectInArray*>(data);
 
     // Object that manages the raw buffer.
     eprosima::fastcdr::FastBuffer fastbuffer(reinterpret_cast<char*>(payload->data), payload->max_size);
@@ -133,7 +133,7 @@ bool TheOtherObjectInArrayPubSubType::deserialize(
 }
 
 std::function<uint32_t()> TheOtherObjectInArrayPubSubType::getSerializedSizeProvider(
-        void* data,
+        const void* const data,
         DataRepresentationId_t data_representation)
 {
     return [data, data_representation]() -> uint32_t
@@ -150,7 +150,7 @@ std::function<uint32_t()> TheOtherObjectInArrayPubSubType::getSerializedSizeProv
                        eprosima::fastcdr::CdrVersion::XCDRv1 :eprosima::fastcdr::CdrVersion::XCDRv2);
                    size_t current_alignment {0};
                    return static_cast<uint32_t>(calculator.calculate_serialized_size(
-                               *static_cast<TheOtherObjectInArray*>(data), current_alignment)) +
+                               *static_cast<const TheOtherObjectInArray*>(data), current_alignment)) +
                            4u /*encapsulation*/;
                }
                catch (eprosima::fastcdr::exception::Exception& /*exception*/)
@@ -173,7 +173,7 @@ void TheOtherObjectInArrayPubSubType::deleteData(
 }
 
 bool TheOtherObjectInArrayPubSubType::getKey(
-        void* data,
+        const void* const data,
         InstanceHandle_t* handle,
         bool force_md5)
 {
@@ -182,7 +182,7 @@ bool TheOtherObjectInArrayPubSubType::getKey(
         return false;
     }
 
-    TheOtherObjectInArray* p_type = static_cast<TheOtherObjectInArray*>(data);
+    const TheOtherObjectInArray* p_type = static_cast<const TheOtherObjectInArray*>(data);
 
     // Object that manages the raw buffer.
     eprosima::fastcdr::FastBuffer fastbuffer(reinterpret_cast<char*>(m_keyBuffer),
@@ -250,11 +250,11 @@ basic_array_structPubSubType::~basic_array_structPubSubType()
 }
 
 bool basic_array_structPubSubType::serialize(
-        void* data,
+        const void* const data,
         SerializedPayload_t* payload,
         DataRepresentationId_t data_representation)
 {
-    basic_array_struct* p_type = static_cast<basic_array_struct*>(data);
+    const basic_array_struct* p_type = static_cast<const basic_array_struct*>(data);
 
     // Object that manages the raw buffer.
     eprosima::fastcdr::FastBuffer fastbuffer(reinterpret_cast<char*>(payload->data), payload->max_size);
@@ -326,7 +326,7 @@ bool basic_array_structPubSubType::deserialize(
 }
 
 std::function<uint32_t()> basic_array_structPubSubType::getSerializedSizeProvider(
-        void* data,
+        const void* const data,
         DataRepresentationId_t data_representation)
 {
     return [data, data_representation]() -> uint32_t
@@ -343,7 +343,7 @@ std::function<uint32_t()> basic_array_structPubSubType::getSerializedSizeProvide
                        eprosima::fastcdr::CdrVersion::XCDRv1 :eprosima::fastcdr::CdrVersion::XCDRv2);
                    size_t current_alignment {0};
                    return static_cast<uint32_t>(calculator.calculate_serialized_size(
-                               *static_cast<basic_array_struct*>(data), current_alignment)) +
+                               *static_cast<const basic_array_struct*>(data), current_alignment)) +
                            4u /*encapsulation*/;
                }
                catch (eprosima::fastcdr::exception::Exception& /*exception*/)
@@ -366,7 +366,7 @@ void basic_array_structPubSubType::deleteData(
 }
 
 bool basic_array_structPubSubType::getKey(
-        void* data,
+        const void* const data,
         InstanceHandle_t* handle,
         bool force_md5)
 {
@@ -375,7 +375,7 @@ bool basic_array_structPubSubType::getKey(
         return false;
     }
 
-    basic_array_struct* p_type = static_cast<basic_array_struct*>(data);
+    const basic_array_struct* p_type = static_cast<const basic_array_struct*>(data);
 
     // Object that manages the raw buffer.
     eprosima::fastcdr::FastBuffer fastbuffer(reinterpret_cast<char*>(m_keyBuffer),

@@ -57,7 +57,7 @@ PayloadPool::~PayloadPool()
 
 // bool PayloadPool::get_payload(
 //         uint32_t size,
-//         eprosima::fastrtps::rtps::CacheChange_t& cache_change)
+//         eprosima::fastdds::rtps::CacheChange_t& cache_change)
 // {
 //     if (get_payload(size, cache_change.serializedPayload))
 //     {
@@ -72,9 +72,9 @@ PayloadPool::~PayloadPool()
 // }
 
 // bool PayloadPool::get_payload(
-//         fastrtps::rtps::SerializedPayload_t& data,
+//         fastdds::rtps::SerializedPayload_t& data,
 //         IPayloadPool*& data_owner,
-//         eprosima::fastrtps::rtps::CacheChange_t& cache_change)
+//         eprosima::fastdds::rtps::CacheChange_t& cache_change)
 // {
 //     if (get_payload(data, data_owner, cache_change.serializedPayload))
 //     {
@@ -89,7 +89,7 @@ PayloadPool::~PayloadPool()
 // }
 
 // bool PayloadPool::release_payload(
-//         fastrtps::rtps::CacheChange_t& cache_change)
+//         fastdds::rtps::CacheChange_t& cache_change)
 // {
 //     if (cache_change.payload_owner() == this)
 //     {
@@ -137,7 +137,7 @@ void PayloadPool::add_release_payload_()
 
 bool PayloadPool::reserve_(
         uint32_t size,
-        eprosima::fastrtps::rtps::SerializedPayload_t& payload)
+        eprosima::fastdds::rtps::SerializedPayload_t& payload)
 {
     if (size == 0)
     {
@@ -156,7 +156,7 @@ bool PayloadPool::reserve_(
 }
 
 bool PayloadPool::release_(
-        eprosima::fastrtps::rtps::SerializedPayload_t& payload)
+        eprosima::fastdds::rtps::SerializedPayload_t& payload)
 {
     logDebug(DDSPIPE_PAYLOADPOOL, "Releasing payload ptr: " << payload.data << ".");
 

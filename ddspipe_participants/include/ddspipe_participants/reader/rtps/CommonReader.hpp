@@ -48,7 +48,7 @@ namespace rtps {
  *
  * @warning This object is not RAII and must be initialized before used.
  */
-class CommonReader : public BaseReader, public fastrtps::rtps::ReaderListener
+class CommonReader : public BaseReader, public fastdds::rtps::ReaderListener
 {
 public:
 
@@ -96,8 +96,8 @@ public:
      */
     DDSPIPE_PARTICIPANTS_DllAPI
     void on_new_cache_change_added(
-            fastrtps::rtps::RTPSReader*,
-            const fastrtps::rtps::CacheChange_t* const change) noexcept override;
+            fastdds::rtps::RTPSReader*,
+            const fastdds::rtps::CacheChange_t* const change) noexcept override;
 
     /**
      * @brief CommonReader Listener callback when a new Writer is matched or unmatched
@@ -109,8 +109,8 @@ public:
      */
     DDSPIPE_PARTICIPANTS_DllAPI
     void on_reader_matched(
-            fastrtps::rtps::RTPSReader*,
-            const fastrtps::rtps::MatchingInfo& info) noexcept override;
+            fastdds::rtps::RTPSReader*,
+            const fastdds::rtps::MatchingInfo& info) noexcept override;
 
     /**
      * This method is called when a new Writer is discovered, with a Topic that
@@ -131,7 +131,7 @@ public:
      */
     DDSPIPE_PARTICIPANTS_DllAPI
     void on_sample_lost(
-            fastrtps::rtps::RTPSReader*,
+            fastdds::rtps::RTPSReader*,
             int32_t sample_lost_since_last_update) noexcept override;
 
     /**
@@ -143,9 +143,9 @@ public:
      */
     DDSPIPE_PARTICIPANTS_DllAPI
     void on_sample_rejected(
-            fastrtps::rtps::RTPSReader*,
+            fastdds::rtps::RTPSReader*,
             eprosima::fastdds::dds::SampleRejectedStatusKind reason,
-            const fastrtps::rtps::CacheChange_t* const change) noexcept override;
+            const fastdds::rtps::CacheChange_t* const change) noexcept override;
 
     /**
      * This method is called when a new Writer is discovered, with a Topic that
@@ -155,7 +155,7 @@ public:
      */
     DDSPIPE_PARTICIPANTS_DllAPI
     void on_incompatible_type(
-            fastrtps::rtps::RTPSReader* reader) noexcept override;
+            fastdds::rtps::RTPSReader* reader) noexcept override;
 
     /////////////////////////
     // RPC REQUIRED METHODS
@@ -168,7 +168,7 @@ public:
 
     //! Get internal RTPS reader mutex
     DDSPIPE_PARTICIPANTS_DllAPI
-    fastrtps::RecursiveTimedMutex& get_rtps_mutex() const noexcept override;
+    fastdds::RecursiveTimedMutex& get_rtps_mutex() const noexcept override;
 
     //! Get number of unread cache changes in internal RTPS reader
     DDSPIPE_PARTICIPANTS_DllAPI
@@ -193,10 +193,10 @@ protected:
             const core::types::ParticipantId& participant_id,
             const core::types::DdsTopic& topic,
             const std::shared_ptr<core::PayloadPool>& payload_pool,
-            fastrtps::rtps::RTPSParticipant* rtps_participant,
-            const fastrtps::rtps::HistoryAttributes& history_attributes,
-            const fastrtps::rtps::ReaderAttributes& reader_attributes,
-            const fastrtps::TopicAttributes& topic_attributes,
+            fastdds::rtps::RTPSParticipant* rtps_participant,
+            const fastdds::rtps::HistoryAttributes& history_attributes,
+            const fastdds::rtps::ReaderAttributes& reader_attributes,
+            const fastdds::TopicAttributes& topic_attributes,
             const fastdds::dds::ReaderQos& reader_qos);
 
     // Specific enable/disable do not need to be implemented
@@ -206,9 +206,9 @@ protected:
      */
     DDSPIPE_PARTICIPANTS_DllAPI
     virtual void internal_entities_creation_(
-            const fastrtps::rtps::HistoryAttributes& history_attributes,
-            const fastrtps::rtps::ReaderAttributes& reader_attributes,
-            const fastrtps::TopicAttributes& topic_attributes,
+            const fastdds::rtps::HistoryAttributes& history_attributes,
+            const fastdds::rtps::ReaderAttributes& reader_attributes,
+            const fastdds::TopicAttributes& topic_attributes,
             const fastdds::dds::ReaderQos& reader_qos);
 
     /**
@@ -218,14 +218,14 @@ protected:
      */
     DDSPIPE_PARTICIPANTS_DllAPI
     virtual core::types::RtpsPayloadData* create_data_(
-            const fastrtps::rtps::CacheChange_t& received_change) const noexcept;
+            const fastdds::rtps::CacheChange_t& received_change) const noexcept;
 
     /**
      * @brief Auxiliary method used in \c take to fill the received data.
      */
     DDSPIPE_PARTICIPANTS_DllAPI
     virtual void fill_received_data_(
-            const fastrtps::rtps::CacheChange_t& received_change,
+            const fastdds::rtps::CacheChange_t& received_change,
             core::types::RtpsPayloadData& data_to_fill) const noexcept;
 
     // Specific enable/disable do not need to be implemented
@@ -260,17 +260,17 @@ protected:
      *
      * @return Default HistoryAttributes
      */
-    static fastrtps::rtps::HistoryAttributes reckon_history_attributes_(
+    static fastdds::rtps::HistoryAttributes reckon_history_attributes_(
             const core::types::DdsTopic& topic) noexcept;
 
     /**
      * @brief Reader Attributes to create RTPS Reader
      */
-    static fastrtps::rtps::ReaderAttributes reckon_reader_attributes_(
+    static fastdds::rtps::ReaderAttributes reckon_reader_attributes_(
             const core::types::DdsTopic& topic) noexcept;
 
     //! Topic Attributes to create RTPS Reader
-    static fastrtps::TopicAttributes reckon_topic_attributes_(
+    static fastdds::TopicAttributes reckon_topic_attributes_(
             const core::types::DdsTopic& topic) noexcept;
 
     //! Reader QoS to create RTPS Reader
@@ -282,24 +282,24 @@ protected:
 
     //! Whether a change received should be processed
     virtual bool should_accept_change_(
-            const fastrtps::rtps::CacheChange_t* change) noexcept;
+            const fastdds::rtps::CacheChange_t* change) noexcept;
 
     //! Whether a change received is from this Participant (to avoid auto-feedback)
     bool come_from_this_participant_(
-            const fastrtps::rtps::CacheChange_t* change) const noexcept;
+            const fastdds::rtps::CacheChange_t* change) const noexcept;
 
     //! Whether a guid references this Participant (to avoid auto-feedback)
     bool come_from_this_participant_(
-            const fastrtps::rtps::GUID_t guid) const noexcept;
+            const fastdds::rtps::GUID_t guid) const noexcept;
 
     utils::ReturnCode is_data_correct_(
-            const fastrtps::rtps::CacheChange_t* received_change) const noexcept;
+            const fastdds::rtps::CacheChange_t* received_change) const noexcept;
 
     /////
     // EXTERNAL VARIABLES
 
     //! RTPS Participant
-    fastrtps::rtps::RTPSParticipant* rtps_participant_;
+    fastdds::rtps::RTPSParticipant* rtps_participant_;
 
     /////
     // INTERNAL VARIABLES
@@ -310,19 +310,19 @@ protected:
     core::types::DdsTopic topic_;
 
     //! RTPS Reader pointer
-    fastrtps::rtps::RTPSReader* rtps_reader_;
+    fastdds::rtps::RTPSReader* rtps_reader_;
 
     //! RTPS Reader History associated to \c rtps_reader_
-    fastrtps::rtps::ReaderHistory* rtps_history_;
+    fastdds::rtps::ReaderHistory* rtps_history_;
 
     //! History attributes to create the History for the internal RTPS Reader.
-    fastrtps::rtps::HistoryAttributes history_attributes_;
+    fastdds::rtps::HistoryAttributes history_attributes_;
 
     //! Reader attributes to create the internal RTPS Reader.
-    fastrtps::rtps::ReaderAttributes reader_attributes_;
+    fastdds::rtps::ReaderAttributes reader_attributes_;
 
     //! Topic attributes to create the internal RTPS Reader.
-    fastrtps::TopicAttributes topic_attributes_;
+    fastdds::TopicAttributes topic_attributes_;
 
     //! Reader QoS to create the internal RTPS Reader.
     fastdds::dds::ReaderQos reader_qos_;

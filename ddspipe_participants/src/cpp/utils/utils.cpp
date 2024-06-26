@@ -42,11 +42,11 @@ core::types::Endpoint create_common_endpoint_from_info_(
     // Reliability
     if (info.info.m_qos.m_reliability.kind == fastdds::dds::BEST_EFFORT_RELIABILITY_QOS)
     {
-        endpoint.topic.topic_qos.reliability_qos.set_value(fastrtps::rtps::BEST_EFFORT);
+        endpoint.topic.topic_qos.reliability_qos.set_value(fastdds::rtps::BEST_EFFORT);
     }
     else if (info.info.m_qos.m_reliability.kind == fastdds::dds::RELIABLE_RELIABILITY_QOS)
     {
-        endpoint.topic.topic_qos.reliability_qos.set_value(fastrtps::rtps::RELIABLE);
+        endpoint.topic.topic_qos.reliability_qos.set_value(fastdds::rtps::RELIABLE);
     }
     else
     {
@@ -59,7 +59,7 @@ core::types::Endpoint create_common_endpoint_from_info_(
     // Set Topic with ownership
     endpoint.topic.topic_qos.ownership_qos.set_value(info.info.m_qos.m_ownership.kind);
     // Set Topic key
-    endpoint.topic.topic_qos.keyed.set_value(info.info.topicKind() == eprosima::fastrtps::rtps::TopicKind_t::WITH_KEY);
+    endpoint.topic.topic_qos.keyed.set_value(info.info.topicKind() == eprosima::fastdds::rtps::TopicKind_t::WITH_KEY);
 
     // Set TypeIdentifier
     endpoint.topic.type_ids.type_identifier1(info.info.type_information().type_information.complete().typeid_with_size().type_id());
@@ -87,8 +87,8 @@ core::types::Endpoint create_common_endpoint_from_info_(
 
 template<>
 DDSPIPE_PARTICIPANTS_DllAPI
-core::types::Endpoint create_endpoint_from_info_<fastrtps::rtps::WriterDiscoveryInfo>(
-        const fastrtps::rtps::WriterDiscoveryInfo& info,
+core::types::Endpoint create_endpoint_from_info_<fastdds::rtps::WriterDiscoveryInfo>(
+        const fastdds::rtps::WriterDiscoveryInfo& info,
         const core::types::ParticipantId participant_discoverer_id)
 {
     // Create Endpoint from common info
@@ -108,8 +108,8 @@ core::types::Endpoint create_endpoint_from_info_<fastrtps::rtps::WriterDiscovery
 
 template<>
 DDSPIPE_PARTICIPANTS_DllAPI
-core::types::Endpoint create_endpoint_from_info_<fastrtps::rtps::ReaderDiscoveryInfo>(
-        const fastrtps::rtps::ReaderDiscoveryInfo& info,
+core::types::Endpoint create_endpoint_from_info_<fastdds::rtps::ReaderDiscoveryInfo>(
+        const fastdds::rtps::ReaderDiscoveryInfo& info,
         const core::types::ParticipantId participant_discoverer_id)
 {
     // Create Endpoint from common info
@@ -129,16 +129,16 @@ core::types::SpecificEndpointQoS specific_qos_of_writer_(
 }
 
 bool come_from_same_participant_(
-        const fastrtps::rtps::GUID_t src_guid,
-        const fastrtps::rtps::GUID_t target_guid) noexcept
+        const fastdds::rtps::GUID_t src_guid,
+        const fastdds::rtps::GUID_t target_guid) noexcept
 {
     return src_guid.guidPrefix == target_guid.guidPrefix;
 }
 
-fastrtps::rtps::GUID_t guid_from_instance_handle(
-        const fastrtps::rtps::InstanceHandle_t& ihandle) noexcept
+fastdds::rtps::GUID_t guid_from_instance_handle(
+        const fastdds::rtps::InstanceHandle_t& ihandle) noexcept
 {
-    return fastrtps::rtps::iHandle2GUID(ihandle);
+    return fastdds::rtps::iHandle2GUID(ihandle);
 }
 
 } /* namespace detail */

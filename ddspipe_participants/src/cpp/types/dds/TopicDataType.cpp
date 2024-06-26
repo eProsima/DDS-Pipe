@@ -52,10 +52,10 @@ TopicDataType::~TopicDataType()
 }
 
 bool TopicDataType::serialize(
-        void* data,
-        fastrtps::rtps::SerializedPayload_t* target_payload)
+        const void* data,
+        fastdds::rtps::SerializedPayload_t* target_payload)
 {
-    DataType* src_payload = static_cast<DataType*>(data);
+    const DataType* src_payload = static_cast<const DataType*>(data);
 
     logDebug(DDSPIPE_DDS_TYPESUPPORT, "Serializing data " << *src_payload << ".");
 
@@ -78,7 +78,7 @@ bool TopicDataType::serialize(
 }
 
 bool TopicDataType::deserialize(
-        eprosima::fastrtps::rtps::SerializedPayload_t* src_payload,
+        eprosima::fastdds::rtps::SerializedPayload_t* src_payload,
         void* data)
 {
     logDebug(DDSPIPE_DDS_TYPESUPPORT, "Deserializing data " << *src_payload << ".");
@@ -92,24 +92,24 @@ bool TopicDataType::deserialize(
 }
 
 std::function<uint32_t()> TopicDataType::getSerializedSizeProvider(
-        void* data)
+        const void* data)
 {
     return [data]() -> uint32_t
            {
-               auto p = static_cast<DataType*>(data);
+               const auto p = static_cast<const DataType*>(data);
                return p->payload.length;
            };
 }
 
 bool TopicDataType::getKey(
-        void* data,
-        eprosima::fastrtps::rtps::InstanceHandle_t* handle,
+        const void* const data,
+        eprosima::fastdds::rtps::InstanceHandle_t* handle,
         bool /* = false */)
 {
     if (m_isGetKeyDefined)
     {
         // Load the instanceHandle from data into handle
-        auto p = static_cast<DataType*>(data);
+        const auto p = static_cast<const DataType*>(data);
         *handle = p->instanceHandle;
         return true;
     }

@@ -38,19 +38,19 @@ using PartitionQosPolicy = eprosima::fastdds::dds::PartitionQosPolicy;
 using OwnershipStrengthQosPolicy = eprosima::fastdds::dds::OwnershipStrengthQosPolicy;
 
 //! Instance Handler type
-using InstanceHandle = eprosima::fastrtps::rtps::InstanceHandle_t;
+using InstanceHandle = eprosima::fastdds::rtps::InstanceHandle_t;
 
 //! Instance Handler type
-using ChangeKind = eprosima::fastrtps::rtps::ChangeKind_t;
+using ChangeKind = eprosima::fastdds::rtps::ChangeKind_t;
 
 //! Fast DDS Time
-using DataTime = eprosima::fastrtps::rtps::Time_t;
+using DataTime = eprosima::fastdds::rtps::Time_t;
 
 //! Kind of every unit that creates a Payload
-using PayloadUnit = eprosima::fastrtps::rtps::octet;
+using PayloadUnit = eprosima::fastdds::rtps::octet;
 
 //! Payload references the raw data received.
-using Payload = eprosima::fastrtps::rtps::SerializedPayload_t;
+using Payload = eprosima::fastdds::rtps::SerializedPayload_t;
 
 //! \c octet to stream serializator
 DDSPIPE_CORE_DllAPI

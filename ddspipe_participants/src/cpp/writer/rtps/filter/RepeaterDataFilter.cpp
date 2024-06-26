@@ -26,8 +26,8 @@ namespace participants {
 namespace rtps {
 
 bool RepeaterDataFilter::is_relevant(
-        const fastrtps::rtps::CacheChange_t& change,
-        const fastrtps::rtps::GUID_t& reader_guid) const
+        const fastdds::rtps::CacheChange_t& change,
+        const fastdds::rtps::GUID_t& reader_guid) const
 {
     if (!SelfDataFilter::is_relevant(change, reader_guid))
     {

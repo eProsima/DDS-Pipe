@@ -59,20 +59,20 @@ public:
             const core::types::ParticipantId& participant_id,
             const core::types::DdsTopic& topic,
             const std::shared_ptr<core::PayloadPool>& payload_pool,
-            fastrtps::rtps::RTPSParticipant* rtps_participant,
+            fastdds::rtps::RTPSParticipant* rtps_participant,
             const bool repeater = false);
 
     //! Override Parent method to fill fields only required for RPC.
     DDSPIPE_PARTICIPANTS_DllAPI
     virtual utils::ReturnCode fill_to_send_data_(
-            fastrtps::rtps::CacheChange_t* to_send_change_to_fill,
-            eprosima::fastrtps::rtps::WriteParams& to_send_params,
+            fastdds::rtps::CacheChange_t* to_send_change_to_fill,
+            eprosima::fastdds::rtps::WriteParams& to_send_params,
             const core::types::RtpsPayloadData& data) const noexcept;
 
     //! Override Parent method to fill fields after message is sent only required for RPC.
     DDSPIPE_PARTICIPANTS_DllAPI
     virtual void fill_sent_data_(
-            const eprosima::fastrtps::rtps::WriteParams& sent_params,
+            const eprosima::fastdds::rtps::WriteParams& sent_params,
             core::types::RtpsPayloadData& data_to_fill) const noexcept;
 };
 

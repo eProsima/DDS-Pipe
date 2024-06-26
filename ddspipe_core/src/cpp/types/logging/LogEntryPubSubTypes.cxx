@@ -27,8 +27,8 @@
 #include <ddspipe_core/types/logging/LogEntryCdrAux.hpp>
 #include <ddspipe_core/types/logging/LogEntryTypeObjectSupport.hpp>
 
-using SerializedPayload_t = eprosima::fastrtps::rtps::SerializedPayload_t;
-using InstanceHandle_t = eprosima::fastrtps::rtps::InstanceHandle_t;
+using SerializedPayload_t = eprosima::fastdds::rtps::SerializedPayload_t;
+using InstanceHandle_t = eprosima::fastdds::rtps::InstanceHandle_t;
 using DataRepresentationId_t = eprosima::fastdds::dds::DataRepresentationId_t;
 
 LogEntryPubSubType::LogEntryPubSubType()
@@ -57,11 +57,11 @@ LogEntryPubSubType::~LogEntryPubSubType()
 }
 
 bool LogEntryPubSubType::serialize(
-        void* data,
+        const void* const data,
         SerializedPayload_t* payload,
         DataRepresentationId_t data_representation)
 {
-    LogEntry* p_type = static_cast<LogEntry*>(data);
+    const LogEntry* p_type = static_cast<const LogEntry*>(data);
 
     // Object that manages the raw buffer.
     eprosima::fastcdr::FastBuffer fastbuffer(reinterpret_cast<char*>(payload->data), payload->max_size);
@@ -133,7 +133,7 @@ bool LogEntryPubSubType::deserialize(
 }
 
 std::function<uint32_t()> LogEntryPubSubType::getSerializedSizeProvider(
-        void* data,
+        const void* const data,
         DataRepresentationId_t data_representation)
 {
     return [data, data_representation]() -> uint32_t
@@ -150,7 +150,7 @@ std::function<uint32_t()> LogEntryPubSubType::getSerializedSizeProvider(
                        eprosima::fastcdr::CdrVersion::XCDRv1 :eprosima::fastcdr::CdrVersion::XCDRv2);
                    size_t current_alignment {0};
                    return static_cast<uint32_t>(calculator.calculate_serialized_size(
-                               *static_cast<LogEntry*>(data), current_alignment)) +
+                               *static_cast<const LogEntry*>(data), current_alignment)) +
                            4u /*encapsulation*/;
                }
                catch (eprosima::fastcdr::exception::Exception& /*exception*/)
@@ -173,7 +173,7 @@ void LogEntryPubSubType::deleteData(
 }
 
 bool LogEntryPubSubType::getKey(
-        void* data,
+        const void* const data,
         InstanceHandle_t* handle,
         bool force_md5)
 {
@@ -182,7 +182,7 @@ bool LogEntryPubSubType::getKey(
         return false;
     }
 
-    LogEntry* p_type = static_cast<LogEntry*>(data);
+    const LogEntry* p_type = static_cast<const LogEntry*>(data);
 
     // Object that manages the raw buffer.
     eprosima::fastcdr::FastBuffer fastbuffer(reinterpret_cast<char*>(m_keyBuffer),
