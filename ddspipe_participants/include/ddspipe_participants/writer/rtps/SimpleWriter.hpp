@@ -14,13 +14,12 @@
 
 #pragma once
 
-#include <fastdds/rtps/rtps_fwd.h>
-#include <fastrtps/rtps/attributes/HistoryAttributes.h>
-#include <fastrtps/attributes/TopicAttributes.h>
-#include <fastrtps/qos/WriterQos.h>
-#include <fastrtps/rtps/history/WriterHistory.h>
-#include <fastrtps/rtps/attributes/WriterAttributes.h>
-#include <fastrtps/rtps/writer/RTPSWriter.h>
+#include <fastdds/rtps/attributes/HistoryAttributes.h>
+#include <fastdds/rtps/attributes/TopicAttributes.h>
+#include <fastdds/dds/publisher/qos/WriterQos.hpp>
+#include <fastdds/rtps/history/WriterHistory.h>
+#include <fastdds/rtps/attributes/WriterAttributes.h>
+#include <fastdds/rtps/writer/RTPSWriter.h>
 
 #include <ddspipe_core/types/participant/ParticipantId.hpp>
 
@@ -60,7 +59,7 @@ public:
             const core::types::ParticipantId& participant_id,
             const core::types::DdsTopic& topic,
             const std::shared_ptr<core::PayloadPool>& payload_pool,
-            fastrtps::rtps::RTPSParticipant* rtps_participant,
+            fastdds::rtps::RTPSParticipant* rtps_participant,
             const bool repeater = false);
 
 };

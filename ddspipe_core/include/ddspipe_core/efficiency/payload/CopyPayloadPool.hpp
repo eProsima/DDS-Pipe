@@ -35,17 +35,16 @@ public:
     //! Reserve a new memory space
     bool get_payload(
             uint32_t size,
-            types::Payload& payload) override;
+            eprosima::fastdds::rtps::SerializedPayload_t& payload) override;
 
     //! Reserve a new memory space and copy the data from \c src_payload to \c target_payload
     bool get_payload(
-            const types::Payload& src_payload,
-            IPayloadPool*& data_owner,
-            types::Payload& target_payload) override;
+            const eprosima::fastdds::rtps::SerializedPayload_t& src_payload,
+            eprosima::fastdds::rtps::SerializedPayload_t& target_payload) override;
 
     //! Release data in \c payload
     bool release_payload(
-            types::Payload& payload) override;
+            eprosima::fastdds::rtps::SerializedPayload_t& payload) override;
 };
 
 } /* namespace core */

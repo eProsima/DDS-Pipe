@@ -13,9 +13,9 @@
 // limitations under the License.
 
 
-#include <fastrtps/rtps/RTPSDomain.h>
-#include <fastrtps/rtps/participant/RTPSParticipant.h>
-#include <fastrtps/rtps/common/CacheChange.h>
+#include <fastdds/rtps/RTPSDomain.h>
+#include <fastdds/rtps/participant/RTPSParticipant.h>
+#include <fastdds/rtps/common/CacheChange.h>
 
 #include <cpp_utils/exception/InitializationException.hpp>
 #include <cpp_utils/Log.hpp>
@@ -69,21 +69,12 @@ void CommonWriter::init()
                       participant_id_ << " in topic " << topic_ << ".");
     }
 
-    #if FASTRTPS_VERSION_MAJOR <= 2 && FASTRTPS_VERSION_MINOR < 12
-    writer_ = dds_publisher_->create_datawriter_with_payload_pool(
-        dds_topic_,
-        reckon_writer_qos_(),
-        payload_pool_,
-        nullptr,
-        eprosima::fastdds::dds::StatusMask::all());
-    #else
     writer_ = dds_publisher_->create_datawriter(
         dds_topic_,
         reckon_writer_qos_(),
         nullptr,
         eprosima::fastdds::dds::StatusMask::all(),
         payload_pool_);
-    #endif // if FASTRTPS_VERSION_MAJOR <= 2 && FASTRTPS_VERSION_MINOR < 13
 
     if (!writer_)
     {
@@ -127,11 +118,11 @@ utils::ReturnCode CommonWriter::write_nts_(
     {
         if (payload_pool_->write(writer_, &rtps_data))
         {
-            return utils::ReturnCode::RETCODE_OK;
+            return utils::ReturnCode::OK;
         }
         else
         {
-            return utils::ReturnCode::RETCODE_ERROR;
+            return utils::ReturnCode::ERROR;
         }
     }
 }
@@ -182,7 +173,7 @@ fastdds::dds::DataWriterQos CommonWriter::reckon_writer_qos_() const noexcept
     }
 
     // Set minimum deadline so it matches with everything
-    qos.deadline().period = eprosima::fastrtps::Duration_t(0);
+    qos.deadline().period = eprosima::fastdds::Duration_t(0);
 
     return qos;
 }

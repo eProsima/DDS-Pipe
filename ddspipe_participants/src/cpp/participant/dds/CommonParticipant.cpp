@@ -16,6 +16,7 @@
 
 #include <cpp_utils/Log.hpp>
 
+#include <fastdds/dds/core/ReturnCode.hpp>
 #include <fastdds/dds/domain/DomainParticipantFactory.hpp>
 
 #include <ddspipe_core/types/dynamic_types/types.hpp>
@@ -90,7 +91,7 @@ void CommonParticipant::init()
         throw utils::InitializationException(STR_ENTRY << "Error creating DDS Participant " << id() << ".");
     }
 
-    if (dds_participant_->enable() != utils::ReturnCode::RETCODE_OK)
+    if (dds_participant_->enable() != fastdds::dds::RETCODE_OK)
     {
         throw utils::InitializationException(STR_ENTRY << "Error enabling DDS Participant " << id() << ".");
     }
@@ -216,37 +217,39 @@ std::shared_ptr<core::IReader> CommonParticipant::create_reader(
 
 void CommonParticipant::on_participant_discovery(
         fastdds::dds::DomainParticipant* participant,
-        fastrtps::rtps::ParticipantDiscoveryInfo&& info)
+        fastdds::rtps::ParticipantDiscoveryInfo&& info,
+        bool&)
 {
     if (info.info.m_guid.guidPrefix != participant->guid().guidPrefix)
     {
-        if (info.status == fastrtps::rtps::ParticipantDiscoveryInfo::DISCOVERED_PARTICIPANT)
+        if (info.status == fastdds::rtps::ParticipantDiscoveryInfo::DISCOVERED_PARTICIPANT)
         {
             logInfo(DDSPIPE_DISCOVERY,
                     "Found in Participant " << configuration_->id << " new Participant " << info.info.m_guid << ".");
         }
-        else if (info.status == fastrtps::rtps::ParticipantDiscoveryInfo::CHANGED_QOS_PARTICIPANT)
+        else if (info.status == fastdds::rtps::ParticipantDiscoveryInfo::CHANGED_QOS_PARTICIPANT)
         {
             logInfo(DDSPIPE_DISCOVERY, "Participant " << info.info.m_guid << " changed QoS.");
         }
-        else if (info.status == fastrtps::rtps::ParticipantDiscoveryInfo::REMOVED_PARTICIPANT)
+        else if (info.status == fastdds::rtps::ParticipantDiscoveryInfo::REMOVED_PARTICIPANT)
         {
             logInfo(DDSPIPE_DISCOVERY, "Participant " << info.info.m_guid << " removed.");
         }
-        else if (info.status == fastrtps::rtps::ParticipantDiscoveryInfo::DROPPED_PARTICIPANT)
+        else if (info.status == fastdds::rtps::ParticipantDiscoveryInfo::DROPPED_PARTICIPANT)
         {
             logInfo(DDSPIPE_DISCOVERY, "Participant " << info.info.m_guid << " dropped.");
         }
-        else if (info.status == fastrtps::rtps::ParticipantDiscoveryInfo::IGNORED_PARTICIPANT)
+        else if (info.status == fastdds::rtps::ParticipantDiscoveryInfo::IGNORED_PARTICIPANT)
         {
             logInfo(DDSPIPE_DISCOVERY, "Participant " << info.info.m_guid << " ignored.");
         }
     }
 }
 
-void CommonParticipant::on_subscriber_discovery(
+void CommonParticipant::on_data_reader_discovery(
         fastdds::dds::DomainParticipant*,
-        fastrtps::rtps::ReaderDiscoveryInfo&& info)
+        fastdds::rtps::ReaderDiscoveryInfo&& info,
+        bool&)
 {
     // If reader is from other participant, store it in discovery database
     if (detail::come_from_same_participant_(info.info.guid(), this->dds_participant_->guid()))
@@ -257,10 +260,10 @@ void CommonParticipant::on_subscriber_discovery(
 
     // Calculate endpoint info
     core::types::Endpoint info_reader =
-            detail::create_endpoint_from_info_<fastrtps::rtps::ReaderDiscoveryInfo>(info, id());
+            detail::create_endpoint_from_info_<fastdds::rtps::ReaderDiscoveryInfo>(info, id());
 
     // If new endpoint discovered
-    if (info.status == fastrtps::rtps::ReaderDiscoveryInfo::DISCOVERY_STATUS::DISCOVERED_READER)
+    if (info.status == fastdds::rtps::ReaderDiscoveryInfo::DISCOVERY_STATUS::DISCOVERED_READER)
     {
         logInfo(DDSPIPE_DISCOVERY,
                 "Found in Participant " << configuration_->id << " new Reader " << info.info.guid() << ".");
@@ -268,20 +271,20 @@ void CommonParticipant::on_subscriber_discovery(
         // TODO check logic because if an endpoint is lost by liveliness it may be inserted again when already in database
         this->discovery_database_->add_endpoint(info_reader);
     }
-    else if (info.status == fastrtps::rtps::ReaderDiscoveryInfo::DISCOVERY_STATUS::CHANGED_QOS_READER)
+    else if (info.status == fastdds::rtps::ReaderDiscoveryInfo::DISCOVERY_STATUS::CHANGED_QOS_READER)
     {
         logInfo(DDSPIPE_DISCOVERY, "Reader " << info.info.guid() << " changed TopicQoS.");
 
         this->discovery_database_->update_endpoint(info_reader);
     }
-    else if (info.status == fastrtps::rtps::ReaderDiscoveryInfo::REMOVED_READER)
+    else if (info.status == fastdds::rtps::ReaderDiscoveryInfo::REMOVED_READER)
     {
         logInfo(DDSPIPE_DISCOVERY, "Reader " << info.info.guid() << " removed.");
 
         info_reader.active = false;
         this->discovery_database_->update_endpoint(info_reader);
     }
-    else if (info.status == fastrtps::rtps::ReaderDiscoveryInfo::IGNORED_READER)
+    else if (info.status == fastdds::rtps::ReaderDiscoveryInfo::IGNORED_READER)
     {
         logInfo(DDSPIPE_DISCOVERY, "Reader " << info.info.guid() << " ignored.");
 
@@ -289,9 +292,10 @@ void CommonParticipant::on_subscriber_discovery(
     }
 }
 
-void CommonParticipant::on_publisher_discovery(
+void CommonParticipant::on_data_writer_discovery(
         fastdds::dds::DomainParticipant*,
-        fastrtps::rtps::WriterDiscoveryInfo&& info)
+        fastdds::rtps::WriterDiscoveryInfo&& info,
+        bool&)
 {
     // If writer is from other participant, store it in discovery database
     if (detail::come_from_same_participant_(info.info.guid(), this->dds_participant_->guid()))
@@ -302,10 +306,10 @@ void CommonParticipant::on_publisher_discovery(
 
     // Calculate endpoint info
     core::types::Endpoint info_writer =
-            detail::create_endpoint_from_info_<fastrtps::rtps::WriterDiscoveryInfo>(info, id());
+            detail::create_endpoint_from_info_<fastdds::rtps::WriterDiscoveryInfo>(info, id());
 
     // If new endpoint discovered
-    if (info.status == fastrtps::rtps::WriterDiscoveryInfo::DISCOVERY_STATUS::DISCOVERED_WRITER)
+    if (info.status == fastdds::rtps::WriterDiscoveryInfo::DISCOVERY_STATUS::DISCOVERED_WRITER)
     {
         logInfo(DDSPIPE_DISCOVERY,
                 "Found in Participant " << configuration_->id << " new Writer " << info.info.guid() << ".");
@@ -313,20 +317,20 @@ void CommonParticipant::on_publisher_discovery(
         // TODO check logic because if an endpoint is lost by liveliness it may be inserted again when already in database
         this->discovery_database_->add_endpoint(info_writer);
     }
-    else if (info.status == fastrtps::rtps::WriterDiscoveryInfo::CHANGED_QOS_WRITER)
+    else if (info.status == fastdds::rtps::WriterDiscoveryInfo::CHANGED_QOS_WRITER)
     {
         logInfo(DDSPIPE_DISCOVERY, "Writer " << info.info.guid() << " changed TopicQoS.");
 
         this->discovery_database_->update_endpoint(info_writer);
     }
-    else if (info.status == fastrtps::rtps::WriterDiscoveryInfo::REMOVED_WRITER)
+    else if (info.status == fastdds::rtps::WriterDiscoveryInfo::REMOVED_WRITER)
     {
         logInfo(DDSPIPE_DISCOVERY, "Writer " << info.info.guid() << " removed.");
 
         info_writer.active = false;
         this->discovery_database_->update_endpoint(info_writer);
     }
-    else if (info.status == fastrtps::rtps::WriterDiscoveryInfo::IGNORED_WRITER)
+    else if (info.status == fastdds::rtps::WriterDiscoveryInfo::IGNORED_WRITER)
     {
         logInfo(DDSPIPE_DISCOVERY, "Writer " << info.info.guid() << " ignored.");
 
@@ -403,9 +407,10 @@ fastdds::dds::Topic* CommonParticipant::topic_related_(
         dds_participant_->register_type(
             eprosima::fastdds::dds::TypeSupport(
                 new TopicDataType(
+                    payload_pool_,
                     topic.type_name,
-                    topic.topic_qos.keyed,
-                    payload_pool_))
+                    topic.type_ids,
+                    topic.topic_qos.keyed))
             );
     }
 

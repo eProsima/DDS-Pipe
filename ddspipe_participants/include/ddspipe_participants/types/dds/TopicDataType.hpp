@@ -14,7 +14,14 @@
 
 #pragma once
 
+#include <memory>
+#include <string>
+
+#include <fastdds/dds/core/ReturnCode.hpp>
+#include <fastdds/dds/domain/DomainParticipantFactory.hpp>
 #include <fastdds/dds/topic/TopicDataType.hpp>
+#include <fastdds/dds/xtypes/type_representation/detail/dds_xtypes_typeobject.hpp>
+#include <fastdds/rtps/common/SerializedPayload.h>
 
 #include <ddspipe_core/efficiency/payload/PayloadPool.hpp>
 #include <ddspipe_core/types/data/RtpsPayloadData.hpp>
@@ -36,9 +43,10 @@ public:
     //! Default constructor
     DDSPIPE_PARTICIPANTS_DllAPI
     TopicDataType(
+            const std::shared_ptr<core::PayloadPool>& payload_pool,
             const std::string& type_name,
-            const bool keyed,
-            const std::shared_ptr<core::PayloadPool>& payload_pool);
+            const fastdds::dds::xtypes::TypeIdentifierPair& type_ids,
+            const bool keyed);
 
     //! Default destructor
     DDSPIPE_PARTICIPANTS_DllAPI
@@ -47,25 +55,25 @@ public:
     //! \c serialize method overriden from \c TopicDataType
     DDSPIPE_PARTICIPANTS_DllAPI
     virtual bool serialize(
-            void* data,
-            eprosima::fastrtps::rtps::SerializedPayload_t* payload) override;
+            const void* data,
+            eprosima::fastdds::rtps::SerializedPayload_t* payload) override;
 
     //! \c deserialize method overriden from \c TopicDataType
     DDSPIPE_PARTICIPANTS_DllAPI
     virtual bool deserialize(
-            eprosima::fastrtps::rtps::SerializedPayload_t* payload,
+            eprosima::fastdds::rtps::SerializedPayload_t* payload,
             void* data) override;
 
     //! \c getSerializedSizeProvider method overriden from \c TopicDataType
     DDSPIPE_PARTICIPANTS_DllAPI
     virtual std::function<uint32_t()> getSerializedSizeProvider(
-            void* data) override;
+            const void* data) override;
 
     //! \c getKey method overriden from \c TopicDataType
     DDSPIPE_PARTICIPANTS_DllAPI
     virtual bool getKey(
-            void* data,
-            eprosima::fastrtps::rtps::InstanceHandle_t* handle,
+            const void* const data,
+            eprosima::fastdds::rtps::InstanceHandle_t* handle,
             bool force_md5 = false) override;
 
     //! \c createData method overriden from \c TopicDataType

@@ -45,13 +45,13 @@ struct RpcPayloadData : public RtpsPayloadData
     virtual types::TopicInternalTypeDiscriminator internal_type_discriminator() const noexcept override;
 
     //! Write params associated to the received cache change
-    utils::Fuzzy<eprosima::fastrtps::rtps::WriteParams> write_params{};
+    utils::Fuzzy<eprosima::fastdds::rtps::WriteParams> write_params{};
 
     //! Sequence number of the received cache change
-    eprosima::fastrtps::rtps::SequenceNumber_t origin_sequence_number{};
+    eprosima::fastdds::rtps::SequenceNumber_t origin_sequence_number{};
 
     //! Sequence Number with which the internal writer (ddspipe rpc writer) has sent this message
-    eprosima::fastrtps::rtps::SequenceNumber_t sent_sequence_number;
+    eprosima::fastdds::rtps::SequenceNumber_t sent_sequence_number;
 };
 
 /**

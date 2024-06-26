@@ -19,10 +19,11 @@
 #include <ostream>
 #include <map>
 
-#include <fastrtps/types/DynamicType.h>
-#include <fastrtps/types/DynamicTypeMember.h>
-#include <fastrtps/types/DynamicTypePtr.h>
-#include <fastrtps/types/TypeDescriptor.h>
+#include <fastdds/dds/core/ReturnCode.hpp>
+#include <fastdds/dds/xtypes/dynamic_types/DynamicType.hpp>
+#include <fastdds/dds/xtypes/dynamic_types/DynamicTypeMember.hpp>
+#include <fastdds/dds/xtypes/dynamic_types/TypeDescriptor.hpp>
+#include <fastdds/dds/xtypes/type_representation/detail/dds_xtypes_typeobject.hpp>
 
 #include <cpp_utils/exception/InconsistencyException.hpp>
 #include <cpp_utils/exception/UnsupportedException.hpp>
@@ -36,6 +37,8 @@ namespace ddspipe {
 namespace core {
 namespace types {
 namespace idl {
+
+// TODO: Include compability with TK_ALIAS, TK_BITSET AND TK_BITMASK
 
 constexpr const char* TYPE_OPENING =
         "\n{\n";
@@ -51,7 +54,7 @@ struct TreeNodeType
     TreeNodeType(
             std::string member_name,
             std::string type_kind_name,
-            fastrtps::types::DynamicType_ptr dynamic_type)
+            fastdds::dds::DynamicType::_ref_type dynamic_type)
         : member_name(member_name)
         , type_kind_name(type_kind_name)
         , dynamic_type(dynamic_type)
@@ -60,58 +63,70 @@ struct TreeNodeType
 
     std::string member_name;
     std::string type_kind_name;
-    fastrtps::types::DynamicType_ptr dynamic_type;
+    fastdds::dds::DynamicType::_ref_type dynamic_type;
 };
 
 // Forward declaration
 std::string type_kind_to_str(
-        const fastrtps::types::DynamicType_ptr& type);
+        const fastdds::dds::DynamicType::_ref_type& type);
 
-fastrtps::types::DynamicType_ptr container_internal_type(
-        const fastrtps::types::DynamicType_ptr& dyn_type)
+fastdds::dds::DynamicType::_ref_type container_internal_type(
+        const fastdds::dds::DynamicType::_ref_type& dyn_type)
 {
-    return dyn_type->get_descriptor()->get_element_type();
+    fastdds::dds::TypeDescriptor::_ref_type type_descriptor {fastdds::dds::traits<fastdds::dds::TypeDescriptor>::make_shared()};
+
+    const auto ret = dyn_type->get_descriptor(type_descriptor);
+    if (ret != fastdds::dds::RETCODE_OK)
+    {
+        throw utils::InconsistencyException("No Type Descriptor, failed to get conatiner internal type");
+    }
+
+    return type_descriptor->element_type();
 }
 
-std::vector<uint32_t> container_size(
-        const fastrtps::types::DynamicType_ptr& dyn_type,
-        bool unidimensional = true)
+fastdds::dds::BoundSeq container_size(
+        const fastdds::dds::DynamicType::_ref_type& dyn_type)
 {
-    if (unidimensional)
+    fastdds::dds::TypeDescriptor::_ref_type type_descriptor {fastdds::dds::traits<fastdds::dds::TypeDescriptor>::make_shared()};
+
+    const auto ret = dyn_type->get_descriptor(type_descriptor);
+    if (ret != fastdds::dds::RETCODE_OK)
     {
-        return {dyn_type->get_descriptor()->get_total_bounds()};
+        throw utils::InconsistencyException("No Type Descriptor, failed to get container size");
     }
-    else
-    {
-        std::vector<uint32_t> result;
-        for (unsigned int i = 0; i < dyn_type->get_descriptor()->get_bounds_size(); i++)
-        {
-            result.push_back(dyn_type->get_descriptor()->get_bounds(i));
-        }
-        return result;
-    }
+
+    return type_descriptor->bound();
 }
 
-std::vector<std::pair<std::string, fastrtps::types::DynamicType_ptr>> get_members_sorted(
-        const fastrtps::types::DynamicType_ptr& dyn_type)
+std::vector<std::pair<std::string, fastdds::dds::DynamicType::_ref_type>> get_members_sorted(
+        const fastdds::dds::DynamicType::_ref_type& dyn_type)
 {
-    std::vector<std::pair<std::string, fastrtps::types::DynamicType_ptr>> result;
+    std::vector<std::pair<std::string, fastdds::dds::DynamicType::_ref_type>> result;
 
-    std::map<fastrtps::types::MemberId, fastrtps::types::DynamicTypeMember*> members;
+    std::map<fastdds::dds::MemberId, fastdds::dds::DynamicTypeMember::_ref_type> members;
     dyn_type->get_all_members(members);
 
     for (const auto& member : members)
     {
+        fastdds::dds::MemberDescriptor::_ref_type member_descriptor {fastdds::dds::traits<fastdds::dds::MemberDescriptor>::make_shared()};
+
+        const auto ret = member.second->get_descriptor(member_descriptor);
+        if (ret != fastdds::dds::RETCODE_OK)
+        {
+            throw utils::InconsistencyException("No Member Descriptor, failed to get sorted members");
+        }
+
         result.emplace_back(
-            std::make_pair<std::string, fastrtps::types::DynamicType_ptr>(
-                member.second->get_name(),
-                member.second->get_descriptor()->get_type()));
+            std::make_pair<std::string, fastdds::dds::DynamicType::_ref_type>(
+                member.second->get_name().to_string(),
+                std::move(member_descriptor->type())));
     }
+
     return result;
 }
 
 std::string array_kind_to_str(
-        const fastrtps::types::DynamicType_ptr& dyn_type)
+        const fastdds::dds::DynamicType::_ref_type& dyn_type)
 {
     auto internal_type = container_internal_type(dyn_type);
     auto this_array_size = container_size(dyn_type);
@@ -128,7 +143,7 @@ std::string array_kind_to_str(
 }
 
 std::string sequence_kind_to_str(
-        const fastrtps::types::DynamicType_ptr& dyn_type)
+        const fastdds::dds::DynamicType::_ref_type& dyn_type)
 {
     auto internal_type = container_internal_type(dyn_type);
     auto this_sequence_size = container_size(dyn_type);
@@ -138,7 +153,7 @@ std::string sequence_kind_to_str(
 
     for (const auto& bound : this_sequence_size)
     {
-        if (bound != fastrtps::types::BOUND_UNLIMITED)
+        if (bound != fastdds::dds::xtypes::INVALID_LBOUND)
         {
             ss << ", " << bound;
         }
@@ -149,84 +164,98 @@ std::string sequence_kind_to_str(
 }
 
 std::string map_kind_to_str(
-        const fastrtps::types::DynamicType_ptr& dyn_type)
+        const fastdds::dds::DynamicType::_ref_type& dyn_type)
 {
     std::stringstream ss;
+    fastdds::dds::TypeDescriptor::_ref_type type_descriptor {fastdds::dds::traits<fastdds::dds::TypeDescriptor>::make_shared()};
 
-    auto key_type = dyn_type->get_descriptor()->get_key_element_type();
-    auto value_type = dyn_type->get_descriptor()->get_element_type();
+    const auto ret = dyn_type->get_descriptor(type_descriptor);
+    if (ret != fastdds::dds::RETCODE_OK)
+    {
+        throw utils::InconsistencyException("No Type Descriptor, failed to map kind");
+    }
+
+    const auto key_type = type_descriptor->key_element_type();
+    const auto value_type = type_descriptor->element_type();
+
     ss << "map<" << type_kind_to_str(key_type) << ", " << type_kind_to_str(value_type) << ">";
 
     return ss.str();
 }
 
 std::string type_kind_to_str(
-        const fastrtps::types::DynamicType_ptr& dyn_type)
+        const fastdds::dds::DynamicType::_ref_type& dyn_type)
 {
     switch (dyn_type->get_kind())
     {
-        case fastrtps::types::TK_BOOLEAN:
+        case fastdds::dds::xtypes::TK_BOOLEAN:
             return "boolean";
 
-        case fastrtps::types::TK_BYTE:
+        case fastdds::dds::xtypes::TK_BYTE:
             return "octet";
 
-        case fastrtps::types::TK_INT16:
+        case fastdds::dds::xtypes::TK_INT8:
             return "short";
 
-        case fastrtps::types::TK_INT32:
+        case fastdds::dds::xtypes::TK_INT16:
+            return "short";
+
+        case fastdds::dds::xtypes::TK_INT32:
             return "long";
 
-        case fastrtps::types::TK_INT64:
+        case fastdds::dds::xtypes::TK_INT64:
             return "long long";
 
-        case fastrtps::types::TK_UINT16:
+        case fastdds::dds::xtypes::TK_UINT8:
             return "unsigned short";
 
-        case fastrtps::types::TK_UINT32:
+        case fastdds::dds::xtypes::TK_UINT16:
+            return "unsigned short";
+
+        case fastdds::dds::xtypes::TK_UINT32:
             return "unsigned long";
 
-        case fastrtps::types::TK_UINT64:
+        case fastdds::dds::xtypes::TK_UINT64:
             return "unsigned long long";
 
-        case fastrtps::types::TK_FLOAT32:
+        case fastdds::dds::xtypes::TK_FLOAT32:
             return "float";
 
-        case fastrtps::types::TK_FLOAT64:
+        case fastdds::dds::xtypes::TK_FLOAT64:
             return "double";
 
-        case fastrtps::types::TK_FLOAT128:
+        case fastdds::dds::xtypes::TK_FLOAT128:
             return "long double";
 
-        case fastrtps::types::TK_CHAR8:
+        case fastdds::dds::xtypes::TK_CHAR8:
             return "char";
 
-        case fastrtps::types::TK_CHAR16:
+        case fastdds::dds::xtypes::TK_CHAR16:
             return "wchar";
 
-        case fastrtps::types::TK_STRING8:
+        case fastdds::dds::xtypes::TK_STRING8:
             return "string";
 
-        case fastrtps::types::TK_STRING16:
+        case fastdds::dds::xtypes::TK_STRING16:
             return "wstring";
 
-        case fastrtps::types::TK_ARRAY:
+        case fastdds::dds::xtypes::TK_ARRAY:
             return array_kind_to_str(dyn_type);
 
-        case fastrtps::types::TK_SEQUENCE:
+        case fastdds::dds::xtypes::TK_SEQUENCE:
             return sequence_kind_to_str(dyn_type);
 
-        case fastrtps::types::TK_MAP:
+        case fastdds::dds::xtypes::TK_MAP:
             return map_kind_to_str(dyn_type);
 
-        case fastrtps::types::TK_STRUCTURE:
-        case fastrtps::types::TK_ENUM:
-        case fastrtps::types::TK_UNION:
-            return dyn_type->get_name();
+        case fastdds::dds::xtypes::TK_STRUCTURE:
+        case fastdds::dds::xtypes::TK_ENUM:
+        case fastdds::dds::xtypes::TK_UNION:
+            return dyn_type->get_name().to_string();
 
-        case fastrtps::types::TK_BITSET:
-        case fastrtps::types::TK_BITMASK:
-        case fastrtps::types::TK_NONE:
+        case fastdds::dds::xtypes::TK_BITSET:
+        case fastdds::dds::xtypes::TK_BITMASK:
+        case fastdds::dds::xtypes::TK_NONE:
             throw utils::UnsupportedException(
                       STR_ENTRY << "Type " << dyn_type->get_name() << " is not supported.");
 
@@ -238,23 +267,23 @@ std::string type_kind_to_str(
 }
 
 utils::TreeNode<TreeNodeType> generate_dyn_type_tree(
-        const fastrtps::types::DynamicType_ptr& type,
+        const fastdds::dds::DynamicType::_ref_type& type,
         const std::string& member_name = "PARENT")
 {
     // Get kind
-    fastrtps::types::TypeKind kind = type->get_kind();
+    fastdds::dds::xtypes::TypeKind kind = type->get_kind();
 
     switch (kind)
     {
-        case fastrtps::types::TK_STRUCTURE:
+        case fastdds::dds::xtypes::TK_STRUCTURE:
         {
             // If is struct, the call is recursive.
             // Create new tree node
-            utils::TreeNode<TreeNodeType> parent(member_name, type->get_name(), type);
+            utils::TreeNode<TreeNodeType> parent(member_name, (type->get_name()).to_string(), type);
 
             // Get all members of this struct
-            std::vector<std::pair<std::string,
-                    fastrtps::types::DynamicType_ptr>> members_by_name = get_members_sorted(type);
+            const std::vector<std::pair<std::string,
+                    fastdds::dds::DynamicType::_ref_type>> members_by_name = get_members_sorted(type);
 
             for (const auto& member : members_by_name)
             {
@@ -265,8 +294,8 @@ utils::TreeNode<TreeNodeType> generate_dyn_type_tree(
             return parent;
         }
 
-        case fastrtps::types::TK_ARRAY:
-        case fastrtps::types::TK_SEQUENCE:
+        case fastdds::dds::xtypes::TK_ARRAY:
+        case fastdds::dds::xtypes::TK_SEQUENCE:
         {
             // If container (array or struct) has exactly one branch
             // Calculate child branch
@@ -291,7 +320,7 @@ std::ostream& node_to_str(
 {
     os << TAB_SEPARATOR;
 
-    if (node.info.dynamic_type->get_kind() == fastrtps::types::TK_ARRAY)
+    if (node.info.dynamic_type->get_kind() == fastdds::dds::xtypes::TK_ARRAY)
     {
         auto dim_pos = node.info.type_kind_name.find("[");
         auto kind_name_str = node.info.type_kind_name.substr(0, dim_pos);
@@ -333,8 +362,10 @@ std::ostream& enum_to_str(
 {
     os << "enum " << node.info.type_kind_name << TYPE_OPENING << TAB_SEPARATOR;
 
-    std::map<fastrtps::types::MemberId, fastrtps::types::DynamicTypeMember*> members;
+    std::map<fastdds::dds::MemberId, fastdds::dds::DynamicTypeMember::_ref_type> members;
+
     node.info.dynamic_type->get_all_members(members);
+
     bool first_iter = true;
     for (const auto& member : members)
     {
@@ -357,14 +388,33 @@ std::ostream& union_to_str(
         std::ostream& os,
         const utils::TreeNode<TreeNodeType>& node)
 {
-    os << "union " << node.info.type_kind_name << " switch (" << type_kind_to_str(
-        node.info.dynamic_type->get_descriptor()->get_discriminator_type()) << ")" << TYPE_OPENING;
+    fastdds::dds::TypeDescriptor::_ref_type type_descriptor {fastdds::dds::traits<fastdds::dds::TypeDescriptor>::make_shared()};
 
-    std::map<fastrtps::types::MemberId, fastrtps::types::DynamicTypeMember*> members;
+    const auto ret = node.info.dynamic_type->get_descriptor(type_descriptor);
+    if (ret != fastdds::dds::RETCODE_OK)
+    {
+        throw utils::InconsistencyException("No Type Descriptor, failed to convert union to string");
+    }
+
+    os << "union " << node.info.type_kind_name << " switch (" << type_kind_to_str(
+        type_descriptor->discriminator_type()) << ")" << TYPE_OPENING;
+
+    std::map<fastdds::dds::MemberId, fastdds::dds::DynamicTypeMember::_ref_type> members;
+
     node.info.dynamic_type->get_all_members(members);  // WARNING: Default case not included in this collection, and currently not available
+
     for (const auto& member : members)
     {
-        auto labels = member.second->get_union_labels();  // WARNING: There might be casting issues as discriminant type is currently not taken into consideration
+        fastdds::dds::MemberDescriptor::_ref_type member_descriptor {fastdds::dds::traits<fastdds::dds::MemberDescriptor>::make_shared()};
+
+        const auto ret = member.second->get_descriptor(member_descriptor);
+        if (ret != fastdds::dds::RETCODE_OK)
+        {
+            throw utils::InconsistencyException("No Member Descriptor");
+        }
+
+        auto labels = member_descriptor->label();  // WARNING: There might be casting issues as discriminant type is currently not taken into consideration
+
         bool first_iter = true;
         for (const auto& label : labels)
         {
@@ -381,7 +431,7 @@ std::ostream& union_to_str(
             os << "case " << std::to_string(label) << ":";
         }
 
-        os << "\n" << TAB_SEPARATOR << TAB_SEPARATOR << type_kind_to_str(member.second->get_descriptor()->get_type()) <<
+        os << "\n" << TAB_SEPARATOR << TAB_SEPARATOR << type_kind_to_str(member_descriptor->type()) <<
             " " << member.second->get_name() << ";\n";
 
 
@@ -410,15 +460,15 @@ std::string generate_dyn_type_schema_from_tree(
         {
             switch (kind)
             {
-                case fastrtps::types::TK_STRUCTURE:
+                case fastdds::dds::xtypes::TK_STRUCTURE:
                     struct_to_str(ss, node);
                     break;
 
-                case fastrtps::types::TK_ENUM:
+                case fastdds::dds::xtypes::TK_ENUM:
                     enum_to_str(ss, node);
                     break;
 
-                case fastrtps::types::TK_UNION:
+                case fastdds::dds::xtypes::TK_UNION:
                     union_to_str(ss, node);
                     break;
 
@@ -438,7 +488,7 @@ std::string generate_dyn_type_schema_from_tree(
 }
 
 std::string generate_idl_schema(
-        const fastrtps::types::DynamicType_ptr& dynamic_type)
+        const fastdds::dds::DynamicType::_ref_type& dynamic_type)
 {
     // Generate type tree
     utils::TreeNode<TreeNodeType> parent_type = generate_dyn_type_tree(dynamic_type);

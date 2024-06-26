@@ -271,7 +271,7 @@ void RpcBridge::transmit_(
     while (true)
     {
         {
-            std::lock_guard<eprosima::fastrtps::RecursiveTimedMutex> lock(reader->get_rtps_mutex());
+            std::lock_guard<eprosima::fastdds::RecursiveTimedMutex> lock(reader->get_rtps_mutex());
 
             if (!enabled_ || !(reader->get_unread_count() > 0))
             {
@@ -300,8 +300,8 @@ void RpcBridge::transmit_(
         RpcPayloadData& rpc_data = dynamic_cast<RpcPayloadData&>(*data);
 
 
-        // Will never return \c RETCODE_NO_DATA, otherwise would have finished before
-        if (!ret)
+        // Will never return \c NO_DATA, otherwise would have finished before
+        if (ret != utils::ReturnCode::OK)
         {
             // Error reading data
             logWarning(DDSPIPE_RPCBRIDGE,
@@ -351,7 +351,7 @@ void RpcBridge::transmit_(
 
                     ret = request_writers_[service_registry.first]->write(*data);
 
-                    if (!ret)
+                    if (ret != utils::ReturnCode::OK)
                     {
                         logWarning(DDSPIPE_RPCBRIDGE, "Error writting request in RpcBridge for service "
                                 << rpc_topic_ << ". Error code " << ret <<
@@ -359,7 +359,7 @@ void RpcBridge::transmit_(
                         continue;
                     }
 
-                    eprosima::fastrtps::rtps::SequenceNumber_t sequence_number =
+                    eprosima::fastdds::rtps::SequenceNumber_t sequence_number =
                             rpc_data.sent_sequence_number;
                     // Add entry to registry associated to the transmission of this request through this proxy client.
                     service_registry.second->add(
@@ -408,7 +408,7 @@ void RpcBridge::transmit_(
 
                     ret = reply_writers_[registry_entry.first]->write(*data);
 
-                    if (!ret)
+                    if (ret != utils::ReturnCode::OK)
                     {
                         logWarning(DDSPIPE_RPCBRIDGE, "Error writting reply in RpcBridge for service "
                                 << rpc_topic_ << ". Error code " << ret << ".");

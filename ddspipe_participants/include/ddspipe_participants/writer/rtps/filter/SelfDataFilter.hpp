@@ -51,8 +51,8 @@ public:
      */
     DDSPIPE_PARTICIPANTS_DllAPI
     bool is_relevant(
-            const fastrtps::rtps::CacheChange_t& change,
-            const fastrtps::rtps::GUID_t& reader_guid
+            const fastdds::rtps::CacheChange_t& change,
+            const fastdds::rtps::GUID_t& reader_guid
             ) const override;
 };
 

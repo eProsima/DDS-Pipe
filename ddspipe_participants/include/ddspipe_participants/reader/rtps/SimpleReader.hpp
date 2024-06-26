@@ -46,7 +46,7 @@ public:
             const core::types::ParticipantId& participant_id,
             const core::types::DdsTopic& topic,
             const std::shared_ptr<core::PayloadPool>& payload_pool,
-            fastrtps::rtps::RTPSParticipant* rtps_participant);
+            fastdds::rtps::RTPSParticipant* rtps_participant);
 };
 
 } /* namespace rtps */

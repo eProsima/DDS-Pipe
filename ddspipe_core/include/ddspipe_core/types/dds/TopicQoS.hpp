@@ -27,10 +27,10 @@ namespace core {
 namespace types {
 
 //! Durability kind enumeration
-using DurabilityKind = eprosima::fastrtps::rtps::DurabilityKind_t;
+using DurabilityKind = eprosima::fastdds::rtps::DurabilityKind_t;
 
 //! Reliability kind enumeration
-using ReliabilityKind = eprosima::fastrtps::rtps::ReliabilityKind_t;
+using ReliabilityKind = eprosima::fastdds::rtps::ReliabilityKind_t;
 
 //! History kind enumeration
 using HistoryDepthType = unsigned int;

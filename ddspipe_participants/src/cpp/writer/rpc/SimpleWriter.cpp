@@ -13,9 +13,9 @@
 // limitations under the License.
 
 
-#include <fastrtps/rtps/RTPSDomain.h>
-#include <fastrtps/rtps/participant/RTPSParticipant.h>
-#include <fastrtps/rtps/common/CacheChange.h>
+#include <fastdds/rtps/RTPSDomain.h>
+#include <fastdds/rtps/participant/RTPSParticipant.h>
+#include <fastdds/rtps/common/CacheChange.h>
 
 #include <cpp_utils/exception/InitializationException.hpp>
 #include <cpp_utils/Log.hpp>
@@ -37,7 +37,7 @@ SimpleWriter::SimpleWriter(
         const core::types::ParticipantId& participant_id,
         const core::types::DdsTopic& topic,
         const std::shared_ptr<core::PayloadPool>& payload_pool,
-        fastrtps::rtps::RTPSParticipant* rtps_participant,
+        fastdds::rtps::RTPSParticipant* rtps_participant,
         const bool repeater /* = false */)
     : CommonWriter(
         participant_id, topic, payload_pool, rtps_participant, repeater,
@@ -51,8 +51,8 @@ SimpleWriter::SimpleWriter(
 }
 
 utils::ReturnCode SimpleWriter::fill_to_send_data_(
-        fastrtps::rtps::CacheChange_t* to_send_change_to_fill,
-        eprosima::fastrtps::rtps::WriteParams& to_send_params,
+        fastdds::rtps::CacheChange_t* to_send_change_to_fill,
+        eprosima::fastdds::rtps::WriteParams& to_send_params,
         const core::types::RtpsPayloadData& data) const noexcept
 {
     CommonWriter::fill_to_send_data_(
@@ -66,11 +66,11 @@ utils::ReturnCode SimpleWriter::fill_to_send_data_(
         to_send_params.related_sample_identity(rpc_data.write_params.get_reference().related_sample_identity());
     }
 
-    return utils::ReturnCode::RETCODE_OK;
+    return utils::ReturnCode::OK;
 }
 
 void SimpleWriter::fill_sent_data_(
-        const eprosima::fastrtps::rtps::WriteParams& sent_params,
+        const eprosima::fastdds::rtps::WriteParams& sent_params,
         core::types::RtpsPayloadData& data_to_fill) const noexcept
 {
     CommonWriter::fill_sent_data_(

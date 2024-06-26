@@ -25,13 +25,6 @@ file(
         "${PROJECT_SOURCE_DIR}/include/*.ipp"
     )
 
-# Exclude types' files depending on the Fast DDS version
-if ("${fastrtps_VERSION}" VERSION_LESS 2.13)
-    list(FILTER LIBRARY_SOURCES EXCLUDE REGEX "v2/")
-else()
-    list(FILTER LIBRARY_SOURCES EXCLUDE REGEX "v1/")
-endif()
-
 all_library_sources(
         "${TEST_SOURCES}"
         "${LIBRARY_SOURCES}"
@@ -44,7 +37,7 @@ set(TEST_LIST
 
 set(TEST_EXTRA_LIBRARIES
         fastcdr
-        fastrtps
+        fastdds
         cpp_utils
     )
 

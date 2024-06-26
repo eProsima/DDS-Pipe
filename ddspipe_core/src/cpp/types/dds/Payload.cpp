@@ -23,7 +23,7 @@ namespace types {
 
 std::ostream& operator <<(
         std::ostream& os,
-        const eprosima::fastrtps::rtps::octet& octet)
+        const eprosima::fastdds::rtps::octet& octet)
 {
     os << std::hex << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(octet) << std::dec;
     return os;

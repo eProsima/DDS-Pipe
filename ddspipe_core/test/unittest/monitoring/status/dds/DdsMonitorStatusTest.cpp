@@ -29,13 +29,8 @@
 #include <ddspipe_core/monitoring/Monitor.hpp>
 #include <ddspipe_core/monitoring/producers/StatusMonitorProducer.hpp>
 
-#if FASTRTPS_VERSION_MAJOR < 2 || (FASTRTPS_VERSION_MAJOR == 2 && FASTRTPS_VERSION_MINOR < 13)
-    #include <ddspipe_core/types/monitoring/status/v1/MonitoringStatus.h>
-    #include <ddspipe_core/types/monitoring/status/v1/MonitoringStatusPubSubTypes.h>
-#else
-    #include <ddspipe_core/types/monitoring/status/v2/MonitoringStatus.h>
-    #include <ddspipe_core/types/monitoring/status/v2/MonitoringStatusPubSubTypes.h>
-#endif // if FASTRTPS_VERSION_MAJOR < 2 || (FASTRTPS_VERSION_MAJOR == 2 && FASTRTPS_VERSION_MINOR < 13)
+#include <ddspipe_core/types/monitoring/status/MonitoringStatus.hpp>
+#include <ddspipe_core/types/monitoring/status/MonitoringStatusPubSubTypes.h>
 
 #include "../../constants.hpp"
 
@@ -131,7 +126,7 @@ TEST_F(DdsMonitorStatusTest, type_mismatch)
     // Wait for the monitor to publish the next message
     ASSERT_TRUE(reader_->wait_for_unread_message(test::monitor::MAX_WAITING_TIME));
 
-    ASSERT_EQ(reader_->take_next_sample(&status, &info), ReturnCode_t::RETCODE_OK);
+    ASSERT_EQ(reader_->take_next_sample(&status, &info), RETCODE_OK);
     ASSERT_EQ(info.instance_state, ALIVE_INSTANCE_STATE);
 
     // Verify that the content of the MonitoringStatus published by the Monitor is correct
@@ -157,7 +152,7 @@ TEST_F(DdsMonitorStatusTest, qos_mismatch)
     // Wait for the monitor to publish the next message
     ASSERT_TRUE(reader_->wait_for_unread_message(test::monitor::MAX_WAITING_TIME));
 
-    ASSERT_EQ(reader_->take_next_sample(&status, &info), ReturnCode_t::RETCODE_OK);
+    ASSERT_EQ(reader_->take_next_sample(&status, &info), RETCODE_OK);
     ASSERT_EQ(info.instance_state, ALIVE_INSTANCE_STATE);
 
     // Verify that the content of the MonitoringStatus published by the Monitor is correct

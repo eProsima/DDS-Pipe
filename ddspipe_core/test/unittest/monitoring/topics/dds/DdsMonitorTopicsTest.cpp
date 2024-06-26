@@ -31,13 +31,8 @@
 #include <ddspipe_core/types/dds/DomainId.hpp>
 #include <ddspipe_core/types/participant/ParticipantId.hpp>
 
-#if FASTRTPS_VERSION_MAJOR < 2 || (FASTRTPS_VERSION_MAJOR == 2 && FASTRTPS_VERSION_MINOR < 13)
-    #include <ddspipe_core/types/monitoring/topics/v1/MonitoringTopics.h>
-    #include <ddspipe_core/types/monitoring/topics/v1/MonitoringTopicsPubSubTypes.h>
-#else
-    #include <ddspipe_core/types/monitoring/topics/v2/MonitoringTopics.h>
-    #include <ddspipe_core/types/monitoring/topics/v2/MonitoringTopicsPubSubTypes.h>
-#endif // if FASTRTPS_VERSION_MAJOR < 2 || (FASTRTPS_VERSION_MAJOR == 2 && FASTRTPS_VERSION_MINOR < 13)
+#include <ddspipe_core/types/monitoring/topics/MonitoringTopics.hpp>
+#include <ddspipe_core/types/monitoring/topics/MonitoringTopicsPubSubTypes.h>
 
 #include "../../constants.hpp"
 
@@ -143,7 +138,7 @@ TEST_F(DdsMonitorTopicsTest, msgs_received)
     // Wait for the monitor to publish the next message
     ASSERT_TRUE(reader_->wait_for_unread_message(test::monitor::MAX_WAITING_TIME));
 
-    ASSERT_EQ(reader_->take_next_sample(&topics, &info), ReturnCode_t::RETCODE_OK);
+    ASSERT_EQ(reader_->take_next_sample(&topics, &info), RETCODE_OK);
     ASSERT_EQ(info.instance_state, ALIVE_INSTANCE_STATE);
 
     ASSERT_EQ(topics.topics().size(), 1);
@@ -175,7 +170,7 @@ TEST_F(DdsMonitorTopicsTest, msgs_lost)
     // Wait for the monitor to publish the next message
     ASSERT_TRUE(reader_->wait_for_unread_message(test::monitor::MAX_WAITING_TIME));
 
-    ASSERT_EQ(reader_->take_next_sample(&topics, &info), ReturnCode_t::RETCODE_OK);
+    ASSERT_EQ(reader_->take_next_sample(&topics, &info), RETCODE_OK);
     ASSERT_EQ(info.instance_state, ALIVE_INSTANCE_STATE);
 
     // Verify that the content of the MonitoringTopics published by the Monitor is correct
@@ -211,7 +206,7 @@ TEST_F(DdsMonitorTopicsTest, type_discovered)
     // Wait for the monitor to publish the next message
     ASSERT_TRUE(reader_->wait_for_unread_message(test::monitor::MAX_WAITING_TIME));
 
-    ASSERT_EQ(reader_->take_next_sample(&topics, &info), ReturnCode_t::RETCODE_OK);
+    ASSERT_EQ(reader_->take_next_sample(&topics, &info), RETCODE_OK);
     ASSERT_EQ(info.instance_state, ALIVE_INSTANCE_STATE);
 
     // Verify that the content of the MonitoringTopics published by the Monitor is correct
@@ -244,7 +239,7 @@ TEST_F(DdsMonitorTopicsTest, type_mismatch)
     // Wait for the monitor to publish the next message
     ASSERT_TRUE(reader_->wait_for_unread_message(test::monitor::MAX_WAITING_TIME));
 
-    ASSERT_EQ(reader_->take_next_sample(&topics, &info), ReturnCode_t::RETCODE_OK);
+    ASSERT_EQ(reader_->take_next_sample(&topics, &info), RETCODE_OK);
     ASSERT_EQ(info.instance_state, ALIVE_INSTANCE_STATE);
 
     // Verify that the content of the MonitoringTopics published by the Monitor is correct
@@ -274,7 +269,7 @@ TEST_F(DdsMonitorTopicsTest, qos_mismatch)
     // Wait for the monitor to publish the next message
     ASSERT_TRUE(reader_->wait_for_unread_message(test::monitor::MAX_WAITING_TIME));
 
-    ASSERT_EQ(reader_->take_next_sample(&topics, &info), ReturnCode_t::RETCODE_OK);
+    ASSERT_EQ(reader_->take_next_sample(&topics, &info), RETCODE_OK);
     ASSERT_EQ(info.instance_state, ALIVE_INSTANCE_STATE);
 
     // Verify that the content of the MonitoringTopics published by the Monitor is correct
