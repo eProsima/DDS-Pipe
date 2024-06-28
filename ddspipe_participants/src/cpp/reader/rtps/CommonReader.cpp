@@ -210,6 +210,9 @@ void CommonReader::fill_received_data_(
     data_to_fill.source_timestamp = received_change.sourceTimestamp;
     // Get Participant receiver
     data_to_fill.participant_receiver = participant_id_;
+    // Get the sample identity
+    data_to_fill.sample_identity.writer_guid(received_change.writerGUID);
+    data_to_fill.sample_identity.sequence_number(received_change.sequenceNumber);
 
     // Store it in DdsPipe PayloadPool if size is bigger than 0
     // NOTE: in case of keyed topics an empty payload is possible

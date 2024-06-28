@@ -293,6 +293,8 @@ void CommonReader::fill_received_data_(
     data_to_fill.source_timestamp = info.source_timestamp;
     // Get Participant receiver
     data_to_fill.participant_receiver = participant_id_;
+    // Get Sample Identity
+    data_to_fill.sample_identity = info.sample_identity;
 
     // Set Instance Handle to data_to_fill
     if (topic_.topic_qos.keyed)
