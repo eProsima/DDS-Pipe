@@ -15,8 +15,8 @@
 
 #pragma once
 
-#include <fastdds/rtps/common/SerializedPayload.h>
-#include <fastdds/rtps/common/SequenceNumber.h>
+#include <fastdds/rtps/common/SerializedPayload.hpp>
+#include <fastdds/rtps/common/SequenceNumber.hpp>
 
 #include <cpp_utils/types/Fuzzy.hpp>
 

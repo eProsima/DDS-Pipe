@@ -30,7 +30,7 @@
 #include <ddspipe_core/monitoring/producers/StatusMonitorProducer.hpp>
 
 #include <ddspipe_core/types/monitoring/status/MonitoringStatus.hpp>
-#include <ddspipe_core/types/monitoring/status/MonitoringStatusPubSubTypes.h>
+#include <ddspipe_core/types/monitoring/status/MonitoringStatusPubSubTypes.hpp>
 
 #include "../../constants.hpp"
 

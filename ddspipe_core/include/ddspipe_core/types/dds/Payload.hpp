@@ -17,12 +17,12 @@
 
 #include <fastdds/dds/core/policy/QosPolicies.hpp>
 #include <fastdds/rtps/common/ChangeKind_t.hpp>
-#include <fastdds/rtps/common/InstanceHandle.h>
-#include <fastdds/rtps/common/SerializedPayload.h>
-#include <fastdds/rtps/common/Time_t.h>
-#include <fastdds/rtps/common/Time_t.h>
-#include <fastdds/rtps/common/Types.h>
-#include <fastdds/rtps/common/WriteParams.h>
+#include <fastdds/rtps/common/InstanceHandle.hpp>
+#include <fastdds/rtps/common/SerializedPayload.hpp>
+#include <fastdds/rtps/common/Time_t.hpp>
+#include <fastdds/rtps/common/Time_t.hpp>
+#include <fastdds/rtps/common/Types.hpp>
+#include <fastdds/rtps/common/WriteParams.hpp>
 
 #include <ddspipe_core/library/library_dll.h>
 

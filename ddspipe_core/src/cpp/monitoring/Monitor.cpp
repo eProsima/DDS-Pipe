@@ -23,9 +23,9 @@
 #include <ddspipe_core/monitoring/producers/TopicsMonitorProducer.hpp>
 
 #include <ddspipe_core/types/monitoring/status/MonitoringStatus.hpp>
-#include <ddspipe_core/types/monitoring/status/MonitoringStatusPubSubTypes.h>
+#include <ddspipe_core/types/monitoring/status/MonitoringStatusPubSubTypes.hpp>
 #include <ddspipe_core/types/monitoring/topics/MonitoringTopics.hpp>
-#include <ddspipe_core/types/monitoring/topics/MonitoringTopicsPubSubTypes.h>
+#include <ddspipe_core/types/monitoring/topics/MonitoringTopicsPubSubTypes.hpp>
 
 namespace eprosima {
 namespace ddspipe {

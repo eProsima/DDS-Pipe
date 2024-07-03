@@ -16,8 +16,8 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
-#include <fastdds/rtps/common/CacheChange.h>
-#include <fastdds/rtps/common/SerializedPayload.h>
+#include <fastdds/rtps/common/CacheChange.hpp>
+#include <fastdds/rtps/common/SerializedPayload.hpp>
 
 #include <cpp_utils/testing/LogChecker.hpp>
 #include <cpp_utils/exception/InconsistencyException.hpp>

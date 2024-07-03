@@ -30,7 +30,7 @@
 #include <fastdds/dds/topic/Topic.hpp>
 
 #include <ddspipe_core/types/logging/LogEntry.hpp>
-#include <ddspipe_core/types/logging/LogEntryPubSubTypes.h>
+#include <ddspipe_core/types/logging/LogEntryPubSubTypes.hpp>
 #include <ddspipe_core/types/logging/LogEntryTypeObjectSupport.hpp>
 
 namespace eprosima {

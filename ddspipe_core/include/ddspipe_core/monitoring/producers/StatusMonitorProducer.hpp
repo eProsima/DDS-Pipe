@@ -24,7 +24,7 @@
 #include <ddspipe_core/monitoring/producers/MonitorProducer.hpp>
 
 #include <ddspipe_core/types/monitoring/status/MonitoringStatus.hpp>
-#include <ddspipe_core/types/monitoring/status/MonitoringStatusPubSubTypes.h>
+#include <ddspipe_core/types/monitoring/status/MonitoringStatusPubSubTypes.hpp>
 #include <ddspipe_core/types/monitoring/status/MonitoringStatusTypeObjectSupport.hpp>
 
 // DDSPIPE MONITOR MACROS

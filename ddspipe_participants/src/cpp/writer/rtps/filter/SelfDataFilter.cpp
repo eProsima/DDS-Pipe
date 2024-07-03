@@ -13,8 +13,8 @@
 // limitations under the License.
 
 
-#include <fastdds/rtps/common/CacheChange.h>
-#include <fastdds/rtps/common/Guid.h>
+#include <fastdds/rtps/common/CacheChange.hpp>
+#include <fastdds/rtps/common/Guid.hpp>
 #include <cpp_utils/Log.hpp>
 
 #include <types/dds/RouterCacheChange.hpp>

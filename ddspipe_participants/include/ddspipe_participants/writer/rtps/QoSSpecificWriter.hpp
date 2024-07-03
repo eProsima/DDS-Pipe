@@ -17,7 +17,7 @@
 #include <memory>
 
 #include <fastdds/dds/publisher/qos/WriterQos.hpp>
-#include <fastdds/rtps/participant/RTPSParticipant.h>
+#include <fastdds/rtps/participant/RTPSParticipant.hpp>
 
 #include <ddspipe_core/efficiency/payload/PayloadPool.hpp>
 #include <ddspipe_core/types/dds/SpecificEndpointQoS.hpp>

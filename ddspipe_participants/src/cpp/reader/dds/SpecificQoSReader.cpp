@@ -13,8 +13,8 @@
 // limitations under the License.
 
 
-#include <fastdds/rtps/RTPSDomain.h>
-#include <fastdds/rtps/participant/RTPSParticipant.h>
+#include <fastdds/rtps/RTPSDomain.hpp>
+#include <fastdds/rtps/participant/RTPSParticipant.hpp>
 
 #include <cpp_utils/exception/InconsistencyException.hpp>
 #include <cpp_utils/Log.hpp>
