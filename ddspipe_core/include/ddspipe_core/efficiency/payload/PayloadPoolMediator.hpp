@@ -21,9 +21,9 @@
 #include <fastdds/dds/core/ReturnCode.hpp>
 
 #include <fastdds/dds/publisher/DataWriter.hpp>
-#include <fastdds/rtps/common/InstanceHandle.h>
-#include <fastdds/rtps/common/SerializedPayload.h>
-#include <fastdds/rtps/history/IPayloadPool.h>
+#include <fastdds/rtps/common/InstanceHandle.hpp>
+#include <fastdds/rtps/common/SerializedPayload.hpp>
+#include <fastdds/rtps/history/IPayloadPool.hpp>
 
 #include <ddspipe_core/efficiency/payload/PayloadPool.hpp>
 #include <ddspipe_core/types/data/RtpsPayloadData.hpp>

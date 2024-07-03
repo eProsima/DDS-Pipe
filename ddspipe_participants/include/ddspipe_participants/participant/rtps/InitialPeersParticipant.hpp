@@ -14,7 +14,7 @@
 
 #pragma once
 
-#include <fastdds/rtps/transport/TCPTransportDescriptor.h>
+#include <fastdds/rtps/transport/TCPTransportDescriptor.hpp>
 
 #include <ddspipe_participants/configuration/InitialPeersParticipantConfiguration.hpp>
 #include <ddspipe_participants/types/security/tls/TlsConfiguration.hpp>

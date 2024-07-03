@@ -18,7 +18,7 @@
 #include <map>
 #include <mutex>
 
-#include <fastdds/rtps/common/SampleIdentity.h>
+#include <fastdds/rtps/common/SampleIdentity.hpp>
 
 #include <ddspipe_core/types/dds/Guid.hpp>
 #include <ddspipe_core/types/participant/ParticipantId.hpp>

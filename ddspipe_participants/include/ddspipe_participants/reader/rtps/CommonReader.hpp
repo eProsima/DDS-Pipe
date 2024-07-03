@@ -19,13 +19,13 @@
 #include <cpp_utils/ReturnCode.hpp>
 #include <cpp_utils/time/time_utils.hpp>
 
-#include <fastdds/rtps/attributes/HistoryAttributes.h>
-#include <fastdds/rtps/attributes/TopicAttributes.h>
+#include <fastdds/rtps/attributes/HistoryAttributes.hpp>
+#include <fastdds/rtps/attributes/TopicAttributes.hpp>
 #include <fastdds/dds/subscriber/qos/ReaderQos.hpp>
-#include <fastdds/rtps/history/ReaderHistory.h>
-#include <fastdds/rtps/attributes/ReaderAttributes.h>
-#include <fastdds/rtps/reader/RTPSReader.h>
-#include <fastdds/rtps/reader/ReaderListener.h>
+#include <fastdds/rtps/history/ReaderHistory.hpp>
+#include <fastdds/rtps/attributes/ReaderAttributes.hpp>
+#include <fastdds/rtps/reader/RTPSReader.hpp>
+#include <fastdds/rtps/reader/ReaderListener.hpp>
 #include <fastdds/utils/TimedMutex.hpp>
 
 #include <ddspipe_core/types/dds/Guid.hpp>

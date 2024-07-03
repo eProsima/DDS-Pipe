@@ -15,7 +15,7 @@
 #include <cpp_utils/testing/gtest_aux.hpp>
 #include <gtest/gtest.h>
 
-#include <fastdds/rtps/common/Guid.h>
+#include <fastdds/rtps/common/Guid.hpp>
 #include <fastdds/rtps/common/EntityId_t.hpp>
 
 #include <ddspipe_core/types/dds/Guid.hpp>

@@ -37,37 +37,37 @@
 #include <fastdds/dds/xtypes/type_representation/TypeObject.hpp>
 
 #include "type_objects/arrays_and_sequences.hpp"
-#include "type_objects/arrays_and_sequencesPubSubTypes.h"
+#include "type_objects/arrays_and_sequencesPubSubTypes.hpp"
 
 #include "type_objects/basic_array_struct.hpp"
-#include "type_objects/basic_array_structPubSubTypes.h"
+#include "type_objects/basic_array_structPubSubTypes.hpp"
 
 #include "type_objects/basic_struct.hpp"
-#include "type_objects/basic_structPubSubTypes.h"
+#include "type_objects/basic_structPubSubTypes.hpp"
 
 #include "type_objects/char_sequence.hpp"
-#include "type_objects/char_sequencePubSubTypes.h"
+#include "type_objects/char_sequencePubSubTypes.hpp"
 
 #include "type_objects/complex_nested_arrays.hpp"
-#include "type_objects/complex_nested_arraysPubSubTypes.h"
+#include "type_objects/complex_nested_arraysPubSubTypes.hpp"
 
 #include "type_objects/enum_struct.hpp"
-#include "type_objects/enum_structPubSubTypes.h"
+#include "type_objects/enum_structPubSubTypes.hpp"
 
 #include "type_objects/float_bounded_sequence.hpp"
-#include "type_objects/float_bounded_sequencePubSubTypes.h"
+#include "type_objects/float_bounded_sequencePubSubTypes.hpp"
 
 #include "type_objects/hello_world.hpp"
-#include "type_objects/hello_worldPubSubTypes.h"
+#include "type_objects/hello_worldPubSubTypes.hpp"
 
 #include "type_objects/map_struct.hpp"
-#include "type_objects/map_structPubSubTypes.h"
+#include "type_objects/map_structPubSubTypes.hpp"
 
 #include "type_objects/numeric_array.hpp"
-#include "type_objects/numeric_arrayPubSubTypes.h"
+#include "type_objects/numeric_arrayPubSubTypes.hpp"
 
 #include "type_objects/union_struct.hpp"
-#include "type_objects/union_structPubSubTypes.h"
+#include "type_objects/union_structPubSubTypes.hpp"
 
 
 namespace test {

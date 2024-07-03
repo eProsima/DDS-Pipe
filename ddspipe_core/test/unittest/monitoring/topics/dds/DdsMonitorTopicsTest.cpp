@@ -32,7 +32,7 @@
 #include <ddspipe_core/types/participant/ParticipantId.hpp>
 
 #include <ddspipe_core/types/monitoring/topics/MonitoringTopics.hpp>
-#include <ddspipe_core/types/monitoring/topics/MonitoringTopicsPubSubTypes.h>
+#include <ddspipe_core/types/monitoring/topics/MonitoringTopicsPubSubTypes.hpp>
 
 #include "../../constants.hpp"
 

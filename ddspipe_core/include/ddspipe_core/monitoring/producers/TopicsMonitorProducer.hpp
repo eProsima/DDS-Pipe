@@ -30,7 +30,7 @@
 #include <ddspipe_core/types/topic/dds/DdsTopic.hpp>
 
 #include <ddspipe_core/types/monitoring/topics/MonitoringTopics.hpp>
-#include <ddspipe_core/types/monitoring/topics/MonitoringTopicsPubSubTypes.h>
+#include <ddspipe_core/types/monitoring/topics/MonitoringTopicsPubSubTypes.hpp>
 #include <ddspipe_core/types/monitoring/topics/MonitoringTopicsTypeObjectSupport.hpp>
 
 

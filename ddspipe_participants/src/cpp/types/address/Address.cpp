@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include <fastdds/utils/IPLocator.h>
+#include <fastdds/utils/IPLocator.hpp>
 
 #include <cpp_utils/exception/DNSException.hpp>
 #include <cpp_utils/utils.hpp>

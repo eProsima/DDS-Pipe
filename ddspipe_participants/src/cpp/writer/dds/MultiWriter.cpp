@@ -13,9 +13,9 @@
 // limitations under the License.
 
 
-#include <fastdds/rtps/RTPSDomain.h>
-#include <fastdds/rtps/participant/RTPSParticipant.h>
-#include <fastdds/rtps/common/CacheChange.h>
+#include <fastdds/rtps/RTPSDomain.hpp>
+#include <fastdds/rtps/participant/RTPSParticipant.hpp>
+#include <fastdds/rtps/common/CacheChange.hpp>
 
 #include <cpp_utils/exception/InitializationException.hpp>
 #include <cpp_utils/Log.hpp>

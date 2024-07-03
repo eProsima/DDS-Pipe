@@ -15,8 +15,8 @@
 
 #pragma once
 
-#include <fastdds/rtps/common/SerializedPayload.h>
-#include <fastdds/rtps/common/SequenceNumber.h>
+#include <fastdds/rtps/common/SerializedPayload.hpp>
+#include <fastdds/rtps/common/SequenceNumber.hpp>
 
 #include <ddspipe_core/library/library_dll.h>
 #include <ddspipe_core/types/dds/Payload.hpp>
