@@ -35,7 +35,7 @@
 #include <ddspipe_core/types/dds/DomainId.hpp>
 
 #include <ddspipe_core/types/logging/LogEntry.hpp>
-#include <ddspipe_core/types/logging/LogEntryPubSubTypes.h>
+#include <ddspipe_core/types/logging/LogEntryPubSubTypes.hpp>
 #include <ddspipe_core/types/logging/LogEntryTypeObjectSupport.hpp>
 
 #include "../constants.hpp"

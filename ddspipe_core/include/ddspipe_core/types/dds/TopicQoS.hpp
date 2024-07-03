@@ -17,7 +17,7 @@
 #include <cpp_utils/types/Fuzzy.hpp>
 
 #include <fastdds/dds/core/policy/QosPolicies.hpp>
-#include <fastdds/rtps/common/Types.h>
+#include <fastdds/rtps/common/Types.hpp>
 
 #include <ddspipe_core/library/library_dll.h>
 

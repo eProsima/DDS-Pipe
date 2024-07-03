@@ -14,9 +14,9 @@
 
 #pragma once
 
-#include <fastdds/rtps/reader/ReaderDiscoveryInfo.h>
-#include <fastdds/rtps/writer/WriterDiscoveryInfo.h>
-#include <fastdds/rtps/common/InstanceHandle.h>
+#include <fastdds/rtps/reader/ReaderDiscoveryInfo.hpp>
+#include <fastdds/rtps/writer/WriterDiscoveryInfo.hpp>
+#include <fastdds/rtps/common/InstanceHandle.hpp>
 
 #include <ddspipe_core/dynamic/DiscoveryDatabase.hpp>
 #include <ddspipe_core/types/dds/Endpoint.hpp>

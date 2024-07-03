@@ -14,7 +14,7 @@
 
 #pragma once
 
-#include <fastdds/rtps/common/CacheChange.h>
+#include <fastdds/rtps/common/CacheChange.hpp>
 #include <fastdds/rtps/common/GuidPrefix_t.hpp>
 
 #include <ddspipe_core/library/library_dll.h>

@@ -14,12 +14,12 @@
 
 #pragma once
 
-#include <fastdds/rtps/attributes/HistoryAttributes.h>
-#include <fastdds/rtps/attributes/TopicAttributes.h>
+#include <fastdds/rtps/attributes/HistoryAttributes.hpp>
+#include <fastdds/rtps/attributes/TopicAttributes.hpp>
 #include <fastdds/dds/publisher/qos/WriterQos.hpp>
-#include <fastdds/rtps/history/WriterHistory.h>
-#include <fastdds/rtps/attributes/WriterAttributes.h>
-#include <fastdds/rtps/writer/RTPSWriter.h>
+#include <fastdds/rtps/history/WriterHistory.hpp>
+#include <fastdds/rtps/attributes/WriterAttributes.hpp>
+#include <fastdds/rtps/writer/RTPSWriter.hpp>
 
 #include <ddspipe_core/types/participant/ParticipantId.hpp>
 
