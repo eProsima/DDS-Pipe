@@ -166,7 +166,7 @@ utils::ReturnCode CommonReader::take_nts_(
     // Check if there is data available
     if (!(reader_->get_unread_count() > 0))
     {
-        return utils::ReturnCode::NO_DATA;
+        return utils::ReturnCode::RETCODE_NO_DATA;
     }
 
     std::unique_ptr<RtpsPayloadData> rtps_data;
@@ -194,7 +194,7 @@ utils::ReturnCode CommonReader::take_nts_(
     if (!rtps_data)
     {
         logError(DDSPIPE_DDS_READER, "The data taken by the reader is not valid.");
-        return utils::ReturnCode::ERROR;
+        return utils::ReturnCode::RETCODE_ERROR;
     }
 
     fill_received_data_(info, *rtps_data);
@@ -202,7 +202,7 @@ utils::ReturnCode CommonReader::take_nts_(
     // data is a unique_ptr; the memory will be handled correctly.
     data.reset(rtps_data.release());
 
-    return utils::ReturnCode::OK;
+    return utils::ReturnCode::RETCODE_OK;
 }
 
 void CommonReader::enable_nts_() noexcept

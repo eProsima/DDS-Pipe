@@ -162,7 +162,7 @@ utils::ReturnCode CommonReader::take_nts_(
     // Check if there is data available
     if (!(rtps_reader_->get_unread_count() > 0))
     {
-        return utils::ReturnCode::NO_DATA;
+        return utils::ReturnCode::RETCODE_NO_DATA;
     }
 
     // Read first change of the history
@@ -170,12 +170,12 @@ utils::ReturnCode CommonReader::take_nts_(
     if (!received_change)
     {
         // Error reading.
-        return utils::ReturnCode::ERROR;
+        return utils::ReturnCode::RETCODE_ERROR;
     }
 
     // If data received is not correct, discard it and remove it from history
     auto ret = is_data_correct_(received_change);
-    if (ret != utils::ReturnCode::OK)
+    if (ret != utils::ReturnCode::RETCODE_OK)
     {
         // Remove the change in the History and release it in the reader
         rtps_reader_->get_history()->remove_change(received_change);
@@ -190,7 +190,7 @@ utils::ReturnCode CommonReader::take_nts_(
     // Remove the change in the History and release it in the reader
     rtps_reader_->get_history()->remove_change(received_change);
 
-    return utils::ReturnCode::OK;
+    return utils::ReturnCode::RETCODE_OK;
 }
 
 RtpsPayloadData* CommonReader::create_data_(
@@ -520,7 +520,7 @@ utils::ReturnCode CommonReader::is_data_correct_(
         logWarning(DDSPIPE_RTPS_COMMONREADER_LISTENER,
                 "Error taking data without correct writer GUID.");
 
-        return utils::ReturnCode::ERROR;
+        return utils::ReturnCode::RETCODE_ERROR;
     }
 
     // Check that the data is consistent
@@ -532,11 +532,11 @@ utils::ReturnCode CommonReader::is_data_correct_(
             logWarning(DDSPIPE_RTPS_COMMONREADER_LISTENER,
                     "Error taking data with length " << received_change->serializedPayload.length << ".");
 
-            return utils::ReturnCode::ERROR;
+            return utils::ReturnCode::RETCODE_ERROR;
         }
     }
 
-    return utils::ReturnCode::OK;
+    return utils::ReturnCode::RETCODE_OK;
 }
 
 } /* namespace rtps */

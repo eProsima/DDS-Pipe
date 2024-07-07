@@ -118,11 +118,11 @@ utils::ReturnCode CommonWriter::write_nts_(
     {
         if (payload_pool_->write(writer_, &rtps_data))
         {
-            return utils::ReturnCode::OK;
+            return utils::ReturnCode::RETCODE_OK;
         }
         else
         {
-            return utils::ReturnCode::ERROR;
+            return utils::ReturnCode::RETCODE_ERROR;
         }
     }
 }
