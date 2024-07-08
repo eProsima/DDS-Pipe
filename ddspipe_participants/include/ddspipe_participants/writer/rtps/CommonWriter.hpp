@@ -130,7 +130,7 @@ public:
     DDSPIPE_PARTICIPANTS_DllAPI
     void on_offered_incompatible_qos(
             fastrtps::rtps::RTPSWriter*,
-            eprosima::fastdds::dds::PolicyMask qos) noexcept override;
+            fastdds::dds::PolicyMask qos) noexcept override;
 
     /////////////////////
     // STATIC ATTRIBUTES
