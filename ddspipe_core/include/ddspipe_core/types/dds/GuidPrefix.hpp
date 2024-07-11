@@ -14,7 +14,6 @@
 
 #pragma once
 
-#include <fastdds/rtps/attributes/ServerAttributes.hpp>
 #include <fastdds/rtps/common/GuidPrefix_t.hpp>
 
 #include <ddspipe_core/library/library_dll.h>
