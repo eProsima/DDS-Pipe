@@ -21,14 +21,14 @@
 /////
 // Forward declarations
 namespace eprosima {
-namespace fastrtps {
+namespace fastdds {
 namespace rtps {
 
 struct CacheChange_t;
 struct GUID_t;
 
 } /* namespace rtps */
-} /* namespace fastrtps */
+} /* namespace fastdds */
 } /* namespace eprosima */
 
 namespace eprosima {
