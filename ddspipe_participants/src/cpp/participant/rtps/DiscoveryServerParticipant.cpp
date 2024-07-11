@@ -229,8 +229,8 @@ DiscoveryServerParticipant::reckon_participant_attributes_(
 
             has_connection_addresses = true;
 
-            eprosima::fastdds::rtps::RemoteServerAttributes server_attr;
-            server_attr.guidPrefix = server_prefix;
+            // eprosima::fastdds::rtps::RemoteServerAttributes server_attr;
+            // server_attr.guidPrefix = server_prefix;
 
             eprosima::fastdds::rtps::Locator_t locator;
 
@@ -265,8 +265,8 @@ DiscoveryServerParticipant::reckon_participant_attributes_(
             // Warning: Logical port is not needed unless domain could change
 
             // Add as remote server and add it to builtin
-            server_attr.metatrafficUnicastLocatorList.push_back(locator);
-            params.builtin.discovery_config.m_DiscoveryServers.push_back(server_attr);
+            // server_attr.metatrafficUnicastLocatorList.push_back(locator);
+            params.builtin.discovery_config.m_DiscoveryServers.push_back(locator);
 
             logDebug(DDSPIPE_DISCOVERYSERVER_PARTICIPANT,
                     "Add connection address " << address << " for server " << server_prefix <<

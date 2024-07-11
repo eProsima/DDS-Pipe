@@ -62,7 +62,7 @@ namespace rtps {
 /**
  * Abstract generic class for a RTPS Writer wrapper.
  *
- * It implements the WriterListener for itself with \c onWriterMatched callbacks.
+ * It implements the WriterListener for itself with \c on_writer_matched callbacks.
  *
  * @warning This object is not RAII and must be initialized before used.
  */
@@ -112,9 +112,9 @@ public:
      * @param [in] info information about the matched Reader
      */
     DDSPIPE_PARTICIPANTS_DllAPI
-    void onWriterMatched(
+    void on_writer_matched(
             fastdds::rtps::RTPSWriter*,
-            fastdds::rtps::MatchingInfo& info) noexcept override;
+            const fastdds::rtps::MatchingInfo& info) noexcept override;
 
     /**
      * @brief CommonWriter Listener callback when all the Readers have received a change.
@@ -125,7 +125,7 @@ public:
      * @param [in] ch the change that has been acknowledged by all the Readers.
      */
     DDSPIPE_PARTICIPANTS_DllAPI
-    void onWriterChangeReceivedByAll(
+    void on_writer_change_received_by_all(
             fastdds::rtps::RTPSWriter*,
             fastdds::rtps::CacheChange_t* change) override;
 

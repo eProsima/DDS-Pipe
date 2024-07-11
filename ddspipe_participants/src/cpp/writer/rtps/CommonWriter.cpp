@@ -105,9 +105,9 @@ void CommonWriter::init()
         pool_configuration_);
 }
 
-void CommonWriter::onWriterMatched(
+void CommonWriter::on_writer_matched(
         fastdds::rtps::RTPSWriter*,
-        fastdds::rtps::MatchingInfo& info) noexcept
+        const fastdds::rtps::MatchingInfo& info) noexcept
 {
     if (!come_from_this_participant_(info.remoteEndpointGuid))
     {
@@ -126,7 +126,7 @@ void CommonWriter::onWriterMatched(
     }
 }
 
-void CommonWriter::onWriterChangeReceivedByAll(
+void CommonWriter::on_writer_change_received_by_all(
         fastdds::rtps::RTPSWriter* /*writer*/,
         fastdds::rtps::CacheChange_t* change)
 {
@@ -170,13 +170,13 @@ utils::ReturnCode CommonWriter::write_nts_(
 
     if (topic_.topic_qos.keyed)
     {
-        new_change = rtps_writer_->new_change(
+        new_change = rtps_history_->create_change(
             rtps_data.kind,
             rtps_data.instanceHandle);
     }
     else
     {
-        new_change = rtps_writer_->new_change(rtps_data.kind);
+        new_change = rtps_history_->create_change(rtps_data.kind);
     }
 
     // If still is not able to get a change, return an error code
@@ -203,7 +203,7 @@ utils::ReturnCode CommonWriter::write_nts_(
     // Send data by adding it to CommonWriter History
     rtps_history_->add_change(new_change, write_params);
 
-    // In the case of BEST_EFFORT, add_change calls onWriterChangeReceivedByAll (which removes the change).
+    // In the case of BEST_EFFORT, add_change calls on_writer_change_received_by_all (which removes the change).
 
     // At this point, write params is now the output of adding change
     fill_sent_data_(write_params, rtps_data);
@@ -268,33 +268,32 @@ void CommonWriter::internal_entities_creation_(
     // Copy writer attributes because fast needs it non const (do not ask why)
     fastdds::rtps::WriterAttributes non_const_writer_attributes = writer_attributes;
 
-    // Create History
-    rtps_history_ = new fastdds::rtps::WriterHistory(history_attributes);
-
     // Create CommonWriter
     // Listener must be set in creation as no callbacks should be missed
     // It is safe to do so here as object is already created and callbacks do not require anything set in this method
     if (repeater_)
     {
-        logDebug(DDSPIPE_RTPS_COMMONWRITER, "CommonWriter created with repeater filter");
-
-        rtps_writer_ = fastdds::rtps::RTPSDomain::createRTPSWriter(
-            rtps_participant_,
-            non_const_writer_attributes,
+        // Create History
+        rtps_history_ = new fastdds::rtps::WriterHistory(
+            history_attributes,
             payload_pool_,
-            std::make_shared<core::CacheChangePool>(pool_configuration),
-            rtps_history_,
-            this);
+            std::make_shared<core::CacheChangePool>(pool_configuration));
+
+        logDebug(DDSPIPE_RTPS_COMMONWRITER, "CommonWriter created with repeater filter");
     }
     else
     {
-        rtps_writer_ = fastdds::rtps::RTPSDomain::createRTPSWriter(
-            rtps_participant_,
-            non_const_writer_attributes,
-            payload_pool_,
-            rtps_history_,
-            this);
+        // Create History
+        rtps_history_ = new fastdds::rtps::WriterHistory(
+            history_attributes,
+            payload_pool_);
     }
+
+    rtps_writer_ = fastdds::rtps::RTPSDomain::createRTPSWriter(
+        rtps_participant_,
+        non_const_writer_attributes,
+        rtps_history_,
+        this);
 
     if (!rtps_writer_)
     {
