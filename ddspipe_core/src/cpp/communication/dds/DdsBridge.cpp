@@ -110,13 +110,17 @@ void DdsBridge::create_endpoint(
 {
     std::lock_guard<std::mutex> lock(mutex_);
 
-    if (discovered_endpoint_kind == EndpointKind::reader)
+    switch (discovered_endpoint_kind)
     {
-        create_writer_and_its_tracks_nts_(participant_id);
-    }
-    else
-    {
-        create_reader_and_its_track_nts_(participant_id);
+        case EndpointKind::reader:
+            create_writer_and_its_tracks_nts_(participant_id);
+            break;
+        case EndpointKind::writer:
+            create_reader_and_its_track_nts_(participant_id);
+            break;
+        default:
+            logError(DDSPIPE_DDSBRIDGE, "Invalid kind " << discovered_endpoint_kind << " to create an endpoint.");
+            break;
     }
 }
 
@@ -126,13 +130,17 @@ void DdsBridge::remove_endpoint(
 {
     std::lock_guard<std::mutex> lock(mutex_);
 
-    if (removed_endpoint_kind == EndpointKind::reader)
+    switch (removed_endpoint_kind)
     {
-        remove_writer_and_its_tracks_nts_(participant_id);
-    }
-    else
-    {
-        remove_reader_and_its_track_nts_(participant_id);
+        case EndpointKind::reader:
+            remove_writer_and_its_tracks_nts_(participant_id);
+            break;
+        case EndpointKind::writer:
+            remove_reader_and_its_track_nts_(participant_id);
+            break;
+        default:
+            logError(DDSPIPE_DDSBRIDGE, "Invalid kind " << removed_endpoint_kind << " to remove an endpoint.");
+            break;
     }
 }
 
@@ -196,15 +204,16 @@ void DdsBridge::remove_writer_and_its_tracks_nts_(
     assert(participant_id != DEFAULT_PARTICIPANT_ID);
 
     // Remove the writer from the tracks and remove the tracks without writers
-    for (const auto& track_it : tracks_)
+    for (auto it = tracks_.cbegin(), next_it = it; it != tracks_.cend(); it = next_it)
     {
-        auto& track = track_it.second;
+        ++next_it;
+        const auto& track = it->second;
 
         track->remove_writer(participant_id);
 
         if (!track->has_writers())
         {
-            tracks_.erase(track_it.first);
+            tracks_.erase(it);
         }
     }
 

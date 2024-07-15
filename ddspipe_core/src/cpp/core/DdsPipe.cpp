@@ -391,13 +391,13 @@ bool DdsPipe::is_endpoint_relevant_(
 
     if (endpoint.active)
     {
-        // An active reader is relevant when it is the only active reader in a topic
+        // An active endpoint is relevant when it is the only active endpoint in a topic
         // with a discoverer participant id.
         return relevant_endpoints.size() == 1 && relevant_endpoints.count(endpoint.guid);
     }
     else
     {
-        // An inactive reader is relevant when there aren't any active readers in a topic
+        // An inactive endpoint is relevant when there aren't any active endpoints in a topic
         // with a discoverer participant id.
         return relevant_endpoints.size() == 0;
     }
@@ -409,7 +409,7 @@ void DdsPipe::init_bridges_nts_(
     for (const auto& topic : builtin_topics)
     {
         discovered_topic_nts_(topic);
-        create_new_bridge_nts_(topic, false);
+        create_new_bridge_nts_(topic, EndpointKind::reader, false);
     }
 }
 
@@ -487,8 +487,8 @@ void DdsPipe::removed_service_nts_(
 
 void DdsPipe::create_new_bridge_nts_(
         const utils::Heritable<DistributedTopic>& topic,
-        bool enabled, /*= false*/
-        const EndpointKind& endpoint_kind /*= EndpointKind::reader*/) noexcept
+        const EndpointKind endpoint_kind /*= EndpointKind::reader*/,
+        bool enabled /*= false*/) noexcept
 {
     EPROSIMA_LOG_INFO(DDSPIPE, "Creating Bridge for topic: " << topic << ".");
 
@@ -546,7 +546,7 @@ void DdsPipe::activate_topic_nts_(
     if (it_bridge == bridges_.end())
     {
         // The Bridge did not exist
-        create_new_bridge_nts_(topic, true, endpoint_kind);
+        create_new_bridge_nts_(topic, endpoint_kind, true);
     }
     else
     {
