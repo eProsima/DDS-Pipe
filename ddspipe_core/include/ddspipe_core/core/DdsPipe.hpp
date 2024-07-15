@@ -261,6 +261,7 @@ protected:
      * @note This is the only method that adds topics to \c current_topics_
      *
      * @param [in] topic : topic discovered
+     * @param [in] endpoint_kind : kind of the endpoint
      */
     void discovered_topic_nts_(
             const utils::Heritable<types::DistributedTopic>& topic,
@@ -303,11 +304,12 @@ protected:
      * It is created enabled if the DdsPipe is enabled.
      *
      * @param [in] topic : new topic
+     * @param [in] enabled : whether to enable the bridge on creation or not
      */
     void create_new_bridge_nts_(
             const utils::Heritable<types::DistributedTopic>& topic,
-            bool enabled = false,
-            const types::EndpointKind& endpoint_kind = types::EndpointKind::reader) noexcept;
+            const types::EndpointKind endpoint_kind = types::EndpointKind::reader,
+            bool enabled = false) noexcept;
 
     /**
      * @brief Create a new \c RpcBridge object
@@ -325,6 +327,7 @@ protected:
      * If the topic did not exist before, the Bridge is created.
      *
      * @param [in] topic : Topic to be enabled
+     * @param [in] endpoint_kind : Kind of endpoint who discovered the topic
      */
     void activate_topic_nts_(
             const utils::Heritable<types::DistributedTopic>& topic,

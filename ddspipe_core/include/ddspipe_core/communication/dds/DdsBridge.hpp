@@ -18,7 +18,6 @@
 
 #include <ddspipe_core/communication/Bridge.hpp>
 #include <ddspipe_core/communication/dds/Track.hpp>
-#include <ddspipe_core/configuration/DdsPipeConfiguration.hpp>
 #include <ddspipe_core/configuration/RoutesConfiguration.hpp>
 #include <ddspipe_core/types/dds/Endpoint.hpp>
 #include <ddspipe_core/types/topic/dds/DistributedTopic.hpp>
@@ -52,7 +51,10 @@ public:
      * @param participant_database: Collection of Participants to manage communication
      * @param payload_pool: Payload Pool that handles the reservation/release of payloads throughout the DDS Router
      * @param thread_pool: Shared pool of threads in charge of data transmission.
-     * @param enable: Whether the Bridge should be initialized as enabled
+     * @param routes_config: Configuration of the routes of the Bridge
+     * @param remove_unused_entities: Whether the Bridge should remove unused entities
+     * @param manual_topics: Topics that explicitally set a QoS attribute for this participant
+     * @param endpoint_kind: Kind of the endpoint that discovered the topic
      *
      * @throw InitializationException in case \c IWriters or \c IReaders creation fails.
      */
@@ -200,6 +202,8 @@ protected:
      * @brief Impose the Topic QoS that have been pre-configured for a participant.
      *
      * First, it imposes the Topic QoS configured at \c manual_topics and then the ones configured at \c participants.
+     *
+     * @param participant: The participant to impose the QoS on.
      */
     utils::Heritable<types::DistributedTopic> create_topic_for_participant_nts_(
             const std::shared_ptr<IParticipant>& participant) noexcept;
