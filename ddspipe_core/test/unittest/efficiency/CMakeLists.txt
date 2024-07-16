@@ -27,8 +27,10 @@ set(TEST_SOURCES
 
 set(TEST_LIST
         reserve
+        reserve_negative
         release
         reserve_and_release_counter
+        reserve_and_release_counter_negative
         is_clean
     )
 
