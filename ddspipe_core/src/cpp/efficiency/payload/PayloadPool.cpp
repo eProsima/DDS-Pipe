@@ -52,65 +52,6 @@ PayloadPool::~PayloadPool()
     }
 }
 
-/////
-// FAST DDS PART
-
-// bool PayloadPool::get_payload(
-//         uint32_t size,
-//         eprosima::fastdds::rtps::CacheChange_t& cache_change)
-// {
-//     if (get_payload(size, cache_change.serializedPayload))
-//     {
-//         cache_change.payload_owner(this);
-//         return true;
-//     }
-//     else
-//     {
-//         logDevError(DDSPIPE_PAYLOADPOOL, "Error occurred while creating payload.")
-//         return false;
-//     }
-// }
-
-// bool PayloadPool::get_payload(
-//         fastdds::rtps::SerializedPayload_t& data,
-//         IPayloadPool*& data_owner,
-//         eprosima::fastdds::rtps::CacheChange_t& cache_change)
-// {
-//     if (get_payload(data, data_owner, cache_change.serializedPayload))
-//     {
-//         cache_change.payload_owner(this);
-//         return true;
-//     }
-//     else
-//     {
-//         logDevError(DDSPIPE_PAYLOADPOOL, "Error occurred while referencing payload.")
-//         return false;
-//     }
-// }
-
-// bool PayloadPool::release_payload(
-//         fastdds::rtps::CacheChange_t& cache_change)
-// {
-//     if (cache_change.payload_owner() == this)
-//     {
-//         if (release_payload(cache_change.serializedPayload))
-//         {
-//             cache_change.payload_owner(nullptr);
-//             return true;
-//         }
-//         else
-//         {
-//             logDevError(DDSPIPE_PAYLOADPOOL, "Error occurred while releasing payload.")
-//             return false;
-//         }
-//     }
-//     else
-//     {
-//         logError(DDSPIPE_PAYLOADPOOL, "Trying to remove a cache change in an incorrect pool.")
-//         throw utils::InconsistencyException("Trying to remove a cache change in an incorrect pool.");
-//     }
-// }
-
 bool PayloadPool::is_clean() const noexcept
 {
     return reserve_count_ == release_count_;
