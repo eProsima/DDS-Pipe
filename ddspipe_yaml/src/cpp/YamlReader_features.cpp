@@ -12,7 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include <cpp_utils/Log.hpp>
+#include <set>
+
 #include <cpp_utils/memory/Heritable.hpp>
 
 #include <ddspipe_core/configuration/DdsPublishingConfiguration.hpp>
@@ -30,6 +31,7 @@
 
 #include <ddspipe_yaml/Yaml.hpp>
 #include <ddspipe_yaml/YamlReader.hpp>
+#include <ddspipe_yaml/YamlValidator.hpp>
 #include <ddspipe_yaml/yaml_configuration_tags.hpp>
 
 namespace eprosima {
@@ -62,10 +64,25 @@ void YamlReader::fill(
 
 template <>
 DDSPIPE_YAML_DllAPI
+bool YamlValidator::validate<participants::XmlHandlerConfiguration>(
+        const Yaml& yml,
+        const YamlReaderVersion& /* version */)
+{
+    static const std::set<TagType> tags{
+        XML_RAW_TAG,
+        XML_FILES_TAG};
+
+    return YamlValidator::validate_tags(yml, tags);
+}
+
+template <>
+DDSPIPE_YAML_DllAPI
 participants::XmlHandlerConfiguration YamlReader::get(
         const Yaml& yml,
         const YamlReaderVersion version)
 {
+    YamlValidator::validate<participants::XmlHandlerConfiguration>(yml, version);
+
     participants::XmlHandlerConfiguration object;
     fill<participants::XmlHandlerConfiguration>(object, yml, version);
     return object;
@@ -74,6 +91,19 @@ participants::XmlHandlerConfiguration YamlReader::get(
 /************************
 * Routes Configuration  *
 ************************/
+
+template <>
+DDSPIPE_YAML_DllAPI
+bool YamlValidator::validate<core::RoutesConfiguration>(
+        const Yaml& yml,
+        const YamlReaderVersion& /* version */)
+{
+    static const std::set<TagType> tags{
+        ROUTES_SRC_TAG,
+        ROUTES_DST_TAG};
+
+    return YamlValidator::validate_tags(yml, tags);
+}
 
 template <>
 DDSPIPE_YAML_DllAPI
@@ -93,25 +123,20 @@ void YamlReader::fill(
 
     for (const auto& route_yml : yml)
     {
+        // The validation has to be done here since the yml object is a list with the route
+        YamlValidator::validate<core::RoutesConfiguration>(route_yml, version);
+
         core::types::ParticipantId src;
         std::set<core::types::ParticipantId> dst;
 
         // Required route source
-        if (is_tag_present(route_yml, ROUTES_SRC_TAG))
-        {
-            src = get<core::types::ParticipantId>(route_yml, ROUTES_SRC_TAG, version);
-            if (object.routes.count(src) != 0)
-            {
-                throw eprosima::utils::ConfigurationException(
-                          utils::Formatter() <<
-                              "Multiple routes defined for participant " << src  << " : only one allowed.");
-            }
-        }
-        else
+        src = get<core::types::ParticipantId>(route_yml, ROUTES_SRC_TAG, version);
+
+        if (object.routes.count(src) != 0)
         {
             throw eprosima::utils::ConfigurationException(
                       utils::Formatter() <<
-                          "Source participant required under tag " << ROUTES_SRC_TAG << " in route definition.");
+                          "Multiple routes defined for participant " << src  << " : only one allowed.");
         }
 
         // Optional route destination(s)
@@ -136,6 +161,8 @@ core::RoutesConfiguration YamlReader::get(
         const Yaml& yml,
         const YamlReaderVersion version)
 {
+    // NOTE: The validation has to be done inside the fill method since the yml object is a list with the routes
+
     core::RoutesConfiguration object;
     fill<core::RoutesConfiguration>(object, yml, version);
     return object;
@@ -144,6 +171,20 @@ core::RoutesConfiguration YamlReader::get(
 /******************************
 * Topic Routes Configuration  *
 ******************************/
+
+template <>
+DDSPIPE_YAML_DllAPI
+bool YamlValidator::validate<core::TopicRoutesConfiguration>(
+        const Yaml& yml,
+        const YamlReaderVersion& /* version */)
+{
+    static const std::set<TagType> tags{
+        TOPIC_NAME_TAG,
+        TOPIC_TYPE_NAME_TAG,
+        ROUTES_TAG};
+
+    return YamlValidator::validate_tags(yml, tags);
+}
 
 template <>
 DDSPIPE_YAML_DllAPI
@@ -163,44 +204,24 @@ void YamlReader::fill(
 
     for (const auto& topic_routes_yml : yml)
     {
+        YamlValidator::validate<core::TopicRoutesConfiguration>(topic_routes_yml, version);
+
         // utils::Heritable<ddspipe::core::types::DistributedTopic> topic;
         auto topic = utils::Heritable<ddspipe::core::types::DdsTopic>::make_heritable();
         core::RoutesConfiguration routes;
 
         // Required topic and type names
-        if (!(is_tag_present(topic_routes_yml,
-                TOPIC_NAME_TAG) && is_tag_present(topic_routes_yml, TOPIC_TYPE_NAME_TAG)))
+        fill<eprosima::ddspipe::core::types::DdsTopic>(topic.get_reference(), topic_routes_yml, version);
+
+        if (object.topic_routes.count(topic) != 0)
         {
             throw eprosima::utils::ConfigurationException(
                       utils::Formatter() <<
-                          "Topic routes require topic and type names to be defined under tags " << TOPIC_NAME_TAG << " and " << TOPIC_TYPE_NAME_TAG <<
-                          ", respectively.");
-        }
-        else
-        {
-            topic = get<utils::Heritable<ddspipe::core::types::DistributedTopic>>(topic_routes_yml, version);
-            if (object.topic_routes.count(topic) != 0)
-            {
-                throw eprosima::utils::ConfigurationException(
-                          utils::Formatter() <<
-                              "Multiple routes defined for topic " << topic  << " : only one allowed.");
-            }
+                          "Multiple routes defined for topic " << topic  << " : only one allowed.");
         }
 
-        // Required routes
-        if (is_tag_present(topic_routes_yml, ROUTES_TAG))
-        {
-            routes = get<core::RoutesConfiguration>(topic_routes_yml, ROUTES_TAG, version);
-        }
-        else
-        {
-            throw eprosima::utils::ConfigurationException(
-                      utils::Formatter() <<
-                          "No routes found under tag " << ROUTES_TAG << " for topic " << topic << " .");
-        }
-
-        // Insert routes
-        object.topic_routes[topic] = routes;
+        // Required route
+        object.topic_routes[topic] = get<core::RoutesConfiguration>(topic_routes_yml, ROUTES_TAG, version);
     }
 }
 
@@ -210,65 +231,16 @@ core::TopicRoutesConfiguration YamlReader::get(
         const Yaml& yml,
         const YamlReaderVersion version)
 {
+    // NOTE: The validation has to be done inside the fill method since the yml object is a list with the topic routes
+
     core::TopicRoutesConfiguration object;
     fill<core::TopicRoutesConfiguration>(object, yml, version);
     return object;
 }
 
-/*************************
- * Monitor Configuration  *
- **************************/
-
-template <>
-DDSPIPE_YAML_DllAPI
-void YamlReader::fill(
-        core::MonitorConfiguration& object,
-        const Yaml& yml,
-        const YamlReaderVersion version)
-{
-    core::types::DomainIdType domain = 0;
-
-    // Optional domain
-    if (is_tag_present(yml, MONITOR_DOMAIN_TAG))
-    {
-        domain = get<int>(yml, MONITOR_DOMAIN_TAG, version);
-    }
-
-    /////
-    // Get optional monitor status tag
-    if (YamlReader::is_tag_present(yml, MONITOR_STATUS_TAG))
-    {
-        object.producers[core::STATUS_MONITOR_PRODUCER_ID] = YamlReader::get<core::MonitorProducerConfiguration>(yml,
-                        MONITOR_STATUS_TAG,
-                        version);
-        object.consumers[core::STATUS_MONITOR_PRODUCER_ID].domain = domain;
-        YamlReader::fill<core::DdsPublishingConfiguration>(object.consumers[core::STATUS_MONITOR_PRODUCER_ID],
-                get_value_in_tag(yml, MONITOR_STATUS_TAG), version);
-    }
-
-    /////
-    // Get optional monitor topics tag
-    if (YamlReader::is_tag_present(yml, MONITOR_TOPICS_TAG))
-    {
-        object.producers[core::TOPICS_MONITOR_PRODUCER_ID] = YamlReader::get<core::MonitorProducerConfiguration>(yml,
-                        MONITOR_TOPICS_TAG,
-                        version);
-        object.consumers[core::TOPICS_MONITOR_PRODUCER_ID].domain = domain;
-        YamlReader::fill<core::DdsPublishingConfiguration>(object.consumers[core::TOPICS_MONITOR_PRODUCER_ID],
-                get_value_in_tag(yml, MONITOR_TOPICS_TAG), version);
-    }
-}
-
-template <>
-DDSPIPE_YAML_DllAPI
-core::MonitorConfiguration YamlReader::get(
-        const Yaml& yml,
-        const YamlReaderVersion version)
-{
-    core::MonitorConfiguration object;
-    fill<core::MonitorConfiguration>(object, yml, version);
-    return object;
-}
+/**************************
+* Monitor Configuration  *
+**************************/
 
 template <>
 DDSPIPE_YAML_DllAPI
@@ -292,12 +264,110 @@ void YamlReader::fill(
 
 template <>
 DDSPIPE_YAML_DllAPI
+bool YamlValidator::validate<core::MonitorProducerConfiguration>(
+        const Yaml& yml,
+        const YamlReaderVersion& /* version */)
+{
+    static const std::set<TagType> tags{
+        MONITOR_ENABLE_TAG,
+        MONITOR_PERIOD_TAG};
+
+    return YamlValidator::validate_tags(yml, tags);
+}
+
+template <>
+DDSPIPE_YAML_DllAPI
 core::MonitorProducerConfiguration YamlReader::get(
         const Yaml& yml,
         const YamlReaderVersion version)
 {
+    YamlValidator::validate<core::MonitorProducerConfiguration>(yml, version);
+
     core::MonitorProducerConfiguration object;
     fill<core::MonitorProducerConfiguration>(object, yml, version);
+    return object;
+}
+
+template <>
+DDSPIPE_YAML_DllAPI
+void YamlReader::fill(
+        core::MonitorConfiguration& object,
+        const Yaml& yml,
+        const YamlReaderVersion version)
+{
+    core::types::DomainIdType domain = 0;
+
+    // Optional domain
+    if (is_tag_present(yml, MONITOR_DOMAIN_TAG))
+    {
+        domain = get<int>(yml, MONITOR_DOMAIN_TAG, version);
+    }
+
+    static const std::set<TagType> tags{
+        MONITOR_ENABLE_TAG,
+        MONITOR_PERIOD_TAG,
+        DDS_PUBLISHING_ENABLE_TAG,
+        DDS_PUBLISHING_DOMAIN_TAG,
+        DDS_PUBLISHING_TOPIC_NAME_TAG,
+        DDS_PUBLISHING_PUBLISH_TYPE_TAG};
+
+    /////
+    // Get optional monitor status tag
+    if (is_tag_present(yml, MONITOR_STATUS_TAG))
+    {
+        YamlValidator::validate_tags(yml[MONITOR_STATUS_TAG], tags);
+
+        // NOTE: Use fill instead of get to avoid throwing exceptions if tags are not present
+        fill<core::MonitorProducerConfiguration>(object.producers[core::STATUS_MONITOR_PRODUCER_ID],
+                get_value_in_tag(yml, MONITOR_STATUS_TAG), version);
+
+        // NOTE: Set the generic domain first so it can be overwritten by the specific domain if present
+        object.consumers[core::STATUS_MONITOR_PRODUCER_ID].domain = domain;
+        fill<core::DdsPublishingConfiguration>(object.consumers[core::STATUS_MONITOR_PRODUCER_ID],
+                get_value_in_tag(yml, MONITOR_STATUS_TAG), version);
+    }
+
+    /////
+    // Get optional monitor topics tag
+    if (is_tag_present(yml, MONITOR_TOPICS_TAG))
+    {
+        YamlValidator::validate_tags(yml[MONITOR_TOPICS_TAG], tags);
+
+        // NOTE: Use fill instead of get to avoid throwing exceptions if tags are not present
+        fill<core::MonitorProducerConfiguration>(object.producers[core::TOPICS_MONITOR_PRODUCER_ID],
+                get_value_in_tag(yml, MONITOR_TOPICS_TAG), version);
+
+        // NOTE: Set the generic domain first so it can be overwritten by the specific domain if present
+        object.consumers[core::TOPICS_MONITOR_PRODUCER_ID].domain = domain;
+        fill<core::DdsPublishingConfiguration>(object.consumers[core::TOPICS_MONITOR_PRODUCER_ID],
+                get_value_in_tag(yml, MONITOR_TOPICS_TAG), version);
+    }
+}
+
+template <>
+DDSPIPE_YAML_DllAPI
+bool YamlValidator::validate<core::MonitorConfiguration>(
+        const Yaml& yml,
+        const YamlReaderVersion& /* version */)
+{
+    static const std::set<TagType> tags{
+        MONITOR_DOMAIN_TAG,
+        MONITOR_STATUS_TAG,
+        MONITOR_TOPICS_TAG};
+
+    return YamlValidator::validate_tags(yml, tags);
+}
+
+template <>
+DDSPIPE_YAML_DllAPI
+core::MonitorConfiguration YamlReader::get(
+        const Yaml& yml,
+        const YamlReaderVersion version)
+{
+    YamlValidator::validate<core::MonitorConfiguration>(yml, version);
+
+    core::MonitorConfiguration object;
+    fill<core::MonitorConfiguration>(object, yml, version);
     return object;
 }
 

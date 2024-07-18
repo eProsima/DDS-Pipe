@@ -14,31 +14,29 @@
 
 /**
  * @file YamlReader.cpp
- *
  */
 
-#include <cpp_utils/Log.hpp>
+#include <set>
+
 #include <cpp_utils/time/time_utils.hpp>
 #include <cpp_utils/utils.hpp>
 
 #include <ddspipe_core/types/dds/DomainId.hpp>
 #include <ddspipe_core/types/dds/GuidPrefix.hpp>
 #include <ddspipe_core/types/participant/ParticipantId.hpp>
-#include <ddspipe_core/types/topic/dds/DdsTopic.hpp>
-#include <ddspipe_core/types/topic/filter/WildcardDdsFilterTopic.hpp>
-
-#include <ddspipe_participants/types/address/Address.hpp>
-#include <ddspipe_participants/types/address/DiscoveryServerConnectionAddress.hpp>
-#include <ddspipe_participants/types/security/tls/TlsConfiguration.hpp>
 
 #include <ddspipe_participants/configuration/DiscoveryServerParticipantConfiguration.hpp>
 #include <ddspipe_participants/configuration/InitialPeersParticipantConfiguration.hpp>
 #include <ddspipe_participants/configuration/ParticipantConfiguration.hpp>
 #include <ddspipe_participants/configuration/EchoParticipantConfiguration.hpp>
 #include <ddspipe_participants/configuration/SimpleParticipantConfiguration.hpp>
+#include <ddspipe_participants/types/address/Address.hpp>
+#include <ddspipe_participants/types/address/DiscoveryServerConnectionAddress.hpp>
+#include <ddspipe_participants/types/security/tls/TlsConfiguration.hpp>
 
 #include <ddspipe_yaml/Yaml.hpp>
 #include <ddspipe_yaml/YamlReader.hpp>
+#include <ddspipe_yaml/YamlValidator.hpp>
 #include <ddspipe_yaml/yaml_configuration_tags.hpp>
 
 namespace eprosima {
@@ -293,10 +291,29 @@ std::string YamlReader::get<std::string>(
 
 template <>
 DDSPIPE_YAML_DllAPI
+bool YamlValidator::validate<utils::Timestamp>(
+        const Yaml& yml,
+        const YamlReaderVersion& /* version */)
+{
+    static const std::set<TagType> tags{
+        TIMESTAMP_DATETIME_FORMAT_TAG,
+        TIMESTAMP_LOCAL_TAG,
+        TIMESTAMP_DATETIME_TAG,
+        TIMESTAMP_MILLISECONDS_TAG,
+        TIMESTAMP_MICROSECONDS_TAG,
+        TIMESTAMP_NANOSECONDS_TAG};
+
+    return YamlValidator::validate_tags(yml, tags);
+}
+
+template <>
+DDSPIPE_YAML_DllAPI
 utils::Timestamp YamlReader::get<utils::Timestamp>(
         const Yaml& yml,
         const YamlReaderVersion version /* version */)
 {
+    YamlValidator::validate<utils::Timestamp>(yml, version);
+
     utils::Timestamp ret_timestamp;
     std::string datetime_str;
     std::string datetime_format("%Y-%m-%d_%H-%M-%S");
