@@ -6,7 +6,7 @@
 #     - execute tests in different versions of windows with different build types
 #
 #   - ubuntu-multiplatform-tests
-#     - [ ubuntu-22.04 | ubuntu-20.04 ]
+#     - [ ubuntu-22.04 | ubuntu-24.04 ]
 #     - [ Debug | Release ]
 #     - execute tests in different versions of ubuntu with different build types
 #
@@ -154,8 +154,8 @@ jobs:
           - Release
           - Debug
         os:
-          - ubuntu-20.04
           - ubuntu-22.04
+          - ubuntu-24.04
 
     steps:
 
