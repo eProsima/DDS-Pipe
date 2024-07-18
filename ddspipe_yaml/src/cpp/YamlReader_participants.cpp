@@ -14,7 +14,6 @@
 
 /**
  * @file YamlReader.cpp
- *
  */
 
 #include <set>
@@ -25,16 +24,15 @@
 #include <ddspipe_core/types/dds/GuidPrefix.hpp>
 #include <ddspipe_core/types/participant/ParticipantId.hpp>
 
-#include <ddspipe_participants/types/address/Address.hpp>
-#include <ddspipe_participants/types/address/DiscoveryServerConnectionAddress.hpp>
-#include <ddspipe_participants/types/security/tls/TlsConfiguration.hpp>
-
 #include <ddspipe_participants/configuration/DiscoveryServerParticipantConfiguration.hpp>
 #include <ddspipe_participants/configuration/InitialPeersParticipantConfiguration.hpp>
 #include <ddspipe_participants/configuration/XmlParticipantConfiguration.hpp>
 #include <ddspipe_participants/configuration/ParticipantConfiguration.hpp>
 #include <ddspipe_participants/configuration/EchoParticipantConfiguration.hpp>
 #include <ddspipe_participants/configuration/SimpleParticipantConfiguration.hpp>
+#include <ddspipe_participants/types/address/Address.hpp>
+#include <ddspipe_participants/types/address/DiscoveryServerConnectionAddress.hpp>
+#include <ddspipe_participants/types/security/tls/TlsConfiguration.hpp>
 
 #include <ddspipe_yaml/Yaml.hpp>
 #include <ddspipe_yaml/YamlReader.hpp>
