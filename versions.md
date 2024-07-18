@@ -7,7 +7,7 @@ The *Forthcoming* section includes those features added in `main` branch that ar
 
 The upcoming release will include the following features:
 * Support Ubuntu Noble (24.04).
-* Stop supporting Ubuntu Focal (20.04).
+* Remove Ubuntu Focal (20.04) from the CI.
 
 ## eProsima DDS Pipe v0.4.0
 
