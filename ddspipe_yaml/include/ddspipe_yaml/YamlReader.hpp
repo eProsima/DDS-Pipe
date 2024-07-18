@@ -16,8 +16,8 @@
 
 #include <functional>
 
-#include <cpp_utils/types/Fuzzy.hpp>
 #include <cpp_utils/enum/EnumBuilder.hpp>
+#include <cpp_utils/types/Fuzzy.hpp>
 
 #include <ddspipe_yaml/library/library_dll.h>
 #include <ddspipe_yaml/Yaml.hpp>

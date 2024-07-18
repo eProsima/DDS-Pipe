@@ -14,10 +14,10 @@
 
 /**
  * @file YamlValidator.cpp
- *
  */
 
 #include <cpp_utils/Log.hpp>
+
 #include <ddspipe_yaml/YamlValidator.hpp>
 
 namespace eprosima {

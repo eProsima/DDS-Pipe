@@ -49,7 +49,7 @@ public:
             const YamlReaderVersion& version = YamlReaderVersion::LATEST);
 
     /**
-     * @brief Ensure that all the tags in \c yml are in \c tags.
+     * @brief Ensure that all the tags in \c yml are unique and inside \c tags.
      *
      * @param yml Yaml object to validate.
      * @param tags Set of tags to validate against.
