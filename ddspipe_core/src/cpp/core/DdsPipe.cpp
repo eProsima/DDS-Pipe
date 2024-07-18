@@ -291,7 +291,9 @@ void DdsPipe::discovered_endpoint_nts_(
     }
     else if (is_endpoint_relevant_(endpoint))
     {
-        discovered_topic_nts_(utils::Heritable<DdsTopic>::make_heritable(endpoint.topic));
+        discovered_topic_nts_(
+            utils::Heritable<DdsTopic>::make_heritable(endpoint.topic),
+            endpoint.kind);
     }
 }
 
@@ -319,7 +321,7 @@ void DdsPipe::removed_endpoint_nts_(
 
         if (it_bridge != bridges_.end() && endpoint.discoverer_participant_id != DEFAULT_PARTICIPANT_ID)
         {
-            it_bridge->second->remove_writer(endpoint.discoverer_participant_id);
+            it_bridge->second->remove_endpoint(endpoint.discoverer_participant_id, endpoint.kind);
         }
     }
 }
@@ -388,13 +390,13 @@ bool DdsPipe::is_endpoint_relevant_(
 
     if (endpoint.active)
     {
-        // An active reader is relevant when it is the only active reader in a topic
+        // An active endpoint is relevant when it is the only active endpoint in a topic
         // with a discoverer participant id.
         return relevant_endpoints.size() == 1 && relevant_endpoints.count(endpoint.guid);
     }
     else
     {
-        // An inactive reader is relevant when there aren't any active readers in a topic
+        // An inactive endpoint is relevant when there aren't any active endpoints in a topic
         // with a discoverer participant id.
         return relevant_endpoints.size() == 0;
     }
@@ -406,12 +408,13 @@ void DdsPipe::init_bridges_nts_(
     for (const auto& topic : builtin_topics)
     {
         discovered_topic_nts_(topic);
-        create_new_bridge_nts_(topic, false);
+        create_new_bridge_nts_(topic, EndpointKind::reader, false);
     }
 }
 
 void DdsPipe::discovered_topic_nts_(
-        const utils::Heritable<DistributedTopic>& topic) noexcept
+        const utils::Heritable<DistributedTopic>& topic,
+        const EndpointKind& endpoint_kind /*= EndpointKind::reader*/) noexcept
 {
     logInfo(DDSPIPE, "Discovered topic: " << topic << " by: " << topic->topic_discoverer() << ".");
 
@@ -426,13 +429,12 @@ void DdsPipe::discovered_topic_nts_(
         // If Pipe is enabled and topic allowed, activate it
         if (enabled_ && allowed_topics_->is_topic_allowed(*topic))
         {
-            activate_topic_nts_(topic);
+            activate_topic_nts_(topic, endpoint_kind);
         }
     }
     else if (configuration_.remove_unused_entities && topic->topic_discoverer() != DEFAULT_PARTICIPANT_ID)
     {
-        // The bridge already exists. Create a writer in the participant who discovered it.
-        it_bridge->second->create_writer(topic->topic_discoverer());
+        it_bridge->second->create_endpoint(topic->topic_discoverer(), endpoint_kind);
     }
 }
 
@@ -484,6 +486,7 @@ void DdsPipe::removed_service_nts_(
 
 void DdsPipe::create_new_bridge_nts_(
         const utils::Heritable<DistributedTopic>& topic,
+        const EndpointKind endpoint_kind /*= EndpointKind::reader*/,
         bool enabled /*= false*/) noexcept
 {
     logInfo(DDSPIPE, "Creating Bridge for topic: " << topic << ".");
@@ -500,7 +503,8 @@ void DdsPipe::create_new_bridge_nts_(
                         thread_pool_,
                         routes_config,
                         configuration_.remove_unused_entities,
-                        manual_topics);
+                        manual_topics,
+                        endpoint_kind);
 
         if (enabled)
         {
@@ -527,7 +531,8 @@ void DdsPipe::create_new_service_nts_(
 }
 
 void DdsPipe::activate_topic_nts_(
-        const utils::Heritable<DistributedTopic>& topic) noexcept
+        const utils::Heritable<DistributedTopic>& topic,
+        const EndpointKind& endpoint_kind /*= EndpointKind::reader*/) noexcept
 {
     logInfo(DDSPIPE, "Activating topic: " << topic << ".");
 
@@ -540,7 +545,7 @@ void DdsPipe::activate_topic_nts_(
     if (it_bridge == bridges_.end())
     {
         // The Bridge did not exist
-        create_new_bridge_nts_(topic, true);
+        create_new_bridge_nts_(topic, endpoint_kind, true);
     }
     else
     {
