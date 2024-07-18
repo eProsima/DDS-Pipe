@@ -38,8 +38,6 @@ add_blackbox_executable(
 # TODO: use a cmake_utils macro
 set(
     XTSAN_TEST_LIST
-        "ParticipantsCreationgTest.creation_trivial"
-        "ParticipantsCreationgTest.ddspipe_all_creation_builtin_topic"
 )
 
 foreach(XTSAN_TEST ${XTSAN_TEST_LIST})
