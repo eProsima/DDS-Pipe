@@ -87,7 +87,7 @@ bool RoutesConfiguration::is_valid(
         if (!src_in_dst && is_repeater)
         {
             // Warn the user repeater routes must be set manually
-            logWarning(
+            EPROSIMA_LOG_WARNING(
                 DDSPIPE_ROUTES,
                 "Source not found in destinations for repeater participant " << src_id
                                                                              << ". If willing to send data through this participant, add its name to the destinations (dst) list.");

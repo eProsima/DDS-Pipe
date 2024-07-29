@@ -21,14 +21,13 @@
 #include <cpp_utils/Log.hpp>
 #include <cpp_utils/logging/BaseLogConsumer.hpp>
 
-#include <ddspipe_core/configuration/DdsPipeLogConfiguration.hpp>
-#include <ddspipe_core/library/library_dll.h>
-
 #include <fastdds/dds/domain/DomainParticipant.hpp>
 #include <fastdds/dds/publisher/DataWriter.hpp>
 #include <fastdds/dds/publisher/Publisher.hpp>
 #include <fastdds/dds/topic/Topic.hpp>
 
+#include <ddspipe_core/configuration/DdsPipeLogConfiguration.hpp>
+#include <ddspipe_core/library/library_dll.h>
 #include <ddspipe_core/types/logging/LogEntry.hpp>
 #include <ddspipe_core/types/logging/LogEntryPubSubTypes.hpp>
 #include <ddspipe_core/types/logging/LogEntryTypeObjectSupport.hpp>

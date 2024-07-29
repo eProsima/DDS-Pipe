@@ -30,9 +30,9 @@ using namespace eprosima::fastdds::dds;
  * Test that the StdLogConsumer prints logs when stdout is set to true.
  *
  * CASES:
- * - check that the StdLogConsumer prints logInfos.
- * - check that the StdLogConsumer prints logWarnings.
- * - check that the StdLogConsumer prints logErrors.
+ * - check that the StdLogConsumer prints EPROSIMA_LOG_INFOs.
+ * - check that the StdLogConsumer prints EPROSIMA_LOG_WARNINGs.
+ * - check that the StdLogConsumer prints EPROSIMA_LOG_ERRORs.
  */
 TEST(StdLogConsumerTest, print_logs)
 {
@@ -59,7 +59,7 @@ TEST(StdLogConsumerTest, print_logs)
     {
         testing::internal::CaptureStdout();
 
-        logInfo(DDSPIPE_TEST, "LOG_CONSUMER_TEST | You only live once.");
+        EPROSIMA_LOG_INFO(DDSPIPE_TEST, "LOG_CONSUMER_TEST | You only live once.");
         eprosima::utils::Log::Flush();
 
         ASSERT_FALSE(testing::internal::GetCapturedStdout().empty());
@@ -69,7 +69,7 @@ TEST(StdLogConsumerTest, print_logs)
     {
         testing::internal::CaptureStderr();
 
-        logWarning(DDSPIPE_TEST, "LOG_CONSUMER_TEST | You only live once.");
+        EPROSIMA_LOG_WARNING(DDSPIPE_TEST, "LOG_CONSUMER_TEST | You only live once.");
         eprosima::utils::Log::Flush();
 
         ASSERT_FALSE(testing::internal::GetCapturedStderr().empty());
@@ -79,7 +79,7 @@ TEST(StdLogConsumerTest, print_logs)
     {
         testing::internal::CaptureStderr();
 
-        logError(DDSPIPE_TEST, "LOG_CONSUMER_TEST | You only live once.");
+        EPROSIMA_LOG_ERROR(DDSPIPE_TEST, "LOG_CONSUMER_TEST | You only live once.");
         eprosima::utils::Log::Flush();
 
         ASSERT_FALSE(testing::internal::GetCapturedStderr().empty());
@@ -90,9 +90,9 @@ TEST(StdLogConsumerTest, print_logs)
  * Test that the StdLogConsumer doesn't print logs when stdout is set to false.
  *
  * CASES:
- * - check that the StdLogConsumer doesn't print logInfos.
- * - check that the StdLogConsumer doesn't print logWarnings.
- * - check that the StdLogConsumer doesn't print logErrors.
+ * - check that the StdLogConsumer doesn't print EPROSIMA_LOG_INFOs.
+ * - check that the StdLogConsumer doesn't print EPROSIMA_LOG_WARNINGs.
+ * - check that the StdLogConsumer doesn't print EPROSIMA_LOG_ERRORs.
  */
 TEST(StdLogConsumerTest, dont_print_logs)
 {
@@ -119,7 +119,7 @@ TEST(StdLogConsumerTest, dont_print_logs)
     {
         testing::internal::CaptureStdout();
 
-        logInfo(DDSPIPE_TEST, "LOG_CONSUMER_TEST | You only live once.");
+        EPROSIMA_LOG_INFO(DDSPIPE_TEST, "LOG_CONSUMER_TEST | You only live once.");
         eprosima::utils::Log::Flush();
 
         ASSERT_TRUE(testing::internal::GetCapturedStdout().empty());
@@ -129,7 +129,7 @@ TEST(StdLogConsumerTest, dont_print_logs)
     {
         testing::internal::CaptureStderr();
 
-        logWarning(DDSPIPE_TEST, "LOG_CONSUMER_TEST | You only live once.");
+        EPROSIMA_LOG_WARNING(DDSPIPE_TEST, "LOG_CONSUMER_TEST | You only live once.");
         eprosima::utils::Log::Flush();
 
         ASSERT_TRUE(testing::internal::GetCapturedStderr().empty());
@@ -139,7 +139,7 @@ TEST(StdLogConsumerTest, dont_print_logs)
     {
         testing::internal::CaptureStderr();
 
-        logError(DDSPIPE_TEST, "LOG_CONSUMER_TEST | You only live once.");
+        EPROSIMA_LOG_ERROR(DDSPIPE_TEST, "LOG_CONSUMER_TEST | You only live once.");
         eprosima::utils::Log::Flush();
 
         ASSERT_TRUE(testing::internal::GetCapturedStderr().empty());

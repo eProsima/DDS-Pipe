@@ -85,7 +85,7 @@ bool MapPayloadPool::get_payload(
         auto payload_it = reserved_payloads_.find(src_payload.data);
         if (payload_it == reserved_payloads_.end())
         {
-            logError(DDSPIPE_PAYLOADPOOL, "Payload ownership is this pool, but it is not reserved from here.");
+            EPROSIMA_LOG_ERROR(DDSPIPE_PAYLOADPOOL, "Payload ownership is this pool, but it is not reserved from here.");
             throw utils::InconsistencyException("Payload ownership is this pool, but it is not reserved from here.");
         }
 
@@ -110,7 +110,7 @@ bool MapPayloadPool::release_payload(
     auto payload_it = reserved_payloads_.find(payload.data);
     if (payload_it == reserved_payloads_.end())
     {
-        logError(DDSPIPE_PAYLOADPOOL, "Trying to release a payload from this pool that is not present.");
+        EPROSIMA_LOG_ERROR(DDSPIPE_PAYLOADPOOL, "Trying to release a payload from this pool that is not present.");
         throw utils::InconsistencyException("Trying to release a payload from this pool that is not present.");
     }
 

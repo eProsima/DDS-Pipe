@@ -48,13 +48,13 @@ CommonReader::~CommonReader()
         dds_participant_->delete_subscriber(dds_subscriber_);
     }
 
-    logInfo(DDSPIPE_DDS_READER, "Deleting CommonReader created in Participant " <<
+    EPROSIMA_LOG_INFO(DDSPIPE_DDS_READER, "Deleting CommonReader created in Participant " <<
             participant_id_ << " for topic " << topic_);
 }
 
 void CommonReader::init()
 {
-    logInfo(DDSPIPE_DDS_READER, "Initializing reader in " << participant_id_ << " for topic " << topic_ << ".");
+    EPROSIMA_LOG_INFO(DDSPIPE_DDS_READER, "Initializing reader in " << participant_id_ << " for topic " << topic_ << ".");
 
     // Create subscriber
     dds_subscriber_ = dds_participant_->create_subscriber(
@@ -94,7 +94,7 @@ void CommonReader::init()
 void CommonReader::on_data_available(
         fastdds::dds::DataReader* /* reader */)
 {
-    logInfo(DDSPIPE_DDS_READER, "On data available in reader in " << participant_id_ << " for topic " << topic_ << ".");
+    EPROSIMA_LOG_INFO(DDSPIPE_DDS_READER, "On data available in reader in " << participant_id_ << " for topic " << topic_ << ".");
 
     // The CommonReader notifies the reception of a message to the Monitor when a on_data_available event is received.
     // An on_data_available event can be received with more than one message, but figuring out the number of messages
@@ -112,7 +112,7 @@ void CommonReader::on_sample_lost(
         fastdds::dds::DataReader* reader,
         const fastdds::dds::SampleLostStatus& status)
 {
-    logWarning(DDSPIPE_DDS_READER,
+    EPROSIMA_LOG_WARNING(DDSPIPE_DDS_READER,
             "SAMPLE_LOST | On reader " << *this << " a data sample was lost and will not be received");
 
     monitor_msg_lost(topic_, participant_id_);
@@ -122,7 +122,7 @@ void CommonReader::on_requested_incompatible_qos(
         fastdds::dds::DataReader* reader,
         const fastdds::dds::RequestedIncompatibleQosStatus& status)
 {
-    logWarning(DDSPIPE_DDS_READER,
+    EPROSIMA_LOG_WARNING(DDSPIPE_DDS_READER,
             "TOPIC_MISMATCH_QOS | Reader " << *this << " found a remote Writer with incompatible QoS");
 
     monitor_qos_mismatch(topic_);
@@ -133,7 +133,7 @@ void CommonReader::on_inconsistent_topic(
         fastdds::dds::Topic* topic,
         fastdds::dds::InconsistentTopicStatus status)
 {
-    logWarning(DDSPIPE_DDS_READER,
+    EPROSIMA_LOG_WARNING(DDSPIPE_DDS_READER,
             "TOPIC_MISMATCH_TYPE | Reader " << *this <<
             " found a remote Writer with same topic name but incompatible type");
 
@@ -164,7 +164,7 @@ utils::ReturnCode CommonReader::take_nts_(
     // NOTE: we assume this function is always called from the same thread
     // NOTE: we assume this function is always called with nullptr data
 
-    logInfo(DDSPIPE_DDS_READER, "Taking data in " << participant_id_ << " for topic " << topic_ << ".");
+    EPROSIMA_LOG_INFO(DDSPIPE_DDS_READER, "Taking data in " << participant_id_ << " for topic " << topic_ << ".");
 
     // Check if there is data available
     if (!(reader_->get_unread_count() > 0))
@@ -191,12 +191,12 @@ utils::ReturnCode CommonReader::take_nts_(
         }
     } while (!should_accept_sample_(info));
 
-    logInfo(DDSPIPE_DDS_READER, "Data taken in " << participant_id_ << " for topic " << topic_ << ".");
+    EPROSIMA_LOG_INFO(DDSPIPE_DDS_READER, "Data taken in " << participant_id_ << " for topic " << topic_ << ".");
 
     // Verify that the rtps_data object is valid
     if (!rtps_data)
     {
-        logError(DDSPIPE_DDS_READER, "The data taken by the reader is not valid.");
+        EPROSIMA_LOG_ERROR(DDSPIPE_DDS_READER, "The data taken by the reader is not valid.");
         return utils::ReturnCode::ERROR;
     }
 

@@ -29,14 +29,14 @@ namespace types {
 //! Durability kind enumeration
 using DurabilityKind = eprosima::fastdds::rtps::DurabilityKind_t;
 
-//! Reliability kind enumeration
-using ReliabilityKind = eprosima::fastdds::rtps::ReliabilityKind_t;
-
 //! History kind enumeration
 using HistoryDepthType = unsigned int;
 
 //! Ownership configuration
 using OwnershipQosPolicyKind = eprosima::fastdds::dds::OwnershipQosPolicyKind;
+
+//! Reliability kind enumeration
+using ReliabilityKind = eprosima::fastdds::rtps::ReliabilityKind_t;
 
 /**
  * The collection of QoS related to a Topic.

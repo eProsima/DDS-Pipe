@@ -27,19 +27,20 @@ namespace eprosima {
 namespace ddspipe {
 namespace core {
 
+using namespace eprosima::fastdds::rtps;
 using namespace eprosima::ddspipe::core::types;
 
 bool FastPayloadPool::get_payload(
         uint32_t size,
-        eprosima::fastdds::rtps::SerializedPayload_t& payload)
+        SerializedPayload_t& payload)
 {
     // Reserve new payload
     return reserve_(size, payload);
 }
 
 bool FastPayloadPool::get_payload(
-        const eprosima::fastdds::rtps::SerializedPayload_t& src_payload,
-        eprosima::fastdds::rtps::SerializedPayload_t& target_payload)
+        const SerializedPayload_t& src_payload,
+        SerializedPayload_t& target_payload)
 {
     // If we are not the owner, create a new payload. Else, reference the existing one
     if (src_payload.payload_owner != this)
@@ -109,7 +110,7 @@ bool FastPayloadPool::release_payload(
 
 bool FastPayloadPool::reserve_(
         uint32_t size,
-        eprosima::fastdds::rtps::SerializedPayload_t& payload)
+        SerializedPayload_t& payload)
 {
     if (size == 0)
     {
@@ -125,7 +126,7 @@ bool FastPayloadPool::reserve_(
     MetaInfoType* reference_place = reinterpret_cast<MetaInfoType*>(memory_allocated);
     (*reference_place) = 1;
 
-    payload.data = reinterpret_cast<eprosima::fastdds::rtps::octet*>(reference_place + 1);
+    payload.data = reinterpret_cast<octet*>(reference_place + 1);
     payload.max_size = size;
     payload.payload_owner = this;
 
@@ -137,7 +138,7 @@ bool FastPayloadPool::reserve_(
 }
 
 bool FastPayloadPool::release_(
-        eprosima::fastdds::rtps::SerializedPayload_t& payload)
+        SerializedPayload_t& payload)
 {
     logDebug(DDSPIPE_PAYLOADPOOL_FAST, "Releasing payload ptr: " << static_cast<void*>(payload.data) << ".");
 

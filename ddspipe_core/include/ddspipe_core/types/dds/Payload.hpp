@@ -31,26 +31,26 @@ namespace ddspipe {
 namespace core {
 namespace types {
 
-//! Durability kind enumeration
-using PartitionQosPolicy = eprosima::fastdds::dds::PartitionQosPolicy;
-
-//! Partition configuration
-using OwnershipStrengthQosPolicy = eprosima::fastdds::dds::OwnershipStrengthQosPolicy;
-
-//! Instance Handler type
-using InstanceHandle = eprosima::fastdds::rtps::InstanceHandle_t;
-
 //! Instance Handler type
 using ChangeKind = eprosima::fastdds::rtps::ChangeKind_t;
 
 //! Fast DDS Time
 using DataTime = eprosima::fastdds::rtps::Time_t;
 
-//! Kind of every unit that creates a Payload
-using PayloadUnit = eprosima::fastdds::rtps::octet;
+//! Instance Handler type
+using InstanceHandle = eprosima::fastdds::rtps::InstanceHandle_t;
+
+//! Ownership Strength configuration
+using OwnershipStrengthQosPolicy = eprosima::fastdds::dds::OwnershipStrengthQosPolicy;
 
 //! Payload references the raw data received.
 using Payload = eprosima::fastdds::rtps::SerializedPayload_t;
+
+//! Kind of every unit that creates a Payload
+using PayloadUnit = eprosima::fastdds::rtps::octet;
+
+//! Partition configuration
+using PartitionQosPolicy = eprosima::fastdds::dds::PartitionQosPolicy;
 
 //! \c octet to stream serializator
 DDSPIPE_CORE_DllAPI

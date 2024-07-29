@@ -58,7 +58,7 @@ std::shared_ptr<core::IWriter> XmlParticipant::create_writer(
     }
     catch (const utils::InitializationException& e)
     {
-        logWarning(
+        EPROSIMA_LOG_WARNING(
             DDSPIPE_XMLPARTICIPANT,
             e.what()
                 << ". Execution continue but this topic will not be published in Participant " << id() << ".");
@@ -75,7 +75,7 @@ std::shared_ptr<core::IReader> XmlParticipant::create_reader(
     }
     catch (const utils::InitializationException& e)
     {
-        logWarning(
+        EPROSIMA_LOG_WARNING(
             DDSPIPE_XMLPARTICIPANT,
             e.what()
                 << ". Execution continue but this topic will not be subscribed in Participant " << id() << ".");

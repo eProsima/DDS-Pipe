@@ -68,7 +68,7 @@ void ServiceRegistry::add(
     if (registry_.count(idx))
     {
         // Should never occur as each sequence number associated to a write operation is unique
-        logWarning(DDSPIPE_SERVICEREGISTRY,
+        EPROSIMA_LOG_WARNING(DDSPIPE_SERVICEREGISTRY,
                 "ServiceRegistry for service " << topic_ << " in participant " << participant_id_ <<
                 " attempting to add entry with already present SequenceNumber.");
         return;

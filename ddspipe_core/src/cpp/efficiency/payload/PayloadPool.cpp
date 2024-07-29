@@ -47,7 +47,7 @@ PayloadPool::~PayloadPool()
     }
     else
     {
-        logInfo(DDSPIPE_PAYLOADPOOL,
+        EPROSIMA_LOG_INFO(DDSPIPE_PAYLOADPOOL,
                 "Removing PayloadPool correctly after reserve: " << reserve_count_ << " payloads.");
     }
 }
@@ -70,7 +70,7 @@ void PayloadPool::add_release_payload_()
     ++release_count_;
     if (release_count_ > reserve_count_)
     {
-        logError(DDSPIPE_PAYLOADPOOL,
+        EPROSIMA_LOG_ERROR(DDSPIPE_PAYLOADPOOL,
                 "Inconsistent PayloadPool, releasing more payloads than reserved.");
         throw utils::InconsistencyException("Inconsistent PayloadPool, releasing more payloads than reserved.");
     }

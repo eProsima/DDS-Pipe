@@ -49,7 +49,7 @@ utils::ReturnCode SchemaWriter::write_nts_(
 {
     auto& rtps_data = dynamic_cast<RtpsPayloadData&>(data);
 
-    logInfo(DDSPIPE_SCHEMA_WRITER,
+    EPROSIMA_LOG_INFO(DDSPIPE_SCHEMA_WRITER,
             "Data in topic: "
             << topic_ << " received: "
             << rtps_data.payload
@@ -62,7 +62,7 @@ utils::ReturnCode SchemaWriter::write_nts_(
     }
     catch (const utils::Exception& e)
     {
-        logWarning(
+        EPROSIMA_LOG_WARNING(
             DDSPIPE_SCHEMA_WRITER,
             "Error writting data in topic " << topic_ << " : <" << e.what() << ">.");
         return utils::ReturnCode::ERROR;

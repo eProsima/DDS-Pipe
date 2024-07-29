@@ -38,7 +38,6 @@
 #include <ddspipe_core/types/topic/dds/DdsTopic.hpp>
 
 #include <ddspipe_participants/library/library_dll.h>
-#include <ddspipe_participants/efficiency/cache_change/CacheChangePool.hpp>
 #include <ddspipe_participants/writer/auxiliar/BaseWriter.hpp>
 
 /////

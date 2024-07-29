@@ -26,12 +26,9 @@
 #include <ddspipe_core/library/library_dll.h>
 #include <ddspipe_core/monitoring/consumers/IMonitorConsumer.hpp>
 #include <ddspipe_core/monitoring/producers/MonitorProducer.hpp>
+#include <ddspipe_core/types/monitoring/topics/MonitoringTopics.hpp>
 #include <ddspipe_core/types/participant/ParticipantId.hpp>
 #include <ddspipe_core/types/topic/dds/DdsTopic.hpp>
-
-#include <ddspipe_core/types/monitoring/topics/MonitoringTopics.hpp>
-#include <ddspipe_core/types/monitoring/topics/MonitoringTopicsPubSubTypes.hpp>
-#include <ddspipe_core/types/monitoring/topics/MonitoringTopicsTypeObjectSupport.hpp>
 
 
 // Macro to notify that a message has been received in a topic by a participant.
