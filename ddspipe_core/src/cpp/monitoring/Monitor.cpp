@@ -16,12 +16,11 @@
 
 #include <cpp_utils/Log.hpp>
 
-#include <ddspipe_core/monitoring/Monitor.hpp>
 #include <ddspipe_core/monitoring/consumers/DdsMonitorConsumer.hpp>
 #include <ddspipe_core/monitoring/consumers/LogMonitorConsumer.hpp>
+#include <ddspipe_core/monitoring/Monitor.hpp>
 #include <ddspipe_core/monitoring/producers/StatusMonitorProducer.hpp>
 #include <ddspipe_core/monitoring/producers/TopicsMonitorProducer.hpp>
-
 #include <ddspipe_core/types/monitoring/status/MonitoringStatus.hpp>
 #include <ddspipe_core/types/monitoring/status/MonitoringStatusPubSubTypes.hpp>
 #include <ddspipe_core/types/monitoring/topics/MonitoringTopics.hpp>
@@ -53,7 +52,7 @@ Monitor::~Monitor()
 
 void Monitor::monitor_status()
 {
-    logInfo(DDSPIPE_MONITOR, "MONITOR | Registering Status Monitor Producer.");
+    EPROSIMA_LOG_INFO(DDSPIPE_MONITOR, "MONITOR | Registering Status Monitor Producer.");
 
     // Register the Status Monitor Producer
     auto status_producer = ddspipe::core::StatusMonitorProducer::get_instance();
@@ -76,7 +75,7 @@ void Monitor::monitor_status()
 
 void Monitor::monitor_topics()
 {
-    logInfo(DDSPIPE_MONITOR, "MONITOR | Registering Topics Monitor Producer.");
+    EPROSIMA_LOG_INFO(DDSPIPE_MONITOR, "MONITOR | Registering Topics Monitor Producer.");
 
     // Register the Topics Monitor Producer
     auto topics_producer = ddspipe::core::TopicsMonitorProducer::get_instance();
@@ -100,7 +99,7 @@ void Monitor::monitor_topics()
 void Monitor::register_producer_(
         IMonitorProducer* producer)
 {
-    logInfo(DDSPIPE_MONITOR, "MONITOR | Registering producer " << producer << ".");
+    EPROSIMA_LOG_INFO(DDSPIPE_MONITOR, "MONITOR | Registering producer " << producer << ".");
 
     producers_.push_back(producer);
 

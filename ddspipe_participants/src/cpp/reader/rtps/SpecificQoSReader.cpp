@@ -61,7 +61,7 @@ void SpecificQoSReader::fill_received_data_(
     {
         // Get a message from a writer not in database, this is an error.
         // Remove data and make as it has not been received.
-        logError(
+        EPROSIMA_LOG_ERROR(
             DDSPIPE_SpecificQoSReader,
             "Received a message from Writer " << data_to_fill.source_guid << " that is not stored in DB.");
     }

@@ -39,7 +39,7 @@ SimpleReader::SimpleReader(
         reckon_topic_attributes_(topic),
         reckon_reader_qos_(topic))
 {
-    logInfo(DDSPIPE_RPC_READER, "Creating RPC Reader for topic " << topic_);
+    EPROSIMA_LOG_INFO(DDSPIPE_RPC_READER, "Creating RPC Reader for topic " << topic_);
 }
 
 //! Override Parent method to create an RPC data type.

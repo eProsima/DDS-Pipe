@@ -17,9 +17,8 @@
 #include <fastdds/rtps/transport/TCPTransportDescriptor.hpp>
 
 #include <ddspipe_participants/configuration/InitialPeersParticipantConfiguration.hpp>
-#include <ddspipe_participants/types/security/tls/TlsConfiguration.hpp>
-
 #include <ddspipe_participants/participant/rtps/CommonParticipant.hpp>
+#include <ddspipe_participants/types/security/tls/TlsConfiguration.hpp>
 
 namespace eprosima {
 namespace ddspipe {

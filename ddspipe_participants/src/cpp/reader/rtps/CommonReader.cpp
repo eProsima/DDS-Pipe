@@ -12,8 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include <fastdds/rtps/RTPSDomain.hpp>
+#include <fastdds/dds/subscriber/qos/ReaderQos.hpp>
 #include <fastdds/rtps/participant/RTPSParticipant.hpp>
+#include <fastdds/rtps/RTPSDomain.hpp>
 
 #include <fastdds/dds/domain/DomainParticipantFactory.hpp>
 
@@ -78,7 +79,7 @@ CommonReader::~CommonReader()
         delete rtps_history_;
     }
 
-    logInfo(DDSPIPE_RTPS_READER, "Deleting CommonReader created in Participant " <<
+    EPROSIMA_LOG_INFO(DDSPIPE_RTPS_READER, "Deleting CommonReader created in Participant " <<
             participant_id_ << " for topic " << topic_);
 }
 
@@ -133,7 +134,7 @@ void CommonReader::internal_entities_creation_(
                       " for Simple RTPSReader in Participant " << participant_id_);
     }
 
-    logInfo(DDSPIPE_RTPS_READER, "New CommonReader created in Participant " << participant_id_ << " for topic " <<
+    EPROSIMA_LOG_INFO(DDSPIPE_RTPS_READER, "New CommonReader created in Participant " << participant_id_ << " for topic " <<
             topic_ << " with guid " << rtps_reader_->getGuid());
 }
 
@@ -416,7 +417,7 @@ void CommonReader::on_new_cache_change_added(
     }
     else
     {
-        logInfo(
+        EPROSIMA_LOG_INFO(
             DDSPIPE_RTPS_COMMONREADER_LISTENER,
             "Rejected received data in reader " << *this << ".");
 
@@ -438,13 +439,13 @@ void CommonReader::on_reader_matched(
     {
         if (info.status == fastdds::rtps::MatchingStatus::MATCHED_MATCHING)
         {
-            logInfo(DDSPIPE_RTPS_COMMONREADER_LISTENER,
+            EPROSIMA_LOG_INFO(DDSPIPE_RTPS_COMMONREADER_LISTENER,
                     "Reader " << *this << " in topic " << topic_.serialize() << " matched with a new Writer with guid " <<
                     info.remoteEndpointGuid);
         }
         else
         {
-            logInfo(DDSPIPE_RTPS_COMMONREADER_LISTENER,
+            EPROSIMA_LOG_INFO(DDSPIPE_RTPS_COMMONREADER_LISTENER,
                     "Reader " << *this << " in topic " << topic_.serialize() << " unmatched with Writer " <<
                     info.remoteEndpointGuid);
         }
@@ -467,7 +468,7 @@ void CommonReader::on_sample_lost(
         fastdds::rtps::RTPSReader*,
         int32_t sample_lost_since_last_update) noexcept
 {
-    logWarning(DDSPIPE_RTPS_COMMONREADER_LISTENER,
+    EPROSIMA_LOG_WARNING(DDSPIPE_RTPS_COMMONREADER_LISTENER,
             "SAMPLE_LOST | On reader " << *this << " a data sample was lost and will not be received");
 
     monitor_msg_lost(topic_, participant_id_);
@@ -497,7 +498,7 @@ void CommonReader::on_sample_rejected(
             reason_str = "UNKNOWN";
             break;
     }
-    logInfo(DDSPIPE_RTPS_COMMONREADER_LISTENER,
+    EPROSIMA_LOG_INFO(DDSPIPE_RTPS_COMMONREADER_LISTENER,
             "Reader " << *this << " rejected a sample from " << change->writerGUID
                       << ". Reason: " << reason_str);
 }
@@ -505,7 +506,7 @@ void CommonReader::on_sample_rejected(
 void CommonReader::on_incompatible_type(
         fastdds::rtps::RTPSReader* reader) noexcept
 {
-    logWarning(DDSPIPE_RTPS_COMMONREADER_LISTENER,
+    EPROSIMA_LOG_WARNING(DDSPIPE_RTPS_COMMONREADER_LISTENER,
             "TOPIC_MISMATCH_TYPE | Reader " << *this <<
             " discovered a Writer with a matching Topic name but with an incompatible type");
 
@@ -519,7 +520,7 @@ utils::ReturnCode CommonReader::is_data_correct_(
     // Check that the guid is consistent
     if (received_change->writerGUID == fastdds::rtps::GUID_t::unknown())
     {
-        logWarning(DDSPIPE_RTPS_COMMONREADER_LISTENER,
+        EPROSIMA_LOG_WARNING(DDSPIPE_RTPS_COMMONREADER_LISTENER,
                 "Error taking data without correct writer GUID.");
 
         return utils::ReturnCode::ERROR;
@@ -531,7 +532,7 @@ utils::ReturnCode CommonReader::is_data_correct_(
         // Data with 0 bytes is only correct if keyed topic and if data is being disposed
         if (!(topic_.topic_qos.keyed && received_change->kind != eprosima::fastdds::rtps::ChangeKind_t::ALIVE))
         {
-            logWarning(DDSPIPE_RTPS_COMMONREADER_LISTENER,
+            EPROSIMA_LOG_WARNING(DDSPIPE_RTPS_COMMONREADER_LISTENER,
                     "Error taking data with length " << received_change->serializedPayload.length << ".");
 
             return utils::ReturnCode::ERROR;

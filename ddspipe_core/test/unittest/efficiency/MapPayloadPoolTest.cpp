@@ -51,15 +51,15 @@ public:
     }
 
     uint64_t reference_count(
-            const eprosima::fastdds::rtps::SerializedPayload_t& payload)
+            const fastdds::rtps::SerializedPayload_t& payload)
     {
         return reserved_payloads_[payload.data];
     }
 
     void clean_all(
-            std::vector<eprosima::fastdds::rtps::SerializedPayload_t>& payloads)
+            std::vector<fastdds::rtps::SerializedPayload_t>& payloads)
     {
-        for (eprosima::fastdds::rtps::SerializedPayload_t& payload : payloads)
+        for (fastdds::rtps::SerializedPayload_t& payload : payloads)
         {
             release_payload(payload);
         }

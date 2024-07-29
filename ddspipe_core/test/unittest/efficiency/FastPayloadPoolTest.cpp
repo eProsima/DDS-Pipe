@@ -255,7 +255,6 @@ TEST(FastPayloadPoolTest, get_payload_from_src_negative)
     {
         eprosima::fastdds::rtps::IPayloadPool* pool = new test::MockFastPayloadPool(); // Requires to be ptr to pass it to get_payload
         test::MockFastPayloadPool* pool_ = static_cast<test::MockFastPayloadPool*>(pool);
-        eprosima::fastdds::rtps::IPayloadPool* pool_aux = nullptr; // nullptr
 
         Payload payload_src;
         Payload payload_target;
@@ -393,8 +392,6 @@ TEST(FastPayloadPoolTest, concurrent_release)
 
         ASSERT_TRUE(pool.get_payload(DEFAULT_SIZE, payload));
 
-        eprosima::fastdds::rtps::IPayloadPool* payload_owner =
-                static_cast<eprosima::fastdds::rtps::IPayloadPool*>(&pool);
         Payload dst_payload;
         ASSERT_TRUE(pool.get_payload(payload, dst_payload));
 
