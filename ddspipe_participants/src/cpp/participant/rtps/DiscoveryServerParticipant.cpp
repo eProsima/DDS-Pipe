@@ -73,7 +73,7 @@ DiscoveryServerParticipant::reckon_participant_attributes_(
         if (!address.is_valid())
         {
             // Invalid address, continue with next one
-            logWarning(DDSPIPE_DISCOVERYSERVER_PARTICIPANT,
+            EPROSIMA_LOG_WARNING(DDSPIPE_DISCOVERYSERVER_PARTICIPANT,
                     "Discard listening address: " << address <<
                     " in Participant " << configuration->id << " initialization.");
             continue;
@@ -204,7 +204,7 @@ DiscoveryServerParticipant::reckon_participant_attributes_(
         if (!connection_address.is_valid())
         {
             // Invalid connection address, continue with next one
-            logWarning(DDSPIPE_DISCOVERYSERVER_PARTICIPANT,
+            EPROSIMA_LOG_WARNING(DDSPIPE_DISCOVERYSERVER_PARTICIPANT,
                     "Discard connection address with remote server: " <<
                     connection_address.discovery_server_guid_prefix() <<
                     " in Participant " << configuration->id << " initialization.");
@@ -219,7 +219,7 @@ DiscoveryServerParticipant::reckon_participant_attributes_(
             if (!address.is_valid())
             {
                 // Invalid ip address, continue with next one
-                logWarning(DDSPIPE_DISCOVERYSERVER_PARTICIPANT,
+                EPROSIMA_LOG_WARNING(DDSPIPE_DISCOVERYSERVER_PARTICIPANT,
                         "Discard connection address with remote server: " <<
                         connection_address.discovery_server_guid_prefix() <<
                         " due to invalid ip address " << address.ip() << " in Participant " << configuration->id <<
@@ -228,9 +228,6 @@ DiscoveryServerParticipant::reckon_participant_attributes_(
             }
 
             has_connection_addresses = true;
-
-            // eprosima::fastdds::rtps::RemoteServerAttributes server_attr;
-            // server_attr.guidPrefix = server_prefix;
 
             eprosima::fastdds::rtps::Locator_t locator;
 
@@ -265,8 +262,8 @@ DiscoveryServerParticipant::reckon_participant_attributes_(
             // Warning: Logical port is not needed unless domain could change
 
             // Add as remote server and add it to builtin
-            // server_attr.metatrafficUnicastLocatorList.push_back(locator);
-            params.builtin.discovery_config.m_DiscoveryServers.push_back(locator);
+            params.builtin.metatrafficUnicastLocatorList.push_back(locator);
+            params.defaultUnicastLocatorList.push_back(locator);
 
             logDebug(DDSPIPE_DISCOVERYSERVER_PARTICIPANT,
                     "Add connection address " << address << " for server " << server_prefix <<
@@ -288,7 +285,7 @@ DiscoveryServerParticipant::reckon_participant_attributes_(
 
         if (!has_connection_addresses)
         {
-            logWarning(DDSPIPE_DISCOVERYSERVER_PARTICIPANT,
+            EPROSIMA_LOG_WARNING(DDSPIPE_DISCOVERYSERVER_PARTICIPANT,
                     "Creating Participant " << configuration->id << " without listening or connection addresses. " <<
                     "It will not communicate with any other Participant.");
         }

@@ -20,6 +20,7 @@
 #include <map>
 
 #include <fastdds/dds/core/ReturnCode.hpp>
+#include <fastdds/dds/xtypes/dynamic_types/detail/dynamic_language_binding.hpp>
 #include <fastdds/dds/xtypes/dynamic_types/DynamicType.hpp>
 #include <fastdds/dds/xtypes/dynamic_types/DynamicTypeMember.hpp>
 #include <fastdds/dds/xtypes/dynamic_types/TypeDescriptor.hpp>
@@ -75,7 +76,7 @@ fastdds::dds::DynamicType::_ref_type container_internal_type(
     return type_descriptor->element_type();
 }
 
-std::vector<uint32_t> array_size(
+fastdds::dds::BoundSeq array_size(
         const fastdds::dds::DynamicType::_ref_type& dyn_type)
 {
     fastdds::dds::TypeDescriptor::_ref_type type_descriptor {fastdds::dds::traits<fastdds::dds::TypeDescriptor>::make_shared()};

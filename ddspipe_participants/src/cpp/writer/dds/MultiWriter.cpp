@@ -56,7 +56,7 @@ MultiWriter::~MultiWriter()
         writer.second->disable();
     }
 
-    logInfo(DDSPIPE_RTPS_WRITER, "Deleting MultiWriter created in Participant " <<
+    EPROSIMA_LOG_INFO(DDSPIPE_RTPS_WRITER, "Deleting MultiWriter created in Participant " <<
             participant_id_ << " for topic " << topic_);
 }
 

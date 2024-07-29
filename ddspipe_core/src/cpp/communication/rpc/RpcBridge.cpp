@@ -59,7 +59,7 @@ RpcBridge::~RpcBridge()
 
 void RpcBridge::init_nts_()
 {
-    logInfo(DDSPIPE_RPCBRIDGE, "Creating endpoints in RpcBridge for service " << rpc_topic_ << ".");
+    EPROSIMA_LOG_INFO(DDSPIPE_RPCBRIDGE, "Creating endpoints in RpcBridge for service " << rpc_topic_ << ".");
 
     // TODO: remove and use every participant
     std::set<ParticipantId> ids = participants_->get_rtps_participants_ids();
@@ -113,7 +113,7 @@ void RpcBridge::enable() noexcept
 
     if (!enabled_ && servers_available_())
     {
-        logInfo(DDSPIPE_RPCBRIDGE, "Enabling RpcBridge for service " << rpc_topic_ << ".");
+        EPROSIMA_LOG_INFO(DDSPIPE_RPCBRIDGE, "Enabling RpcBridge for service " << rpc_topic_ << ".");
 
         if (!init_)
         {
@@ -123,7 +123,7 @@ void RpcBridge::enable() noexcept
             }
             catch (const utils::InitializationException& e)
             {
-                logError(DDSPIPE_RPCBRIDGE,
+                EPROSIMA_LOG_ERROR(DDSPIPE_RPCBRIDGE,
                         "Error while creating endpoints in RpcBridge for service " << rpc_topic_ <<
                         ". Error code:" << e.what() << ".");
                 return;
@@ -163,7 +163,7 @@ void RpcBridge::disable() noexcept
 
     if (enabled_)
     {
-        logInfo(DDSPIPE_RPCBRIDGE, "Disabling RpcBridge for service " << rpc_topic_ << ".");
+        EPROSIMA_LOG_INFO(DDSPIPE_RPCBRIDGE, "Disabling RpcBridge for service " << rpc_topic_ << ".");
 
         enabled_ = false;
 
@@ -304,7 +304,7 @@ void RpcBridge::transmit_(
         if (ret != utils::ReturnCode::OK)
         {
             // Error reading data
-            logWarning(DDSPIPE_RPCBRIDGE,
+            EPROSIMA_LOG_WARNING(DDSPIPE_RPCBRIDGE,
                     "Error taking data at service Reader in topic " << reader->topic()
                                                                     << ". Error code " << ret
                                                                     << ". Skipping data and continue.");
@@ -323,7 +323,7 @@ void RpcBridge::transmit_(
 
             if (reply_related_sample_identity == SampleIdentity::unknown())
             {
-                logWarning(DDSPIPE_RPCBRIDGE,
+                EPROSIMA_LOG_WARNING(DDSPIPE_RPCBRIDGE,
                         "RpcBridge for service " << rpc_topic_ <<
                         " received ill-formed request from remote endpoint " << rpc_data.source_guid <<
                         ". Ignoring...");
@@ -353,7 +353,7 @@ void RpcBridge::transmit_(
 
                     if (ret != utils::ReturnCode::OK)
                     {
-                        logWarning(DDSPIPE_RPCBRIDGE, "Error writting request in RpcBridge for service "
+                        EPROSIMA_LOG_WARNING(DDSPIPE_RPCBRIDGE, "Error writting request in RpcBridge for service "
                                 << rpc_topic_ << ". Error code " << ret <<
                                 ". Skipping data for this writer and continue.");
                         continue;
@@ -410,7 +410,7 @@ void RpcBridge::transmit_(
 
                     if (ret != utils::ReturnCode::OK)
                     {
-                        logWarning(DDSPIPE_RPCBRIDGE, "Error writting reply in RpcBridge for service "
+                        EPROSIMA_LOG_WARNING(DDSPIPE_RPCBRIDGE, "Error writting reply in RpcBridge for service "
                                 << rpc_topic_ << ". Error code " << ret << ".");
                     }
                     else

@@ -39,9 +39,8 @@ namespace ddspipe {
 namespace participants {
 
 /**
- * Simple RTPS Participant
+ * Simple RTPS Participant responsible for registering discovered types
  *
- * TODO: separate these 2 participants
  */
 class DynTypesParticipant : public rtps::SimpleParticipant
 {

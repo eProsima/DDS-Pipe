@@ -97,9 +97,9 @@ protected:
  * Test that the DdsLogConsumer publishes logs when publish::enable is set to true.
  *
  * CASES:
- * - check that the DdsLogConsumer publishes logInfos.
- * - check that the DdsLogConsumer publishes logWarnings.
- * - check that the DdsLogConsumer publishes logErrors.
+ * - check that the DdsLogConsumer publishes EPROSIMA_LOG_INFOs.
+ * - check that the DdsLogConsumer publishes EPROSIMA_LOG_WARNINGs.
+ * - check that the DdsLogConsumer publishes EPROSIMA_LOG_ERRORs.
  */
 TEST_F(DdsLogConsumerTest, publish_logs)
 {
@@ -132,7 +132,7 @@ TEST_F(DdsLogConsumerTest, publish_logs)
 
     // INFO
     {
-        logInfo(DDSPIPE_TEST, "LOG_CONSUMER_TEST | You only live once.");
+        EPROSIMA_LOG_INFO(DDSPIPE_TEST, "LOG_CONSUMER_TEST | You only live once.");
         utils::Log::Flush();
 
         // Wait for the subscriber to receive the message
@@ -150,7 +150,7 @@ TEST_F(DdsLogConsumerTest, publish_logs)
 
     // WARNING
     {
-        logWarning(DDSPIPE_TEST, "LOG_CONSUMER_TEST | You only live once.");
+        EPROSIMA_LOG_WARNING(DDSPIPE_TEST, "LOG_CONSUMER_TEST | You only live once.");
         utils::Log::Flush();
 
         // Wait for the subscriber to receive the message
@@ -168,7 +168,7 @@ TEST_F(DdsLogConsumerTest, publish_logs)
 
     // ERROR
     {
-        logError(DDSPIPE_TEST, "LOG_CONSUMER_TEST | You only live once.");
+        EPROSIMA_LOG_ERROR(DDSPIPE_TEST, "LOG_CONSUMER_TEST | You only live once.");
         utils::Log::Flush();
 
         // Wait for the subscriber to receive the message
@@ -191,9 +191,9 @@ TEST_F(DdsLogConsumerTest, publish_logs)
  * Test that the DdsLogConsumer doesn't publish when publish::enable is set to false.
  *
  * CASES:
- * - check that the DdsLogConsumer doesn't publish logInfos.
- * - check that the DdsLogConsumer doesn't publish logWarnings.
- * - check that the DdsLogConsumer doesn't publish logErrors.
+ * - check that the DdsLogConsumer doesn't publish EPROSIMA_LOG_INFOs.
+ * - check that the DdsLogConsumer doesn't publish EPROSIMA_LOG_WARNINGs.
+ * - check that the DdsLogConsumer doesn't publish EPROSIMA_LOG_ERRORs.
  */
 TEST_F(DdsLogConsumerTest, dont_publish_logs)
 {
@@ -226,7 +226,7 @@ TEST_F(DdsLogConsumerTest, dont_publish_logs)
 
     // INFO
     {
-        logInfo(DDSPIPE_TEST, "LOG_CONSUMER_TEST | You only live once.");
+        EPROSIMA_LOG_INFO(DDSPIPE_TEST, "LOG_CONSUMER_TEST | You only live once.");
         utils::Log::Flush();
 
         // Wait for the subscriber to receive the message
@@ -238,7 +238,7 @@ TEST_F(DdsLogConsumerTest, dont_publish_logs)
 
     // WARNING
     {
-        logWarning(DDSPIPE_TEST, "LOG_CONSUMER_TEST | You only live once.");
+        EPROSIMA_LOG_WARNING(DDSPIPE_TEST, "LOG_CONSUMER_TEST | You only live once.");
         utils::Log::Flush();
 
         // Wait for the subscriber to receive the message
@@ -250,7 +250,7 @@ TEST_F(DdsLogConsumerTest, dont_publish_logs)
 
     // ERROR
     {
-        logError(DDSPIPE_TEST, "LOG_CONSUMER_TEST | You only live once.");
+        EPROSIMA_LOG_ERROR(DDSPIPE_TEST, "LOG_CONSUMER_TEST | You only live once.");
         utils::Log::Flush();
 
         // Wait for the subscriber to receive the message

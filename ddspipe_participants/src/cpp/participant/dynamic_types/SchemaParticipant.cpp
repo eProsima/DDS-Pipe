@@ -80,7 +80,7 @@ std::shared_ptr<IWriter> SchemaParticipant::create_writer(
     {
         if (!utils::can_cast<DdsTopic>(topic))
         {
-            logWarning(DDSPIPE_SCHEMA_PARTICIPANT, "Not creating Writer for topic " << topic.topic_name());
+            EPROSIMA_LOG_WARNING(DDSPIPE_SCHEMA_PARTICIPANT, "Not creating Writer for topic " << topic.topic_name());
             return std::make_shared<BlankWriter>();
         }
         return std::make_shared<SchemaWriter>(id(), dynamic_cast<const DdsTopic&>(topic), payload_pool_,

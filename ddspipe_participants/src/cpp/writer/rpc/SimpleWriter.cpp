@@ -47,7 +47,7 @@ SimpleWriter::SimpleWriter(
         reckon_writer_qos_(topic),
         reckon_cache_change_pool_configuration_(topic))
 {
-    logInfo(DDSPIPE_RPC_WRITER, "Creating RPC Writer for topic " << topic_);
+    EPROSIMA_LOG_INFO(DDSPIPE_RPC_WRITER, "Creating RPC Writer for topic " << topic_);
 }
 
 utils::ReturnCode SimpleWriter::fill_to_send_data_(

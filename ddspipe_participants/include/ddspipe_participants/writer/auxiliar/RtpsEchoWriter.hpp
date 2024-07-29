@@ -16,6 +16,8 @@
 
 #include <atomic>
 
+#include <cpp_utils/ReturnCode.hpp>
+
 #include <ddspipe_core/types/participant/ParticipantId.hpp>
 #include <ddspipe_core/types/topic/dds/DdsTopic.hpp>
 

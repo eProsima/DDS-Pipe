@@ -49,13 +49,13 @@ CommonWriter::~CommonWriter()
         dds_participant_->delete_publisher(dds_publisher_);
     }
 
-    logInfo(DDSPIPE_DDS_WRITER, "Deleting CommonWriter created in Participant " <<
+    EPROSIMA_LOG_INFO(DDSPIPE_DDS_WRITER, "Deleting CommonWriter created in Participant " <<
             participant_id_ << " for topic " << topic_);
 }
 
 void CommonWriter::init()
 {
-    logInfo(DDSPIPE_DDS_WRITER, "Initializing writer in " << participant_id_ << " for topic " << topic_ << ".");
+    EPROSIMA_LOG_INFO(DDSPIPE_DDS_WRITER, "Initializing writer in " << participant_id_ << " for topic " << topic_ << ".");
 
     // Create publisher
     dds_publisher_ = dds_participant_->create_publisher(
@@ -105,7 +105,7 @@ CommonWriter::CommonWriter(
 utils::ReturnCode CommonWriter::write_nts_(
         core::IRoutingData& data) noexcept
 {
-    logInfo(DDSPIPE_DDS_WRITER, "Writing data in " << participant_id_ << " for topic " << topic_ << ".");
+    EPROSIMA_LOG_INFO(DDSPIPE_DDS_WRITER, "Writing data in " << participant_id_ << " for topic " << topic_ << ".");
 
     auto& rtps_data = dynamic_cast<core::types::RtpsPayloadData&>(data);
 

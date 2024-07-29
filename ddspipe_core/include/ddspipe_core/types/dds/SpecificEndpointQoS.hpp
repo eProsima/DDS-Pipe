@@ -15,8 +15,6 @@
 #pragma once
 
 #include <fastdds/dds/core/policy/QosPolicies.hpp>
-#include <fastdds/rtps/common/InstanceHandle.hpp>
-#include <fastdds/rtps/common/Types.hpp>
 
 #include <ddspipe_core/library/library_dll.h>
 

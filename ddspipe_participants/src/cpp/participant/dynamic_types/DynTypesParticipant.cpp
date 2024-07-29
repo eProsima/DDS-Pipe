@@ -132,14 +132,14 @@ void DynTypesParticipant::notify_type_discovered_(
             const fastdds::dds::xtypes::TypeInformation& type_info,
             const fastcdr::string_255& type_name)
 {
-    const auto type_identifier = type_info.complete().typeid_with_size().type_id();
+    const auto type_id = type_info.complete().typeid_with_size().type_id();
     fastdds::dds::xtypes::TypeObject dyn_type_object;
     if (fastdds::dds::RETCODE_OK != fastdds::dds::DomainParticipantFactory::get_instance()->type_object_registry().get_type_object(
-            type_identifier,
+            type_id,
             dyn_type_object))
     {
-        logWarning(DDSPIPE_DYNTYPES_PARTICIPANT,
-            "Failed to get type object of " << type_name << "type");
+        EPROSIMA_LOG_WARNING(DDSPIPE_DYNTYPES_PARTICIPANT,
+            "Failed to get type object of " << type_name << " type");
         return;
     }
 
@@ -148,14 +148,14 @@ void DynTypesParticipant::notify_type_discovered_(
                 dyn_type_object)->build();
     if (!dyn_type)
     {
-        logWarning(DDSPIPE_DYNTYPES_PARTICIPANT,
+        EPROSIMA_LOG_WARNING(DDSPIPE_DYNTYPES_PARTICIPANT,
             "Failed to create Dynamic Type " << type_name);
         return;
     }
 
-    // Notify type_identifier and its associated tyme_name.
-    // NOTE: We assume each type_name corresponds to only one type_identifier
-    logInfo(DDSPIPE_DYNTYPES_PARTICIPANT,
+    // Notify type_id and its associated tyme_name.
+    // NOTE: We assume each type_name corresponds to only one type_id
+    EPROSIMA_LOG_INFO(DDSPIPE_DYNTYPES_PARTICIPANT,
             "Participant " << this->id() << " discovered type object " << dyn_type->get_name());
 
     monitor_type_discovered(type_name.to_string());
@@ -164,7 +164,7 @@ void DynTypesParticipant::notify_type_discovered_(
     auto data = std::make_unique<DynamicTypeData>();
     data->dynamic_type = dyn_type; // TODO: add constructor with param
     data->type_name = type_name;
-    data->type_id = type_identifier;
+    data->type_id = type_id;
 
     // Insert new data in internal reader queue
     type_object_reader_->simulate_data_reception(std::move(data));

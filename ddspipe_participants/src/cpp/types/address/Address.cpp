@@ -74,7 +74,7 @@ Address::Address(
     }
     catch (const utils::DNSException& )
     {
-        logWarning(
+        EPROSIMA_LOG_WARNING(
             DDSPIPE_ADDRESS, "Address created without IP because given domain " << domain << " was not found.");
     }
 }
@@ -114,7 +114,7 @@ Address::Address(
     }
     catch (const utils::DNSException& )
     {
-        logWarning(
+        EPROSIMA_LOG_WARNING(
             DDSPIPE_ADDRESS, "Address created without IP because given domain " << domain << " was not found.");
     }
 }
@@ -339,7 +339,7 @@ IpType Address::resolve_dns(
         }
         else
         {
-            logInfo(
+            EPROSIMA_LOG_INFO(
                 DDSPIPE_ADDRESS,
                 "Getting first IpVersion::v4: " << dns_response.first.begin()->data() <<
                     " for Domain name: " << domain <<
@@ -356,7 +356,7 @@ IpType Address::resolve_dns(
         }
         else
         {
-            logInfo(
+            EPROSIMA_LOG_INFO(
                 DDSPIPE_ADDRESS,
                 "Getting first IpVersion::v6: " << dns_response.second.begin()->data() <<
                     " for Domain name: " << domain <<
@@ -383,7 +383,7 @@ std::pair<IpType, IpVersion> Address::resolve_dns(
         }
         else
         {
-            logInfo(
+            EPROSIMA_LOG_INFO(
                 DDSPIPE_ADDRESS,
                 "Getting first IpVersion::v6: " << dns_response.second.begin()->data() <<
                     " for Domain name: " << domain <<
@@ -393,7 +393,7 @@ std::pair<IpType, IpVersion> Address::resolve_dns(
     }
     else
     {
-        logInfo(
+        EPROSIMA_LOG_INFO(
             DDSPIPE_ADDRESS,
             "Getting first IpVersion::v4: " << dns_response.first.begin()->data() <<
                 " for Domain name: " << domain <<

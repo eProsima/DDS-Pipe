@@ -123,7 +123,7 @@ bool DiscoveryDatabase::add_endpoint_(
                 // If exists but inactive, modify entry
                 it->second = new_endpoint;
 
-                logInfo(DDSPIPE_DISCOVERY_DATABASE,
+                EPROSIMA_LOG_INFO(DDSPIPE_DISCOVERY_DATABASE,
                         "Modifying an already discovered (inactive) Endpoint " << new_endpoint << ".");
 
                 return true;
@@ -131,7 +131,7 @@ bool DiscoveryDatabase::add_endpoint_(
         }
         else
         {
-            logInfo(DDSPIPE_DISCOVERY_DATABASE, "Inserting a new discovered Endpoint " << new_endpoint << ".");
+            EPROSIMA_LOG_INFO(DDSPIPE_DISCOVERY_DATABASE, "Inserting a new discovered Endpoint " << new_endpoint << ".");
 
             // Add it to the dictionary
             entities_.insert(std::pair<Guid, Endpoint>(new_endpoint.guid, new_endpoint));
@@ -163,7 +163,7 @@ bool DiscoveryDatabase::update_endpoint_(
         }
         else
         {
-            logInfo(DDSPIPE_DISCOVERY_DATABASE,
+            EPROSIMA_LOG_INFO(DDSPIPE_DISCOVERY_DATABASE,
                     "Modifying an already discovered Endpoint " << endpoint_to_update << ".");
 
             // Modify entry
@@ -187,7 +187,7 @@ utils::ReturnCode DiscoveryDatabase::erase_endpoint_(
     {
         std::unique_lock<std::shared_timed_mutex> lock(mutex_);
 
-        logInfo(DDSPIPE_DISCOVERY_DATABASE, "Erasing Endpoint " << endpoint_to_erase << ".");
+        EPROSIMA_LOG_INFO(DDSPIPE_DISCOVERY_DATABASE, "Erasing Endpoint " << endpoint_to_erase << ".");
 
         auto erased = entities_.erase(endpoint_to_erase.guid);
 

@@ -89,24 +89,24 @@ void CommonParticipant::onParticipantDiscovery(
     {
         if (info.status == fastdds::rtps::ParticipantDiscoveryInfo::DISCOVERED_PARTICIPANT)
         {
-            logInfo(DDSPIPE_DISCOVERY,
+            EPROSIMA_LOG_INFO(DDSPIPE_DISCOVERY,
                     "Found in Participant " << configuration_->id << " new Participant " << info.info.m_guid << ".");
         }
         else if (info.status == fastdds::rtps::ParticipantDiscoveryInfo::CHANGED_QOS_PARTICIPANT)
         {
-            logInfo(DDSPIPE_DISCOVERY, "Participant " << info.info.m_guid << " changed QoS.");
+            EPROSIMA_LOG_INFO(DDSPIPE_DISCOVERY, "Participant " << info.info.m_guid << " changed QoS.");
         }
         else if (info.status == fastdds::rtps::ParticipantDiscoveryInfo::REMOVED_PARTICIPANT)
         {
-            logInfo(DDSPIPE_DISCOVERY, "Participant " << info.info.m_guid << " removed.");
+            EPROSIMA_LOG_INFO(DDSPIPE_DISCOVERY, "Participant " << info.info.m_guid << " removed.");
         }
         else if (info.status == fastdds::rtps::ParticipantDiscoveryInfo::DROPPED_PARTICIPANT)
         {
-            logInfo(DDSPIPE_DISCOVERY, "Participant " << info.info.m_guid << " dropped.");
+            EPROSIMA_LOG_INFO(DDSPIPE_DISCOVERY, "Participant " << info.info.m_guid << " dropped.");
         }
         else if (info.status == fastdds::rtps::ParticipantDiscoveryInfo::IGNORED_PARTICIPANT)
         {
-            logInfo(DDSPIPE_DISCOVERY, "Participant " << info.info.m_guid << " ignored.");
+            EPROSIMA_LOG_INFO(DDSPIPE_DISCOVERY, "Participant " << info.info.m_guid << " ignored.");
         }
     }
 }
@@ -123,27 +123,27 @@ void CommonParticipant::onReaderDiscovery(
 
         if (info.status == fastdds::rtps::ReaderDiscoveryInfo::DISCOVERED_READER)
         {
-            logInfo(DDSPIPE_DISCOVERY,
+            EPROSIMA_LOG_INFO(DDSPIPE_DISCOVERY,
                     "Found in Participant " << configuration_->id << " new Reader " << info.info.guid() << ".");
 
             this->discovery_database_->add_endpoint(info_reader);
         }
         else if (info.status == fastdds::rtps::ReaderDiscoveryInfo::CHANGED_QOS_READER)
         {
-            logInfo(DDSPIPE_DISCOVERY, "Reader " << info.info.guid() << " changed TopicQoS.");
+            EPROSIMA_LOG_INFO(DDSPIPE_DISCOVERY, "Reader " << info.info.guid() << " changed TopicQoS.");
 
             this->discovery_database_->update_endpoint(info_reader);
         }
         else if (info.status == fastdds::rtps::ReaderDiscoveryInfo::REMOVED_READER)
         {
-            logInfo(DDSPIPE_DISCOVERY, "Reader " << info.info.guid() << " removed.");
+            EPROSIMA_LOG_INFO(DDSPIPE_DISCOVERY, "Reader " << info.info.guid() << " removed.");
 
             info_reader.active = false;
             this->discovery_database_->update_endpoint(info_reader);
         }
         else if (info.status == fastdds::rtps::ReaderDiscoveryInfo::IGNORED_READER)
         {
-            logInfo(DDSPIPE_DISCOVERY, "Reader " << info.info.guid() << " ignored.");
+            EPROSIMA_LOG_INFO(DDSPIPE_DISCOVERY, "Reader " << info.info.guid() << " ignored.");
 
             // Do not notify discovery database (design choice that might be changed in the future)
         }
@@ -162,27 +162,27 @@ void CommonParticipant::onWriterDiscovery(
 
         if (info.status == fastdds::rtps::WriterDiscoveryInfo::DISCOVERED_WRITER)
         {
-            logInfo(DDSPIPE_DISCOVERY,
+            EPROSIMA_LOG_INFO(DDSPIPE_DISCOVERY,
                     "Found in Participant " << configuration_->id << " new Writer " << info.info.guid() << ".");
 
             this->discovery_database_->add_endpoint(info_writer);
         }
         else if (info.status == fastdds::rtps::WriterDiscoveryInfo::CHANGED_QOS_WRITER)
         {
-            logInfo(DDSPIPE_DISCOVERY, "Writer " << info.info.guid() << " changed TopicQoS.");
+            EPROSIMA_LOG_INFO(DDSPIPE_DISCOVERY, "Writer " << info.info.guid() << " changed TopicQoS.");
 
             this->discovery_database_->update_endpoint(info_writer);
         }
         else if (info.status == fastdds::rtps::WriterDiscoveryInfo::REMOVED_WRITER)
         {
-            logInfo(DDSPIPE_DISCOVERY, "Writer " << info.info.guid() << " removed.");
+            EPROSIMA_LOG_INFO(DDSPIPE_DISCOVERY, "Writer " << info.info.guid() << " removed.");
 
             info_writer.active = false;
             this->discovery_database_->update_endpoint(info_writer);
         }
         else if (info.status == fastdds::rtps::WriterDiscoveryInfo::IGNORED_WRITER)
         {
-            logInfo(DDSPIPE_DISCOVERY, "Writer " << info.info.guid() << " ignored.");
+            EPROSIMA_LOG_INFO(DDSPIPE_DISCOVERY, "Writer " << info.info.guid() << " ignored.");
 
             // Do not notify discovery database (design choice that might be changed in the future)
         }
@@ -217,13 +217,13 @@ CommonParticipant::create_descriptor(
         if (types::Address::is_ipv4_correct(ip))
         {
             udp_transport->interfaceWhiteList.emplace_back(ip);
-            logInfo(DDSPIPE_COMMON_PARTICIPANT,
+            EPROSIMA_LOG_INFO(DDSPIPE_COMMON_PARTICIPANT,
                     "Adding " << ip << " to UDP whitelist interfaces.");
         }
         else
         {
             // Invalid address, continue with next one
-            logWarning(DDSPIPE_COMMON_PARTICIPANT,
+            EPROSIMA_LOG_WARNING(DDSPIPE_COMMON_PARTICIPANT,
                     "Not valid IPv4. Discarding UDP whitelist interface " << ip << ".");
         }
     }
@@ -245,13 +245,13 @@ CommonParticipant::create_descriptor(
         if (types::Address::is_ipv6_correct(ip))
         {
             udp_transport->interfaceWhiteList.emplace_back(ip);
-            logInfo(DDSPIPE_COMMON_PARTICIPANT,
+            EPROSIMA_LOG_INFO(DDSPIPE_COMMON_PARTICIPANT,
                     "Adding " << ip << " to UDP whitelist interfaces.");
         }
         else
         {
             // Invalid address, continue with next one
-            logWarning(DDSPIPE_COMMON_PARTICIPANT,
+            EPROSIMA_LOG_WARNING(DDSPIPE_COMMON_PARTICIPANT,
                     "Not valid IPv6. Discarding UDP whitelist interface " << ip << ".");
         }
     }
@@ -273,13 +273,13 @@ CommonParticipant::create_descriptor(
         if (types::Address::is_ipv4_correct(ip))
         {
             tcp_transport->interfaceWhiteList.emplace_back(ip);
-            logInfo(DDSPIPE_COMMON_PARTICIPANT,
+            EPROSIMA_LOG_INFO(DDSPIPE_COMMON_PARTICIPANT,
                     "Adding " << ip << " to TCP whitelist interfaces.");
         }
         else
         {
             // Invalid address, continue with next one
-            logWarning(DDSPIPE_COMMON_PARTICIPANT,
+            EPROSIMA_LOG_WARNING(DDSPIPE_COMMON_PARTICIPANT,
                     "Not valid IPv4. Discarding TCP whitelist interface " << ip << ".");
         }
     }
@@ -301,13 +301,13 @@ CommonParticipant::create_descriptor(
         if (types::Address::is_ipv6_correct(ip))
         {
             tcp_transport->interfaceWhiteList.emplace_back(ip);
-            logInfo(DDSPIPE_COMMON_PARTICIPANT,
+            EPROSIMA_LOG_INFO(DDSPIPE_COMMON_PARTICIPANT,
                     "Adding " << ip << " to TCP whitelist interfaces.");
         }
         else
         {
             // Invalid address, continue with next one
-            logWarning(DDSPIPE_COMMON_PARTICIPANT,
+            EPROSIMA_LOG_WARNING(DDSPIPE_COMMON_PARTICIPANT,
                     "Not valid IPv6. Discarding TCP whitelist interface " << ip << ".");
         }
     }
@@ -339,7 +339,7 @@ void CommonParticipant::create_participant_(
         const core::types::DomainId& domain,
         const fastdds::rtps::RTPSParticipantAttributes& participant_attributes)
 {
-    logInfo(DDSPIPE_RTPS_PARTICIPANT,
+    EPROSIMA_LOG_INFO(DDSPIPE_RTPS_PARTICIPANT,
             "Creating Participant in domain " << domain);
 
     // Listener must be set in creation as no callbacks should be missed
@@ -355,7 +355,7 @@ void CommonParticipant::create_participant_(
                   utils::Formatter() << "Error creating RTPS Participant " << this->id());
     }
 
-    logInfo(DDSPIPE_RTPS_PARTICIPANT,
+    EPROSIMA_LOG_INFO(DDSPIPE_RTPS_PARTICIPANT,
             "New Participant created with id " << this->id() <<
             " in domain " << domain << " with guid " << rtps_participant_->getGuid() <<
             (this->is_repeater() ? " (repeater)" : " (non repeater)"));

@@ -56,7 +56,7 @@ utils::ReturnCode TypeObjectWriter::write_nts_(
     }
     catch (const utils::Exception& e)
     {
-        logError(
+        EPROSIMA_LOG_ERROR(
             DDSPIPE_TYPEOBJECT_WRITER,
             "Error generating schema for type " << dynamic_type_data.dynamic_type->get_name()
                                                 << " : <" << e.what() << ">.");

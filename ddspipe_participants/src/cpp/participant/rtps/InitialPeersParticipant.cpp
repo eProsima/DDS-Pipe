@@ -68,7 +68,7 @@ fastdds::rtps::RTPSParticipantAttributes InitialPeersParticipant::reckon_partici
         if (!address.is_valid())
         {
             // Invalid address, continue with next one
-            logWarning(DDSPIPE_INITIALPEERS_PARTICIPANT,
+            EPROSIMA_LOG_WARNING(DDSPIPE_INITIALPEERS_PARTICIPANT,
                     "Discard listening address: " << address <<
                     " in Participant " << configuration->id << " initialization.");
             continue;
@@ -200,7 +200,7 @@ fastdds::rtps::RTPSParticipantAttributes InitialPeersParticipant::reckon_partici
         if (!connection_address.is_valid())
         {
             // Invalid connection address, continue with next one
-            logWarning(DDSPIPE_INITIALPEERS_PARTICIPANT,
+            EPROSIMA_LOG_WARNING(DDSPIPE_INITIALPEERS_PARTICIPANT,
                     "Discard connection address: " << connection_address <<
                     " in Participant " << configuration->id << " initialization.");
             continue;

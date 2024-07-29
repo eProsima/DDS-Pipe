@@ -13,6 +13,8 @@
 // limitations under the License.
 
 #include <fastdds/dds/domain/DomainParticipantFactory.hpp>
+#include <fastdds/dds/publisher/qos/WriterQos.hpp>
+#include <fastdds/dds/xtypes/type_representation/detail/dds_xtypes_typeobject.hpp>
 #include <fastdds/rtps/common/CacheChange.hpp>
 #include <fastdds/rtps/participant/RTPSParticipant.hpp>
 #include <fastdds/rtps/RTPSDomain.hpp>
@@ -90,7 +92,7 @@ CommonWriter::~CommonWriter()
         delete rtps_history_;
     }
 
-    logInfo(DDSPIPE_RTPS_COMMONWRITER, "Deleting CommonWriter created in Participant " <<
+    EPROSIMA_LOG_INFO(DDSPIPE_RTPS_COMMONWRITER, "Deleting CommonWriter created in Participant " <<
             participant_id_ << " for topic " << topic_);
 }
 
@@ -112,13 +114,13 @@ void CommonWriter::on_writer_matched(
     {
         if (info.status == fastdds::rtps::MatchingStatus::MATCHED_MATCHING)
         {
-            logInfo(DDSPIPE_RTPS_COMMONWRITER_LISTENER,
+            EPROSIMA_LOG_INFO(DDSPIPE_RTPS_COMMONWRITER_LISTENER,
                     "Writer " << *this << " in topic " << topic_.serialize() << " matched with a new Reader with guid " <<
                     info.remoteEndpointGuid);
         }
         else
         {
-            logInfo(DDSPIPE_RTPS_COMMONWRITER_LISTENER,
+            EPROSIMA_LOG_INFO(DDSPIPE_RTPS_COMMONWRITER_LISTENER,
                     "Writer " << *this << " in topic " << topic_.serialize() << " unmatched with Reader " <<
                     info.remoteEndpointGuid);
         }
@@ -140,7 +142,7 @@ void CommonWriter::on_offered_incompatible_qos(
         fastdds::rtps::RTPSWriter*,
         eprosima::fastdds::dds::PolicyMask qos) noexcept
 {
-    logWarning(DDSPIPE_RTPS_COMMONWRITER_LISTENER,
+    EPROSIMA_LOG_WARNING(DDSPIPE_RTPS_COMMONWRITER_LISTENER,
             "Writer " << *this << " found a remote Reader with incompatible QoS: " << qos);
 }
 
@@ -187,7 +189,7 @@ utils::ReturnCode CommonWriter::write_nts_(
     auto ret = fill_to_send_data_(new_change, write_params, rtps_data);
     if (ret != utils::ReturnCode::OK)
     {
-        logError(DDSPIPE_RTPS_COMMONWRITER, "Error setting change to send.");
+        EPROSIMA_LOG_ERROR(DDSPIPE_RTPS_COMMONWRITER, "Error setting change to send.");
         return ret;
     }
 
@@ -231,8 +233,8 @@ utils::ReturnCode CommonWriter::fill_to_send_data_(
     if (data.payload.length > 0)
     {
         if (!payload_pool_->get_payload(
-                    const_cast<fastdds::rtps::SerializedPayload_t&>(data.payload),
-                    (to_send_change_to_fill->serializedPayload)))
+                    data.payload,
+                    to_send_change_to_fill->serializedPayload))
         {
             logDevError(DDSPIPE_RTPS_COMMONWRITER, "Error getting Payload.");
             return utils::ReturnCode::ERROR;
@@ -321,7 +323,7 @@ void CommonWriter::internal_entities_creation_(
 
     rtps_writer_->reader_data_filter(data_filter_.get());
 
-    logInfo(
+    EPROSIMA_LOG_INFO(
         DDSPIPE_RTPS_COMMONWRITER,
         "New CommonWriter created in Participant " << participant_id_ <<
             " for topic " << topic_ <<

@@ -117,7 +117,7 @@ void ParticipantsDatabase::add_participant(
     }
     else
     {
-        logInfo(DDSPIPE_PARTICIPANT_DATABASE, "Inserting a new Participant " << id);
+        EPROSIMA_LOG_INFO(DDSPIPE_PARTICIPANT_DATABASE, "Inserting a new Participant " << id);
     }
 
     participants_[id] = participant;
