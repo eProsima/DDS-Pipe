@@ -23,8 +23,6 @@
 #include <fastdds/dds/xtypes/dynamic_types/DynamicTypeBuilderFactory.hpp>
 #include <fastdds/dds/xtypes/type_representation/TypeObject.hpp>
 #include <fastdds/rtps/attributes/RTPSParticipantAttributes.hpp>
-// #include <fastdds/rtps/builtin/data/ReaderProxyData.hpp>
-// #include <fastdds/rtps/builtin/data/WriterProxyData.hpp>
 #include <fastdds/rtps/RTPSDomain.hpp>
 
 #include <cpp_utils/Log.hpp>

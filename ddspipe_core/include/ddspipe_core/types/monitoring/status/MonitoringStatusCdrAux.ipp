@@ -113,8 +113,13 @@ void serialize_key(
         eprosima::fastcdr::Cdr& scdr,
         const MonitoringErrorStatus& data)
 {
+
     static_cast<void>(scdr);
     static_cast<void>(data);
+                        scdr << data.type_mismatch();
+
+                        scdr << data.qos_mismatch();
+
 }
 
 
@@ -197,8 +202,18 @@ void serialize_key(
         eprosima::fastcdr::Cdr& scdr,
         const MonitoringStatus& data)
 {
+            extern void serialize_key(
+                    Cdr& scdr,
+                    const MonitoringErrorStatus& data);
+
+
+
     static_cast<void>(scdr);
     static_cast<void>(data);
+                        serialize_key(scdr, data.error_status());
+
+                        scdr << data.has_errors();
+
 }
 
 

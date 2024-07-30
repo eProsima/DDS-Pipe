@@ -129,8 +129,17 @@ void serialize_key(
         eprosima::fastcdr::Cdr& scdr,
         const DdsTopicData& data)
 {
+
     static_cast<void>(scdr);
     static_cast<void>(data);
+                        scdr << data.participant_id();
+
+                        scdr << data.msgs_lost();
+
+                        scdr << data.msgs_received();
+
+                        scdr << data.msg_rx_rate();
+
 }
 
 
@@ -245,8 +254,21 @@ void serialize_key(
         eprosima::fastcdr::Cdr& scdr,
         const DdsTopic& data)
 {
+
     static_cast<void>(scdr);
     static_cast<void>(data);
+                        scdr << data.name();
+
+                        scdr << data.type_name();
+
+                        scdr << data.type_discovered();
+
+                        scdr << data.type_mismatch();
+
+                        scdr << data.qos_mismatch();
+
+                        scdr << data.data();
+
 }
 
 
@@ -321,8 +343,11 @@ void serialize_key(
         eprosima::fastcdr::Cdr& scdr,
         const MonitoringTopics& data)
 {
+
     static_cast<void>(scdr);
     static_cast<void>(data);
+                        scdr << data.topics();
+
 }
 
 
