@@ -37,7 +37,7 @@ SpecificQoSReader::SpecificQoSReader(
         participant_id, topic, payload_pool, rtps_participant,
         reckon_history_attributes_(topic),
         reckon_reader_attributes_(topic),
-        reckon_topic_attributes_(topic),
+        reckon_topic_description_(topic),
         reckon_reader_qos_(topic))
     , discovery_database_(discovery_database)
 {

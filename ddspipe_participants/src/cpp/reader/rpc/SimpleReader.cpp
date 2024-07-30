@@ -36,7 +36,7 @@ SimpleReader::SimpleReader(
         participant_id, topic, payload_pool, rtps_participant,
         reckon_history_attributes_(topic),
         reckon_reader_attributes_(topic),
-        reckon_topic_attributes_(topic),
+        reckon_topic_description_(topic),
         reckon_reader_qos_(topic))
 {
     EPROSIMA_LOG_INFO(DDSPIPE_RPC_READER, "Creating RPC Reader for topic " << topic_);

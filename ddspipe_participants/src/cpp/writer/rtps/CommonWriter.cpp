@@ -15,6 +15,7 @@
 #include <fastdds/dds/domain/DomainParticipantFactory.hpp>
 #include <fastdds/dds/publisher/qos/WriterQos.hpp>
 #include <fastdds/dds/xtypes/type_representation/detail/dds_xtypes_typeobject.hpp>
+#include <fastdds/rtps/builtin/data/TopicDescription.hpp>
 #include <fastdds/rtps/common/CacheChange.hpp>
 #include <fastdds/rtps/participant/RTPSParticipant.hpp>
 #include <fastdds/rtps/RTPSDomain.hpp>
@@ -48,7 +49,7 @@ CommonWriter::CommonWriter(
         const bool repeater,
         const fastdds::rtps::HistoryAttributes& history_attributes,
         const fastdds::rtps::WriterAttributes& writer_attributes,
-        const fastdds::TopicAttributes& topic_attributes,
+        const fastdds::rtps::TopicDescription& topic_description,
         const fastdds::dds::WriterQos& writer_qos,
         const utils::PoolConfiguration& pool_configuration)
     : BaseWriter(participant_id, topic.topic_qos.max_tx_rate)
@@ -60,7 +61,7 @@ CommonWriter::CommonWriter(
     , rtps_history_(nullptr)
     , history_attributes_(history_attributes)
     , writer_attributes_(writer_attributes)
-    , topic_attributes_(topic_attributes)
+    , topic_description_(topic_description)
     , writer_qos_(writer_qos)
     , pool_configuration_(pool_configuration)
 {
@@ -102,7 +103,7 @@ void CommonWriter::init()
     internal_entities_creation_(
         history_attributes_,
         writer_attributes_,
-        topic_attributes_,
+        topic_description_,
         writer_qos_,
         pool_configuration_);
 }
@@ -263,7 +264,7 @@ void CommonWriter::fill_sent_data_(
 void CommonWriter::internal_entities_creation_(
         const fastdds::rtps::HistoryAttributes& history_attributes,
         const fastdds::rtps::WriterAttributes& writer_attributes,
-        const fastdds::TopicAttributes& topic_attributes,
+        const fastdds::rtps::TopicDescription& topic_description,
         const fastdds::dds::WriterQos& writer_qos,
         const utils::PoolConfiguration& pool_configuration)
 {
@@ -305,7 +306,7 @@ void CommonWriter::internal_entities_creation_(
     }
 
     // Register writer with topic
-    if (!rtps_participant_->registerWriter(rtps_writer_, topic_attributes, writer_qos))
+    if (!rtps_participant_->register_writer(rtps_writer_, topic_description, writer_qos))
     {
         // In case it fails, remove writer and throw exception
         fastdds::rtps::RTPSDomain::removeRTPSWriter(rtps_writer_);
@@ -381,36 +382,47 @@ fastdds::rtps::WriterAttributes CommonWriter::reckon_writer_attributes_(
     return att;
 }
 
-fastdds::TopicAttributes CommonWriter::reckon_topic_attributes_(
+fastdds::rtps::TopicDescription CommonWriter::reckon_topic_description_(
         const core::types::DdsTopic& topic) noexcept
 {
-    fastdds::TopicAttributes att;
+    fastdds::rtps::TopicDescription topic_description;
 
-    // Set if topic has key
-    if (topic.topic_qos.keyed)
-    {
-        att.topicKind = eprosima::fastdds::rtps::WITH_KEY;
-    }
-    else
-    {
-        att.topicKind = eprosima::fastdds::rtps::NO_KEY;
-    }
+    topic_description.type_name = topic.m_topic_name;
+    topic_description.topic_name = topic.type_name;
 
-    // Set Topic attributes
-    att.topicName = topic.m_topic_name;
-    att.topicDataType = topic.type_name;
-
-    // Set TypeInformation of the discovered type
-    fastdds::dds::xtypes::TypeInformation type_information;
-    if (fastdds::dds::RETCODE_OK == fastdds::dds::DomainParticipantFactory::get_instance()->type_object_registry().get_type_information(
-                                    topic.type_ids,
-                                    type_information))
-    {
-        att.type_information = type_information;
-    }
-
-    return att;
+    return topic_description;
 }
+
+// fastdds::TopicAttributes CommonWriter::reckon_topic_attributes_(
+//         const core::types::DdsTopic& topic) noexcept
+// {
+//     fastdds::TopicAttributes att;
+
+//     // Set if topic has key
+//     if (topic.topic_qos.keyed)
+//     {
+//         att.topicKind = eprosima::fastdds::rtps::WITH_KEY;
+//     }
+//     else
+//     {
+//         att.topicKind = eprosima::fastdds::rtps::NO_KEY;
+//     }
+
+//     // Set Topic attributes
+//     att.topicName = topic.m_topic_name;
+//     att.topicDataType = topic.type_name;
+
+//     // Set TypeInformation of the discovered type
+//     fastdds::dds::xtypes::TypeInformation type_information;
+//     if (fastdds::dds::RETCODE_OK == fastdds::dds::DomainParticipantFactory::get_instance()->type_object_registry().get_type_information(
+//                                     topic.type_ids,
+//                                     type_information))
+//     {
+//         att.type_information = type_information;
+//     }
+
+//     return att;
+// }
 
 fastdds::dds::WriterQos CommonWriter::reckon_writer_qos_(
         const core::types::DdsTopic& topic) noexcept
