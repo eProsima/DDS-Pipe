@@ -23,8 +23,8 @@
 #include <fastdds/dds/xtypes/dynamic_types/DynamicTypeBuilderFactory.hpp>
 #include <fastdds/dds/xtypes/type_representation/TypeObject.hpp>
 #include <fastdds/rtps/attributes/RTPSParticipantAttributes.hpp>
-#include <fastdds/rtps/builtin/data/ReaderProxyData.hpp>
-#include <fastdds/rtps/builtin/data/WriterProxyData.hpp>
+// #include <fastdds/rtps/builtin/data/ReaderProxyData.hpp>
+// #include <fastdds/rtps/builtin/data/WriterProxyData.hpp>
 #include <fastdds/rtps/RTPSDomain.hpp>
 
 #include <cpp_utils/Log.hpp>
@@ -90,39 +90,37 @@ std::shared_ptr<IReader> DynTypesParticipant::create_reader(
     return rtps::SimpleParticipant::create_reader(topic);
 }
 
-void DynTypesParticipant::onReaderDiscovery(
+void DynTypesParticipant::on_reader_discovery(
             fastdds::rtps::RTPSParticipant* participant,
-            fastdds::rtps::ReaderDiscoveryInfo&& info,
+            fastdds::rtps::ReaderDiscoveryStatus reason,
+            const fastdds::rtps::SubscriptionBuiltinTopicData& info,
             bool& should_be_ignored)
 {
-    if (info.info.guid().guidPrefix != participant->getGuid().guidPrefix)
+    if (info.guid.guidPrefix != participant->getGuid().guidPrefix)
     {
-        fastdds::rtps::ReaderProxyData proxy_copy(info.info);
-
         // Get type information
-        const auto type_info = proxy_copy.type_information().type_information;
-        const auto type_name = proxy_copy.typeName();
+        const auto type_info = info.type_information.type_information;
+        const auto type_name = info.type_name;
 
-        rtps::CommonParticipant::onReaderDiscovery(participant, std::move(info), should_be_ignored);
+        rtps::CommonParticipant::on_reader_discovery(participant, reason, info, should_be_ignored);
 
         notify_type_discovered_(type_info, type_name);
     }
 }
 
-void DynTypesParticipant::onWriterDiscovery(
+void DynTypesParticipant::on_writer_discovery(
             fastdds::rtps::RTPSParticipant* participant,
-            fastdds::rtps::WriterDiscoveryInfo&& info,
+            fastdds::rtps::WriterDiscoveryStatus reason,
+            const fastdds::rtps::PublicationBuiltinTopicData& info,
             bool& should_be_ignored)
 {
-    if (info.info.guid().guidPrefix != participant->getGuid().guidPrefix)
+    if (info.guid.guidPrefix != participant->getGuid().guidPrefix)
     {
-        fastdds::rtps::WriterProxyData proxy_copy(info.info);
-
         // Get type information
-        const auto type_info = proxy_copy.type_information().type_information;
-        const auto type_name = proxy_copy.typeName();
+        const auto type_info = info.type_information.type_information;
+        const auto type_name = info.type_name;
 
-        rtps::CommonParticipant::onWriterDiscovery(participant, std::move(info), should_be_ignored);
+        rtps::CommonParticipant::on_writer_discovery(participant, reason, info, should_be_ignored);
 
         notify_type_discovered_(type_info, type_name);
     }

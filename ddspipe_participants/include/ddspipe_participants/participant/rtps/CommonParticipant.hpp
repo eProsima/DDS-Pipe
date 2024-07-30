@@ -16,12 +16,14 @@
 
 #include <cpp_utils/memory/Heritable.hpp>
 
-#include <fastdds/rtps/participant/ParticipantDiscoveryInfo.hpp>
-#include <fastdds/rtps/reader/ReaderDiscoveryInfo.hpp>
-#include <fastdds/rtps/writer/WriterDiscoveryInfo.hpp>
 #include <fastdds/rtps/attributes/RTPSParticipantAttributes.hpp>
+#include <fastdds/rtps/builtin/data/PublicationBuiltinTopicData.hpp>
+#include <fastdds/rtps/builtin/data/SubscriptionBuiltinTopicData.hpp>
+#include <fastdds/rtps/participant/ParticipantDiscoveryInfo.hpp>
 #include <fastdds/rtps/participant/RTPSParticipantListener.hpp>
+#include <fastdds/rtps/reader/ReaderDiscoveryStatus.hpp>
 #include <fastdds/rtps/RTPSDomain.hpp>
+#include <fastdds/rtps/writer/WriterDiscoveryStatus.hpp>
 
 #include <ddspipe_core/dynamic/DiscoveryDatabase.hpp>
 #include <ddspipe_core/efficiency/payload/PayloadPool.hpp>
@@ -137,9 +139,10 @@ public:
      * This method adds to database the endpoint discovered or modified.
      */
     DDSPIPE_PARTICIPANTS_DllAPI
-    virtual void onReaderDiscovery(
+    virtual void on_reader_discovery(
             fastdds::rtps::RTPSParticipant* participant,
-            fastdds::rtps::ReaderDiscoveryInfo&& info,
+            fastdds::rtps::ReaderDiscoveryStatus reason,
+            const fastdds::rtps::SubscriptionBuiltinTopicData& info,
             bool& /*should_be_ignored*/) override;
 
     /**
@@ -148,9 +151,10 @@ public:
      * This method adds to database the endpoint discovered or modified.
      */
     DDSPIPE_PARTICIPANTS_DllAPI
-    virtual void onWriterDiscovery(
+    virtual void on_writer_discovery(
             fastdds::rtps::RTPSParticipant* participant,
-            fastdds::rtps::WriterDiscoveryInfo&& info,
+            fastdds::rtps::WriterDiscoveryStatus reason,
+            const fastdds::rtps::PublicationBuiltinTopicData& info,
             bool& /*should_be_ignored*/) override;
 
     //////////////////

@@ -14,8 +14,8 @@
 
 #pragma once
 
-#include <fastdds/rtps/reader/ReaderDiscoveryInfo.hpp>
-#include <fastdds/rtps/writer/WriterDiscoveryInfo.hpp>
+#include <fastdds/rtps/builtin/data/PublicationBuiltinTopicData.hpp>
+#include <fastdds/rtps/builtin/data/SubscriptionBuiltinTopicData.hpp>
 #include <fastdds/rtps/common/InstanceHandle.hpp>
 
 #include <ddspipe_core/dynamic/DiscoveryDatabase.hpp>
@@ -29,21 +29,35 @@ namespace participants {
 namespace detail {
 
 /**
+ * @brief Checks if the writer/reader is keyed based on its \c GUID_t .
+ */
+bool is_keyed_(
+        const eprosima::fastdds::rtps::GUID_t& guid);
+
+/**
+ * @brief Common part to create any endpoint from info object
+ */
+template<class DiscoveryBuiltinTopicData>
+core::types::Endpoint create_common_endpoint_from_info_(
+        const DiscoveryBuiltinTopicData& info,
+        const core::types::ParticipantId participant_discoverer_id);
+
+/**
+ * @brief Create an endpoint from info object
+ *
+ * Specialized for \c PublicationBuiltinTopicData and \c SubscriptionBuiltinTopicData .
+ */
+template<class DiscoveryBuiltinTopicData>
+core::types::Endpoint create_endpoint_from_info_(
+        const DiscoveryBuiltinTopicData& info,
+        const core::types::ParticipantId participant_discoverer_id);
+
+/**
  * @brief Get the QoS from a Writer from the \c DiscoveryDatabase .
  */
 core::types::SpecificEndpointQoS specific_qos_of_writer_(
         const core::DiscoveryDatabase& database,
         const core::types::Guid& guid);
-
-/**
- * @brief Create a endpoint from info object
- *
- * Specialized for \c WriterDiscoveryInfo and \c ReaderDiscoveryInfo .
- */
-template<class DiscoveryInfoKind>
-core::types::Endpoint create_endpoint_from_info_(
-        const DiscoveryInfoKind& info,
-        const core::types::ParticipantId participant_discoverer_id);
 
 bool come_from_same_participant_(
         const fastdds::rtps::GUID_t src_guid,

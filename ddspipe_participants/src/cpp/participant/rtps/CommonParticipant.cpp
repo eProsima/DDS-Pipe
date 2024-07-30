@@ -111,78 +111,80 @@ void CommonParticipant::onParticipantDiscovery(
     }
 }
 
-void CommonParticipant::onReaderDiscovery(
+void CommonParticipant::on_reader_discovery(
         fastdds::rtps::RTPSParticipant* participant,
-        fastdds::rtps::ReaderDiscoveryInfo&& info,
+        fastdds::rtps::ReaderDiscoveryStatus reason,
+        const fastdds::rtps::SubscriptionBuiltinTopicData& info,
         bool&)
 {
-    if (info.info.guid().guidPrefix != participant->getGuid().guidPrefix)
+    if (info.guid.guidPrefix != participant->getGuid().guidPrefix)
     {
-        core::types::Endpoint info_reader = detail::create_endpoint_from_info_<fastdds::rtps::ReaderDiscoveryInfo>(
+        core::types::Endpoint info_reader = detail::create_endpoint_from_info_<fastdds::rtps::SubscriptionBuiltinTopicData>(
             info, this->id());
 
-        if (info.status == fastdds::rtps::ReaderDiscoveryInfo::DISCOVERED_READER)
+        if (reason == fastdds::rtps::ReaderDiscoveryStatus::DISCOVERED_READER)
         {
             EPROSIMA_LOG_INFO(DDSPIPE_DISCOVERY,
-                    "Found in Participant " << configuration_->id << " new Reader " << info.info.guid() << ".");
+                    "Found in Participant " << configuration_->id << " new Reader " << info.guid << ".");
 
             this->discovery_database_->add_endpoint(info_reader);
         }
-        else if (info.status == fastdds::rtps::ReaderDiscoveryInfo::CHANGED_QOS_READER)
+        else if (reason == fastdds::rtps::ReaderDiscoveryStatus::CHANGED_QOS_READER)
         {
-            EPROSIMA_LOG_INFO(DDSPIPE_DISCOVERY, "Reader " << info.info.guid() << " changed TopicQoS.");
+            EPROSIMA_LOG_INFO(DDSPIPE_DISCOVERY, "Reader " << info.guid << " changed TopicQoS.");
 
             this->discovery_database_->update_endpoint(info_reader);
         }
-        else if (info.status == fastdds::rtps::ReaderDiscoveryInfo::REMOVED_READER)
+        else if (reason == fastdds::rtps::ReaderDiscoveryStatus::REMOVED_READER)
         {
-            EPROSIMA_LOG_INFO(DDSPIPE_DISCOVERY, "Reader " << info.info.guid() << " removed.");
+            EPROSIMA_LOG_INFO(DDSPIPE_DISCOVERY, "Reader " << info.guid << " removed.");
 
             info_reader.active = false;
             this->discovery_database_->update_endpoint(info_reader);
         }
-        else if (info.status == fastdds::rtps::ReaderDiscoveryInfo::IGNORED_READER)
+        else if (reason == fastdds::rtps::ReaderDiscoveryStatus::IGNORED_READER)
         {
-            EPROSIMA_LOG_INFO(DDSPIPE_DISCOVERY, "Reader " << info.info.guid() << " ignored.");
+            EPROSIMA_LOG_INFO(DDSPIPE_DISCOVERY, "Reader " << info.guid << " ignored.");
 
             // Do not notify discovery database (design choice that might be changed in the future)
         }
     }
 }
 
-void CommonParticipant::onWriterDiscovery(
+void CommonParticipant::on_writer_discovery(
         fastdds::rtps::RTPSParticipant* participant,
-        fastdds::rtps::WriterDiscoveryInfo&& info,
+        fastdds::rtps::WriterDiscoveryStatus reason,
+        const fastdds::rtps::PublicationBuiltinTopicData& info,
         bool&)
 {
-    if (info.info.guid().guidPrefix != participant->getGuid().guidPrefix)
+    if (info.guid.guidPrefix != participant->getGuid().guidPrefix)
     {
-        core::types::Endpoint info_writer = detail::create_endpoint_from_info_<fastdds::rtps::WriterDiscoveryInfo>(
+        core::types::Endpoint info_writer = detail::create_endpoint_from_info_<fastdds::rtps::PublicationBuiltinTopicData>(
             info, this->id());
 
-        if (info.status == fastdds::rtps::WriterDiscoveryInfo::DISCOVERED_WRITER)
+        if (reason == fastdds::rtps::WriterDiscoveryStatus::DISCOVERED_WRITER)
         {
             EPROSIMA_LOG_INFO(DDSPIPE_DISCOVERY,
-                    "Found in Participant " << configuration_->id << " new Writer " << info.info.guid() << ".");
+                    "Found in Participant " << configuration_->id << " new Writer " << info.guid << ".");
 
             this->discovery_database_->add_endpoint(info_writer);
         }
-        else if (info.status == fastdds::rtps::WriterDiscoveryInfo::CHANGED_QOS_WRITER)
+        else if (reason == fastdds::rtps::WriterDiscoveryStatus::CHANGED_QOS_WRITER)
         {
-            EPROSIMA_LOG_INFO(DDSPIPE_DISCOVERY, "Writer " << info.info.guid() << " changed TopicQoS.");
+            EPROSIMA_LOG_INFO(DDSPIPE_DISCOVERY, "Writer " << info.guid << " changed TopicQoS.");
 
             this->discovery_database_->update_endpoint(info_writer);
         }
-        else if (info.status == fastdds::rtps::WriterDiscoveryInfo::REMOVED_WRITER)
+        else if (reason == fastdds::rtps::WriterDiscoveryStatus::REMOVED_WRITER)
         {
-            EPROSIMA_LOG_INFO(DDSPIPE_DISCOVERY, "Writer " << info.info.guid() << " removed.");
+            EPROSIMA_LOG_INFO(DDSPIPE_DISCOVERY, "Writer " << info.guid << " removed.");
 
             info_writer.active = false;
             this->discovery_database_->update_endpoint(info_writer);
         }
-        else if (info.status == fastdds::rtps::WriterDiscoveryInfo::IGNORED_WRITER)
+        else if (reason == fastdds::rtps::WriterDiscoveryStatus::IGNORED_WRITER)
         {
-            EPROSIMA_LOG_INFO(DDSPIPE_DISCOVERY, "Writer " << info.info.guid() << " ignored.");
+            EPROSIMA_LOG_INFO(DDSPIPE_DISCOVERY, "Writer " << info.guid << " ignored.");
 
             // Do not notify discovery database (design choice that might be changed in the future)
         }
