@@ -430,7 +430,7 @@ fastdds::dds::WriterQos CommonWriter::reckon_writer_qos_(
             : eprosima::fastdds::dds::ReliabilityQosPolicyKind::BEST_EFFORT_RELIABILITY_QOS);
 
     // Set minimum deadline so it matches with everything
-    qos.m_deadline.period = eprosima::fastdds::Duration_t(0);
+    qos.m_deadline.period = eprosima::fastdds::dds::Duration_t(0);
 
     // Partitions and specific ownership strength are not set in common.
 

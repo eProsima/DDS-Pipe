@@ -173,7 +173,7 @@ fastdds::dds::DataWriterQos CommonWriter::reckon_writer_qos_() const noexcept
     }
 
     // Set minimum deadline so it matches with everything
-    qos.deadline().period = eprosima::fastdds::Duration_t(0);
+    qos.deadline().period = eprosima::fastdds::dds::Duration_t(0);
 
     return qos;
 }

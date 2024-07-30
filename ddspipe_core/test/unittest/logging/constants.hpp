@@ -34,7 +34,7 @@ using namespace eprosima;
 using namespace eprosima::ddspipe::core::types;
 
 // Maximum time to wait for a sample to arrive.
-const auto MAX_WAITING_TIME = fastdds::Duration_t(1);
+const auto MAX_WAITING_TIME = fastdds::dds::Duration_t(1);
 
 // The domain and topic the Monitor should publish its data in.
 constexpr DomainIdType DOMAIN = 84;
