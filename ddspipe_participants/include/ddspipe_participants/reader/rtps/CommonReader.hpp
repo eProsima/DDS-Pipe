@@ -19,13 +19,13 @@
 #include <cpp_utils/ReturnCode.hpp>
 #include <cpp_utils/time/time_utils.hpp>
 
-#include <fastdds/rtps/attributes/HistoryAttributes.hpp>
-#include <fastdds/rtps/attributes/TopicAttributes.hpp>
 #include <fastdds/dds/subscriber/qos/ReaderQos.hpp>
-#include <fastdds/rtps/history/ReaderHistory.hpp>
+#include <fastdds/rtps/attributes/HistoryAttributes.hpp>
 #include <fastdds/rtps/attributes/ReaderAttributes.hpp>
-#include <fastdds/rtps/reader/RTPSReader.hpp>
+#include <fastdds/rtps/builtin/data/TopicDescription.hpp>
+#include <fastdds/rtps/history/ReaderHistory.hpp>
 #include <fastdds/rtps/reader/ReaderListener.hpp>
+#include <fastdds/rtps/reader/RTPSReader.hpp>
 #include <fastdds/utils/TimedMutex.hpp>
 
 #include <ddspipe_core/types/dds/Guid.hpp>
@@ -44,7 +44,7 @@ namespace rtps {
 /**
  * Abstract generic class for a RTPS Reader wrapper.
  *
- * It implements the ReaderListener for itself with \c onNewCacheChangeAdded and \c onReaderMatched callbacks.
+ * It implements the ReaderListener for itself with \c on_new_cache_change_added and \c on_reader_matched callbacks.
  *
  * @warning This object is not RAII and must be initialized before used.
  */
@@ -196,7 +196,7 @@ protected:
             fastdds::rtps::RTPSParticipant* rtps_participant,
             const fastdds::rtps::HistoryAttributes& history_attributes,
             const fastdds::rtps::ReaderAttributes& reader_attributes,
-            const fastdds::TopicAttributes& topic_attributes,
+            const fastdds::rtps::TopicDescription& topic_desc,
             const fastdds::dds::ReaderQos& reader_qos);
 
     // Specific enable/disable do not need to be implemented
@@ -208,7 +208,7 @@ protected:
     virtual void internal_entities_creation_(
             const fastdds::rtps::HistoryAttributes& history_attributes,
             const fastdds::rtps::ReaderAttributes& reader_attributes,
-            const fastdds::TopicAttributes& topic_attributes,
+            const fastdds::rtps::TopicDescription& topic_desc,
             const fastdds::dds::ReaderQos& reader_qos);
 
     /**
@@ -269,9 +269,13 @@ protected:
     static fastdds::rtps::ReaderAttributes reckon_reader_attributes_(
             const core::types::DdsTopic& topic) noexcept;
 
-    //! Topic Attributes to create RTPS Reader
-    static fastdds::TopicAttributes reckon_topic_attributes_(
+    //! TODO
+    fastdds::rtps::TopicDescription reckon_topic_description_(
             const core::types::DdsTopic& topic) noexcept;
+
+    // //! Topic Attributes to create RTPS Reader
+    // static fastdds::TopicAttributes reckon_topic_attributes_(
+    //         const core::types::DdsTopic& topic) noexcept;
 
     //! Reader QoS to create RTPS Reader
     static fastdds::dds::ReaderQos reckon_reader_qos_(
@@ -322,7 +326,7 @@ protected:
     fastdds::rtps::ReaderAttributes reader_attributes_;
 
     //! Topic attributes to create the internal RTPS Reader.
-    fastdds::TopicAttributes topic_attributes_;
+    fastdds::rtps::TopicDescription topic_description_;
 
     //! Reader QoS to create the internal RTPS Reader.
     fastdds::dds::ReaderQos reader_qos_;

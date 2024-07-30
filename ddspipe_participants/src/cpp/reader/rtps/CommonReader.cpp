@@ -44,7 +44,7 @@ CommonReader::CommonReader(
         fastdds::rtps::RTPSParticipant* rtps_participant,
         const fastdds::rtps::HistoryAttributes& history_attributes,
         const fastdds::rtps::ReaderAttributes& reader_attributes,
-        const fastdds::TopicAttributes& topic_attributes,
+        const fastdds::rtps::TopicDescription& topic_description,
         const fastdds::dds::ReaderQos& reader_qos)
     : BaseReader(participant_id, topic.topic_qos.max_rx_rate, topic.topic_qos.downsampling)
     , rtps_participant_(rtps_participant)
@@ -54,7 +54,7 @@ CommonReader::CommonReader(
     , rtps_history_(nullptr)
     , history_attributes_(history_attributes)
     , reader_attributes_(reader_attributes)
-    , topic_attributes_(topic_attributes)
+    , topic_description_(topic_description)
     , reader_qos_(reader_qos)
 {
     // Do nothing.
@@ -88,14 +88,14 @@ void CommonReader::init()
     internal_entities_creation_(
         history_attributes_,
         reader_attributes_,
-        topic_attributes_,
+        topic_description_,
         reader_qos_);
 }
 
 void CommonReader::internal_entities_creation_(
         const fastdds::rtps::HistoryAttributes& history_attributes,
         const fastdds::rtps::ReaderAttributes& reader_attributes,
-        const fastdds::TopicAttributes& topic_attributes,
+        const fastdds::rtps::TopicDescription& topic_description,
         const fastdds::dds::ReaderQos& reader_qos)
 {
     // Copy reader attributes because fast needs it non const (do not ask why)
@@ -126,7 +126,7 @@ void CommonReader::internal_entities_creation_(
     rtps_reader_->set_listener(this);
 
     // Register reader with topic
-    if (!rtps_participant_->registerReader(rtps_reader_, topic_attributes, reader_qos))
+    if (!rtps_participant_->register_reader(rtps_reader_, topic_description, reader_qos))
     {
         // In case it fails, remove reader and throw exception
         fastdds::rtps::RTPSDomain::removeRTPSReader(rtps_reader_);
@@ -323,40 +323,51 @@ fastdds::rtps::ReaderAttributes CommonReader::reckon_reader_attributes_(
     return att;
 }
 
-fastdds::TopicAttributes CommonReader::reckon_topic_attributes_(
+fastdds::rtps::TopicDescription CommonReader::reckon_topic_description_(
         const core::types::DdsTopic& topic) noexcept
 {
-    fastdds::TopicAttributes att;
+    fastdds::rtps::TopicDescription topic_description;
 
-    // Set if topic has key
-    if (topic.topic_qos.keyed)
-    {
-        att.topicKind = eprosima::fastdds::rtps::WITH_KEY;
-    }
-    else
-    {
-        att.topicKind = eprosima::fastdds::rtps::NO_KEY;
-    }
+    topic_description.type_name = topic.m_topic_name;
+    topic_description.topic_name = topic.type_name;
 
-    // Set Topic attributes
-    att.topicName = topic.m_topic_name;
-    att.topicDataType = topic.type_name;
-
-    // Set Topic history attributes
-    att.historyQos.kind = eprosima::fastdds::dds::HistoryQosPolicyKind::KEEP_LAST_HISTORY_QOS;
-    att.historyQos.depth = topic.topic_qos.history_depth;
-
-    // Set TypeInformation of the discovered type
-    fastdds::dds::xtypes::TypeInformation type_information;
-    if (fastdds::dds::RETCODE_OK == fastdds::dds::DomainParticipantFactory::get_instance()->type_object_registry().get_type_information(
-                                    topic.type_ids,
-                                    type_information))
-    {
-        att.type_information = type_information;
-    }
-
-    return att;
+    return topic_description;
 }
+
+// fastdds::TopicAttributes CommonReader::reckon_topic_attributes_(
+//         const core::types::DdsTopic& topic) noexcept
+// {
+//     fastdds::TopicAttributes att;
+
+//     // Set if topic has key
+//     if (topic.topic_qos.keyed)
+//     {
+//         att.topicKind = eprosima::fastdds::rtps::WITH_KEY;
+//     }
+//     else
+//     {
+//         att.topicKind = eprosima::fastdds::rtps::NO_KEY;
+//     }
+
+//     // Set Topic attributes
+//     att.topicName = topic.m_topic_name;
+//     att.topicDataType = topic.type_name;
+
+//     // Set Topic history attributes
+//     att.historyQos.kind = eprosima::fastdds::dds::HistoryQosPolicyKind::KEEP_LAST_HISTORY_QOS;
+//     att.historyQos.depth = topic.topic_qos.history_depth;
+
+//     // Set TypeInformation of the discovered type
+//     fastdds::dds::xtypes::TypeInformation type_information;
+//     if (fastdds::dds::RETCODE_OK == fastdds::dds::DomainParticipantFactory::get_instance()->type_object_registry().get_type_information(
+//                                     topic.type_ids,
+//                                     type_information))
+//     {
+//         att.type_information = type_information;
+//     }
+
+//     return att;
+// }
 
 fastdds::dds::ReaderQos CommonReader::reckon_reader_qos_(
         const core::types::DdsTopic& topic) noexcept
