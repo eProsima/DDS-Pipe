@@ -33,7 +33,7 @@ QoSSpecificWriter::QoSSpecificWriter(
         participant_id, topic, payload_pool, rtps_participant, repeater
         , reckon_history_attributes_(topic)
         , reckon_writer_attributes_(topic)
-        , reckon_topic_attributes_(topic)
+        , reckon_topic_description_(topic)
         , reckon_writer_qos_(specific_qos, topic)  // this modifies the qos of the Common Writer
         , reckon_cache_change_pool_configuration_(topic))
     , specific_qos_(specific_qos)

@@ -22,8 +22,8 @@
 
 #include <fastdds/dds/publisher/qos/WriterQos.hpp>
 #include <fastdds/rtps/attributes/HistoryAttributes.hpp>
-#include <fastdds/rtps/attributes/TopicAttributes.hpp>
 #include <fastdds/rtps/attributes/WriterAttributes.hpp>
+#include <fastdds/rtps/builtin/data/TopicDescription.hpp>
 #include <fastdds/rtps/common/CacheChange.hpp>
 #include <fastdds/rtps/common/WriteParams.hpp>
 #include <fastdds/rtps/history/WriterHistory.hpp>
@@ -167,7 +167,7 @@ protected:
             const bool repeater,
             const fastdds::rtps::HistoryAttributes& history_attributes,
             const fastdds::rtps::WriterAttributes& writer_attributes,
-            const fastdds::TopicAttributes& topic_attributes,
+            const fastdds::rtps::TopicDescription& topic_description,
             const fastdds::dds::WriterQos& writer_qos,
             const utils::PoolConfiguration& pool_configuration);
 
@@ -230,7 +230,7 @@ protected:
     void internal_entities_creation_(
             const fastdds::rtps::HistoryAttributes& history_attributes,
             const fastdds::rtps::WriterAttributes& writer_attributes,
-            const fastdds::TopicAttributes& topic_attributes,
+            const fastdds::rtps::TopicDescription& topic_description,
             const fastdds::dds::WriterQos& writer_qos,
             const utils::PoolConfiguration& pool_configuration);
 
@@ -246,9 +246,13 @@ protected:
     static fastdds::rtps::WriterAttributes reckon_writer_attributes_(
             const core::types::DdsTopic& topic) noexcept;
 
-    //! Topic Attributes to create RTPS Writer
-    static fastdds::TopicAttributes reckon_topic_attributes_(
+    //! TODO
+    fastdds::rtps::TopicDescription reckon_topic_description_(
             const core::types::DdsTopic& topic) noexcept;
+
+    // //! Topic Attributes to create RTPS Writer
+    // static fastdds::TopicAttributes reckon_topic_attributes_(
+    //         const core::types::DdsTopic& topic) noexcept;
 
     //! QoS for RTPS Writer
     static fastdds::dds::WriterQos reckon_writer_qos_(
@@ -293,8 +297,8 @@ protected:
     //! Writer attributes to create the internal RTPS Writer.
     fastdds::rtps::WriterAttributes writer_attributes_;
 
-    //! Topic attributes to create the internal RTPS Writer.
-    fastdds::TopicAttributes topic_attributes_;
+    //! TODO
+    fastdds::rtps::TopicDescription topic_description_;
 
     //! Writer QoS to create the internal RTPS Writer.
     fastdds::dds::WriterQos writer_qos_;

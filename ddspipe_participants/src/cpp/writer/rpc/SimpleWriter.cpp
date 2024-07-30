@@ -43,7 +43,7 @@ SimpleWriter::SimpleWriter(
         participant_id, topic, payload_pool, rtps_participant, repeater,
         reckon_history_attributes_(topic),
         reckon_writer_attributes_(topic),
-        reckon_topic_attributes_(topic),
+        reckon_topic_description_(topic),
         reckon_writer_qos_(topic),
         reckon_cache_change_pool_configuration_(topic))
 {
