@@ -59,7 +59,6 @@ DdsLogConsumer::DdsLogConsumer(
     {
         // Publish the type
         type->register_type_object_representation();
-        type->auto_fill_type_information(true);
     }
 
     type.register_type(participant_);

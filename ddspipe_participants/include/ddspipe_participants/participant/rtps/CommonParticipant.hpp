@@ -17,6 +17,7 @@
 #include <cpp_utils/memory/Heritable.hpp>
 
 #include <fastdds/rtps/attributes/RTPSParticipantAttributes.hpp>
+#include <fastdds/rtps/builtin/data/ParticipantBuiltinTopicData.hpp>
 #include <fastdds/rtps/builtin/data/PublicationBuiltinTopicData.hpp>
 #include <fastdds/rtps/builtin/data/SubscriptionBuiltinTopicData.hpp>
 #include <fastdds/rtps/participant/ParticipantDiscoveryInfo.hpp>
@@ -128,9 +129,10 @@ public:
      * This method only is for debugging purposes.
      */
     DDSPIPE_PARTICIPANTS_DllAPI
-    virtual void onParticipantDiscovery(
+    virtual void on_participant_discovery(
             fastdds::rtps::RTPSParticipant* participant,
-            fastdds::rtps::ParticipantDiscoveryInfo&& info,
+            fastdds::rtps::ParticipantDiscoveryStatus reason,
+            const fastdds::rtps::ParticipantBuiltinTopicData& info,
             bool& /*should_be_ignored*/) override;
 
     /**

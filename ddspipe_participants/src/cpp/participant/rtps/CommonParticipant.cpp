@@ -80,33 +80,34 @@ void CommonParticipant::init()
         participant_attributes_);
 }
 
-void CommonParticipant::onParticipantDiscovery(
+void CommonParticipant::on_participant_discovery(
         fastdds::rtps::RTPSParticipant* participant,
-        fastdds::rtps::ParticipantDiscoveryInfo&& info,
+        fastdds::rtps::ParticipantDiscoveryStatus reason,
+        const fastdds::rtps::ParticipantBuiltinTopicData& info,
         bool&)
 {
-    if (info.info.m_guid.guidPrefix != participant->getGuid().guidPrefix)
+    if (info.guid.guidPrefix != participant->getGuid().guidPrefix)
     {
-        if (info.status == fastdds::rtps::ParticipantDiscoveryInfo::DISCOVERED_PARTICIPANT)
+        if (reason == fastdds::rtps::ParticipantDiscoveryStatus::DISCOVERED_PARTICIPANT)
         {
             EPROSIMA_LOG_INFO(DDSPIPE_DISCOVERY,
-                    "Found in Participant " << configuration_->id << " new Participant " << info.info.m_guid << ".");
+                    "Found in Participant " << configuration_->id << " new Participant " << info.guid << ".");
         }
-        else if (info.status == fastdds::rtps::ParticipantDiscoveryInfo::CHANGED_QOS_PARTICIPANT)
+        else if (reason == fastdds::rtps::ParticipantDiscoveryStatus::CHANGED_QOS_PARTICIPANT)
         {
-            EPROSIMA_LOG_INFO(DDSPIPE_DISCOVERY, "Participant " << info.info.m_guid << " changed QoS.");
+            EPROSIMA_LOG_INFO(DDSPIPE_DISCOVERY, "Participant " << info.guid << " changed QoS.");
         }
-        else if (info.status == fastdds::rtps::ParticipantDiscoveryInfo::REMOVED_PARTICIPANT)
+        else if (reason == fastdds::rtps::ParticipantDiscoveryStatus::REMOVED_PARTICIPANT)
         {
-            EPROSIMA_LOG_INFO(DDSPIPE_DISCOVERY, "Participant " << info.info.m_guid << " removed.");
+            EPROSIMA_LOG_INFO(DDSPIPE_DISCOVERY, "Participant " << info.guid << " removed.");
         }
-        else if (info.status == fastdds::rtps::ParticipantDiscoveryInfo::DROPPED_PARTICIPANT)
+        else if (reason == fastdds::rtps::ParticipantDiscoveryStatus::DROPPED_PARTICIPANT)
         {
-            EPROSIMA_LOG_INFO(DDSPIPE_DISCOVERY, "Participant " << info.info.m_guid << " dropped.");
+            EPROSIMA_LOG_INFO(DDSPIPE_DISCOVERY, "Participant " << info.guid << " dropped.");
         }
-        else if (info.status == fastdds::rtps::ParticipantDiscoveryInfo::IGNORED_PARTICIPANT)
+        else if (reason == fastdds::rtps::ParticipantDiscoveryStatus::IGNORED_PARTICIPANT)
         {
-            EPROSIMA_LOG_INFO(DDSPIPE_DISCOVERY, "Participant " << info.info.m_guid << " ignored.");
+            EPROSIMA_LOG_INFO(DDSPIPE_DISCOVERY, "Participant " << info.guid << " ignored.");
         }
     }
 }
