@@ -18,11 +18,14 @@
 
 #include <cpp_utils/types/Atomicable.hpp>
 
+#include <fastdds/dds/builtin/topic/SubscriptionBuiltinTopicData.hpp>
 #include <fastdds/dds/domain/DomainParticipant.hpp>
 #include <fastdds/dds/domain/DomainParticipantListener.hpp>
 #include <fastdds/dds/domain/qos/DomainParticipantQos.hpp>
 #include <fastdds/dds/publisher/qos/DataWriterQos.hpp>
 #include <fastdds/dds/subscriber/qos/DataReaderQos.hpp>
+#include <fastdds/rtps/reader/ReaderDiscoveryStatus.hpp>
+#include <fastdds/rtps/writer/WriterDiscoveryStatus.hpp>
 
 #include <ddspipe_core/dynamic/DiscoveryDatabase.hpp>
 #include <ddspipe_core/efficiency/payload/PayloadPool.hpp>
@@ -113,12 +116,14 @@ public:
 
     void on_data_reader_discovery(
             fastdds::dds::DomainParticipant* participant,
-            fastdds::rtps::ReaderDiscoveryInfo&& info,
+            fastdds::rtps::ReaderDiscoveryStatus reason,
+            const fastdds::dds::SubscriptionBuiltinTopicData& info,
             bool& /*should_be_ignored*/) override;
 
     void on_data_writer_discovery(
             fastdds::dds::DomainParticipant* participant,
-            fastdds::rtps::WriterDiscoveryInfo&& info,
+            fastdds::rtps::WriterDiscoveryStatus reason,
+            const fastdds::dds::PublicationBuiltinTopicData& info,
             bool& /*should_be_ignored*/) override;
 
 protected:

@@ -25,9 +25,11 @@
 #include <fastdds/dds/domain/DomainParticipant.hpp>
 #include <fastdds/dds/xtypes/dynamic_types/DynamicType.hpp>
 #include <fastdds/dds/xtypes/type_representation/detail/dds_xtypes_typeobject.hpp>
+#include <fastdds/rtps/builtin/data/PublicationBuiltinTopicData.hpp>
+#include <fastdds/rtps/builtin/data/SubscriptionBuiltinTopicData.hpp>
 #include <fastdds/rtps/participant/RTPSParticipant.hpp>
-#include <fastdds/rtps/reader/ReaderDiscoveryInfo.hpp>
-#include <fastdds/rtps/writer/WriterDiscoveryInfo.hpp>
+#include <fastdds/rtps/reader/ReaderDiscoveryStatus.hpp>
+#include <fastdds/rtps/writer/WriterDiscoveryStatus.hpp>
 
 #include <ddspipe_participants/configuration/SimpleParticipantConfiguration.hpp>
 #include <ddspipe_participants/library/library_dll.h>
@@ -78,15 +80,17 @@ public:
             const core::ITopic& topic) override;
 
     DDSPIPE_PARTICIPANTS_DllAPI
-    void onReaderDiscovery(
+    void on_reader_discovery(
             fastdds::rtps::RTPSParticipant* participant,
-            fastdds::rtps::ReaderDiscoveryInfo&& info,
+            fastdds::rtps::ReaderDiscoveryStatus reason,
+            const fastdds::rtps::SubscriptionBuiltinTopicData& info,
             bool& should_be_ignored) override;
 
     DDSPIPE_PARTICIPANTS_DllAPI
-    void onWriterDiscovery(
+    void on_writer_discovery(
             fastdds::rtps::RTPSParticipant* participant,
-            fastdds::rtps::WriterDiscoveryInfo&& info,
+            fastdds::rtps::WriterDiscoveryStatus reason,
+            const fastdds::rtps::PublicationBuiltinTopicData& info,
             bool& should_be_ignored) override;
 
 protected:
