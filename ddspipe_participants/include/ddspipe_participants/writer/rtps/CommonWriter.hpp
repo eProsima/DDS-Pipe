@@ -250,10 +250,6 @@ protected:
     fastdds::rtps::TopicDescription reckon_topic_description_(
             const core::types::DdsTopic& topic) noexcept;
 
-    // //! Topic Attributes to create RTPS Writer
-    // static fastdds::TopicAttributes reckon_topic_attributes_(
-    //         const core::types::DdsTopic& topic) noexcept;
-
     //! QoS for RTPS Writer
     static fastdds::dds::WriterQos reckon_writer_qos_(
             const core::types::DdsTopic& topic) noexcept;
