@@ -273,10 +273,6 @@ protected:
     fastdds::rtps::TopicDescription reckon_topic_description_(
             const core::types::DdsTopic& topic) noexcept;
 
-    // //! Topic Attributes to create RTPS Reader
-    // static fastdds::TopicAttributes reckon_topic_attributes_(
-    //         const core::types::DdsTopic& topic) noexcept;
-
     //! Reader QoS to create RTPS Reader
     static fastdds::dds::ReaderQos reckon_reader_qos_(
             const core::types::DdsTopic& topic) noexcept;
