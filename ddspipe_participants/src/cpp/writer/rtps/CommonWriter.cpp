@@ -387,42 +387,20 @@ fastdds::rtps::TopicDescription CommonWriter::reckon_topic_description_(
 {
     fastdds::rtps::TopicDescription topic_description;
 
-    topic_description.type_name = topic.m_topic_name;
-    topic_description.topic_name = topic.type_name;
+    topic_description.type_name = topic.type_name;
+    topic_description.topic_name = topic.m_topic_name;
+
+    // Set TypeInformation of the discovered type
+    fastdds::dds::xtypes::TypeInformation type_information;
+    if (fastdds::dds::RETCODE_OK == fastdds::dds::DomainParticipantFactory::get_instance()->type_object_registry().get_type_information(
+                                    topic.type_ids,
+                                    type_information))
+    {
+        topic_description.type_information = type_information;
+    }
 
     return topic_description;
 }
-
-// fastdds::TopicAttributes CommonWriter::reckon_topic_attributes_(
-//         const core::types::DdsTopic& topic) noexcept
-// {
-//     fastdds::TopicAttributes att;
-
-//     // Set if topic has key
-//     if (topic.topic_qos.keyed)
-//     {
-//         att.topicKind = eprosima::fastdds::rtps::WITH_KEY;
-//     }
-//     else
-//     {
-//         att.topicKind = eprosima::fastdds::rtps::NO_KEY;
-//     }
-
-//     // Set Topic attributes
-//     att.topicName = topic.m_topic_name;
-//     att.topicDataType = topic.type_name;
-
-//     // Set TypeInformation of the discovered type
-//     fastdds::dds::xtypes::TypeInformation type_information;
-//     if (fastdds::dds::RETCODE_OK == fastdds::dds::DomainParticipantFactory::get_instance()->type_object_registry().get_type_information(
-//                                     topic.type_ids,
-//                                     type_information))
-//     {
-//         att.type_information = type_information;
-//     }
-
-//     return att;
-// }
 
 fastdds::dds::WriterQos CommonWriter::reckon_writer_qos_(
         const core::types::DdsTopic& topic) noexcept
