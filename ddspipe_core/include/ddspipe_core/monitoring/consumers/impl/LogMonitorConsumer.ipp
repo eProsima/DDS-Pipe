@@ -25,7 +25,7 @@ template <typename T>
 void LogMonitorConsumer<T>::consume(
         const T& data) const
 {
-    logInfo(DDSPIPE_MONITOR, "MONITOR_DATA | " << data);
+    EPROSIMA_LOG_INFO(DDSPIPE_MONITOR, "MONITOR_DATA | " << data);
 }
 
 template <typename T>

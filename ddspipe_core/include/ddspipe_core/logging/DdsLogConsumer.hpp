@@ -21,23 +21,16 @@
 #include <cpp_utils/Log.hpp>
 #include <cpp_utils/logging/BaseLogConsumer.hpp>
 
-#include <ddspipe_core/configuration/DdsPipeLogConfiguration.hpp>
-#include <ddspipe_core/library/library_dll.h>
-
 #include <fastdds/dds/domain/DomainParticipant.hpp>
 #include <fastdds/dds/publisher/DataWriter.hpp>
 #include <fastdds/dds/publisher/Publisher.hpp>
 #include <fastdds/dds/topic/Topic.hpp>
 
-#if FASTRTPS_VERSION_MAJOR < 2 || (FASTRTPS_VERSION_MAJOR == 2 && FASTRTPS_VERSION_MINOR < 13)
-    #include <ddspipe_core/types/logging/v1/LogEntry.h>
-    #include <ddspipe_core/types/logging/v1/LogEntryPubSubTypes.h>
-    #include <ddspipe_core/types/logging/v1/LogEntryTypeObject.h>
-#else
-    #include <ddspipe_core/types/logging/v2/LogEntry.h>
-    #include <ddspipe_core/types/logging/v2/LogEntryPubSubTypes.h>
-    #include <ddspipe_core/types/logging/v2/LogEntryTypeObject.h>
-#endif // if FASTRTPS_VERSION_MAJOR < 2 || (FASTRTPS_VERSION_MAJOR == 2 && FASTRTPS_VERSION_MINOR < 13)
+#include <ddspipe_core/configuration/DdsPipeLogConfiguration.hpp>
+#include <ddspipe_core/library/library_dll.h>
+#include <ddspipe_core/types/logging/LogEntry.hpp>
+#include <ddspipe_core/types/logging/LogEntryPubSubTypes.hpp>
+#include <ddspipe_core/types/logging/LogEntryTypeObjectSupport.hpp>
 
 namespace eprosima {
 namespace ddspipe {

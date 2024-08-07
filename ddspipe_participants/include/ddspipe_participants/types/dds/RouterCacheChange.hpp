@@ -14,7 +14,7 @@
 
 #pragma once
 
-#include <fastdds/rtps/common/CacheChange.h>
+#include <fastdds/rtps/common/CacheChange.hpp>
 #include <fastdds/rtps/common/GuidPrefix_t.hpp>
 
 #include <ddspipe_core/library/library_dll.h>
@@ -33,19 +33,19 @@ namespace types {
  * This Change is required to be used for features:
  * - Repeater participant: avoid redirecting the message to the source participant.
  */
-struct RouterCacheChange : public fastrtps::rtps::CacheChange_t
+struct RouterCacheChange : public fastdds::rtps::CacheChange_t
 {
 public:
 
     //! Using parent constructors
-    using fastrtps::rtps::CacheChange_t::CacheChange_t;
+    using fastdds::rtps::CacheChange_t::CacheChange_t;
 
     /**
      * @brief GuidPrefix of the Participant that has sent this message through the pipe.
      *
      * @note it is not the same as origin writer, as there could be more pipes in the path.
      */
-    fastrtps::rtps::GuidPrefix_t last_writer_guid_prefix;
+    fastdds::rtps::GuidPrefix_t last_writer_guid_prefix;
 };
 
 } /* namespace types */

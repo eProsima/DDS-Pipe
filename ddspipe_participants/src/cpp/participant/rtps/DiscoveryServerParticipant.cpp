@@ -12,10 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include <fastdds/rtps/transport/UDPv4TransportDescriptor.h>
-#include <fastdds/rtps/transport/UDPv6TransportDescriptor.h>
-#include <fastdds/rtps/transport/TCPv4TransportDescriptor.h>
-#include <fastdds/rtps/transport/TCPv6TransportDescriptor.h>
+#include <fastdds/rtps/transport/UDPv4TransportDescriptor.hpp>
+#include <fastdds/rtps/transport/UDPv6TransportDescriptor.hpp>
+#include <fastdds/rtps/transport/TCPv4TransportDescriptor.hpp>
+#include <fastdds/rtps/transport/TCPv6TransportDescriptor.hpp>
 
 #include <cpp_utils/exception/ConfigurationException.hpp>
 #include <cpp_utils/utils.hpp>
@@ -43,12 +43,12 @@ DiscoveryServerParticipant::DiscoveryServerParticipant(
 {
 }
 
-fastrtps::rtps::RTPSParticipantAttributes
+fastdds::rtps::RTPSParticipantAttributes
 DiscoveryServerParticipant::reckon_participant_attributes_(
         const DiscoveryServerParticipantConfiguration* configuration)
 {
     // Use default as base attributes
-    fastrtps::rtps::RTPSParticipantAttributes params = CommonParticipant::reckon_participant_attributes_(configuration);
+    fastdds::rtps::RTPSParticipantAttributes params = CommonParticipant::reckon_participant_attributes_(configuration);
 
     // Auxiliary variable to save characters and improve readability
     const core::types::GuidPrefix& discovery_server_guid_prefix = configuration->discovery_server_guid_prefix;
@@ -73,7 +73,7 @@ DiscoveryServerParticipant::reckon_participant_attributes_(
         if (!address.is_valid())
         {
             // Invalid address, continue with next one
-            logWarning(DDSPIPE_DISCOVERYSERVER_PARTICIPANT,
+            EPROSIMA_LOG_WARNING(DDSPIPE_DISCOVERYSERVER_PARTICIPANT,
                     "Discard listening address: " << address <<
                     " in Participant " << configuration->id << " initialization.");
             continue;
@@ -161,21 +161,21 @@ DiscoveryServerParticipant::reckon_participant_attributes_(
 
         // For any, UDP or TCP
         // Create Locator
-        eprosima::fastrtps::rtps::Locator_t locator;
+        eprosima::fastdds::rtps::Locator_t locator;
         locator.kind = address.get_locator_kind();
 
         // IP
         if (address.is_ipv4())
         {
-            eprosima::fastrtps::rtps::IPLocator::setIPv4(locator, address.ip());
+            eprosima::fastdds::rtps::IPLocator::setIPv4(locator, address.ip());
         }
         else
         {
-            eprosima::fastrtps::rtps::IPLocator::setIPv6(locator, address.ip());
+            eprosima::fastdds::rtps::IPLocator::setIPv6(locator, address.ip());
         }
 
         // Port
-        eprosima::fastrtps::rtps::IPLocator::setPhysicalPort(locator, address.port());
+        eprosima::fastdds::rtps::IPLocator::setPhysicalPort(locator, address.port());
 
         if (address.is_tcp())
         {
@@ -185,8 +185,8 @@ DiscoveryServerParticipant::reckon_participant_attributes_(
             // port announced is equal to the internal port.
             // If external port is defined, announced port is external port. This is the one clients,
             // should try to connect, which should match network router public port.
-            eprosima::fastrtps::rtps::IPLocator::setPhysicalPort(locator, address.external_port());
-            eprosima::fastrtps::rtps::IPLocator::setLogicalPort(locator, address.external_port());
+            eprosima::fastdds::rtps::IPLocator::setPhysicalPort(locator, address.external_port());
+            eprosima::fastdds::rtps::IPLocator::setLogicalPort(locator, address.external_port());
         }
 
         // Add listening address to builtin
@@ -204,7 +204,7 @@ DiscoveryServerParticipant::reckon_participant_attributes_(
         if (!connection_address.is_valid())
         {
             // Invalid connection address, continue with next one
-            logWarning(DDSPIPE_DISCOVERYSERVER_PARTICIPANT,
+            EPROSIMA_LOG_WARNING(DDSPIPE_DISCOVERYSERVER_PARTICIPANT,
                     "Discard connection address with remote server: " <<
                     connection_address.discovery_server_guid_prefix() <<
                     " in Participant " << configuration->id << " initialization.");
@@ -219,7 +219,7 @@ DiscoveryServerParticipant::reckon_participant_attributes_(
             if (!address.is_valid())
             {
                 // Invalid ip address, continue with next one
-                logWarning(DDSPIPE_DISCOVERYSERVER_PARTICIPANT,
+                EPROSIMA_LOG_WARNING(DDSPIPE_DISCOVERYSERVER_PARTICIPANT,
                         "Discard connection address with remote server: " <<
                         connection_address.discovery_server_guid_prefix() <<
                         " due to invalid ip address " << address.ip() << " in Participant " << configuration->id <<
@@ -229,10 +229,7 @@ DiscoveryServerParticipant::reckon_participant_attributes_(
 
             has_connection_addresses = true;
 
-            eprosima::fastrtps::rtps::RemoteServerAttributes server_attr;
-            server_attr.guidPrefix = server_prefix;
-
-            eprosima::fastrtps::rtps::Locator_t locator;
+            eprosima::fastdds::rtps::Locator_t locator;
 
             // KIND
             locator.kind = address.get_locator_kind();
@@ -252,21 +249,21 @@ DiscoveryServerParticipant::reckon_participant_attributes_(
             // IP
             if (address.is_ipv4())
             {
-                eprosima::fastrtps::rtps::IPLocator::setIPv4(locator, address.ip());
+                eprosima::fastdds::rtps::IPLocator::setIPv4(locator, address.ip());
             }
             else
             {
-                eprosima::fastrtps::rtps::IPLocator::setIPv6(locator, address.ip());
+                eprosima::fastdds::rtps::IPLocator::setIPv6(locator, address.ip());
             }
 
             // PORT
-            eprosima::fastrtps::rtps::IPLocator::setPhysicalPort(locator, address.port());
-            eprosima::fastrtps::rtps::IPLocator::setLogicalPort(locator, address.port());
+            eprosima::fastdds::rtps::IPLocator::setPhysicalPort(locator, address.port());
+            eprosima::fastdds::rtps::IPLocator::setLogicalPort(locator, address.port());
             // Warning: Logical port is not needed unless domain could change
 
             // Add as remote server and add it to builtin
-            server_attr.metatrafficUnicastLocatorList.push_back(locator);
-            params.builtin.discovery_config.m_DiscoveryServers.push_back(server_attr);
+            params.builtin.metatrafficUnicastLocatorList.push_back(locator);
+            params.defaultUnicastLocatorList.push_back(locator);
 
             logDebug(DDSPIPE_DISCOVERYSERVER_PARTICIPANT,
                     "Add connection address " << address << " for server " << server_prefix <<
@@ -279,16 +276,16 @@ DiscoveryServerParticipant::reckon_participant_attributes_(
     if (has_listening_addresses)
     {
         params.builtin.discovery_config.discoveryProtocol =
-                fastrtps::rtps::DiscoveryProtocol::SERVER;
+                fastdds::rtps::DiscoveryProtocol::SERVER;
     }
     else
     {
         params.builtin.discovery_config.discoveryProtocol =
-                fastrtps::rtps::DiscoveryProtocol::SUPER_CLIENT;
+                fastdds::rtps::DiscoveryProtocol::SUPER_CLIENT;
 
         if (!has_connection_addresses)
         {
-            logWarning(DDSPIPE_DISCOVERYSERVER_PARTICIPANT,
+            EPROSIMA_LOG_WARNING(DDSPIPE_DISCOVERYSERVER_PARTICIPANT,
                     "Creating Participant " << configuration->id << " without listening or connection addresses. " <<
                     "It will not communicate with any other Participant.");
         }

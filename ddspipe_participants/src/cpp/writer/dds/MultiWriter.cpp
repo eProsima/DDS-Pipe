@@ -13,9 +13,9 @@
 // limitations under the License.
 
 
-#include <fastrtps/rtps/RTPSDomain.h>
-#include <fastrtps/rtps/participant/RTPSParticipant.h>
-#include <fastrtps/rtps/common/CacheChange.h>
+#include <fastdds/rtps/RTPSDomain.hpp>
+#include <fastdds/rtps/participant/RTPSParticipant.hpp>
+#include <fastdds/rtps/common/CacheChange.hpp>
 
 #include <cpp_utils/exception/InitializationException.hpp>
 #include <cpp_utils/Log.hpp>
@@ -56,7 +56,7 @@ MultiWriter::~MultiWriter()
         writer.second->disable();
     }
 
-    logInfo(DDSPIPE_RTPS_WRITER, "Deleting MultiWriter created in Participant " <<
+    EPROSIMA_LOG_INFO(DDSPIPE_RTPS_WRITER, "Deleting MultiWriter created in Participant " <<
             participant_id_ << " for topic " << topic_);
 }
 

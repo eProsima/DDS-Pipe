@@ -38,7 +38,7 @@ typedef std::atomic<unsigned int> MetaInfoType;
  * This class is used to manage the allocation and release of the payloads used within the Router.
  * The main target is not to copy or alloc data that is already in memory, but to reuse it safely.
  *
- * This implementation uses an idea get from TopicPayloadPool from fastrtps.
+ * This implementation uses an idea get from TopicPayloadPool from fastdds.
  * This is, to alloc more space than required whenever a new payload is needed, and in this extra space (at the
  * beginning of the data) stores the number of references this data has.
  * As long as this number does not reach 0, the data is not deleted.
@@ -76,7 +76,7 @@ public:
     DDSPIPE_CORE_DllAPI
     bool get_payload(
             uint32_t size,
-            types::Payload& payload) override;
+            eprosima::fastdds::rtps::SerializedPayload_t& payload) override;
 
     /**
      * Reserve in \c target_payload the payload in \c src_payload .
@@ -95,9 +95,8 @@ public:
      */
     DDSPIPE_CORE_DllAPI
     bool get_payload(
-            const types::Payload& src_payload,
-            IPayloadPool*& data_owner,
-            types::Payload& target_payload) override;
+            const eprosima::fastdds::rtps::SerializedPayload_t& src_payload,
+            eprosima::fastdds::rtps::SerializedPayload_t& payload) override;
 
     /**
      * Release a payload that has been reserved from this pool.
@@ -113,7 +112,7 @@ public:
      */
     DDSPIPE_CORE_DllAPI
     bool release_payload(
-            types::Payload& payload) override;
+            eprosima::fastdds::rtps::SerializedPayload_t& payload) override;
 
 protected:
 
@@ -132,7 +131,7 @@ protected:
     DDSPIPE_CORE_DllAPI
     virtual bool reserve_(
             uint32_t size,
-            types::Payload& payload) override;
+            eprosima::fastdds::rtps::SerializedPayload_t& payload) override;
 
     /**
      * @brief Reimplement parent \c release_ method
@@ -146,7 +145,7 @@ protected:
      */
     DDSPIPE_CORE_DllAPI
     virtual bool release_(
-            types::Payload& payload) override;
+            eprosima::fastdds::rtps::SerializedPayload_t& payload) override;
 };
 
 } /* namespace core */

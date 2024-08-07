@@ -136,7 +136,7 @@ public:
 
     //! Get internal RTPS reader mutex
     DDSPIPE_PARTICIPANTS_DllAPI
-    fastrtps::RecursiveTimedMutex& get_rtps_mutex() const override;
+    fastdds::RecursiveTimedMutex& get_rtps_mutex() const override;
 
     //! Get number of unread cache changes in internal RTPS reader
     DDSPIPE_PARTICIPANTS_DllAPI

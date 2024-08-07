@@ -14,6 +14,15 @@
 
 #pragma once
 
+#include <memory>
+
+#include <fastdds/dds/publisher/qos/WriterQos.hpp>
+#include <fastdds/rtps/participant/RTPSParticipant.hpp>
+
+#include <ddspipe_core/efficiency/payload/PayloadPool.hpp>
+#include <ddspipe_core/types/dds/SpecificEndpointQoS.hpp>
+#include <ddspipe_core/types/participant/ParticipantId.hpp>
+#include <ddspipe_core/types/topic/dds/DdsTopic.hpp>
 #include <ddspipe_participants/library/library_dll.h>
 #include <ddspipe_participants/writer/rtps/CommonWriter.hpp>
 
@@ -48,14 +57,14 @@ public:
             const core::types::ParticipantId& participant_id,
             const core::types::DdsTopic& topic,
             const std::shared_ptr<core::PayloadPool>& payload_pool,
-            fastrtps::rtps::RTPSParticipant* rtps_participant,
+            fastdds::rtps::RTPSParticipant* rtps_participant,
             const core::types::SpecificEndpointQoS& specific_qos,
             const bool repeater = false);
 
 protected:
 
     //! Specific writer QoS to override (more or less) the CommonWriter qos
-    static fastrtps::WriterQos reckon_writer_qos_(
+    static fastdds::dds::WriterQos reckon_writer_qos_(
             const core::types::SpecificEndpointQoS& specific_qos,
             const core::types::DdsTopic& topic) noexcept;
 

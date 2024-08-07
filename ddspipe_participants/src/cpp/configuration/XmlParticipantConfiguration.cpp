@@ -13,8 +13,8 @@
 // limitations under the License.
 
 #include <cpp_utils/Log.hpp>
-#include <cpp_utils/ReturnCode.hpp>
 
+#include <fastdds/dds/core/ReturnCode.hpp>
 #include <fastdds/dds/domain/DomainParticipantFactory.hpp>
 
 #include <ddspipe_participants/configuration/XmlParticipantConfiguration.hpp>
@@ -39,7 +39,7 @@ bool XmlParticipantConfiguration::is_valid(
             participant_profile.get_value(),
             qos);
 
-        if (res != utils::ReturnCode::RETCODE_OK)
+        if (res != fastdds::dds::RETCODE_OK)
         {
             error_msg << "Profile " << participant_profile.get_value() << " is not loaded in XML. ";
             return false;

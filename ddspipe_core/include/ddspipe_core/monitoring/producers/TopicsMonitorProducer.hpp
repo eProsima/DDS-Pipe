@@ -26,18 +26,9 @@
 #include <ddspipe_core/library/library_dll.h>
 #include <ddspipe_core/monitoring/consumers/IMonitorConsumer.hpp>
 #include <ddspipe_core/monitoring/producers/MonitorProducer.hpp>
+#include <ddspipe_core/types/monitoring/topics/MonitoringTopics.hpp>
 #include <ddspipe_core/types/participant/ParticipantId.hpp>
 #include <ddspipe_core/types/topic/dds/DdsTopic.hpp>
-
-#if FASTRTPS_VERSION_MAJOR < 2 || (FASTRTPS_VERSION_MAJOR == 2 && FASTRTPS_VERSION_MINOR < 13)
-    #include <ddspipe_core/types/monitoring/topics/v1/MonitoringTopics.h>
-    #include <ddspipe_core/types/monitoring/topics/v1/MonitoringTopicsPubSubTypes.h>
-    #include <ddspipe_core/types/monitoring/topics/v1/MonitoringTopicsTypeObject.h>
-#else
-    #include <ddspipe_core/types/monitoring/topics/v2/MonitoringTopics.h>
-    #include <ddspipe_core/types/monitoring/topics/v2/MonitoringTopicsPubSubTypes.h>
-    #include <ddspipe_core/types/monitoring/topics/v2/MonitoringTopicsTypeObject.h>
-#endif // if FASTRTPS_VERSION_MAJOR < 2 || (FASTRTPS_VERSION_MAJOR == 2 && FASTRTPS_VERSION_MINOR < 13)
 
 
 // Macro to notify that a message has been received in a topic by a participant.

@@ -13,6 +13,7 @@
 // limitations under the License.
 
 #include <cpp_utils/Log.hpp>
+#include <cpp_utils/ReturnCode.hpp>
 
 #include <ddspipe_core/types/data/RtpsPayloadData.hpp>
 
@@ -62,7 +63,7 @@ utils::ReturnCode RtpsEchoWriter::write(
                 ".");
     }
 
-    return utils::ReturnCode::RETCODE_OK;
+    return utils::ReturnCode::OK;
 }
 
 } /* namespace participants */

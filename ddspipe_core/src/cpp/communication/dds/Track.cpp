@@ -19,6 +19,7 @@
 
 #include <cpp_utils/exception/UnsupportedException.hpp>
 #include <cpp_utils/Log.hpp>
+#include <cpp_utils/ReturnCode.hpp>
 #include <cpp_utils/thread_pool/pool/SlotThreadPool.hpp>
 #include <cpp_utils/thread_pool/task/TaskId.hpp>
 
@@ -86,7 +87,7 @@ void Track::enable() noexcept
 
     if (!enabled_)
     {
-        logInfo(DDSPIPE_TRACK,
+        EPROSIMA_LOG_INFO(DDSPIPE_TRACK,
                 "Enabling Track " << reader_participant_id_ << " for topic " << topic_->serialize() <<
                 ".");
         enabled_ = true;
@@ -116,7 +117,7 @@ void Track::disable() noexcept
 
     if (enabled_)
     {
-        logInfo(DDSPIPE_TRACK,
+        EPROSIMA_LOG_INFO(DDSPIPE_TRACK,
                 "Disabling Track " << reader_participant_id_ << " for topic " << topic_->serialize() <<
                 ".");
 
@@ -218,9 +219,9 @@ void Track::transmit_() noexcept
 
         // Get data received (send empty data to be created(allocated) in reader)
         std::unique_ptr<IRoutingData> data;
-        utils::ReturnCode ret = reader_->take(data);
+        auto ret = reader_->take(data);
 
-        if (ret == utils::ReturnCode::RETCODE_NO_DATA)
+        if (ret == utils::ReturnCode::NO_DATA)
         {
             // There is no more data; reduce the status by 1
             unsigned int previous_status = data_available_status_.fetch_sub(DataAvailableStatus::transmitting_data);
@@ -238,10 +239,10 @@ void Track::transmit_() noexcept
                 continue;
             }
         }
-        else if (!ret)
+        else if (ret != utils::ReturnCode::OK)
         {
             // Error reading data
-            logWarning(DDSPIPE_TRACK, "Error taking data in Track " << topic_->serialize() << ". Error code " << ret
+            EPROSIMA_LOG_WARNING(DDSPIPE_TRACK, "Error taking data in Track " << topic_->serialize() << ". Error code " << ret
                                                                     << ". Skipping data and continue.");
             continue;
         }
@@ -259,9 +260,9 @@ void Track::transmit_() noexcept
 
             ret = writer_it.second->write(*data);
 
-            if (!ret)
+            if (ret != utils::ReturnCode::OK)
             {
-                logWarning(
+                EPROSIMA_LOG_WARNING(
                     DDSPIPE_TRACK,
                     "Error writting data in Track " << topic_->serialize()
                                                     << " for writer " << writer_it.second.get()

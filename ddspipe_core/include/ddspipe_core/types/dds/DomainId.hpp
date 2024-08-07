@@ -14,7 +14,7 @@
 
 #pragma once
 
-#include <fastrtps/types/TypesBase.h>
+#include <fastdds/dds/core/Types.hpp>
 
 #include <ddspipe_core/library/library_dll.h>
 #include <ddspipe_core/configuration/IConfiguration.hpp>

@@ -14,8 +14,12 @@
 
 #pragma once
 
+#include <ddspipe_core/efficiency/payload/PayloadPool.hpp>
+#include <ddspipe_core/types/participant/ParticipantId.hpp>
+#include <ddspipe_core/types/topic/dds/DdsTopic.hpp>
 #include <ddspipe_participants/library/library_dll.h>
 #include <ddspipe_participants/reader/rtps/CommonReader.hpp>
+#include <fastdds/rtps/participant/RTPSParticipant.hpp>
 
 namespace eprosima {
 namespace ddspipe {
@@ -46,7 +50,7 @@ public:
             const core::types::ParticipantId& participant_id,
             const core::types::DdsTopic& topic,
             const std::shared_ptr<core::PayloadPool>& payload_pool,
-            fastrtps::rtps::RTPSParticipant* rtps_participant);
+            fastdds::rtps::RTPSParticipant* rtps_participant);
 };
 
 } /* namespace rtps */

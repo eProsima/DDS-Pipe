@@ -12,8 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include <fastrtps/rtps/RTPSDomain.h>
-#include <fastrtps/rtps/participant/RTPSParticipant.h>
+#include <fastdds/dds/subscriber/qos/ReaderQos.hpp>
+#include <fastdds/rtps/participant/RTPSParticipant.hpp>
+#include <fastdds/rtps/RTPSDomain.hpp>
+
+#include <fastdds/dds/domain/DomainParticipantFactory.hpp>
 
 #include <cpp_utils/exception/InitializationException.hpp>
 #include <cpp_utils/Log.hpp>
@@ -37,11 +40,11 @@ CommonReader::CommonReader(
         const ParticipantId& participant_id,
         const DdsTopic& topic,
         const std::shared_ptr<core::PayloadPool>& payload_pool,
-        fastrtps::rtps::RTPSParticipant* rtps_participant,
-        const fastrtps::rtps::HistoryAttributes& history_attributes,
-        const fastrtps::rtps::ReaderAttributes& reader_attributes,
-        const fastrtps::TopicAttributes& topic_attributes,
-        const fastrtps::ReaderQos& reader_qos)
+        fastdds::rtps::RTPSParticipant* rtps_participant,
+        const fastdds::rtps::HistoryAttributes& history_attributes,
+        const fastdds::rtps::ReaderAttributes& reader_attributes,
+        const fastdds::rtps::TopicDescription& topic_description,
+        const fastdds::dds::ReaderQos& reader_qos)
     : BaseReader(participant_id, topic.topic_qos.max_rx_rate, topic.topic_qos.downsampling)
     , rtps_participant_(rtps_participant)
     , payload_pool_(payload_pool)
@@ -50,7 +53,7 @@ CommonReader::CommonReader(
     , rtps_history_(nullptr)
     , history_attributes_(history_attributes)
     , reader_attributes_(reader_attributes)
-    , topic_attributes_(topic_attributes)
+    , topic_description_(topic_description)
     , reader_qos_(reader_qos)
 {
     // Do nothing.
@@ -65,8 +68,8 @@ CommonReader::~CommonReader()
     if (rtps_reader_)
     {
         // Unset listener before destruction (not necessary in principle, but just in case)
-        rtps_reader_->setListener(nullptr);
-        fastrtps::rtps::RTPSDomain::removeRTPSReader(rtps_reader_);
+        rtps_reader_->set_listener(nullptr);
+        fastdds::rtps::RTPSDomain::removeRTPSReader(rtps_reader_);
     }
 
     // Delete History
@@ -75,7 +78,7 @@ CommonReader::~CommonReader()
         delete rtps_history_;
     }
 
-    logInfo(DDSPIPE_RTPS_READER, "Deleting CommonReader created in Participant " <<
+    EPROSIMA_LOG_INFO(DDSPIPE_RTPS_READER, "Deleting CommonReader created in Participant " <<
             participant_id_ << " for topic " << topic_);
 }
 
@@ -84,26 +87,26 @@ void CommonReader::init()
     internal_entities_creation_(
         history_attributes_,
         reader_attributes_,
-        topic_attributes_,
+        topic_description_,
         reader_qos_);
 }
 
 void CommonReader::internal_entities_creation_(
-        const fastrtps::rtps::HistoryAttributes& history_attributes,
-        const fastrtps::rtps::ReaderAttributes& reader_attributes,
-        const fastrtps::TopicAttributes& topic_attributes,
-        const fastrtps::ReaderQos& reader_qos)
+        const fastdds::rtps::HistoryAttributes& history_attributes,
+        const fastdds::rtps::ReaderAttributes& reader_attributes,
+        const fastdds::rtps::TopicDescription& topic_description,
+        const fastdds::dds::ReaderQos& reader_qos)
 {
     // Copy reader attributes because fast needs it non const (do not ask why)
-    fastrtps::rtps::ReaderAttributes non_const_reader_attributes = reader_attributes;
+    fastdds::rtps::ReaderAttributes non_const_reader_attributes = reader_attributes;
 
     // Create History
-    rtps_history_ = new fastrtps::rtps::ReaderHistory(history_attributes);
+    rtps_history_ = new fastdds::rtps::ReaderHistory(history_attributes);
 
     // Create CommonReader
     // Listener must be set in creation as no callbacks should be missed
     // It is safe to do so here as object is already created and callbacks do not require anything set in this method
-    rtps_reader_ = fastrtps::rtps::RTPSDomain::createRTPSReader(
+    rtps_reader_ = fastdds::rtps::RTPSDomain::createRTPSReader(
         rtps_participant_,
         non_const_reader_attributes,
         payload_pool_,
@@ -119,18 +122,18 @@ void CommonReader::internal_entities_creation_(
 
     // Set listener after entity creation to avoid SEGFAULT (produced when callback using rtps_reader_ is
     // invoked before the variable is fully set)
-    rtps_reader_->setListener(this);
+    rtps_reader_->set_listener(this);
 
     // Register reader with topic
-    if (!rtps_participant_->registerReader(rtps_reader_, topic_attributes, reader_qos))
+    if (!rtps_participant_->register_reader(rtps_reader_, topic_description, reader_qos))
     {
         // In case it fails, remove reader and throw exception
-        fastrtps::rtps::RTPSDomain::removeRTPSReader(rtps_reader_);
+        fastdds::rtps::RTPSDomain::removeRTPSReader(rtps_reader_);
         throw utils::InitializationException(utils::Formatter() << "Error registering topic " << topic_ <<
                       " for Simple RTPSReader in Participant " << participant_id_);
     }
 
-    logInfo(DDSPIPE_RTPS_READER, "New CommonReader created in Participant " << participant_id_ << " for topic " <<
+    EPROSIMA_LOG_INFO(DDSPIPE_RTPS_READER, "New CommonReader created in Participant " << participant_id_ << " for topic " <<
             topic_ << " with guid " << rtps_reader_->getGuid());
 }
 
@@ -139,7 +142,7 @@ core::types::Guid CommonReader::guid() const noexcept
     return rtps_reader_->getGuid();
 }
 
-fastrtps::RecursiveTimedMutex& CommonReader::get_rtps_mutex() const noexcept
+fastdds::RecursiveTimedMutex& CommonReader::get_rtps_mutex() const noexcept
 {
     return rtps_reader_->getMutex();
 }
@@ -160,25 +163,23 @@ utils::ReturnCode CommonReader::take_nts_(
     // Check if there is data available
     if (!(rtps_reader_->get_unread_count() > 0))
     {
-        return utils::ReturnCode::RETCODE_NO_DATA;
+        return utils::ReturnCode::NO_DATA;
     }
 
-    fastrtps::rtps::CacheChange_t* received_change = nullptr;
-    fastrtps::rtps::WriterProxy* wp = nullptr;
-
     // Read first change of the history
-    if (!rtps_reader_->nextUntakenCache(&received_change, &wp))
+    auto received_change = rtps_reader_->next_untaken_cache();
+    if (!received_change)
     {
         // Error reading.
-        return utils::ReturnCode::RETCODE_ERROR;
+        return utils::ReturnCode::ERROR;
     }
 
     // If data received is not correct, discard it and remove it from history
     auto ret = is_data_correct_(received_change);
-    if (!ret)
+    if (ret != utils::ReturnCode::OK)
     {
         // Remove the change in the History and release it in the reader
-        rtps_reader_->getHistory()->remove_change(received_change);
+        rtps_reader_->get_history()->remove_change(received_change);
         return ret;
     }
 
@@ -188,19 +189,19 @@ utils::ReturnCode CommonReader::take_nts_(
     data.reset(data_ptr);
 
     // Remove the change in the History and release it in the reader
-    rtps_reader_->getHistory()->remove_change(received_change);
+    rtps_reader_->get_history()->remove_change(received_change);
 
-    return utils::ReturnCode::RETCODE_OK;
+    return utils::ReturnCode::OK;
 }
 
 RtpsPayloadData* CommonReader::create_data_(
-        const fastrtps::rtps::CacheChange_t& received_change) const noexcept
+        const fastdds::rtps::CacheChange_t& received_change) const noexcept
 {
     return new RtpsPayloadData();
 }
 
 void CommonReader::fill_received_data_(
-        const fastrtps::rtps::CacheChange_t& received_change,
+        const fastdds::rtps::CacheChange_t& received_change,
         RtpsPayloadData& data_to_fill) const noexcept
 {
     // Store the new data that has arrived in the Track data
@@ -215,12 +216,8 @@ void CommonReader::fill_received_data_(
     // NOTE: in case of keyed topics an empty payload is possible
     if (received_change.serializedPayload.length > 0)
     {
-        eprosima::fastrtps::rtps::IPayloadPool* payload_owner =
-                const_cast<eprosima::fastrtps::rtps::IPayloadPool*>(received_change.payload_owner());
-
         payload_pool_->get_payload(
             received_change.serializedPayload,
-            payload_owner,
             data_to_fill.payload);
 
         data_to_fill.payload_owner = payload_pool_.get();
@@ -250,13 +247,13 @@ void CommonReader::enable_nts_() noexcept
     // However, if the topic is best_effort, the reader will discard the samples received when it was disabled.
     if (topic_.topic_qos.is_reliable())
     {
-        std::lock_guard<eprosima::fastrtps::RecursiveTimedMutex> lock(get_rtps_mutex());
+        std::lock_guard<eprosima::fastdds::RecursiveTimedMutex> lock(get_rtps_mutex());
         on_data_available_();
     }
 }
 
 bool CommonReader::should_accept_change_(
-        const fastrtps::rtps::CacheChange_t* change) noexcept
+        const fastdds::rtps::CacheChange_t* change) noexcept
 {
     // Reject samples sent by a Writer from the same Participant this Reader belongs to
     if (come_from_this_participant_(change))
@@ -268,23 +265,23 @@ bool CommonReader::should_accept_change_(
 }
 
 bool CommonReader::come_from_this_participant_(
-        const fastrtps::rtps::CacheChange_t* change) const noexcept
+        const fastdds::rtps::CacheChange_t* change) const noexcept
 {
     return come_from_this_participant_(change->writerGUID);
 }
 
 bool CommonReader::come_from_this_participant_(
-        const fastrtps::rtps::GUID_t guid) const noexcept
+        const fastdds::rtps::GUID_t guid) const noexcept
 {
     return guid.guidPrefix == rtps_reader_->getGuid().guidPrefix;
 }
 
-fastrtps::rtps::HistoryAttributes CommonReader::reckon_history_attributes_(
+fastdds::rtps::HistoryAttributes CommonReader::reckon_history_attributes_(
         const core::types::DdsTopic& topic) noexcept
 {
-    fastrtps::rtps::HistoryAttributes att;
+    fastdds::rtps::HistoryAttributes att;
     att.memoryPolicy =
-            eprosima::fastrtps::rtps::MemoryManagementPolicy_t::PREALLOCATED_WITH_REALLOC_MEMORY_MODE;
+            eprosima::fastdds::rtps::MemoryManagementPolicy_t::PREALLOCATED_WITH_REALLOC_MEMORY_MODE;
 
     att.maximumReservedCaches = topic.topic_qos.history_depth;
     if (att.maximumReservedCaches > 0 && att.initialReservedCaches > att.maximumReservedCaches)
@@ -296,10 +293,10 @@ fastrtps::rtps::HistoryAttributes CommonReader::reckon_history_attributes_(
     return att;
 }
 
-fastrtps::rtps::ReaderAttributes CommonReader::reckon_reader_attributes_(
+fastdds::rtps::ReaderAttributes CommonReader::reckon_reader_attributes_(
         const core::types::DdsTopic& topic) noexcept
 {
-    fastrtps::rtps::ReaderAttributes att;
+    fastdds::rtps::ReaderAttributes att;
 
     // Set Durability
     att.endpoint.durabilityKind = topic.topic_qos.durability_qos;
@@ -310,14 +307,14 @@ fastrtps::rtps::ReaderAttributes CommonReader::reckon_reader_attributes_(
     // Set if topic has key
     if (topic.topic_qos.keyed)
     {
-        att.endpoint.topicKind = eprosima::fastrtps::rtps::WITH_KEY;
+        att.endpoint.topicKind = eprosima::fastdds::rtps::WITH_KEY;
 
         // If the topic has a key, request inline qos (containing the instance handle)
-        att.expectsInlineQos = true;
+        att.expects_inline_qos = true;
     }
     else
     {
-        att.endpoint.topicKind = eprosima::fastrtps::rtps::NO_KEY;
+        att.endpoint.topicKind = eprosima::fastdds::rtps::NO_KEY;
     }
 
     // Ownership and Partitions are not part of RTPS, thus they are set in properties
@@ -325,36 +322,33 @@ fastrtps::rtps::ReaderAttributes CommonReader::reckon_reader_attributes_(
     return att;
 }
 
-fastrtps::TopicAttributes CommonReader::reckon_topic_attributes_(
+fastdds::rtps::TopicDescription CommonReader::reckon_topic_description_(
         const core::types::DdsTopic& topic) noexcept
 {
-    fastrtps::TopicAttributes att;
+    fastdds::rtps::TopicDescription topic_description;
 
-    // Set if topic has key
-    if (topic.topic_qos.keyed)
+    topic_description.topic_name = topic.m_topic_name;
+    topic_description.type_name = topic.type_name;
+
+    fastdds::dds::xtypes::TypeIdentifierPair type_ids_pair;
+    type_ids_pair.type_identifier1(topic.type_ids.type_identifier1());
+
+    // Set TypeInformation of the discovered type
+    fastdds::dds::xtypes::TypeInformation type_information;
+    if (fastdds::dds::RETCODE_OK == fastdds::dds::DomainParticipantFactory::get_instance()->type_object_registry().get_type_information(
+                                    type_ids_pair,
+                                    type_information))
     {
-        att.topicKind = eprosima::fastrtps::rtps::WITH_KEY;
-    }
-    else
-    {
-        att.topicKind = eprosima::fastrtps::rtps::NO_KEY;
+        topic_description.type_information = type_information;
     }
 
-    // Set Topic attributes
-    att.topicName = topic.m_topic_name;
-    att.topicDataType = topic.type_name;
-
-    // Set Topic history attributes
-    att.historyQos.kind = eprosima::fastdds::dds::HistoryQosPolicyKind::KEEP_LAST_HISTORY_QOS;
-    att.historyQos.depth = topic.topic_qos.history_depth;
-
-    return att;
+    return topic_description;
 }
 
-fastrtps::ReaderQos CommonReader::reckon_reader_qos_(
+fastdds::dds::ReaderQos CommonReader::reckon_reader_qos_(
         const core::types::DdsTopic& topic) noexcept
 {
-    fastrtps::ReaderQos properties;
+    fastdds::dds::ReaderQos properties;
 
     // Set Durability
     properties.m_durability.kind =
@@ -380,9 +374,9 @@ fastrtps::ReaderQos CommonReader::reckon_reader_qos_(
     return properties;
 }
 
-void CommonReader::onNewCacheChangeAdded(
-        fastrtps::rtps::RTPSReader* reader,
-        const fastrtps::rtps::CacheChange_t* const change) noexcept
+void CommonReader::on_new_cache_change_added(
+        fastdds::rtps::RTPSReader* reader,
+        const fastdds::rtps::CacheChange_t* const change) noexcept
 {
     monitor_msg_rx(topic_, participant_id_);
 
@@ -402,7 +396,7 @@ void CommonReader::onNewCacheChangeAdded(
             // Remove received change if the CommonReader is disbled and the topic is not reliable
             if (!topic_.topic_qos.is_reliable())
             {
-                reader->getHistory()->remove_change((fastrtps::rtps::CacheChange_t*)change);
+                reader->get_history()->remove_change((fastdds::rtps::CacheChange_t*)change);
                 logDebug(DDSPIPE_RTPS_COMMONREADER_LISTENER,
                         "Change removed from history");
             }
@@ -410,7 +404,7 @@ void CommonReader::onNewCacheChangeAdded(
     }
     else
     {
-        logInfo(
+        EPROSIMA_LOG_INFO(
             DDSPIPE_RTPS_COMMONREADER_LISTENER,
             "Rejected received data in reader " << *this << ".");
 
@@ -420,25 +414,25 @@ void CommonReader::onNewCacheChangeAdded(
         // WARNING: Removing an unacceptable change here is valid given that Fast-DDS internal reader's mutex is locked.
         // If the mutex wasn't locked, the track's transmit thread could take an unacceptable sample before it gets
         // deleted here.
-        reader->getHistory()->remove_change((fastrtps::rtps::CacheChange_t*)change);
+        reader->get_history()->remove_change((fastdds::rtps::CacheChange_t*)change);
     }
 }
 
-void CommonReader::onReaderMatched(
-        fastrtps::rtps::RTPSReader*,
-        fastrtps::rtps::MatchingInfo& info) noexcept
+void CommonReader::on_reader_matched(
+        fastdds::rtps::RTPSReader*,
+        const fastdds::rtps::MatchingInfo& info) noexcept
 {
     if (!come_from_this_participant_(info.remoteEndpointGuid))
     {
-        if (info.status == fastrtps::rtps::MatchingStatus::MATCHED_MATCHING)
+        if (info.status == fastdds::rtps::MatchingStatus::MATCHED_MATCHING)
         {
-            logInfo(DDSPIPE_RTPS_COMMONREADER_LISTENER,
+            EPROSIMA_LOG_INFO(DDSPIPE_RTPS_COMMONREADER_LISTENER,
                     "Reader " << *this << " in topic " << topic_.serialize() << " matched with a new Writer with guid " <<
                     info.remoteEndpointGuid);
         }
         else
         {
-            logInfo(DDSPIPE_RTPS_COMMONREADER_LISTENER,
+            EPROSIMA_LOG_INFO(DDSPIPE_RTPS_COMMONREADER_LISTENER,
                     "Reader " << *this << " in topic " << topic_.serialize() << " unmatched with Writer " <<
                     info.remoteEndpointGuid);
         }
@@ -446,10 +440,10 @@ void CommonReader::onReaderMatched(
 }
 
 void CommonReader::on_requested_incompatible_qos(
-        fastrtps::rtps::RTPSReader*,
+        fastdds::rtps::RTPSReader*,
         eprosima::fastdds::dds::PolicyMask qos) noexcept
 {
-    logWarning(DDSPIPE_RTPS_COMMONREADER_LISTENER,
+    EPROSIMA_LOG_WARNING(DDSPIPE_RTPS_COMMONREADER_LISTENER,
             "TOPIC_MISMATCH_QOS | Reader " << *this << " found a remote Writer with incompatible QoS: " << qos);
 
     monitor_qos_mismatch(topic_);
@@ -457,19 +451,19 @@ void CommonReader::on_requested_incompatible_qos(
 }
 
 void CommonReader::on_sample_lost(
-        fastrtps::rtps::RTPSReader*,
+        fastdds::rtps::RTPSReader*,
         int32_t sample_lost_since_last_update) noexcept
 {
-    logWarning(DDSPIPE_RTPS_COMMONREADER_LISTENER,
+    EPROSIMA_LOG_WARNING(DDSPIPE_RTPS_COMMONREADER_LISTENER,
             "SAMPLE_LOST | On reader " << *this << " a data sample was lost and will not be received");
 
     monitor_msg_lost(topic_, participant_id_);
 }
 
 void CommonReader::on_sample_rejected(
-        fastrtps::rtps::RTPSReader*,
+        fastdds::rtps::RTPSReader*,
         eprosima::fastdds::dds::SampleRejectedStatusKind reason,
-        const fastrtps::rtps::CacheChange_t* const change) noexcept
+        const fastdds::rtps::CacheChange_t* const change) noexcept
 {
     std::string reason_str;
     switch (reason)
@@ -490,15 +484,15 @@ void CommonReader::on_sample_rejected(
             reason_str = "UNKNOWN";
             break;
     }
-    logInfo(DDSPIPE_RTPS_COMMONREADER_LISTENER,
+    EPROSIMA_LOG_INFO(DDSPIPE_RTPS_COMMONREADER_LISTENER,
             "Reader " << *this << " rejected a sample from " << change->writerGUID
                       << ". Reason: " << reason_str);
 }
 
 void CommonReader::on_incompatible_type(
-        fastrtps::rtps::RTPSReader* reader) noexcept
+        fastdds::rtps::RTPSReader* reader) noexcept
 {
-    logWarning(DDSPIPE_RTPS_COMMONREADER_LISTENER,
+    EPROSIMA_LOG_WARNING(DDSPIPE_RTPS_COMMONREADER_LISTENER,
             "TOPIC_MISMATCH_TYPE | Reader " << *this <<
             " discovered a Writer with a matching Topic name but with an incompatible type");
 
@@ -507,31 +501,31 @@ void CommonReader::on_incompatible_type(
 }
 
 utils::ReturnCode CommonReader::is_data_correct_(
-        const fastrtps::rtps::CacheChange_t* received_change) const noexcept
+        const fastdds::rtps::CacheChange_t* received_change) const noexcept
 {
     // Check that the guid is consistent
-    if (received_change->writerGUID == fastrtps::rtps::GUID_t::unknown())
+    if (received_change->writerGUID == fastdds::rtps::GUID_t::unknown())
     {
-        logWarning(DDSPIPE_RTPS_COMMONREADER_LISTENER,
+        EPROSIMA_LOG_WARNING(DDSPIPE_RTPS_COMMONREADER_LISTENER,
                 "Error taking data without correct writer GUID.");
 
-        return utils::ReturnCode::RETCODE_ERROR;
+        return utils::ReturnCode::ERROR;
     }
 
     // Check that the data is consistent
     if (!(received_change->serializedPayload.max_size > 0))
     {
         // Data with 0 bytes is only correct if keyed topic and if data is being disposed
-        if (!(topic_.topic_qos.keyed && received_change->kind != eprosima::fastrtps::rtps::ChangeKind_t::ALIVE))
+        if (!(topic_.topic_qos.keyed && received_change->kind != eprosima::fastdds::rtps::ChangeKind_t::ALIVE))
         {
-            logWarning(DDSPIPE_RTPS_COMMONREADER_LISTENER,
+            EPROSIMA_LOG_WARNING(DDSPIPE_RTPS_COMMONREADER_LISTENER,
                     "Error taking data with length " << received_change->serializedPayload.length << ".");
 
-            return utils::ReturnCode::RETCODE_ERROR;
+            return utils::ReturnCode::ERROR;
         }
     }
 
-    return utils::ReturnCode::RETCODE_OK;
+    return utils::ReturnCode::OK;
 }
 
 } /* namespace rtps */

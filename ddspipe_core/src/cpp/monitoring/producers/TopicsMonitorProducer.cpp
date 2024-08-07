@@ -30,7 +30,7 @@ void TopicsMonitorProducer::init_instance(
 
     if (instance_ != nullptr)
     {
-        logWarning(DDSPIPE_MONITOR, "MONITOR | TopicsMonitorProducer instance is already initialized.");
+        EPROSIMA_LOG_WARNING(DDSPIPE_MONITOR, "MONITOR | TopicsMonitorProducer instance is already initialized.");
         return;
     }
 
@@ -53,7 +53,7 @@ void TopicsMonitorProducer::enable()
 {
     std::lock_guard<std::mutex> lock(mutex_);
 
-    logInfo(DDSPIPE_MONITOR, "MONITOR | Enabling TopicsMonitorProducer.");
+    EPROSIMA_LOG_INFO(DDSPIPE_MONITOR, "MONITOR | Enabling TopicsMonitorProducer.");
 
     enabled_ = true;
 }
@@ -62,7 +62,7 @@ void TopicsMonitorProducer::disable()
 {
     std::lock_guard<std::mutex> lock(mutex_);
 
-    logInfo(DDSPIPE_MONITOR, "MONITOR | Disabling TopicsMonitorProducer.");
+    EPROSIMA_LOG_INFO(DDSPIPE_MONITOR, "MONITOR | Disabling TopicsMonitorProducer.");
 
     enabled_ = false;
 }
@@ -72,7 +72,7 @@ void TopicsMonitorProducer::register_consumer(
 {
     if (!enabled_)
     {
-        logWarning(DDSPIPE_MONITOR,
+        EPROSIMA_LOG_WARNING(DDSPIPE_MONITOR,
                 "MONITOR | Not registering consumer " << consumer->get_name() << " on TopicsMonitorProducer"
                 "since the TopicsMonitorProducer is disabled.");
 
@@ -81,7 +81,7 @@ void TopicsMonitorProducer::register_consumer(
 
     std::lock_guard<std::mutex> lock(mutex_);
 
-    logInfo(DDSPIPE_MONITOR, "MONITOR | Registering consumer " << consumer->get_name() << " on TopicsMonitorProducer.");
+    EPROSIMA_LOG_INFO(DDSPIPE_MONITOR, "MONITOR | Registering consumer " << consumer->get_name() << " on TopicsMonitorProducer.");
 
     consumers_.push_back(std::move(consumer));
 }
@@ -90,7 +90,7 @@ void TopicsMonitorProducer::clear_consumers()
 {
     std::lock_guard<std::mutex> lock(mutex_);
 
-    logInfo(DDSPIPE_MONITOR, "MONITOR | Removing all consumers from TopicsMonitorProducer.");
+    EPROSIMA_LOG_INFO(DDSPIPE_MONITOR, "MONITOR | Removing all consumers from TopicsMonitorProducer.");
 
     consumers_.clear();
 }
@@ -142,7 +142,7 @@ void TopicsMonitorProducer::clear_data()
     // Take the lock to prevent clearing the data while it's being saved
     std::lock_guard<std::mutex> lock(mutex_);
 
-    logInfo(DDSPIPE_MONITOR, "MONITOR | Clearing the data.");
+    EPROSIMA_LOG_INFO(DDSPIPE_MONITOR, "MONITOR | Clearing the data.");
 
     topic_data_.clear();
     participant_data_.clear();
@@ -167,7 +167,7 @@ void TopicsMonitorProducer::msgs_received(
     //      2. Simultaneous calls to msg_received.
     std::lock_guard<std::mutex> lock(mutex_);
 
-    logInfo(DDSPIPE_MONITOR, "MONITOR | Received " << number_of_messages << " messages from Participant " <<
+    EPROSIMA_LOG_INFO(DDSPIPE_MONITOR, "MONITOR | Received " << number_of_messages << " messages from Participant " <<
             participant_id << " on Topic " << topic << ".");
 
     // Register the topic
@@ -198,7 +198,7 @@ void TopicsMonitorProducer::msgs_lost(
     //      2. Simultaneous calls to msg_lost.
     std::lock_guard<std::mutex> lock(mutex_);
 
-    logInfo(DDSPIPE_MONITOR, "MONITOR | Lost " << number_of_messages << " messages from Participant " <<
+    EPROSIMA_LOG_INFO(DDSPIPE_MONITOR, "MONITOR | Lost " << number_of_messages << " messages from Participant " <<
             participant_id << " on Topic " << topic << ".");
 
     // Register the topic
@@ -227,7 +227,7 @@ void TopicsMonitorProducer::type_discovered(
     //      2. Simultaneous calls to msg_lost.
     std::lock_guard<std::mutex> lock(mutex_);
 
-    logInfo(DDSPIPE_MONITOR, "MONITOR | Discovered type " << type_name << ".");
+    EPROSIMA_LOG_INFO(DDSPIPE_MONITOR, "MONITOR | Discovered type " << type_name << ".");
 
     types_discovered_[type_name] = true;
 }
@@ -246,7 +246,7 @@ void TopicsMonitorProducer::type_mismatch(
     //      2. Simultaneous calls to msg_lost.
     std::lock_guard<std::mutex> lock(mutex_);
 
-    logInfo(DDSPIPE_MONITOR, "MONITOR | Type mismatch on Topic " << topic << ".");
+    EPROSIMA_LOG_INFO(DDSPIPE_MONITOR, "MONITOR | Type mismatch on Topic " << topic << ".");
 
     // Register the topic
     topic_data_[topic].name(topic.m_topic_name);
@@ -270,7 +270,7 @@ void TopicsMonitorProducer::qos_mismatch(
     //      2. Simultaneous calls to msg_lost.
     std::lock_guard<std::mutex> lock(mutex_);
 
-    logInfo(DDSPIPE_MONITOR, "MONITOR | QoS mismatch on Topic " << topic << ".");
+    EPROSIMA_LOG_INFO(DDSPIPE_MONITOR, "MONITOR | QoS mismatch on Topic " << topic << ".");
 
     // Register the topic
     topic_data_[topic].name(topic.m_topic_name);
@@ -282,7 +282,7 @@ void TopicsMonitorProducer::qos_mismatch(
 
 void TopicsMonitorProducer::produce_nts_()
 {
-    logInfo(DDSPIPE_MONITOR, "MONITOR | Producing MonitoringTopics.");
+    EPROSIMA_LOG_INFO(DDSPIPE_MONITOR, "MONITOR | Producing MonitoringTopics.");
 
     std::vector<DdsTopic> topics_data;
 
@@ -317,7 +317,7 @@ void TopicsMonitorProducer::produce_nts_()
 
 void TopicsMonitorProducer::consume_nts_()
 {
-    logInfo(DDSPIPE_MONITOR, "MONITOR | Consuming MonitoringTopics.");
+    EPROSIMA_LOG_INFO(DDSPIPE_MONITOR, "MONITOR | Consuming MonitoringTopics.");
 
     for (auto& consumer : consumers_)
     {
@@ -329,7 +329,7 @@ void TopicsMonitorProducer::consume_nts_()
 
 void TopicsMonitorProducer::reset_data_()
 {
-    logInfo(DDSPIPE_MONITOR, "MONITOR | Resetting the messages received and lost for the next period.");
+    EPROSIMA_LOG_INFO(DDSPIPE_MONITOR, "MONITOR | Resetting the messages received and lost for the next period.");
 
     // Reset the data
     for (auto& topic : participant_data_)

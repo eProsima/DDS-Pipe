@@ -17,7 +17,7 @@
 #include <string>
 #include <memory>
 
-#include <fastdds/rtps/transport/TCPTransportDescriptor.h>
+#include <fastdds/rtps/transport/TCPTransportDescriptor.hpp>
 
 #include <cpp_utils/macros/custom_enumeration.hpp>
 

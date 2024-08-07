@@ -16,7 +16,7 @@
 
 #include <string>
 
-#include <fastdds/rtps/common/Locator.h>
+#include <fastdds/rtps/common/Locator.hpp>
 
 #include <ddspipe_participants/library/library_dll.h>
 

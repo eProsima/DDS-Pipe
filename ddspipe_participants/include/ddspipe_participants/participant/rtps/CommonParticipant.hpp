@@ -16,13 +16,15 @@
 
 #include <cpp_utils/memory/Heritable.hpp>
 
-#include <fastdds/rtps/participant/ParticipantDiscoveryInfo.h>
-#include <fastdds/rtps/reader/ReaderDiscoveryInfo.h>
-#include <fastdds/rtps/rtps_fwd.h>
-#include <fastdds/rtps/writer/WriterDiscoveryInfo.h>
-#include <fastrtps/rtps/attributes/RTPSParticipantAttributes.h>
-#include <fastrtps/rtps/participant/RTPSParticipantListener.h>
-#include <fastrtps/rtps/RTPSDomain.h>
+#include <fastdds/rtps/attributes/RTPSParticipantAttributes.hpp>
+#include <fastdds/rtps/builtin/data/ParticipantBuiltinTopicData.hpp>
+#include <fastdds/rtps/builtin/data/PublicationBuiltinTopicData.hpp>
+#include <fastdds/rtps/builtin/data/SubscriptionBuiltinTopicData.hpp>
+#include <fastdds/rtps/participant/ParticipantDiscoveryInfo.hpp>
+#include <fastdds/rtps/participant/RTPSParticipantListener.hpp>
+#include <fastdds/rtps/reader/ReaderDiscoveryStatus.hpp>
+#include <fastdds/rtps/RTPSDomain.hpp>
+#include <fastdds/rtps/writer/WriterDiscoveryStatus.hpp>
 
 #include <ddspipe_core/dynamic/DiscoveryDatabase.hpp>
 #include <ddspipe_core/efficiency/payload/PayloadPool.hpp>
@@ -50,7 +52,7 @@ namespace rtps {
  */
 class CommonParticipant
     : public core::IParticipant
-    , public fastrtps::rtps::RTPSParticipantListener
+    , public fastdds::rtps::RTPSParticipantListener
 {
 public:
 
@@ -127,9 +129,11 @@ public:
      * This method only is for debugging purposes.
      */
     DDSPIPE_PARTICIPANTS_DllAPI
-    virtual void onParticipantDiscovery(
-            fastrtps::rtps::RTPSParticipant* participant,
-            fastrtps::rtps::ParticipantDiscoveryInfo&& info) override;
+    virtual void on_participant_discovery(
+            fastdds::rtps::RTPSParticipant* participant,
+            fastdds::rtps::ParticipantDiscoveryStatus reason,
+            const fastdds::rtps::ParticipantBuiltinTopicData& info,
+            bool& /*should_be_ignored*/) override;
 
     /**
      * @brief Override method from \c RTPSParticipantListener .
@@ -137,9 +141,11 @@ public:
      * This method adds to database the endpoint discovered or modified.
      */
     DDSPIPE_PARTICIPANTS_DllAPI
-    virtual void onReaderDiscovery(
-            fastrtps::rtps::RTPSParticipant* participant,
-            fastrtps::rtps::ReaderDiscoveryInfo&& info) override;
+    virtual void on_reader_discovery(
+            fastdds::rtps::RTPSParticipant* participant,
+            fastdds::rtps::ReaderDiscoveryStatus reason,
+            const fastdds::rtps::SubscriptionBuiltinTopicData& info,
+            bool& /*should_be_ignored*/) override;
 
     /**
      * @brief Override method from \c RTPSParticipantListener .
@@ -147,9 +153,11 @@ public:
      * This method adds to database the endpoint discovered or modified.
      */
     DDSPIPE_PARTICIPANTS_DllAPI
-    virtual void onWriterDiscovery(
-            fastrtps::rtps::RTPSParticipant* participant,
-            fastrtps::rtps::WriterDiscoveryInfo&& info) override;
+    virtual void on_writer_discovery(
+            fastdds::rtps::RTPSParticipant* participant,
+            fastdds::rtps::WriterDiscoveryStatus reason,
+            const fastdds::rtps::PublicationBuiltinTopicData& info,
+            bool& /*should_be_ignored*/) override;
 
     //////////////////
     // STATIC METHODS
@@ -187,14 +195,14 @@ protected:
             const std::shared_ptr<core::PayloadPool>& payload_pool,
             const std::shared_ptr<core::DiscoveryDatabase>& discovery_database,
             const core::types::DomainId& domain_id,
-            const fastrtps::rtps::RTPSParticipantAttributes& participant_attributes);
+            const fastdds::rtps::RTPSParticipantAttributes& participant_attributes);
 
     /**
      * @brief Auxiliary method to create the internal RTPS participant.
      */
     void create_participant_(
             const core::types::DomainId& domain,
-            const fastrtps::rtps::RTPSParticipantAttributes& participant_attributes);
+            const fastdds::rtps::RTPSParticipantAttributes& participant_attributes);
 
     /////
     // RTPS specific methods
@@ -204,7 +212,7 @@ protected:
      *
      * @note This method must be specialized from inherit classes.
      */
-    static fastrtps::rtps::RTPSParticipantAttributes reckon_participant_attributes_(
+    static fastdds::rtps::RTPSParticipantAttributes reckon_participant_attributes_(
             const ParticipantConfiguration* participant_configuration);
 
     /////
@@ -220,13 +228,13 @@ protected:
     const std::shared_ptr<core::DiscoveryDatabase> discovery_database_;
 
     //! Internal RTPS Participant
-    eprosima::fastrtps::rtps::RTPSParticipant* rtps_participant_;
+    eprosima::fastdds::rtps::RTPSParticipant* rtps_participant_;
 
     //! Domain Id to create the internal RTPS Participant.
     core::types::DomainId domain_id_;
 
     //! Participant attributes to create the internal RTPS Participant.
-    fastrtps::rtps::RTPSParticipantAttributes participant_attributes_;
+    fastdds::rtps::RTPSParticipantAttributes participant_attributes_;
 };
 
 } /* namespace rtps */

@@ -13,8 +13,8 @@
 // limitations under the License.
 
 
-#include <fastrtps/rtps/RTPSDomain.h>
-#include <fastrtps/rtps/participant/RTPSParticipant.h>
+#include <fastdds/rtps/RTPSDomain.hpp>
+#include <fastdds/rtps/participant/RTPSParticipant.hpp>
 
 #include <cpp_utils/exception/InconsistencyException.hpp>
 #include <cpp_utils/Log.hpp>
@@ -31,20 +31,20 @@ SpecificQoSReader::SpecificQoSReader(
         const core::types::ParticipantId& participant_id,
         const core::types::DdsTopic& topic,
         const std::shared_ptr<core::PayloadPool>& payload_pool,
-        fastrtps::rtps::RTPSParticipant* rtps_participant,
+        fastdds::rtps::RTPSParticipant* rtps_participant,
         const std::shared_ptr<core::DiscoveryDatabase>& discovery_database)
     : CommonReader(
         participant_id, topic, payload_pool, rtps_participant,
         reckon_history_attributes_(topic),
         reckon_reader_attributes_(topic),
-        reckon_topic_attributes_(topic),
+        reckon_topic_description_(topic),
         reckon_reader_qos_(topic))
     , discovery_database_(discovery_database)
 {
 }
 
 void SpecificQoSReader::fill_received_data_(
-        const fastrtps::rtps::CacheChange_t& received_change,
+        const fastdds::rtps::CacheChange_t& received_change,
         core::types::RtpsPayloadData& data_to_fill) const noexcept
 {
     CommonReader::fill_received_data_(received_change, data_to_fill);
@@ -61,7 +61,7 @@ void SpecificQoSReader::fill_received_data_(
     {
         // Get a message from a writer not in database, this is an error.
         // Remove data and make as it has not been received.
-        logError(
+        EPROSIMA_LOG_ERROR(
             DDSPIPE_SpecificQoSReader,
             "Received a message from Writer " << data_to_fill.source_guid << " that is not stored in DB.");
     }

@@ -18,7 +18,7 @@
 #include <map>
 #include <mutex>
 
-#include <fastdds/rtps/common/SampleIdentity.h>
+#include <fastdds/rtps/common/SampleIdentity.hpp>
 
 #include <ddspipe_core/types/dds/Guid.hpp>
 #include <ddspipe_core/types/participant/ParticipantId.hpp>
@@ -28,9 +28,9 @@ namespace eprosima {
 namespace ddspipe {
 namespace core {
 
-using SampleIdentity = eprosima::fastrtps::rtps::SampleIdentity;
+using SampleIdentity = eprosima::fastdds::rtps::SampleIdentity;
 
-using SequenceNumber = eprosima::fastrtps::rtps::SequenceNumber_t;
+using SequenceNumber = eprosima::fastdds::rtps::SequenceNumber_t;
 
 /**
  * Class used to store the information associated to a service request, so its reply can be forwarded through the
