@@ -28,16 +28,6 @@ namespace ddspipe {
 namespace participants {
 namespace detail {
 
-bool is_keyed_(
-        const eprosima::fastdds::rtps::GUID_t& guid)
-{
-    const eprosima::fastdds::rtps::octet identifier = guid.entityId.value[3];
-
-    // - For writers: NO_KEY = 0x03, WITH_KEY = 0x02
-    // - For readers: NO_KEY = 0x04, WITH_KEY = 0x07
-    return (identifier & 0x0F) == 0x02 || (identifier & 0x0F) == 0x07;
-}
-
 template<class DiscoveryBuiltinTopicData>
 core::types::Endpoint create_common_endpoint_from_info_(
         const DiscoveryBuiltinTopicData& info,
@@ -72,7 +62,7 @@ core::types::Endpoint create_common_endpoint_from_info_(
     // Set Topic with ownership
     endpoint.topic.topic_qos.ownership_qos.set_value(info.ownership.kind);
     // Set Topic key
-    endpoint.topic.topic_qos.keyed.set_value(is_keyed_(info.guid));
+    endpoint.topic.topic_qos.keyed.set_value(info.topic_kind == eprosima::fastdds::rtps::TopicKind_t::WITH_KEY);
 
     // Set TypeIdentifier
     endpoint.topic.type_identifiers.type_identifier1(info.type_information.type_information.complete().typeid_with_size().type_id());

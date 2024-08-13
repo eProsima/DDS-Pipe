@@ -29,12 +29,6 @@ namespace participants {
 namespace detail {
 
 /**
- * @brief Checks if the writer/reader is keyed based on its \c GUID_t .
- */
-bool is_keyed_(
-        const eprosima::fastdds::rtps::GUID_t& guid);
-
-/**
  * @brief Common part to create any endpoint from info object
  */
 template<class DiscoveryBuiltinTopicData>
