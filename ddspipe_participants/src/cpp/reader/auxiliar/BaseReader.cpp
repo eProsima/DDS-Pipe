@@ -122,7 +122,7 @@ utils::ReturnCode BaseReader::take(
     {
         logDevError(DDSPIPE_BASEREADER,
                 "Attempt to take data from disabled Reader in Participant " << participant_id_);
-        return utils::ReturnCode::NOT_ENABLED;
+        return utils::ReturnCode::RETCODE_NOT_ENABLED;
     }
 }
 

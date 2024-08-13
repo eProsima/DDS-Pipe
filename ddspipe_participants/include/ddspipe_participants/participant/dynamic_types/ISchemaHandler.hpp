@@ -39,8 +39,7 @@ public:
 
     virtual void add_schema(
             const fastdds::dds::DynamicType::_ref_type& dynamic_type,
-            const std::string& type_name,
-            const fastdds::dds::xtypes::TypeIdentifier& type_id) = 0;
+            const fastdds::dds::xtypes::TypeIdentifier& type_identifier) = 0;
 
     virtual void add_data(
             const core::types::DdsTopic& topic,

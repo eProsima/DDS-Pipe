@@ -185,7 +185,7 @@ utils::ReturnCode CommonWriter::write_nts_(
     // If still is not able to get a change, return an error code
     if (!new_change)
     {
-        return utils::ReturnCode::ERROR;
+        return utils::ReturnCode::RETCODE_ERROR;
     }
 
     logDebug(DDSPIPE_RTPS_COMMONWRITER,
@@ -197,7 +197,7 @@ utils::ReturnCode CommonWriter::write_nts_(
 
     // Fill cache change with specific data to send
     auto ret = fill_to_send_data_(new_change, write_params, rtps_data);
-    if (ret != utils::ReturnCode::OK)
+    if (ret != utils::ReturnCode::RETCODE_OK)
     {
         EPROSIMA_LOG_ERROR(DDSPIPE_RTPS_COMMONWRITER, "Error setting change to send.");
         return ret;
@@ -211,7 +211,7 @@ utils::ReturnCode CommonWriter::write_nts_(
     // At this point, write params is now the output of adding change
     fill_sent_data_(write_params, rtps_data);
 
-    return utils::ReturnCode::OK;
+    return utils::ReturnCode::RETCODE_OK;
 }
 
 utils::ReturnCode CommonWriter::fill_to_send_data_(
@@ -241,7 +241,7 @@ utils::ReturnCode CommonWriter::fill_to_send_data_(
                     to_send_change_to_fill->serializedPayload))
         {
             logDevError(DDSPIPE_RTPS_COMMONWRITER, "Error getting Payload.");
-            return utils::ReturnCode::ERROR;
+            return utils::ReturnCode::RETCODE_ERROR;
         }
     }
 
@@ -251,7 +251,7 @@ utils::ReturnCode CommonWriter::fill_to_send_data_(
     // Set source time stamp to be the original one
     to_send_params.source_timestamp(data.source_timestamp);
 
-    return utils::ReturnCode::OK;
+    return utils::ReturnCode::RETCODE_OK;
 }
 
 void CommonWriter::fill_sent_data_(
@@ -393,7 +393,7 @@ fastdds::rtps::TopicDescription CommonWriter::reckon_topic_description_(
     // Set TypeInformation of the discovered type
     fastdds::dds::xtypes::TypeInformation type_information;
     if (fastdds::dds::RETCODE_OK == fastdds::dds::DomainParticipantFactory::get_instance()->type_object_registry().get_type_information(
-                                    topic.type_ids,
+                                    topic.type_identifiers,
                                     type_information))
     {
         topic_description.type_information = type_information;

@@ -77,12 +77,12 @@ utils::ReturnCode BaseWriter::write(
     {
         logDevError(DDSPIPE_BASEWRITER,
                 "Attempt to write data from disabled Writer in topic in Participant " << participant_id_);
-        return utils::ReturnCode::NOT_ENABLED;
+        return utils::ReturnCode::RETCODE_NOT_ENABLED;
     }
 
     if (!should_send_sample_())
     {
-        return utils::ReturnCode::OK;
+        return utils::ReturnCode::RETCODE_OK;
     }
 
     return write_nts_(data);

@@ -70,7 +70,7 @@ protected:
     DDSPIPE_CORE_DllAPI
     virtual bool reserve_(
             uint32_t size,
-            eprosima::fastdds::rtps::SerializedPayload_t& payload);
+            types::Payload& payload);
 
     /**
      * @brief Free a memory space.
@@ -86,7 +86,7 @@ protected:
      */
     DDSPIPE_CORE_DllAPI
     virtual bool release_(
-            eprosima::fastdds::rtps::SerializedPayload_t& payload);
+            types::Payload& payload);
 
     //! Increase \c reserve_count_
     DDSPIPE_CORE_DllAPI

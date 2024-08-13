@@ -32,8 +32,6 @@ bool CopyPayloadPool::get_payload(
         SerializedPayload_t& payload)
 {
     reserve_(size, payload);
-    payload.max_size = size;
-    payload.payload_owner = this;
 
     return true;
 }

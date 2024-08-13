@@ -56,9 +56,6 @@ struct DdsPublishingConfiguration : public IConfiguration
 
     //! The DDS topic name to publish in.
     std::string topic_name{};
-
-    //! Whether the LogEntry type should be published or not.
-    bool publish_type = false;
 };
 
 } /* namespace core */

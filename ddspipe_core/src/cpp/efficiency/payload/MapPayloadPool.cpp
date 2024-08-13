@@ -50,8 +50,6 @@ bool MapPayloadPool::get_payload(
     {
         return false;
     }
-    payload.max_size = size;
-    payload.payload_owner = this;
 
     // Store this payload in map
     std::lock_guard<std::mutex> lock(reserved_payloads_mutex_);

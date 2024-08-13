@@ -262,8 +262,7 @@ DiscoveryServerParticipant::reckon_participant_attributes_(
             // Warning: Logical port is not needed unless domain could change
 
             // Add as remote server and add it to builtin
-            params.builtin.metatrafficUnicastLocatorList.push_back(locator);
-            params.defaultUnicastLocatorList.push_back(locator);
+            params.builtin.discovery_config.m_DiscoveryServers.push_back(locator);
 
             logDebug(DDSPIPE_DISCOVERYSERVER_PARTICIPANT,
                     "Add connection address " << address << " for server " << server_prefix <<

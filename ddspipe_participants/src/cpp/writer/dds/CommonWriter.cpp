@@ -116,14 +116,7 @@ utils::ReturnCode CommonWriter::write_nts_(
     }
     else
     {
-        if (payload_pool_->write(writer_, &rtps_data))
-        {
-            return utils::ReturnCode::OK;
-        }
-        else
-        {
-            return utils::ReturnCode::ERROR;
-        }
+        return payload_pool_->write(writer_, &rtps_data);
     }
 }
 

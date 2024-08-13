@@ -19,6 +19,7 @@
 #pragma once
 
 #include <memory>
+#include <set>
 
 #include <fastcdr/cdr/fixed_size_string.hpp>
 
@@ -41,7 +42,7 @@ namespace ddspipe {
 namespace participants {
 
 /**
- * Simple RTPS Participant responsible for registering discovered types
+ * Simple RTPS Participant able to route dynamic types in addition to user data.
  *
  */
 class DynTypesParticipant : public rtps::SimpleParticipant
@@ -57,9 +58,6 @@ public:
 
     DDSPIPE_PARTICIPANTS_DllAPI
     ~DynTypesParticipant();
-
-    DDSPIPE_PARTICIPANTS_DllAPI
-    virtual void init() override;
 
     /**
      * @brief Create a writer object
@@ -97,10 +95,13 @@ protected:
 
     void notify_type_discovered_(
             const fastdds::dds::xtypes::TypeInformation& type_info,
-            const fastcdr::string_255& type_name);
+            const std::string& type_name);
 
     //! Type Object Internal Reader
     std::shared_ptr<InternalReader> type_object_reader_;
+
+    //! Received types set
+    std::set<std::string> received_types_;
 };
 
 } /* namespace participants */

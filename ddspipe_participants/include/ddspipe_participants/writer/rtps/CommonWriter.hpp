@@ -246,7 +246,7 @@ protected:
     static fastdds::rtps::WriterAttributes reckon_writer_attributes_(
             const core::types::DdsTopic& topic) noexcept;
 
-    //! TODO
+    //! Topic Description to create RTPS Writer
     fastdds::rtps::TopicDescription reckon_topic_description_(
             const core::types::DdsTopic& topic) noexcept;
 
@@ -293,7 +293,7 @@ protected:
     //! Writer attributes to create the internal RTPS Writer.
     fastdds::rtps::WriterAttributes writer_attributes_;
 
-    //! TODO
+    //! Topic description to create the internal RTPS Writer
     fastdds::rtps::TopicDescription topic_description_;
 
     //! Writer QoS to create the internal RTPS Writer.

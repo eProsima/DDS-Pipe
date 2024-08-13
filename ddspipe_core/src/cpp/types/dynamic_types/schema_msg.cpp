@@ -20,6 +20,7 @@
 #include <map>
 
 #include <fastdds/dds/core/ReturnCode.hpp>
+#include <fastdds/dds/core/Types.hpp>
 #include <fastdds/dds/xtypes/dynamic_types/detail/dynamic_language_binding.hpp>
 #include <fastdds/dds/xtypes/dynamic_types/DynamicType.hpp>
 #include <fastdds/dds/xtypes/dynamic_types/DynamicTypeMember.hpp>
@@ -68,11 +69,12 @@ fastdds::dds::DynamicType::_ref_type container_internal_type(
         const fastdds::dds::DynamicType::_ref_type& dyn_type)
 {
     fastdds::dds::TypeDescriptor::_ref_type type_descriptor {fastdds::dds::traits<fastdds::dds::TypeDescriptor>::make_shared()};
-    const auto ret = dyn_type->get_descriptor(type_descriptor);
-    if (ret != fastdds::dds::RETCODE_OK)
+    if (fastdds::dds::RETCODE_OK != dyn_type->get_descriptor(type_descriptor))
     {
-        throw utils::InconsistencyException("No Type Descriptor");
+        throw utils::InconsistencyException(
+            "Failed to get Type Descriptor for type: " + dyn_type->get_name().to_string());
     }
+
     return type_descriptor->element_type();
 }
 
@@ -80,11 +82,12 @@ fastdds::dds::BoundSeq array_size(
         const fastdds::dds::DynamicType::_ref_type& dyn_type)
 {
     fastdds::dds::TypeDescriptor::_ref_type type_descriptor {fastdds::dds::traits<fastdds::dds::TypeDescriptor>::make_shared()};
-    const auto ret = dyn_type->get_descriptor(type_descriptor);
-    if (ret != fastdds::dds::RETCODE_OK)
+    if (fastdds::dds::RETCODE_OK != dyn_type->get_descriptor(type_descriptor))
     {
-        throw utils::InconsistencyException("No Type Descriptor");
+        throw utils::InconsistencyException(
+            "Failed to get Type Descriptor for type: " + dyn_type->get_name().to_string());
     }
+
     return type_descriptor->bound();
 }
 
@@ -94,17 +97,23 @@ std::vector<std::pair<std::string, fastdds::dds::DynamicType::_ref_type>> get_me
     std::vector<std::pair<std::string, fastdds::dds::DynamicType::_ref_type>> result;
 
     std::map<fastdds::dds::MemberId, fastdds::dds::DynamicTypeMember::_ref_type> members;
-    dyn_type->get_all_members(members);
+    if (fastdds::dds::RETCODE_OK != dyn_type->get_all_members(members))
+    {
+        throw utils::InconsistencyException(
+            "Failed to get Type Members for type: " + dyn_type->get_name().to_string());
+    }
 
     for (const auto& member : members)
     {
         fastdds::dds::ObjectName dyn_name = member.second->get_name();
+
         fastdds::dds::MemberDescriptor::_ref_type member_descriptor {fastdds::dds::traits<fastdds::dds::MemberDescriptor>::make_shared()};
-        const auto ret = member.second->get_descriptor(member_descriptor);
-        if (ret != fastdds::dds::RETCODE_OK)
+        if (fastdds::dds::RETCODE_OK != member.second->get_descriptor(member_descriptor))
         {
-            throw utils::InconsistencyException("No Member Descriptor");
+            throw utils::InconsistencyException(
+                "Failed to get Type Descriptor of Member with name: " + dyn_name.to_string());
         }
+
         result.emplace_back(
             std::make_pair<std::string, fastdds::dds::DynamicType::_ref_type>(
                 utils::demangle_if_ros_type(dyn_name.to_string()),
@@ -120,12 +129,15 @@ std::string container_kind_to_str(
     auto internal_type = container_internal_type(dyn_type);
     auto this_array_size = array_size(dyn_type);
 
+    // TODO: Change assert -> RETCODE
+    assert(this_array_size.size() == 1); // Multidimensional arrays not supported in ROS2
+
     std::stringstream ss;
     ss << type_kind_to_str(internal_type);
 
     for (const auto& bound : this_array_size)
     {
-        if (bound != fastdds::dds::xtypes::INVALID_LBOUND)
+        if (bound != static_cast<std::uint32_t>(fastdds::dds::LENGTH_UNLIMITED))
         {
             if (allow_bounded)
             {
@@ -156,6 +168,9 @@ std::string type_kind_to_str(
         case fastdds::dds::xtypes::TK_BYTE:
             return "uint8";
 
+        case fastdds::dds::xtypes::TK_INT8:
+            return "int8";
+
         case fastdds::dds::xtypes::TK_INT16:
             return "int16";
 
@@ -164,6 +179,9 @@ std::string type_kind_to_str(
 
         case fastdds::dds::xtypes::TK_INT64:
             return "int64";
+
+        case fastdds::dds::xtypes::TK_UINT8:
+            return "uint8";
 
         case fastdds::dds::xtypes::TK_UINT16:
             return "uint16";
@@ -180,9 +198,6 @@ std::string type_kind_to_str(
         case fastdds::dds::xtypes::TK_FLOAT64:
             return "float64";
 
-        case fastdds::dds::xtypes::TK_CHAR8:
-            return "int8";
-
         case fastdds::dds::xtypes::TK_STRING8:
             return "string";
 
@@ -196,6 +211,7 @@ std::string type_kind_to_str(
             return utils::demangle_if_ros_type((dyn_type->get_name()).to_string());
 
         case fastdds::dds::xtypes::TK_FLOAT128:
+        case fastdds::dds::xtypes::TK_CHAR8:
         case fastdds::dds::xtypes::TK_CHAR16:
         case fastdds::dds::xtypes::TK_STRING16:
         case fastdds::dds::xtypes::TK_ENUM:

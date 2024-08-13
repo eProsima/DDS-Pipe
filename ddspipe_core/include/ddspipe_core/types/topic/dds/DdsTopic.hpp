@@ -89,7 +89,7 @@ struct DdsTopic : public DistributedTopic
     std::string type_name{};
 
     //! Type Identifiers (complete and minimal)
-    fastdds::dds::xtypes::TypeIdentifierPair type_ids;
+    fastdds::dds::xtypes::TypeIdentifierPair type_identifiers;
 };
 
 } /* namespace types */

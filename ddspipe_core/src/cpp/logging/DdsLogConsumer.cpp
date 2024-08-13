@@ -55,12 +55,6 @@ DdsLogConsumer::DdsLogConsumer(
     // Register the type
     fastdds::dds::TypeSupport type(new LogEntryPubSubType());
 
-    if (configuration->publish.publish_type)
-    {
-        // Publish the type
-        type->register_type_object_representation();
-    }
-
     type.register_type(participant_);
 
     // Create the publisher

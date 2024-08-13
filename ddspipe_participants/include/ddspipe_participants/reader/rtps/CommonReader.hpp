@@ -269,7 +269,7 @@ protected:
     static fastdds::rtps::ReaderAttributes reckon_reader_attributes_(
             const core::types::DdsTopic& topic) noexcept;
 
-    //! TODO
+    //! Topic Description to create RTPS Reader
     fastdds::rtps::TopicDescription reckon_topic_description_(
             const core::types::DdsTopic& topic) noexcept;
 
@@ -321,7 +321,7 @@ protected:
     //! Reader attributes to create the internal RTPS Reader.
     fastdds::rtps::ReaderAttributes reader_attributes_;
 
-    //! Topic attributes to create the internal RTPS Reader.
+    //! Topic description to create the internal RTPS Reader.
     fastdds::rtps::TopicDescription topic_description_;
 
     //! Reader QoS to create the internal RTPS Reader.

@@ -33,7 +33,7 @@ PayloadPoolMediator::PayloadPoolMediator(
 {
 }
 
-bool PayloadPoolMediator::write(
+utils::ReturnCode PayloadPoolMediator::write(
         fastdds::dds::DataWriter* writer,
         types::RtpsPayloadData* data)
 {
@@ -45,7 +45,7 @@ bool PayloadPoolMediator::write(
     return writer->write(data);
 }
 
-bool PayloadPoolMediator::write(
+utils::ReturnCode PayloadPoolMediator::write(
         fastdds::dds::DataWriter* writer,
         types::RtpsPayloadData* data,
         fastdds::rtps::WriteParams& params)
@@ -58,7 +58,7 @@ bool PayloadPoolMediator::write(
     return writer->write(data, params);
 }
 
-fastdds::dds::ReturnCode_t PayloadPoolMediator::write(
+utils::ReturnCode PayloadPoolMediator::write(
         fastdds::dds::DataWriter* writer,
         types::RtpsPayloadData* data,
         const fastdds::rtps::InstanceHandle_t& handle)

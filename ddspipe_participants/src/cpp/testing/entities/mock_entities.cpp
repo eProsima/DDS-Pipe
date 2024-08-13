@@ -143,13 +143,13 @@ utils::ReturnCode MockReader::take_nts_(
 
     if (data_queue_.empty())
     {
-        return utils::ReturnCode::NO_DATA;
+        return utils::ReturnCode::RETCODE_NO_DATA;
     }
 
     data.reset(new MockRoutingData(std::move(data_queue_.front())));
     data_queue_.pop();
 
-    return utils::ReturnCode::OK;
+    return utils::ReturnCode::RETCODE_OK;
 }
 
 void MockReader::enable_nts_() noexcept
@@ -181,7 +181,7 @@ utils::ReturnCode MockWriter::write_nts_(
     }
 
     ++waiter_;
-    return utils::ReturnCode::OK;
+    return utils::ReturnCode::RETCODE_OK;
 }
 
 MockRoutingData MockWriter::wait_data()

@@ -56,7 +56,6 @@ bool FastPayloadPool::get_payload(
         // Copy info
         std::memcpy(target_payload.data, src_payload.data, src_payload.length);
         target_payload.length = src_payload.length;
-        target_payload.payload_owner = this;
     }
     else
     {

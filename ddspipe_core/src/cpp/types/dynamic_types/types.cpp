@@ -16,9 +16,8 @@
  * @file types.cpp
  */
 
-#include <fastdds/dds/xtypes/type_representation/TypeObject.hpp>
-
 #include <ddspipe_core/types/dynamic_types/types.hpp>
+#include <ddspipe_core/types/topic/dds/DdsTopic.hpp>
 
 namespace eprosima {
 namespace ddspipe {

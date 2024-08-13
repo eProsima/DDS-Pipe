@@ -32,7 +32,7 @@ utils::ReturnCode XmlHandler::load_xml(
 
     if (ret != fastdds::dds::RETCODE_OK)
     {
-        return utils::ReturnCode::ERROR;
+        return utils::ReturnCode::RETCODE_ERROR;
     }
 
     // Load string if exist
@@ -44,7 +44,7 @@ utils::ReturnCode XmlHandler::load_xml(
 
         if (ret != fastdds::dds::RETCODE_OK)
         {
-            return utils::ReturnCode::ERROR;
+            return utils::ReturnCode::RETCODE_ERROR;
         }
     }
 
@@ -55,11 +55,11 @@ utils::ReturnCode XmlHandler::load_xml(
 
         if (ret != fastdds::dds::RETCODE_OK)
         {
-            return utils::ReturnCode::ERROR;
+            return utils::ReturnCode::RETCODE_ERROR;
         }
     }
 
-    return utils::ReturnCode::OK;
+    return utils::ReturnCode::RETCODE_OK;
 }
 
 } /* namespace participants */

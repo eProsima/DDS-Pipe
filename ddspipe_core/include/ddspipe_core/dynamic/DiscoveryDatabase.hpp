@@ -23,8 +23,8 @@
 #include <string>
 #include <thread>
 
-#include <cpp_utils/ReturnCode.hpp>
 #include <cpp_utils/queue/DBQueue.hpp>
+#include <cpp_utils/ReturnCode.hpp>
 
 #include <ddspipe_core/types/dds/Endpoint.hpp>
 #include <ddspipe_core/types/dds/Guid.hpp>

@@ -66,7 +66,7 @@ utils::ReturnCode SimpleWriter::fill_to_send_data_(
         to_send_params.related_sample_identity(rpc_data.write_params.get_reference().related_sample_identity());
     }
 
-    return utils::ReturnCode::OK;
+    return utils::ReturnCode::RETCODE_OK;
 }
 
 void SimpleWriter::fill_sent_data_(

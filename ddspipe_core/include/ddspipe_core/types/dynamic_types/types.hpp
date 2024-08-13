@@ -40,9 +40,7 @@ struct DynamicTypeData : public core::IRoutingData
 
     fastdds::dds::DynamicType::_ref_type dynamic_type{nullptr};
 
-    fastcdr::string_255 type_name{};
-
-    fastdds::dds::xtypes::TypeIdentifier type_id{};
+    fastdds::dds::xtypes::TypeIdentifier type_identifier{};
 };
 
 DDSPIPE_CORE_DllAPI
