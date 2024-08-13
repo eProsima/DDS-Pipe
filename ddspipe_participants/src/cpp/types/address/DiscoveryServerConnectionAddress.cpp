@@ -20,16 +20,9 @@ namespace participants {
 namespace types {
 
 DiscoveryServerConnectionAddress::DiscoveryServerConnectionAddress(
-        core::types::GuidPrefix discovery_server_guid,
         std::set<Address> addresses)
-    : discovery_server_guid_prefix_(discovery_server_guid)
-    , addresses_(addresses)
+    : addresses_(addresses)
 {
-}
-
-core::types::GuidPrefix DiscoveryServerConnectionAddress::discovery_server_guid_prefix() const noexcept
-{
-    return discovery_server_guid_prefix_;
 }
 
 std::set<Address> DiscoveryServerConnectionAddress::addresses() const noexcept
@@ -39,11 +32,6 @@ std::set<Address> DiscoveryServerConnectionAddress::addresses() const noexcept
 
 bool DiscoveryServerConnectionAddress::is_valid() const noexcept
 {
-    if (!discovery_server_guid_prefix_.is_valid())
-    {
-        return false;
-    }
-
     for (auto address : addresses_)
     {
         if (address.is_valid())
@@ -58,30 +46,20 @@ bool DiscoveryServerConnectionAddress::is_valid() const noexcept
 bool DiscoveryServerConnectionAddress::operator <(
         const DiscoveryServerConnectionAddress& other) const noexcept
 {
-    if (this->discovery_server_guid_prefix() == other.discovery_server_guid_prefix())
-    {
-        // Same Guid
-        return this->addresses() < other.addresses();
-    }
-    else
-    {
-        // Different guid
-        return this->discovery_server_guid_prefix() < other.discovery_server_guid_prefix();
-    }
+    return this->addresses() < other.addresses();
 }
 
 bool DiscoveryServerConnectionAddress::operator ==(
         const DiscoveryServerConnectionAddress& other) const noexcept
 {
-    return (this->discovery_server_guid_prefix() == other.discovery_server_guid_prefix()) &&
-           (this->addresses() == other.addresses());
+    return (this->addresses() == other.addresses());
 }
 
 std::ostream& operator <<(
         std::ostream& output,
         const DiscoveryServerConnectionAddress& address)
 {
-    output << "{{" << address.discovery_server_guid_prefix() << "}[";
+    output << "{[";
     for (auto a : address.addresses())
     {
         output << a << ",";

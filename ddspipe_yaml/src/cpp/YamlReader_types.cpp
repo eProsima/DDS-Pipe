@@ -301,28 +301,22 @@ DiscoveryServerConnectionAddress _get_discovery_server_connection_address_v1(
         const Yaml& yml,
         const YamlReaderVersion version)
 {
-    // GuidPrefix required
-    GuidPrefix server_guid = YamlReader::get<GuidPrefix>(yml, version);
-
     // Addresses required
     std::set<Address> addresses = YamlReader::get_set<Address>(yml, COLLECTION_ADDRESSES_TAG, version);
 
     // Create Connection Address
-    return DiscoveryServerConnectionAddress(server_guid, addresses);
+    return DiscoveryServerConnectionAddress(addresses);
 }
 
 DiscoveryServerConnectionAddress _get_discovery_server_connection_address_latest(
         const Yaml& yml,
         const YamlReaderVersion version)
 {
-    // GuidPrefix required
-    GuidPrefix server_guid = YamlReader::get<GuidPrefix>(yml, DISCOVERY_SERVER_GUID_PREFIX_TAG, version);
-
     // Addresses required
     std::set<Address> addresses = YamlReader::get_set<Address>(yml, COLLECTION_ADDRESSES_TAG, version);
 
     // Create Connection Address
-    return DiscoveryServerConnectionAddress(server_guid, addresses);
+    return DiscoveryServerConnectionAddress(addresses);
 }
 
 template <>

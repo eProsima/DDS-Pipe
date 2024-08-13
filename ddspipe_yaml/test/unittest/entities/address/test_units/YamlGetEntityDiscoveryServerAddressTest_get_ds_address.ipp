@@ -44,13 +44,6 @@ TEST(YamlGetEntityDiscoveryServerAddressTest, get_ds_address)
     {
         Yaml yml_ds_address;
 
-        // Get random guid prefix and add it to yaml
-        core::types::GuidPrefix guid_prefix = random_guid_prefix();
-        Yaml yml_guid;
-        guid_prefix_to_yaml(yml_guid, guid_prefix);
-
-        yml_ds_address[DISCOVERY_SERVER_GUID_PREFIX_TAG] = yml_guid;
-
         // Get random address and add it to yaml
         participants::types::Address address = random_address();
         Yaml yml_addresses;
@@ -70,7 +63,6 @@ TEST(YamlGetEntityDiscoveryServerAddressTest, get_ds_address)
                 YamlReader::get<participants::types::DiscoveryServerConnectionAddress>(yml, "ds-address", LATEST);
 
         // Check result
-        ASSERT_EQ(guid_prefix, result.discovery_server_guid_prefix());
         ASSERT_EQ(result.addresses().size(), 1u);
         ASSERT_EQ(address, *result.addresses().begin());
     }
@@ -78,13 +70,6 @@ TEST(YamlGetEntityDiscoveryServerAddressTest, get_ds_address)
     // several addresses
     {
         Yaml yml_ds_address;
-
-        // Get random guid prefix and add it to yaml
-        core::types::GuidPrefix guid_prefix = random_guid_prefix();
-        Yaml yml_guid;
-        guid_prefix_to_yaml(yml_guid, guid_prefix);
-
-        yml_ds_address[DISCOVERY_SERVER_GUID_PREFIX_TAG] = yml_guid;
 
         // Get random address and add it to yaml
         Yaml yml_addresses;
@@ -111,7 +96,6 @@ TEST(YamlGetEntityDiscoveryServerAddressTest, get_ds_address)
                 YamlReader::get<participants::types::DiscoveryServerConnectionAddress>(yml, "ds-address", LATEST);
 
         // Check result
-        ASSERT_EQ(guid_prefix, result.discovery_server_guid_prefix());
         ASSERT_EQ(result.addresses().size(), TEST_ADDRESSES_NUMBER);
 
         // Check every address introduced in yaml is in result
