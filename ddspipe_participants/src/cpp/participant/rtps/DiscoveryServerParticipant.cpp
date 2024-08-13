@@ -205,14 +205,10 @@ DiscoveryServerParticipant::reckon_participant_attributes_(
         {
             // Invalid connection address, continue with next one
             EPROSIMA_LOG_WARNING(DDSPIPE_DISCOVERYSERVER_PARTICIPANT,
-                    "Discard connection address with remote server: " <<
-                    connection_address.discovery_server_guid_prefix() <<
-                    " in Participant " << configuration->id << " initialization.");
+                    "Discard connection address with remote server in Participant " <<
+                    configuration->id << " initialization.");
             continue;
         }
-
-        // Set Server GUID
-        core::types::GuidPrefix server_prefix = connection_address.discovery_server_guid_prefix();
 
         for (types::Address address : connection_address.addresses())
         {
@@ -220,9 +216,8 @@ DiscoveryServerParticipant::reckon_participant_attributes_(
             {
                 // Invalid ip address, continue with next one
                 EPROSIMA_LOG_WARNING(DDSPIPE_DISCOVERYSERVER_PARTICIPANT,
-                        "Discard connection address with remote server: " <<
-                        connection_address.discovery_server_guid_prefix() <<
-                        " due to invalid ip address " << address.ip() << " in Participant " << configuration->id <<
+                        "Discard connection address with remote server due to invalid ip address " <<
+                        address.ip() << " in Participant " << configuration->id <<
                         " initialization.");
                 continue;
             }
@@ -265,8 +260,7 @@ DiscoveryServerParticipant::reckon_participant_attributes_(
             params.builtin.discovery_config.m_DiscoveryServers.push_back(locator);
 
             logDebug(DDSPIPE_DISCOVERYSERVER_PARTICIPANT,
-                    "Add connection address " << address << " for server " << server_prefix <<
-                    " to Participant " << configuration->id << ".");
+                    "Add connection address " << address << " to Server Participant " << configuration->id << ".");
         }
     }
 

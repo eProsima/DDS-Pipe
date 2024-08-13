@@ -42,7 +42,6 @@ DiscoveryServerConnectionAddress random_connection_address(
     }
 
     return DiscoveryServerConnectionAddress(
-        core::testing::random_guid_prefix(seed, ros),
         addresses
         );
 }
