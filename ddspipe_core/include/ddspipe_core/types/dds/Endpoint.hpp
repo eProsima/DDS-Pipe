@@ -75,23 +75,23 @@ struct Endpoint
     bool operator ==(
             const Endpoint& other) const noexcept;
 
+    //! Kind of the endpoint
+    EndpointKind kind {EndpointKind::invalid};
+
+    //! Unique id of the endpoint
+    Guid guid {};
+
+    //! Topic that this endpoint belongs to
+    DdsTopic topic {};
+
+    //! Specific QoS of the entity
+    SpecificEndpointQoS specific_qos {};
+
     //! Whether the endpoint is currently active
     bool active {true};
 
     //! Id of participant who discovered this endpoint
     ParticipantId discoverer_participant_id {DEFAULT_PARTICIPANT_ID};
-
-    //! Unique id of the endpoint
-    Guid guid {};
-
-    //! Kind of the endpoint
-    EndpointKind kind {EndpointKind::invalid};
-
-    //! Specific QoS of the entity
-    SpecificEndpointQoS specific_qos {};
-
-    //! Topic that this endpoint belongs to
-    DdsTopic topic {};
 };
 
 /**

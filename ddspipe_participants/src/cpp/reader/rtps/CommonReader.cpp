@@ -164,7 +164,7 @@ utils::ReturnCode CommonReader::take_nts_(
     // Check if there is data available
     if (!(rtps_reader_->get_unread_count() > 0))
     {
-        return utils::ReturnCode::NO_DATA;
+        return utils::ReturnCode::RETCODE_NO_DATA;
     }
 
     // Read first change of the history
@@ -172,12 +172,12 @@ utils::ReturnCode CommonReader::take_nts_(
     if (!received_change)
     {
         // Error reading.
-        return utils::ReturnCode::ERROR;
+        return utils::ReturnCode::RETCODE_ERROR;
     }
 
     // If data received is not correct, discard it and remove it from history
     auto ret = is_data_correct_(received_change);
-    if (ret != utils::ReturnCode::OK)
+    if (ret != utils::ReturnCode::RETCODE_OK)
     {
         // Remove the change in the History and release it in the reader
         rtps_reader_->get_history()->remove_change(received_change);
@@ -192,7 +192,7 @@ utils::ReturnCode CommonReader::take_nts_(
     // Remove the change in the History and release it in the reader
     rtps_reader_->get_history()->remove_change(received_change);
 
-    return utils::ReturnCode::OK;
+    return utils::ReturnCode::RETCODE_OK;
 }
 
 RtpsPayloadData* CommonReader::create_data_(
@@ -331,13 +331,13 @@ fastdds::rtps::TopicDescription CommonReader::reckon_topic_description_(
     topic_description.topic_name = topic.m_topic_name;
     topic_description.type_name = topic.type_name;
 
-    fastdds::dds::xtypes::TypeIdentifierPair type_ids_pair;
-    type_ids_pair.type_identifier1(topic.type_ids.type_identifier1());
+    fastdds::dds::xtypes::TypeIdentifierPair type_identifiers;
+    type_identifiers.type_identifier1(topic.type_identifiers.type_identifier1());
 
     // Set TypeInformation of the discovered type
     fastdds::dds::xtypes::TypeInformation type_information;
     if (fastdds::dds::RETCODE_OK == fastdds::dds::DomainParticipantFactory::get_instance()->type_object_registry().get_type_information(
-                                    type_ids_pair,
+                                    type_identifiers,
                                     type_information))
     {
         topic_description.type_information = type_information;
@@ -511,7 +511,7 @@ utils::ReturnCode CommonReader::is_data_correct_(
         EPROSIMA_LOG_WARNING(DDSPIPE_RTPS_COMMONREADER_LISTENER,
                 "Error taking data without correct writer GUID.");
 
-        return utils::ReturnCode::ERROR;
+        return utils::ReturnCode::RETCODE_ERROR;
     }
 
     // Check that the data is consistent
@@ -523,11 +523,11 @@ utils::ReturnCode CommonReader::is_data_correct_(
             EPROSIMA_LOG_WARNING(DDSPIPE_RTPS_COMMONREADER_LISTENER,
                     "Error taking data with length " << received_change->serializedPayload.length << ".");
 
-            return utils::ReturnCode::ERROR;
+            return utils::ReturnCode::RETCODE_ERROR;
         }
     }
 
-    return utils::ReturnCode::OK;
+    return utils::ReturnCode::RETCODE_OK;
 }
 
 } /* namespace rtps */

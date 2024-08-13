@@ -121,7 +121,7 @@ DdsTopic& DdsTopic::operator = (
     Topic::operator =(other);
 
     this->type_name = other.type_name;
-    this->type_ids = other.type_ids;
+    this->type_identifiers = other.type_identifiers;
 
     return *this;
 }

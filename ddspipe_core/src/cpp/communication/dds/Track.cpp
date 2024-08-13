@@ -221,7 +221,7 @@ void Track::transmit_() noexcept
         std::unique_ptr<IRoutingData> data;
         auto ret = reader_->take(data);
 
-        if (ret == utils::ReturnCode::NO_DATA)
+        if (ret == utils::ReturnCode::RETCODE_NO_DATA)
         {
             // There is no more data; reduce the status by 1
             unsigned int previous_status = data_available_status_.fetch_sub(DataAvailableStatus::transmitting_data);
@@ -239,7 +239,7 @@ void Track::transmit_() noexcept
                 continue;
             }
         }
-        else if (ret != utils::ReturnCode::OK)
+        else if (ret != utils::ReturnCode::RETCODE_OK)
         {
             // Error reading data
             EPROSIMA_LOG_WARNING(DDSPIPE_TRACK, "Error taking data in Track " << topic_->serialize() << ". Error code " << ret
@@ -260,7 +260,7 @@ void Track::transmit_() noexcept
 
             ret = writer_it.second->write(*data);
 
-            if (ret != utils::ReturnCode::OK)
+            if (ret != utils::ReturnCode::RETCODE_OK)
             {
                 EPROSIMA_LOG_WARNING(
                     DDSPIPE_TRACK,

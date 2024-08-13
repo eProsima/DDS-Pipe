@@ -97,9 +97,9 @@ protected:
  * Test that the DdsLogConsumer publishes logs when publish::enable is set to true.
  *
  * CASES:
- * - check that the DdsLogConsumer publishes EPROSIMA_LOG_INFOs.
- * - check that the DdsLogConsumer publishes EPROSIMA_LOG_WARNINGs.
- * - check that the DdsLogConsumer publishes EPROSIMA_LOG_ERRORs.
+ * - check that the DdsLogConsumer publishes log info traces.
+ * - check that the DdsLogConsumer publishes log warning traces.
+ * - check that the DdsLogConsumer publishes log error traces.
  */
 TEST_F(DdsLogConsumerTest, publish_logs)
 {
@@ -191,9 +191,9 @@ TEST_F(DdsLogConsumerTest, publish_logs)
  * Test that the DdsLogConsumer doesn't publish when publish::enable is set to false.
  *
  * CASES:
- * - check that the DdsLogConsumer doesn't publish EPROSIMA_LOG_INFOs.
- * - check that the DdsLogConsumer doesn't publish EPROSIMA_LOG_WARNINGs.
- * - check that the DdsLogConsumer doesn't publish EPROSIMA_LOG_ERRORs.
+ * - check that the DdsLogConsumer doesn't publish log info traces.
+ * - check that the DdsLogConsumer doesn't publish log warning traces.
+ * - check that the DdsLogConsumer doesn't publish log error traces.
  */
 TEST_F(DdsLogConsumerTest, dont_publish_logs)
 {

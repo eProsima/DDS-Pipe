@@ -52,7 +52,7 @@ utils::ReturnCode TypeObjectWriter::write_nts_(
     try
     {
         schema_handler_->add_schema(
-                dynamic_type_data.dynamic_type, dynamic_type_data.type_name.to_string(), dynamic_type_data.type_id);
+                dynamic_type_data.dynamic_type, dynamic_type_data.type_identifier);
     }
     catch (const utils::Exception& e)
     {
@@ -60,10 +60,10 @@ utils::ReturnCode TypeObjectWriter::write_nts_(
             DDSPIPE_TYPEOBJECT_WRITER,
             "Error generating schema for type " << dynamic_type_data.dynamic_type->get_name()
                                                 << " : <" << e.what() << ">.");
-        return utils::ReturnCode::ERROR;
+        return utils::ReturnCode::RETCODE_ERROR;
     }
 
-    return utils::ReturnCode::OK;
+    return utils::ReturnCode::RETCODE_OK;
 }
 
 } /* namespace participants */

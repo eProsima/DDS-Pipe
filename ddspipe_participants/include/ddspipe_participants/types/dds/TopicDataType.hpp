@@ -47,7 +47,7 @@ public:
     TopicDataType(
             const std::shared_ptr<core::PayloadPool>& payload_pool,
             const std::string& type_name,
-            const fastdds::dds::xtypes::TypeIdentifierPair& type_ids,
+            const fastdds::dds::xtypes::TypeIdentifierPair& type_identifiers,
             const bool keyed);
 
     //! Default destructor

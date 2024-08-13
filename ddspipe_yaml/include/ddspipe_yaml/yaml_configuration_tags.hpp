@@ -143,7 +143,6 @@ constexpr const char* TIMESTAMP_NANOSECONDS_TAG("nanoseconds"); //! TODO: add co
 constexpr const char* DDS_PUBLISHING_ENABLE_TAG("enable"); //! Whether the publishing is enabled
 constexpr const char* DDS_PUBLISHING_DOMAIN_TAG("domain"); //! The DDS domain id to publish in
 constexpr const char* DDS_PUBLISHING_TOPIC_NAME_TAG("topic-name"); //! The DDS topic name to publish in
-constexpr const char* DDS_PUBLISHING_PUBLISH_TYPE_TAG("publish-type"); //! Whether the LogEntry type should be published
 
 // Custom routes related tags
 constexpr const char* ROUTES_TAG("routes"); //! Forwarding routes

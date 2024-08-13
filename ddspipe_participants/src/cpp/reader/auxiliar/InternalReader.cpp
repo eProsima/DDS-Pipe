@@ -72,14 +72,14 @@ utils::ReturnCode InternalReader::take_nts_(
     // There is no data pending sent
     if (data_to_send_.empty())
     {
-        return utils::ReturnCode::NO_DATA;
+        return utils::ReturnCode::RETCODE_NO_DATA;
     }
 
     // Move first data in queue to input
     data = std::move(data_to_send_.front());
     data_to_send_.pop();
 
-    return utils::ReturnCode::OK;
+    return utils::ReturnCode::RETCODE_OK;
 }
 
 } /* namespace participants */

@@ -18,12 +18,12 @@
 #include <map>
 #include <mutex>
 
-#include <fastdds/dds/core/ReturnCode.hpp>
-
 #include <fastdds/dds/publisher/DataWriter.hpp>
 #include <fastdds/rtps/common/InstanceHandle.hpp>
 #include <fastdds/rtps/common/SerializedPayload.hpp>
 #include <fastdds/rtps/history/IPayloadPool.hpp>
+
+#include <cpp_utils/ReturnCode.hpp>
 
 #include <ddspipe_core/efficiency/payload/PayloadPool.hpp>
 #include <ddspipe_core/types/data/RtpsPayloadData.hpp>
@@ -66,11 +66,10 @@ public:
      * @param writer the writer who has to write the \c data.
      * @param data the data to be written by the \c writer.
      *
-     * @return true if everything OK
-     * @return false if something went wrong
+     * @return ReturnCode::OK if the data is correctly sent or a ReturnCode related to the specific error otherwise.
      */
     DDSPIPE_CORE_DllAPI
-    bool write(
+    utils::ReturnCode write(
             fastdds::dds::DataWriter* writer,
             types::RtpsPayloadData* data);
 
@@ -90,11 +89,10 @@ public:
      * @param data the data to be written by the \c writer.
      * @param params the data to be written by the \c writer.
      *
-     * @return true if everything OK
-     * @return false if something went wrong
+     * @return ReturnCode::OK if the data is correctly sent or a ReturnCode related to the specific error otherwise.
      */
     DDSPIPE_CORE_DllAPI
-    bool write(
+    utils::ReturnCode write(
             fastdds::dds::DataWriter* writer,
             types::RtpsPayloadData* data,
             fastdds::rtps::WriteParams& params);
@@ -115,11 +113,11 @@ public:
      * @param data the data to be written by the \c writer.
      * @param handle the data to be used by the \c writer.
      *
-     * @return true if everything OK
-     * @return false if something went wrong
+     * @return ReturnCode::PRECONDITION_NOT_MET if the handle introduced does not match with the one associated to the
+     * data, ReturnCode::OK if the data is correctly sent and ReturnCode::ERROR otherwise.
      */
     DDSPIPE_CORE_DllAPI
-    fastdds::dds::ReturnCode_t write(
+    utils::ReturnCode write(
             fastdds::dds::DataWriter* writer,
             types::RtpsPayloadData* data,
             const fastdds::rtps::InstanceHandle_t& handle);

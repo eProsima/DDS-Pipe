@@ -31,7 +31,7 @@ using eprosima::ddspipe::core::types::operator <<;
 TopicDataType::TopicDataType(
         const std::shared_ptr<core::PayloadPool>& payload_pool,
         const std::string& type_name,
-        const fastdds::dds::xtypes::TypeIdentifierPair& type_ids,
+        const fastdds::dds::xtypes::TypeIdentifierPair& type_identifiers,
         const bool keyed)
     : payload_pool_(payload_pool)
     , type_name_(type_name)
@@ -45,7 +45,7 @@ TopicDataType::TopicDataType(
     set_name(type_name_.c_str());
 
     // Set Type Identifiers
-    type_identifiers_ = type_ids;
+    type_identifiers_ = type_identifiers;
 }
 
 TopicDataType::~TopicDataType()

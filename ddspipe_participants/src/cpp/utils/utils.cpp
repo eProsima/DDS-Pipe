@@ -75,8 +75,8 @@ core::types::Endpoint create_common_endpoint_from_info_(
     endpoint.topic.topic_qos.keyed.set_value(is_keyed_(info.guid));
 
     // Set TypeIdentifier
-    endpoint.topic.type_ids.type_identifier1(info.type_information.type_information.complete().typeid_with_size().type_id());
-    endpoint.topic.type_ids.type_identifier2(info.type_information.type_information.minimal().typeid_with_size().type_id());
+    endpoint.topic.type_identifiers.type_identifier1(info.type_information.type_information.complete().typeid_with_size().type_id());
+    endpoint.topic.type_identifiers.type_identifier2(info.type_information.type_information.minimal().typeid_with_size().type_id());
 
     // Parse Topic
     core::types::DdsTopic info_topic;

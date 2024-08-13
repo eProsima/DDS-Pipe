@@ -14,13 +14,12 @@
 
 #include <set>
 
-#include <fastdds/dds/core/ReturnCode.hpp>
-
-#include <cpp_utils/exception/UnsupportedException.hpp>
 #include <cpp_utils/exception/ConfigurationException.hpp>
-#include <cpp_utils/exception/InitializationException.hpp>
 #include <cpp_utils/exception/InconsistencyException.hpp>
+#include <cpp_utils/exception/InitializationException.hpp>
+#include <cpp_utils/exception/UnsupportedException.hpp>
 #include <cpp_utils/Log.hpp>
+#include <cpp_utils/ReturnCode.hpp>
 #include <cpp_utils/utils.hpp>
 
 #include <ddspipe_core/core/DdsPipe.hpp>
@@ -154,12 +153,12 @@ utils::ReturnCode DdsPipe::enable() noexcept
             }
         }
 
-        return utils::ReturnCode::OK;
+        return utils::ReturnCode::RETCODE_OK;
     }
     else
     {
         EPROSIMA_LOG_INFO(DDSPIPE, "Trying to enable an already enabled DDS Pipe.");
-        return utils::ReturnCode::PRECONDITION_NOT_MET;
+        return utils::ReturnCode::RETCODE_PRECONDITION_NOT_MET;
     }
 }
 
@@ -175,12 +174,12 @@ utils::ReturnCode DdsPipe::disable() noexcept
 
         deactivate_all_topics_nts_();
 
-        return utils::ReturnCode::OK;
+        return utils::ReturnCode::RETCODE_OK;
     }
     else
     {
         EPROSIMA_LOG_INFO(DDSPIPE, "Trying to disable a disabled DDS Pipe.");
-        return utils::ReturnCode::PRECONDITION_NOT_MET;
+        return utils::ReturnCode::RETCODE_PRECONDITION_NOT_MET;
     }
 }
 
@@ -204,7 +203,7 @@ utils::ReturnCode DdsPipe::reload_allowed_topics_(
     if (*allowed_topics == *allowed_topics_)
     {
         logDebug(DDSPIPE, "Same configuration, do nothing in reload.");
-        return utils::ReturnCode::NO_DATA;
+        return utils::ReturnCode::RETCODE_NO_DATA;
     }
 
     // Set new Allowed list
@@ -214,7 +213,7 @@ utils::ReturnCode DdsPipe::reload_allowed_topics_(
 
     if (!enabled_)
     {
-        return utils::ReturnCode::OK;
+        return utils::ReturnCode::RETCODE_OK;
     }
 
     // It must change the configuration. Check every topic discovered and activate/deactivate it if needed.
@@ -253,7 +252,7 @@ utils::ReturnCode DdsPipe::reload_allowed_topics_(
         }
     }
 
-    return utils::ReturnCode::OK;
+    return utils::ReturnCode::RETCODE_OK;
 }
 
 void DdsPipe::discovered_endpoint_(

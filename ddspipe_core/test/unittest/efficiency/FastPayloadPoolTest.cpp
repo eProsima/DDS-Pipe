@@ -67,8 +67,6 @@ void get_release(
         FastPayloadPool& pool,
         Payload& src_payload)
 {
-    eprosima::fastdds::rtps::IPayloadPool* payload_owner =
-            static_cast<eprosima::fastdds::rtps::IPayloadPool*>(&pool);
     Payload dst_payload;
     ASSERT_TRUE(pool.get_payload(src_payload, dst_payload));
     ASSERT_TRUE(pool.release_payload(dst_payload));

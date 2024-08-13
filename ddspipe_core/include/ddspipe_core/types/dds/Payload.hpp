@@ -20,7 +20,6 @@
 #include <fastdds/rtps/common/InstanceHandle.hpp>
 #include <fastdds/rtps/common/SerializedPayload.hpp>
 #include <fastdds/rtps/common/Time_t.hpp>
-#include <fastdds/rtps/common/Time_t.hpp>
 #include <fastdds/rtps/common/Types.hpp>
 #include <fastdds/rtps/common/WriteParams.hpp>
 
@@ -31,13 +30,13 @@ namespace ddspipe {
 namespace core {
 namespace types {
 
-//! Instance Handler type
+//! Change kind
 using ChangeKind = eprosima::fastdds::rtps::ChangeKind_t;
 
 //! Fast DDS Time
 using DataTime = eprosima::fastdds::rtps::Time_t;
 
-//! Instance Handler type
+//! Instance Handle type
 using InstanceHandle = eprosima::fastdds::rtps::InstanceHandle_t;
 
 //! Ownership Strength configuration

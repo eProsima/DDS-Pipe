@@ -78,7 +78,7 @@ void PayloadPool::add_release_payload_()
 
 bool PayloadPool::reserve_(
         uint32_t size,
-        eprosima::fastdds::rtps::SerializedPayload_t& payload)
+        types::Payload& payload)
 {
     if (size == 0)
     {
@@ -89,6 +89,9 @@ bool PayloadPool::reserve_(
 
     payload.reserve(size);
 
+    payload.max_size = size;
+    payload.payload_owner = this;
+
     logDebug(DDSPIPE_PAYLOADPOOL, "Reserved payload ptr: " << payload.data << ".");
 
     add_reserved_payload_();
@@ -97,11 +100,16 @@ bool PayloadPool::reserve_(
 }
 
 bool PayloadPool::release_(
-        eprosima::fastdds::rtps::SerializedPayload_t& payload)
+        types::Payload& payload)
 {
     logDebug(DDSPIPE_PAYLOADPOOL, "Releasing payload ptr: " << payload.data << ".");
 
+    // Remove payload internal values
+    payload.length = 0;
+    payload.max_size = 0;
+    payload.data = nullptr;
     payload.payload_owner = nullptr;
+    payload.pos = 0;
 
     payload.empty();
 

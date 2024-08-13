@@ -206,7 +206,7 @@ utils::ReturnCode DiscoveryDatabase::erase_endpoint_(
         erased_endpoint_callback(endpoint_to_erase);
     }
 
-    return utils::ReturnCode::OK;
+    return utils::ReturnCode::RETCODE_OK;
 }
 
 void DiscoveryDatabase::add_endpoint(
