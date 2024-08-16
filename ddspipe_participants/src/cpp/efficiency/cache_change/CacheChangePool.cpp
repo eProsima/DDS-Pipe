@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include <fastrtps/rtps/common/Guid.h>
+#include <fastdds/rtps/common/Guid.hpp>
 #include <fastdds/rtps/common/ChangeKind_t.hpp>
 
 #include <ddspipe_participants/efficiency/cache_change/CacheChangePool.hpp>
@@ -47,13 +47,13 @@ fastdds::rtps::CacheChange_t* CacheChangePool::new_element_()
 }
 
 void CacheChangePool::reset_element_(
-        fastrtps::rtps::CacheChange_t* change)
+        fastdds::rtps::CacheChange_t* change)
 {
     // NOTE: This could be done by =operator but it is deleted, so it must be done field by field
-    change->kind = fastrtps::rtps::ALIVE;
+    change->kind = fastdds::rtps::ChangeKind_t::ALIVE;
     change->sequenceNumber.high = 0;
     change->sequenceNumber.low = 0;
-    change->writerGUID = fastrtps::rtps::c_Guid_Unknown;
+    change->writerGUID = fastdds::rtps::c_Guid_Unknown;
     change->instanceHandle.clear();
     change->isRead = 0;
     change->sourceTimestamp.seconds(0);
