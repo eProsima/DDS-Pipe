@@ -120,7 +120,7 @@ public:
      */
     DDSPIPE_PARTICIPANTS_DllAPI
     void on_requested_incompatible_qos(
-            fastrtps::rtps::RTPSReader*,
+            fastdds::rtps::RTPSReader*,
             fastdds::dds::PolicyMask qos) noexcept override;
 
     /**
