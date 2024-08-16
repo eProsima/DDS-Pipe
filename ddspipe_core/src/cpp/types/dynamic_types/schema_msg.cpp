@@ -198,6 +198,9 @@ std::string type_kind_to_str(
         case fastdds::dds::xtypes::TK_FLOAT64:
             return "float64";
 
+        case fastdds::dds::xtypes::TK_CHAR8:
+            return "int8";
+
         case fastdds::dds::xtypes::TK_STRING8:
             return "string";
 
@@ -211,7 +214,6 @@ std::string type_kind_to_str(
             return utils::demangle_if_ros_type((dyn_type->get_name()).to_string());
 
         case fastdds::dds::xtypes::TK_FLOAT128:
-        case fastdds::dds::xtypes::TK_CHAR8:
         case fastdds::dds::xtypes::TK_CHAR16:
         case fastdds::dds::xtypes::TK_STRING16:
         case fastdds::dds::xtypes::TK_ENUM:

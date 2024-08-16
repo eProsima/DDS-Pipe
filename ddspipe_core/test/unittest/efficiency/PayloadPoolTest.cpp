@@ -77,8 +77,6 @@ public:
 
     // Using parent methods and variables as public
     using PayloadPool::PayloadPool;
-    using PayloadPool::get_payload;
-    using PayloadPool::release_payload;
     using PayloadPool::reserve_;
     using PayloadPool::release_;
     using PayloadPool::reserve_count_;
@@ -137,6 +135,8 @@ TEST(PayloadPoolTest, reserve)
 
         // This would (maybe) fail with SEG FAULT if the data has not been correctly set
         payload.data[0] = 16u;
+
+        ASSERT_TRUE(pool.release_(payload));
     }
 
     // large size
@@ -155,6 +155,8 @@ TEST(PayloadPoolTest, reserve)
         // This would (maybe) fail with SEG FAULT if the data has not been correctly set
         payload.data[0] = 4u;
         payload.data[0x1000 - 1] = 5u;
+
+        ASSERT_TRUE(pool.release_(payload));
     }
 }
 
