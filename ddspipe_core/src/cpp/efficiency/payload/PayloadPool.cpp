@@ -104,6 +104,8 @@ bool PayloadPool::release_(
 {
     logDebug(DDSPIPE_PAYLOADPOOL, "Releasing payload ptr: " << payload.data << ".");
 
+    free(payload.data);
+
     // Remove payload internal values
     payload.length = 0;
     payload.max_size = 0;
