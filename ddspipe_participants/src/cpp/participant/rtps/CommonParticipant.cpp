@@ -120,7 +120,8 @@ void CommonParticipant::on_reader_discovery(
 {
     if (info.guid.guidPrefix != participant->getGuid().guidPrefix)
     {
-        core::types::Endpoint info_reader = detail::create_endpoint_from_info_<fastdds::rtps::SubscriptionBuiltinTopicData>(
+        core::types::Endpoint info_reader =
+                detail::create_endpoint_from_info_<fastdds::rtps::SubscriptionBuiltinTopicData>(
             info, this->id());
 
         if (reason == fastdds::rtps::ReaderDiscoveryStatus::DISCOVERED_READER)
@@ -160,7 +161,8 @@ void CommonParticipant::on_writer_discovery(
 {
     if (info.guid.guidPrefix != participant->getGuid().guidPrefix)
     {
-        core::types::Endpoint info_writer = detail::create_endpoint_from_info_<fastdds::rtps::PublicationBuiltinTopicData>(
+        core::types::Endpoint info_writer =
+                detail::create_endpoint_from_info_<fastdds::rtps::PublicationBuiltinTopicData>(
             info, this->id());
 
         if (reason == fastdds::rtps::WriterDiscoveryStatus::DISCOVERED_WRITER)

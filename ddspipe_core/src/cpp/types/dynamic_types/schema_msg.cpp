@@ -68,11 +68,12 @@ std::string type_kind_to_str(
 fastdds::dds::DynamicType::_ref_type container_internal_type(
         const fastdds::dds::DynamicType::_ref_type& dyn_type)
 {
-    fastdds::dds::TypeDescriptor::_ref_type type_descriptor {fastdds::dds::traits<fastdds::dds::TypeDescriptor>::make_shared()};
+    fastdds::dds::TypeDescriptor::_ref_type type_descriptor {fastdds::dds::traits<fastdds::dds::TypeDescriptor>::
+                                                             make_shared()};
     if (fastdds::dds::RETCODE_OK != dyn_type->get_descriptor(type_descriptor))
     {
         throw utils::InconsistencyException(
-            "Failed to get Type Descriptor for type: " + dyn_type->get_name().to_string());
+                  "Failed to get Type Descriptor for type: " + dyn_type->get_name().to_string());
     }
 
     return type_descriptor->element_type();
@@ -81,11 +82,12 @@ fastdds::dds::DynamicType::_ref_type container_internal_type(
 fastdds::dds::BoundSeq array_size(
         const fastdds::dds::DynamicType::_ref_type& dyn_type)
 {
-    fastdds::dds::TypeDescriptor::_ref_type type_descriptor {fastdds::dds::traits<fastdds::dds::TypeDescriptor>::make_shared()};
+    fastdds::dds::TypeDescriptor::_ref_type type_descriptor {fastdds::dds::traits<fastdds::dds::TypeDescriptor>::
+                                                             make_shared()};
     if (fastdds::dds::RETCODE_OK != dyn_type->get_descriptor(type_descriptor))
     {
         throw utils::InconsistencyException(
-            "Failed to get Type Descriptor for type: " + dyn_type->get_name().to_string());
+                  "Failed to get Type Descriptor for type: " + dyn_type->get_name().to_string());
     }
 
     return type_descriptor->bound();
@@ -100,18 +102,19 @@ std::vector<std::pair<std::string, fastdds::dds::DynamicType::_ref_type>> get_me
     if (fastdds::dds::RETCODE_OK != dyn_type->get_all_members(members))
     {
         throw utils::InconsistencyException(
-            "Failed to get Type Members for type: " + dyn_type->get_name().to_string());
+                  "Failed to get Type Members for type: " + dyn_type->get_name().to_string());
     }
 
     for (const auto& member : members)
     {
         fastdds::dds::ObjectName dyn_name = member.second->get_name();
 
-        fastdds::dds::MemberDescriptor::_ref_type member_descriptor {fastdds::dds::traits<fastdds::dds::MemberDescriptor>::make_shared()};
+        fastdds::dds::MemberDescriptor::_ref_type member_descriptor {fastdds::dds::traits<fastdds::dds::MemberDescriptor>
+                                                                     ::make_shared()};
         if (fastdds::dds::RETCODE_OK != member.second->get_descriptor(member_descriptor))
         {
             throw utils::InconsistencyException(
-                "Failed to get Type Descriptor of Member with name: " + dyn_name.to_string());
+                      "Failed to get Type Descriptor of Member with name: " + dyn_name.to_string());
         }
 
         result.emplace_back(
@@ -245,7 +248,8 @@ utils::TreeNode<TreeNodeType> generate_dyn_type_tree(
         {
             // If is struct, the call is recursive.
             // Create new tree node
-            utils::TreeNode<TreeNodeType> parent(member_name, utils::demangle_if_ros_type((type->get_name()).to_string()), true);
+            utils::TreeNode<TreeNodeType> parent(member_name, utils::demangle_if_ros_type(
+                        (type->get_name()).to_string()), true);
 
             // Get all members of this struct
             std::vector<std::pair<std::string,

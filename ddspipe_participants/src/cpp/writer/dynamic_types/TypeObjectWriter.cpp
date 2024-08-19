@@ -52,7 +52,7 @@ utils::ReturnCode TypeObjectWriter::write_nts_(
     try
     {
         schema_handler_->add_schema(
-                dynamic_type_data.dynamic_type, dynamic_type_data.type_identifier);
+            dynamic_type_data.dynamic_type, dynamic_type_data.type_identifier);
     }
     catch (const utils::Exception& e)
     {

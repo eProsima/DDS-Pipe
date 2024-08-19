@@ -38,7 +38,7 @@ utils::ReturnCode XmlHandler::load_xml(
     // Load string if exist
     if (configuration.raw.is_set())
     {
-            ret = fastdds::dds::DomainParticipantFactory::get_instance()->load_XML_profiles_string(
+        ret = fastdds::dds::DomainParticipantFactory::get_instance()->load_XML_profiles_string(
             configuration.raw->c_str(),
             configuration.raw->size());
 
