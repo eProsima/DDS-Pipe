@@ -82,10 +82,10 @@ std::shared_ptr<IReader> DynTypesParticipant::create_reader(
 }
 
 void DynTypesParticipant::on_reader_discovery(
-            fastdds::rtps::RTPSParticipant* participant,
-            fastdds::rtps::ReaderDiscoveryStatus reason,
-            const fastdds::rtps::SubscriptionBuiltinTopicData& info,
-            bool& should_be_ignored)
+        fastdds::rtps::RTPSParticipant* participant,
+        fastdds::rtps::ReaderDiscoveryStatus reason,
+        const fastdds::rtps::SubscriptionBuiltinTopicData& info,
+        bool& should_be_ignored)
 {
     if (info.guid.guidPrefix != participant->getGuid().guidPrefix)
     {
@@ -100,10 +100,10 @@ void DynTypesParticipant::on_reader_discovery(
 }
 
 void DynTypesParticipant::on_writer_discovery(
-            fastdds::rtps::RTPSParticipant* participant,
-            fastdds::rtps::WriterDiscoveryStatus reason,
-            const fastdds::rtps::PublicationBuiltinTopicData& info,
-            bool& should_be_ignored)
+        fastdds::rtps::RTPSParticipant* participant,
+        fastdds::rtps::WriterDiscoveryStatus reason,
+        const fastdds::rtps::PublicationBuiltinTopicData& info,
+        bool& should_be_ignored)
 {
     if (info.guid.guidPrefix != participant->getGuid().guidPrefix)
     {
@@ -118,8 +118,8 @@ void DynTypesParticipant::on_writer_discovery(
 }
 
 void DynTypesParticipant::notify_type_discovered_(
-            const fastdds::dds::xtypes::TypeInformation& type_info,
-            const std::string& type_name)
+        const fastdds::dds::xtypes::TypeInformation& type_info,
+        const std::string& type_name)
 {
     // Check if it exists already
     if (received_types_.find(type_name) != received_types_.end())
@@ -132,22 +132,24 @@ void DynTypesParticipant::notify_type_discovered_(
 
     const auto type_identifier = type_info.complete().typeid_with_size().type_id();
     fastdds::dds::xtypes::TypeObject dyn_type_object;
-    if (fastdds::dds::RETCODE_OK != fastdds::dds::DomainParticipantFactory::get_instance()->type_object_registry().get_type_object(
-            type_identifier,
-            dyn_type_object))
+    if (fastdds::dds::RETCODE_OK !=
+            fastdds::dds::DomainParticipantFactory::get_instance()->type_object_registry().get_type_object(
+                type_identifier,
+                dyn_type_object))
     {
         EPROSIMA_LOG_INFO(DDSPIPE_DYNTYPES_PARTICIPANT,
-            "Failed to get type object of " << type_name << " type");
+                "Failed to get type object of " << type_name << " type");
         return;
     }
 
     // Create Dynamic Type
-    fastdds::dds::DynamicType::_ref_type dyn_type = fastdds::dds::DynamicTypeBuilderFactory::get_instance()->create_type_w_type_object(
-                dyn_type_object)->build();
+    fastdds::dds::DynamicType::_ref_type dyn_type =
+            fastdds::dds::DynamicTypeBuilderFactory::get_instance()->create_type_w_type_object(
+        dyn_type_object)->build();
     if (!dyn_type)
     {
         EPROSIMA_LOG_WARNING(DDSPIPE_DYNTYPES_PARTICIPANT,
-            "Failed to create Dynamic Type " << type_name);
+                "Failed to create Dynamic Type " << type_name);
         return;
     }
 

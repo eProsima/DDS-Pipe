@@ -55,7 +55,8 @@ CommonWriter::~CommonWriter()
 
 void CommonWriter::init()
 {
-    EPROSIMA_LOG_INFO(DDSPIPE_DDS_WRITER, "Initializing writer in " << participant_id_ << " for topic " << topic_ << ".");
+    EPROSIMA_LOG_INFO(DDSPIPE_DDS_WRITER,
+            "Initializing writer in " << participant_id_ << " for topic " << topic_ << ".");
 
     // Create publisher
     dds_publisher_ = dds_participant_->create_publisher(

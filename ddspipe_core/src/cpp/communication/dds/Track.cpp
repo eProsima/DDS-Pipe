@@ -242,8 +242,9 @@ void Track::transmit_() noexcept
         else if (ret != utils::ReturnCode::RETCODE_OK)
         {
             // Error reading data
-            EPROSIMA_LOG_WARNING(DDSPIPE_TRACK, "Error taking data in Track " << topic_->serialize() << ". Error code " << ret
-                                                                    << ". Skipping data and continue.");
+            EPROSIMA_LOG_WARNING(DDSPIPE_TRACK,
+                    "Error taking data in Track " << topic_->serialize() << ". Error code " << ret
+                                                  << ". Skipping data and continue.");
             continue;
         }
 

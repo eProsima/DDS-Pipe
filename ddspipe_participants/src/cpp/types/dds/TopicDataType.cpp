@@ -81,7 +81,7 @@ bool TopicDataType::serialize(
 }
 
 bool TopicDataType::deserialize(
-         fastdds::rtps::SerializedPayload_t& src_payload,
+        fastdds::rtps::SerializedPayload_t& src_payload,
         void* data)
 {
     logDebug(DDSPIPE_DDS_TYPESUPPORT, "Deserializing data " << src_payload << ".");

@@ -81,7 +81,8 @@ void TopicsMonitorProducer::register_consumer(
 
     std::lock_guard<std::mutex> lock(mutex_);
 
-    EPROSIMA_LOG_INFO(DDSPIPE_MONITOR, "MONITOR | Registering consumer " << consumer->get_name() << " on TopicsMonitorProducer.");
+    EPROSIMA_LOG_INFO(DDSPIPE_MONITOR,
+            "MONITOR | Registering consumer " << consumer->get_name() << " on TopicsMonitorProducer.");
 
     consumers_.push_back(std::move(consumer));
 }

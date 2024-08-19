@@ -336,9 +336,10 @@ fastdds::rtps::TopicDescription CommonReader::reckon_topic_description_(
 
     // Set TypeInformation of the discovered type
     fastdds::dds::xtypes::TypeInformation type_information;
-    if (fastdds::dds::RETCODE_OK == fastdds::dds::DomainParticipantFactory::get_instance()->type_object_registry().get_type_information(
-                                    type_identifiers,
-                                    type_information))
+    if (fastdds::dds::RETCODE_OK ==
+            fastdds::dds::DomainParticipantFactory::get_instance()->type_object_registry().get_type_information(
+                type_identifiers,
+                type_information))
     {
         topic_description.type_information = type_information;
     }

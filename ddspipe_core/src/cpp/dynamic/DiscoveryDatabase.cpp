@@ -131,7 +131,8 @@ bool DiscoveryDatabase::add_endpoint_(
         }
         else
         {
-            EPROSIMA_LOG_INFO(DDSPIPE_DISCOVERY_DATABASE, "Inserting a new discovered Endpoint " << new_endpoint << ".");
+            EPROSIMA_LOG_INFO(DDSPIPE_DISCOVERY_DATABASE,
+                    "Inserting a new discovered Endpoint " << new_endpoint << ".");
 
             // Add it to the dictionary
             entities_.insert(std::pair<Guid, Endpoint>(new_endpoint.guid, new_endpoint));

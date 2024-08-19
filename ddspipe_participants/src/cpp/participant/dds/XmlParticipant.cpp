@@ -41,7 +41,8 @@ XmlParticipant::XmlParticipant(
 {
     fastdds::dds::DomainParticipantExtendedQos extended_qos;
     if (xml_specific_configuration_.participant_profile.is_set() &&
-    fastdds::dds::RETCODE_OK == fastdds::dds::DomainParticipantFactory::get_instance()->get_participant_extended_qos_from_profile(
+            fastdds::dds::RETCODE_OK ==
+            fastdds::dds::DomainParticipantFactory::get_instance()->get_participant_extended_qos_from_profile(
                 xml_specific_configuration_.participant_profile.get_value(),
                 extended_qos))
     {

@@ -122,8 +122,8 @@ void register_type_object_representation(
 }
 
 void get_dynamic_type(
-            const SupportedType& type,
-            eprosima::fastdds::dds::DynamicType::_ref_type& dyn_type)
+        const SupportedType& type,
+        eprosima::fastdds::dds::DynamicType::_ref_type& dyn_type)
 {
     auto type_name = to_string(type);
 
