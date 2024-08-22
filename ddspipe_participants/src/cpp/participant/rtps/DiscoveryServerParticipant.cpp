@@ -276,8 +276,12 @@ DiscoveryServerParticipant::reckon_participant_attributes_() const
 
             // PORT
             eprosima::fastdds::rtps::IPLocator::setPhysicalPort(server_locator, address.port());
-            eprosima::fastdds::rtps::IPLocator::setLogicalPort(server_locator, address.port());
-            // Warning: Logical port is not needed unless domain could change
+
+            if (address.is_tcp())
+            {
+                eprosima::fastdds::rtps::IPLocator::setLogicalPort(server_locator, address.port());
+                // Warning: Logical port is not needed unless domain could change
+            }
 
             // Add as remote server and add it to builtin
             params.builtin.discovery_config.m_DiscoveryServers.push_back(server_locator);
