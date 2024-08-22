@@ -296,6 +296,8 @@ DiscoveryServerParticipant::reckon_participant_attributes_() const
                 create_descriptor<eprosima::fastdds::rtps::TCPv4TransportDescriptor>(
             discovery_server_configuration->whitelist);
 
+        descriptor->add_listener_port(0);
+
         // Enable TLS
         if (tls_config.is_active())
         {
@@ -312,6 +314,8 @@ DiscoveryServerParticipant::reckon_participant_attributes_() const
         std::shared_ptr<eprosima::fastdds::rtps::TCPv6TransportDescriptor> descriptor =
                 create_descriptor<eprosima::fastdds::rtps::TCPv6TransportDescriptor>(
             discovery_server_configuration->whitelist);
+
+        descriptor->add_listener_port(0);
 
         // Enable TLS
         if (tls_config.is_active())
