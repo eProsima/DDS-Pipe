@@ -170,21 +170,26 @@ DiscoveryServerParticipant::reckon_participant_attributes_() const
 
         // For any, UDP or TCP
         // Create Locator
-        eprosima::fastdds::rtps::Locator_t locator;
-        locator.kind = address.get_locator_kind();
+        eprosima::fastdds::rtps::Locator_t listening_locator;
+        eprosima::fastdds::rtps::Locator_t connection_locator;
+        listening_locator.kind = address.get_locator_kind();
+        connection_locator.kind = address.get_locator_kind();
 
         // IP
         if (address.is_ipv4())
         {
-            eprosima::fastdds::rtps::IPLocator::setIPv4(locator, address.ip());
+            eprosima::fastdds::rtps::IPLocator::setIPv4(listening_locator, address.ip());
+            eprosima::fastdds::rtps::IPLocator::setIPv4(connection_locator, address.ip());
         }
         else
         {
-            eprosima::fastdds::rtps::IPLocator::setIPv6(locator, address.ip());
+            eprosima::fastdds::rtps::IPLocator::setIPv6(listening_locator, address.ip());
+            eprosima::fastdds::rtps::IPLocator::setIPv6(connection_locator, address.ip());
         }
 
         // Port
-        eprosima::fastdds::rtps::IPLocator::setPhysicalPort(locator, address.port());
+        eprosima::fastdds::rtps::IPLocator::setPhysicalPort(listening_locator, address.port());
+        eprosima::fastdds::rtps::IPLocator::setPhysicalPort(connection_locator, address.external_port());
 
         if (address.is_tcp())
         {
@@ -194,13 +199,13 @@ DiscoveryServerParticipant::reckon_participant_attributes_() const
             // port announced is equal to the internal port.
             // If external port is defined, announced port is external port. This is the one clients,
             // should try to connect, which should match network router public port.
-            eprosima::fastdds::rtps::IPLocator::setPhysicalPort(locator, address.external_port());
-            eprosima::fastdds::rtps::IPLocator::setLogicalPort(locator, address.external_port());
+            eprosima::fastdds::rtps::IPLocator::setLogicalPort(listening_locator, address.port());
+            eprosima::fastdds::rtps::IPLocator::setLogicalPort(connection_locator, address.external_port());
         }
 
         // Add listening address to builtin
-        params.builtin.metatrafficUnicastLocatorList.push_back(locator);
-        params.defaultUnicastLocatorList.push_back(locator);
+        params.builtin.metatrafficUnicastLocatorList.push_back(listening_locator);
+        params.defaultUnicastLocatorList.push_back(listening_locator); // needed???
 
         logDebug(DDSPIPE_DISCOVERYSERVER_PARTICIPANT,
                 "Add listening address " << address << " to Participant " << discovery_server_configuration->id << ".");
