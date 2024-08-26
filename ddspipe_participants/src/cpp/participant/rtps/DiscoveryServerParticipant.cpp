@@ -327,8 +327,8 @@ DiscoveryServerParticipant::reckon_participant_attributes_() const
                         has_connection_descriptor = true;
                         auto descriptor_tmp =
                             create_descriptor<eprosima::fastdds::rtps::TCPv6TransportDescriptor>(configuration->whitelist);
-                        descriptor_tmp->add_listener_port(0);
-                        // descriptor_tmp->interfaceWhiteList.push_back(address.ip());
+                        // descriptor_tmp->add_listener_port(0);
+                        descriptor_tmp->interfaceWhiteList.push_back(address.ip());
 
                         // Enable TLS
                         if (tls_config.is_active())
