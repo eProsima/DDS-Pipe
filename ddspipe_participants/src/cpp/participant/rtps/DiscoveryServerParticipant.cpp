@@ -98,7 +98,7 @@ DiscoveryServerParticipant::reckon_participant_attributes_() const
                 has_listening_udp_ipv4 = true;
 
                 auto descriptor_tmp =
-                    create_descriptor<eprosima::fastdds::rtps::UDPv4TransportDescriptor>(configuration->whitelist);
+                        create_descriptor<eprosima::fastdds::rtps::UDPv4TransportDescriptor>(configuration->whitelist);
                 descriptor = descriptor_tmp;
 
                 eprosima::fastdds::rtps::IPLocator::setIPv4(listening_locator, address.ip());
@@ -111,7 +111,7 @@ DiscoveryServerParticipant::reckon_participant_attributes_() const
                 has_listening_udp_ipv6 = true;
 
                 auto descriptor_tmp =
-                    create_descriptor<eprosima::fastdds::rtps::UDPv6TransportDescriptor>(configuration->whitelist);
+                        create_descriptor<eprosima::fastdds::rtps::UDPv6TransportDescriptor>(configuration->whitelist);
                 descriptor = descriptor_tmp;
 
                 eprosima::fastdds::rtps::IPLocator::setIPv6(listening_locator, address.ip());
@@ -269,7 +269,8 @@ DiscoveryServerParticipant::reckon_participant_attributes_() const
                     {
                         has_connection_descriptor = true;
                         auto descriptor_tmp =
-                            create_descriptor<eprosima::fastdds::rtps::UDPv4TransportDescriptor>(configuration->whitelist);
+                                create_descriptor<eprosima::fastdds::rtps::UDPv4TransportDescriptor>(
+                            configuration->whitelist);
                         // descriptor_tmp->interfaceWhiteList.push_back(address.ip());
                         descriptor = descriptor_tmp;
                     }
@@ -285,7 +286,8 @@ DiscoveryServerParticipant::reckon_participant_attributes_() const
                     {
                         has_connection_descriptor = true;
                         auto descriptor_tmp =
-                            create_descriptor<eprosima::fastdds::rtps::UDPv6TransportDescriptor>(configuration->whitelist);
+                                create_descriptor<eprosima::fastdds::rtps::UDPv6TransportDescriptor>(
+                            configuration->whitelist);
                         // descriptor_tmp->interfaceWhiteList.push_back(address.ip());
                         descriptor = descriptor_tmp;
                     }
@@ -301,7 +303,8 @@ DiscoveryServerParticipant::reckon_participant_attributes_() const
                     {
                         has_connection_descriptor = true;
                         auto descriptor_tmp =
-                            create_descriptor<eprosima::fastdds::rtps::TCPv4TransportDescriptor>(configuration->whitelist);
+                                create_descriptor<eprosima::fastdds::rtps::TCPv4TransportDescriptor>(
+                            configuration->whitelist);
                         descriptor_tmp->add_listener_port(0);
                         // descriptor_tmp->interfaceWhiteList.push_back(address.ip());
 
@@ -326,7 +329,8 @@ DiscoveryServerParticipant::reckon_participant_attributes_() const
                     {
                         has_connection_descriptor = true;
                         auto descriptor_tmp =
-                            create_descriptor<eprosima::fastdds::rtps::TCPv6TransportDescriptor>(configuration->whitelist);
+                                create_descriptor<eprosima::fastdds::rtps::TCPv6TransportDescriptor>(
+                            configuration->whitelist);
                         // descriptor_tmp->add_listener_port(0);
                         descriptor_tmp->interfaceWhiteList.push_back(address.ip());
 
@@ -353,7 +357,7 @@ DiscoveryServerParticipant::reckon_participant_attributes_() const
             {
                 // Set participant as DS CLIENT
                 params.builtin.discovery_config.discoveryProtocol =
-                    eprosima::fastdds::rtps::DiscoveryProtocol::SUPER_CLIENT;
+                        eprosima::fastdds::rtps::DiscoveryProtocol::SUPER_CLIENT;
 
                 // Add descriptor
                 params.userTransports.push_back(descriptor);
