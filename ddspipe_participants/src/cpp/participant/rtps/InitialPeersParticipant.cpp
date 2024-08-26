@@ -128,6 +128,11 @@ fastrtps::rtps::RTPSParticipantAttributes InitialPeersParticipant::reckon_partic
 
                 }
 
+                descriptor->enable_tcp_nodelay = true;
+                descriptor->check_crc = false;
+                descriptor->calculate_crc = false;
+                descriptor->non_blocking_send = true;
+
                 params.userTransports.push_back(descriptor);
             }
             else
@@ -144,6 +149,11 @@ fastrtps::rtps::RTPSParticipantAttributes InitialPeersParticipant::reckon_partic
                 {
                     tls_config.enable_tls(descriptor);
                 }
+
+                descriptor->enable_tcp_nodelay = true;
+                descriptor->check_crc = false;
+                descriptor->calculate_crc = false;
+                descriptor->non_blocking_send = true;
 
                 params.userTransports.push_back(descriptor);
             }
@@ -272,6 +282,11 @@ fastrtps::rtps::RTPSParticipantAttributes InitialPeersParticipant::reckon_partic
             tls_config.enable_tls(descriptor, true);
         }
 
+        descriptor->enable_tcp_nodelay = true;
+        descriptor->check_crc = false;
+        descriptor->calculate_crc = false;
+        descriptor->non_blocking_send = true;
+
         params.userTransports.push_back(descriptor);
 
         logDebug(DDSPIPE_INITIALPEERS_PARTICIPANT,
@@ -288,6 +303,11 @@ fastrtps::rtps::RTPSParticipantAttributes InitialPeersParticipant::reckon_partic
         {
             tls_config.enable_tls(descriptor, true);
         }
+
+        descriptor->enable_tcp_nodelay = true;
+        descriptor->check_crc = false;
+        descriptor->calculate_crc = false;
+        descriptor->non_blocking_send = true;
 
         params.userTransports.push_back(descriptor);
 
