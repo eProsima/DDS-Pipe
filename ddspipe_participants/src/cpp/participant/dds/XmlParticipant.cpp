@@ -36,7 +36,7 @@ XmlParticipant::XmlParticipant(
         const std::shared_ptr<XmlParticipantConfiguration>& participant_configuration,
         const std::shared_ptr<core::PayloadPool>& payload_pool,
         const std::shared_ptr<core::DiscoveryDatabase>& discovery_database)
-    : CommonParticipant(participant_configuration, payload_pool, discovery_database)
+    : CommonParticipant(participant_configuration, payload_pool, discovery_database, reckon_participant_qos_()) // TODO Irene: Check if this is correct
     , xml_specific_configuration_(*reinterpret_cast<XmlParticipantConfiguration*>(configuration_.get()))
 {
     fastdds::dds::DomainParticipantExtendedQos extended_qos;

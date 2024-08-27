@@ -16,6 +16,11 @@
 
 #include <cpp_utils/Log.hpp>
 
+#include <fastdds/rtps/transport/TCPv4TransportDescriptor.hpp>
+#include <fastdds/rtps/transport/TCPv6TransportDescriptor.hpp>
+#include <fastdds/rtps/transport/UDPv4TransportDescriptor.hpp>
+#include <fastdds/rtps/transport/UDPv6TransportDescriptor.hpp>
+
 #include <fastdds/dds/core/ReturnCode.hpp>
 #include <fastdds/dds/domain/DomainParticipantFactory.hpp>
 
@@ -44,16 +49,12 @@ using namespace eprosima::ddspipe::core::types;
 
 CommonParticipant::~CommonParticipant()
 {
-    // In case init has been done, remove everything
-    if (dds_participant_)
+    if (nullptr != dds_participant_)
     {
-        dds_participant_->set_listener(nullptr);
+        // Delete DDS entities contained within the DomainParticipant
+        dds_participant_->delete_contained_entities();
 
-        for (auto& topic : dds_topics_)
-        {
-            dds_participant_->delete_topic(topic.second);
-        }
-
+        // Delete DomainParticipant
         eprosima::fastdds::dds::DomainParticipantFactory::get_instance()->delete_participant(dds_participant_);
     }
 }
@@ -95,6 +96,118 @@ void CommonParticipant::init()
     {
         throw utils::InitializationException(STR_ENTRY << "Error enabling DDS Participant " << id() << ".");
     }
+}
+
+template<>
+DDSPIPE_PARTICIPANTS_DllAPI
+std::shared_ptr<eprosima::fastdds::rtps::UDPv4TransportDescriptor>
+CommonParticipant::create_descriptor(
+        std::set<types::IpType> whitelist)
+{
+    std::shared_ptr<eprosima::fastdds::rtps::UDPv4TransportDescriptor> udp_transport =
+            std::make_shared<eprosima::fastdds::rtps::UDPv4TransportDescriptor>();
+
+    for (const types::IpType& ip : whitelist)
+    {
+        if (types::Address::is_ipv4_correct(ip))
+        {
+            udp_transport->interfaceWhiteList.emplace_back(ip);
+            EPROSIMA_LOG_INFO(DDSPIPE_COMMON_PARTICIPANT,
+                    "Adding " << ip << " to UDP whitelist interfaces.");
+        }
+        else
+        {
+            // Invalid address, continue with next one
+            EPROSIMA_LOG_WARNING(DDSPIPE_COMMON_PARTICIPANT,
+                    "Not valid IPv4. Discarding UDP whitelist interface " << ip << ".");
+        }
+    }
+
+    return udp_transport;
+}
+
+template<>
+DDSPIPE_PARTICIPANTS_DllAPI
+std::shared_ptr<eprosima::fastdds::rtps::UDPv6TransportDescriptor>
+CommonParticipant::create_descriptor(
+        std::set<types::IpType> whitelist)
+{
+    std::shared_ptr<eprosima::fastdds::rtps::UDPv6TransportDescriptor> udp_transport =
+            std::make_shared<eprosima::fastdds::rtps::UDPv6TransportDescriptor>();
+
+    for (const types::IpType& ip : whitelist)
+    {
+        if (types::Address::is_ipv6_correct(ip))
+        {
+            udp_transport->interfaceWhiteList.emplace_back(ip);
+            EPROSIMA_LOG_INFO(DDSPIPE_COMMON_PARTICIPANT,
+                    "Adding " << ip << " to UDP whitelist interfaces.");
+        }
+        else
+        {
+            // Invalid address, continue with next one
+            EPROSIMA_LOG_WARNING(DDSPIPE_COMMON_PARTICIPANT,
+                    "Not valid IPv6. Discarding UDP whitelist interface " << ip << ".");
+        }
+    }
+
+    return udp_transport;
+}
+
+template<>
+DDSPIPE_PARTICIPANTS_DllAPI
+std::shared_ptr<eprosima::fastdds::rtps::TCPv4TransportDescriptor>
+CommonParticipant::create_descriptor(
+        std::set<types::IpType> whitelist)
+{
+    std::shared_ptr<eprosima::fastdds::rtps::TCPv4TransportDescriptor> tcp_transport =
+            std::make_shared<eprosima::fastdds::rtps::TCPv4TransportDescriptor>();
+
+    for (const types::IpType& ip : whitelist)
+    {
+        if (types::Address::is_ipv4_correct(ip))
+        {
+            tcp_transport->interfaceWhiteList.emplace_back(ip);
+            EPROSIMA_LOG_INFO(DDSPIPE_COMMON_PARTICIPANT,
+                    "Adding " << ip << " to TCP whitelist interfaces.");
+        }
+        else
+        {
+            // Invalid address, continue with next one
+            EPROSIMA_LOG_WARNING(DDSPIPE_COMMON_PARTICIPANT,
+                    "Not valid IPv4. Discarding TCP whitelist interface " << ip << ".");
+        }
+    }
+
+    return tcp_transport;
+}
+
+template<>
+DDSPIPE_PARTICIPANTS_DllAPI
+std::shared_ptr<eprosima::fastdds::rtps::TCPv6TransportDescriptor>
+CommonParticipant::create_descriptor(
+        std::set<types::IpType> whitelist)
+{
+    std::shared_ptr<eprosima::fastdds::rtps::TCPv6TransportDescriptor> tcp_transport =
+            std::make_shared<eprosima::fastdds::rtps::TCPv6TransportDescriptor>();
+
+    for (const types::IpType& ip : whitelist)
+    {
+        if (types::Address::is_ipv6_correct(ip))
+        {
+            tcp_transport->interfaceWhiteList.emplace_back(ip);
+            EPROSIMA_LOG_INFO(DDSPIPE_COMMON_PARTICIPANT,
+                    "Adding " << ip << " to TCP whitelist interfaces.");
+        }
+        else
+        {
+            // Invalid address, continue with next one
+            EPROSIMA_LOG_WARNING(DDSPIPE_COMMON_PARTICIPANT,
+                    "Not valid IPv6. Discarding TCP whitelist interface " << ip << ".");
+        }
+    }
+
+    return tcp_transport;
 }
 
 core::types::ParticipantId CommonParticipant::id() const noexcept
@@ -355,10 +468,12 @@ void CommonParticipant::on_data_writer_discovery(
 CommonParticipant::CommonParticipant(
         const std::shared_ptr<SimpleParticipantConfiguration>& participant_configuration,
         const std::shared_ptr<core::PayloadPool>& payload_pool,
-        const std::shared_ptr<core::DiscoveryDatabase>& discovery_database)
+        const std::shared_ptr<core::DiscoveryDatabase>& discovery_database,
+        const fastdds::dds::DomainParticipantQos& participant_qos)
     : configuration_(participant_configuration)
     , payload_pool_(payload_pool)
     , discovery_database_(discovery_database)
+    , participant_qos_(participant_qos)
 {
     // Do nothing
 }
@@ -395,16 +510,16 @@ fastdds::dds::DomainParticipantQos CommonParticipant::reckon_participant_qos_() 
 
 fastdds::dds::DomainParticipant* CommonParticipant::create_dds_participant_()
 {
-    // Set listener mask so reader read its own messages
-    fastdds::dds::StatusMask mask;
-    mask << fastdds::dds::StatusMask::publication_matched();
-    mask << fastdds::dds::StatusMask::subscription_matched();
-
-    return eprosima::fastdds::dds::DomainParticipantFactory::get_instance()->create_participant(
-        configuration_->domain,
-        reckon_participant_qos_(),
-        this,
-        mask);
+    // Set listener mask so reader read its own messages TODO Irene: check if this is needed
+    // fastdds::dds::StatusMask mask;
+    // mask << fastdds::dds::StatusMask::publication_matched();
+    // mask << fastdds::dds::StatusMask::subscription_matched();
+    return eprosima::fastdds::dds::DomainParticipantFactory::get_instance()->create_participant(configuration_->domain, participant_qos_, this);
+    // return eprosima::fastdds::dds::DomainParticipantFactory::get_instance()->create_participant(
+    //     configuration_->domain,
+    //     reckon_participant_qos_(),
+    //     this,
+    //     mask);
 }
 
 fastdds::dds::Topic* CommonParticipant::topic_related_(

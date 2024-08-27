@@ -130,6 +130,20 @@ public:
             const fastdds::dds::PublicationBuiltinTopicData& info,
             bool& /*should_be_ignored*/) override;
 
+    //////////////////
+    // STATIC METHODS
+    //////////////////
+
+    /**
+     * @brief Create a transport descriptor with given whitelist.
+     *
+     * This templated method is specialized for UPDv4, UDPv6, TCPv4 and TCPv6.
+     */
+    template<typename T>
+    DDSPIPE_PARTICIPANTS_DllAPI
+    static std::shared_ptr<T> create_descriptor(
+            std::set<types::IpType> whitelist = {});
+
 protected:
 
     /////////////////////////
@@ -140,7 +154,8 @@ protected:
     CommonParticipant(
             const std::shared_ptr<SimpleParticipantConfiguration>& participant_configuration,
             const std::shared_ptr<core::PayloadPool>& payload_pool,
-            const std::shared_ptr<core::DiscoveryDatabase>& discovery_database);
+            const std::shared_ptr<core::DiscoveryDatabase>& discovery_database,
+            const fastdds::dds::DomainParticipantQos& participant_attributes);
 
     /////////////////////////
     // INTERNAL VIRTUAL METHODS
@@ -194,6 +209,9 @@ protected:
 
     //! DDS Router shared Discovery Database
     const std::shared_ptr<core::DiscoveryDatabase> discovery_database_;
+
+    //! Participant QoS
+    fastdds::dds::DomainParticipantQos participant_qos_;
 };
 
 } /* namespace dds */
