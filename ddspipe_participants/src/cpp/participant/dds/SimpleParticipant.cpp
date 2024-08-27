@@ -36,7 +36,7 @@ SimpleParticipant::SimpleParticipant(
         payload_pool,
         discovery_database,
         reckon_participant_qos_()),
-    configuration_(*reinterpret_cast<SimpleParticipantConfiguration*>(participant_configuration.get()))
+      configuration_(*reinterpret_cast<SimpleParticipantConfiguration*>(participant_configuration.get()))
 {
 }
 

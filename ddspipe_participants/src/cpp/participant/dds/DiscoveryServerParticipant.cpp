@@ -204,8 +204,8 @@ DiscoveryServerParticipant::reckon_participant_qos_() const
                 eprosima::fastdds::rtps::DiscoveryProtocol::SERVER;
 
         // Set SERVER's listening locator for PDP
-        // params.defaultUnicastLocatorList.push_back(listening_locator); TODO: Check if this is needed
         pqos.wire_protocol().builtin.metatrafficUnicastLocatorList.push_back(listening_locator);
+        pqos.wire_protocol().default_unicast_locator_list.push_back(listening_locator);
 
         logDebug(DDSPIPE_DISCOVERYSERVER_PARTICIPANT,
                 "Add listening address " << address << " to Participant " << configuration_.id << ".");
