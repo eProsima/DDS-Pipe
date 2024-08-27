@@ -48,15 +48,11 @@ fastdds::dds::DomainParticipantQos InitialPeersParticipant::reckon_participant_q
     const auto& tls_config = configuration_.tls_configuration;
 
     // Needed values to check at the end if descriptor must be set
-    bool has_listening_addresses = false;
     bool has_listening_tcp_ipv4 = false;
     bool has_listening_tcp_ipv6 = false;
-    bool has_connection_tcp_ipv4 = false;
-    bool has_connection_tcp_ipv6 = false;
-    bool has_connection_udp_ipv4 = false;
-    bool has_connection_udp_ipv6 = false;
-    bool has_udp_ipv4 = false;
-    bool has_udp_ipv6 = false;
+    bool has_listening_udp_ipv4 = false;
+    bool has_listening_udp_ipv6 = false;
+    bool has_connection_descriptor = false;
 
     pqos.transport().use_builtin_transports = false;
 
@@ -73,16 +69,46 @@ fastdds::dds::DomainParticipantQos InitialPeersParticipant::reckon_participant_q
             continue;
         }
 
-        has_listening_addresses = true;
+        eprosima::fastdds::rtps::Locator locator;
+        locator.kind = address.get_locator_kind();
+        eprosima::fastdds::rtps::IPLocator::setPhysicalPort(locator, address.port());
 
-        // TCP Listening WAN address
-        if (address.is_tcp())
+
+        std::shared_ptr<eprosima::fastdds::rtps::TransportDescriptorInterface> descriptor;
+
+        switch (address.get_locator_kind())
         {
-            if (address.is_ipv4())
+            case LOCATOR_KIND_UDPv4:
+            {
+                has_listening_udp_ipv4 = true;
+
+                auto descriptor_tmp =
+                        create_descriptor<eprosima::fastdds::rtps::UDPv4TransportDescriptor>(configuration_.whitelist);
+                descriptor = descriptor_tmp;
+
+                eprosima::fastdds::rtps::IPLocator::setIPv4(locator, address.ip());
+
+                break;
+            }
+
+            case LOCATOR_KIND_UDPv6:
+            {
+                has_listening_udp_ipv6 = true;
+
+                auto descriptor_tmp =
+                        create_descriptor<eprosima::fastdds::rtps::UDPv6TransportDescriptor>(configuration_.whitelist);
+                descriptor = descriptor_tmp;
+
+                eprosima::fastdds::rtps::IPLocator::setIPv6(locator, address.ip());
+
+                break;
+            }
+
+            case LOCATOR_KIND_TCPv4:
             {
                 has_listening_tcp_ipv4 = true;
 
-                std::shared_ptr<eprosima::fastdds::rtps::TCPv4TransportDescriptor> descriptor;
+                std::shared_ptr<eprosima::fastdds::rtps::TCPv4TransportDescriptor> descriptor_tmp;
 
                 // We check if several descriptors share a WAN address.
                 // If so, we add a new port to the previously created descriptor.
@@ -97,7 +123,7 @@ fastdds::dds::DomainParticipantQos InitialPeersParticipant::reckon_participant_q
                     if ((tmp_descriptor != nullptr) && (address.ip() == tmp_descriptor->get_WAN_address()))
                     {
                         // Save in the new descriptor the previously added descriptor with the same WAN address
-                        descriptor = tmp_descriptor;
+                        descriptor_tmp = tmp_descriptor;
                         // Set that a descriptor with same WAN address was found
                         same_wan_addr = true;
                         // Remove the previously added descriptor as this will be replaced by the same one updated with
@@ -110,79 +136,63 @@ fastdds::dds::DomainParticipantQos InitialPeersParticipant::reckon_participant_q
                 // Add the new locator to the descriptor if another with the same wan address was found
                 if (same_wan_addr)
                 {
-                    descriptor->add_listener_port(address.port());
+                    descriptor_tmp->add_listener_port(address.port());
                 }
                 else
                 {
-                    descriptor = create_descriptor<eprosima::fastdds::rtps::TCPv4TransportDescriptor>(
+                    descriptor_tmp = create_descriptor<eprosima::fastdds::rtps::TCPv4TransportDescriptor>(
                         configuration_.whitelist);
-                    descriptor->add_listener_port(address.port());
-                    descriptor->set_WAN_address(address.ip());
+                    descriptor_tmp->add_listener_port(address.port());
+                    descriptor_tmp->set_WAN_address(address.ip());
 
                     // Enable TLS
                     if (tls_config.is_active())
                     {
-                        tls_config.enable_tls(descriptor);
+                        tls_config.enable_tls(descriptor_tmp);
                     }
 
                 }
 
-                pqos.transport().user_transports.push_back(descriptor);
+                descriptor = descriptor_tmp;
+
+                eprosima::fastdds::rtps::IPLocator::setPhysicalPort(locator, address.external_port());
+                eprosima::fastdds::rtps::IPLocator::setLogicalPort(locator, 0);
+                eprosima::fastdds::rtps::IPLocator::setIPv4(locator, address.ip());
+
+                break;
             }
-            else
+
+            case LOCATOR_KIND_TCPv6:
             {
                 has_listening_tcp_ipv6 = true;
 
-                std::shared_ptr<eprosima::fastdds::rtps::TCPv6TransportDescriptor> descriptor =
+                std::shared_ptr<eprosima::fastdds::rtps::TCPv6TransportDescriptor> descriptor_tmp =
                         create_descriptor<eprosima::fastdds::rtps::TCPv6TransportDescriptor>(configuration_.whitelist);
 
-                descriptor->add_listener_port(address.port());
+                descriptor_tmp->add_listener_port(address.port());
 
                 // Enable TLS
                 if (tls_config.is_active())
                 {
-                    tls_config.enable_tls(descriptor);
+                    tls_config.enable_tls(descriptor_tmp);
                 }
 
-                pqos.transport().user_transports.push_back(descriptor);
+                descriptor = descriptor_tmp;
+
+                eprosima::fastdds::rtps::IPLocator::setPhysicalPort(locator, address.external_port());
+                eprosima::fastdds::rtps::IPLocator::setLogicalPort(locator, 0);
+                eprosima::fastdds::rtps::IPLocator::setIPv6(locator, address.ip());
+
+                break;
+
             }
-        }
-        else
-        {
-            has_udp_ipv4 = address.is_ipv4();
-            has_udp_ipv6 = !address.is_ipv4();
+
+            default:
+                break;
         }
 
-        // For any, UDP or TCP
-        // Create Locator
-        eprosima::fastdds::rtps::Locator_t locator;
-        locator.kind = address.get_locator_kind();
-
-        // IP
-        if (address.is_ipv4())
-        {
-            eprosima::fastdds::rtps::IPLocator::setIPv4(locator, address.ip());
-        }
-        else
-        {
-            eprosima::fastdds::rtps::IPLocator::setIPv6(locator, address.ip());
-        }
-
-        // Set Logical port for every locator
-        eprosima::fastdds::rtps::IPLocator::setPhysicalPort(locator, address.port());
-
-        // In TCP case, set Physical port
-        if (address.is_tcp())
-        {
-            // Server side
-            // Internal local port is the one passed to add_listener_port (port value).
-            // If external port is not defined, it gets internal port value. Therefore, the physical
-            // port announced is equal to the internal port.
-            // If external port is defined, announced port is external port. This is the one clients,
-            // should try to connect, which should match network router public port.
-            eprosima::fastdds::rtps::IPLocator::setPhysicalPort(locator, address.external_port());
-            eprosima::fastdds::rtps::IPLocator::setLogicalPort(locator, 0);
-        }
+        // Add descriptor
+        pqos.transport().user_transports.push_back(descriptor);
 
         // Add listening address to builtin
         pqos.wire_protocol().builtin.metatrafficUnicastLocatorList.push_back(locator);
@@ -206,132 +216,127 @@ fastdds::dds::DomainParticipantQos InitialPeersParticipant::reckon_participant_q
         }
 
         // Create Locator for connection initial peers
-        eprosima::fastdds::rtps::Locator_t locator;
-
-        // KIND
+        eprosima::fastdds::rtps::Locator locator;
         locator.kind = connection_address.get_locator_kind();
-
-        // In case it is TCP mark has_connection_tcp as true
-        if (connection_address.is_tcp())
-        {
-            has_connection_tcp_ipv4 = connection_address.is_ipv4();
-            has_connection_tcp_ipv6 = !connection_address.is_ipv4();
-        }
-        else
-        {
-            has_connection_udp_ipv4 = connection_address.is_ipv4();
-            has_connection_udp_ipv6 = !connection_address.is_ipv4();
-            has_udp_ipv4 = connection_address.is_ipv4();
-            has_udp_ipv6 = !connection_address.is_ipv4();
-        }
-
-        // IP
-        if (connection_address.is_ipv4())
-        {
-            eprosima::fastdds::rtps::IPLocator::setIPv4(locator, connection_address.ip());
-        }
-        else
-        {
-            eprosima::fastdds::rtps::IPLocator::setIPv6(locator, connection_address.ip());
-        }
-
-        // Set Physical port for every locator
         eprosima::fastdds::rtps::IPLocator::setPhysicalPort(locator, connection_address.port());
 
-        // TCP client side
-        // Initial peer physical port must match server's public port. If server specified an external port,
-        // client port value must be server's external port. Client's external port have no effect.
+        std::shared_ptr<eprosima::fastdds::rtps::TransportDescriptorInterface> descriptor;
 
-        // In TCP case, set Logical port
-        if (connection_address.is_tcp())
+        switch (connection_address.get_locator_kind())
         {
-            eprosima::fastdds::rtps::IPLocator::setLogicalPort(locator, 0);
+            case LOCATOR_KIND_UDPv4:
+            {
+                if (!has_listening_udp_ipv4)
+                {
+                    has_connection_descriptor = true;
+                    auto descriptor_tmp =
+                            create_descriptor<eprosima::fastdds::rtps::UDPv4TransportDescriptor>(
+                        configuration_.whitelist);
+                    // descriptor_tmp->interfaceWhiteList.push_back(connection_address.ip());
+                    descriptor = descriptor_tmp;
+
+                    // To avoid creating a multicast transport in UDP when non listening addresses
+                    // Fast requires an empty locator that will be set by default afterwards
+                    eprosima::fastdds::rtps::Locator_t empty_locator;
+                    empty_locator.kind = LOCATOR_KIND_UDPv4;
+                    pqos.wire_protocol().builtin.metatrafficUnicastLocatorList.push_back(empty_locator);
+                }
+
+                eprosima::fastdds::rtps::IPLocator::setIPv4(locator, connection_address.ip());
+
+                break;
+            }
+
+            case LOCATOR_KIND_UDPv6:
+            {
+                if (!has_listening_udp_ipv6)
+                {
+                    has_connection_descriptor = true;
+                    auto descriptor_tmp =
+                            create_descriptor<eprosima::fastdds::rtps::UDPv6TransportDescriptor>(
+                        configuration_.whitelist);
+                    // descriptor_tmp->interfaceWhiteList.push_back(connection_address.ip());
+                    descriptor = descriptor_tmp;
+
+                    // To avoid creating a multicast transport in UDP when non listening addresses
+                    // Fast requires an empty locator that will be set by default afterwards
+                    eprosima::fastdds::rtps::Locator_t empty_locator;
+                    empty_locator.kind = LOCATOR_KIND_UDPv6;
+                    pqos.wire_protocol().builtin.metatrafficUnicastLocatorList.push_back(empty_locator);
+                }
+
+                eprosima::fastdds::rtps::IPLocator::setIPv6(locator, connection_address.ip());
+
+                break;
+            }
+
+            case LOCATOR_KIND_TCPv4:
+            {
+                if (!has_listening_tcp_ipv4)
+                {
+                    has_connection_descriptor = true;
+                    auto descriptor_tmp =
+                            create_descriptor<eprosima::fastdds::rtps::TCPv4TransportDescriptor>(
+                        configuration_.whitelist);
+                    descriptor_tmp->add_listener_port(0);
+                    // descriptor_tmp->interfaceWhiteList.push_back(address.ip());
+
+                    // Enable TLS
+                    if (tls_config.is_active())
+                    {
+                        tls_config.enable_tls(descriptor_tmp, true);
+                    }
+
+                    descriptor = descriptor_tmp;
+                }
+
+                eprosima::fastdds::rtps::IPLocator::setLogicalPort(locator, 0);
+                eprosima::fastdds::rtps::IPLocator::setIPv4(locator, connection_address.ip());
+
+                break;
+            }
+
+            case LOCATOR_KIND_TCPv6:
+            {
+                if (!has_listening_tcp_ipv6)
+                {
+                    has_connection_descriptor = true;
+                    auto descriptor_tmp =
+                            create_descriptor<eprosima::fastdds::rtps::TCPv6TransportDescriptor>(
+                        configuration_.whitelist);
+                    // descriptor_tmp->add_listener_port(0);
+                    descriptor_tmp->interfaceWhiteList.push_back(connection_address.ip());
+
+                    // Enable TLS
+                    if (tls_config.is_active())
+                    {
+                        tls_config.enable_tls(descriptor_tmp, true);
+                    }
+
+                    descriptor = descriptor_tmp;
+                }
+
+                eprosima::fastdds::rtps::IPLocator::setLogicalPort(locator, 0);
+                eprosima::fastdds::rtps::IPLocator::setIPv6(locator, connection_address.ip());
+
+                break;
+            }
+
+            default:
+                break;
+        }
+
+        if (has_connection_descriptor)
+        {
+            // Add descriptor
+            pqos.transport().user_transports.push_back(descriptor);
+
+            logDebug(DDSPIPE_INITIALPEERS_PARTICIPANT,
+                "Add connection address " << connection_address << " to Participant " << configuration_.id << ".");
         }
 
         // Add it to builtin
         pqos.wire_protocol().builtin.initialPeersList.push_back(locator);
-
-        logDebug(DDSPIPE_INITIALPEERS_PARTICIPANT,
-                "Add connection address " << connection_address <<
-                " to Participant " << configuration_.id << ".");
-    }
-
-    /////
-    // Create specific descriptors if needed
-
-    // If has TCP connections but not TCP listening addresses, it must specify the TCP transport
-    if (has_connection_tcp_ipv4 && !has_listening_tcp_ipv4)
-    {
-        std::shared_ptr<eprosima::fastdds::rtps::TCPv4TransportDescriptor> descriptor =
-                create_descriptor<eprosima::fastdds::rtps::TCPv4TransportDescriptor>(configuration_.whitelist);
-
-        // Enable TLS
-        if (tls_config.is_active())
-        {
-            tls_config.enable_tls(descriptor, true);
-        }
-
-        pqos.transport().user_transports.push_back(descriptor);
-
-        logDebug(DDSPIPE_INITIALPEERS_PARTICIPANT,
-                "Adding TCPv4 Transport to Participant " << configuration_.id << ".");
-    }
-
-    if (has_connection_tcp_ipv6 && !has_listening_tcp_ipv6)
-    {
-        std::shared_ptr<eprosima::fastdds::rtps::TCPv6TransportDescriptor> descriptor =
-                create_descriptor<eprosima::fastdds::rtps::TCPv6TransportDescriptor>(configuration_.whitelist);
-
-        // Enable TLS
-        if (tls_config.is_active())
-        {
-            tls_config.enable_tls(descriptor, true);
-        }
-
-        pqos.transport().user_transports.push_back(descriptor);
-
-        logDebug(DDSPIPE_INITIALPEERS_PARTICIPANT,
-                "Adding TCPv6 Transport to Participant " << configuration_.id << ".");
-    }
-
-    // If has UDP, create descriptor because it has not been created yet
-    if (has_udp_ipv4)
-    {
-        std::shared_ptr<eprosima::fastdds::rtps::UDPv4TransportDescriptor> descriptor =
-                create_descriptor<eprosima::fastdds::rtps::UDPv4TransportDescriptor>(configuration_.whitelist);
-        pqos.transport().user_transports.push_back(descriptor);
-
-        logDebug(DDSPIPE_INITIALPEERS_PARTICIPANT,
-                "Adding UDPv4 Transport to Participant " << configuration_.id << ".");
-    }
-
-    if (has_udp_ipv6)
-    {
-        std::shared_ptr<eprosima::fastdds::rtps::UDPv6TransportDescriptor> descriptor =
-                create_descriptor<eprosima::fastdds::rtps::UDPv6TransportDescriptor>(configuration_.whitelist);
-        pqos.transport().user_transports.push_back(descriptor);
-
-        logDebug(DDSPIPE_INITIALPEERS_PARTICIPANT,
-                "Adding UDPv6 Transport to Participant " << configuration_.id << ".");
-    }
-
-    // To avoid creating a multicast transport in UDP when non listening addresses
-    // Fast requires an empty locator that will be set by default afterwards
-    if (!has_listening_addresses)
-    {
-        if (has_connection_udp_ipv4)
-        {
-            eprosima::fastdds::rtps::Locator_t locator;
-            locator.kind = LOCATOR_KIND_UDPv4;
-            pqos.wire_protocol().builtin.metatrafficUnicastLocatorList.push_back(locator);
-        }
-
-        if (has_connection_udp_ipv6)
-        {
-            eprosima::fastdds::rtps::Locator_t locator;
-            locator.kind = LOCATOR_KIND_UDPv6;
-            pqos.wire_protocol().builtin.metatrafficUnicastLocatorList.push_back(locator);
-        }
     }
 
     logDebug(DDSPIPE_INITIALPEERS_PARTICIPANT,
