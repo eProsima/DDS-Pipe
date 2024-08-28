@@ -34,18 +34,20 @@ InitialPeersParticipant::InitialPeersParticipant(
         participant_configuration,
         payload_pool,
         discovery_database,
-        reckon_participant_qos_()),
-      configuration_(*reinterpret_cast<InitialPeersParticipantConfiguration*>(participant_configuration.get()))
+        participant_configuration->domain,
+        reckon_participant_qos_(participant_configuration.get()))
 {
 }
 
-fastdds::dds::DomainParticipantQos InitialPeersParticipant::reckon_participant_qos_() const
+fastdds::dds::DomainParticipantQos
+InitialPeersParticipant::reckon_participant_qos_(
+        const InitialPeersParticipantConfiguration* participant_configuration)
 {
     // Use default as base qos
-    fastdds::dds::DomainParticipantQos pqos = CommonParticipant::reckon_participant_qos_();
+    fastdds::dds::DomainParticipantQos pqos = CommonParticipant::reckon_participant_qos_(participant_configuration);
 
     // Auxiliary variable to save characters and improve readability
-    const auto& tls_config = configuration_.tls_configuration;
+    const auto& tls_config = participant_configuration->tls_configuration;
 
     // Needed values to check at the end if descriptor must be set
     bool has_listening_tcp_ipv4 = false;
@@ -58,14 +60,14 @@ fastdds::dds::DomainParticipantQos InitialPeersParticipant::reckon_participant_q
 
     /////
     // Set listening addresses
-    for (const types::Address& address : configuration_.listening_addresses)
+    for (const types::Address& address : participant_configuration->listening_addresses)
     {
         if (!address.is_valid())
         {
             // Invalid address, continue with next one
             EPROSIMA_LOG_WARNING(DDSPIPE_INITIALPEERS_PARTICIPANT,
                     "Discard listening address: " << address <<
-                    " in Participant " << configuration_.id << " initialization.");
+                    " in Participant " << participant_configuration->id << " initialization.");
             continue;
         }
 
@@ -83,7 +85,7 @@ fastdds::dds::DomainParticipantQos InitialPeersParticipant::reckon_participant_q
                 has_listening_udp_ipv4 = true;
 
                 auto descriptor_tmp =
-                        create_descriptor<eprosima::fastdds::rtps::UDPv4TransportDescriptor>(configuration_.whitelist);
+                        create_descriptor<eprosima::fastdds::rtps::UDPv4TransportDescriptor>(participant_configuration->whitelist);
                 descriptor = descriptor_tmp;
 
                 eprosima::fastdds::rtps::IPLocator::setIPv4(locator, address.ip());
@@ -96,7 +98,7 @@ fastdds::dds::DomainParticipantQos InitialPeersParticipant::reckon_participant_q
                 has_listening_udp_ipv6 = true;
 
                 auto descriptor_tmp =
-                        create_descriptor<eprosima::fastdds::rtps::UDPv6TransportDescriptor>(configuration_.whitelist);
+                        create_descriptor<eprosima::fastdds::rtps::UDPv6TransportDescriptor>(participant_configuration->whitelist);
                 descriptor = descriptor_tmp;
 
                 eprosima::fastdds::rtps::IPLocator::setIPv6(locator, address.ip());
@@ -141,7 +143,7 @@ fastdds::dds::DomainParticipantQos InitialPeersParticipant::reckon_participant_q
                 else
                 {
                     descriptor_tmp = create_descriptor<eprosima::fastdds::rtps::TCPv4TransportDescriptor>(
-                        configuration_.whitelist);
+                        participant_configuration->whitelist);
                     descriptor_tmp->add_listener_port(address.port());
                     descriptor_tmp->set_WAN_address(address.ip());
 
@@ -167,7 +169,7 @@ fastdds::dds::DomainParticipantQos InitialPeersParticipant::reckon_participant_q
                 has_listening_tcp_ipv6 = true;
 
                 std::shared_ptr<eprosima::fastdds::rtps::TCPv6TransportDescriptor> descriptor_tmp =
-                        create_descriptor<eprosima::fastdds::rtps::TCPv6TransportDescriptor>(configuration_.whitelist);
+                        create_descriptor<eprosima::fastdds::rtps::TCPv6TransportDescriptor>(participant_configuration->whitelist);
 
                 descriptor_tmp->add_listener_port(address.port());
 
@@ -199,19 +201,19 @@ fastdds::dds::DomainParticipantQos InitialPeersParticipant::reckon_participant_q
         pqos.wire_protocol().default_unicast_locator_list.push_back(locator);
 
         logDebug(DDSPIPE_INITIALPEERS_PARTICIPANT,
-                "Add listening address " << address << " to Participant " << configuration_.id << ".");
+                "Add listening address " << address << " to Participant " << participant_configuration->id << ".");
     }
 
     /////
     // Set connection addresses
-    for (const types::Address& connection_address : configuration_.connection_addresses)
+    for (const types::Address& connection_address : participant_configuration->connection_addresses)
     {
         if (!connection_address.is_valid())
         {
             // Invalid connection address, continue with next one
             EPROSIMA_LOG_WARNING(DDSPIPE_INITIALPEERS_PARTICIPANT,
                     "Discard connection address: " << connection_address <<
-                    " in Participant " << configuration_.id << " initialization.");
+                    " in Participant " << participant_configuration->id << " initialization.");
             continue;
         }
 
@@ -231,7 +233,7 @@ fastdds::dds::DomainParticipantQos InitialPeersParticipant::reckon_participant_q
                     has_connection_descriptor = true;
                     auto descriptor_tmp =
                             create_descriptor<eprosima::fastdds::rtps::UDPv4TransportDescriptor>(
-                        configuration_.whitelist);
+                        participant_configuration->whitelist);
                     // descriptor_tmp->interfaceWhiteList.push_back(connection_address.ip());
                     descriptor = descriptor_tmp;
 
@@ -254,7 +256,7 @@ fastdds::dds::DomainParticipantQos InitialPeersParticipant::reckon_participant_q
                     has_connection_descriptor = true;
                     auto descriptor_tmp =
                             create_descriptor<eprosima::fastdds::rtps::UDPv6TransportDescriptor>(
-                        configuration_.whitelist);
+                        participant_configuration->whitelist);
                     // descriptor_tmp->interfaceWhiteList.push_back(connection_address.ip());
                     descriptor = descriptor_tmp;
 
@@ -277,7 +279,7 @@ fastdds::dds::DomainParticipantQos InitialPeersParticipant::reckon_participant_q
                     has_connection_descriptor = true;
                     auto descriptor_tmp =
                             create_descriptor<eprosima::fastdds::rtps::TCPv4TransportDescriptor>(
-                        configuration_.whitelist);
+                        participant_configuration->whitelist);
                     descriptor_tmp->add_listener_port(0);
                     // descriptor_tmp->interfaceWhiteList.push_back(address.ip());
 
@@ -303,7 +305,7 @@ fastdds::dds::DomainParticipantQos InitialPeersParticipant::reckon_participant_q
                     has_connection_descriptor = true;
                     auto descriptor_tmp =
                             create_descriptor<eprosima::fastdds::rtps::TCPv6TransportDescriptor>(
-                        configuration_.whitelist);
+                        participant_configuration->whitelist);
                     // descriptor_tmp->add_listener_port(0);
                     descriptor_tmp->interfaceWhiteList.push_back(connection_address.ip());
 
@@ -332,7 +334,7 @@ fastdds::dds::DomainParticipantQos InitialPeersParticipant::reckon_participant_q
             pqos.transport().user_transports.push_back(descriptor);
 
             logDebug(DDSPIPE_INITIALPEERS_PARTICIPANT,
-                "Add connection address " << connection_address << " to Participant " << configuration_.id << ".");
+                "Add connection address " << connection_address << " to Participant " << participant_configuration->id << ".");
         }
 
         // Add it to builtin
@@ -340,7 +342,7 @@ fastdds::dds::DomainParticipantQos InitialPeersParticipant::reckon_participant_q
     }
 
     logDebug(DDSPIPE_INITIALPEERS_PARTICIPANT,
-            "Configured Participant " << configuration_.id);
+            "Configured Participant " << participant_configuration->id);
 
     return pqos;
 }

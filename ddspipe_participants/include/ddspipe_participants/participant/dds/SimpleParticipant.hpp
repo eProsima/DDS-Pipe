@@ -49,14 +49,15 @@ public:
 
 protected:
 
-    virtual fastdds::dds::DomainParticipantQos reckon_participant_qos_() const override;
+    /////
+    // DDS specific methods
 
-    /////////////////////////
-    // INTERNAL VARIABLES
-    /////////////////////////
-
-    //! Participant configuration
-    const SimpleParticipantConfiguration& configuration_;
+    /**
+     * @brief Static method that gives the QoS for a Simple Participant.
+     *
+     */
+    static fastdds::dds::DomainParticipantQos reckon_participant_qos_(
+        const SimpleParticipantConfiguration* participant_configuration);
 };
 
 } /* namespace dds */

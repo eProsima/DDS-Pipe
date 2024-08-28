@@ -35,21 +35,22 @@ SimpleParticipant::SimpleParticipant(
         participant_configuration,
         payload_pool,
         discovery_database,
-        reckon_participant_qos_()),
-      configuration_(*reinterpret_cast<SimpleParticipantConfiguration*>(participant_configuration.get()))
+        participant_configuration->domain,
+        reckon_participant_qos_(participant_configuration.get()))
 {
 }
 
 fastdds::dds::DomainParticipantQos
-SimpleParticipant::reckon_participant_qos_() const
+SimpleParticipant::reckon_participant_qos_(
+        const SimpleParticipantConfiguration* participant_configuration)
 {
     // Use default as base qos
-    fastdds::dds::DomainParticipantQos pqos = CommonParticipant::reckon_participant_qos_();
+    fastdds::dds::DomainParticipantQos pqos = CommonParticipant::reckon_participant_qos_(participant_configuration);
 
     // Configure Participant transports
-    if (configuration_.transport == core::types::TransportDescriptors::builtin)
+    if (participant_configuration->transport == core::types::TransportDescriptors::builtin)
     {
-        if (!configuration_.whitelist.empty())
+        if (!participant_configuration->whitelist.empty())
         {
             pqos.transport().use_builtin_transports = false;
 
@@ -58,11 +59,11 @@ SimpleParticipant::reckon_participant_qos_() const
             pqos.transport().user_transports.push_back(shm_transport);
 
             std::shared_ptr<eprosima::fastdds::rtps::UDPv4TransportDescriptor> udp_transport =
-                    create_descriptor<eprosima::fastdds::rtps::UDPv4TransportDescriptor>(configuration_.whitelist);
+                    create_descriptor<eprosima::fastdds::rtps::UDPv4TransportDescriptor>(participant_configuration->whitelist);
             pqos.transport().user_transports.push_back(udp_transport);
         }
     }
-    else if (configuration_.transport == core::types::TransportDescriptors::shm_only)
+    else if (participant_configuration->transport == core::types::TransportDescriptors::shm_only)
     {
         pqos.transport().use_builtin_transports = false;
 
@@ -70,17 +71,17 @@ SimpleParticipant::reckon_participant_qos_() const
                 std::make_shared<eprosima::fastdds::rtps::SharedMemTransportDescriptor>();
         pqos.transport().user_transports.push_back(shm_transport);
     }
-    else if (configuration_.transport == core::types::TransportDescriptors::udp_only)
+    else if (participant_configuration->transport == core::types::TransportDescriptors::udp_only)
     {
         pqos.transport().use_builtin_transports = false;
 
         std::shared_ptr<eprosima::fastdds::rtps::UDPv4TransportDescriptor> udp_transport =
-                create_descriptor<eprosima::fastdds::rtps::UDPv4TransportDescriptor>(configuration_.whitelist);
+                create_descriptor<eprosima::fastdds::rtps::UDPv4TransportDescriptor>(participant_configuration->whitelist);
         pqos.transport().user_transports.push_back(udp_transport);
     }
 
     // Participant discovery filter configuration
-    switch (configuration_.ignore_participant_flags)
+    switch (participant_configuration->ignore_participant_flags)
     {
         case core::types::IgnoreParticipantFlags::no_filter:
             pqos.wire_protocol().builtin.discovery_config.ignoreParticipantFlags =

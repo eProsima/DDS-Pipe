@@ -469,10 +469,12 @@ CommonParticipant::CommonParticipant(
         const std::shared_ptr<SimpleParticipantConfiguration>& participant_configuration,
         const std::shared_ptr<core::PayloadPool>& payload_pool,
         const std::shared_ptr<core::DiscoveryDatabase>& discovery_database,
+        const core::types::DomainId& domain_id,
         const fastdds::dds::DomainParticipantQos& participant_qos)
     : configuration_(participant_configuration)
     , payload_pool_(payload_pool)
     , discovery_database_(discovery_database)
+    , domain_id_(domain_id)
     , participant_qos_(participant_qos)
 {
     // Do nothing
@@ -489,11 +491,11 @@ fastdds::dds::DomainParticipantQos CommonParticipant::add_qos_properties_(
     // Set app properties
     qos.properties().properties().emplace_back(
         "fastdds.application.id",
-        configuration_->app_id,
+        participant_configuration->app_id,
         "true");
     qos.properties().properties().emplace_back(
         "fastdds.application.metadata",
-        configuration_->app_metadata,
+        participant_configuration->app_metadata,
         "true");
 
     return qos;
@@ -514,7 +516,7 @@ fastdds::dds::DomainParticipant* CommonParticipant::create_dds_participant_()
     // fastdds::dds::StatusMask mask;
     // mask << fastdds::dds::StatusMask::publication_matched();
     // mask << fastdds::dds::StatusMask::subscription_matched();
-    return eprosima::fastdds::dds::DomainParticipantFactory::get_instance()->create_participant(configuration_->domain, participant_qos_, this);
+    return eprosima::fastdds::dds::DomainParticipantFactory::get_instance()->create_participant(domain_id_, participant_qos_, this);
     // return eprosima::fastdds::dds::DomainParticipantFactory::get_instance()->create_participant(
     //     configuration_->domain,
     //     reckon_participant_qos_(),
