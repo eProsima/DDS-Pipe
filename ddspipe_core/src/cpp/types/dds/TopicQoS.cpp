@@ -129,6 +129,13 @@ void TopicQoS::set_default_qos() noexcept
     this->durability_qos.set_value(DEFAULT_DURABILITY_QOS, utils::FuzzyLevelValues::fuzzy_level_default);
     this->reliability_qos.set_value(DEFAULT_RELIABILITY_QOS, utils::FuzzyLevelValues::fuzzy_level_default);
     this->ownership_qos.set_value(DEFAULT_OWNERSHIP_QOS, utils::FuzzyLevelValues::fuzzy_level_default);
+
+    LivelinessQosPolicy default_liveliness_qos;
+    default_liveliness_qos.kind = LivelinessQosPolicyKind::AUTOMATIC_LIVELINESS_QOS;
+    default_liveliness_qos.lease_duration = DurationTimeInfinite;
+    default_liveliness_qos.announcement_period = DurationTimeInfinite;
+    this->liveliness_qos.set_value(default_liveliness_qos, utils::FuzzyLevelValues::fuzzy_level_default);
+
     this->use_partitions.set_value(DEFAULT_USE_PARTITIONS, utils::FuzzyLevelValues::fuzzy_level_default);
     this->history_depth.set_value(DEFAULT_HISTORY_DEPTH, utils::FuzzyLevelValues::fuzzy_level_default);
     this->keyed.set_value(DEFAULT_KEYED, utils::FuzzyLevelValues::fuzzy_level_default);

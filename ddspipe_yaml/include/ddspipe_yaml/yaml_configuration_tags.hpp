@@ -21,6 +21,10 @@ namespace eprosima {
 namespace ddspipe {
 namespace yaml {
 
+// Time related tags
+constexpr const char* SECONDS_TAG("seconds"); //! Seconds
+constexpr const char* NANOSECONDS_TAG("nanoseconds"); //! Nanoseconds
+
 // Yaml related tags
 constexpr const char* VERSION_TAG("version");       //! Version to parse the yaml with
 constexpr const char* VERSION_TAG_V_1_0("v1.0");    //! Version v1.0
@@ -62,6 +66,9 @@ constexpr const char* QOS_KEYED_TAG("keyed"); //! Kind of a topic (with or witho
 constexpr const char* QOS_MAX_TX_RATE_TAG("max-tx-rate"); //! Topic specific max transmission rate
 constexpr const char* QOS_MAX_RX_RATE_TAG("max-rx-rate"); //! Topic specific max reception rate
 constexpr const char* QOS_DOWNSAMPLING_TAG("downsampling"); //! Topic specific downsampling factor
+constexpr const char* QOS_LIVELINESS_TAG("livelines"); //! Topic specific liveliness
+constexpr const char* QOS_LIVELINESS_LEASE_DURATION_TAG("lease-duration"); //! Topic specific liveliness lease duration
+constexpr const char* QOS_LIVELINESS_ANNOUNCEMENT_PERIOD_TAG("announcement-period"); //! Topic specific liveliness announcement period
 
 // Participant related tags
 constexpr const char* PARTICIPANT_KIND_TAG("kind");   //! Participant Kind

@@ -303,6 +303,30 @@ Address YamlReader::get<Address>(
     }
 }
 
+template <>
+DDSPIPE_YAML_DllAPI
+Duration YamlReader::get<Duration>(
+        const Yaml& yml,
+        const YamlReaderVersion version)
+{
+    if (is_tag_present(yml, SECONDS_TAG) && is_tag_present(yml, NANOSECONDS_TAG))
+    {
+        return Duration(get_scalar<int32_t>(yml, SECONDS_TAG), get_scalar<uint32_t>(yml, NANOSECONDS_TAG));
+    }
+    else if (is_tag_present(yml, SECONDS_TAG))
+    {
+        return Duration(get_scalar<int32_t>(yml, SECONDS_TAG), 0);
+    }
+    else if (is_tag_present(yml, NANOSECONDS_TAG))
+    {
+        return Duration(0, get_scalar<uint32_t>(yml, NANOSECONDS_TAG));
+    }
+    else
+    {
+        return DurationTimeInfinite;
+    }
+}
+
 DiscoveryServerConnectionAddress _get_discovery_server_connection_address_v1(
         const Yaml& yml,
         const YamlReaderVersion version)
@@ -426,6 +450,12 @@ void YamlReader::fill(
         }
     }
 
+    // Liveliness optional
+    if (is_tag_present(yml, QOS_LIVELINESS_TAG))
+    {
+
+    }
+
     // Use partitions optional
     if (is_tag_present(yml, QOS_PARTITION_TAG))
     {
@@ -461,6 +491,38 @@ void YamlReader::fill(
     {
         object.downsampling.set_value(get_positive_int(yml, QOS_DOWNSAMPLING_TAG));
     }
+}
+
+template <>
+DDSPIPE_YAML_DllAPI
+void YamlReader::fill<core::types::LivelinessQosPolicy>(
+        core::types::LivelinessQosPolicy& object,
+        const Yaml& yml,
+        const YamlReaderVersion version)
+{
+    core::types::LivelinessQosPolicy liveliness;
+    liveliness.kind = core::types::LivelinessQosPolicyKind::MANUAL_BY_TOPIC_LIVELINESS_QOS;
+
+    if (is_tag_present(yml, QOS_LIVELINESS_LEASE_DURATION_TAG))
+    {
+        liveliness.lease_duration = get<core::types::Duration>(yml, QOS_LIVELINESS_LEASE_DURATION_TAG, version);
+    }
+
+    if (is_tag_present(yml, QOS_LIVELINESS_ANNOUNCEMENT_PERIOD_TAG))
+    {
+        liveliness.announcement_period = get<core::types::Duration>(yml, QOS_LIVELINESS_ANNOUNCEMENT_PERIOD_TAG, version);
+    }
+}
+
+template <>
+DDSPIPE_YAML_DllAPI
+core::types::LivelinessQosPolicy YamlReader::get(
+        const Yaml& yml,
+        const YamlReaderVersion version)
+{
+    core::types::LivelinessQosPolicy object;
+    fill<core::types::LivelinessQosPolicy>(object, yml, version);
+    return object;
 }
 
 /************************

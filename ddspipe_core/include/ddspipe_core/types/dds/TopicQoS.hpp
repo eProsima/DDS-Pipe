@@ -17,6 +17,7 @@
 #include <cpp_utils/types/Fuzzy.hpp>
 
 #include <fastdds/dds/core/policy/QosPolicies.hpp>
+#include <fastdds/dds/core/Time_t.hpp>
 #include <fastdds/rtps/common/Types.hpp>
 
 #include <ddspipe_core/library/library_dll.h>
@@ -25,6 +26,11 @@ namespace eprosima {
 namespace ddspipe {
 namespace core {
 namespace types {
+
+//! Duration type
+using Duration = eprosima::fastdds::dds::Duration_t;
+// using DurationTimeInfinite = eprosima::fastdds::dds::c_TimeInfinite;
+const Duration DurationTimeInfinite{Duration::INFINITE_SECONDS, Duration::INFINITE_NANOSECONDS};
 
 //! Durability kind enumeration
 using DurabilityKind = eprosima::fastdds::rtps::DurabilityKind_t;
@@ -37,6 +43,10 @@ using OwnershipQosPolicyKind = eprosima::fastdds::dds::OwnershipQosPolicyKind;
 
 //! Reliability kind enumeration
 using ReliabilityKind = eprosima::fastdds::rtps::ReliabilityKind_t;
+
+//! Liveliness configuration
+using LivelinessQosPolicy = eprosima::fastdds::dds::LivelinessQosPolicy;
+using LivelinessQosPolicyKind = eprosima::fastdds::dds::LivelinessQosPolicyKind;
 
 /**
  * The collection of QoS related to a Topic.
@@ -57,8 +67,7 @@ using ReliabilityKind = eprosima::fastdds::rtps::ReliabilityKind_t;
  *
  * @todo create a child of TopicQoS called DdsTopicQoS that contains the QoS specific to DDS.
  */
-struct
-TopicQoS
+struct TopicQoS
 {
     /////////////////////////
     // CONSTRUCTORS
@@ -125,6 +134,9 @@ TopicQoS
 
     //! Ownership kind of the topic
     utils::Fuzzy<OwnershipQosPolicyKind> ownership_qos;
+
+    //! Liveliness kind of the topic
+    utils::Fuzzy<LivelinessQosPolicy> liveliness_qos;
 
     //! Whether the topics uses partitions
     utils::Fuzzy<bool> use_partitions;
