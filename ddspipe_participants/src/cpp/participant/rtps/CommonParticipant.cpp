@@ -502,6 +502,9 @@ CommonParticipant::reckon_participant_attributes_(
         participant_configuration->app_metadata,
         "true");
 
+    params.sendSocketBufferSize = 134217728;
+    params.listenSocketBufferSize = 134217728;
+
     return params;
 }
 
