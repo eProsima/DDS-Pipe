@@ -87,7 +87,7 @@ void CommonParticipant::init()
     eprosima::fastdds::dds::DomainParticipantFactory::get_instance()->set_qos(
         original_fact_qos);
 
-    if (dds_participant_ == nullptr)
+    if (!dds_participant_)
     {
         throw utils::InitializationException(STR_ENTRY << "Error creating DDS Participant " << id() << ".");
     }
@@ -96,6 +96,11 @@ void CommonParticipant::init()
     {
         throw utils::InitializationException(STR_ENTRY << "Error enabling DDS Participant " << id() << ".");
     }
+
+    EPROSIMA_LOG_INFO(DDSPIPE_RTPS_PARTICIPANT,
+            "New Participant created with id " << this->id() <<
+            " in domain " << domain_id_ << " with guid " << dds_participant_->guid() <<
+            (this->is_repeater() ? " (repeater)" : " (non repeater)"));
 }
 
 template<>
@@ -513,15 +518,17 @@ fastdds::dds::DomainParticipantQos CommonParticipant::reckon_participant_qos_() 
 fastdds::dds::DomainParticipant* CommonParticipant::create_dds_participant_()
 {
     // Set listener mask so reader read its own messages TODO Irene: check if this is needed
-    // fastdds::dds::StatusMask mask;
-    // mask << fastdds::dds::StatusMask::publication_matched();
-    // mask << fastdds::dds::StatusMask::subscription_matched();
-    return eprosima::fastdds::dds::DomainParticipantFactory::get_instance()->create_participant(domain_id_, participant_qos_, this);
-    // return eprosima::fastdds::dds::DomainParticipantFactory::get_instance()->create_participant(
-    //     configuration_->domain,
-    //     reckon_participant_qos_(),
-    //     this,
-    //     mask);
+    fastdds::dds::StatusMask mask;
+    mask << fastdds::dds::StatusMask::publication_matched();
+    mask << fastdds::dds::StatusMask::subscription_matched();
+    EPROSIMA_LOG_INFO(DDSPIPE_RTPS_PARTICIPANT,
+            "Creating Participant in domain " << domain_id_);
+
+    return eprosima::fastdds::dds::DomainParticipantFactory::get_instance()->create_participant(
+        domain_id_,
+        participant_qos_,
+        this,
+        mask);
 }
 
 fastdds::dds::Topic* CommonParticipant::topic_related_(
