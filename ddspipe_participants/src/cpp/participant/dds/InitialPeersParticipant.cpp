@@ -234,7 +234,6 @@ InitialPeersParticipant::reckon_participant_qos_(
                     auto descriptor_tmp =
                             create_descriptor<eprosima::fastdds::rtps::UDPv4TransportDescriptor>(
                         participant_configuration->whitelist);
-                    // descriptor_tmp->interfaceWhiteList.push_back(connection_address.ip());
                     descriptor = descriptor_tmp;
 
                     // To avoid creating a multicast transport in UDP when non listening addresses
@@ -257,7 +256,6 @@ InitialPeersParticipant::reckon_participant_qos_(
                     auto descriptor_tmp =
                             create_descriptor<eprosima::fastdds::rtps::UDPv6TransportDescriptor>(
                         participant_configuration->whitelist);
-                    // descriptor_tmp->interfaceWhiteList.push_back(connection_address.ip());
                     descriptor = descriptor_tmp;
 
                     // To avoid creating a multicast transport in UDP when non listening addresses
@@ -280,8 +278,6 @@ InitialPeersParticipant::reckon_participant_qos_(
                     auto descriptor_tmp =
                             create_descriptor<eprosima::fastdds::rtps::TCPv4TransportDescriptor>(
                         participant_configuration->whitelist);
-                    descriptor_tmp->add_listener_port(0);
-                    // descriptor_tmp->interfaceWhiteList.push_back(address.ip());
 
                     // Enable TLS
                     if (tls_config.is_active())
@@ -306,8 +302,6 @@ InitialPeersParticipant::reckon_participant_qos_(
                     auto descriptor_tmp =
                             create_descriptor<eprosima::fastdds::rtps::TCPv6TransportDescriptor>(
                         participant_configuration->whitelist);
-                    // descriptor_tmp->add_listener_port(0);
-                    descriptor_tmp->interfaceWhiteList.push_back(connection_address.ip());
 
                     // Enable TLS
                     if (tls_config.is_active())

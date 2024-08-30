@@ -517,7 +517,7 @@ fastdds::dds::DomainParticipantQos CommonParticipant::reckon_participant_qos_() 
 
 fastdds::dds::DomainParticipant* CommonParticipant::create_dds_participant_()
 {
-    // Set listener mask so reader read its own messages TODO Irene: check if this is needed
+    // Set listener mask so reader read its own messages
     fastdds::dds::StatusMask mask;
     mask << fastdds::dds::StatusMask::publication_matched();
     mask << fastdds::dds::StatusMask::subscription_matched();
