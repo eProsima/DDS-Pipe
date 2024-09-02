@@ -94,6 +94,7 @@ public:
      * @brief Create a writer object
      *
      * Depending on the Topic QoS creates a Basic or Specific Writer.
+     * If it fails to create the writer it will return a blank one.
      */
     DDSPIPE_PARTICIPANTS_DllAPI
     std::shared_ptr<core::IWriter> create_writer(
@@ -103,6 +104,7 @@ public:
      * @brief Create a reader object
      *
      * Depending on the Topic QoS creates a Basic or Specific Reader.
+     * If it fails to create the reader it will return a blank one.
      */
     DDSPIPE_PARTICIPANTS_DllAPI
     std::shared_ptr<core::IReader> create_reader(

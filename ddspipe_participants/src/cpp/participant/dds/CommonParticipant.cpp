@@ -254,8 +254,20 @@ std::shared_ptr<core::IWriter> CommonParticipant::create_writer(
         return std::make_shared<BlankWriter>();
     }
 
-    // Get the DDS Topic associated (create it if it does not exist)
-    fastdds::dds::Topic* fastdds_topic = topic_related_(dds_topic);
+    fastdds::dds::Topic* fastdds_topic;
+    try
+    {
+        // Get the DDS Topic associated (create it if it does not exist)
+        fastdds_topic = topic_related_(dds_topic);
+    }
+    catch (const utils::InitializationException& e)
+    {
+        EPROSIMA_LOG_WARNING(
+            DDSPIPE_DDS_PARTICIPANT,
+            e.what()
+                << " Execution continue but this topic will not be published in Participant " << id() << ".");
+        return std::make_shared<BlankWriter>();
+    }
 
     if (dds_topic.topic_qos.has_partitions() || dds_topic.topic_qos.has_ownership())
     {
@@ -303,7 +315,20 @@ std::shared_ptr<core::IReader> CommonParticipant::create_reader(
     }
 
     // Get the DDS Topic associated (create it if it does not exist)
-    fastdds::dds::Topic* fastdds_topic = topic_related_(dds_topic);
+    fastdds::dds::Topic* fastdds_topic;
+    try
+    {
+        // Get the DDS Topic associated (create it if it does not exist)
+        fastdds_topic = topic_related_(dds_topic);
+    }
+    catch (const utils::InitializationException& e)
+    {
+        EPROSIMA_LOG_WARNING(
+            DDSPIPE_DDS_PARTICIPANT,
+            e.what()
+                << ". Execution continue but this topic will not be subscribed in Participant " << id() << ".");
+        return std::make_shared<BlankReader>();
+    }
 
     if (dds_topic.topic_qos.has_partitions() || dds_topic.topic_qos.has_ownership())
     {
