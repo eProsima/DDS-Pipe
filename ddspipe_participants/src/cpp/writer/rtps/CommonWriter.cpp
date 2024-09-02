@@ -390,11 +390,14 @@ fastdds::rtps::TopicDescription CommonWriter::reckon_topic_description_(
     topic_description.type_name = topic.type_name;
     topic_description.topic_name = topic.m_topic_name;
 
+    fastdds::dds::xtypes::TypeIdentifierPair type_identifiers;
+    type_identifiers.type_identifier1(topic.type_identifiers.type_identifier1());
+
     // Set TypeInformation of the discovered type
     fastdds::dds::xtypes::TypeInformation type_information;
     if (fastdds::dds::RETCODE_OK ==
             fastdds::dds::DomainParticipantFactory::get_instance()->type_object_registry().get_type_information(
-                topic.type_identifiers,
+                type_identifiers,
                 type_information))
     {
         topic_description.type_information = type_information;
