@@ -104,7 +104,12 @@ bool PayloadPool::release_(
 {
     logDebug(DDSPIPE_PAYLOADPOOL, "Releasing payload ptr: " << payload.data << ".");
 
-    free(payload.data);
+    payload.empty();
+
+    if (payload.data != nullptr)
+    {
+        return false;
+    }
 
     // Remove payload internal values
     payload.length = 0;
@@ -112,13 +117,6 @@ bool PayloadPool::release_(
     payload.data = nullptr;
     payload.payload_owner = nullptr;
     payload.pos = 0;
-
-    payload.empty();
-
-    if (payload.data != nullptr)
-    {
-        return false;
-    }
 
     add_release_payload_();
 

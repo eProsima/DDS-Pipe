@@ -390,18 +390,45 @@ fastdds::rtps::TopicDescription CommonWriter::reckon_topic_description_(
     topic_description.type_name = topic.type_name;
     topic_description.topic_name = topic.m_topic_name;
 
-    fastdds::dds::xtypes::TypeIdentifierPair type_identifiers;
-    type_identifiers.type_identifier1(topic.type_identifiers.type_identifier1());
+    // Check TypeIdentifierPair in DdsTopic is not empty
+    fastdds::dds::xtypes::TypeIdentifierPair empty_type_identifiers;
+    if (topic.type_identifiers == empty_type_identifiers)
+    {
+        return topic_description;
+    }
 
     // Set TypeInformation of the discovered type
     fastdds::dds::xtypes::TypeInformation type_information;
-    if (fastdds::dds::RETCODE_OK ==
+
+    auto try_get_type_information = [&](const fastdds::dds::xtypes::TypeIdentifierPair& identifiers) -> bool {
+        return fastdds::dds::RETCODE_OK ==
             fastdds::dds::DomainParticipantFactory::get_instance()->type_object_registry().get_type_information(
-                type_identifiers,
-                type_information))
+            identifiers, type_information);
+    };
+
+    if (!try_get_type_information(topic.type_identifiers))
     {
-        topic_description.type_information = type_information;
+        // If get_type_information fails with TypeIdentifierPair try just with complete
+        fastdds::dds::xtypes::TypeIdentifierPair complete_only;
+        complete_only.type_identifier1(topic.type_identifiers.type_identifier1());
+
+        if (!try_get_type_information(complete_only))
+        {
+            // If get_type_information fails with complete TypeIdentifier try just with minimal
+            fastdds::dds::xtypes::TypeIdentifierPair minimal_only;
+            minimal_only.type_identifier2(topic.type_identifiers.type_identifier2());
+
+            if (!try_get_type_information(minimal_only))
+            {
+                logWarning(DDSPIPE_RTPS_COMMONREADER_LISTENER,
+                    "Failed to get TypeInformation for type " << topic.type_name);
+
+                return topic_description;
+            }
+        }
     }
+
+    topic_description.type_information = type_information;
 
     return topic_description;
 }

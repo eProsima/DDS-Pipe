@@ -84,7 +84,7 @@ std::shared_ptr<core::IReader> XmlParticipant::create_reader(
     }
 }
 
-fastdds::dds::DomainParticipantQos XmlParticipant::reckon_participant_qos_() const
+fastdds::dds::DomainParticipantQos XmlParticipant::reckon_participant_qos_()
 {
     fastdds::dds::DomainParticipantQos qos = CommonParticipant::reckon_participant_qos_();
 
@@ -104,10 +104,8 @@ fastdds::dds::DomainParticipantQos XmlParticipant::reckon_participant_qos_() con
         }
     }
 
-    // Enforce ignore local endpoints on XML participants
-    qos.properties().properties().emplace_back(
-        "fastdds.ignore_local_endpoints",
-        "true");
+    // Set qos properties
+    add_qos_properties_(qos);
 
     return qos;
 }

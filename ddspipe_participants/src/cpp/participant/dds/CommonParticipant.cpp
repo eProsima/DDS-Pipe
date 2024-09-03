@@ -352,7 +352,7 @@ CommonParticipant::CommonParticipant(
     // Do nothing
 }
 
-fastdds::dds::DomainParticipantQos CommonParticipant::reckon_participant_qos_() const
+fastdds::dds::DomainParticipantQos CommonParticipant::reckon_participant_qos_()
 {
     auto qos = fastdds::dds::DomainParticipantFactory::get_instance()->get_default_participant_qos();
 
@@ -385,6 +385,27 @@ fastdds::dds::DomainParticipant* CommonParticipant::create_dds_participant_()
         reckon_participant_qos_(),
         this,
         mask);
+}
+
+fastdds::dds::DomainParticipantQos CommonParticipant::add_qos_properties_(
+        fastdds::dds::DomainParticipantQos& qos)
+{
+    // Enforce ignore local endpoints on XML participants
+    qos.properties().properties().emplace_back(
+        "fastdds.ignore_local_endpoints",
+        "true");
+
+    // Set app properties
+    qos.properties().properties().emplace_back(
+        "fastdds.application.id",
+        configuration_->app_id,
+        "true");
+    qos.properties().properties().emplace_back(
+        "fastdds.application.metadata",
+        configuration_->app_metadata,
+        "true");
+
+    return qos;
 }
 
 fastdds::dds::Topic* CommonParticipant::topic_related_(
