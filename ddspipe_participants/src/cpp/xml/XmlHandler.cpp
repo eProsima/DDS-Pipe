@@ -12,11 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include <cpp_utils/utils.hpp>
-
-// #include <fastrtps/xmlparser/XMLProfileManager.h>
 #include <fastdds/dds/core/ReturnCode.hpp>
 #include <fastdds/dds/domain/DomainParticipantFactory.hpp>
+
+#include <cpp_utils/utils.hpp>
 
 #include <ddspipe_participants/xml/XmlHandler.hpp>
 

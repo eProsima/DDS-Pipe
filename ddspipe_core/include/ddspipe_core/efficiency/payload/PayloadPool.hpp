@@ -16,8 +16,6 @@
 
 #include <atomic>
 
-#include <fastdds/rtps/common/CacheChange.hpp>
-#include <fastdds/rtps/common/SerializedPayload.hpp>
 #include <fastdds/rtps/history/IPayloadPool.hpp>
 
 #include <ddspipe_core/types/dds/Payload.hpp>

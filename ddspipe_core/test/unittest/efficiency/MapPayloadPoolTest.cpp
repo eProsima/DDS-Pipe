@@ -51,15 +51,15 @@ public:
     }
 
     uint64_t reference_count(
-            const types::Payload& payload)
+            const Payload& payload)
     {
         return reserved_payloads_[payload.data];
     }
 
     void clean_all(
-            std::vector<types::Payload>& payloads)
+            std::vector<Payload>& payloads)
     {
-        for (types::Payload& payload : payloads)
+        for (Payload& payload : payloads)
         {
             release_payload(payload);
         }
@@ -88,7 +88,7 @@ TEST(MapPayloadPoolTest, get_payload)
     // Get N different pointers
     {
         test::MockMapPayloadPool pool;
-        std::vector<eprosima::ddspipe::core::types::Payload> payloads(TEST_NUMBER);
+        std::vector<Payload> payloads(TEST_NUMBER);
 
         for (unsigned int i = 0; i < TEST_NUMBER; i++)
         {
@@ -101,14 +101,22 @@ TEST(MapPayloadPoolTest, get_payload)
 
         // END : Clean all remaining payloads
         pool.clean_all(payloads);
+
+        // Check payload pool is empty
+        ASSERT_TRUE(pool.is_clean());
+        ASSERT_EQ(pool.pointers_stored(), 0u);
     }
 
     // fail reserve memory
     {
         test::MockMapPayloadPool pool;
-        eprosima::ddspipe::core::types::Payload payload;
+        Payload payload;
 
         ASSERT_FALSE(pool.get_payload(0, payload));
+
+        // Check payload pool is empty
+        ASSERT_TRUE(pool.is_clean());
+        ASSERT_EQ(pool.pointers_stored(), 0u);
     }
 }
 
@@ -130,12 +138,12 @@ TEST(MapPayloadPoolTest, get_payload_from_src)
     eprosima::fastdds::rtps::IPayloadPool* pool = new test::MockMapPayloadPool();
     test::MockMapPayloadPool* pool_ = static_cast<test::MockMapPayloadPool*>(pool);
 
-    eprosima::ddspipe::core::types::Payload payload0;
-    eprosima::ddspipe::core::types::Payload payload1;
-    eprosima::ddspipe::core::types::Payload payload2;
-    eprosima::ddspipe::core::types::Payload payload3;
-    eprosima::ddspipe::core::types::Payload payload4;
-    eprosima::ddspipe::core::types::Payload payload5;
+    Payload payload0;
+    Payload payload1;
+    Payload payload2;
+    Payload payload3;
+    Payload payload4;
+    Payload payload5;
 
     // get payload0
     ASSERT_TRUE(pool_->get_payload(DEFAULT_SIZE, payload0));
@@ -214,8 +222,8 @@ TEST(MapPayloadPoolTest, get_payload_from_src_no_owner)
     eprosima::fastdds::rtps::IPayloadPool* pool_aux = new test::MockMapPayloadPool(); // Requires to be ptr to pass it to get_payload
     test::MockMapPayloadPool* pool_aux_ = static_cast<test::MockMapPayloadPool*>(pool_aux);
 
-    eprosima::ddspipe::core::types::Payload payload_src;
-    eprosima::ddspipe::core::types::Payload payload_target;
+    Payload payload_src;
+    Payload payload_target;
 
     // get payload aux from pool aux
     pool_aux_->get_payload(DEFAULT_SIZE, payload_src);
@@ -253,13 +261,17 @@ TEST(MapPayloadPoolTest, get_payload_from_src_negative)
         test::MockMapPayloadPool* pool_ = static_cast<test::MockMapPayloadPool*>(pool);
         eprosima::fastdds::rtps::IPayloadPool* pool_aux = nullptr; // nullptr
 
-        eprosima::ddspipe::core::types::Payload payload_src;
-        eprosima::ddspipe::core::types::Payload payload_target;
+        Payload payload_src;
+        Payload payload_target;
 
         ASSERT_FALSE(
             pool_->get_payload(
                 payload_src,
                 payload_target));
+
+        // Check payload pool is empty
+        ASSERT_TRUE(pool_->is_clean());
+        ASSERT_EQ(pool_->pointers_stored(), 0u);
 
         delete pool;
     }
@@ -279,7 +291,7 @@ TEST(MapPayloadPoolTest, release_payload)
 {
     eprosima::fastdds::rtps::IPayloadPool* pool = new test::MockMapPayloadPool(); // Requires to be ptr to pass it to get_payload
     test::MockMapPayloadPool* pool_ = static_cast<test::MockMapPayloadPool*>(pool);
-    std::vector<eprosima::ddspipe::core::types::Payload> payloads(TEST_NUMBER);
+    std::vector<Payload> payloads(TEST_NUMBER);
 
     // get first payload
     pool_->get_payload(DEFAULT_SIZE, payloads[0]);
@@ -332,7 +344,7 @@ TEST(MapPayloadPoolTest, release_payload_negative)
 
     test::MockMapPayloadPool pool;
     test::MockMapPayloadPool pool_aux;
-    eprosima::ddspipe::core::types::Payload payload;
+    Payload payload;
 
     pool_aux.get_payload(DEFAULT_SIZE, payload);
 

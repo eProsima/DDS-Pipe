@@ -16,8 +16,9 @@
  * @file schema_msg.cpp
  */
 
-#include <ostream>
+#include <cassert>
 #include <map>
+#include <ostream>
 
 #include <fastdds/dds/core/ReturnCode.hpp>
 #include <fastdds/dds/core/Types.hpp>
@@ -25,7 +26,7 @@
 #include <fastdds/dds/xtypes/dynamic_types/DynamicType.hpp>
 #include <fastdds/dds/xtypes/dynamic_types/DynamicTypeMember.hpp>
 #include <fastdds/dds/xtypes/dynamic_types/TypeDescriptor.hpp>
-#include <fastdds/dds/xtypes/type_representation/TypeObject.hpp> //To include xtypes constants
+#include <fastdds/dds/xtypes/type_representation/detail/dds_xtypes_typeobject.hpp>
 
 #include <cpp_utils/exception/InconsistencyException.hpp>
 #include <cpp_utils/exception/UnsupportedException.hpp>
@@ -132,8 +133,11 @@ std::string container_kind_to_str(
     auto internal_type = container_internal_type(dyn_type);
     auto this_array_size = array_size(dyn_type);
 
-    // TODO: Change assert -> RETCODE
-    assert(this_array_size.size() == 1); // Multidimensional arrays not supported in ROS2
+    // TODO: Change exception -> RETCODE
+    if (this_array_size.size() != 1)
+    {
+        throw utils::InconsistencyException("Failed to convert container type: Multidimensional arrays are not supported in ROS2.");
+    }
 
     std::stringstream ss;
     ss << type_kind_to_str(internal_type);
@@ -169,7 +173,7 @@ std::string type_kind_to_str(
             return "bool";
 
         case fastdds::dds::xtypes::TK_BYTE:
-            return "uint8";
+            return "byte";
 
         case fastdds::dds::xtypes::TK_INT8:
             return "int8";

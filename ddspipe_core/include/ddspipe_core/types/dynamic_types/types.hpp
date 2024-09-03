@@ -14,8 +14,6 @@
 
 #pragma once
 
-#include <fastcdr/cdr/fixed_size_string.hpp>
-
 #include <fastdds/dds/xtypes/dynamic_types/DynamicType.hpp>
 #include <fastdds/dds/xtypes/type_representation/detail/dds_xtypes_typeobject.hpp>
 
@@ -40,6 +38,7 @@ struct DynamicTypeData : public core::IRoutingData
 
     fastdds::dds::DynamicType::_ref_type dynamic_type{nullptr};
 
+    // Complete TypeIdentifier of the DynamicType
     fastdds::dds::xtypes::TypeIdentifier type_identifier{};
 };
 

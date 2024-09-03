@@ -56,9 +56,6 @@ public:
             std::shared_ptr<core::PayloadPool> payload_pool,
             std::shared_ptr<core::DiscoveryDatabase> discovery_database);
 
-    DDSPIPE_PARTICIPANTS_DllAPI
-    ~DynTypesParticipant();
-
     /**
      * @brief Create a writer object
      *

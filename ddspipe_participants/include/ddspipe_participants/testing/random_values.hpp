@@ -30,8 +30,7 @@ types::Address random_address(
 DDSPIPE_PARTICIPANTS_DllAPI
 types::DiscoveryServerConnectionAddress random_connection_address(
         unsigned int seed = 0,
-        unsigned int size = 1,
-        bool ros = false);
+        unsigned int size = 1);
 
 } /* namespace testing */
 } /* namespace participants */

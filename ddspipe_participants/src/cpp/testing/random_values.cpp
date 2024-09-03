@@ -31,8 +31,7 @@ Address random_address(
 
 DiscoveryServerConnectionAddress random_connection_address(
         unsigned int seed /* = 0 */,
-        unsigned int size /* = 1 */,
-        bool ros /* = false */)
+        unsigned int size /* = 1 */)
 {
     std::set<Address> addresses;
     for (unsigned int i = 0; i < size; ++i)

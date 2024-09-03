@@ -62,7 +62,7 @@ protected:
 
     virtual
     fastdds::dds::DomainParticipantQos
-    reckon_participant_qos_() const override;
+    reckon_participant_qos_() override;
 
     /////////////////////////
     // INTERNAL VARIABLES

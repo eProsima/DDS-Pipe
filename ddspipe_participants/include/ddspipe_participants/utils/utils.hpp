@@ -29,14 +29,6 @@ namespace participants {
 namespace detail {
 
 /**
- * @brief Common part to create any endpoint from info object
- */
-template<class DiscoveryBuiltinTopicData>
-core::types::Endpoint create_common_endpoint_from_info_(
-        const DiscoveryBuiltinTopicData& info,
-        const core::types::ParticipantId participant_discoverer_id);
-
-/**
  * @brief Create an endpoint from info object
  *
  * Specialized for \c PublicationBuiltinTopicData and \c SubscriptionBuiltinTopicData .

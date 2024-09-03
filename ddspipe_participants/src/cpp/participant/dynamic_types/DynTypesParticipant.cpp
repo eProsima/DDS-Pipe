@@ -56,11 +56,6 @@ DynTypesParticipant::DynTypesParticipant(
     // Do nothing
 }
 
-DynTypesParticipant::~DynTypesParticipant()
-{
-    // Do nothing
-}
-
 std::shared_ptr<IWriter> DynTypesParticipant::create_writer(
         const ITopic& topic)
 {
@@ -124,11 +119,10 @@ void DynTypesParticipant::notify_type_discovered_(
     // Check if it exists already
     if (received_types_.find(type_name) != received_types_.end())
     {
+        EPROSIMA_LOG_INFO(DDSPIPE_DYNTYPES_PARTICIPANT,
+                "Type " << type_name << " was already received");
         return;
     }
-
-    // If not, add it to the received types set
-    received_types_.insert(type_name);
 
     const auto type_identifier = type_info.complete().typeid_with_size().type_id();
     fastdds::dds::xtypes::TypeObject dyn_type_object;
@@ -159,6 +153,9 @@ void DynTypesParticipant::notify_type_discovered_(
             "Participant " << this->id() << " discovered type object " << dyn_type->get_name());
 
     monitor_type_discovered(type_name);
+
+    // If not, add it to the received types set
+    received_types_.insert(type_name);
 
     // Create data containing Dynamic Type
     auto data = std::make_unique<core::types::DynamicTypeData>();
