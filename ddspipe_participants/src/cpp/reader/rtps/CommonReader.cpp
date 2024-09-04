@@ -332,8 +332,7 @@ fastdds::rtps::TopicDescription CommonReader::reckon_topic_description_(
     topic_description.type_name = topic.type_name;
 
     // Check TypeIdentifierPair in DdsTopic is not empty
-    fastdds::dds::xtypes::TypeIdentifierPair empty_type_identifiers;
-    if (topic.type_identifiers == empty_type_identifiers)
+    if (topic.type_identifiers == fastdds::dds::xtypes::TypeIdentifierPair())
     {
         return topic_description;
     }
@@ -361,7 +360,7 @@ fastdds::rtps::TopicDescription CommonReader::reckon_topic_description_(
 
             if (!try_get_type_information(minimal_only))
             {
-                logWarning(DDSPIPE_RTPS_COMMONREADER_LISTENER,
+                EPROSIMA_LOG_WARNING(DDSPIPE_RTPS_COMMONREADER_LISTENER,
                     "Failed to get TypeInformation for type " << topic.type_name);
 
                 return topic_description;
@@ -472,7 +471,7 @@ void CommonReader::on_requested_incompatible_qos(
         fastdds::rtps::RTPSReader*,
         eprosima::fastdds::dds::PolicyMask qos) noexcept
 {
-    logWarning(DDSPIPE_RTPS_COMMONREADER_LISTENER,
+    EPROSIMA_LOG_WARNING(DDSPIPE_RTPS_COMMONREADER_LISTENER,
             "TOPIC_MISMATCH_QOS | Reader " << *this << " found a remote Writer with incompatible QoS: " <<
             utils::qos_policy_mask_to_string(qos));
 

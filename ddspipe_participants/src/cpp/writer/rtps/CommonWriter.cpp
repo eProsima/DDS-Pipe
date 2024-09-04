@@ -144,7 +144,7 @@ void CommonWriter::on_offered_incompatible_qos(
         fastdds::rtps::RTPSWriter*,
         eprosima::fastdds::dds::PolicyMask qos) noexcept
 {
-    logWarning(DDSPIPE_RTPS_COMMONWRITER_LISTENER,
+    EPROSIMA_LOG_WARNING(DDSPIPE_RTPS_COMMONWRITER_LISTENER,
             "Writer " << *this << " found a remote Reader with incompatible QoS: " <<
             utils::qos_policy_mask_to_string(qos));
 }
@@ -420,7 +420,7 @@ fastdds::rtps::TopicDescription CommonWriter::reckon_topic_description_(
 
             if (!try_get_type_information(minimal_only))
             {
-                logWarning(DDSPIPE_RTPS_COMMONREADER_LISTENER,
+                EPROSIMA_LOG_WARNING(DDSPIPE_RTPS_COMMONREADER_LISTENER,
                     "Failed to get TypeInformation for type " << topic.type_name);
 
                 return topic_description;
