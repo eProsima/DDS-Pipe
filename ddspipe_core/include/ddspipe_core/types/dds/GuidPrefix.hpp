@@ -75,12 +75,12 @@ public:
      *
      * @todo use the seed of \c id to modify the whole guid and not only one of the 12 values.
      *
-     * @param ros : whether to use the Discovery Server ROS2 specific guid [Default: false]
+     * @param ros : whether to use the Discovery Server ROS2 specific guid
      * @param id : number to seed for the final Guid Prefix [Default: 0]
      */
     DDSPIPE_CORE_DllAPI
     GuidPrefix (
-            bool ros = false,
+            bool ros,
             uint32_t id = 0) noexcept;
 
     /**

@@ -33,13 +33,6 @@ bool DiscoveryServerParticipantConfiguration::is_valid(
         return false;
     }
 
-    // Check DS Guid Prefix
-    if (!discovery_server_guid_prefix.is_valid())
-    {
-        error_msg << "Non valid Participant Guid Prefix " << discovery_server_guid_prefix << ". ";
-        return false;
-    }
-
     // Check listening addresses
     for (types::Address address : listening_addresses)
     {

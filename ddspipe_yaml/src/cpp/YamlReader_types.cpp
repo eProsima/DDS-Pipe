@@ -165,24 +165,29 @@ GuidPrefix YamlReader::get<GuidPrefix>(
     }
 
     // ROS DS is optional.
-    bool ros_id;
+    bool ros_id = false;
     bool ros_id_set = is_tag_present(yml, DISCOVERY_SERVER_ID_ROS_TAG);
     if (ros_id_set)
     {
         ros_id = get_scalar<bool>(yml, DISCOVERY_SERVER_ID_ROS_TAG);
     }
 
-    // Id is mandatory if guid is not present
-    uint32_t id = get_scalar<uint32_t>(yml, DISCOVERY_SERVER_ID_TAG);
+    // Id is optional.
+    uint32_t id = 0;
+    bool id_set = is_tag_present(yml, DISCOVERY_SERVER_ID_TAG);
+    if (id_set)
+    {
+        id = get_scalar<uint32_t>(yml, DISCOVERY_SERVER_ID_TAG);
+    }
 
-    // Create GuidPrefix
-    if (ros_id_set)
+    if (ros_id_set || id_set)
     {
         return GuidPrefix(ros_id, id);
     }
     else
     {
-        return GuidPrefix(id);
+        // Return unknown prefix -> delegate assignment on Fast-DDS
+        return GuidPrefix();
     }
 }
 
