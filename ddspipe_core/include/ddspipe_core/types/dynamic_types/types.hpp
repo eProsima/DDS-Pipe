@@ -36,6 +36,7 @@ struct DynamicTypeData : public core::IRoutingData
     DDSPIPE_CORE_DllAPI
     virtual types::TopicInternalTypeDiscriminator internal_type_discriminator() const noexcept override;
 
+    // DynamicType created from a complete TypeObject
     fastdds::dds::DynamicType::_ref_type dynamic_type{nullptr};
 
     // Complete TypeIdentifier of the DynamicType

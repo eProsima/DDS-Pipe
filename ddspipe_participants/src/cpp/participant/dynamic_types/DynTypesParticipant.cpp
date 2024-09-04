@@ -120,7 +120,7 @@ void DynTypesParticipant::notify_type_discovered_(
     if (received_types_.find(type_name) != received_types_.end())
     {
         EPROSIMA_LOG_INFO(DDSPIPE_DYNTYPES_PARTICIPANT,
-                "Type " << type_name << " was already received");
+                "Type " << type_name << " was already received, aborting propagation.");
         return;
     }
 
