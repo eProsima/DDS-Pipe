@@ -51,6 +51,7 @@ utils::ReturnCode TypeObjectWriter::write_nts_(
     // Add schema
     try
     {
+        assert(fastdds::dds::xtypes::EK_COMPLETE == dynamic_type_data.type_identifier._d());
         schema_handler_->add_schema(
             dynamic_type_data.dynamic_type, dynamic_type_data.type_identifier);
     }
