@@ -231,9 +231,21 @@ void YamlReader::fill(
                     YamlReader::get<GuidPrefix>(yml, version);
             break;
 
-        default:
+        case V_2_0:
+        case V_3_0:
+        case V_3_1:
+        case V_4_0:
             object.discovery_server_guid_prefix =
                     YamlReader::get<GuidPrefix>(yml, DISCOVERY_SERVER_GUID_PREFIX_TAG, version);
+            break;
+
+        case V_5_0:
+        default:
+            if (YamlReader::is_tag_present(yml, DISCOVERY_SERVER_GUID_PREFIX_TAG))
+            {
+                object.discovery_server_guid_prefix =
+                        YamlReader::get<GuidPrefix>(yml, DISCOVERY_SERVER_GUID_PREFIX_TAG, version);
+            }
             break;
     }
 }
