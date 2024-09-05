@@ -194,8 +194,7 @@ protected:
             const std::shared_ptr<ParticipantConfiguration>& participant_configuration,
             const std::shared_ptr<core::PayloadPool>& payload_pool,
             const std::shared_ptr<core::DiscoveryDatabase>& discovery_database,
-            const core::types::DomainId& domain_id,
-            const fastdds::rtps::RTPSParticipantAttributes& participant_attributes);
+            const core::types::DomainId& domain_id);
 
     /**
      * @brief Auxiliary method to create the internal RTPS participant.
@@ -208,12 +207,19 @@ protected:
     // RTPS specific methods
 
     /**
-     * @brief Static method that gives the std attributes for a Participant.
+     * @brief Virtual method that gives the common std attributes for a Participant.
      *
      * @note This method must be specialized from inherit classes.
      */
-    static fastdds::rtps::RTPSParticipantAttributes reckon_participant_attributes_(
-            const ParticipantConfiguration* participant_configuration);
+    virtual fastdds::rtps::RTPSParticipantAttributes add_participant_att_properties_(
+            fastdds::rtps::RTPSParticipantAttributes& params) const;
+
+    /**
+     * @brief Virtual method that gives the std attributes for a Participant.
+     *
+     * @note This method must be specialized from inherit classes.
+     */
+    virtual fastdds::rtps::RTPSParticipantAttributes reckon_participant_attributes_() const;
 
     /////
     // VARIABLES

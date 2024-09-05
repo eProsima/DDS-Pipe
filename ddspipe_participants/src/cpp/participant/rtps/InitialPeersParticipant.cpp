@@ -34,19 +34,20 @@ InitialPeersParticipant::InitialPeersParticipant(
         participant_configuration,
         payload_pool,
         discovery_database,
-        participant_configuration->domain,
-        reckon_participant_attributes_(participant_configuration.get()))
+        participant_configuration->domain)
 {
 }
 
-fastdds::rtps::RTPSParticipantAttributes InitialPeersParticipant::reckon_participant_attributes_(
-        const InitialPeersParticipantConfiguration* configuration)
+fastdds::rtps::RTPSParticipantAttributes InitialPeersParticipant::reckon_participant_attributes_() const
 {
     // Use default as base attributes
-    fastdds::rtps::RTPSParticipantAttributes params = CommonParticipant::reckon_participant_attributes_(configuration);
+    fastdds::rtps::RTPSParticipantAttributes params = CommonParticipant::reckon_participant_attributes_();
+
+    std::shared_ptr<InitialPeersParticipantConfiguration> ip_configuration =
+            std::static_pointer_cast<InitialPeersParticipantConfiguration>(configuration_);
 
     // Auxiliary variable to save characters and improve readability
-    const auto& tls_config = configuration->tls_configuration;
+    const auto& tls_config = ip_configuration->tls_configuration;
 
     // Needed values to check at the end if descriptor must be set
     bool has_listening_addresses = false;
@@ -63,14 +64,14 @@ fastdds::rtps::RTPSParticipantAttributes InitialPeersParticipant::reckon_partici
 
     /////
     // Set listening addresses
-    for (const types::Address& address : configuration->listening_addresses)
+    for (const types::Address& address : ip_configuration->listening_addresses)
     {
         if (!address.is_valid())
         {
             // Invalid address, continue with next one
             EPROSIMA_LOG_WARNING(DDSPIPE_INITIALPEERS_PARTICIPANT,
                     "Discard listening address: " << address <<
-                    " in Participant " << configuration->id << " initialization.");
+                    " in Participant " << ip_configuration->id << " initialization.");
             continue;
         }
 
@@ -116,7 +117,7 @@ fastdds::rtps::RTPSParticipantAttributes InitialPeersParticipant::reckon_partici
                 else
                 {
                     descriptor = create_descriptor<eprosima::fastdds::rtps::TCPv4TransportDescriptor>(
-                        configuration->whitelist);
+                        ip_configuration->whitelist);
                     descriptor->add_listener_port(address.port());
                     descriptor->set_WAN_address(address.ip());
 
@@ -135,7 +136,7 @@ fastdds::rtps::RTPSParticipantAttributes InitialPeersParticipant::reckon_partici
                 has_listening_tcp_ipv6 = true;
 
                 std::shared_ptr<eprosima::fastdds::rtps::TCPv6TransportDescriptor> descriptor =
-                        create_descriptor<eprosima::fastdds::rtps::TCPv6TransportDescriptor>(configuration->whitelist);
+                        create_descriptor<eprosima::fastdds::rtps::TCPv6TransportDescriptor>(ip_configuration->whitelist);
 
                 descriptor->add_listener_port(address.port());
 
@@ -190,19 +191,19 @@ fastdds::rtps::RTPSParticipantAttributes InitialPeersParticipant::reckon_partici
         params.defaultUnicastLocatorList.push_back(locator);
 
         logDebug(DDSPIPE_INITIALPEERS_PARTICIPANT,
-                "Add listening address " << address << " to Participant " << configuration->id << ".");
+                "Add listening address " << address << " to Participant " << ip_configuration->id << ".");
     }
 
     /////
     // Set connection addresses
-    for (const types::Address& connection_address : configuration->connection_addresses)
+    for (const types::Address& connection_address : ip_configuration->connection_addresses)
     {
         if (!connection_address.is_valid())
         {
             // Invalid connection address, continue with next one
             EPROSIMA_LOG_WARNING(DDSPIPE_INITIALPEERS_PARTICIPANT,
                     "Discard connection address: " << connection_address <<
-                    " in Participant " << configuration->id << " initialization.");
+                    " in Participant " << ip_configuration->id << " initialization.");
             continue;
         }
 
@@ -254,7 +255,7 @@ fastdds::rtps::RTPSParticipantAttributes InitialPeersParticipant::reckon_partici
 
         logDebug(DDSPIPE_INITIALPEERS_PARTICIPANT,
                 "Add connection address " << connection_address <<
-                " to Participant " << configuration->id << ".");
+                " to Participant " << ip_configuration->id << ".");
     }
 
     /////
@@ -264,7 +265,7 @@ fastdds::rtps::RTPSParticipantAttributes InitialPeersParticipant::reckon_partici
     if (has_connection_tcp_ipv4 && !has_listening_tcp_ipv4)
     {
         std::shared_ptr<eprosima::fastdds::rtps::TCPv4TransportDescriptor> descriptor =
-                create_descriptor<eprosima::fastdds::rtps::TCPv4TransportDescriptor>(configuration->whitelist);
+                create_descriptor<eprosima::fastdds::rtps::TCPv4TransportDescriptor>(ip_configuration->whitelist);
 
         // Enable TLS
         if (tls_config.is_active())
@@ -275,13 +276,13 @@ fastdds::rtps::RTPSParticipantAttributes InitialPeersParticipant::reckon_partici
         params.userTransports.push_back(descriptor);
 
         logDebug(DDSPIPE_INITIALPEERS_PARTICIPANT,
-                "Adding TCPv4 Transport to Participant " << configuration->id << ".");
+                "Adding TCPv4 Transport to Participant " << ip_configuration->id << ".");
     }
 
     if (has_connection_tcp_ipv6 && !has_listening_tcp_ipv6)
     {
         std::shared_ptr<eprosima::fastdds::rtps::TCPv6TransportDescriptor> descriptor =
-                create_descriptor<eprosima::fastdds::rtps::TCPv6TransportDescriptor>(configuration->whitelist);
+                create_descriptor<eprosima::fastdds::rtps::TCPv6TransportDescriptor>(ip_configuration->whitelist);
 
         // Enable TLS
         if (tls_config.is_active())
@@ -292,28 +293,28 @@ fastdds::rtps::RTPSParticipantAttributes InitialPeersParticipant::reckon_partici
         params.userTransports.push_back(descriptor);
 
         logDebug(DDSPIPE_INITIALPEERS_PARTICIPANT,
-                "Adding TCPv6 Transport to Participant " << configuration->id << ".");
+                "Adding TCPv6 Transport to Participant " << ip_configuration->id << ".");
     }
 
     // If has UDP, create descriptor because it has not been created yet
     if (has_udp_ipv4)
     {
         std::shared_ptr<eprosima::fastdds::rtps::UDPv4TransportDescriptor> descriptor =
-                create_descriptor<eprosima::fastdds::rtps::UDPv4TransportDescriptor>(configuration->whitelist);
+                create_descriptor<eprosima::fastdds::rtps::UDPv4TransportDescriptor>(ip_configuration->whitelist);
         params.userTransports.push_back(descriptor);
 
         logDebug(DDSPIPE_INITIALPEERS_PARTICIPANT,
-                "Adding UDPv4 Transport to Participant " << configuration->id << ".");
+                "Adding UDPv4 Transport to Participant " << ip_configuration->id << ".");
     }
 
     if (has_udp_ipv6)
     {
         std::shared_ptr<eprosima::fastdds::rtps::UDPv6TransportDescriptor> descriptor_v6 =
-                create_descriptor<eprosima::fastdds::rtps::UDPv6TransportDescriptor>(configuration->whitelist);
+                create_descriptor<eprosima::fastdds::rtps::UDPv6TransportDescriptor>(ip_configuration->whitelist);
         params.userTransports.push_back(descriptor_v6);
 
         logDebug(DDSPIPE_INITIALPEERS_PARTICIPANT,
-                "Adding UDPv6 Transport to Participant " << configuration->id << ".");
+                "Adding UDPv6 Transport to Participant " << ip_configuration->id << ".");
     }
 
     // To avoid creating a multicast transport in UDP when non listening addresses
@@ -336,7 +337,7 @@ fastdds::rtps::RTPSParticipantAttributes InitialPeersParticipant::reckon_partici
     }
 
     logDebug(DDSPIPE_INITIALPEERS_PARTICIPANT,
-            "Configured Participant " << configuration->id);
+            "Configured Participant " << ip_configuration->id);
 
     return params;
 }
