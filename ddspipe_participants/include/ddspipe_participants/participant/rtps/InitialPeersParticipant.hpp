@@ -41,8 +41,7 @@ public:
 
 protected:
 
-    static fastdds::rtps::RTPSParticipantAttributes reckon_participant_attributes_(
-            const InitialPeersParticipantConfiguration* configuration);
+    fastdds::rtps::RTPSParticipantAttributes reckon_participant_attributes_() const override;
 
 };
 

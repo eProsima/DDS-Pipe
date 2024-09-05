@@ -35,22 +35,23 @@ SimpleParticipant::SimpleParticipant(
         participant_configuration,
         payload_pool,
         discovery_database,
-        participant_configuration->domain,
-        reckon_participant_attributes_(participant_configuration.get()))
+        participant_configuration->domain)
 {
 }
 
 fastdds::rtps::RTPSParticipantAttributes
-SimpleParticipant::reckon_participant_attributes_(
-        const SimpleParticipantConfiguration* configuration)
+SimpleParticipant::reckon_participant_attributes_() const
 {
     // Use default as base attributes
-    fastdds::rtps::RTPSParticipantAttributes params = CommonParticipant::reckon_participant_attributes_(configuration);
+    fastdds::rtps::RTPSParticipantAttributes params = CommonParticipant::reckon_participant_attributes_();
+
+    std::shared_ptr<SimpleParticipantConfiguration> simple_configuration =
+            std::static_pointer_cast<SimpleParticipantConfiguration>(configuration_);
 
     // Configure Participant transports
-    if (configuration->transport == core::types::TransportDescriptors::builtin)
+    if (simple_configuration->transport == core::types::TransportDescriptors::builtin)
     {
-        if (!configuration->whitelist.empty())
+        if (!simple_configuration->whitelist.empty())
         {
             params.useBuiltinTransports = false;
 
@@ -59,11 +60,11 @@ SimpleParticipant::reckon_participant_attributes_(
             params.userTransports.push_back(shm_transport);
 
             std::shared_ptr<eprosima::fastdds::rtps::UDPv4TransportDescriptor> udp_transport =
-                    create_descriptor<eprosima::fastdds::rtps::UDPv4TransportDescriptor>(configuration->whitelist);
+                    create_descriptor<eprosima::fastdds::rtps::UDPv4TransportDescriptor>(simple_configuration->whitelist);
             params.userTransports.push_back(udp_transport);
         }
     }
-    else if (configuration->transport == core::types::TransportDescriptors::shm_only)
+    else if (simple_configuration->transport == core::types::TransportDescriptors::shm_only)
     {
         params.useBuiltinTransports = false;
 
@@ -71,17 +72,17 @@ SimpleParticipant::reckon_participant_attributes_(
                 std::make_shared<eprosima::fastdds::rtps::SharedMemTransportDescriptor>();
         params.userTransports.push_back(shm_transport);
     }
-    else if (configuration->transport == core::types::TransportDescriptors::udp_only)
+    else if (simple_configuration->transport == core::types::TransportDescriptors::udp_only)
     {
         params.useBuiltinTransports = false;
 
         std::shared_ptr<eprosima::fastdds::rtps::UDPv4TransportDescriptor> udp_transport =
-                create_descriptor<eprosima::fastdds::rtps::UDPv4TransportDescriptor>(configuration->whitelist);
+                create_descriptor<eprosima::fastdds::rtps::UDPv4TransportDescriptor>(simple_configuration->whitelist);
         params.userTransports.push_back(udp_transport);
     }
 
     // Participant discovery filter configuration
-    switch (configuration->ignore_participant_flags)
+    switch (simple_configuration->ignore_participant_flags)
     {
         case core::types::IgnoreParticipantFlags::no_filter:
             params.builtin.discovery_config.ignoreParticipantFlags =

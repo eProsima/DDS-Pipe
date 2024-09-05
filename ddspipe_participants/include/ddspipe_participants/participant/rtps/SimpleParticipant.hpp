@@ -52,8 +52,7 @@ protected:
     /**
      * @brief Static method that gives the attributes for a Simple Participant.
      */
-    static fastdds::rtps::RTPSParticipantAttributes reckon_participant_attributes_(
-            const SimpleParticipantConfiguration* configuration);
+    fastdds::rtps::RTPSParticipantAttributes reckon_participant_attributes_() const override;
 };
 
 } /* namespace rtps */

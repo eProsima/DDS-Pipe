@@ -54,13 +54,11 @@ CommonParticipant::CommonParticipant(
         const std::shared_ptr<ParticipantConfiguration>& participant_configuration,
         const std::shared_ptr<core::PayloadPool>& payload_pool,
         const std::shared_ptr<core::DiscoveryDatabase>& discovery_database,
-        const core::types::DomainId& domain_id,
-        const fastdds::rtps::RTPSParticipantAttributes& participant_attributes)
+        const core::types::DomainId& domain_id)
     : configuration_(participant_configuration)
     , payload_pool_(payload_pool)
     , discovery_database_(discovery_database)
     , domain_id_(domain_id)
-    , participant_attributes_(participant_attributes)
 {
     // Do nothing
 }
@@ -75,6 +73,7 @@ CommonParticipant::~CommonParticipant()
 
 void CommonParticipant::init()
 {
+    participant_attributes_ = reckon_participant_attributes_();
     create_participant_(
         domain_id_,
         participant_attributes_);
@@ -487,14 +486,9 @@ std::shared_ptr<core::IReader> CommonParticipant::create_reader(
 }
 
 fastdds::rtps::RTPSParticipantAttributes
-CommonParticipant::reckon_participant_attributes_(
-        const ParticipantConfiguration* participant_configuration)
+CommonParticipant::add_participant_att_properties_(
+        fastdds::rtps::RTPSParticipantAttributes& params) const
 {
-    fastdds::rtps::RTPSParticipantAttributes params;
-
-    // Add Participant name
-    params.setName(participant_configuration->id.c_str());
-
     // Ignore the local endpoints so that the reader and writer of the same participant don't match.
     params.properties.properties().emplace_back(
         "fastdds.ignore_local_endpoints",
@@ -503,12 +497,25 @@ CommonParticipant::reckon_participant_attributes_(
     // Set app properties
     params.properties.properties().emplace_back(
         "fastdds.application.id",
-        participant_configuration->app_id,
+        configuration_->app_id,
         "true");
     params.properties.properties().emplace_back(
         "fastdds.application.metadata",
-        participant_configuration->app_metadata,
+        configuration_->app_metadata,
         "true");
+
+    return params;
+}
+
+fastdds::rtps::RTPSParticipantAttributes
+CommonParticipant::reckon_participant_attributes_() const
+{
+    fastdds::rtps::RTPSParticipantAttributes params;
+
+    // Add Participant name
+    params.setName(configuration_->id.c_str());
+
+    add_participant_att_properties_(params);
 
     return params;
 }
