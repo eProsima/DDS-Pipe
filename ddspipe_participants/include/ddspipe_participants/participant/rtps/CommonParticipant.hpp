@@ -173,7 +173,7 @@ public:
     template<typename T>
     DDSPIPE_PARTICIPANTS_DllAPI
     static std::shared_ptr<T> create_descriptor(
-            std::set<types::IpType> whitelist = {});
+            std::set<types::WhitelistType> whitelist = {});
 
 protected:
 

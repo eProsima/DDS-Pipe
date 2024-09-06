@@ -35,16 +35,6 @@ bool SimpleParticipantConfiguration::is_valid(
         return false;
     }
 
-    // Check whitelist interfaces
-    for (types::IpType ip : whitelist)
-    {
-        if (!types::Address::is_ipv4_correct(ip))
-        {
-            error_msg << "Incorrect IPv4 address " << ip << " in whitelist interfaces. ";
-            return false;
-        }
-    }
-
     return true;
 }
 

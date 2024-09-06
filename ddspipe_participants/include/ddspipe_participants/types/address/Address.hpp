@@ -29,6 +29,8 @@ namespace types {
 using LocatorType = uint32_t;
 // Data Type for IP
 using IpType = std::string;
+// Data Type for an interfaces whitelist entry
+using WhitelistType = std::string;
 // Data Type for Domain name (DNS)
 using DomainType = std::string;
 // Data Type for Port
