@@ -51,7 +51,7 @@ public:
 
     core::types::DomainId domain {0u};
 
-    std::set<participants::types::IpType> whitelist {};
+    std::set<participants::types::WhitelistType> whitelist {};
 
     core::types::TransportDescriptors transport {core::types::TransportDescriptors::builtin};
 
