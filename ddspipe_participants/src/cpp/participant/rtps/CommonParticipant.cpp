@@ -211,25 +211,16 @@ template<>
 DDSPIPE_PARTICIPANTS_DllAPI
 std::shared_ptr<eprosima::fastdds::rtps::UDPv4TransportDescriptor>
 CommonParticipant::create_descriptor(
-        std::set<types::IpType> whitelist)
+        std::set<types::WhitelistType> whitelist)
 {
     std::shared_ptr<eprosima::fastdds::rtps::UDPv4TransportDescriptor> udp_transport =
             std::make_shared<eprosima::fastdds::rtps::UDPv4TransportDescriptor>();
 
-    for (const types::IpType& ip : whitelist)
+    for (const types::WhitelistType& iface : whitelist)
     {
-        if (types::Address::is_ipv4_correct(ip))
-        {
-            udp_transport->interfaceWhiteList.emplace_back(ip);
-            EPROSIMA_LOG_INFO(DDSPIPE_COMMON_PARTICIPANT,
-                    "Adding " << ip << " to UDP whitelist interfaces.");
-        }
-        else
-        {
-            // Invalid address, continue with next one
-            EPROSIMA_LOG_WARNING(DDSPIPE_COMMON_PARTICIPANT,
-                    "Not valid IPv4. Discarding UDP whitelist interface " << ip << ".");
-        }
+        udp_transport->interfaceWhiteList.emplace_back(iface);
+        EPROSIMA_LOG_INFO(DDSPIPE_COMMON_PARTICIPANT,
+                "Adding " << iface << " to UDP whitelist interfaces.");
     }
 
     return udp_transport;
@@ -239,25 +230,16 @@ template<>
 DDSPIPE_PARTICIPANTS_DllAPI
 std::shared_ptr<eprosima::fastdds::rtps::UDPv6TransportDescriptor>
 CommonParticipant::create_descriptor(
-        std::set<types::IpType> whitelist)
+        std::set<types::WhitelistType> whitelist)
 {
     std::shared_ptr<eprosima::fastdds::rtps::UDPv6TransportDescriptor> udp_transport =
             std::make_shared<eprosima::fastdds::rtps::UDPv6TransportDescriptor>();
 
-    for (const types::IpType& ip : whitelist)
+    for (const types::WhitelistType& iface : whitelist)
     {
-        if (types::Address::is_ipv6_correct(ip))
-        {
-            udp_transport->interfaceWhiteList.emplace_back(ip);
-            EPROSIMA_LOG_INFO(DDSPIPE_COMMON_PARTICIPANT,
-                    "Adding " << ip << " to UDP whitelist interfaces.");
-        }
-        else
-        {
-            // Invalid address, continue with next one
-            EPROSIMA_LOG_WARNING(DDSPIPE_COMMON_PARTICIPANT,
-                    "Not valid IPv6. Discarding UDP whitelist interface " << ip << ".");
-        }
+        udp_transport->interfaceWhiteList.emplace_back(iface);
+        EPROSIMA_LOG_INFO(DDSPIPE_COMMON_PARTICIPANT,
+                "Adding " << iface << " to UDP whitelist interfaces.");
     }
 
     return udp_transport;
@@ -267,25 +249,16 @@ template<>
 DDSPIPE_PARTICIPANTS_DllAPI
 std::shared_ptr<eprosima::fastdds::rtps::TCPv4TransportDescriptor>
 CommonParticipant::create_descriptor(
-        std::set<types::IpType> whitelist)
+        std::set<types::WhitelistType> whitelist)
 {
     std::shared_ptr<eprosima::fastdds::rtps::TCPv4TransportDescriptor> tcp_transport =
             std::make_shared<eprosima::fastdds::rtps::TCPv4TransportDescriptor>();
 
-    for (const types::IpType& ip : whitelist)
+    for (const types::WhitelistType& iface : whitelist)
     {
-        if (types::Address::is_ipv4_correct(ip))
-        {
-            tcp_transport->interfaceWhiteList.emplace_back(ip);
-            EPROSIMA_LOG_INFO(DDSPIPE_COMMON_PARTICIPANT,
-                    "Adding " << ip << " to TCP whitelist interfaces.");
-        }
-        else
-        {
-            // Invalid address, continue with next one
-            EPROSIMA_LOG_WARNING(DDSPIPE_COMMON_PARTICIPANT,
-                    "Not valid IPv4. Discarding TCP whitelist interface " << ip << ".");
-        }
+        tcp_transport->interfaceWhiteList.emplace_back(iface);
+        EPROSIMA_LOG_INFO(DDSPIPE_COMMON_PARTICIPANT,
+                "Adding " << iface << " to TCP whitelist interfaces.");
     }
 
     return tcp_transport;
@@ -295,25 +268,16 @@ template<>
 DDSPIPE_PARTICIPANTS_DllAPI
 std::shared_ptr<eprosima::fastdds::rtps::TCPv6TransportDescriptor>
 CommonParticipant::create_descriptor(
-        std::set<types::IpType> whitelist)
+        std::set<types::WhitelistType> whitelist)
 {
     std::shared_ptr<eprosima::fastdds::rtps::TCPv6TransportDescriptor> tcp_transport =
             std::make_shared<eprosima::fastdds::rtps::TCPv6TransportDescriptor>();
 
-    for (const types::IpType& ip : whitelist)
+    for (const types::WhitelistType& iface : whitelist)
     {
-        if (types::Address::is_ipv6_correct(ip))
-        {
-            tcp_transport->interfaceWhiteList.emplace_back(ip);
-            EPROSIMA_LOG_INFO(DDSPIPE_COMMON_PARTICIPANT,
-                    "Adding " << ip << " to TCP whitelist interfaces.");
-        }
-        else
-        {
-            // Invalid address, continue with next one
-            EPROSIMA_LOG_WARNING(DDSPIPE_COMMON_PARTICIPANT,
-                    "Not valid IPv6. Discarding TCP whitelist interface " << ip << ".");
-        }
+        tcp_transport->interfaceWhiteList.emplace_back(iface);
+        EPROSIMA_LOG_INFO(DDSPIPE_COMMON_PARTICIPANT,
+                "Adding " << iface << " to TCP whitelist interfaces.");
     }
 
     return tcp_transport;
