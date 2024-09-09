@@ -41,7 +41,7 @@ GuidPrefix::GuidPrefix (
 }
 
 GuidPrefix::GuidPrefix (
-        bool ros /*= false*/,
+        bool ros,
         uint32_t id /*= 0*/) noexcept
 {
     if (ros)

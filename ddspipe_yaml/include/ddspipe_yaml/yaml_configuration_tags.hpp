@@ -28,6 +28,7 @@ constexpr const char* VERSION_TAG_V_2_0("v2.0");    //! Version v2.0
 constexpr const char* VERSION_TAG_V_3_0("v3.0");    //! Version v3.0
 constexpr const char* VERSION_TAG_V_3_1("v3.1");    //! Version v3.1
 constexpr const char* VERSION_TAG_V_4_0("v4.0");    //! Version v4.0
+constexpr const char* VERSION_TAG_V_5_0("v5.0");    //! Version v5.0
 
 // Topics related tags
 constexpr const char* ALLOWLIST_TAG("allowlist");     //! List of allowed topics

@@ -230,19 +230,24 @@ void CommonParticipant::on_participant_discovery(
         }
         else if (reason == fastdds::rtps::ParticipantDiscoveryStatus::CHANGED_QOS_PARTICIPANT)
         {
-            EPROSIMA_LOG_INFO(DDSPIPE_DISCOVERY, "Participant " << info.guid << " changed QoS.");
+            EPROSIMA_LOG_INFO(DDSPIPE_DISCOVERY,
+                    configuration_->id << " participant : " << "Participant " << info.guid <<
+                    " changed QoS.");
         }
         else if (reason == fastdds::rtps::ParticipantDiscoveryStatus::REMOVED_PARTICIPANT)
         {
-            EPROSIMA_LOG_INFO(DDSPIPE_DISCOVERY, "Participant " << info.guid << " removed.");
+            EPROSIMA_LOG_INFO(DDSPIPE_DISCOVERY,
+                    configuration_->id << " participant : " << "Participant " << info.guid << " removed.");
         }
         else if (reason == fastdds::rtps::ParticipantDiscoveryStatus::DROPPED_PARTICIPANT)
         {
-            EPROSIMA_LOG_INFO(DDSPIPE_DISCOVERY, "Participant " << info.guid << " dropped.");
+            EPROSIMA_LOG_INFO(DDSPIPE_DISCOVERY,
+                    configuration_->id << " participant : " << "Participant " << info.guid << " dropped.");
         }
         else if (reason == fastdds::rtps::ParticipantDiscoveryStatus::IGNORED_PARTICIPANT)
         {
-            EPROSIMA_LOG_INFO(DDSPIPE_DISCOVERY, "Participant " << info.guid << " ignored.");
+            EPROSIMA_LOG_INFO(DDSPIPE_DISCOVERY,
+                    configuration_->id << " participant : " << "Participant " << info.guid << " ignored.");
         }
     }
 }
@@ -275,20 +280,23 @@ void CommonParticipant::on_data_reader_discovery(
     }
     else if (reason == fastdds::rtps::ReaderDiscoveryStatus::CHANGED_QOS_READER)
     {
-        EPROSIMA_LOG_INFO(DDSPIPE_DISCOVERY, "Reader " << info.guid << " changed TopicQoS.");
+        EPROSIMA_LOG_INFO(DDSPIPE_DISCOVERY,
+                configuration_->id << " participant : " << "Reader " << info.guid << " changed TopicQoS.");
 
         this->discovery_database_->update_endpoint(info_reader);
     }
     else if (reason == fastdds::rtps::ReaderDiscoveryStatus::REMOVED_READER)
     {
-        EPROSIMA_LOG_INFO(DDSPIPE_DISCOVERY, "Reader " << info.guid << " removed.");
+        EPROSIMA_LOG_INFO(DDSPIPE_DISCOVERY,
+                configuration_->id << " participant : " << "Reader " << info.guid << " removed.");
 
         info_reader.active = false;
         this->discovery_database_->update_endpoint(info_reader);
     }
     else if (reason == fastdds::rtps::ReaderDiscoveryStatus::IGNORED_READER)
     {
-        EPROSIMA_LOG_INFO(DDSPIPE_DISCOVERY, "Reader " << info.guid << " ignored.");
+        EPROSIMA_LOG_INFO(DDSPIPE_DISCOVERY,
+                configuration_->id << " participant : " << "Reader " << info.guid << " ignored.");
 
         // Do not notify discovery database (design choice that might be changed in the future)
     }
@@ -322,20 +330,23 @@ void CommonParticipant::on_data_writer_discovery(
     }
     else if (reason == fastdds::rtps::WriterDiscoveryStatus::CHANGED_QOS_WRITER)
     {
-        EPROSIMA_LOG_INFO(DDSPIPE_DISCOVERY, "Writer " << info.guid << " changed TopicQoS.");
+        EPROSIMA_LOG_INFO(DDSPIPE_DISCOVERY,
+                configuration_->id << " participant : " << "Writer " << info.guid << " changed TopicQoS.");
 
         this->discovery_database_->update_endpoint(info_writer);
     }
     else if (reason == fastdds::rtps::WriterDiscoveryStatus::REMOVED_WRITER)
     {
-        EPROSIMA_LOG_INFO(DDSPIPE_DISCOVERY, "Writer " << info.guid << " removed.");
+        EPROSIMA_LOG_INFO(DDSPIPE_DISCOVERY,
+                configuration_->id << " participant : " << "Writer " << info.guid << " removed.");
 
         info_writer.active = false;
         this->discovery_database_->update_endpoint(info_writer);
     }
     else if (reason == fastdds::rtps::WriterDiscoveryStatus::IGNORED_WRITER)
     {
-        EPROSIMA_LOG_INFO(DDSPIPE_DISCOVERY, "Writer " << info.guid << " ignored.");
+        EPROSIMA_LOG_INFO(DDSPIPE_DISCOVERY,
+                configuration_->id << " participant : " << "Writer " << info.guid << " ignored.");
 
         // Do not notify discovery database (design choice that might be changed in the future)
     }
