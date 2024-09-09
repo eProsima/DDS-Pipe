@@ -207,7 +207,7 @@ std::string type_kind_to_str(
             return "float64";
 
         case fastdds::dds::xtypes::TK_CHAR8:
-            return "int8";
+            return "char";
 
         case fastdds::dds::xtypes::TK_STRING8:
             return "string";
