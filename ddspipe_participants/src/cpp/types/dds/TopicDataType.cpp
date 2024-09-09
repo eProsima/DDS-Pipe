@@ -107,6 +107,11 @@ bool TopicDataType::compute_key(
         fastdds::rtps::InstanceHandle_t& handle,
         bool /* = false */)
 {
+    // NOTE: This method returns false because Fast DDS always sends the KEY_HASH in inline QoS.
+    // As a result, the reader will never call this method when communicating with a Fast DDS writer.
+    // This would only be needed if receiving data from another DDS vendor that omits the KEY_HASH.
+    // Workaround in that case (different DDS vendor that omits KEY_HASH): set expects_inline_qos_ to
+    // true in DataReaderQos
     return false;
 }
 
