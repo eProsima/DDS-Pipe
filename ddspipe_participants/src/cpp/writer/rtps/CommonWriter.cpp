@@ -142,7 +142,7 @@ void CommonWriter::on_writer_change_received_by_all(
 
 void CommonWriter::on_offered_incompatible_qos(
         fastdds::rtps::RTPSWriter*,
-        eprosima::fastdds::dds::PolicyMask qos) noexcept
+        fastdds::dds::PolicyMask qos) noexcept
 {
     EPROSIMA_LOG_WARNING(DDSPIPE_RTPS_COMMONWRITER_LISTENER,
             "Writer " << *this << " found a remote Reader with incompatible QoS: " <<
@@ -193,7 +193,7 @@ utils::ReturnCode CommonWriter::write_nts_(
             rtps_data.source_guid);
 
     // Get params to write (if set)
-    eprosima::fastdds::rtps::WriteParams write_params;
+    fastdds::rtps::WriteParams write_params;
 
     // Fill cache change with specific data to send
     auto ret = fill_to_send_data_(new_change, write_params, rtps_data);
@@ -216,7 +216,7 @@ utils::ReturnCode CommonWriter::write_nts_(
 
 utils::ReturnCode CommonWriter::fill_to_send_data_(
         fastdds::rtps::CacheChange_t* to_send_change_to_fill,
-        eprosima::fastdds::rtps::WriteParams& to_send_params,
+        fastdds::rtps::WriteParams& to_send_params,
         const RtpsPayloadData& data) const noexcept
 {
     if (repeater_)
@@ -255,7 +255,7 @@ utils::ReturnCode CommonWriter::fill_to_send_data_(
 }
 
 void CommonWriter::fill_sent_data_(
-        const eprosima::fastdds::rtps::WriteParams& params,
+        const fastdds::rtps::WriteParams& params,
         core::types::RtpsPayloadData& data_to_fill) const noexcept
 {
     // Do nothing
@@ -340,7 +340,7 @@ fastdds::rtps::HistoryAttributes CommonWriter::reckon_history_attributes_(
     fastdds::rtps::HistoryAttributes att;
 
     att.memoryPolicy =
-            eprosima::fastdds::rtps::MemoryManagementPolicy_t::PREALLOCATED_WITH_REALLOC_MEMORY_MODE;
+            fastdds::rtps::MemoryManagementPolicy_t::PREALLOCATED_WITH_REALLOC_MEMORY_MODE;
 
     att.maximumReservedCaches = topic.topic_qos.history_depth;
     if (att.maximumReservedCaches > 0 && att.initialReservedCaches > att.maximumReservedCaches)
@@ -366,11 +366,11 @@ fastdds::rtps::WriterAttributes CommonWriter::reckon_writer_attributes_(
     // Set if topic has key
     if (topic.topic_qos.keyed)
     {
-        att.endpoint.topicKind = eprosima::fastdds::rtps::WITH_KEY;
+        att.endpoint.topicKind = fastdds::rtps::WITH_KEY;
     }
     else
     {
-        att.endpoint.topicKind = eprosima::fastdds::rtps::NO_KEY;
+        att.endpoint.topicKind = fastdds::rtps::NO_KEY;
     }
 
     // Other attributes as partitions and ownership are not used in this writer
@@ -441,17 +441,17 @@ fastdds::dds::WriterQos CommonWriter::reckon_writer_qos_(
     // Set Durability
     qos.m_durability.kind =
             (topic.topic_qos.is_transient_local()
-            ? eprosima::fastdds::dds::DurabilityQosPolicyKind_t::TRANSIENT_LOCAL_DURABILITY_QOS
-            : eprosima::fastdds::dds::DurabilityQosPolicyKind_t::VOLATILE_DURABILITY_QOS);
+            ? fastdds::dds::DurabilityQosPolicyKind_t::TRANSIENT_LOCAL_DURABILITY_QOS
+            : fastdds::dds::DurabilityQosPolicyKind_t::VOLATILE_DURABILITY_QOS);
 
     // Set Reliability
     qos.m_reliability.kind =
             (topic.topic_qos.is_reliable()
-            ? eprosima::fastdds::dds::ReliabilityQosPolicyKind::RELIABLE_RELIABILITY_QOS
-            : eprosima::fastdds::dds::ReliabilityQosPolicyKind::BEST_EFFORT_RELIABILITY_QOS);
+            ? fastdds::dds::ReliabilityQosPolicyKind::RELIABLE_RELIABILITY_QOS
+            : fastdds::dds::ReliabilityQosPolicyKind::BEST_EFFORT_RELIABILITY_QOS);
 
     // Set minimum deadline so it matches with everything
-    qos.m_deadline.period = eprosima::fastdds::dds::Duration_t(0);
+    qos.m_deadline.period = fastdds::dds::Duration_t(0);
 
     // Partitions and specific ownership strength are not set in common.
 

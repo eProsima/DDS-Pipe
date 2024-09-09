@@ -259,7 +259,6 @@ TEST(MapPayloadPoolTest, get_payload_from_src_negative)
     {
         eprosima::fastdds::rtps::IPayloadPool* pool = new test::MockMapPayloadPool(); // Requires to be ptr to pass it to get_payload
         test::MockMapPayloadPool* pool_ = static_cast<test::MockMapPayloadPool*>(pool);
-        eprosima::fastdds::rtps::IPayloadPool* pool_aux = nullptr; // nullptr
 
         Payload payload_src;
         Payload payload_target;

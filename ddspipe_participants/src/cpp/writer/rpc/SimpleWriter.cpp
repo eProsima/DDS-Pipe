@@ -52,7 +52,7 @@ SimpleWriter::SimpleWriter(
 
 utils::ReturnCode SimpleWriter::fill_to_send_data_(
         fastdds::rtps::CacheChange_t* to_send_change_to_fill,
-        eprosima::fastdds::rtps::WriteParams& to_send_params,
+        fastdds::rtps::WriteParams& to_send_params,
         const core::types::RtpsPayloadData& data) const noexcept
 {
     CommonWriter::fill_to_send_data_(
@@ -70,7 +70,7 @@ utils::ReturnCode SimpleWriter::fill_to_send_data_(
 }
 
 void SimpleWriter::fill_sent_data_(
-        const eprosima::fastdds::rtps::WriteParams& sent_params,
+        const fastdds::rtps::WriteParams& sent_params,
         core::types::RtpsPayloadData& data_to_fill) const noexcept
 {
     CommonWriter::fill_sent_data_(
