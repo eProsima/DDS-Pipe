@@ -49,7 +49,7 @@ DiscoveryServerParticipant::reckon_participant_attributes_() const
     fastdds::rtps::RTPSParticipantAttributes params = CommonParticipant::reckon_participant_attributes_();
 
     std::shared_ptr<DiscoveryServerParticipantConfiguration> discovery_server_configuration =
-            std::static_pointer_cast<DiscoveryServerParticipantConfiguration>(configuration_);
+            std::dynamic_pointer_cast<DiscoveryServerParticipantConfiguration>(configuration_);
 
     // Auxiliary variable to save characters and improve readability
     const core::types::GuidPrefix& discovery_server_guid_prefix =

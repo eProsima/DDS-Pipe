@@ -44,7 +44,7 @@ fastdds::rtps::RTPSParticipantAttributes InitialPeersParticipant::reckon_partici
     fastdds::rtps::RTPSParticipantAttributes params = CommonParticipant::reckon_participant_attributes_();
 
     std::shared_ptr<InitialPeersParticipantConfiguration> initial_peers_configuration =
-            std::static_pointer_cast<InitialPeersParticipantConfiguration>(configuration_);
+            std::dynamic_pointer_cast<InitialPeersParticipantConfiguration>(configuration_);
 
     // Auxiliary variable to save characters and improve readability
     const auto& tls_config = initial_peers_configuration->tls_configuration;

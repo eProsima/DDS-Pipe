@@ -46,7 +46,7 @@ SimpleParticipant::reckon_participant_attributes_() const
     fastdds::rtps::RTPSParticipantAttributes params = CommonParticipant::reckon_participant_attributes_();
 
     std::shared_ptr<SimpleParticipantConfiguration> simple_configuration =
-            std::static_pointer_cast<SimpleParticipantConfiguration>(configuration_);
+            std::dynamic_pointer_cast<SimpleParticipantConfiguration>(configuration_);
 
     // Configure Participant transports
     if (simple_configuration->transport == core::types::TransportDescriptors::builtin)
