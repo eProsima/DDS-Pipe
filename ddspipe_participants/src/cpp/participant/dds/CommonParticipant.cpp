@@ -363,41 +363,6 @@ CommonParticipant::CommonParticipant(
     // Do nothing
 }
 
-fastdds::dds::DomainParticipantQos CommonParticipant::reckon_participant_qos_() const
-{
-    auto qos = fastdds::dds::DomainParticipantFactory::get_instance()->get_default_participant_qos();
-
-    qos.properties().properties().emplace_back(
-        "fastdds.ignore_local_endpoints",
-        "true");
-
-    // Set app properties
-    qos.properties().properties().emplace_back(
-        "fastdds.application.id",
-        configuration_->app_id,
-        "true");
-    qos.properties().properties().emplace_back(
-        "fastdds.application.metadata",
-        configuration_->app_metadata,
-        "true");
-
-    return qos;
-}
-
-fastdds::dds::DomainParticipant* CommonParticipant::create_dds_participant_()
-{
-    // Set listener mask so reader read its own messages
-    fastdds::dds::StatusMask mask;
-    mask << fastdds::dds::StatusMask::publication_matched();
-    mask << fastdds::dds::StatusMask::subscription_matched();
-
-    return eprosima::fastdds::dds::DomainParticipantFactory::get_instance()->create_participant(
-        configuration_->domain,
-        reckon_participant_qos_(),
-        this,
-        mask);
-}
-
 fastdds::dds::DomainParticipantQos CommonParticipant::add_qos_properties_(
         fastdds::dds::DomainParticipantQos& qos) const
 {
@@ -417,6 +382,29 @@ fastdds::dds::DomainParticipantQos CommonParticipant::add_qos_properties_(
         "true");
 
     return qos;
+}
+
+fastdds::dds::DomainParticipantQos CommonParticipant::reckon_participant_qos_() const
+{
+    auto qos = fastdds::dds::DomainParticipantFactory::get_instance()->get_default_participant_qos();
+
+    add_qos_properties_(qos);
+
+    return qos;
+}
+
+fastdds::dds::DomainParticipant* CommonParticipant::create_dds_participant_()
+{
+    // Set listener mask so reader read its own messages
+    fastdds::dds::StatusMask mask;
+    mask << fastdds::dds::StatusMask::publication_matched();
+    mask << fastdds::dds::StatusMask::subscription_matched();
+
+    return eprosima::fastdds::dds::DomainParticipantFactory::get_instance()->create_participant(
+        configuration_->domain,
+        reckon_participant_qos_(),
+        this,
+        mask);
 }
 
 fastdds::dds::Topic* CommonParticipant::topic_related_(

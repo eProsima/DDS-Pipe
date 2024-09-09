@@ -148,16 +148,16 @@ protected:
 
     virtual
     fastdds::dds::DomainParticipantQos
+    add_qos_properties_(
+            fastdds::dds::DomainParticipantQos& qos) const;
+
+    virtual
+    fastdds::dds::DomainParticipantQos
     reckon_participant_qos_() const;
 
     virtual
     fastdds::dds::DomainParticipant*
     create_dds_participant_();
-
-    virtual
-    fastdds::dds::DomainParticipantQos
-    add_qos_properties_(
-            fastdds::dds::DomainParticipantQos& qos) const;
 
     /////////////////////////
     // INTERNAL METHODS
