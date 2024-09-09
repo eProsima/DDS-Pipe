@@ -207,9 +207,8 @@ protected:
     // RTPS specific methods
 
     /**
-     * @brief Virtual method that gives the common std attributes for a Participant.
+     * @brief Virtual method that sets the common properties of std attributes for a Participant.
      *
-     * @note This method must be specialized from inherit classes.
      */
     virtual fastdds::rtps::RTPSParticipantAttributes add_participant_att_properties_(
             fastdds::rtps::RTPSParticipantAttributes& params) const;
@@ -217,7 +216,6 @@ protected:
     /**
      * @brief Virtual method that gives the std attributes for a Participant.
      *
-     * @note This method must be specialized from inherit classes.
      */
     virtual fastdds::rtps::RTPSParticipantAttributes reckon_participant_attributes_() const;
 
