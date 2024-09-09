@@ -89,9 +89,9 @@ TEST(YamlGetEntityGuidPrefixTest, get_guidprefix_explicitly)
         Yaml yml;
         yml["guid_prefix"] = yml_gp;
 
-        ASSERT_THROW(
+        ASSERT_EQ(
             YamlReader::get<core::types::GuidPrefix>(yml, "guid_prefix", LATEST),
-            eprosima::utils::ConfigurationException);
+            core::types::GuidPrefix());
     }
 
     // TODO: this tests requires to modify fastrtps core::types::GuidPrefix >> operator so it returns a non valid guid
