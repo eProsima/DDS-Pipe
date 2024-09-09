@@ -113,8 +113,7 @@ public:
      * @param data the data to be written by the \c writer.
      * @param handle the data to be used by the \c writer.
      *
-     * @return ReturnCode::PRECONDITION_NOT_MET if the handle introduced does not match with the one associated to the
-     * data, ReturnCode::OK if the data is correctly sent and ReturnCode::ERROR otherwise.
+     * @return ReturnCode::OK if the data is correctly sent, ReturnCode::PRECONDITION_NOT_MET or ReturnCode::ERROR otherwise.
      */
     DDSPIPE_CORE_DllAPI
     utils::ReturnCode write(
