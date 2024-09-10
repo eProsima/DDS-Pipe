@@ -47,10 +47,10 @@ fastdds::rtps::RTPSParticipantAttributes InitialPeersParticipant::reckon_partici
     std::shared_ptr<InitialPeersParticipantConfiguration> initial_peers_configuration =
             std::dynamic_pointer_cast<InitialPeersParticipantConfiguration>(configuration_);
 
-    if(initial_peers_configuration == nullptr)
+    if (initial_peers_configuration == nullptr)
     {
         throw utils::ConfigurationException(
-                "Failed to cast ParticipantConfiguration to InitialPeersParticipantConfiguration.");
+                  "Failed to cast ParticipantConfiguration to InitialPeersParticipantConfiguration.");
     }
 
     // Auxiliary variable to save characters and improve readability

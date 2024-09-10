@@ -50,7 +50,7 @@ SimpleParticipant::reckon_participant_attributes_() const
     std::shared_ptr<SimpleParticipantConfiguration> simple_configuration =
             std::dynamic_pointer_cast<SimpleParticipantConfiguration>(configuration_);
 
-    if(simple_configuration == nullptr)
+    if (simple_configuration == nullptr)
     {
         throw utils::ConfigurationException("Failed to cast ParticipantConfiguration to SimpleParticipantConfiguration.");
     }
