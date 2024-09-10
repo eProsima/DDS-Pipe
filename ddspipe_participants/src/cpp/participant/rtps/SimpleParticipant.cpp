@@ -14,11 +14,13 @@
 
 #include <memory>
 
-#include <fastrtps/rtps/participant/RTPSParticipant.h>
-#include <fastrtps/rtps/RTPSDomain.h>
-#include <fastdds/rtps/transport/UDPv4TransportDescriptor.h>
-#include <fastdds/rtps/transport/shared_mem/SharedMemTransportDescriptor.h>
-#include <fastdds/rtps/attributes/RTPSParticipantAttributes.h>
+#include <fastdds/rtps/participant/RTPSParticipant.hpp>
+#include <fastdds/rtps/RTPSDomain.hpp>
+#include <fastdds/rtps/transport/UDPv4TransportDescriptor.hpp>
+#include <fastdds/rtps/transport/shared_mem/SharedMemTransportDescriptor.hpp>
+#include <fastdds/rtps/attributes/RTPSParticipantAttributes.hpp>
+
+#include <cpp_utils/exception/ConfigurationException.hpp>
 
 #include <ddspipe_participants/participant/rtps/SimpleParticipant.hpp>
 
@@ -35,22 +37,28 @@ SimpleParticipant::SimpleParticipant(
         participant_configuration,
         payload_pool,
         discovery_database,
-        participant_configuration->domain,
-        reckon_participant_attributes_(participant_configuration.get()))
+        participant_configuration->domain)
 {
 }
 
-fastrtps::rtps::RTPSParticipantAttributes
-SimpleParticipant::reckon_participant_attributes_(
-        const SimpleParticipantConfiguration* configuration)
+fastdds::rtps::RTPSParticipantAttributes
+SimpleParticipant::reckon_participant_attributes_() const
 {
     // Use default as base attributes
-    fastrtps::rtps::RTPSParticipantAttributes params = CommonParticipant::reckon_participant_attributes_(configuration);
+    fastdds::rtps::RTPSParticipantAttributes params = CommonParticipant::reckon_participant_attributes_();
+
+    std::shared_ptr<SimpleParticipantConfiguration> simple_configuration =
+            std::dynamic_pointer_cast<SimpleParticipantConfiguration>(configuration_);
+
+    if (simple_configuration == nullptr)
+    {
+        throw utils::ConfigurationException("Failed to cast ParticipantConfiguration to SimpleParticipantConfiguration.");
+    }
 
     // Configure Participant transports
-    if (configuration->transport == core::types::TransportDescriptors::builtin)
+    if (simple_configuration->transport == core::types::TransportDescriptors::builtin)
     {
-        if (!configuration->whitelist.empty())
+        if (!simple_configuration->whitelist.empty())
         {
             params.useBuiltinTransports = false;
 
@@ -59,11 +67,11 @@ SimpleParticipant::reckon_participant_attributes_(
             params.userTransports.push_back(shm_transport);
 
             std::shared_ptr<eprosima::fastdds::rtps::UDPv4TransportDescriptor> udp_transport =
-                    create_descriptor<eprosima::fastdds::rtps::UDPv4TransportDescriptor>(configuration->whitelist);
+                    create_descriptor<eprosima::fastdds::rtps::UDPv4TransportDescriptor>(simple_configuration->whitelist);
             params.userTransports.push_back(udp_transport);
         }
     }
-    else if (configuration->transport == core::types::TransportDescriptors::shm_only)
+    else if (simple_configuration->transport == core::types::TransportDescriptors::shm_only)
     {
         params.useBuiltinTransports = false;
 
@@ -71,39 +79,39 @@ SimpleParticipant::reckon_participant_attributes_(
                 std::make_shared<eprosima::fastdds::rtps::SharedMemTransportDescriptor>();
         params.userTransports.push_back(shm_transport);
     }
-    else if (configuration->transport == core::types::TransportDescriptors::udp_only)
+    else if (simple_configuration->transport == core::types::TransportDescriptors::udp_only)
     {
         params.useBuiltinTransports = false;
 
         std::shared_ptr<eprosima::fastdds::rtps::UDPv4TransportDescriptor> udp_transport =
-                create_descriptor<eprosima::fastdds::rtps::UDPv4TransportDescriptor>(configuration->whitelist);
+                create_descriptor<eprosima::fastdds::rtps::UDPv4TransportDescriptor>(simple_configuration->whitelist);
         params.userTransports.push_back(udp_transport);
     }
 
     // Participant discovery filter configuration
-    switch (configuration->ignore_participant_flags)
+    switch (simple_configuration->ignore_participant_flags)
     {
         case core::types::IgnoreParticipantFlags::no_filter:
             params.builtin.discovery_config.ignoreParticipantFlags =
-                    eprosima::fastrtps::rtps::ParticipantFilteringFlags_t::NO_FILTER;
+                    eprosima::fastdds::rtps::ParticipantFilteringFlags::NO_FILTER;
             break;
         case core::types::IgnoreParticipantFlags::filter_different_host:
             params.builtin.discovery_config.ignoreParticipantFlags =
-                    eprosima::fastrtps::rtps::ParticipantFilteringFlags_t::FILTER_DIFFERENT_HOST;
+                    eprosima::fastdds::rtps::ParticipantFilteringFlags::FILTER_DIFFERENT_HOST;
             break;
         case core::types::IgnoreParticipantFlags::filter_different_process:
             params.builtin.discovery_config.ignoreParticipantFlags =
-                    eprosima::fastrtps::rtps::ParticipantFilteringFlags_t::FILTER_DIFFERENT_PROCESS;
+                    eprosima::fastdds::rtps::ParticipantFilteringFlags::FILTER_DIFFERENT_PROCESS;
             break;
         case core::types::IgnoreParticipantFlags::filter_same_process:
             params.builtin.discovery_config.ignoreParticipantFlags =
-                    eprosima::fastrtps::rtps::ParticipantFilteringFlags_t::FILTER_SAME_PROCESS;
+                    eprosima::fastdds::rtps::ParticipantFilteringFlags::FILTER_SAME_PROCESS;
             break;
         case core::types::IgnoreParticipantFlags::filter_different_and_same_process:
             params.builtin.discovery_config.ignoreParticipantFlags =
-                    static_cast<eprosima::fastrtps::rtps::ParticipantFilteringFlags_t>(
-                eprosima::fastrtps::rtps::ParticipantFilteringFlags_t::FILTER_DIFFERENT_PROCESS |
-                eprosima::fastrtps::rtps::ParticipantFilteringFlags_t::FILTER_SAME_PROCESS);
+                    static_cast<eprosima::fastdds::rtps::ParticipantFilteringFlags>(
+                eprosima::fastdds::rtps::ParticipantFilteringFlags::FILTER_DIFFERENT_PROCESS |
+                eprosima::fastdds::rtps::ParticipantFilteringFlags::FILTER_SAME_PROCESS);
             break;
         default:
             break;

@@ -36,7 +36,7 @@ DdsMonitorParticipantRegistry::~DdsMonitorParticipantRegistry()
             continue;
         }
 
-        logInfo(DDSPIPE_MONITOR,
+        EPROSIMA_LOG_INFO(DDSPIPE_MONITOR,
                 "MONITOR | Deleting Participant " << participant.second << " on domain " << participant.first << ".");
 
         participant.second->delete_contained_entities();
@@ -58,7 +58,8 @@ fastdds::dds::DomainParticipant* DdsMonitorParticipantRegistry::get_participant(
         // The participant already exists. Use it.
         participant = participants_[domain];
 
-        logInfo(DDSPIPE_MONITOR, "MONITOR | Reusing Participant " << participant << " on domain " << domain << ".")
+        EPROSIMA_LOG_INFO(DDSPIPE_MONITOR,
+                "MONITOR | Reusing Participant " << participant << " on domain " << domain << ".");
     }
     else
     {
@@ -68,7 +69,8 @@ fastdds::dds::DomainParticipant* DdsMonitorParticipantRegistry::get_participant(
 
         participant = fastdds::dds::DomainParticipantFactory::get_instance()->create_participant(domain, pqos);
 
-        logInfo(DDSPIPE_MONITOR, "MONITOR | Created Participant " << participant << " on domain " << domain << ".");
+        EPROSIMA_LOG_INFO(DDSPIPE_MONITOR,
+                "MONITOR | Created Participant " << participant << " on domain " << domain << ".");
 
         if (participant == nullptr)
         {

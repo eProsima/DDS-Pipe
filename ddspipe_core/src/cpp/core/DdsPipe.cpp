@@ -14,11 +14,12 @@
 
 #include <set>
 
-#include <cpp_utils/exception/UnsupportedException.hpp>
 #include <cpp_utils/exception/ConfigurationException.hpp>
-#include <cpp_utils/exception/InitializationException.hpp>
 #include <cpp_utils/exception/InconsistencyException.hpp>
+#include <cpp_utils/exception/InitializationException.hpp>
+#include <cpp_utils/exception/UnsupportedException.hpp>
 #include <cpp_utils/Log.hpp>
+#include <cpp_utils/ReturnCode.hpp>
 #include <cpp_utils/utils.hpp>
 
 #include <ddspipe_core/core/DdsPipe.hpp>
@@ -138,7 +139,7 @@ utils::ReturnCode DdsPipe::enable() noexcept
     {
         enabled_ = true;
 
-        logInfo(DDSPIPE, "Enabling DDS Pipe.");
+        EPROSIMA_LOG_INFO(DDSPIPE, "Enabling DDS Pipe.");
 
         activate_all_topics_nts_();
 
@@ -156,7 +157,7 @@ utils::ReturnCode DdsPipe::enable() noexcept
     }
     else
     {
-        logInfo(DDSPIPE, "Trying to enable an already enabled DDS Pipe.");
+        EPROSIMA_LOG_INFO(DDSPIPE, "Trying to enable an already enabled DDS Pipe.");
         return utils::ReturnCode::RETCODE_PRECONDITION_NOT_MET;
     }
 }
@@ -169,7 +170,7 @@ utils::ReturnCode DdsPipe::disable() noexcept
     {
         enabled_ = false;
 
-        logInfo(DDSPIPE, "Disabling DDS Pipe.");
+        EPROSIMA_LOG_INFO(DDSPIPE, "Disabling DDS Pipe.");
 
         deactivate_all_topics_nts_();
 
@@ -177,7 +178,7 @@ utils::ReturnCode DdsPipe::disable() noexcept
     }
     else
     {
-        logInfo(DDSPIPE, "Trying to disable a disabled DDS Pipe.");
+        EPROSIMA_LOG_INFO(DDSPIPE, "Trying to disable a disabled DDS Pipe.");
         return utils::ReturnCode::RETCODE_PRECONDITION_NOT_MET;
     }
 }
@@ -188,7 +189,7 @@ void DdsPipe::init_allowed_topics_()
         configuration_.allowlist,
         configuration_.blocklist);
 
-    logInfo(DDSROUTER, "DDS Router configured with allowed topics: " << *allowed_topics_);
+    EPROSIMA_LOG_INFO(DDSROUTER, "DDS Router configured with allowed topics: " << *allowed_topics_);
 }
 
 utils::ReturnCode DdsPipe::reload_allowed_topics_(
@@ -413,7 +414,7 @@ void DdsPipe::init_bridges_nts_(
 void DdsPipe::discovered_topic_nts_(
         const utils::Heritable<DistributedTopic>& topic) noexcept
 {
-    logInfo(DDSPIPE, "Discovered topic: " << topic << " by: " << topic->topic_discoverer() << ".");
+    EPROSIMA_LOG_INFO(DDSPIPE, "Discovered topic: " << topic << " by: " << topic->topic_discoverer() << ".");
 
     // Check if the bridge (and the topic) already exist.
     auto it_bridge = bridges_.find(topic);
@@ -441,7 +442,7 @@ void DdsPipe::discovered_service_nts_(
         const ParticipantId& server_participant_id,
         const GuidPrefix& server_guid_prefix) noexcept
 {
-    logInfo(DDSPIPE, "Discovered service: " << topic << ".");
+    EPROSIMA_LOG_INFO(DDSPIPE, "Discovered service: " << topic << ".");
 
     auto it_bridge = rpc_bridges_.find(topic);
 
@@ -472,7 +473,7 @@ void DdsPipe::removed_service_nts_(
         const ParticipantId& server_participant_id,
         const GuidPrefix& server_guid_prefix) noexcept
 {
-    logInfo(DDSPIPE, "Removed service: " << topic << ".");
+    EPROSIMA_LOG_INFO(DDSPIPE, "Removed service: " << topic << ".");
 
     auto it_bridge = rpc_bridges_.find(topic);
 
@@ -486,7 +487,7 @@ void DdsPipe::create_new_bridge_nts_(
         const utils::Heritable<DistributedTopic>& topic,
         bool enabled /*= false*/) noexcept
 {
-    logInfo(DDSPIPE, "Creating Bridge for topic: " << topic << ".");
+    EPROSIMA_LOG_INFO(DDSPIPE, "Creating Bridge for topic: " << topic << ".");
 
     try
     {
@@ -511,7 +512,7 @@ void DdsPipe::create_new_bridge_nts_(
     }
     catch (const utils::InitializationException& e)
     {
-        logError(DDSPIPE,
+        EPROSIMA_LOG_ERROR(DDSPIPE,
                 "Error creating Bridge for topic " << topic <<
                 ". Error code:" << e.what() << ".");
     }
@@ -520,7 +521,7 @@ void DdsPipe::create_new_bridge_nts_(
 void DdsPipe::create_new_service_nts_(
         const RpcTopic& topic) noexcept
 {
-    logInfo(DDSPIPE, "Creating Service: " << topic << ".");
+    EPROSIMA_LOG_INFO(DDSPIPE, "Creating Service: " << topic << ".");
 
     // Endpoints not created until enabled for the first time, so no exception can be thrown
     rpc_bridges_[topic] = std::make_unique<RpcBridge>(topic, participants_database_, payload_pool_, thread_pool_);
@@ -529,7 +530,7 @@ void DdsPipe::create_new_service_nts_(
 void DdsPipe::activate_topic_nts_(
         const utils::Heritable<DistributedTopic>& topic) noexcept
 {
-    logInfo(DDSPIPE, "Activating topic: " << topic << ".");
+    EPROSIMA_LOG_INFO(DDSPIPE, "Activating topic: " << topic << ".");
 
     // Modify current_topics_ and set this topic as active
     current_topics_[topic] = true;
@@ -552,7 +553,7 @@ void DdsPipe::activate_topic_nts_(
 void DdsPipe::deactivate_topic_nts_(
         const utils::Heritable<DistributedTopic>& topic) noexcept
 {
-    logInfo(DDSPIPE, "Deactivating topic: " << topic << ".");
+    EPROSIMA_LOG_INFO(DDSPIPE, "Deactivating topic: " << topic << ".");
 
     // Modify current_topics_ and set this topic as not active
     current_topics_[topic] = false;

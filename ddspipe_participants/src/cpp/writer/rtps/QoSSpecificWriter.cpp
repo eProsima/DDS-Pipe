@@ -26,26 +26,26 @@ QoSSpecificWriter::QoSSpecificWriter(
         const ParticipantId& participant_id,
         const DdsTopic& topic,
         const std::shared_ptr<core::PayloadPool>& payload_pool,
-        fastrtps::rtps::RTPSParticipant* rtps_participant,
+        fastdds::rtps::RTPSParticipant* rtps_participant,
         const SpecificEndpointQoS& specific_qos,
         const bool repeater /* = false */)
     : CommonWriter(
         participant_id, topic, payload_pool, rtps_participant, repeater
         , reckon_history_attributes_(topic)
         , reckon_writer_attributes_(topic)
-        , reckon_topic_attributes_(topic)
+        , reckon_topic_description_(topic)
         , reckon_writer_qos_(specific_qos, topic)  // this modifies the qos of the Common Writer
         , reckon_cache_change_pool_configuration_(topic))
     , specific_qos_(specific_qos)
 {
 }
 
-fastrtps::WriterQos QoSSpecificWriter::reckon_writer_qos_(
+fastdds::dds::WriterQos QoSSpecificWriter::reckon_writer_qos_(
         const SpecificEndpointQoS& specific_qos,
         const DdsTopic& topic) noexcept
 {
     // Get QoS from parent class
-    fastrtps::WriterQos qos = CommonWriter::reckon_writer_qos_(topic);
+    fastdds::dds::WriterQos qos = CommonWriter::reckon_writer_qos_(topic);
 
     // Set Partitions
     if (topic.topic_qos.has_partitions())

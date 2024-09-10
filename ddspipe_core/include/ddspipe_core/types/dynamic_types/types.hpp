@@ -14,12 +14,13 @@
 
 #pragma once
 
-#include <fastrtps/types/DynamicTypePtr.h>
+#include <fastdds/dds/xtypes/dynamic_types/DynamicType.hpp>
+#include <fastdds/dds/xtypes/type_representation/detail/dds_xtypes_typeobject.hpp>
 
 #include <ddspipe_core/interface/IRoutingData.hpp>
 #include <ddspipe_core/library/library_dll.h>
-#include <ddspipe_core/types/topic/TopicInternalTypeDiscriminator.hpp>
 #include <ddspipe_core/types/topic/dds/DdsTopic.hpp>
+#include <ddspipe_core/types/topic/TopicInternalTypeDiscriminator.hpp>
 
 namespace eprosima {
 namespace ddspipe {
@@ -35,7 +36,11 @@ struct DynamicTypeData : public core::IRoutingData
     DDSPIPE_CORE_DllAPI
     virtual types::TopicInternalTypeDiscriminator internal_type_discriminator() const noexcept override;
 
-    fastrtps::types::DynamicType_ptr dynamic_type{nullptr};
+    // DynamicType created from a complete TypeObject
+    fastdds::dds::DynamicType::_ref_type dynamic_type{nullptr};
+
+    // Complete TypeIdentifier of the DynamicType
+    fastdds::dds::xtypes::TypeIdentifier type_identifier{};
 };
 
 DDSPIPE_CORE_DllAPI

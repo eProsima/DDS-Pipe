@@ -18,6 +18,7 @@
 
 #include <cpp_utils/exception/UnsupportedException.hpp>
 #include <cpp_utils/Log.hpp>
+#include <cpp_utils/ReturnCode.hpp>
 
 #include <ddspipe_participants/reader/auxiliar/InternalReader.hpp>
 

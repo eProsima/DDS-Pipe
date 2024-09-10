@@ -14,12 +14,11 @@
 
 #pragma once
 
-#include <fastdds/rtps/transport/TCPTransportDescriptor.h>
+#include <fastdds/rtps/transport/TCPTransportDescriptor.hpp>
 
 #include <ddspipe_participants/configuration/InitialPeersParticipantConfiguration.hpp>
-#include <ddspipe_participants/types/security/tls/TlsConfiguration.hpp>
-
 #include <ddspipe_participants/participant/rtps/CommonParticipant.hpp>
+#include <ddspipe_participants/types/security/tls/TlsConfiguration.hpp>
 
 namespace eprosima {
 namespace ddspipe {
@@ -42,8 +41,7 @@ public:
 
 protected:
 
-    static fastrtps::rtps::RTPSParticipantAttributes reckon_participant_attributes_(
-            const InitialPeersParticipantConfiguration* configuration);
+    fastdds::rtps::RTPSParticipantAttributes reckon_participant_attributes_() const override;
 
 };
 

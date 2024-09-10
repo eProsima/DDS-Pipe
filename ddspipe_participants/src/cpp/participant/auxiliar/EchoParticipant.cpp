@@ -94,7 +94,7 @@ std::shared_ptr<core::IWriter> EchoParticipant::create_writer(
     }
     else
     {
-        logInfo(DDSPIPE_ECHO_DISCOVERY, "Ignoring topic " << topic.topic_name() << " as it is not RTPS.");
+        EPROSIMA_LOG_INFO(DDSPIPE_ECHO_DISCOVERY, "Ignoring topic " << topic.topic_name() << " as it is not RTPS.");
     }
 
     return std::make_shared<BlankWriter>();

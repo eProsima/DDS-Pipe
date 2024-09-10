@@ -13,64 +13,13 @@
 # limitations under the License.
 
 ####################
-# dtypes_idl_tests #
-####################
-
-set(TEST_NAME dtypes_idl_tests)
-
-# Determine Fast DDS version
-if ("${fastrtps_VERSION}" VERSION_LESS 2.13)
-    set(DDS_TYPES_VERSION "v1")
-else()
-    set(DDS_TYPES_VERSION "v2")
-endif()
-
-# Add to test sources every FastDDSGen file generated
-file(GLOB DATATYPE_SOURCES_CXX "types/${DDS_TYPES_VERSION}/**/*.cxx")
-set(TEST_SOURCES
-        dtypes_idl_tests.cpp
-        ${PROJECT_SOURCE_DIR}/src/cpp/types/dynamic_types/schema_idl.cpp
-        ${DATATYPE_SOURCES_CXX}
-    )
-
-set(TEST_LIST
-    )
-
-set(TEST_EXTRA_LIBRARIES
-        fastcdr
-        fastrtps
-        cpp_utils
-        $<$<BOOL:${WIN32}>:iphlpapi$<SEMICOLON>Shlwapi>
-    )
-
-# Add to needed sources every .idl file
-file(
-    GLOB
-        RESULT_SOURCES_IDL
-    RELATIVE
-        "${CMAKE_CURRENT_SOURCE_DIR}"
-    "types/${DDS_TYPES_VERSION}/idls/*.idl")
-
-set(TEST_NEEDED_SOURCES
-        ${RESULT_SOURCES_IDL}
-    )
-
-add_unittest_executable(
-        "${TEST_NAME}"
-        "${TEST_SOURCES}"
-        "${TEST_LIST}"
-        "${TEST_EXTRA_LIBRARIES}"
-        "${TEST_NEEDED_SOURCES}"
-    )
-
-####################
 # dtypes_msg_tests #
 ####################
 
 set(TEST_NAME dtypes_msg_tests)
 
 # Add to test sources every FastDDSGen file generated
-file(GLOB DATATYPE_SOURCES_CXX "types/${DDS_TYPES_VERSION}/**/*.cxx")
+file(GLOB DATATYPE_SOURCES_CXX "types/**/*.cxx")
 set(TEST_SOURCES
         dtypes_msg_tests.cpp
         ${PROJECT_SOURCE_DIR}/src/cpp/types/dynamic_types/schema_msg.cpp
@@ -82,7 +31,7 @@ set(TEST_LIST
 
 set(TEST_EXTRA_LIBRARIES
         fastcdr
-        fastrtps
+        fastdds
         cpp_utils
         $<$<BOOL:${WIN32}>:iphlpapi$<SEMICOLON>Shlwapi>
     )
@@ -93,7 +42,7 @@ file(
         RESULT_SOURCES_MSG
     RELATIVE
         "${CMAKE_CURRENT_SOURCE_DIR}"
-    "types/${DDS_TYPES_VERSION}/msgs/*.msg")
+    "types/msgs/*.msg")
 
 set(TEST_NEEDED_SOURCES
         ${RESULT_SOURCES_MSG}

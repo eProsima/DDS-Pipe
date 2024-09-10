@@ -16,7 +16,7 @@
 
 #include <functional>
 
-#include <fastrtps/utils/TimedMutex.hpp>
+#include <fastdds/utils/TimedMutex.hpp>
 
 #include <cpp_utils/ReturnCode.hpp>
 
@@ -121,7 +121,7 @@ public:
 
     //! Get internal RTPS reader mutex
     DDSPIPE_CORE_DllAPI
-    virtual fastrtps::RecursiveTimedMutex& get_rtps_mutex() const = 0;
+    virtual fastdds::RecursiveTimedMutex& get_rtps_mutex() const = 0;
 
     //! Get number of unread cache changes in internal RTPS reader
     DDSPIPE_CORE_DllAPI

@@ -27,23 +27,23 @@ namespace eprosima {
 namespace ddspipe {
 namespace core {
 
+using namespace eprosima::fastdds::rtps;
 using namespace eprosima::ddspipe::core::types;
 
 bool FastPayloadPool::get_payload(
         uint32_t size,
-        Payload& payload)
+        SerializedPayload_t& payload)
 {
     // Reserve new payload
     return reserve_(size, payload);
 }
 
 bool FastPayloadPool::get_payload(
-        const Payload& src_payload,
-        IPayloadPool*& data_owner,
-        Payload& target_payload)
+        const SerializedPayload_t& src_payload,
+        SerializedPayload_t& target_payload)
 {
     // If we are not the owner, create a new payload. Else, reference the existing one
-    if (data_owner != this)
+    if (src_payload.payload_owner != this)
     {
         logDebug(DDSPIPE_PAYLOADPOOL_FAST, "Copying payload with ptr: " << static_cast<void*>(src_payload.data) << ".");
 
@@ -74,6 +74,7 @@ bool FastPayloadPool::get_payload(
         target_payload.data = src_payload.data;
         target_payload.length = src_payload.length;
         target_payload.max_size = src_payload.max_size;
+        target_payload.payload_owner = src_payload.payload_owner;
     }
     return true;
 }
@@ -100,6 +101,7 @@ bool FastPayloadPool::release_payload(
     payload.length = 0;
     payload.max_size = 0;
     payload.data = nullptr;
+    payload.payload_owner = nullptr;
     payload.pos = 0;
 
     return true;
@@ -107,7 +109,7 @@ bool FastPayloadPool::release_payload(
 
 bool FastPayloadPool::reserve_(
         uint32_t size,
-        types::Payload& payload)
+        SerializedPayload_t& payload)
 {
     if (size == 0)
     {
@@ -123,8 +125,9 @@ bool FastPayloadPool::reserve_(
     MetaInfoType* reference_place = reinterpret_cast<MetaInfoType*>(memory_allocated);
     (*reference_place) = 1;
 
-    payload.data = reinterpret_cast<eprosima::fastrtps::rtps::octet*>(reference_place + 1);
+    payload.data = reinterpret_cast<octet*>(reference_place + 1);
     payload.max_size = size;
+    payload.payload_owner = this;
 
     add_reserved_payload_();
 
@@ -134,7 +137,7 @@ bool FastPayloadPool::reserve_(
 }
 
 bool FastPayloadPool::release_(
-        types::Payload& payload)
+        SerializedPayload_t& payload)
 {
     logDebug(DDSPIPE_PAYLOADPOOL_FAST, "Releasing payload ptr: " << static_cast<void*>(payload.data) << ".");
 
@@ -147,6 +150,7 @@ bool FastPayloadPool::release_(
     payload.length = 0;
     payload.max_size = 0;
     payload.data = nullptr;
+    payload.payload_owner = nullptr;
     payload.pos = 0;
 
     add_release_payload_();

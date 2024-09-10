@@ -13,9 +13,9 @@
 // limitations under the License.
 
 
-#include <fastrtps/rtps/RTPSDomain.h>
-#include <fastrtps/rtps/participant/RTPSParticipant.h>
-#include <fastrtps/rtps/common/CacheChange.h>
+#include <fastdds/rtps/RTPSDomain.hpp>
+#include <fastdds/rtps/participant/RTPSParticipant.hpp>
+#include <fastdds/rtps/common/CacheChange.hpp>
 
 #include <cpp_utils/exception/InitializationException.hpp>
 #include <cpp_utils/Log.hpp>
@@ -49,13 +49,14 @@ CommonWriter::~CommonWriter()
         dds_participant_->delete_publisher(dds_publisher_);
     }
 
-    logInfo(DDSPIPE_DDS_WRITER, "Deleting CommonWriter created in Participant " <<
+    EPROSIMA_LOG_INFO(DDSPIPE_DDS_WRITER, "Deleting CommonWriter created in Participant " <<
             participant_id_ << " for topic " << topic_);
 }
 
 void CommonWriter::init()
 {
-    logInfo(DDSPIPE_DDS_WRITER, "Initializing writer in " << participant_id_ << " for topic " << topic_ << ".");
+    EPROSIMA_LOG_INFO(DDSPIPE_DDS_WRITER,
+            "Initializing writer in " << participant_id_ << " for topic " << topic_ << ".");
 
     // Create publisher
     dds_publisher_ = dds_participant_->create_publisher(
@@ -69,21 +70,12 @@ void CommonWriter::init()
                       participant_id_ << " in topic " << topic_ << ".");
     }
 
-    #if FASTRTPS_VERSION_MAJOR <= 2 && FASTRTPS_VERSION_MINOR < 12
-    writer_ = dds_publisher_->create_datawriter_with_payload_pool(
-        dds_topic_,
-        reckon_writer_qos_(),
-        payload_pool_,
-        nullptr,
-        eprosima::fastdds::dds::StatusMask::all());
-    #else
     writer_ = dds_publisher_->create_datawriter(
         dds_topic_,
         reckon_writer_qos_(),
         nullptr,
         eprosima::fastdds::dds::StatusMask::all(),
         payload_pool_);
-    #endif // if FASTRTPS_VERSION_MAJOR <= 2 && FASTRTPS_VERSION_MINOR < 13
 
     if (!writer_)
     {
@@ -114,7 +106,7 @@ CommonWriter::CommonWriter(
 utils::ReturnCode CommonWriter::write_nts_(
         core::IRoutingData& data) noexcept
 {
-    logInfo(DDSPIPE_DDS_WRITER, "Writing data in " << participant_id_ << " for topic " << topic_ << ".");
+    EPROSIMA_LOG_INFO(DDSPIPE_DDS_WRITER, "Writing data in " << participant_id_ << " for topic " << topic_ << ".");
 
     auto& rtps_data = dynamic_cast<core::types::RtpsPayloadData&>(data);
 
@@ -125,14 +117,7 @@ utils::ReturnCode CommonWriter::write_nts_(
     }
     else
     {
-        if (payload_pool_->write(writer_, &rtps_data))
-        {
-            return utils::ReturnCode::RETCODE_OK;
-        }
-        else
-        {
-            return utils::ReturnCode::RETCODE_ERROR;
-        }
+        return payload_pool_->write(writer_, &rtps_data);
     }
 }
 
@@ -182,7 +167,7 @@ fastdds::dds::DataWriterQos CommonWriter::reckon_writer_qos_() const noexcept
     }
 
     // Set minimum deadline so it matches with everything
-    qos.deadline().period = eprosima::fastrtps::Duration_t(0);
+    qos.deadline().period = eprosima::fastdds::dds::Duration_t(0);
 
     return qos;
 }

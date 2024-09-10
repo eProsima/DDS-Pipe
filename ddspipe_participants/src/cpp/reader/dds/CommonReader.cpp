@@ -48,13 +48,14 @@ CommonReader::~CommonReader()
         dds_participant_->delete_subscriber(dds_subscriber_);
     }
 
-    logInfo(DDSPIPE_DDS_READER, "Deleting CommonReader created in Participant " <<
+    EPROSIMA_LOG_INFO(DDSPIPE_DDS_READER, "Deleting CommonReader created in Participant " <<
             participant_id_ << " for topic " << topic_);
 }
 
 void CommonReader::init()
 {
-    logInfo(DDSPIPE_DDS_READER, "Initializing reader in " << participant_id_ << " for topic " << topic_ << ".");
+    EPROSIMA_LOG_INFO(DDSPIPE_DDS_READER,
+            "Initializing reader in " << participant_id_ << " for topic " << topic_ << ".");
 
     // Create subscriber
     dds_subscriber_ = dds_participant_->create_subscriber(
@@ -71,21 +72,12 @@ void CommonReader::init()
     // Create CommonReader
     // Listener must be set in creation as no callbacks should be missed
     // It is safe to do so here as object is already created and callbacks do not require anything set in this method
-    #if FASTRTPS_VERSION_MAJOR <= 2 && FASTRTPS_VERSION_MINOR < 12
-    reader_ = dds_subscriber_->create_datareader_with_payload_pool(
-        dds_topic_,
-        reckon_reader_qos_(),
-        payload_pool_,
-        nullptr,
-        eprosima::fastdds::dds::StatusMask::all());
-    #else
     reader_ = dds_subscriber_->create_datareader(
         dds_topic_,
         reckon_reader_qos_(),
         nullptr,
         eprosima::fastdds::dds::StatusMask::all(),
         payload_pool_);
-    #endif // if FASTRTPS_VERSION_MAJOR <= 2 && FASTRTPS_VERSION_MINOR < 13
 
     if (!reader_)
     {
@@ -103,7 +95,8 @@ void CommonReader::init()
 void CommonReader::on_data_available(
         fastdds::dds::DataReader* /* reader */)
 {
-    logInfo(DDSPIPE_DDS_READER, "On data available in reader in " << participant_id_ << " for topic " << topic_ << ".");
+    EPROSIMA_LOG_INFO(DDSPIPE_DDS_READER,
+            "On data available in reader in " << participant_id_ << " for topic " << topic_ << ".");
 
     // The CommonReader notifies the reception of a message to the Monitor when a on_data_available event is received.
     // An on_data_available event can be received with more than one message, but figuring out the number of messages
@@ -121,7 +114,7 @@ void CommonReader::on_sample_lost(
         fastdds::dds::DataReader* reader,
         const fastdds::dds::SampleLostStatus& status)
 {
-    logWarning(DDSPIPE_DDS_READER,
+    EPROSIMA_LOG_WARNING(DDSPIPE_DDS_READER,
             "SAMPLE_LOST | On reader " << *this << " a data sample was lost and will not be received");
 
     monitor_msg_lost(topic_, participant_id_);
@@ -131,7 +124,7 @@ void CommonReader::on_requested_incompatible_qos(
         fastdds::dds::DataReader* reader,
         const fastdds::dds::RequestedIncompatibleQosStatus& status)
 {
-    logWarning(DDSPIPE_DDS_READER,
+    EPROSIMA_LOG_WARNING(DDSPIPE_DDS_READER,
             "TOPIC_MISMATCH_QOS | Reader " << *this << " found a remote Writer with incompatible QoS");
 
     monitor_qos_mismatch(topic_);
@@ -142,7 +135,7 @@ void CommonReader::on_inconsistent_topic(
         fastdds::dds::Topic* topic,
         fastdds::dds::InconsistentTopicStatus status)
 {
-    logWarning(DDSPIPE_DDS_READER,
+    EPROSIMA_LOG_WARNING(DDSPIPE_DDS_READER,
             "TOPIC_MISMATCH_TYPE | Reader " << *this <<
             " found a remote Writer with same topic name but incompatible type");
 
@@ -173,7 +166,7 @@ utils::ReturnCode CommonReader::take_nts_(
     // NOTE: we assume this function is always called from the same thread
     // NOTE: we assume this function is always called with nullptr data
 
-    logInfo(DDSPIPE_DDS_READER, "Taking data in " << participant_id_ << " for topic " << topic_ << ".");
+    EPROSIMA_LOG_INFO(DDSPIPE_DDS_READER, "Taking data in " << participant_id_ << " for topic " << topic_ << ".");
 
     // Check if there is data available
     if (!(reader_->get_unread_count() > 0))
@@ -193,19 +186,19 @@ utils::ReturnCode CommonReader::take_nts_(
         // If the payload owner is not set, rtps_data won't release the payload on destruction
         rtps_data->payload_owner = payload_pool_.get();
 
-        if (!ret)
+        if (ret != fastdds::dds::RETCODE_OK)
         {
             // There has been an error taking the data. Exit.
             return ret;
         }
     } while (!should_accept_sample_(info));
 
-    logInfo(DDSPIPE_DDS_READER, "Data taken in " << participant_id_ << " for topic " << topic_ << ".");
+    EPROSIMA_LOG_INFO(DDSPIPE_DDS_READER, "Data taken in " << participant_id_ << " for topic " << topic_ << ".");
 
     // Verify that the rtps_data object is valid
     if (!rtps_data)
     {
-        logError(DDSPIPE_DDS_READER, "The data taken by the reader is not valid.");
+        EPROSIMA_LOG_ERROR(DDSPIPE_DDS_READER, "The data taken by the reader is not valid.");
         return utils::ReturnCode::RETCODE_ERROR;
     }
 

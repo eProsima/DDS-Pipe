@@ -13,17 +13,18 @@
 // limitations under the License.
 
 #include <algorithm>
+
+#include <fastdds/dds/xtypes/dynamic_types/DynamicType.hpp>
+
 #include <cpp_utils/testing/gtest_aux.hpp>
-#include <gtest/gtest.h>
 #include <cpp_utils/macros/custom_enumeration.hpp>
 #include <cpp_utils/file/file_utils.hpp>
-#include <fastrtps/types/DynamicTypePtr.h>
+
 #include <ddspipe_core/types/dynamic_types/schema.hpp>
-#if FASTRTPS_VERSION_MAJOR <= 2 && FASTRTPS_VERSION_MINOR < 13
-    #include "types/v1/all_types.hpp"
-#else
-    #include "types/v2/all_types.hpp"
-#endif // if FASTRTPS_VERSION_MAJOR <= 2 && FASTRTPS_VERSION_MINOR < 13
+
+#include <gtest/gtest.h>
+
+#include "types/all_types.hpp"
 
 using namespace eprosima;
 
@@ -38,11 +39,7 @@ std::string read_msg_from_file_(
 std::string file_name_by_type(
         SupportedType type)
 {
-    #if FASTRTPS_VERSION_MAJOR <= 2 && FASTRTPS_VERSION_MINOR < 13
-    return std::string("types/v1/msgs/") + to_string(type) + ".msg";
-    #else
-    return std::string("types/v2/msgs/") + to_string(type) + ".msg";
-    #endif // if FASTRTPS_VERSION_MAJOR <= 2 && FASTRTPS_VERSION_MINOR < 13
+    return std::string("types/msgs/") + to_string(type) + ".msg";
 }
 
 void compare_schemas(
@@ -58,8 +55,12 @@ void execute_test_by_type(
     // Get msg file in string with the value expected to be generated in the schema
     std::string msg_file = read_msg_from_file_(file_name_by_type(type));
 
+    // Register TypeObject representation
+    register_type_object_representation(type);
+
     // Get Dynamic type
-    fastrtps::types::DynamicType_ptr dyn_type = get_dynamic_type(type);
+    fastdds::dds::DynamicType::_ref_type dyn_type;
+    get_dynamic_type(type, dyn_type);
 
     // Get schema generated
     std::string schema = ddspipe::core::types::msg::generate_ros2_schema(dyn_type);

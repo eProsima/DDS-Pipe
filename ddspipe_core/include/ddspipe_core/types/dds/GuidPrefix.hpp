@@ -14,7 +14,6 @@
 
 #pragma once
 
-#include <fastdds/rtps/attributes/ServerAttributes.h>
 #include <fastdds/rtps/common/GuidPrefix_t.hpp>
 
 #include <ddspipe_core/library/library_dll.h>
@@ -30,12 +29,13 @@ namespace types {
  * This class extends the \c GuidPrefix_t class in FastDDS, which is a RTPS Participant Unique Id.
  * This class does not belong to class \c Guid due to a design flaw in OOP (parallel hierarchy is the future).
  */
-class GuidPrefix : public fastrtps::rtps::GuidPrefix_t
+class GuidPrefix : public fastdds::rtps::GuidPrefix_t
 {
 public:
 
     //! Using parent constructors
-    using fastrtps::rtps::GuidPrefix_t::GuidPrefix_t;
+    DDSPIPE_CORE_DllAPI
+    GuidPrefix () = default;
 
     //! Constructor from Parent class
     DDSPIPE_CORE_DllAPI
@@ -76,12 +76,12 @@ public:
      *
      * @todo use the seed of \c id to modify the whole guid and not only one of the 12 values.
      *
-     * @param ros : whether to use the Discovery Server ROS2 specific guid [Default: false]
+     * @param ros : whether to use the Discovery Server ROS2 specific guid
      * @param id : number to seed for the final Guid Prefix [Default: 0]
      */
     DDSPIPE_CORE_DllAPI
     GuidPrefix (
-            bool ros = false,
+            bool ros,
             uint32_t id = 0) noexcept;
 
     /**
@@ -95,7 +95,7 @@ public:
 
     DDSPIPE_CORE_DllAPI
     GuidPrefix& operator = (
-            const fastrtps::rtps::GuidPrefix_t& other) noexcept;
+            const fastdds::rtps::GuidPrefix_t& other) noexcept;
 
     /**
      * Whether the guid prefix is a valid one

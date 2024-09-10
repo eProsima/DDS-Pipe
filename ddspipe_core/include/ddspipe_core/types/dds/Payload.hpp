@@ -17,12 +17,11 @@
 
 #include <fastdds/dds/core/policy/QosPolicies.hpp>
 #include <fastdds/rtps/common/ChangeKind_t.hpp>
-#include <fastdds/rtps/common/InstanceHandle.h>
-#include <fastdds/rtps/common/SerializedPayload.h>
-#include <fastdds/rtps/common/Time_t.h>
-#include <fastdds/rtps/common/Time_t.h>
-#include <fastdds/rtps/common/Types.h>
-#include <fastdds/rtps/common/WriteParams.h>
+#include <fastdds/rtps/common/InstanceHandle.hpp>
+#include <fastdds/rtps/common/SerializedPayload.hpp>
+#include <fastdds/rtps/common/Time_t.hpp>
+#include <fastdds/rtps/common/Types.hpp>
+#include <fastdds/rtps/common/WriteParams.hpp>
 
 #include <ddspipe_core/library/library_dll.h>
 
@@ -31,26 +30,26 @@ namespace ddspipe {
 namespace core {
 namespace types {
 
-//! Durability kind enumeration
-using PartitionQosPolicy = eprosima::fastdds::dds::PartitionQosPolicy;
-
-//! Partition configuration
-using OwnershipStrengthQosPolicy = eprosima::fastdds::dds::OwnershipStrengthQosPolicy;
-
-//! Instance Handler type
-using InstanceHandle = eprosima::fastrtps::rtps::InstanceHandle_t;
-
-//! Instance Handler type
-using ChangeKind = eprosima::fastrtps::rtps::ChangeKind_t;
+//! Change kind
+using ChangeKind = eprosima::fastdds::rtps::ChangeKind_t;
 
 //! Fast DDS Time
-using DataTime = eprosima::fastrtps::rtps::Time_t;
+using DataTime = eprosima::fastdds::rtps::Time_t;
 
-//! Kind of every unit that creates a Payload
-using PayloadUnit = eprosima::fastrtps::rtps::octet;
+//! Instance Handle type
+using InstanceHandle = eprosima::fastdds::rtps::InstanceHandle_t;
+
+//! Ownership Strength configuration
+using OwnershipStrengthQosPolicy = eprosima::fastdds::dds::OwnershipStrengthQosPolicy;
 
 //! Payload references the raw data received.
-using Payload = eprosima::fastrtps::rtps::SerializedPayload_t;
+using Payload = eprosima::fastdds::rtps::SerializedPayload_t;
+
+//! Kind of every unit that creates a Payload
+using PayloadUnit = eprosima::fastdds::rtps::octet;
+
+//! Partition configuration
+using PartitionQosPolicy = eprosima::fastdds::dds::PartitionQosPolicy;
 
 //! \c octet to stream serializator
 DDSPIPE_CORE_DllAPI

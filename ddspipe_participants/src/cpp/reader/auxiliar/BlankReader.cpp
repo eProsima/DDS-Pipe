@@ -13,6 +13,7 @@
 // limitations under the License.
 
 #include <cpp_utils/exception/UnsupportedException.hpp>
+#include <cpp_utils/ReturnCode.hpp>
 
 #include <ddspipe_participants/reader/auxiliar/BlankReader.hpp>
 
@@ -48,7 +49,7 @@ core::types::Guid BlankReader::guid() const
     throw utils::UnsupportedException("guid method not allowed for non RTPS readers.");
 }
 
-fastrtps::RecursiveTimedMutex& BlankReader::get_rtps_mutex() const
+fastdds::RecursiveTimedMutex& BlankReader::get_rtps_mutex() const
 {
     throw utils::UnsupportedException("get_rtps_mutex method not allowed for non RTPS readers.");
 }

@@ -32,7 +32,7 @@ void StatusMonitorProducer::init_instance(
 
     if (instance_ != nullptr)
     {
-        logWarning(DDSPIPE_MONITOR, "MONITOR | StatusMonitorProducer instance is already initialized.");
+        EPROSIMA_LOG_WARNING(DDSPIPE_MONITOR, "MONITOR | StatusMonitorProducer instance is already initialized.");
         return;
     }
 
@@ -55,7 +55,7 @@ void StatusMonitorProducer::enable()
 {
     std::lock_guard<std::mutex> lock(mutex_);
 
-    logInfo(DDSPIPE_MONITOR, "MONITOR | Enabling StatusMonitorProducer.");
+    EPROSIMA_LOG_INFO(DDSPIPE_MONITOR, "MONITOR | Enabling StatusMonitorProducer.");
 
     enabled_ = true;
 }
@@ -64,7 +64,7 @@ void StatusMonitorProducer::disable()
 {
     std::lock_guard<std::mutex> lock(mutex_);
 
-    logInfo(DDSPIPE_MONITOR, "MONITOR | Disabling StatusMonitorProducer.");
+    EPROSIMA_LOG_INFO(DDSPIPE_MONITOR, "MONITOR | Disabling StatusMonitorProducer.");
 
     enabled_ = false;
 }
@@ -74,7 +74,7 @@ void StatusMonitorProducer::register_consumer(
 {
     if (!enabled_)
     {
-        logWarning(DDSPIPE_MONITOR,
+        EPROSIMA_LOG_WARNING(DDSPIPE_MONITOR,
                 "MONITOR | Not registering consumer " << consumer->get_name() << " on StatusMonitorProducer"
                 "since the StatusMonitorProducer is disabled.");
 
@@ -83,7 +83,8 @@ void StatusMonitorProducer::register_consumer(
 
     std::lock_guard<std::mutex> lock(mutex_);
 
-    logInfo(DDSPIPE_MONITOR, "MONITOR | Registering consumer " << consumer->get_name() << " on StatusMonitorProducer.");
+    EPROSIMA_LOG_INFO(DDSPIPE_MONITOR,
+            "MONITOR | Registering consumer " << consumer->get_name() << " on StatusMonitorProducer.");
 
     consumers_.push_back(std::move(consumer));
 }
@@ -92,7 +93,7 @@ void StatusMonitorProducer::clear_consumers()
 {
     std::lock_guard<std::mutex> lock(mutex_);
 
-    logInfo(DDSPIPE_MONITOR, "MONITOR | Removing consumers from StatusMonitorProducer.");
+    EPROSIMA_LOG_INFO(DDSPIPE_MONITOR, "MONITOR | Removing consumers from StatusMonitorProducer.");
 
     consumers_.clear();
 }
@@ -147,7 +148,7 @@ void StatusMonitorProducer::clear_data()
 {
     std::lock_guard<std::mutex> lock(mutex_);
 
-    logInfo(DDSPIPE_MONITOR, "MONITOR | Clearing StatusMonitorProducer data.");
+    EPROSIMA_LOG_INFO(DDSPIPE_MONITOR, "MONITOR | Clearing StatusMonitorProducer data.");
 
     error_status_.type_mismatch(false);
     error_status_.qos_mismatch(false);
@@ -171,7 +172,7 @@ void StatusMonitorProducer::add_error_to_status(
     //      2. Simultaneous calls to add_error_to_status.
     std::lock_guard<std::mutex> lock(mutex_);
 
-    logInfo(DDSPIPE_MONITOR, "MONITOR | Adding error " << error << " to status.");
+    EPROSIMA_LOG_INFO(DDSPIPE_MONITOR, "MONITOR | Adding error " << error << " to status.");
 
     if (error == "TYPE_MISMATCH")
     {
@@ -187,7 +188,7 @@ void StatusMonitorProducer::add_error_to_status(
 
 void StatusMonitorProducer::produce_nts_()
 {
-    logInfo(DDSPIPE_MONITOR, "MONITOR | Producing MonitoringStatus.");
+    EPROSIMA_LOG_INFO(DDSPIPE_MONITOR, "MONITOR | Producing MonitoringStatus.");
 
     data_.error_status(error_status_);
     data_.has_errors(has_errors_);
@@ -195,7 +196,7 @@ void StatusMonitorProducer::produce_nts_()
 
 void StatusMonitorProducer::consume_nts_()
 {
-    logInfo(DDSPIPE_MONITOR, "MONITOR | Consuming MonitoringStatus.")
+    EPROSIMA_LOG_INFO(DDSPIPE_MONITOR, "MONITOR | Consuming MonitoringStatus.");
 
     for (auto& consumer : consumers_)
     {

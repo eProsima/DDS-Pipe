@@ -68,7 +68,7 @@ DdsMonitorConsumer<T>::DdsMonitorConsumer(
                       participant_->guid() << " in topic " << topic_ << ".");
     }
 
-    logInfo(DDSPIPE_MONITOR, "MONITOR | Created DataWriter " << writer_ << " for Participant " <<
+    EPROSIMA_LOG_INFO(DDSPIPE_MONITOR, "MONITOR | Created DataWriter " << writer_ << " for Participant " <<
             participant_->guid() << " in topic " << topic_ << ".");
 }
 
@@ -95,7 +95,7 @@ template <typename T>
 void DdsMonitorConsumer<T>::consume(
         const T& data) const
 {
-    writer_->write(&const_cast<T&>(data));
+    writer_->write(&data);
 }
 
 template <typename T>

@@ -21,14 +21,14 @@
 /////
 // Forward declarations
 namespace eprosima {
-namespace fastrtps {
+namespace fastdds {
 namespace rtps {
 
 struct CacheChange_t;
 struct GUID_t;
 
 } /* namespace rtps */
-} /* namespace fastrtps */
+} /* namespace fastdds */
 } /* namespace eprosima */
 
 namespace eprosima {
@@ -51,8 +51,8 @@ public:
      */
     DDSPIPE_PARTICIPANTS_DllAPI
     bool is_relevant(
-            const fastrtps::rtps::CacheChange_t& change,
-            const fastrtps::rtps::GUID_t& reader_guid
+            const fastdds::rtps::CacheChange_t& change,
+            const fastdds::rtps::GUID_t& reader_guid
             ) const override;
 };
 

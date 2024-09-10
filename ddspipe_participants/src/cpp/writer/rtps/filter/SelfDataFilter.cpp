@@ -13,8 +13,8 @@
 // limitations under the License.
 
 
-#include <fastrtps/rtps/common/CacheChange.h>
-#include <fastrtps/rtps/common/Guid.h>
+#include <fastdds/rtps/common/CacheChange.hpp>
+#include <fastdds/rtps/common/Guid.hpp>
 #include <cpp_utils/Log.hpp>
 
 #include <types/dds/RouterCacheChange.hpp>
@@ -26,8 +26,8 @@ namespace participants {
 namespace rtps {
 
 bool SelfDataFilter::is_relevant(
-        const fastrtps::rtps::CacheChange_t& change,
-        const fastrtps::rtps::GUID_t& reader_guid) const
+        const fastdds::rtps::CacheChange_t& change,
+        const fastdds::rtps::GUID_t& reader_guid) const
 {
     // It is relevant only if the reader does not belong to same participant as writer
     return change.writerGUID.guidPrefix != reader_guid.guidPrefix;

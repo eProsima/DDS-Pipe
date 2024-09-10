@@ -59,7 +59,7 @@ RpcBridge::~RpcBridge()
 
 void RpcBridge::init_nts_()
 {
-    logInfo(DDSPIPE_RPCBRIDGE, "Creating endpoints in RpcBridge for service " << rpc_topic_ << ".");
+    EPROSIMA_LOG_INFO(DDSPIPE_RPCBRIDGE, "Creating endpoints in RpcBridge for service " << rpc_topic_ << ".");
 
     // TODO: remove and use every participant
     std::set<ParticipantId> ids = participants_->get_rtps_participants_ids();
@@ -113,7 +113,7 @@ void RpcBridge::enable() noexcept
 
     if (!enabled_ && servers_available_())
     {
-        logInfo(DDSPIPE_RPCBRIDGE, "Enabling RpcBridge for service " << rpc_topic_ << ".");
+        EPROSIMA_LOG_INFO(DDSPIPE_RPCBRIDGE, "Enabling RpcBridge for service " << rpc_topic_ << ".");
 
         if (!init_)
         {
@@ -123,7 +123,7 @@ void RpcBridge::enable() noexcept
             }
             catch (const utils::InitializationException& e)
             {
-                logError(DDSPIPE_RPCBRIDGE,
+                EPROSIMA_LOG_ERROR(DDSPIPE_RPCBRIDGE,
                         "Error while creating endpoints in RpcBridge for service " << rpc_topic_ <<
                         ". Error code:" << e.what() << ".");
                 return;
@@ -163,7 +163,7 @@ void RpcBridge::disable() noexcept
 
     if (enabled_)
     {
-        logInfo(DDSPIPE_RPCBRIDGE, "Disabling RpcBridge for service " << rpc_topic_ << ".");
+        EPROSIMA_LOG_INFO(DDSPIPE_RPCBRIDGE, "Disabling RpcBridge for service " << rpc_topic_ << ".");
 
         enabled_ = false;
 
@@ -271,7 +271,7 @@ void RpcBridge::transmit_(
     while (true)
     {
         {
-            std::lock_guard<eprosima::fastrtps::RecursiveTimedMutex> lock(reader->get_rtps_mutex());
+            std::lock_guard<eprosima::fastdds::RecursiveTimedMutex> lock(reader->get_rtps_mutex());
 
             if (!enabled_ || !(reader->get_unread_count() > 0))
             {
@@ -300,11 +300,11 @@ void RpcBridge::transmit_(
         RpcPayloadData& rpc_data = dynamic_cast<RpcPayloadData&>(*data);
 
 
-        // Will never return \c RETCODE_NO_DATA, otherwise would have finished before
-        if (!ret)
+        // Will never return \c NO_DATA, otherwise would have finished before
+        if (ret != utils::ReturnCode::RETCODE_OK)
         {
             // Error reading data
-            logWarning(DDSPIPE_RPCBRIDGE,
+            EPROSIMA_LOG_WARNING(DDSPIPE_RPCBRIDGE,
                     "Error taking data at service Reader in topic " << reader->topic()
                                                                     << ". Error code " << ret
                                                                     << ". Skipping data and continue.");
@@ -323,7 +323,7 @@ void RpcBridge::transmit_(
 
             if (reply_related_sample_identity == SampleIdentity::unknown())
             {
-                logWarning(DDSPIPE_RPCBRIDGE,
+                EPROSIMA_LOG_WARNING(DDSPIPE_RPCBRIDGE,
                         "RpcBridge for service " << rpc_topic_ <<
                         " received ill-formed request from remote endpoint " << rpc_data.source_guid <<
                         ". Ignoring...");
@@ -351,15 +351,15 @@ void RpcBridge::transmit_(
 
                     ret = request_writers_[service_registry.first]->write(*data);
 
-                    if (!ret)
+                    if (ret != utils::ReturnCode::RETCODE_OK)
                     {
-                        logWarning(DDSPIPE_RPCBRIDGE, "Error writting request in RpcBridge for service "
+                        EPROSIMA_LOG_WARNING(DDSPIPE_RPCBRIDGE, "Error writting request in RpcBridge for service "
                                 << rpc_topic_ << ". Error code " << ret <<
                                 ". Skipping data for this writer and continue.");
                         continue;
                     }
 
-                    eprosima::fastrtps::rtps::SequenceNumber_t sequence_number =
+                    eprosima::fastdds::rtps::SequenceNumber_t sequence_number =
                             rpc_data.sent_sequence_number;
                     // Add entry to registry associated to the transmission of this request through this proxy client.
                     service_registry.second->add(
@@ -408,9 +408,9 @@ void RpcBridge::transmit_(
 
                     ret = reply_writers_[registry_entry.first]->write(*data);
 
-                    if (!ret)
+                    if (ret != utils::ReturnCode::RETCODE_OK)
                     {
-                        logWarning(DDSPIPE_RPCBRIDGE, "Error writting reply in RpcBridge for service "
+                        EPROSIMA_LOG_WARNING(DDSPIPE_RPCBRIDGE, "Error writting reply in RpcBridge for service "
                                 << rpc_topic_ << ". Error code " << ret << ".");
                     }
                     else

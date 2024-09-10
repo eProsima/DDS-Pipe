@@ -13,9 +13,9 @@
 // limitations under the License.
 
 
-#include <fastrtps/rtps/RTPSDomain.h>
-#include <fastrtps/rtps/participant/RTPSParticipant.h>
-#include <fastrtps/rtps/common/CacheChange.h>
+#include <fastdds/rtps/RTPSDomain.hpp>
+#include <fastdds/rtps/participant/RTPSParticipant.hpp>
+#include <fastdds/rtps/common/CacheChange.hpp>
 
 #include <cpp_utils/exception/InitializationException.hpp>
 #include <cpp_utils/Log.hpp>
@@ -35,13 +35,13 @@ SimpleWriter::SimpleWriter(
         const core::types::ParticipantId& participant_id,
         const core::types::DdsTopic& topic,
         const std::shared_ptr<core::PayloadPool>& payload_pool,
-        fastrtps::rtps::RTPSParticipant* rtps_participant,
+        fastdds::rtps::RTPSParticipant* rtps_participant,
         const bool repeater /* = false */)
     : CommonWriter(
         participant_id, topic, payload_pool, rtps_participant, repeater,
         reckon_history_attributes_(topic),
         reckon_writer_attributes_(topic),
-        reckon_topic_attributes_(topic),
+        reckon_topic_description_(topic),
         reckon_writer_qos_(topic),
         reckon_cache_change_pool_configuration_(topic))
 {

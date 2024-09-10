@@ -18,11 +18,17 @@
 
 #include <cpp_utils/types/Atomicable.hpp>
 
+#include <fastdds/dds/builtin/topic/ParticipantBuiltinTopicData.hpp>
+#include <fastdds/dds/builtin/topic/PublicationBuiltinTopicData.hpp>
+#include <fastdds/dds/builtin/topic/SubscriptionBuiltinTopicData.hpp>
 #include <fastdds/dds/domain/DomainParticipant.hpp>
 #include <fastdds/dds/domain/DomainParticipantListener.hpp>
 #include <fastdds/dds/domain/qos/DomainParticipantQos.hpp>
 #include <fastdds/dds/publisher/qos/DataWriterQos.hpp>
 #include <fastdds/dds/subscriber/qos/DataReaderQos.hpp>
+#include <fastdds/rtps/participant/ParticipantDiscoveryInfo.hpp>
+#include <fastdds/rtps/reader/ReaderDiscoveryStatus.hpp>
+#include <fastdds/rtps/writer/WriterDiscoveryStatus.hpp>
 
 #include <ddspipe_core/dynamic/DiscoveryDatabase.hpp>
 #include <ddspipe_core/efficiency/payload/PayloadPool.hpp>
@@ -73,13 +79,13 @@ public:
     /////////////////////////
 
     DDSPIPE_PARTICIPANTS_DllAPI
-    virtual core::types::ParticipantId id() const noexcept override;
+    core::types::ParticipantId id() const noexcept override;
 
     DDSPIPE_PARTICIPANTS_DllAPI
-    virtual bool is_rtps_kind() const noexcept override;
+    bool is_rtps_kind() const noexcept override;
 
     DDSPIPE_PARTICIPANTS_DllAPI
-    virtual bool is_repeater() const noexcept override;
+    bool is_repeater() const noexcept override;
 
     DDSPIPE_PARTICIPANTS_DllAPI
     core::types::TopicQoS topic_qos() const noexcept override;
@@ -106,17 +112,23 @@ public:
     // LISTENER METHODS
     /////////////////////////
 
-    virtual void on_participant_discovery(
+    void on_participant_discovery(
             fastdds::dds::DomainParticipant* participant,
-            fastrtps::rtps::ParticipantDiscoveryInfo&& info) override;
+            fastdds::rtps::ParticipantDiscoveryStatus reason,
+            const fastdds::rtps::ParticipantBuiltinTopicData& info,
+            bool& /*should_be_ignored*/) override;
 
-    virtual void on_subscriber_discovery(
+    void on_data_reader_discovery(
             fastdds::dds::DomainParticipant* participant,
-            fastrtps::rtps::ReaderDiscoveryInfo&& info) override;
+            fastdds::rtps::ReaderDiscoveryStatus reason,
+            const fastdds::dds::SubscriptionBuiltinTopicData& info,
+            bool& /*should_be_ignored*/) override;
 
-    virtual void on_publisher_discovery(
+    void on_data_writer_discovery(
             fastdds::dds::DomainParticipant* participant,
-            fastrtps::rtps::WriterDiscoveryInfo&& info) override;
+            fastdds::rtps::WriterDiscoveryStatus reason,
+            const fastdds::dds::PublicationBuiltinTopicData& info,
+            bool& /*should_be_ignored*/) override;
 
 protected:
 
@@ -133,6 +145,11 @@ protected:
     /////////////////////////
     // INTERNAL VIRTUAL METHODS
     /////////////////////////
+
+    virtual
+    fastdds::dds::DomainParticipantQos
+    add_qos_properties_(
+            fastdds::dds::DomainParticipantQos& qos) const;
 
     virtual
     fastdds::dds::DomainParticipantQos

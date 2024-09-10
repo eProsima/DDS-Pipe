@@ -18,7 +18,10 @@
 
 #pragma once
 
-#include <fastrtps/types/DynamicTypePtr.h>
+#include <string>
+
+#include <fastdds/dds/xtypes/dynamic_types/DynamicType.hpp>
+#include <fastdds/dds/xtypes/type_representation/detail/dds_xtypes_typeobject.hpp>
 
 #include <ddspipe_core/types/data/RtpsPayloadData.hpp>
 #include <ddspipe_core/types/topic/dds/DdsTopic.hpp>
@@ -35,7 +38,8 @@ class ISchemaHandler
 public:
 
     virtual void add_schema(
-            const fastrtps::types::DynamicType_ptr& dynamic_type) = 0;
+            const fastdds::dds::DynamicType::_ref_type& dynamic_type,
+            const fastdds::dds::xtypes::TypeIdentifier& type_identifier) = 0;
 
     virtual void add_data(
             const core::types::DdsTopic& topic,

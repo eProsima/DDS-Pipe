@@ -26,11 +26,11 @@ set(MODULE_SUMMARY
 
 set(MODULE_FIND_PACKAGES
     fastcdr
-    fastrtps
+    fastdds
     cpp_utils
 )
 
-set(fastrtps_MINIMUM_VERSION "2.10")
+set(fastdds_MINIMUM_VERSION "3.0.0")
 
 set(MODULE_DEPENDENCIES
     $<$<BOOL:${WIN32}>:iphlpapi$<SEMICOLON>Shlwapi>

@@ -23,11 +23,11 @@
 #include <string>
 #include <thread>
 
-#include <fastrtps/utils/DBQueue.h>
+#include <cpp_utils/queue/DBQueue.hpp>
+#include <cpp_utils/ReturnCode.hpp>
 
 #include <ddspipe_core/types/dds/Endpoint.hpp>
 #include <ddspipe_core/types/dds/Guid.hpp>
-#include <cpp_utils/ReturnCode.hpp>
 #include <ddspipe_core/types/topic/dds/DistributedTopic.hpp>
 
 namespace eprosima {
@@ -263,7 +263,7 @@ protected:
     mutable std::mutex callbacks_mutex_;
 
     //! Queue storing database operations to be performed in a dedicated thread
-    fastrtps::DBQueue<std::tuple<DatabaseOperation, types::Endpoint>> entities_to_process_;
+    utils::event::DBQueue<std::tuple<DatabaseOperation, types::Endpoint>> entities_to_process_;
 
     //! Handle of thread dedicated to performing database operations
     std::thread queue_processing_thread_;

@@ -47,67 +47,8 @@ PayloadPool::~PayloadPool()
     }
     else
     {
-        logInfo(DDSPIPE_PAYLOADPOOL,
+        EPROSIMA_LOG_INFO(DDSPIPE_PAYLOADPOOL,
                 "Removing PayloadPool correctly after reserve: " << reserve_count_ << " payloads.");
-    }
-}
-
-/////
-// FAST DDS PART
-
-bool PayloadPool::get_payload(
-        uint32_t size,
-        eprosima::fastrtps::rtps::CacheChange_t& cache_change)
-{
-    if (get_payload(size, cache_change.serializedPayload))
-    {
-        cache_change.payload_owner(this);
-        return true;
-    }
-    else
-    {
-        logDevError(DDSPIPE_PAYLOADPOOL, "Error occurred while creating payload.")
-        return false;
-    }
-}
-
-bool PayloadPool::get_payload(
-        fastrtps::rtps::SerializedPayload_t& data,
-        IPayloadPool*& data_owner,
-        eprosima::fastrtps::rtps::CacheChange_t& cache_change)
-{
-    if (get_payload(data, data_owner, cache_change.serializedPayload))
-    {
-        cache_change.payload_owner(this);
-        return true;
-    }
-    else
-    {
-        logDevError(DDSPIPE_PAYLOADPOOL, "Error occurred while referencing payload.")
-        return false;
-    }
-}
-
-bool PayloadPool::release_payload(
-        fastrtps::rtps::CacheChange_t& cache_change)
-{
-    if (cache_change.payload_owner() == this)
-    {
-        if (release_payload(cache_change.serializedPayload))
-        {
-            cache_change.payload_owner(nullptr);
-            return true;
-        }
-        else
-        {
-            logDevError(DDSPIPE_PAYLOADPOOL, "Error occurred while releasing payload.")
-            return false;
-        }
-    }
-    else
-    {
-        logError(DDSPIPE_PAYLOADPOOL, "Trying to remove a cache change in an incorrect pool.")
-        throw utils::InconsistencyException("Trying to remove a cache change in an incorrect pool.");
     }
 }
 
@@ -129,7 +70,7 @@ void PayloadPool::add_release_payload_()
     ++release_count_;
     if (release_count_ > reserve_count_)
     {
-        logError(DDSPIPE_PAYLOADPOOL,
+        EPROSIMA_LOG_ERROR(DDSPIPE_PAYLOADPOOL,
                 "Inconsistent PayloadPool, releasing more payloads than reserved.");
         throw utils::InconsistencyException("Inconsistent PayloadPool, releasing more payloads than reserved.");
     }
@@ -137,7 +78,7 @@ void PayloadPool::add_release_payload_()
 
 bool PayloadPool::reserve_(
         uint32_t size,
-        Payload& payload)
+        types::Payload& payload)
 {
     if (size == 0)
     {
@@ -148,6 +89,9 @@ bool PayloadPool::reserve_(
 
     payload.reserve(size);
 
+    payload.max_size = size;
+    payload.payload_owner = this;
+
     logDebug(DDSPIPE_PAYLOADPOOL, "Reserved payload ptr: " << payload.data << ".");
 
     add_reserved_payload_();
@@ -156,16 +100,23 @@ bool PayloadPool::reserve_(
 }
 
 bool PayloadPool::release_(
-        Payload& payload)
+        types::Payload& payload)
 {
     logDebug(DDSPIPE_PAYLOADPOOL, "Releasing payload ptr: " << payload.data << ".");
 
+    payload.payload_owner = nullptr;
     payload.empty();
 
     if (payload.data != nullptr)
     {
         return false;
     }
+
+    // Remove payload internal values
+    payload.length = 0;
+    payload.max_size = 0;
+    payload.data = nullptr;
+    payload.pos = 0;
 
     add_release_payload_();
 

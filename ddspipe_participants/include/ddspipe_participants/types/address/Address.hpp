@@ -16,7 +16,7 @@
 
 #include <string>
 
-#include <fastdds/rtps/common/Locator.h>
+#include <fastdds/rtps/common/Locator.hpp>
 
 #include <ddspipe_participants/library/library_dll.h>
 
@@ -29,6 +29,8 @@ namespace types {
 using LocatorType = uint32_t;
 // Data Type for IP
 using IpType = std::string;
+// Data Type for an interfaces whitelist entry
+using WhitelistType = std::string;
 // Data Type for Domain name (DNS)
 using DomainType = std::string;
 // Data Type for Port

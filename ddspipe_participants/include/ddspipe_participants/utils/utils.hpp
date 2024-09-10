@@ -14,9 +14,9 @@
 
 #pragma once
 
-#include <fastdds/rtps/reader/ReaderDiscoveryInfo.h>
-#include <fastdds/rtps/writer/WriterDiscoveryInfo.h>
-#include <fastrtps/rtps/common/InstanceHandle.h>
+#include <fastdds/rtps/builtin/data/PublicationBuiltinTopicData.hpp>
+#include <fastdds/rtps/builtin/data/SubscriptionBuiltinTopicData.hpp>
+#include <fastdds/rtps/common/InstanceHandle.hpp>
 
 #include <ddspipe_core/dynamic/DiscoveryDatabase.hpp>
 #include <ddspipe_core/types/dds/Endpoint.hpp>
@@ -29,28 +29,28 @@ namespace participants {
 namespace detail {
 
 /**
+ * @brief Create an endpoint from info object
+ *
+ * Specialized for \c PublicationBuiltinTopicData and \c SubscriptionBuiltinTopicData .
+ */
+template<class DiscoveryBuiltinTopicData>
+core::types::Endpoint create_endpoint_from_info_(
+        const DiscoveryBuiltinTopicData& info,
+        const core::types::ParticipantId participant_discoverer_id);
+
+/**
  * @brief Get the QoS from a Writer from the \c DiscoveryDatabase .
  */
 core::types::SpecificEndpointQoS specific_qos_of_writer_(
         const core::DiscoveryDatabase& database,
         const core::types::Guid& guid);
 
-/**
- * @brief Create a endpoint from info object
- *
- * Specialized for \c WriterDiscoveryInfo and \c ReaderDiscoveryInfo .
- */
-template<class DiscoveryInfoKind>
-core::types::Endpoint create_endpoint_from_info_(
-        const DiscoveryInfoKind& info,
-        const core::types::ParticipantId participant_discoverer_id);
-
 bool come_from_same_participant_(
-        const fastrtps::rtps::GUID_t src_guid,
-        const fastrtps::rtps::GUID_t target_guid) noexcept;
+        const fastdds::rtps::GUID_t src_guid,
+        const fastdds::rtps::GUID_t target_guid) noexcept;
 
-fastrtps::rtps::GUID_t guid_from_instance_handle(
-        const fastrtps::rtps::InstanceHandle_t& ihandle) noexcept;
+fastdds::rtps::GUID_t guid_from_instance_handle(
+        const fastdds::rtps::InstanceHandle_t& ihandle) noexcept;
 
 } /* namespace detail */
 } /* namespace participants */

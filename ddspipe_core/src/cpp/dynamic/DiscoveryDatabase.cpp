@@ -123,7 +123,7 @@ bool DiscoveryDatabase::add_endpoint_(
                 // If exists but inactive, modify entry
                 it->second = new_endpoint;
 
-                logInfo(DDSPIPE_DISCOVERY_DATABASE,
+                EPROSIMA_LOG_INFO(DDSPIPE_DISCOVERY_DATABASE,
                         "Modifying an already discovered (inactive) Endpoint " << new_endpoint << ".");
 
                 return true;
@@ -131,7 +131,8 @@ bool DiscoveryDatabase::add_endpoint_(
         }
         else
         {
-            logInfo(DDSPIPE_DISCOVERY_DATABASE, "Inserting a new discovered Endpoint " << new_endpoint << ".");
+            EPROSIMA_LOG_INFO(DDSPIPE_DISCOVERY_DATABASE,
+                    "Inserting a new discovered Endpoint " << new_endpoint << ".");
 
             // Add it to the dictionary
             entities_.insert(std::pair<Guid, Endpoint>(new_endpoint.guid, new_endpoint));
@@ -163,7 +164,7 @@ bool DiscoveryDatabase::update_endpoint_(
         }
         else
         {
-            logInfo(DDSPIPE_DISCOVERY_DATABASE,
+            EPROSIMA_LOG_INFO(DDSPIPE_DISCOVERY_DATABASE,
                     "Modifying an already discovered Endpoint " << endpoint_to_update << ".");
 
             // Modify entry
@@ -187,7 +188,7 @@ utils::ReturnCode DiscoveryDatabase::erase_endpoint_(
     {
         std::unique_lock<std::shared_timed_mutex> lock(mutex_);
 
-        logInfo(DDSPIPE_DISCOVERY_DATABASE, "Erasing Endpoint " << endpoint_to_erase << ".");
+        EPROSIMA_LOG_INFO(DDSPIPE_DISCOVERY_DATABASE, "Erasing Endpoint " << endpoint_to_erase << ".");
 
         auto erased = entities_.erase(endpoint_to_erase.guid);
 
@@ -308,7 +309,7 @@ void DiscoveryDatabase::queue_processing_thread_routine_() noexcept
                 lock,
                 [&]
                 {
-                    return !entities_to_process_.BothEmpty() || exit_.load();
+                    return !entities_to_process_.both_empty() || exit_.load();
                 });
 
             if (exit_.load())
@@ -326,17 +327,17 @@ void DiscoveryDatabase::push_item_to_queue_(
 {
     {
         std::lock_guard<std::mutex> lock(entities_to_process_cv_mutex_);
-        entities_to_process_.Push(item);
+        entities_to_process_.push(item);
     }
     entities_to_process_cv_.notify_one();
 }
 
 void DiscoveryDatabase::process_queue_() noexcept
 {
-    entities_to_process_.Swap();
-    while (!entities_to_process_.Empty())
+    entities_to_process_.swap();
+    while (!entities_to_process_.empty())
     {
-        std::tuple<DatabaseOperation, Endpoint> queue_item = entities_to_process_.Front();
+        std::tuple<DatabaseOperation, Endpoint> queue_item = entities_to_process_.front();
         DatabaseOperation db_operation = std::get<0>(queue_item);
         Endpoint entity = std::get<1>(queue_item);
         try
@@ -359,7 +360,7 @@ void DiscoveryDatabase::process_queue_() noexcept
             logDevError(DDSPIPE_DISCOVERY_DATABASE,
                     "Error processing database operations queue:" << e.what() << ".");
         }
-        entities_to_process_.Pop();
+        entities_to_process_.pop();
     }
 }
 

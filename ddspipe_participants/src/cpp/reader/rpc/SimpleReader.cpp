@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include <fastrtps/rtps/RTPSDomain.h>
-#include <fastrtps/rtps/participant/RTPSParticipant.h>
+#include <fastdds/rtps/RTPSDomain.hpp>
+#include <fastdds/rtps/participant/RTPSParticipant.hpp>
 
 #include <cpp_utils/exception/InitializationException.hpp>
 #include <cpp_utils/Log.hpp>
@@ -31,27 +31,27 @@ SimpleReader::SimpleReader(
         const core::types::ParticipantId& participant_id,
         const core::types::DdsTopic& topic,
         const std::shared_ptr<core::PayloadPool>& payload_pool,
-        fastrtps::rtps::RTPSParticipant* rtps_participant)
+        fastdds::rtps::RTPSParticipant* rtps_participant)
     : CommonReader(
         participant_id, topic, payload_pool, rtps_participant,
         reckon_history_attributes_(topic),
         reckon_reader_attributes_(topic),
-        reckon_topic_attributes_(topic),
+        reckon_topic_description_(topic),
         reckon_reader_qos_(topic))
 {
-    logInfo(DDSPIPE_RPC_READER, "Creating RPC Reader for topic " << topic_);
+    EPROSIMA_LOG_INFO(DDSPIPE_RPC_READER, "Creating RPC Reader for topic " << topic_);
 }
 
 //! Override Parent method to create an RPC data type.
 core::types::RtpsPayloadData* SimpleReader::create_data_(
-        const fastrtps::rtps::CacheChange_t& received_change) const noexcept
+        const fastdds::rtps::CacheChange_t& received_change) const noexcept
 {
     return new core::types::RpcPayloadData();
 }
 
 //! Override Parent method to fill fields exclusive from RPC.
 void SimpleReader::fill_received_data_(
-        const fastrtps::rtps::CacheChange_t& received_change,
+        const fastdds::rtps::CacheChange_t& received_change,
         core::types::RtpsPayloadData& data_to_fill) const noexcept
 {
     CommonReader::fill_received_data_(received_change, data_to_fill);

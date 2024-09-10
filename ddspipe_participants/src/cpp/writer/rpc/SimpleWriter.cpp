@@ -13,9 +13,9 @@
 // limitations under the License.
 
 
-#include <fastrtps/rtps/RTPSDomain.h>
-#include <fastrtps/rtps/participant/RTPSParticipant.h>
-#include <fastrtps/rtps/common/CacheChange.h>
+#include <fastdds/rtps/RTPSDomain.hpp>
+#include <fastdds/rtps/participant/RTPSParticipant.hpp>
+#include <fastdds/rtps/common/CacheChange.hpp>
 
 #include <cpp_utils/exception/InitializationException.hpp>
 #include <cpp_utils/Log.hpp>
@@ -37,22 +37,22 @@ SimpleWriter::SimpleWriter(
         const core::types::ParticipantId& participant_id,
         const core::types::DdsTopic& topic,
         const std::shared_ptr<core::PayloadPool>& payload_pool,
-        fastrtps::rtps::RTPSParticipant* rtps_participant,
+        fastdds::rtps::RTPSParticipant* rtps_participant,
         const bool repeater /* = false */)
     : CommonWriter(
         participant_id, topic, payload_pool, rtps_participant, repeater,
         reckon_history_attributes_(topic),
         reckon_writer_attributes_(topic),
-        reckon_topic_attributes_(topic),
+        reckon_topic_description_(topic),
         reckon_writer_qos_(topic),
         reckon_cache_change_pool_configuration_(topic))
 {
-    logInfo(DDSPIPE_RPC_WRITER, "Creating RPC Writer for topic " << topic_);
+    EPROSIMA_LOG_INFO(DDSPIPE_RPC_WRITER, "Creating RPC Writer for topic " << topic_);
 }
 
 utils::ReturnCode SimpleWriter::fill_to_send_data_(
-        fastrtps::rtps::CacheChange_t* to_send_change_to_fill,
-        eprosima::fastrtps::rtps::WriteParams& to_send_params,
+        fastdds::rtps::CacheChange_t* to_send_change_to_fill,
+        fastdds::rtps::WriteParams& to_send_params,
         const core::types::RtpsPayloadData& data) const noexcept
 {
     CommonWriter::fill_to_send_data_(
@@ -70,7 +70,7 @@ utils::ReturnCode SimpleWriter::fill_to_send_data_(
 }
 
 void SimpleWriter::fill_sent_data_(
-        const eprosima::fastrtps::rtps::WriteParams& sent_params,
+        const fastdds::rtps::WriteParams& sent_params,
         core::types::RtpsPayloadData& data_to_fill) const noexcept
 {
     CommonWriter::fill_sent_data_(

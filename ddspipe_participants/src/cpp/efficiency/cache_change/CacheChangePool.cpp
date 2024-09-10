@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include <fastrtps/rtps/common/Guid.h>
+#include <fastdds/rtps/common/Guid.hpp>
 #include <fastdds/rtps/common/ChangeKind_t.hpp>
 
 #include <ddspipe_participants/efficiency/cache_change/CacheChangePool.hpp>
@@ -24,36 +24,36 @@ namespace core {
 
 CacheChangePool::CacheChangePool(
         utils::PoolConfiguration configuration)
-    : utils::UnboundedPool<fastrtps::rtps::CacheChange_t>(configuration)
+    : utils::UnboundedPool<fastdds::rtps::CacheChange_t>(configuration)
 {
     initialize_vector_();
 }
 
 bool CacheChangePool::reserve_cache(
-        fastrtps::rtps::CacheChange_t*& cache_change)
+        fastdds::rtps::CacheChange_t*& cache_change)
 {
     return loan(cache_change);
 }
 
 bool CacheChangePool::release_cache(
-        fastrtps::rtps::CacheChange_t* cache_change)
+        fastdds::rtps::CacheChange_t* cache_change)
 {
     return return_loan(cache_change);
 }
 
-fastrtps::rtps::CacheChange_t* CacheChangePool::new_element_()
+fastdds::rtps::CacheChange_t* CacheChangePool::new_element_()
 {
     return new types::RouterCacheChange();
 }
 
 void CacheChangePool::reset_element_(
-        fastrtps::rtps::CacheChange_t* change)
+        fastdds::rtps::CacheChange_t* change)
 {
     // NOTE: This could be done by =operator but it is deleted, so it must be done field by field
-    change->kind = fastrtps::rtps::ALIVE;
+    change->kind = fastdds::rtps::ChangeKind_t::ALIVE;
     change->sequenceNumber.high = 0;
     change->sequenceNumber.low = 0;
-    change->writerGUID = fastrtps::rtps::c_Guid_Unknown;
+    change->writerGUID = fastdds::rtps::c_Guid_Unknown;
     change->instanceHandle.clear();
     change->isRead = 0;
     change->sourceTimestamp.seconds(0);

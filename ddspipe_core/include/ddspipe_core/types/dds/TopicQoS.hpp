@@ -17,7 +17,7 @@
 #include <cpp_utils/types/Fuzzy.hpp>
 
 #include <fastdds/dds/core/policy/QosPolicies.hpp>
-#include <fastdds/rtps/common/Types.h>
+#include <fastdds/rtps/common/Types.hpp>
 
 #include <ddspipe_core/library/library_dll.h>
 
@@ -27,16 +27,16 @@ namespace core {
 namespace types {
 
 //! Durability kind enumeration
-using DurabilityKind = eprosima::fastrtps::rtps::DurabilityKind_t;
-
-//! Reliability kind enumeration
-using ReliabilityKind = eprosima::fastrtps::rtps::ReliabilityKind_t;
+using DurabilityKind = eprosima::fastdds::rtps::DurabilityKind_t;
 
 //! History kind enumeration
 using HistoryDepthType = unsigned int;
 
 //! Ownership configuration
 using OwnershipQosPolicyKind = eprosima::fastdds::dds::OwnershipQosPolicyKind;
+
+//! Reliability kind enumeration
+using ReliabilityKind = eprosima::fastdds::rtps::ReliabilityKind_t;
 
 /**
  * The collection of QoS related to a Topic.

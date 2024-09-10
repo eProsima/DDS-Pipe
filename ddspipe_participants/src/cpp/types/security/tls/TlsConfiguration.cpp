@@ -61,7 +61,7 @@ void TlsConfiguration::enable_tls(
     {
         if (!compatible<types::TlsKind::client>())
         {
-            logError(DDSPIPE_DISCOVERYSERVER_PARTICIPANT,
+            EPROSIMA_LOG_ERROR(DDSPIPE_DISCOVERYSERVER_PARTICIPANT,
                     "TLS Configuration expected a Client configuration.");
             throw utils::ConfigurationException("TLS Configuration expected a Client configuration.");
         }
@@ -74,7 +74,7 @@ void TlsConfiguration::enable_tls(
     {
         if (!compatible<types::TlsKind::server>())
         {
-            logError(DDSPIPE_DISCOVERYSERVER_PARTICIPANT,
+            EPROSIMA_LOG_ERROR(DDSPIPE_DISCOVERYSERVER_PARTICIPANT,
                     "TLS Configuration expected a Server configuration.");
             throw utils::ConfigurationException("TLS Configuration expected a Server configuration.");
         }

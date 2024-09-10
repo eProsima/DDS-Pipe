@@ -41,7 +41,7 @@ GuidPrefix::GuidPrefix (
 }
 
 GuidPrefix::GuidPrefix (
-        bool ros /*= false*/,
+        bool ros,
         uint32_t id /*= 0*/) noexcept
 {
     if (ros)
@@ -57,7 +57,7 @@ GuidPrefix::GuidPrefix (
 
     // Modify depending on the seed
     // TODO : make available to modify for the whole guid prefix, so it is not truncated to 255
-    value[2] = static_cast<fastrtps::rtps::octet>(id);
+    value[2] = static_cast<fastdds::rtps::octet>(id);
 }
 
 GuidPrefix::GuidPrefix (
@@ -67,7 +67,7 @@ GuidPrefix::GuidPrefix (
 }
 
 GuidPrefix& GuidPrefix::operator = (
-        const fastrtps::rtps::GuidPrefix_t& other) noexcept
+        const fastdds::rtps::GuidPrefix_t& other) noexcept
 {
     for (unsigned int i = 0; i < this->size; ++i)
     {
@@ -78,7 +78,7 @@ GuidPrefix& GuidPrefix::operator = (
 
 bool GuidPrefix::is_valid() const noexcept
 {
-    return *this != eprosima::fastrtps::rtps::GuidPrefix_t::unknown();
+    return *this != eprosima::fastdds::rtps::GuidPrefix_t::unknown();
 }
 
 } /* namespace types */

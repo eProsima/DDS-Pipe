@@ -12,9 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include <cpp_utils/utils.hpp>
+#include <fastdds/dds/core/ReturnCode.hpp>
+#include <fastdds/dds/domain/DomainParticipantFactory.hpp>
 
-#include <fastrtps/xmlparser/XMLProfileManager.h>
+#include <cpp_utils/utils.hpp>
 
 #include <ddspipe_participants/xml/XmlHandler.hpp>
 
@@ -26,17 +27,21 @@ utils::ReturnCode XmlHandler::load_xml(
         const XmlHandlerConfiguration& configuration)
 {
     // Load default xml profiles
-    // Note: we assume this function cannot fail
-    fastrtps::xmlparser::XMLProfileManager::loadDefaultXMLFile();
+    fastdds::dds::ReturnCode_t ret = fastdds::dds::DomainParticipantFactory::get_instance()->load_profiles();
+
+    if (ret != fastdds::dds::RETCODE_OK)
+    {
+        return utils::ReturnCode::RETCODE_ERROR;
+    }
 
     // Load string if exist
     if (configuration.raw.is_set())
     {
-        fastrtps::xmlparser::XMLP_ret res = fastrtps::xmlparser::XMLProfileManager::loadXMLString(
+        ret = fastdds::dds::DomainParticipantFactory::get_instance()->load_XML_profiles_string(
             configuration.raw->c_str(),
             configuration.raw->size());
 
-        if (res != fastrtps::xmlparser::XMLP_ret::XML_OK)
+        if (ret != fastdds::dds::RETCODE_OK)
         {
             return utils::ReturnCode::RETCODE_ERROR;
         }
@@ -45,9 +50,9 @@ utils::ReturnCode XmlHandler::load_xml(
     // Load files
     for (const auto& file : configuration.files)
     {
-        fastrtps::xmlparser::XMLP_ret res = fastrtps::xmlparser::XMLProfileManager::loadXMLFile(file);
+        ret = fastdds::dds::DomainParticipantFactory::get_instance()->load_XML_profiles_file(file);
 
-        if (res != fastrtps::xmlparser::XMLP_ret::XML_OK)
+        if (ret != fastdds::dds::RETCODE_OK)
         {
             return utils::ReturnCode::RETCODE_ERROR;
         }

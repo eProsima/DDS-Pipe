@@ -14,23 +14,30 @@
 
 #pragma once
 
+#include <atomic>
+
+#include <cpp_utils/pool/IPool.hpp>
+#include <cpp_utils/ReturnCode.hpp>
 #include <cpp_utils/time/time_utils.hpp>
 
-#include <fastdds/rtps/rtps_fwd.h>
-#include <fastrtps/rtps/attributes/HistoryAttributes.h>
-#include <fastrtps/attributes/TopicAttributes.h>
-#include <fastrtps/qos/WriterQos.h>
-#include <fastrtps/rtps/history/WriterHistory.h>
-#include <fastrtps/rtps/attributes/WriterAttributes.h>
-#include <fastrtps/rtps/writer/RTPSWriter.h>
-#include <fastrtps/rtps/writer/WriterListener.h>
+#include <fastdds/dds/publisher/qos/WriterQos.hpp>
+#include <fastdds/rtps/attributes/HistoryAttributes.hpp>
+#include <fastdds/rtps/attributes/WriterAttributes.hpp>
+#include <fastdds/rtps/builtin/data/TopicDescription.hpp>
+#include <fastdds/rtps/common/CacheChange.hpp>
+#include <fastdds/rtps/common/WriteParams.hpp>
+#include <fastdds/rtps/history/WriterHistory.hpp>
+#include <fastdds/rtps/participant/RTPSParticipant.hpp>
+#include <fastdds/rtps/writer/RTPSWriter.hpp>
+#include <fastdds/rtps/writer/WriterListener.hpp>
 
-#include <ddspipe_core/types/participant/ParticipantId.hpp>
+#include <ddspipe_core/efficiency/payload/PayloadPool.hpp>
+#include <ddspipe_core/interface/IRoutingData.hpp>
 #include <ddspipe_core/types/data/RtpsPayloadData.hpp>
+#include <ddspipe_core/types/participant/ParticipantId.hpp>
 #include <ddspipe_core/types/topic/dds/DdsTopic.hpp>
 
 #include <ddspipe_participants/library/library_dll.h>
-#include <ddspipe_participants/efficiency/cache_change/CacheChangePool.hpp>
 #include <ddspipe_participants/writer/auxiliar/BaseWriter.hpp>
 
 /////
@@ -54,11 +61,11 @@ namespace rtps {
 /**
  * Abstract generic class for a RTPS Writer wrapper.
  *
- * It implements the WriterListener for itself with \c onWriterMatched callbacks.
+ * It implements the WriterListener for itself with \c on_writer_matched callbacks.
  *
  * @warning This object is not RAII and must be initialized before used.
  */
-class CommonWriter : public BaseWriter, public fastrtps::rtps::WriterListener
+class CommonWriter : public BaseWriter, public fastdds::rtps::WriterListener
 {
 public:
 
@@ -104,9 +111,9 @@ public:
      * @param [in] info information about the matched Reader
      */
     DDSPIPE_PARTICIPANTS_DllAPI
-    void onWriterMatched(
-            fastrtps::rtps::RTPSWriter*,
-            fastrtps::rtps::MatchingInfo& info) noexcept override;
+    void on_writer_matched(
+            fastdds::rtps::RTPSWriter*,
+            const fastdds::rtps::MatchingInfo& info) noexcept override;
 
     /**
      * @brief CommonWriter Listener callback when all the Readers have received a change.
@@ -117,9 +124,9 @@ public:
      * @param [in] ch the change that has been acknowledged by all the Readers.
      */
     DDSPIPE_PARTICIPANTS_DllAPI
-    void onWriterChangeReceivedByAll(
-            fastrtps::rtps::RTPSWriter*,
-            fastrtps::rtps::CacheChange_t* change) override;
+    void on_writer_change_received_by_all(
+            fastdds::rtps::RTPSWriter*,
+            fastdds::rtps::CacheChange_t* change) override;
 
     /**
      * This method is called when a new Reader is discovered, with a Topic that
@@ -129,8 +136,8 @@ public:
      */
     DDSPIPE_PARTICIPANTS_DllAPI
     void on_offered_incompatible_qos(
-            fastrtps::rtps::RTPSWriter*,
-            fastdds::dds::PolicyMask qos) noexcept override;
+            fastdds::rtps::RTPSWriter*,
+            eprosima::fastdds::dds::PolicyMask qos) noexcept override;
 
     /////////////////////
     // STATIC ATTRIBUTES
@@ -156,12 +163,12 @@ protected:
             const core::types::ParticipantId& participant_id,
             const core::types::DdsTopic& topic,
             const std::shared_ptr<core::PayloadPool>& payload_pool,
-            fastrtps::rtps::RTPSParticipant* rtps_participant,
+            fastdds::rtps::RTPSParticipant* rtps_participant,
             const bool repeater,
-            const fastrtps::rtps::HistoryAttributes& history_attributes,
-            const fastrtps::rtps::WriterAttributes& writer_attributes,
-            const fastrtps::TopicAttributes& topic_attributes,
-            const fastrtps::WriterQos& writer_qos,
+            const fastdds::rtps::HistoryAttributes& history_attributes,
+            const fastdds::rtps::WriterAttributes& writer_attributes,
+            const fastdds::rtps::TopicDescription& topic_description,
+            const fastdds::dds::WriterQos& writer_qos,
             const utils::PoolConfiguration& pool_configuration);
 
     // Specific enable/disable do not need to be implemented
@@ -194,8 +201,8 @@ protected:
      */
     DDSPIPE_PARTICIPANTS_DllAPI
     virtual utils::ReturnCode fill_to_send_data_(
-            fastrtps::rtps::CacheChange_t* to_send_change_to_fill,
-            eprosima::fastrtps::rtps::WriteParams& to_send_params,
+            fastdds::rtps::CacheChange_t* to_send_change_to_fill,
+            eprosima::fastdds::rtps::WriteParams& to_send_params,
             const core::types::RtpsPayloadData& data) const noexcept;
 
     /**
@@ -206,7 +213,7 @@ protected:
      */
     DDSPIPE_PARTICIPANTS_DllAPI
     virtual void fill_sent_data_(
-            const eprosima::fastrtps::rtps::WriteParams& sent_params,
+            const eprosima::fastdds::rtps::WriteParams& sent_params,
             core::types::RtpsPayloadData& data_to_fill) const noexcept;
 
     /////
@@ -221,30 +228,30 @@ protected:
      * @param rtps_participant
      */
     void internal_entities_creation_(
-            const fastrtps::rtps::HistoryAttributes& history_attributes,
-            const fastrtps::rtps::WriterAttributes& writer_attributes,
-            const fastrtps::TopicAttributes& topic_attributes,
-            const fastrtps::WriterQos& writer_qos,
+            const fastdds::rtps::HistoryAttributes& history_attributes,
+            const fastdds::rtps::WriterAttributes& writer_attributes,
+            const fastdds::rtps::TopicDescription& topic_description,
+            const fastdds::dds::WriterQos& writer_qos,
             const utils::PoolConfiguration& pool_configuration);
 
     /**
      * @brief History Attributes to create RTPS Writer History
      */
-    static fastrtps::rtps::HistoryAttributes reckon_history_attributes_(
+    static fastdds::rtps::HistoryAttributes reckon_history_attributes_(
             const core::types::DdsTopic& topic) noexcept;
 
     /**
      * @brief Writer Attributes to create RTPS Writer
      */
-    static fastrtps::rtps::WriterAttributes reckon_writer_attributes_(
+    static fastdds::rtps::WriterAttributes reckon_writer_attributes_(
             const core::types::DdsTopic& topic) noexcept;
 
-    //! Topic Attributes to create RTPS Writer
-    static fastrtps::TopicAttributes reckon_topic_attributes_(
+    //! Topic Description to create RTPS Writer
+    fastdds::rtps::TopicDescription reckon_topic_description_(
             const core::types::DdsTopic& topic) noexcept;
 
     //! QoS for RTPS Writer
-    static fastrtps::WriterQos reckon_writer_qos_(
+    static fastdds::dds::WriterQos reckon_writer_qos_(
             const core::types::DdsTopic& topic) noexcept;
 
     //! Cache Change Pool Configuration
@@ -253,13 +260,13 @@ protected:
 
     //! Whether a guid references this Participant
     bool come_from_this_participant_(
-            const fastrtps::rtps::GUID_t guid) const noexcept;
+            const fastdds::rtps::GUID_t guid) const noexcept;
 
     /////
     // EXTERNAL VARIABLES
 
     //! RTPS Participant
-    fastrtps::rtps::RTPSParticipant* rtps_participant_;
+    fastdds::rtps::RTPSParticipant* rtps_participant_;
 
     //! Whether it is repeater or not (used for data filters and/or qos)
     bool repeater_;
@@ -272,25 +279,25 @@ protected:
     const std::shared_ptr<core::PayloadPool>& payload_pool_;
 
     //! RTPS CommonWriter pointer
-    fastrtps::rtps::RTPSWriter* rtps_writer_;
+    fastdds::rtps::RTPSWriter* rtps_writer_;
 
     //! RTPS CommonWriter History associated to \c rtps_reader_
-    fastrtps::rtps::WriterHistory* rtps_history_;
+    fastdds::rtps::WriterHistory* rtps_history_;
 
     //! Data Filter used to filter cache changes at the RTPSWriter level.
     std::unique_ptr<fastdds::rtps::IReaderDataFilter> data_filter_;
 
     //! History attributes to create the History for the internal RTPS Writer.
-    fastrtps::rtps::HistoryAttributes history_attributes_;
+    fastdds::rtps::HistoryAttributes history_attributes_;
 
     //! Writer attributes to create the internal RTPS Writer.
-    fastrtps::rtps::WriterAttributes writer_attributes_;
+    fastdds::rtps::WriterAttributes writer_attributes_;
 
-    //! Topic attributes to create the internal RTPS Writer.
-    fastrtps::TopicAttributes topic_attributes_;
+    //! Topic description to create the internal RTPS Writer
+    fastdds::rtps::TopicDescription topic_description_;
 
     //! Writer QoS to create the internal RTPS Writer.
-    fastrtps::WriterQos writer_qos_;
+    fastdds::dds::WriterQos writer_qos_;
 
     //! Pool Configuration to create the internal History.
     utils::PoolConfiguration pool_configuration_;

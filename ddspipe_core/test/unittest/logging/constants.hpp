@@ -22,7 +22,8 @@
 #include <cstdint>
 #include <string>
 
-#include <fastdds/rtps/common/Time_t.h>
+#include <fastdds/rtps/common/Time_t.hpp>
+
 #include <ddspipe_core/types/dds/DomainId.hpp>
 #include <ddspipe_core/types/participant/ParticipantId.hpp>
 
@@ -33,7 +34,7 @@ using namespace eprosima;
 using namespace eprosima::ddspipe::core::types;
 
 // Maximum time to wait for a sample to arrive.
-const auto MAX_WAITING_TIME = fastrtps::Duration_t(1);
+const auto MAX_WAITING_TIME = fastdds::dds::Duration_t(1);
 
 // The domain and topic the Monitor should publish its data in.
 constexpr DomainIdType DOMAIN = 84;

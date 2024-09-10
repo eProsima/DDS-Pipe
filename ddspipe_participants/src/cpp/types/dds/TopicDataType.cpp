@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#include <fastcdr/CdrSizeCalculator.hpp>
+
 #include <cpp_utils/Log.hpp>
 
 #include <fastcdr/FastBuffer.h>
@@ -27,21 +29,23 @@ namespace dds {
 using eprosima::ddspipe::core::types::operator <<;
 
 TopicDataType::TopicDataType(
+        const std::shared_ptr<core::PayloadPool>& payload_pool,
         const std::string& type_name,
-        const bool keyed,
-        const std::shared_ptr<core::PayloadPool>& payload_pool)
-    : type_name_(type_name)
+        const fastdds::dds::xtypes::TypeIdentifierPair& type_identifiers,
+        const bool keyed)
+    : payload_pool_(payload_pool)
+    , type_name_(type_name)
     , keyed_(keyed)
-    , payload_pool_(payload_pool)
 {
     // Set topic data
-    m_typeSize = 4;
-    m_isGetKeyDefined = keyed_;
-    auto_fill_type_object(false);
-    auto_fill_type_information(false);
+    max_serialized_type_size = 4;
+    is_compute_key_provided = keyed_;
 
     // Set name
-    setName(type_name_.c_str());
+    set_name(type_name_.c_str());
+
+    // Set Type Identifiers
+    type_identifiers_ = type_identifiers;
 }
 
 TopicDataType::~TopicDataType()
@@ -50,10 +54,11 @@ TopicDataType::~TopicDataType()
 }
 
 bool TopicDataType::serialize(
-        void* data,
-        fastrtps::rtps::SerializedPayload_t* target_payload)
+        const void* data,
+        fastdds::rtps::SerializedPayload_t& target_payload,
+        fastdds::dds::DataRepresentationId_t data_representation)
 {
-    DataType* src_payload = static_cast<DataType*>(data);
+    const DataType* src_payload = static_cast<const DataType*>(data);
 
     logDebug(DDSPIPE_DDS_TYPESUPPORT, "Serializing data " << *src_payload << ".");
 
@@ -62,68 +67,76 @@ bool TopicDataType::serialize(
         // The src and dst Payload Pools are the same. The payload can be referenced.
         // We do not call get_payload since Fast-DDS doesn't call release_payload internally.
         // If we did, there would be leaks.
-        target_payload->data = src_payload->payload.data;
+        target_payload.data = src_payload->payload.data;
     }
     else
     {
-        logWarning(DDSPIPE_DDS_TYPESUPPORT, "Copying the payload between two different payload pools.");
+        EPROSIMA_LOG_WARNING(DDSPIPE_DDS_TYPESUPPORT, "Copying the payload between two different payload pools.");
 
         // The src and dst Payload Pools are different. The payload must be copied.
-        target_payload->copy(&src_payload->payload);
+        target_payload.copy(&src_payload->payload);
     }
 
     return true;
 }
 
 bool TopicDataType::deserialize(
-        eprosima::fastrtps::rtps::SerializedPayload_t* src_payload,
+        fastdds::rtps::SerializedPayload_t& src_payload,
         void* data)
 {
-    logDebug(DDSPIPE_DDS_TYPESUPPORT, "Deserializing data " << *src_payload << ".");
+    logDebug(DDSPIPE_DDS_TYPESUPPORT, "Deserializing data " << src_payload << ".");
 
     DataType* target_payload = static_cast<DataType*>(data);
 
     // Get data and store it in PayloadPool
-    eprosima::fastrtps::rtps::IPayloadPool* payload_owner =
-            static_cast<eprosima::fastrtps::rtps::IPayloadPool*>(payload_pool_.get());
-
-    payload_pool_->get_payload(*src_payload, payload_owner, target_payload->payload);
+    payload_pool_->get_payload(src_payload, target_payload->payload);
 
     return true;
 }
 
-std::function<uint32_t()> TopicDataType::getSerializedSizeProvider(
-        void* data)
+uint32_t TopicDataType::calculate_serialized_size(
+        const void* const data,
+        fastdds::dds::DataRepresentationId_t /* data_representation */)
 {
-    return [data]() -> uint32_t
-           {
-               auto p = static_cast<DataType*>(data);
-               return p->payload.length;
-           };
+    const auto p = static_cast<const DataType*>(data);
+    return p->payload.length;
 }
 
-bool TopicDataType::getKey(
-        void* data,
-        eprosima::fastrtps::rtps::InstanceHandle_t* handle,
+bool TopicDataType::compute_key(
+        fastdds::rtps::SerializedPayload_t& payload,
+        fastdds::rtps::InstanceHandle_t& handle,
         bool /* = false */)
 {
-    if (m_isGetKeyDefined)
+    // NOTE: This method returns false because Fast DDS always sends the KEY_HASH in inline QoS.
+    // As a result, the reader will never call this method when communicating with a Fast DDS writer.
+    // This would only be needed if receiving data from another DDS vendor that omits the KEY_HASH.
+    // Workaround in that case (different DDS vendor that omits KEY_HASH): set expects_inline_qos_ to
+    // true in DataReaderQos
+    return false;
+}
+
+bool TopicDataType::compute_key(
+        const void* const data,
+        fastdds::rtps::InstanceHandle_t& handle,
+        bool /* = false */)
+{
+    if (is_compute_key_provided)
     {
         // Load the instanceHandle from data into handle
-        auto p = static_cast<DataType*>(data);
-        *handle = p->instanceHandle;
+        const auto p = static_cast<const DataType*>(data);
+        handle = p->instanceHandle;
         return true;
     }
 
     return false;
 }
 
-void* TopicDataType::createData()
+void* TopicDataType::create_data()
 {
     return reinterpret_cast<void*>(new DataType());
 }
 
-void TopicDataType::deleteData(
+void TopicDataType::delete_data(
         void* data)
 {
     delete(reinterpret_cast<DataType*>(data));

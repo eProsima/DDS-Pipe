@@ -42,13 +42,6 @@ DdsLogConsumer::DdsLogConsumer(
     fastdds::dds::DomainParticipantQos pqos;
     pqos.name("DdsLogConsumerParticipant_" + std::to_string(configuration->publish.domain));
 
-    if (configuration->publish.publish_type)
-    {
-        // Send the type information
-        pqos.wire_protocol().builtin.typelookup_config.use_client = false;
-        pqos.wire_protocol().builtin.typelookup_config.use_server = true;
-    }
-
     participant_ = fastdds::dds::DomainParticipantFactory::get_instance()->create_participant(
         configuration->publish.domain, pqos);
 
@@ -61,13 +54,6 @@ DdsLogConsumer::DdsLogConsumer(
 
     // Register the type
     fastdds::dds::TypeSupport type(new LogEntryPubSubType());
-
-    if (configuration->publish.publish_type)
-    {
-        // Publish the type
-        registerLogEntryTypes();
-        type->auto_fill_type_information(true);
-    }
 
     type.register_type(participant_);
 

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include <fastrtps/utils/IPLocator.h>
+#include <fastdds/utils/IPLocator.hpp>
 
 #include <cpp_utils/exception/DNSException.hpp>
 #include <cpp_utils/utils.hpp>
@@ -74,7 +74,7 @@ Address::Address(
     }
     catch (const utils::DNSException& )
     {
-        logWarning(
+        EPROSIMA_LOG_WARNING(
             DDSPIPE_ADDRESS, "Address created without IP because given domain " << domain << " was not found.");
     }
 }
@@ -114,7 +114,7 @@ Address::Address(
     }
     catch (const utils::DNSException& )
     {
-        logWarning(
+        EPROSIMA_LOG_WARNING(
             DDSPIPE_ADDRESS, "Address created without IP because given domain " << domain << " was not found.");
     }
 }
@@ -280,13 +280,13 @@ bool Address::operator ==(
 bool Address::is_ipv4_correct(
         const IpType& ip) noexcept
 {
-    return eprosima::fastrtps::rtps::IPLocator::isIPv4(ip);
+    return eprosima::fastdds::rtps::IPLocator::isIPv4(ip);
 }
 
 bool Address::is_ipv6_correct(
         const IpType& ip) noexcept
 {
-    return eprosima::fastrtps::rtps::IPLocator::isIPv6(ip);
+    return eprosima::fastdds::rtps::IPLocator::isIPv6(ip);
 }
 
 PortType Address::default_port() noexcept
@@ -328,7 +328,7 @@ IpType Address::resolve_dns(
         IpVersion ip_version)
 {
     std::pair<std::set<std::string>, std::set<std::string>> dns_response =
-            fastrtps::rtps::IPLocator::resolveNameDNS(domain);
+            fastdds::rtps::IPLocator::resolveNameDNS(domain);
 
     if (ip_version == IpVersion::v4)
     {
@@ -339,7 +339,7 @@ IpType Address::resolve_dns(
         }
         else
         {
-            logInfo(
+            EPROSIMA_LOG_INFO(
                 DDSPIPE_ADDRESS,
                 "Getting first IpVersion::v4: " << dns_response.first.begin()->data() <<
                     " for Domain name: " << domain <<
@@ -356,7 +356,7 @@ IpType Address::resolve_dns(
         }
         else
         {
-            logInfo(
+            EPROSIMA_LOG_INFO(
                 DDSPIPE_ADDRESS,
                 "Getting first IpVersion::v6: " << dns_response.second.begin()->data() <<
                     " for Domain name: " << domain <<
@@ -370,7 +370,7 @@ std::pair<IpType, IpVersion> Address::resolve_dns(
         DomainType domain)
 {
     std::pair<std::set<std::string>, std::set<std::string>> dns_response =
-            fastrtps::rtps::IPLocator::resolveNameDNS(domain);
+            fastdds::rtps::IPLocator::resolveNameDNS(domain);
 
     if (dns_response.first.empty())
     {
@@ -383,7 +383,7 @@ std::pair<IpType, IpVersion> Address::resolve_dns(
         }
         else
         {
-            logInfo(
+            EPROSIMA_LOG_INFO(
                 DDSPIPE_ADDRESS,
                 "Getting first IpVersion::v6: " << dns_response.second.begin()->data() <<
                     " for Domain name: " << domain <<
@@ -393,7 +393,7 @@ std::pair<IpType, IpVersion> Address::resolve_dns(
     }
     else
     {
-        logInfo(
+        EPROSIMA_LOG_INFO(
             DDSPIPE_ADDRESS,
             "Getting first IpVersion::v4: " << dns_response.first.begin()->data() <<
                 " for Domain name: " << domain <<

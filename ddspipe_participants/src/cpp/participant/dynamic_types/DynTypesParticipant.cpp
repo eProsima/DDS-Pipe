@@ -18,20 +18,17 @@
 
 #include <memory>
 
+#include <fastdds/dds/domain/DomainParticipantFactory.hpp>
+#include <fastdds/dds/xtypes/dynamic_types/DynamicTypeBuilder.hpp>
+#include <fastdds/dds/xtypes/dynamic_types/DynamicTypeBuilderFactory.hpp>
+#include <fastdds/dds/xtypes/type_representation/TypeObject.hpp>
+#include <fastdds/rtps/attributes/RTPSParticipantAttributes.hpp>
+#include <fastdds/rtps/RTPSDomain.hpp>
+
 #include <cpp_utils/Log.hpp>
 
-#include <fastdds/dds/domain/DomainParticipantFactory.hpp>
-#include <fastrtps/rtps/participant/RTPSParticipant.h>
-#include <fastrtps/rtps/RTPSDomain.h>
-#include <fastrtps/types/DynamicType.h>
-#include <fastrtps/types/DynamicTypePtr.h>
-#include <fastrtps/types/TypeObjectFactory.h>
-#include <fastdds/rtps/transport/UDPv4TransportDescriptor.h>
-#include <fastdds/rtps/transport/shared_mem/SharedMemTransportDescriptor.h>
-#include <fastdds/rtps/attributes/RTPSParticipantAttributes.h>
-#include <ddspipe_core/types/dynamic_types/types.hpp>
-
 #include <ddspipe_core/monitoring/producers/TopicsMonitorProducer.hpp>
+#include <ddspipe_core/types/dynamic_types/types.hpp>
 #include <ddspipe_participants/reader/auxiliar/BlankReader.hpp>
 #include <ddspipe_participants/reader/rtps/SimpleReader.hpp>
 #include <ddspipe_participants/reader/rtps/SpecificQoSReader.hpp>
@@ -44,8 +41,6 @@ namespace ddspipe {
 namespace participants {
 
 using namespace eprosima::ddspipe::core;
-using namespace eprosima::ddspipe::core::types;
-using namespace eprosima::fastrtps::types;
 
 DynTypesParticipant::DynTypesParticipant(
         std::shared_ptr<SimpleParticipantConfiguration> participant_configuration,
@@ -61,19 +56,6 @@ DynTypesParticipant::DynTypesParticipant(
     // Do nothing
 }
 
-DynTypesParticipant::~DynTypesParticipant()
-{
-    dds_participant_->set_listener(nullptr);
-    eprosima::fastdds::dds::DomainParticipantFactory::get_instance()->delete_participant(dds_participant_);
-
-}
-
-void DynTypesParticipant::init()
-{
-    CommonParticipant::init();
-    initialize_internal_dds_participant_();
-}
-
 std::shared_ptr<IWriter> DynTypesParticipant::create_writer(
         const ITopic& topic)
 {
@@ -85,7 +67,7 @@ std::shared_ptr<IReader> DynTypesParticipant::create_reader(
         const ITopic& topic)
 {
     // If type object topic, return the internal reader for type objects
-    if (is_type_object_topic(topic))
+    if (core::types::is_type_object_topic(topic))
     {
         return this->type_object_reader_;
     }
@@ -94,210 +76,94 @@ std::shared_ptr<IReader> DynTypesParticipant::create_reader(
     return rtps::SimpleParticipant::create_reader(topic);
 }
 
-void DynTypesParticipant::on_type_discovery(
-        eprosima::fastdds::dds::DomainParticipant* /* participant */,
-        const fastrtps::rtps::SampleIdentity& /* request_sample_id */,
-        const fastrtps::string_255& /* topic */,
-        const fastrtps::types::TypeIdentifier* identifier,
-        const fastrtps::types::TypeObject* object,
-        fastrtps::types::DynamicType_ptr dyn_type)
+void DynTypesParticipant::on_reader_discovery(
+        fastdds::rtps::RTPSParticipant* participant,
+        fastdds::rtps::ReaderDiscoveryStatus reason,
+        const fastdds::rtps::SubscriptionBuiltinTopicData& info,
+        bool& should_be_ignored)
 {
-    if (nullptr != dyn_type)
+    if (info.guid.guidPrefix != participant->getGuid().guidPrefix)
     {
-        // Register type obj in singleton factory
-        TypeObjectFactory::get_instance()->add_type_object(
-            dyn_type->get_name(), identifier, object);
-        internal_notify_type_object_(dyn_type);
+        // Get type information
+        const auto type_info = info.type_information.type_information;
+        const auto type_name = info.type_name.to_string();
+
+        rtps::CommonParticipant::on_reader_discovery(participant, reason, info, should_be_ignored);
+
+        notify_type_discovered_(type_info, type_name);
     }
 }
 
-void DynTypesParticipant::on_type_information_received(
-        eprosima::fastdds::dds::DomainParticipant* participant,
-        const fastrtps::string_255 /* topic_name */,
-        const fastrtps::string_255 type_name,
-        const fastrtps::types::TypeInformation& type_information)
+void DynTypesParticipant::on_writer_discovery(
+        fastdds::rtps::RTPSParticipant* participant,
+        fastdds::rtps::WriterDiscoveryStatus reason,
+        const fastdds::rtps::PublicationBuiltinTopicData& info,
+        bool& should_be_ignored)
 {
-    std::string type_name_ = type_name.to_string();
-    const TypeIdentifier* type_identifier = nullptr;
-    const TypeObject* type_object = nullptr;
-    DynamicType_ptr dynamic_type(nullptr);
+    if (info.guid.guidPrefix != participant->getGuid().guidPrefix)
+    {
+        // Get type information
+        const auto type_info = info.type_information.type_information;
+        const auto type_name = info.type_name.to_string();
 
-    // Check if complete identifier already present in factory
-    type_identifier = TypeObjectFactory::get_instance()->get_type_identifier(type_name_, true);
-    if (type_identifier)
-    {
-        type_object = TypeObjectFactory::get_instance()->get_type_object(type_name_, true);
-    }
+        rtps::CommonParticipant::on_writer_discovery(participant, reason, info, should_be_ignored);
 
-    // If complete not found, try with minimal
-    if (!type_object)
-    {
-        type_identifier = TypeObjectFactory::get_instance()->get_type_identifier(type_name_, false);
-        if (type_identifier)
-        {
-            type_object = TypeObjectFactory::get_instance()->get_type_object(type_name_, false);
-        }
-    }
-
-    // Build dynamic type if type identifier and object found in factory
-    if (type_identifier && type_object)
-    {
-        dynamic_type = TypeObjectFactory::get_instance()->build_dynamic_type(type_name_, type_identifier, type_object);
-    }
-
-    // Request type object through TypeLookup if not present in factory, or if type building failed
-    if (!dynamic_type)
-    {
-        std::function<void(const std::string&, const DynamicType_ptr)> callback(
-            [this]
-                (const std::string& /* type_name */, const DynamicType_ptr type)
-            {
-                this->internal_notify_type_object_(type);
-            });
-        // Registering type and creating reader
-        participant->register_remote_type(
-            type_information,
-            type_name_,
-            callback);
-    }
-    else
-    {
-        internal_notify_type_object_(dynamic_type);
+        notify_type_discovered_(type_info, type_name);
     }
 }
 
-void DynTypesParticipant::internal_notify_type_object_(
-        DynamicType_ptr dynamic_type)
+void DynTypesParticipant::notify_type_discovered_(
+        const fastdds::dds::xtypes::TypeInformation& type_info,
+        const std::string& type_name)
 {
-    logInfo(DDSPIPE_DYNTYPES_PARTICIPANT,
-            "Participant " << this->id() << " discovered type object " << dynamic_type->get_name());
+    // Check if it exists already
+    if (received_types_.find(type_name) != received_types_.end())
+    {
+        EPROSIMA_LOG_INFO(DDSPIPE_DYNTYPES_PARTICIPANT,
+                "Type " << type_name << " was already received, aborting propagation.");
+        return;
+    }
 
-    monitor_type_discovered(dynamic_type->get_name());
+    const auto type_identifier = type_info.complete().typeid_with_size().type_id();
+    fastdds::dds::xtypes::TypeObject dyn_type_object;
+    if (fastdds::dds::RETCODE_OK !=
+            fastdds::dds::DomainParticipantFactory::get_instance()->type_object_registry().get_type_object(
+                type_identifier,
+                dyn_type_object))
+    {
+        EPROSIMA_LOG_INFO(DDSPIPE_DYNTYPES_PARTICIPANT,
+                "Failed to get type object of " << type_name << " type");
+        return;
+    }
+
+    // Create Dynamic Type
+    fastdds::dds::DynamicType::_ref_type dyn_type =
+            fastdds::dds::DynamicTypeBuilderFactory::get_instance()->create_type_w_type_object(
+        dyn_type_object)->build();
+    if (!dyn_type)
+    {
+        EPROSIMA_LOG_WARNING(DDSPIPE_DYNTYPES_PARTICIPANT,
+                "Failed to create Dynamic Type " << type_name);
+        return;
+    }
+
+    // Notify type_identifier
+    // NOTE: We assume each type_name corresponds to only one type_identifier
+    EPROSIMA_LOG_INFO(DDSPIPE_DYNTYPES_PARTICIPANT,
+            "Participant " << this->id() << " discovered type object " << dyn_type->get_name());
+
+    monitor_type_discovered(type_name);
+
+    // If not, add it to the received types set
+    received_types_.insert(type_name);
 
     // Create data containing Dynamic Type
-    auto data = std::make_unique<DynamicTypeData>();
-    data->dynamic_type = dynamic_type; // TODO: add constructor with param
+    auto data = std::make_unique<core::types::DynamicTypeData>();
+    data->dynamic_type = dyn_type; // TODO: add constructor with param
+    data->type_identifier = type_identifier;
 
     // Insert new data in internal reader queue
     type_object_reader_->simulate_data_reception(std::move(data));
-}
-
-void DynTypesParticipant::initialize_internal_dds_participant_()
-{
-
-    std::shared_ptr<SimpleParticipantConfiguration> configuration =
-            std::dynamic_pointer_cast<SimpleParticipantConfiguration>(this->configuration_);
-
-    eprosima::fastdds::dds::DomainParticipantQos pqos;
-    pqos.name(this->id());
-
-    // Set app properties
-    pqos.properties().properties().emplace_back(
-        "fastdds.application.id",
-        configuration->app_id,
-        "true");
-    pqos.properties().properties().emplace_back(
-        "fastdds.application.metadata",
-        configuration->app_metadata,
-        "true");
-
-    // Set Type LookUp to ON
-    pqos.wire_protocol().builtin.typelookup_config.use_server = false;
-    pqos.wire_protocol().builtin.typelookup_config.use_client = true;
-
-    // Configure Participant transports
-    if (configuration->transport == core::types::TransportDescriptors::builtin)
-    {
-        if (!configuration->whitelist.empty())
-        {
-            pqos.transport().use_builtin_transports = false;
-
-            std::shared_ptr<eprosima::fastdds::rtps::SharedMemTransportDescriptor> shm_transport =
-                    std::make_shared<eprosima::fastdds::rtps::SharedMemTransportDescriptor>();
-            pqos.transport().user_transports.push_back(shm_transport);
-
-            std::shared_ptr<eprosima::fastdds::rtps::UDPv4TransportDescriptor> udp_transport =
-                    create_descriptor<eprosima::fastdds::rtps::UDPv4TransportDescriptor>(configuration->whitelist);
-            pqos.transport().user_transports.push_back(udp_transport);
-        }
-    }
-    else if (configuration->transport == core::types::TransportDescriptors::shm_only)
-    {
-        pqos.transport().use_builtin_transports = false;
-
-        std::shared_ptr<eprosima::fastdds::rtps::SharedMemTransportDescriptor> shm_transport =
-                std::make_shared<eprosima::fastdds::rtps::SharedMemTransportDescriptor>();
-        pqos.transport().user_transports.push_back(shm_transport);
-    }
-    else if (configuration->transport == core::types::TransportDescriptors::udp_only)
-    {
-        pqos.transport().use_builtin_transports = false;
-
-        std::shared_ptr<eprosima::fastdds::rtps::UDPv4TransportDescriptor> udp_transport =
-                create_descriptor<eprosima::fastdds::rtps::UDPv4TransportDescriptor>(configuration->whitelist);
-        pqos.transport().user_transports.push_back(udp_transport);
-    }
-
-    // Participant discovery filter configuration
-    switch (configuration->ignore_participant_flags)
-    {
-        case core::types::IgnoreParticipantFlags::no_filter:
-            pqos.wire_protocol().builtin.discovery_config.ignoreParticipantFlags =
-                    eprosima::fastrtps::rtps::ParticipantFilteringFlags_t::NO_FILTER;
-            break;
-        case core::types::IgnoreParticipantFlags::filter_different_host:
-            pqos.wire_protocol().builtin.discovery_config.ignoreParticipantFlags =
-                    eprosima::fastrtps::rtps::ParticipantFilteringFlags_t::FILTER_DIFFERENT_HOST;
-            break;
-        case core::types::IgnoreParticipantFlags::filter_different_process:
-            pqos.wire_protocol().builtin.discovery_config.ignoreParticipantFlags =
-                    eprosima::fastrtps::rtps::ParticipantFilteringFlags_t::FILTER_DIFFERENT_PROCESS;
-            break;
-        case core::types::IgnoreParticipantFlags::filter_same_process:
-            pqos.wire_protocol().builtin.discovery_config.ignoreParticipantFlags =
-                    eprosima::fastrtps::rtps::ParticipantFilteringFlags_t::FILTER_SAME_PROCESS;
-            break;
-        case core::types::IgnoreParticipantFlags::filter_different_and_same_process:
-            pqos.wire_protocol().builtin.discovery_config.ignoreParticipantFlags =
-                    static_cast<eprosima::fastrtps::rtps::ParticipantFilteringFlags_t>(
-                eprosima::fastrtps::rtps::ParticipantFilteringFlags_t::FILTER_DIFFERENT_PROCESS |
-                eprosima::fastrtps::rtps::ParticipantFilteringFlags_t::FILTER_SAME_PROCESS);
-            break;
-        default:
-            break;
-    }
-
-    // Force DDS entities to be created disabled
-    // NOTE: this is very dangerous because we are modifying a global variable (and a not thread safe one) in a
-    // local function.
-    // However, this is required, otherwise we could fail in two points:
-    // - receive in this object, maybe in same thread a discovery callback, which could use this variable
-    //    (e.g to check if the Participant called is this one)
-    // - lose a discovery callback
-    fastdds::dds::DomainParticipantFactoryQos fact_qos;
-    fact_qos.entity_factory().autoenable_created_entities = false;
-    eprosima::fastdds::dds::DomainParticipantFactory::get_instance()->set_qos(
-        fact_qos);
-
-    // CREATE THE PARTICIPANT
-    dds_participant_ = eprosima::fastdds::dds::DomainParticipantFactory::get_instance()->create_participant(
-        configuration->domain,
-        pqos);
-
-    dds_participant_->set_listener(this);
-
-    dds_participant_->enable();
-
-    // Restore default DomainParticipantQoS (create enabled entities) after creating and enabling this participant
-    // WARNING: not thread safe at the moment of this writing, see note above.
-    fact_qos.entity_factory().autoenable_created_entities = true;
-    eprosima::fastdds::dds::DomainParticipantFactory::get_instance()->set_qos(
-        fact_qos);
-
-    if (dds_participant_ == nullptr)
-    {
-        throw utils::InitializationException("Error creating DDS Participant.");
-    }
 }
 
 } /* namespace participants */

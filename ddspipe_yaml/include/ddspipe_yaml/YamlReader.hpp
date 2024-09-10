@@ -51,14 +51,13 @@ enum YamlReaderVersion
      * @brief First version.
      *
      * @version 0.1.0
-     * @version 0.2.0
      */
     V_1_0,
 
     /**
      * @brief Version 2.0
      *
-     * @version 0.3.0
+     * @version 0.1.0
      *
      * - Adds builtin-topics tag.
      * - Adds participants list.
@@ -70,7 +69,7 @@ enum YamlReaderVersion
     /**
      * @brief Version 3.0
      *
-     * @version 0.4.0
+     * @version 0.1.0
      *
      * - Change wan to initial peers participant
      * - Add Specs
@@ -80,7 +79,7 @@ enum YamlReaderVersion
     /**
      * @brief Version 3.1.
      *
-     * @version 0.5.0
+     * @version 0.2.0
      *
      * - Add XML load by file or raw
      * - Add xml participant
@@ -88,9 +87,9 @@ enum YamlReaderVersion
     V_3_1,
 
     /**
-     * @brief Latest version.
+     * @brief Version 4.0.
      *
-     * @version 0.6.0
+     * @version 0.3.0
      *
      * - Forwarding Routes.
      * - Remove Unused Entities.
@@ -101,6 +100,16 @@ enum YamlReaderVersion
      * - Rename the `max-depth` under the `specs` tag to `history-depth`.
      */
     V_4_0,
+
+    /**
+     * @brief Latest version.
+     *
+     * @version 1.0.0
+     *
+     * - Make discovery server's guid prefix optional.
+     * - Remove server's guid prefix from discovery server clients' connection addresses.
+     */
+    V_5_0,
 
     /**
      * @brief  Main version.

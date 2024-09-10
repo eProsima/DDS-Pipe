@@ -137,7 +137,8 @@ void YamlReader::fill(
     // Optional whitelist interfaces
     if (YamlReader::is_tag_present(yml, WHITELIST_INTERFACES_TAG))
     {
-        object.whitelist = YamlReader::get_set<participants::types::IpType>(yml, WHITELIST_INTERFACES_TAG, version);
+        object.whitelist = YamlReader::get_set<participants::types::WhitelistType>(yml, WHITELIST_INTERFACES_TAG,
+                        version);
     }
 
     // Optional get Transport descriptors
@@ -194,7 +195,8 @@ void YamlReader::fill(
     // Optional whitelist interfaces
     if (YamlReader::is_tag_present(yml, WHITELIST_INTERFACES_TAG))
     {
-        object.whitelist = YamlReader::get_set<participants::types::IpType>(yml, WHITELIST_INTERFACES_TAG, version);
+        object.whitelist = YamlReader::get_set<participants::types::WhitelistType>(yml, WHITELIST_INTERFACES_TAG,
+                        version);
     }
 
     // Optional listening addresses
@@ -229,9 +231,21 @@ void YamlReader::fill(
                     YamlReader::get<GuidPrefix>(yml, version);
             break;
 
-        default:
+        case V_2_0:
+        case V_3_0:
+        case V_3_1:
+        case V_4_0:
             object.discovery_server_guid_prefix =
                     YamlReader::get<GuidPrefix>(yml, DISCOVERY_SERVER_GUID_PREFIX_TAG, version);
+            break;
+
+        case V_5_0:
+        default:
+            if (YamlReader::is_tag_present(yml, DISCOVERY_SERVER_GUID_PREFIX_TAG))
+            {
+                object.discovery_server_guid_prefix =
+                        YamlReader::get<GuidPrefix>(yml, DISCOVERY_SERVER_GUID_PREFIX_TAG, version);
+            }
             break;
     }
 }
@@ -262,7 +276,8 @@ void YamlReader::fill(
     // Optional whitelist interfaces
     if (YamlReader::is_tag_present(yml, WHITELIST_INTERFACES_TAG))
     {
-        object.whitelist = YamlReader::get_set<participants::types::IpType>(yml, WHITELIST_INTERFACES_TAG, version);
+        object.whitelist = YamlReader::get_set<participants::types::WhitelistType>(yml, WHITELIST_INTERFACES_TAG,
+                        version);
     }
 
     // Optional listening addresses

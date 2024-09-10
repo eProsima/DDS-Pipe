@@ -24,26 +24,22 @@ namespace eprosima {
 namespace ddspipe {
 namespace core {
 
+using namespace eprosima::fastdds::rtps;
 using namespace eprosima::ddspipe::core::types;
 
 bool CopyPayloadPool::get_payload(
         uint32_t size,
-        Payload& payload)
+        SerializedPayload_t& payload)
 {
     reserve_(size, payload);
-    payload.max_size = size;
 
     return true;
 }
 
 bool CopyPayloadPool::get_payload(
-        const Payload& src_payload,
-        IPayloadPool*& data_owner,
-        Payload& target_payload)
+        const SerializedPayload_t& src_payload,
+        SerializedPayload_t& target_payload)
 {
-    // As this class copies always the data, it does not matter the owner of this data
-    static_cast<void>(data_owner);
-
     if (!get_payload(src_payload.max_size, target_payload))
     {
         return false;

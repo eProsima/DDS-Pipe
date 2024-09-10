@@ -15,12 +15,12 @@
 
 #include <memory>
 
-#include <fastdds/rtps/transport/TCPv4TransportDescriptor.h>
-#include <fastdds/rtps/transport/TCPv6TransportDescriptor.h>
-#include <fastdds/rtps/transport/UDPv4TransportDescriptor.h>
-#include <fastdds/rtps/transport/UDPv6TransportDescriptor.h>
-#include <fastrtps/rtps/participant/RTPSParticipant.h>
-#include <fastrtps/rtps/RTPSDomain.h>
+#include <fastdds/rtps/transport/TCPv4TransportDescriptor.hpp>
+#include <fastdds/rtps/transport/TCPv6TransportDescriptor.hpp>
+#include <fastdds/rtps/transport/UDPv4TransportDescriptor.hpp>
+#include <fastdds/rtps/transport/UDPv6TransportDescriptor.hpp>
+#include <fastdds/rtps/participant/RTPSParticipant.hpp>
+#include <fastdds/rtps/RTPSDomain.hpp>
 
 #include <cpp_utils/exception/InitializationException.hpp>
 #include <cpp_utils/Log.hpp>
@@ -54,13 +54,11 @@ CommonParticipant::CommonParticipant(
         const std::shared_ptr<ParticipantConfiguration>& participant_configuration,
         const std::shared_ptr<core::PayloadPool>& payload_pool,
         const std::shared_ptr<core::DiscoveryDatabase>& discovery_database,
-        const core::types::DomainId& domain_id,
-        const fastrtps::rtps::RTPSParticipantAttributes& participant_attributes)
+        const core::types::DomainId& domain_id)
     : configuration_(participant_configuration)
     , payload_pool_(payload_pool)
     , discovery_database_(discovery_database)
     , domain_id_(domain_id)
-    , participant_attributes_(participant_attributes)
 {
     // Do nothing
 }
@@ -69,117 +67,139 @@ CommonParticipant::~CommonParticipant()
 {
     if (rtps_participant_)
     {
-        fastrtps::rtps::RTPSDomain::removeRTPSParticipant(rtps_participant_);
+        fastdds::rtps::RTPSDomain::removeRTPSParticipant(rtps_participant_);
     }
 }
 
 void CommonParticipant::init()
 {
+    participant_attributes_ = reckon_participant_attributes_();
     create_participant_(
         domain_id_,
         participant_attributes_);
 }
 
-void CommonParticipant::onParticipantDiscovery(
-        fastrtps::rtps::RTPSParticipant* participant,
-        fastrtps::rtps::ParticipantDiscoveryInfo&& info)
+void CommonParticipant::on_participant_discovery(
+        fastdds::rtps::RTPSParticipant* participant,
+        fastdds::rtps::ParticipantDiscoveryStatus reason,
+        const fastdds::rtps::ParticipantBuiltinTopicData& info,
+        bool&)
 {
-    if (info.info.m_guid.guidPrefix != participant->getGuid().guidPrefix)
+    if (info.guid.guidPrefix != participant->getGuid().guidPrefix)
     {
-        if (info.status == fastrtps::rtps::ParticipantDiscoveryInfo::DISCOVERED_PARTICIPANT)
+        if (reason == fastdds::rtps::ParticipantDiscoveryStatus::DISCOVERED_PARTICIPANT)
         {
-            logInfo(DDSPIPE_DISCOVERY,
-                    "Found in Participant " << configuration_->id << " new Participant " << info.info.m_guid << ".");
+            EPROSIMA_LOG_INFO(DDSPIPE_DISCOVERY,
+                    "Found in Participant " << configuration_->id << " new Participant " << info.guid << ".");
         }
-        else if (info.status == fastrtps::rtps::ParticipantDiscoveryInfo::CHANGED_QOS_PARTICIPANT)
+        else if (reason == fastdds::rtps::ParticipantDiscoveryStatus::CHANGED_QOS_PARTICIPANT)
         {
-            logInfo(DDSPIPE_DISCOVERY, "Participant " << info.info.m_guid << " changed QoS.");
+            EPROSIMA_LOG_INFO(DDSPIPE_DISCOVERY,
+                    configuration_->id << " participant : " << "Participant " << info.guid <<
+                    " changed QoS.");
         }
-        else if (info.status == fastrtps::rtps::ParticipantDiscoveryInfo::REMOVED_PARTICIPANT)
+        else if (reason == fastdds::rtps::ParticipantDiscoveryStatus::REMOVED_PARTICIPANT)
         {
-            logInfo(DDSPIPE_DISCOVERY, "Participant " << info.info.m_guid << " removed.");
+            EPROSIMA_LOG_INFO(DDSPIPE_DISCOVERY,
+                    configuration_->id << " participant : " << "Participant " << info.guid << " removed.");
         }
-        else if (info.status == fastrtps::rtps::ParticipantDiscoveryInfo::DROPPED_PARTICIPANT)
+        else if (reason == fastdds::rtps::ParticipantDiscoveryStatus::DROPPED_PARTICIPANT)
         {
-            logInfo(DDSPIPE_DISCOVERY, "Participant " << info.info.m_guid << " dropped.");
+            EPROSIMA_LOG_INFO(DDSPIPE_DISCOVERY,
+                    configuration_->id << " participant : " << "Participant " << info.guid << " dropped.");
         }
-        else if (info.status == fastrtps::rtps::ParticipantDiscoveryInfo::IGNORED_PARTICIPANT)
+        else if (reason == fastdds::rtps::ParticipantDiscoveryStatus::IGNORED_PARTICIPANT)
         {
-            logInfo(DDSPIPE_DISCOVERY, "Participant " << info.info.m_guid << " ignored.");
+            EPROSIMA_LOG_INFO(DDSPIPE_DISCOVERY,
+                    configuration_->id << " participant : " << "Participant " << info.guid << " ignored.");
         }
     }
 }
 
-void CommonParticipant::onReaderDiscovery(
-        fastrtps::rtps::RTPSParticipant* participant,
-        fastrtps::rtps::ReaderDiscoveryInfo&& info)
+void CommonParticipant::on_reader_discovery(
+        fastdds::rtps::RTPSParticipant* participant,
+        fastdds::rtps::ReaderDiscoveryStatus reason,
+        const fastdds::rtps::SubscriptionBuiltinTopicData& info,
+        bool&)
 {
-    if (info.info.guid().guidPrefix != participant->getGuid().guidPrefix)
+    if (info.guid.guidPrefix != participant->getGuid().guidPrefix)
     {
-        core::types::Endpoint info_reader = detail::create_endpoint_from_info_<fastrtps::rtps::ReaderDiscoveryInfo>(
+        core::types::Endpoint info_reader =
+                detail::create_endpoint_from_info_<fastdds::rtps::SubscriptionBuiltinTopicData>(
             info, this->id());
 
-        if (info.status == fastrtps::rtps::ReaderDiscoveryInfo::DISCOVERED_READER)
+        if (reason == fastdds::rtps::ReaderDiscoveryStatus::DISCOVERED_READER)
         {
-            logInfo(DDSPIPE_DISCOVERY,
-                    "Found in Participant " << configuration_->id << " new Reader " << info.info.guid() << ".");
+            EPROSIMA_LOG_INFO(DDSPIPE_DISCOVERY,
+                    "Found in Participant " << configuration_->id << " new Reader " << info.guid << ".");
 
             this->discovery_database_->add_endpoint(info_reader);
         }
-        else if (info.status == fastrtps::rtps::ReaderDiscoveryInfo::CHANGED_QOS_READER)
+        else if (reason == fastdds::rtps::ReaderDiscoveryStatus::CHANGED_QOS_READER)
         {
-            logInfo(DDSPIPE_DISCOVERY, "Reader " << info.info.guid() << " changed TopicQoS.");
+            EPROSIMA_LOG_INFO(DDSPIPE_DISCOVERY,
+                    configuration_->id << " participant : " << "Reader " << info.guid <<
+                    " changed TopicQoS.");
 
             this->discovery_database_->update_endpoint(info_reader);
         }
-        else if (info.status == fastrtps::rtps::ReaderDiscoveryInfo::REMOVED_READER)
+        else if (reason == fastdds::rtps::ReaderDiscoveryStatus::REMOVED_READER)
         {
-            logInfo(DDSPIPE_DISCOVERY, "Reader " << info.info.guid() << " removed.");
+            EPROSIMA_LOG_INFO(DDSPIPE_DISCOVERY,
+                    configuration_->id << " participant : " << "Reader " << info.guid << " removed.");
 
             info_reader.active = false;
             this->discovery_database_->update_endpoint(info_reader);
         }
-        else if (info.status == fastrtps::rtps::ReaderDiscoveryInfo::IGNORED_READER)
+        else if (reason == fastdds::rtps::ReaderDiscoveryStatus::IGNORED_READER)
         {
-            logInfo(DDSPIPE_DISCOVERY, "Reader " << info.info.guid() << " ignored.");
+            EPROSIMA_LOG_INFO(DDSPIPE_DISCOVERY,
+                    configuration_->id << " participant : " << "Reader " << info.guid << " ignored.");
 
             // Do not notify discovery database (design choice that might be changed in the future)
         }
     }
 }
 
-void CommonParticipant::onWriterDiscovery(
-        fastrtps::rtps::RTPSParticipant* participant,
-        fastrtps::rtps::WriterDiscoveryInfo&& info)
+void CommonParticipant::on_writer_discovery(
+        fastdds::rtps::RTPSParticipant* participant,
+        fastdds::rtps::WriterDiscoveryStatus reason,
+        const fastdds::rtps::PublicationBuiltinTopicData& info,
+        bool&)
 {
-    if (info.info.guid().guidPrefix != participant->getGuid().guidPrefix)
+    if (info.guid.guidPrefix != participant->getGuid().guidPrefix)
     {
-        core::types::Endpoint info_writer = detail::create_endpoint_from_info_<fastrtps::rtps::WriterDiscoveryInfo>(
+        core::types::Endpoint info_writer =
+                detail::create_endpoint_from_info_<fastdds::rtps::PublicationBuiltinTopicData>(
             info, this->id());
 
-        if (info.status == fastrtps::rtps::WriterDiscoveryInfo::DISCOVERED_WRITER)
+        if (reason == fastdds::rtps::WriterDiscoveryStatus::DISCOVERED_WRITER)
         {
-            logInfo(DDSPIPE_DISCOVERY,
-                    "Found in Participant " << configuration_->id << " new Writer " << info.info.guid() << ".");
+            EPROSIMA_LOG_INFO(DDSPIPE_DISCOVERY,
+                    "Found in Participant " << configuration_->id << " new Writer " << info.guid << ".");
 
             this->discovery_database_->add_endpoint(info_writer);
         }
-        else if (info.status == fastrtps::rtps::WriterDiscoveryInfo::CHANGED_QOS_WRITER)
+        else if (reason == fastdds::rtps::WriterDiscoveryStatus::CHANGED_QOS_WRITER)
         {
-            logInfo(DDSPIPE_DISCOVERY, "Writer " << info.info.guid() << " changed TopicQoS.");
+            EPROSIMA_LOG_INFO(DDSPIPE_DISCOVERY,
+                    configuration_->id << " participant : " << "Writer " << info.guid <<
+                    " changed TopicQoS.");
 
             this->discovery_database_->update_endpoint(info_writer);
         }
-        else if (info.status == fastrtps::rtps::WriterDiscoveryInfo::REMOVED_WRITER)
+        else if (reason == fastdds::rtps::WriterDiscoveryStatus::REMOVED_WRITER)
         {
-            logInfo(DDSPIPE_DISCOVERY, "Writer " << info.info.guid() << " removed.");
+            EPROSIMA_LOG_INFO(DDSPIPE_DISCOVERY,
+                    configuration_->id << " participant : " << "Writer " << info.guid << " removed.");
 
             info_writer.active = false;
             this->discovery_database_->update_endpoint(info_writer);
         }
-        else if (info.status == fastrtps::rtps::WriterDiscoveryInfo::IGNORED_WRITER)
+        else if (reason == fastdds::rtps::WriterDiscoveryStatus::IGNORED_WRITER)
         {
-            logInfo(DDSPIPE_DISCOVERY, "Writer " << info.info.guid() << " ignored.");
+            EPROSIMA_LOG_INFO(DDSPIPE_DISCOVERY,
+                    configuration_->id << " participant : " << "Writer " << info.guid << " ignored.");
 
             // Do not notify discovery database (design choice that might be changed in the future)
         }
@@ -204,25 +224,16 @@ template<>
 DDSPIPE_PARTICIPANTS_DllAPI
 std::shared_ptr<eprosima::fastdds::rtps::UDPv4TransportDescriptor>
 CommonParticipant::create_descriptor(
-        std::set<types::IpType> whitelist)
+        std::set<types::WhitelistType> whitelist)
 {
     std::shared_ptr<eprosima::fastdds::rtps::UDPv4TransportDescriptor> udp_transport =
             std::make_shared<eprosima::fastdds::rtps::UDPv4TransportDescriptor>();
 
-    for (const types::IpType& ip : whitelist)
+    for (const types::WhitelistType& iface : whitelist)
     {
-        if (types::Address::is_ipv4_correct(ip))
-        {
-            udp_transport->interfaceWhiteList.emplace_back(ip);
-            logInfo(DDSPIPE_COMMON_PARTICIPANT,
-                    "Adding " << ip << " to UDP whitelist interfaces.");
-        }
-        else
-        {
-            // Invalid address, continue with next one
-            logWarning(DDSPIPE_COMMON_PARTICIPANT,
-                    "Not valid IPv4. Discarding UDP whitelist interface " << ip << ".");
-        }
+        udp_transport->interfaceWhiteList.emplace_back(iface);
+        EPROSIMA_LOG_INFO(DDSPIPE_COMMON_PARTICIPANT,
+                "Adding " << iface << " to UDP whitelist interfaces.");
     }
 
     return udp_transport;
@@ -232,25 +243,16 @@ template<>
 DDSPIPE_PARTICIPANTS_DllAPI
 std::shared_ptr<eprosima::fastdds::rtps::UDPv6TransportDescriptor>
 CommonParticipant::create_descriptor(
-        std::set<types::IpType> whitelist)
+        std::set<types::WhitelistType> whitelist)
 {
     std::shared_ptr<eprosima::fastdds::rtps::UDPv6TransportDescriptor> udp_transport =
             std::make_shared<eprosima::fastdds::rtps::UDPv6TransportDescriptor>();
 
-    for (const types::IpType& ip : whitelist)
+    for (const types::WhitelistType& iface : whitelist)
     {
-        if (types::Address::is_ipv6_correct(ip))
-        {
-            udp_transport->interfaceWhiteList.emplace_back(ip);
-            logInfo(DDSPIPE_COMMON_PARTICIPANT,
-                    "Adding " << ip << " to UDP whitelist interfaces.");
-        }
-        else
-        {
-            // Invalid address, continue with next one
-            logWarning(DDSPIPE_COMMON_PARTICIPANT,
-                    "Not valid IPv6. Discarding UDP whitelist interface " << ip << ".");
-        }
+        udp_transport->interfaceWhiteList.emplace_back(iface);
+        EPROSIMA_LOG_INFO(DDSPIPE_COMMON_PARTICIPANT,
+                "Adding " << iface << " to UDP whitelist interfaces.");
     }
 
     return udp_transport;
@@ -260,25 +262,16 @@ template<>
 DDSPIPE_PARTICIPANTS_DllAPI
 std::shared_ptr<eprosima::fastdds::rtps::TCPv4TransportDescriptor>
 CommonParticipant::create_descriptor(
-        std::set<types::IpType> whitelist)
+        std::set<types::WhitelistType> whitelist)
 {
     std::shared_ptr<eprosima::fastdds::rtps::TCPv4TransportDescriptor> tcp_transport =
             std::make_shared<eprosima::fastdds::rtps::TCPv4TransportDescriptor>();
 
-    for (const types::IpType& ip : whitelist)
+    for (const types::WhitelistType& iface : whitelist)
     {
-        if (types::Address::is_ipv4_correct(ip))
-        {
-            tcp_transport->interfaceWhiteList.emplace_back(ip);
-            logInfo(DDSPIPE_COMMON_PARTICIPANT,
-                    "Adding " << ip << " to TCP whitelist interfaces.");
-        }
-        else
-        {
-            // Invalid address, continue with next one
-            logWarning(DDSPIPE_COMMON_PARTICIPANT,
-                    "Not valid IPv4. Discarding TCP whitelist interface " << ip << ".");
-        }
+        tcp_transport->interfaceWhiteList.emplace_back(iface);
+        EPROSIMA_LOG_INFO(DDSPIPE_COMMON_PARTICIPANT,
+                "Adding " << iface << " to TCP whitelist interfaces.");
     }
 
     return tcp_transport;
@@ -288,25 +281,16 @@ template<>
 DDSPIPE_PARTICIPANTS_DllAPI
 std::shared_ptr<eprosima::fastdds::rtps::TCPv6TransportDescriptor>
 CommonParticipant::create_descriptor(
-        std::set<types::IpType> whitelist)
+        std::set<types::WhitelistType> whitelist)
 {
     std::shared_ptr<eprosima::fastdds::rtps::TCPv6TransportDescriptor> tcp_transport =
             std::make_shared<eprosima::fastdds::rtps::TCPv6TransportDescriptor>();
 
-    for (const types::IpType& ip : whitelist)
+    for (const types::WhitelistType& iface : whitelist)
     {
-        if (types::Address::is_ipv6_correct(ip))
-        {
-            tcp_transport->interfaceWhiteList.emplace_back(ip);
-            logInfo(DDSPIPE_COMMON_PARTICIPANT,
-                    "Adding " << ip << " to TCP whitelist interfaces.");
-        }
-        else
-        {
-            // Invalid address, continue with next one
-            logWarning(DDSPIPE_COMMON_PARTICIPANT,
-                    "Not valid IPv6. Discarding TCP whitelist interface " << ip << ".");
-        }
+        tcp_transport->interfaceWhiteList.emplace_back(iface);
+        EPROSIMA_LOG_INFO(DDSPIPE_COMMON_PARTICIPANT,
+                "Adding " << iface << " to TCP whitelist interfaces.");
     }
 
     return tcp_transport;
@@ -334,14 +318,14 @@ core::types::TopicQoS CommonParticipant::topic_qos() const noexcept
 
 void CommonParticipant::create_participant_(
         const core::types::DomainId& domain,
-        const fastrtps::rtps::RTPSParticipantAttributes& participant_attributes)
+        const fastdds::rtps::RTPSParticipantAttributes& participant_attributes)
 {
-    logInfo(DDSPIPE_RTPS_PARTICIPANT,
+    EPROSIMA_LOG_INFO(DDSPIPE_RTPS_PARTICIPANT,
             "Creating Participant in domain " << domain);
 
     // Listener must be set in creation as no callbacks should be missed
     // It is safe to do so here as object is already created and callbacks do not require anything set in this method
-    rtps_participant_ = fastrtps::rtps::RTPSDomain::createParticipant(
+    rtps_participant_ = fastdds::rtps::RTPSDomain::createParticipant(
         domain,
         participant_attributes,
         this);
@@ -352,7 +336,7 @@ void CommonParticipant::create_participant_(
                   utils::Formatter() << "Error creating RTPS Participant " << this->id());
     }
 
-    logInfo(DDSPIPE_RTPS_PARTICIPANT,
+    EPROSIMA_LOG_INFO(DDSPIPE_RTPS_PARTICIPANT,
             "New Participant created with id " << this->id() <<
             " in domain " << domain << " with guid " << rtps_participant_->getGuid() <<
             (this->is_repeater() ? " (repeater)" : " (non repeater)"));
@@ -478,15 +462,10 @@ std::shared_ptr<core::IReader> CommonParticipant::create_reader(
     }
 }
 
-fastrtps::rtps::RTPSParticipantAttributes
-CommonParticipant::reckon_participant_attributes_(
-        const ParticipantConfiguration* participant_configuration)
+fastdds::rtps::RTPSParticipantAttributes
+CommonParticipant::add_participant_att_properties_(
+        fastdds::rtps::RTPSParticipantAttributes& params) const
 {
-    fastrtps::rtps::RTPSParticipantAttributes params;
-
-    // Add Participant name
-    params.setName(participant_configuration->id.c_str());
-
     // Ignore the local endpoints so that the reader and writer of the same participant don't match.
     params.properties.properties().emplace_back(
         "fastdds.ignore_local_endpoints",
@@ -495,12 +474,25 @@ CommonParticipant::reckon_participant_attributes_(
     // Set app properties
     params.properties.properties().emplace_back(
         "fastdds.application.id",
-        participant_configuration->app_id,
+        configuration_->app_id,
         "true");
     params.properties.properties().emplace_back(
         "fastdds.application.metadata",
-        participant_configuration->app_metadata,
+        configuration_->app_metadata,
         "true");
+
+    return params;
+}
+
+fastdds::rtps::RTPSParticipantAttributes
+CommonParticipant::reckon_participant_attributes_() const
+{
+    fastdds::rtps::RTPSParticipantAttributes params;
+
+    // Add Participant name
+    params.setName(configuration_->id.c_str());
+
+    add_participant_att_properties_(params);
 
     return params;
 }

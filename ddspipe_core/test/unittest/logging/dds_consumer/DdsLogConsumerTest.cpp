@@ -34,15 +34,9 @@
 #include <ddspipe_core/logging/DdsLogConsumer.hpp>
 #include <ddspipe_core/types/dds/DomainId.hpp>
 
-#if FASTRTPS_VERSION_MAJOR < 2 || (FASTRTPS_VERSION_MAJOR == 2 && FASTRTPS_VERSION_MINOR < 13)
-    #include <ddspipe_core/types/logging/v1/LogEntry.h>
-    #include <ddspipe_core/types/logging/v1/LogEntryPubSubTypes.h>
-    #include <ddspipe_core/types/logging/v1/LogEntryTypeObject.h>
-#else
-    #include <ddspipe_core/types/logging/v2/LogEntry.h>
-    #include <ddspipe_core/types/logging/v2/LogEntryPubSubTypes.h>
-    #include <ddspipe_core/types/logging/v2/LogEntryTypeObject.h>
-#endif // if FASTRTPS_VERSION_MAJOR < 2 || (FASTRTPS_VERSION_MAJOR == 2 && FASTRTPS_VERSION_MINOR < 13)
+#include <ddspipe_core/types/logging/LogEntry.hpp>
+#include <ddspipe_core/types/logging/LogEntryPubSubTypes.hpp>
+#include <ddspipe_core/types/logging/LogEntryTypeObjectSupport.hpp>
 
 #include "../constants.hpp"
 
@@ -103,9 +97,9 @@ protected:
  * Test that the DdsLogConsumer publishes logs when publish::enable is set to true.
  *
  * CASES:
- * - check that the DdsLogConsumer publishes logInfos.
- * - check that the DdsLogConsumer publishes logWarnings.
- * - check that the DdsLogConsumer publishes logErrors.
+ * - check that the DdsLogConsumer publishes log info traces.
+ * - check that the DdsLogConsumer publishes log warning traces.
+ * - check that the DdsLogConsumer publishes log error traces.
  */
 TEST_F(DdsLogConsumerTest, publish_logs)
 {
@@ -138,14 +132,14 @@ TEST_F(DdsLogConsumerTest, publish_logs)
 
     // INFO
     {
-        logInfo(DDSPIPE_TEST, "LOG_CONSUMER_TEST | You only live once.");
+        EPROSIMA_LOG_INFO(DDSPIPE_TEST, "LOG_CONSUMER_TEST | You only live once.");
         utils::Log::Flush();
 
         // Wait for the subscriber to receive the message
         ASSERT_TRUE(reader_->wait_for_unread_message(test::logging::MAX_WAITING_TIME));
 
         // Verify that the content of the LogEntry published by the Log is correct
-        ASSERT_EQ(reader_->take_next_sample(&entry, &info), ReturnCode_t::RETCODE_OK);
+        ASSERT_EQ(reader_->take_next_sample(&entry, &info), RETCODE_OK);
         ASSERT_EQ(info.instance_state, ALIVE_INSTANCE_STATE);
 
         ASSERT_EQ(entry.event(), UNDEFINED);
@@ -156,14 +150,14 @@ TEST_F(DdsLogConsumerTest, publish_logs)
 
     // WARNING
     {
-        logWarning(DDSPIPE_TEST, "LOG_CONSUMER_TEST | You only live once.");
+        EPROSIMA_LOG_WARNING(DDSPIPE_TEST, "LOG_CONSUMER_TEST | You only live once.");
         utils::Log::Flush();
 
         // Wait for the subscriber to receive the message
         ASSERT_TRUE(reader_->wait_for_unread_message(test::logging::MAX_WAITING_TIME));
 
         // Verify that the content of the LogEntry published by the Log is correct
-        ASSERT_EQ(reader_->take_next_sample(&entry, &info), ReturnCode_t::RETCODE_OK);
+        ASSERT_EQ(reader_->take_next_sample(&entry, &info), RETCODE_OK);
         ASSERT_EQ(info.instance_state, ALIVE_INSTANCE_STATE);
 
         ASSERT_EQ(entry.event(), UNDEFINED);
@@ -174,14 +168,14 @@ TEST_F(DdsLogConsumerTest, publish_logs)
 
     // ERROR
     {
-        logError(DDSPIPE_TEST, "LOG_CONSUMER_TEST | You only live once.");
+        EPROSIMA_LOG_ERROR(DDSPIPE_TEST, "LOG_CONSUMER_TEST | You only live once.");
         utils::Log::Flush();
 
         // Wait for the subscriber to receive the message
         ASSERT_TRUE(reader_->wait_for_unread_message(test::logging::MAX_WAITING_TIME));
 
         // Verify that the content of the LogEntry published by the Log is correct
-        ASSERT_EQ(reader_->take_next_sample(&entry, &info), ReturnCode_t::RETCODE_OK);
+        ASSERT_EQ(reader_->take_next_sample(&entry, &info), RETCODE_OK);
         ASSERT_EQ(info.instance_state, ALIVE_INSTANCE_STATE);
 
         ASSERT_EQ(entry.event(), UNDEFINED);
@@ -197,9 +191,9 @@ TEST_F(DdsLogConsumerTest, publish_logs)
  * Test that the DdsLogConsumer doesn't publish when publish::enable is set to false.
  *
  * CASES:
- * - check that the DdsLogConsumer doesn't publish logInfos.
- * - check that the DdsLogConsumer doesn't publish logWarnings.
- * - check that the DdsLogConsumer doesn't publish logErrors.
+ * - check that the DdsLogConsumer doesn't publish log info traces.
+ * - check that the DdsLogConsumer doesn't publish log warning traces.
+ * - check that the DdsLogConsumer doesn't publish log error traces.
  */
 TEST_F(DdsLogConsumerTest, dont_publish_logs)
 {
@@ -232,38 +226,38 @@ TEST_F(DdsLogConsumerTest, dont_publish_logs)
 
     // INFO
     {
-        logInfo(DDSPIPE_TEST, "LOG_CONSUMER_TEST | You only live once.");
+        EPROSIMA_LOG_INFO(DDSPIPE_TEST, "LOG_CONSUMER_TEST | You only live once.");
         utils::Log::Flush();
 
         // Wait for the subscriber to receive the message
         ASSERT_FALSE(reader_->wait_for_unread_message(test::logging::MAX_WAITING_TIME));
 
         // Verify that the content of the LogEntry published by the Log is correct
-        ASSERT_EQ(reader_->take_next_sample(&entry, &info), ReturnCode_t::RETCODE_NO_DATA);
+        ASSERT_EQ(reader_->take_next_sample(&entry, &info), RETCODE_NO_DATA);
     }
 
     // WARNING
     {
-        logWarning(DDSPIPE_TEST, "LOG_CONSUMER_TEST | You only live once.");
+        EPROSIMA_LOG_WARNING(DDSPIPE_TEST, "LOG_CONSUMER_TEST | You only live once.");
         utils::Log::Flush();
 
         // Wait for the subscriber to receive the message
         ASSERT_FALSE(reader_->wait_for_unread_message(test::logging::MAX_WAITING_TIME));
 
         // Verify that the content of the LogEntry published by the Log is correct
-        ASSERT_EQ(reader_->take_next_sample(&entry, &info), ReturnCode_t::RETCODE_NO_DATA);
+        ASSERT_EQ(reader_->take_next_sample(&entry, &info), RETCODE_NO_DATA);
     }
 
     // ERROR
     {
-        logError(DDSPIPE_TEST, "LOG_CONSUMER_TEST | You only live once.");
+        EPROSIMA_LOG_ERROR(DDSPIPE_TEST, "LOG_CONSUMER_TEST | You only live once.");
         utils::Log::Flush();
 
         // Wait for the subscriber to receive the message
         ASSERT_FALSE(reader_->wait_for_unread_message(test::logging::MAX_WAITING_TIME));
 
         // Verify that the content of the LogEntry published by the Log is correct
-        ASSERT_EQ(reader_->take_next_sample(&entry, &info), ReturnCode_t::RETCODE_NO_DATA);
+        ASSERT_EQ(reader_->take_next_sample(&entry, &info), RETCODE_NO_DATA);
     }
 
     utils::Log::ClearConsumers();

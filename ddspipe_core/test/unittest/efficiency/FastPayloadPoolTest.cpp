@@ -17,7 +17,7 @@
 #include <cpp_utils/testing/gtest_aux.hpp>
 #include <gtest/gtest.h>
 
-#include <fastdds/rtps/common/CacheChange.h>
+#include <fastdds/rtps/common/CacheChange.hpp>
 
 #include <cpp_utils/testing/LogChecker.hpp>
 #include <cpp_utils/exception/InconsistencyException.hpp>
@@ -67,10 +67,8 @@ void get_release(
         FastPayloadPool& pool,
         Payload& src_payload)
 {
-    eprosima::fastrtps::rtps::IPayloadPool* payload_owner =
-            static_cast<eprosima::fastrtps::rtps::IPayloadPool*>(&pool);
     Payload dst_payload;
-    ASSERT_TRUE(pool.get_payload(src_payload, payload_owner, dst_payload));
+    ASSERT_TRUE(pool.get_payload(src_payload, dst_payload));
     ASSERT_TRUE(pool.release_payload(dst_payload));
 }
 
@@ -140,7 +138,7 @@ TEST(FastPayloadPoolTest, get_payload)
  */
 TEST(FastPayloadPoolTest, get_payload_from_src)
 {
-    eprosima::fastrtps::rtps::IPayloadPool* pool = new test::MockFastPayloadPool(); // Requires to be ptr to pass it to get_payload
+    eprosima::fastdds::rtps::IPayloadPool* pool = new test::MockFastPayloadPool(); // Requires to be ptr to pass it to get_payload
     test::MockFastPayloadPool* pool_ = static_cast<test::MockFastPayloadPool*>(pool);
 
     Payload payload0;
@@ -155,13 +153,13 @@ TEST(FastPayloadPoolTest, get_payload_from_src)
     ASSERT_EQ(pool_->pointers_stored(), 1u);
 
     // get payload1 from src payload0
-    ASSERT_TRUE(pool_->get_payload(payload0, pool, payload1));
+    ASSERT_TRUE(pool_->get_payload(payload0, payload1));
     ASSERT_EQ(pool_->pointers_stored(), 1u);
     ASSERT_EQ(payload1.max_size, payload0.max_size);
     ASSERT_EQ(payload1.data, payload0.data);
 
     // get payload2 from src payload1
-    ASSERT_TRUE(pool_->get_payload(payload1, pool, payload2));
+    ASSERT_TRUE(pool_->get_payload(payload1, payload2));
     ASSERT_EQ(pool_->pointers_stored(), 1u);
     ASSERT_EQ(payload2.max_size, payload0.max_size);
     ASSERT_EQ(payload2.data, payload0.data);
@@ -171,7 +169,7 @@ TEST(FastPayloadPoolTest, get_payload_from_src)
     ASSERT_EQ(pool_->pointers_stored(), 1u);
 
     // get payload3 from src payload1
-    ASSERT_TRUE(pool_->get_payload(payload1, pool, payload3));
+    ASSERT_TRUE(pool_->get_payload(payload1, payload3));
     ASSERT_EQ(pool_->pointers_stored(), 1u);
     ASSERT_EQ(payload3.max_size, payload1.max_size);
     ASSERT_EQ(payload3.data, payload1.data);
@@ -181,7 +179,7 @@ TEST(FastPayloadPoolTest, get_payload_from_src)
     ASSERT_EQ(pool_->pointers_stored(), 2u);
 
     // get payload5 from src payload4
-    ASSERT_TRUE(pool_->get_payload(payload4, pool, payload5));
+    ASSERT_TRUE(pool_->get_payload(payload4, payload5));
     ASSERT_EQ(pool_->pointers_stored(), 2u);
     ASSERT_EQ(payload5.max_size, payload4.max_size);
     ASSERT_EQ(payload5.data, payload4.data);
@@ -213,9 +211,9 @@ TEST(FastPayloadPoolTest, get_payload_from_src_no_owner)
 {
     // Each pool has a IPayloadPool and a MockFastPayloadPool so it can be called to get_payload from source
     // and specific methods from mock
-    eprosima::fastrtps::rtps::IPayloadPool* pool = new test::MockFastPayloadPool(); // Requires to be ptr to pass it to get_payload
+    eprosima::fastdds::rtps::IPayloadPool* pool = new test::MockFastPayloadPool(); // Requires to be ptr to pass it to get_payload
     test::MockFastPayloadPool* pool_ = static_cast<test::MockFastPayloadPool*>(pool);
-    eprosima::fastrtps::rtps::IPayloadPool* pool_aux = new test::MockFastPayloadPool(); // Requires to be ptr to pass it to get_payload
+    eprosima::fastdds::rtps::IPayloadPool* pool_aux = new test::MockFastPayloadPool(); // Requires to be ptr to pass it to get_payload
     test::MockFastPayloadPool* pool_aux_ = static_cast<test::MockFastPayloadPool*>(pool_aux);
 
     Payload payload_src;
@@ -227,7 +225,7 @@ TEST(FastPayloadPoolTest, get_payload_from_src_no_owner)
     ASSERT_EQ(pool_->pointers_stored(), 0u);
 
     // get payload from src payload aux
-    ASSERT_TRUE(pool_->get_payload(payload_src, pool_aux, payload_target));
+    ASSERT_TRUE(pool_->get_payload(payload_src, payload_target));
     ASSERT_EQ(pool_->pointers_stored(), 1u);
 
     // release payload aux from pool aux
@@ -253,9 +251,8 @@ TEST(FastPayloadPoolTest, get_payload_from_src_negative)
 {
     // Source has size 0 and different owner
     {
-        eprosima::fastrtps::rtps::IPayloadPool* pool = new test::MockFastPayloadPool(); // Requires to be ptr to pass it to get_payload
+        eprosima::fastdds::rtps::IPayloadPool* pool = new test::MockFastPayloadPool(); // Requires to be ptr to pass it to get_payload
         test::MockFastPayloadPool* pool_ = static_cast<test::MockFastPayloadPool*>(pool);
-        eprosima::fastrtps::rtps::IPayloadPool* pool_aux = nullptr; // nullptr
 
         Payload payload_src;
         Payload payload_target;
@@ -263,7 +260,6 @@ TEST(FastPayloadPoolTest, get_payload_from_src_negative)
         ASSERT_FALSE(
             pool_->get_payload(
                 payload_src,
-                pool_aux,
                 payload_target));
 
         delete pool;
@@ -282,7 +278,7 @@ TEST(FastPayloadPoolTest, get_payload_from_src_negative)
  */
 TEST(FastPayloadPoolTest, release_payload)
 {
-    eprosima::fastrtps::rtps::IPayloadPool* pool = new test::MockFastPayloadPool(); // Requires to be ptr to pass it to get_payload
+    eprosima::fastdds::rtps::IPayloadPool* pool = new test::MockFastPayloadPool(); // Requires to be ptr to pass it to get_payload
     test::MockFastPayloadPool* pool_ = static_cast<test::MockFastPayloadPool*>(pool);
     std::vector<Payload> payloads(TEST_NUMBER);
 
@@ -292,7 +288,7 @@ TEST(FastPayloadPoolTest, release_payload)
     // get N-1 payloads from first
     for (unsigned int i = 1; i < TEST_NUMBER; i++)
     {
-        pool_->get_payload(payloads[0], pool, payloads[i]);
+        pool_->get_payload(payloads[0], payloads[i]);
     }
 
     // release N-2 payloads
@@ -304,7 +300,7 @@ TEST(FastPayloadPoolTest, release_payload)
     // get N-2 more payloads from first
     for (unsigned int i = 2; i < TEST_NUMBER; i++)
     {
-        pool_->get_payload(payloads[0], pool, payloads[i]);
+        pool_->get_payload(payloads[0], payloads[i]);
     }
 
     // release N payloads
@@ -394,10 +390,8 @@ TEST(FastPayloadPoolTest, concurrent_release)
 
         ASSERT_TRUE(pool.get_payload(DEFAULT_SIZE, payload));
 
-        eprosima::fastrtps::rtps::IPayloadPool* payload_owner =
-                static_cast<eprosima::fastrtps::rtps::IPayloadPool*>(&pool);
         Payload dst_payload;
-        ASSERT_TRUE(pool.get_payload(payload, payload_owner, dst_payload));
+        ASSERT_TRUE(pool.get_payload(payload, dst_payload));
 
         std::thread t1(test::release, std::ref(pool), std::ref(dst_payload));
 
