@@ -400,11 +400,13 @@ fastdds::rtps::TopicDescription CommonWriter::reckon_topic_description_(
     // Set TypeInformation of the discovered type
     fastdds::dds::xtypes::TypeInformation type_information;
 
-    auto try_get_type_information = [&](const fastdds::dds::xtypes::TypeIdentifierPair& identifiers) -> bool {
-        return fastdds::dds::RETCODE_OK ==
-            fastdds::dds::DomainParticipantFactory::get_instance()->type_object_registry().get_type_information(
-            identifiers, type_information);
-    };
+    auto try_get_type_information = [&](const fastdds::dds::xtypes::TypeIdentifierPair& identifiers) -> bool
+            {
+                return fastdds::dds::RETCODE_OK ==
+                       fastdds::dds::DomainParticipantFactory::get_instance()->type_object_registry().
+                               get_type_information(
+                    identifiers, type_information);
+            };
 
     if (!try_get_type_information(topic.type_identifiers))
     {
@@ -421,7 +423,7 @@ fastdds::rtps::TopicDescription CommonWriter::reckon_topic_description_(
             if (!try_get_type_information(minimal_only))
             {
                 EPROSIMA_LOG_WARNING(DDSPIPE_RTPS_COMMONREADER_LISTENER,
-                    "Failed to get TypeInformation for type " << topic.type_name);
+                        "Failed to get TypeInformation for type " << topic.type_name);
 
                 return topic_description;
             }

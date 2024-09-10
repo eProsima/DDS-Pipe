@@ -137,7 +137,7 @@ std::string container_kind_to_str(
     if (this_array_size.size() != 1)
     {
         throw utils::UnsupportedException(
-            STR_ENTRY << "Failed to convert container type: Multidimensional arrays are not supported in ROS2.");
+                STR_ENTRY << "Failed to convert container type: Multidimensional arrays are not supported in ROS2.");
     }
 
     std::stringstream ss;

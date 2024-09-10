@@ -117,7 +117,7 @@ fastdds::rtps::RTPSParticipantAttributes InitialPeersParticipant::reckon_partici
                 else
                 {
                     descriptor = create_descriptor<eprosima::fastdds::rtps::TCPv4TransportDescriptor>(
-                            initial_peers_configuration->whitelist);
+                        initial_peers_configuration->whitelist);
                     descriptor->add_listener_port(address.port());
                     descriptor->set_WAN_address(address.ip());
 
@@ -137,7 +137,7 @@ fastdds::rtps::RTPSParticipantAttributes InitialPeersParticipant::reckon_partici
 
                 std::shared_ptr<eprosima::fastdds::rtps::TCPv6TransportDescriptor> descriptor =
                         create_descriptor<eprosima::fastdds::rtps::TCPv6TransportDescriptor>(
-                                initial_peers_configuration->whitelist);
+                    initial_peers_configuration->whitelist);
 
                 descriptor->add_listener_port(address.port());
 
@@ -267,7 +267,7 @@ fastdds::rtps::RTPSParticipantAttributes InitialPeersParticipant::reckon_partici
     {
         std::shared_ptr<eprosima::fastdds::rtps::TCPv4TransportDescriptor> descriptor =
                 create_descriptor<eprosima::fastdds::rtps::TCPv4TransportDescriptor>(
-                        initial_peers_configuration->whitelist);
+            initial_peers_configuration->whitelist);
 
         // Enable TLS
         if (tls_config.is_active())
@@ -285,7 +285,7 @@ fastdds::rtps::RTPSParticipantAttributes InitialPeersParticipant::reckon_partici
     {
         std::shared_ptr<eprosima::fastdds::rtps::TCPv6TransportDescriptor> descriptor =
                 create_descriptor<eprosima::fastdds::rtps::TCPv6TransportDescriptor>(
-                        initial_peers_configuration->whitelist);
+            initial_peers_configuration->whitelist);
 
         // Enable TLS
         if (tls_config.is_active())
@@ -304,7 +304,7 @@ fastdds::rtps::RTPSParticipantAttributes InitialPeersParticipant::reckon_partici
     {
         std::shared_ptr<eprosima::fastdds::rtps::UDPv4TransportDescriptor> descriptor =
                 create_descriptor<eprosima::fastdds::rtps::UDPv4TransportDescriptor>(
-                        initial_peers_configuration->whitelist);
+            initial_peers_configuration->whitelist);
         params.userTransports.push_back(descriptor);
 
         logDebug(DDSPIPE_INITIALPEERS_PARTICIPANT,
@@ -315,7 +315,7 @@ fastdds::rtps::RTPSParticipantAttributes InitialPeersParticipant::reckon_partici
     {
         std::shared_ptr<eprosima::fastdds::rtps::UDPv6TransportDescriptor> descriptor_v6 =
                 create_descriptor<eprosima::fastdds::rtps::UDPv6TransportDescriptor>(
-                        initial_peers_configuration->whitelist);
+            initial_peers_configuration->whitelist);
         params.userTransports.push_back(descriptor_v6);
 
         logDebug(DDSPIPE_INITIALPEERS_PARTICIPANT,
