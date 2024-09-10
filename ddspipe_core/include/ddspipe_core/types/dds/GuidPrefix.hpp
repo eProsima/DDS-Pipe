@@ -34,7 +34,8 @@ class GuidPrefix : public fastdds::rtps::GuidPrefix_t
 public:
 
     //! Using parent constructors
-    using fastdds::rtps::GuidPrefix_t::GuidPrefix_t;
+    DDSPIPE_CORE_DllAPI
+    GuidPrefix () = default;
 
     //! Constructor from Parent class
     DDSPIPE_CORE_DllAPI
