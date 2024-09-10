@@ -88,7 +88,7 @@ struct DdsTopic : public DistributedTopic
     //! Topic Type name
     std::string type_name{};
 
-    //! Type Identifiers (complete and minimal)
+    //! Type Identifiers: first one is complete and second one minimal
     fastdds::dds::xtypes::TypeIdentifierPair type_identifiers;
 };
 
