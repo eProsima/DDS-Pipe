@@ -20,6 +20,8 @@
 #include <fastdds/rtps/transport/shared_mem/SharedMemTransportDescriptor.hpp>
 #include <fastdds/rtps/attributes/RTPSParticipantAttributes.hpp>
 
+#include <cpp_utils/exception/ConfigurationException.hpp>
+
 #include <ddspipe_participants/participant/rtps/SimpleParticipant.hpp>
 
 namespace eprosima {
@@ -47,6 +49,11 @@ SimpleParticipant::reckon_participant_attributes_() const
 
     std::shared_ptr<SimpleParticipantConfiguration> simple_configuration =
             std::dynamic_pointer_cast<SimpleParticipantConfiguration>(configuration_);
+
+    if(simple_configuration == nullptr)
+    {
+        throw utils::ConfigurationException("Failed to cast ParticipantConfiguration to SimpleParticipantConfiguration.");
+    }
 
     // Configure Participant transports
     if (simple_configuration->transport == core::types::TransportDescriptors::builtin)

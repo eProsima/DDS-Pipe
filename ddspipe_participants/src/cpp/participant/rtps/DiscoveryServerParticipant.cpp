@@ -51,6 +51,12 @@ DiscoveryServerParticipant::reckon_participant_attributes_() const
     std::shared_ptr<DiscoveryServerParticipantConfiguration> discovery_server_configuration =
             std::dynamic_pointer_cast<DiscoveryServerParticipantConfiguration>(configuration_);
 
+    if(discovery_server_configuration == nullptr)
+    {
+        throw utils::ConfigurationException(
+                "Failed to cast ParticipantConfiguration to DiscoveryServerParticipantConfiguration.");
+    }
+
     // Auxiliary variable to save characters and improve readability
     const core::types::GuidPrefix& discovery_server_guid_prefix =
             discovery_server_configuration->discovery_server_guid_prefix;

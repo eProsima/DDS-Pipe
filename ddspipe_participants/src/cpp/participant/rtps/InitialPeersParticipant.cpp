@@ -17,6 +17,7 @@
 #include <fastdds/rtps/transport/TCPv4TransportDescriptor.hpp>
 #include <fastdds/rtps/transport/TCPv6TransportDescriptor.hpp>
 
+#include <cpp_utils/exception/ConfigurationException.hpp>
 #include <cpp_utils/Log.hpp>
 
 #include <ddspipe_participants/participant/rtps/InitialPeersParticipant.hpp>
@@ -45,6 +46,12 @@ fastdds::rtps::RTPSParticipantAttributes InitialPeersParticipant::reckon_partici
 
     std::shared_ptr<InitialPeersParticipantConfiguration> initial_peers_configuration =
             std::dynamic_pointer_cast<InitialPeersParticipantConfiguration>(configuration_);
+
+    if(initial_peers_configuration == nullptr)
+    {
+        throw utils::ConfigurationException(
+                "Failed to cast ParticipantConfiguration to InitialPeersParticipantConfiguration.");
+    }
 
     // Auxiliary variable to save characters and improve readability
     const auto& tls_config = initial_peers_configuration->tls_configuration;
