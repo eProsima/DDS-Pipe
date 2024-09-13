@@ -50,36 +50,3 @@ add_unittest_executable(
     "${TEST_SOURCES}"
     "${TEST_LIST}"
     "${TEST_EXTRA_LIBRARIES}")
-
-################################################
-# Yaml GetEntities DiscoveryServerAddress Test #
-################################################
-
-set(TEST_NAME YamlGetEntityDiscoveryServerAddressTest)
-
-set(TEST_SOURCES
-        ${PROJECT_SOURCE_DIR}/src/cpp/YamlReader_generic.cpp
-        ${PROJECT_SOURCE_DIR}/src/cpp/YamlReader_participants.cpp
-        ${PROJECT_SOURCE_DIR}/src/cpp/YamlReader_types.cpp
-        YamlGetEntityDiscoveryServerAddressTest.cpp
-    )
-
-set(TEST_LIST
-        get_ds_address
-        get_ds_address_negative
-    )
-
-set(TEST_EXTRA_LIBRARIES
-        yaml-cpp
-        fastcdr
-        fastdds
-        cpp_utils
-        ddspipe_core
-        ddspipe_participants
-    )
-
-add_unittest_executable(
-    "${TEST_NAME}"
-    "${TEST_SOURCES}"
-    "${TEST_LIST}"
-    "${TEST_EXTRA_LIBRARIES}")

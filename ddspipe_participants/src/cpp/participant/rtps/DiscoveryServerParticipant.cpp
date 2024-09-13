@@ -208,10 +208,10 @@ DiscoveryServerParticipant::reckon_participant_attributes_() const
 
     /////
     // Set connection addresses
-    for (types::DiscoveryServerConnectionAddress connection_address :
+    for (types::Address address :
             discovery_server_configuration->connection_addresses)
     {
-        if (!connection_address.is_valid())
+        if (!address.is_valid())
         {
             // Invalid connection address, continue with next one
             EPROSIMA_LOG_WARNING(DDSPIPE_DISCOVERYSERVER_PARTICIPANT,
@@ -220,59 +220,46 @@ DiscoveryServerParticipant::reckon_participant_attributes_() const
             continue;
         }
 
-        for (types::Address address : connection_address.addresses())
+        has_connection_addresses = true;
+
+        eprosima::fastdds::rtps::Locator_t locator;
+
+        // KIND
+        locator.kind = address.get_locator_kind();
+
+        // In case it is TCP mark has_connection_tcp as true
+        if (address.is_tcp())
         {
-            if (!address.is_valid())
-            {
-                // Invalid ip address, continue with next one
-                EPROSIMA_LOG_WARNING(DDSPIPE_DISCOVERYSERVER_PARTICIPANT,
-                        "Discard connection address with remote server due to invalid ip address " <<
-                        address.ip() << " in Participant " << discovery_server_configuration->id <<
-                        " initialization.");
-                continue;
-            }
-
-            has_connection_addresses = true;
-
-            eprosima::fastdds::rtps::Locator_t locator;
-
-            // KIND
-            locator.kind = address.get_locator_kind();
-
-            // In case it is TCP mark has_connection_tcp as true
-            if (address.is_tcp())
-            {
-                has_connection_tcp_ipv4 = address.is_ipv4();
-                has_connection_tcp_ipv6 = !address.is_ipv4();
-            }
-            else
-            {
-                has_udp_ipv4 = address.is_ipv4();
-                has_udp_ipv6 = !address.is_ipv4();
-            }
-
-            // IP
-            if (address.is_ipv4())
-            {
-                eprosima::fastdds::rtps::IPLocator::setIPv4(locator, address.ip());
-            }
-            else
-            {
-                eprosima::fastdds::rtps::IPLocator::setIPv6(locator, address.ip());
-            }
-
-            // PORT
-            eprosima::fastdds::rtps::IPLocator::setPhysicalPort(locator, address.port());
-            eprosima::fastdds::rtps::IPLocator::setLogicalPort(locator, address.port());
-            // Warning: Logical port is not needed unless domain could change
-
-            // Add as remote server and add it to builtin
-            params.builtin.discovery_config.m_DiscoveryServers.push_back(locator);
-
-            logDebug(DDSPIPE_DISCOVERYSERVER_PARTICIPANT,
-                    "Add connection address " << address << " to Server Participant " <<
-                    discovery_server_configuration->id << ".");
+            has_connection_tcp_ipv4 = address.is_ipv4();
+            has_connection_tcp_ipv6 = !address.is_ipv4();
         }
+        else
+        {
+            has_udp_ipv4 = address.is_ipv4();
+            has_udp_ipv6 = !address.is_ipv4();
+        }
+
+        // IP
+        if (address.is_ipv4())
+        {
+            eprosima::fastdds::rtps::IPLocator::setIPv4(locator, address.ip());
+        }
+        else
+        {
+            eprosima::fastdds::rtps::IPLocator::setIPv6(locator, address.ip());
+        }
+
+        // PORT
+        eprosima::fastdds::rtps::IPLocator::setPhysicalPort(locator, address.port());
+        eprosima::fastdds::rtps::IPLocator::setLogicalPort(locator, address.port());
+        // Warning: Logical port is not needed unless domain could change
+
+        // Add as remote server and add it to builtin
+        params.builtin.discovery_config.m_DiscoveryServers.push_back(locator);
+
+        logDebug(DDSPIPE_DISCOVERYSERVER_PARTICIPANT,
+                "Add connection address " << address << " to Server Participant " <<
+                discovery_server_configuration->id << ".");
     }
 
     /////

@@ -31,7 +31,6 @@
 #include <ddspipe_core/types/topic/filter/WildcardDdsFilterTopic.hpp>
 
 #include <ddspipe_participants/types/address/Address.hpp>
-#include <ddspipe_participants/types/address/DiscoveryServerConnectionAddress.hpp>
 #include <ddspipe_participants/types/security/tls/TlsConfiguration.hpp>
 
 #include <ddspipe_participants/configuration/DiscoveryServerParticipantConfiguration.hpp>
@@ -300,44 +299,6 @@ Address YamlReader::get<Address>(
         {
             return Address(ip, port, external_port, tp);
         }
-    }
-}
-
-DiscoveryServerConnectionAddress _get_discovery_server_connection_address_v1(
-        const Yaml& yml,
-        const YamlReaderVersion version)
-{
-    // Addresses required
-    std::set<Address> addresses = YamlReader::get_set<Address>(yml, COLLECTION_ADDRESSES_TAG, version);
-
-    // Create Connection Address
-    return DiscoveryServerConnectionAddress(addresses);
-}
-
-DiscoveryServerConnectionAddress _get_discovery_server_connection_address_latest(
-        const Yaml& yml,
-        const YamlReaderVersion version)
-{
-    // Addresses required
-    std::set<Address> addresses = YamlReader::get_set<Address>(yml, COLLECTION_ADDRESSES_TAG, version);
-
-    // Create Connection Address
-    return DiscoveryServerConnectionAddress(addresses);
-}
-
-template <>
-DDSPIPE_YAML_DllAPI
-DiscoveryServerConnectionAddress YamlReader::get<DiscoveryServerConnectionAddress>(
-        const Yaml& yml,
-        const YamlReaderVersion version)
-{
-    switch (version)
-    {
-        case V_1_0:
-            return _get_discovery_server_connection_address_v1(yml, version);
-
-        default:
-            return _get_discovery_server_connection_address_latest(yml, version);
     }
 }
 

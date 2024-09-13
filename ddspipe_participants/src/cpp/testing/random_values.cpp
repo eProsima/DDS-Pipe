@@ -29,22 +29,6 @@ Address random_address(
     return Address("127.0.0.1", 10000 + seed, 10000 + seed, TransportProtocol::udp);
 }
 
-DiscoveryServerConnectionAddress random_connection_address(
-        unsigned int seed /* = 0 */,
-        unsigned int size /* = 1 */)
-{
-    std::set<Address> addresses;
-    for (unsigned int i = 0; i < size; ++i)
-    {
-        addresses.insert(
-            random_address((seed + i)));
-    }
-
-    return DiscoveryServerConnectionAddress(
-        addresses
-        );
-}
-
 } /* namespace testing */
 } /* namespace participants */
 } /* namespace ddspipe */

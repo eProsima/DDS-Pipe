@@ -108,6 +108,7 @@ enum YamlReaderVersion
      *
      * - Make discovery server's guid prefix optional.
      * - Remove server's guid prefix from discovery server clients' connection addresses.
+     * - Remove 'addresses' tag from discovery server clients' connection addresses (now it's just a list of addresses).
      */
     V_5_0,
 

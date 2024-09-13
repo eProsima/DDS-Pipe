@@ -28,7 +28,6 @@
 #include <ddspipe_core/types/topic/filter/WildcardDdsFilterTopic.hpp>
 
 #include <ddspipe_participants/types/address/Address.hpp>
-#include <ddspipe_participants/types/address/DiscoveryServerConnectionAddress.hpp>
 #include <ddspipe_participants/types/security/tls/TlsConfiguration.hpp>
 
 #include <ddspipe_participants/configuration/DiscoveryServerParticipantConfiguration.hpp>
