@@ -24,7 +24,6 @@
 #include <ddspipe_core/testing/random_values.hpp>
 
 #include <ddspipe_participants/types/address/Address.hpp>
-#include <ddspipe_participants/types/address/DiscoveryServerConnectionAddress.hpp>
 #include <ddspipe_participants/testing/random_values.hpp>
 
 #include <ddspipe_yaml/Yaml.hpp>

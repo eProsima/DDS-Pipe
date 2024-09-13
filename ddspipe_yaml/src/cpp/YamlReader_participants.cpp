@@ -25,7 +25,6 @@
 #include <ddspipe_core/types/participant/ParticipantId.hpp>
 
 #include <ddspipe_participants/types/address/Address.hpp>
-#include <ddspipe_participants/types/address/DiscoveryServerConnectionAddress.hpp>
 #include <ddspipe_participants/types/security/tls/TlsConfiguration.hpp>
 
 #include <ddspipe_participants/configuration/DiscoveryServerParticipantConfiguration.hpp>
@@ -208,7 +207,7 @@ void YamlReader::fill(
     // Optional connection addresses
     if (YamlReader::is_tag_present(yml, CONNECTION_ADDRESSES_TAG))
     {
-        object.connection_addresses = YamlReader::get_set<DiscoveryServerConnectionAddress>(
+        object.connection_addresses = YamlReader::get_set<Address>(
             yml,
             CONNECTION_ADDRESSES_TAG,
             version);

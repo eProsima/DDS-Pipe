@@ -101,7 +101,6 @@ constexpr const char* DOMAIN_ID_TAG("domain"); //! Domain Id of the participant
 constexpr const char* DISCOVERY_SERVER_GUID_PREFIX_TAG("discovery-server-guid"); //! TODO: add comment
 constexpr const char* LISTENING_ADDRESSES_TAG("listening-addresses"); //! TODO: add comment
 constexpr const char* CONNECTION_ADDRESSES_TAG("connection-addresses"); //! TODO: add comment
-constexpr const char* COLLECTION_ADDRESSES_TAG("addresses"); //! TODO: add comment
 
 // TLS related tags
 constexpr const char* TLS_TAG("tls"); //! TLS configuration tag

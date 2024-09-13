@@ -18,7 +18,6 @@
 #include <ddspipe_participants/library/library_dll.h>
 #include <ddspipe_participants/types/security/tls/TlsConfiguration.hpp>
 #include <ddspipe_participants/types/address/Address.hpp>
-#include <ddspipe_participants/types/address/DiscoveryServerConnectionAddress.hpp>
 #include <ddspipe_core/types/dds/DomainId.hpp>
 #include <ddspipe_core/types/dds/GuidPrefix.hpp>
 

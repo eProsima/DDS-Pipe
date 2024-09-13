@@ -18,7 +18,6 @@
 #include <ddspipe_participants/configuration/DiscoveryServerParticipantConfiguration.hpp>
 #include <ddspipe_participants/types/security/tls/TlsConfiguration.hpp>
 #include <ddspipe_participants/types/address/Address.hpp>
-#include <ddspipe_participants/types/address/DiscoveryServerConnectionAddress.hpp>
 
 namespace eprosima {
 namespace ddspipe {
@@ -44,7 +43,7 @@ bool DiscoveryServerParticipantConfiguration::is_valid(
     }
 
     // Check connection addresses
-    for (types::DiscoveryServerConnectionAddress address : connection_addresses)
+    for (types::Address address : connection_addresses)
     {
         if (!address.is_valid())
         {
