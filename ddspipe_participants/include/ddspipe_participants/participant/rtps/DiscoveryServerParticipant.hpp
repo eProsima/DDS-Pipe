@@ -41,6 +41,7 @@ public:
 
 protected:
 
+    DDSPIPE_PARTICIPANTS_DllAPI
     fastdds::rtps::RTPSParticipantAttributes reckon_participant_attributes_() const override;
 
 };
