@@ -210,6 +210,7 @@ protected:
      * @brief Virtual method that sets the common properties of std attributes for a Participant.
      *
      */
+    DDSPIPE_PARTICIPANTS_DllAPI
     virtual fastdds::rtps::RTPSParticipantAttributes add_participant_att_properties_(
             fastdds::rtps::RTPSParticipantAttributes& params) const;
 
@@ -217,6 +218,7 @@ protected:
      * @brief Virtual method that gives the std attributes for a Participant.
      *
      */
+    DDSPIPE_PARTICIPANTS_DllAPI
     virtual fastdds::rtps::RTPSParticipantAttributes reckon_participant_attributes_() const;
 
     /////
