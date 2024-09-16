@@ -5,9 +5,33 @@ The *Forthcoming* section includes those features added in `main` branch that ar
 
 ## Forthcoming
 
+## eProsima DDS Pipe v1.0.0
+
 The upcoming release will include the following features:
+* Add support for Fast DDS v3.
 * Support Ubuntu Noble (24.04).
 * Stop supporting Ubuntu Focal (20.04).
+
+This release includes the following *internal changes* & *bugfixes*:
+* Add DLL export for protected methods in `CommonParticipant` and its derived classes.
+* Remove `DiscoveryServerConnectionAdress`.
+* Print `PolicyMasks` as strings.
+* Add support for builds with both Fast DDS v2 and v3.
+* Empty XTSAN tests list to run all tests with Thread Sanitizer.
+* Remove change before creation in full writer's history.
+* Reset cache changes to prevent data fragmentation issues.
+* Process received samples only when the reader is enabled.
+* Fix data race on concurrent `FastPayloadPool` payload release.
+* Change `CommandlineArgs` default verbosity to `Error`.
+
+This release includes the following *dependencies update*:
+
+|  | Repository | Old Version | New Version |
+|---|---|---|---|
+| Foonathan Memory Vendor | [eProsima/foonathan_memory_vendor](https://github.com/eProsima/foonathan_memory_vendor) | [v1.3.1](https://github.com/eProsima/foonathan_memory_vendor/releases/tag/v1.3.1) | [v1.3.1](https://github.com/eProsima/foonathan_memory_vendor/releases/tag/v1.3.1) |
+| Fast CDR | [eProsima/Fast-CDR](https://github.com/eProsima/Fast-CDR) | [v2.2.0](https://github.com/eProsima/Fast-CDR/releases/tag/v2.2.0) | [v2.2.4](https://github.com/eProsima/Fast-CDR/releases/tag/v2.2.4) |
+| Fast DDS | [eProsima/Fast-DDS](https://github.com/eProsima/Fast-DDS) | [v2.14.0](https://github.com/eProsima/Fast-DDS/releases/tag/v2.14.0) | [v3.0.1](https://github.com/eProsima/Fast-DDS/releases/tag/v3.0.1) |
+| Dev Utils | [eProsima/dev-utils](https://github.com/eProsima/dev-utils) | [v0.6.0](https://github.com/eProsima/dev-utils/releases/tag/v0.6.0) | [v1.0.0](https://github.com/eProsima/dev-utils/releases/tag/v1.0.0) |
 
 ## eProsima DDS Pipe v0.4.0
 
