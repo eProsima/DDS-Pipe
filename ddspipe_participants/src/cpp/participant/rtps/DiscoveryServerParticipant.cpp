@@ -98,7 +98,8 @@ DiscoveryServerParticipant::reckon_participant_attributes_() const
                 has_listening_udp_ipv4 = true;
 
                 auto descriptor_tmp =
-                        create_descriptor<eprosima::fastdds::rtps::UDPv4TransportDescriptor>(discovery_server_configuration->whitelist);
+                        create_descriptor<eprosima::fastdds::rtps::UDPv4TransportDescriptor>(
+                    discovery_server_configuration->whitelist);
                 descriptor = descriptor_tmp;
 
                 eprosima::fastdds::rtps::IPLocator::setIPv4(listening_locator, address.ip());
@@ -111,7 +112,8 @@ DiscoveryServerParticipant::reckon_participant_attributes_() const
                 has_listening_udp_ipv6 = true;
 
                 auto descriptor_tmp =
-                        create_descriptor<eprosima::fastdds::rtps::UDPv6TransportDescriptor>(discovery_server_configuration->whitelist);
+                        create_descriptor<eprosima::fastdds::rtps::UDPv6TransportDescriptor>(
+                    discovery_server_configuration->whitelist);
                 descriptor = descriptor_tmp;
 
                 eprosima::fastdds::rtps::IPLocator::setIPv6(listening_locator, address.ip());
@@ -337,7 +339,8 @@ DiscoveryServerParticipant::reckon_participant_attributes_() const
             params.userTransports.push_back(descriptor);
 
             logDebug(DDSPIPE_DISCOVERYSERVER_PARTICIPANT,
-                    "Add connection address " << address << " to Participant " << discovery_server_configuration->id << ".");
+                    "Add connection address " << address << " to Participant " << discovery_server_configuration->id <<
+                            ".");
         }
 
         // Add remote SERVER to CLIENT's list of SERVERs
