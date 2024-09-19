@@ -238,7 +238,7 @@ core::TopicRoutesConfiguration YamlReader::get(
     return object;
 }
 
-/**************************
+/*************************
 * Monitor Configuration  *
 **************************/
 
@@ -308,8 +308,7 @@ void YamlReader::fill(
         MONITOR_PERIOD_TAG,
         DDS_PUBLISHING_ENABLE_TAG,
         DDS_PUBLISHING_DOMAIN_TAG,
-        DDS_PUBLISHING_TOPIC_NAME_TAG,
-        DDS_PUBLISHING_PUBLISH_TYPE_TAG};
+        DDS_PUBLISHING_TOPIC_NAME_TAG};
 
     /////
     // Get optional monitor status tag

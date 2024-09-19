@@ -46,7 +46,7 @@ bool YamlValidator::validate_tags(
         // Check if the tag is valid
         if (!valid_tags.count(tag_name))
         {
-            logWarning(DDSPIPE_YAML, "Tag <" << tag_name << "> is not a valid tag (" << get_position_(tag) << ").");
+            EPROSIMA_LOG_WARNING(DDSPIPE_YAML, "Tag <" << tag_name << "> is not a valid tag (" << get_position_(tag) << ").");
             is_valid = false;
         }
 
@@ -55,7 +55,7 @@ bool YamlValidator::validate_tags(
 
         if (tags_count[tag_name] > 1)
         {
-            logWarning(DDSPIPE_YAML, "Tag <" << tag_name << "> is repeated (" << get_position_(tag) << ").");
+            EPROSIMA_LOG_WARNING(DDSPIPE_YAML, "Tag <" << tag_name << "> is repeated (" << get_position_(tag) << ").");
             is_valid = false;
         }
     }

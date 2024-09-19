@@ -340,69 +340,6 @@ Address YamlReader::get<Address>(
     }
 }
 
-DiscoveryServerConnectionAddress _get_discovery_server_connection_address_v1(
-        const Yaml& yml,
-        const YamlReaderVersion version)
-{
-    // GuidPrefix required
-    GuidPrefix server_guid = YamlReader::get<GuidPrefix>(yml, version);
-
-    // Addresses required
-    std::set<Address> addresses = YamlReader::get_set<Address>(yml, COLLECTION_ADDRESSES_TAG, version);
-
-    // Create Connection Address
-    return DiscoveryServerConnectionAddress(server_guid, addresses);
-}
-
-DiscoveryServerConnectionAddress _get_discovery_server_connection_address_latest(
-        const Yaml& yml,
-        const YamlReaderVersion version)
-{
-    // GuidPrefix required
-    GuidPrefix server_guid = YamlReader::get<GuidPrefix>(yml, DISCOVERY_SERVER_GUID_PREFIX_TAG, version);
-
-    // Addresses required
-    std::set<Address> addresses = YamlReader::get_set<Address>(yml, COLLECTION_ADDRESSES_TAG, version);
-
-    // Create Connection Address
-    return DiscoveryServerConnectionAddress(server_guid, addresses);
-}
-
-template <>
-DDSPIPE_YAML_DllAPI
-bool YamlValidator::validate<DiscoveryServerConnectionAddress>(
-        const Yaml& yml,
-        const YamlReaderVersion& version)
-{
-    std::set<TagType> tags{
-        COLLECTION_ADDRESSES_TAG};
-
-    if (version != V_1_0)
-    {
-        tags.insert(DISCOVERY_SERVER_GUID_PREFIX_TAG);
-    }
-
-    return YamlValidator::validate_tags(yml, tags);
-}
-
-template <>
-DDSPIPE_YAML_DllAPI
-DiscoveryServerConnectionAddress YamlReader::get<DiscoveryServerConnectionAddress>(
-        const Yaml& yml,
-        const YamlReaderVersion version)
-{
-    YamlValidator::validate<DiscoveryServerConnectionAddress>(yml, version);
-
-    switch (version)
-    {
-        case V_1_0:
-            return _get_discovery_server_connection_address_v1(yml, version);
-
-        default:
-            return _get_discovery_server_connection_address_latest(yml, version);
-    }
-}
-
 template <>
 DDSPIPE_YAML_DllAPI
 void YamlReader::fill(
@@ -435,8 +372,7 @@ bool YamlValidator::validate<core::DdsPublishingConfiguration>(
     static const std::set<TagType> tags{
         DDS_PUBLISHING_ENABLE_TAG,
         DDS_PUBLISHING_DOMAIN_TAG,
-        DDS_PUBLISHING_TOPIC_NAME_TAG,
-        DDS_PUBLISHING_PUBLISH_TYPE_TAG};
+        DDS_PUBLISHING_TOPIC_NAME_TAG};
 
     return YamlValidator::validate_tags(yml, tags);
 }
