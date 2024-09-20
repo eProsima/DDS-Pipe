@@ -36,17 +36,21 @@ XmlParticipant::XmlParticipant(
         const std::shared_ptr<XmlParticipantConfiguration>& participant_configuration,
         const std::shared_ptr<core::PayloadPool>& payload_pool,
         const std::shared_ptr<core::DiscoveryDatabase>& discovery_database)
-    : CommonParticipant(participant_configuration, payload_pool, discovery_database)
-    , xml_specific_configuration_(*reinterpret_cast<XmlParticipantConfiguration*>(configuration_.get()))
+    : CommonParticipant(
+        participant_configuration,
+        payload_pool,
+        discovery_database,
+        core::types::DomainId(),
+        reckon_participant_qos_(participant_configuration.get()))
 {
     fastdds::dds::DomainParticipantExtendedQos extended_qos;
-    if (xml_specific_configuration_.participant_profile.is_set() &&
+    if (participant_configuration->participant_profile.is_set() &&
             fastdds::dds::RETCODE_OK ==
             fastdds::dds::DomainParticipantFactory::get_instance()->get_participant_extended_qos_from_profile(
-                xml_specific_configuration_.participant_profile.get_value(),
+                participant_configuration->participant_profile.get_value(),
                 extended_qos))
     {
-        configuration_->domain = extended_qos.domainId();
+        domain_id_ = extended_qos.domainId();
     }
 }
 
@@ -84,22 +88,24 @@ std::shared_ptr<core::IReader> XmlParticipant::create_reader(
     }
 }
 
-fastdds::dds::DomainParticipantQos XmlParticipant::reckon_participant_qos_() const
+fastdds::dds::DomainParticipantQos
+XmlParticipant::reckon_participant_qos_(
+    const XmlParticipantConfiguration* participant_configuration)
 {
-    fastdds::dds::DomainParticipantQos qos = CommonParticipant::reckon_participant_qos_();
+    fastdds::dds::DomainParticipantQos qos = CommonParticipant::reckon_participant_qos_(participant_configuration);
 
     // Use the participant's profile if it has been set
-    if (xml_specific_configuration_.participant_profile.is_set())
+    if (participant_configuration->participant_profile.is_set())
     {
         auto res = fastdds::dds::DomainParticipantFactory::get_instance()->get_participant_qos_from_profile(
-            xml_specific_configuration_.participant_profile.get_value(),
+            participant_configuration->participant_profile.get_value(),
             qos
             );
 
         if (res != fastdds::dds::RETCODE_OK)
         {
             throw utils::ConfigurationException(STR_ENTRY
-                          << "Participant profile <" << xml_specific_configuration_.participant_profile.get_value()
+                          << "Participant profile <" << participant_configuration->participant_profile.get_value()
                           << "> does not exist.");
         }
     }

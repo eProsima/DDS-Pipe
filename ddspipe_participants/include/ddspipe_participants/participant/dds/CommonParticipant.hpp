@@ -94,6 +94,7 @@ public:
      * @brief Create a writer object
      *
      * Depending on the Topic QoS creates a Basic or Specific Writer.
+     * If it fails to create the writer it will return a blank one.
      */
     DDSPIPE_PARTICIPANTS_DllAPI
     std::shared_ptr<core::IWriter> create_writer(
@@ -103,6 +104,7 @@ public:
      * @brief Create a reader object
      *
      * Depending on the Topic QoS creates a Basic or Specific Reader.
+     * If it fails to create the reader it will return a blank one.
      */
     DDSPIPE_PARTICIPANTS_DllAPI
     std::shared_ptr<core::IReader> create_reader(
@@ -130,6 +132,20 @@ public:
             const fastdds::dds::PublicationBuiltinTopicData& info,
             bool& /*should_be_ignored*/) override;
 
+    //////////////////
+    // STATIC METHODS
+    //////////////////
+
+    /**
+     * @brief Create a transport descriptor with given whitelist.
+     *
+     * This templated method is specialized for UPDv4, UDPv6, TCPv4 and TCPv6.
+     */
+    template<typename T>
+    DDSPIPE_PARTICIPANTS_DllAPI
+    static std::shared_ptr<T> create_descriptor(
+            std::set<types::IpType> whitelist = {});
+
 protected:
 
     /////////////////////////
@@ -140,7 +156,9 @@ protected:
     CommonParticipant(
             const std::shared_ptr<SimpleParticipantConfiguration>& participant_configuration,
             const std::shared_ptr<core::PayloadPool>& payload_pool,
-            const std::shared_ptr<core::DiscoveryDatabase>& discovery_database);
+            const std::shared_ptr<core::DiscoveryDatabase>& discovery_database,
+            const core::types::DomainId& domain_id,
+            const fastdds::dds::DomainParticipantQos& participant_attributes);
 
     /////////////////////////
     // INTERNAL VIRTUAL METHODS
@@ -187,13 +205,20 @@ protected:
      */
     std::set<std::string> type_names_registered_;
 
-    const std::shared_ptr<SimpleParticipantConfiguration> configuration_;
+    //! Participant configuration
+    const std::shared_ptr<ParticipantConfiguration> configuration_;
 
     //! DDS Router shared Payload Pool
     const std::shared_ptr<core::PayloadPool> payload_pool_;
 
     //! DDS Router shared Discovery Database
     const std::shared_ptr<core::DiscoveryDatabase> discovery_database_;
+
+    //! Domain Id to create the internal DDS Participant.
+    core::types::DomainId domain_id_;
+
+    //! Participant QoS
+    fastdds::dds::DomainParticipantQos participant_qos_;
 };
 
 } /* namespace dds */

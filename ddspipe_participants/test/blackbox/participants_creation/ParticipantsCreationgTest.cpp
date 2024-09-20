@@ -27,6 +27,10 @@
 #include <ddspipe_participants/participant/rtps/SimpleParticipant.hpp>
 #include <ddspipe_participants/participant/rtps/CommonParticipant.hpp>
 #include <ddspipe_participants/participant/rtps/InitialPeersParticipant.hpp>
+#include <ddspipe_participants/participant/dds/CommonParticipant.hpp>
+#include <ddspipe_participants/participant/dds/DiscoveryServerParticipant.hpp>
+#include <ddspipe_participants/participant/dds/SimpleParticipant.hpp>
+#include <ddspipe_participants/participant/dds/InitialPeersParticipant.hpp>
 #include <ddspipe_participants/participant/dds/XmlParticipant.hpp>
 #include <ddspipe_participants/testing/entities/mock_entities.hpp>
 #include <ddspipe_participants/testing/random_values.hpp>
@@ -61,9 +65,13 @@ TEST(ParticipantsCreationgTest, default_configuration)
  * CASES:
  * - Blank
  * - Echo
- * - Simple
- * - Discovery Server
- * - Initial Peers
+ * - Simple RTPS
+ * - Simple DDS
+ * - Discovery Server RTPS
+ * - Discovery Server DDS
+ * - Initial Peers RTPS
+ * - Initial Peers DDS
+ * - Xml DDS
  */
 TEST(ParticipantsCreationgTest, creation_trivial)
 {
@@ -86,7 +94,7 @@ TEST(ParticipantsCreationgTest, creation_trivial)
         participants::EchoParticipant participant(conf, discovery_database);
     }
 
-    // Simple
+    // Simple RTPS
     {
         std::shared_ptr<participants::SimpleParticipantConfiguration> conf(
             new participants::SimpleParticipantConfiguration());
@@ -96,7 +104,17 @@ TEST(ParticipantsCreationgTest, creation_trivial)
         participant.init();
     }
 
-    // Discovery Server
+    // Simple DDS
+    {
+        std::shared_ptr<participants::SimpleParticipantConfiguration> conf(
+            new participants::SimpleParticipantConfiguration());
+        conf->id = part_id;
+
+        participants::dds::SimpleParticipant participant(conf, payload_pool, discovery_database);
+        participant.init();
+    }
+
+    // Discovery Server RTPS
     {
         std::shared_ptr<participants::InitialPeersParticipantConfiguration> conf(
             new participants::InitialPeersParticipantConfiguration());
@@ -107,7 +125,18 @@ TEST(ParticipantsCreationgTest, creation_trivial)
         participant.init();
     }
 
-    // Initial Peers
+    // Discovery Server DDS
+    {
+        std::shared_ptr<participants::InitialPeersParticipantConfiguration> conf(
+            new participants::InitialPeersParticipantConfiguration());
+        conf->id = part_id;
+        conf->listening_addresses.insert(participants::testing::random_address());
+
+        participants::dds::InitialPeersParticipant participant(conf, payload_pool, discovery_database);
+        participant.init();
+    }
+
+    // Initial Peers RTPS
     {
         std::shared_ptr<participants::DiscoveryServerParticipantConfiguration> conf(
             new participants::DiscoveryServerParticipantConfiguration());
@@ -118,7 +147,18 @@ TEST(ParticipantsCreationgTest, creation_trivial)
         participant.init();
     }
 
-    // Xml Participant
+    // Initial Peers DDS
+    {
+        std::shared_ptr<participants::DiscoveryServerParticipantConfiguration> conf(
+            new participants::DiscoveryServerParticipantConfiguration());
+        conf->id = part_id;
+        conf->listening_addresses.insert(participants::testing::random_address());
+
+        participants::dds::DiscoveryServerParticipant participant(conf, payload_pool, discovery_database);
+        participant.init();
+    }
+
+    // Xml Participant DDS
     {
         std::shared_ptr<participants::XmlParticipantConfiguration> conf(
             new participants::XmlParticipantConfiguration());
@@ -158,11 +198,11 @@ TEST(ParticipantsCreationgTest, ddspipe_all_creation_builtin_topic)
                     conf, discovery_database));
     }
 
-    // Simple
+    // Simple RTPS
     {
         std::shared_ptr<participants::SimpleParticipantConfiguration> conf(
             new participants::SimpleParticipantConfiguration());
-        conf->id = core::types::ParticipantId("Simple");
+        conf->id = core::types::ParticipantId("SimpleRTPS");
 
         auto part = std::make_shared<participants::rtps::SimpleParticipant>(
             conf, payload_pool, discovery_database);
@@ -170,11 +210,23 @@ TEST(ParticipantsCreationgTest, ddspipe_all_creation_builtin_topic)
         part_db->add_participant(conf->id, part);
     }
 
-    // Discovery Server
+    // Simple DDS
+    {
+        std::shared_ptr<participants::SimpleParticipantConfiguration> conf(
+            new participants::SimpleParticipantConfiguration());
+        conf->id = core::types::ParticipantId("SimpleDDS");
+
+        auto part = std::make_shared<participants::dds::SimpleParticipant>(
+            conf, payload_pool, discovery_database);
+        part->init();
+        part_db->add_participant(conf->id, part);
+    }
+
+    // Discovery Server RTPS
     {
         std::shared_ptr<participants::DiscoveryServerParticipantConfiguration> conf(
             new participants::DiscoveryServerParticipantConfiguration());
-        conf->id = core::types::ParticipantId("DiscoveryServer");
+        conf->id = core::types::ParticipantId("DiscoveryServerRTPS");
         conf->listening_addresses.insert(participants::testing::random_address(1));
 
         auto part = std::make_shared<participants::rtps::DiscoveryServerParticipant>(
@@ -183,12 +235,25 @@ TEST(ParticipantsCreationgTest, ddspipe_all_creation_builtin_topic)
         part_db->add_participant(conf->id, part);
     }
 
-    // Initial Peers
+    // Discovery Server DDS
+    {
+        std::shared_ptr<participants::DiscoveryServerParticipantConfiguration> conf(
+            new participants::DiscoveryServerParticipantConfiguration());
+        conf->id = core::types::ParticipantId("DiscoveryServerDDS");
+        conf->listening_addresses.insert(participants::testing::random_address(2));
+
+        auto part = std::make_shared<participants::dds::DiscoveryServerParticipant>(
+            conf, payload_pool, discovery_database);
+        part->init();
+        part_db->add_participant(conf->id, part);
+    }
+
+    // Initial Peers RTPS
     {
         std::shared_ptr<participants::InitialPeersParticipantConfiguration> conf(
             new participants::InitialPeersParticipantConfiguration());
-        conf->id = core::types::ParticipantId("InitialPeers");
-        conf->listening_addresses.insert(participants::testing::random_address(2));
+        conf->id = core::types::ParticipantId("InitialPeersRTPS");
+        conf->listening_addresses.insert(participants::testing::random_address(3));
 
         auto part = std::make_shared<participants::rtps::InitialPeersParticipant>(
             conf, payload_pool, discovery_database);
@@ -196,11 +261,24 @@ TEST(ParticipantsCreationgTest, ddspipe_all_creation_builtin_topic)
         part_db->add_participant(conf->id, part);
     }
 
-    // Xml
+    // Initial Peers DDS
+    {
+        std::shared_ptr<participants::InitialPeersParticipantConfiguration> conf(
+            new participants::InitialPeersParticipantConfiguration());
+        conf->id = core::types::ParticipantId("InitialPeersDDS");
+        conf->listening_addresses.insert(participants::testing::random_address(4));
+
+        auto part = std::make_shared<participants::dds::InitialPeersParticipant>(
+            conf, payload_pool, discovery_database);
+        part->init();
+        part_db->add_participant(conf->id, part);
+    }
+
+    // Xml DDS
     {
         std::shared_ptr<participants::XmlParticipantConfiguration> conf(
             new participants::XmlParticipantConfiguration());
-        conf->id = core::types::ParticipantId("Xml");
+        conf->id = core::types::ParticipantId("XmlDDS");
 
         auto part = std::make_shared<participants::dds::XmlParticipant>(
             conf, payload_pool, discovery_database);
