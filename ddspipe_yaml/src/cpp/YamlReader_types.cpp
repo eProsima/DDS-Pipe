@@ -523,17 +523,17 @@ void YamlReader::fill(
 {
     if (is_tag_present(yml, LOG_FILTER_ERROR_TAG))
     {
-        object[utils::VerbosityKind::Error] = get<std::string>(yml, LOG_FILTER_ERROR_TAG, version);
+        object.error = get<std::string>(yml, LOG_FILTER_ERROR_TAG, version);
     }
 
     if (is_tag_present(yml, LOG_FILTER_WARNING_TAG))
     {
-        object[utils::VerbosityKind::Warning] = get<std::string>(yml, LOG_FILTER_WARNING_TAG, version);
+        object.warning = get<std::string>(yml, LOG_FILTER_WARNING_TAG, version);
     }
 
     if (is_tag_present(yml, LOG_FILTER_INFO_TAG))
     {
-        object[utils::VerbosityKind::Info] = get<std::string>(yml, LOG_FILTER_INFO_TAG, version);
+        object.info = get<std::string>(yml, LOG_FILTER_INFO_TAG, version);
     }
 }
 

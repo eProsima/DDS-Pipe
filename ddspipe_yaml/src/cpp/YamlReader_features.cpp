@@ -130,13 +130,22 @@ void YamlReader::fill(
         std::set<core::types::ParticipantId> dst;
 
         // Required route source
-        src = get<core::types::ParticipantId>(route_yml, ROUTES_SRC_TAG, version);
+        if (is_tag_present(route_yml, ROUTES_SRC_TAG))
+        {
+            src = get<core::types::ParticipantId>(route_yml, ROUTES_SRC_TAG, version);
 
-        if (object.routes.count(src) != 0)
+            if (object.routes.count(src) != 0)
+            {
+                throw eprosima::utils::ConfigurationException(
+                        utils::Formatter() <<
+                            "Multiple routes defined for participant " << src  << " : only one allowed.");
+            }
+        }
+        else
         {
             throw eprosima::utils::ConfigurationException(
                       utils::Formatter() <<
-                          "Multiple routes defined for participant " << src  << " : only one allowed.");
+                          "Source participant required under tag " << ROUTES_SRC_TAG << " in route definition.");
         }
 
         // Optional route destination(s)
@@ -206,22 +215,44 @@ void YamlReader::fill(
     {
         YamlValidator::validate<core::TopicRoutesConfiguration>(topic_routes_yml, version);
 
-        // utils::Heritable<ddspipe::core::types::DistributedTopic> topic;
         auto topic = utils::Heritable<ddspipe::core::types::DdsTopic>::make_heritable();
         core::RoutesConfiguration routes;
 
         // Required topic and type names
-        fill<eprosima::ddspipe::core::types::DdsTopic>(topic.get_reference(), topic_routes_yml, version);
-
-        if (object.topic_routes.count(topic) != 0)
+        if (!(is_tag_present(topic_routes_yml,
+                TOPIC_NAME_TAG) && is_tag_present(topic_routes_yml, TOPIC_TYPE_NAME_TAG)))
         {
             throw eprosima::utils::ConfigurationException(
                       utils::Formatter() <<
-                          "Multiple routes defined for topic " << topic  << " : only one allowed.");
+                          "Topic routes require topic and type names to be defined under tags " << TOPIC_NAME_TAG <<
+                          " and " << TOPIC_TYPE_NAME_TAG << ", respectively.");
+        }
+        else
+        {
+            topic = get<utils::Heritable<ddspipe::core::types::DistributedTopic>>(topic_routes_yml, version);
+
+            if (object.topic_routes.count(topic) != 0)
+            {
+                throw eprosima::utils::ConfigurationException(
+                        utils::Formatter() <<
+                            "Multiple routes defined for topic " << topic  << " : only one allowed.");
+            }
         }
 
-        // Required route
-        object.topic_routes[topic] = get<core::RoutesConfiguration>(topic_routes_yml, ROUTES_TAG, version);
+        // Required routes
+        if (is_tag_present(topic_routes_yml, ROUTES_TAG))
+        {
+            routes = get<core::RoutesConfiguration>(topic_routes_yml, ROUTES_TAG, version);
+        }
+        else
+        {
+            throw eprosima::utils::ConfigurationException(
+                      utils::Formatter() <<
+                          "No routes found under tag " << ROUTES_TAG << " for topic " << topic << " .");
+        }
+
+        // Insert routes
+        object.topic_routes[topic] = routes;
     }
 }
 

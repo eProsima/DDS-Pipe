@@ -45,7 +45,7 @@ namespace yaml {
 using namespace eprosima::ddspipe::core::types;
 using namespace eprosima::ddspipe::participants::types;
 
-/************************
+/***********************
 * PARTICIPANTS         *
 ************************/
 

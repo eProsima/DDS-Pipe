@@ -25,11 +25,6 @@
 #include <ddspipe_core/types/dds/GuidPrefix.hpp>
 #include <ddspipe_core/types/participant/ParticipantId.hpp>
 
-#include <ddspipe_participants/configuration/DiscoveryServerParticipantConfiguration.hpp>
-#include <ddspipe_participants/configuration/EchoParticipantConfiguration.hpp>
-#include <ddspipe_participants/configuration/InitialPeersParticipantConfiguration.hpp>
-#include <ddspipe_participants/configuration/ParticipantConfiguration.hpp>
-#include <ddspipe_participants/configuration/SimpleParticipantConfiguration.hpp>
 #include <ddspipe_participants/types/address/Address.hpp>
 #include <ddspipe_participants/types/security/tls/TlsConfiguration.hpp>
 
@@ -290,30 +285,11 @@ std::string YamlReader::get<std::string>(
 
 template <>
 DDSPIPE_YAML_DllAPI
-bool YamlValidator::validate<utils::Timestamp>(
+void YamlReader::fill(
+        utils::Timestamp& object,
         const Yaml& yml,
-        const YamlReaderVersion& /* version */)
+        const YamlReaderVersion version)
 {
-    static const std::set<TagType> tags{
-        TIMESTAMP_DATETIME_FORMAT_TAG,
-        TIMESTAMP_LOCAL_TAG,
-        TIMESTAMP_DATETIME_TAG,
-        TIMESTAMP_MILLISECONDS_TAG,
-        TIMESTAMP_MICROSECONDS_TAG,
-        TIMESTAMP_NANOSECONDS_TAG};
-
-    return YamlValidator::validate_tags(yml, tags);
-}
-
-template <>
-DDSPIPE_YAML_DllAPI
-utils::Timestamp YamlReader::get<utils::Timestamp>(
-        const Yaml& yml,
-        const YamlReaderVersion version /* version */)
-{
-    YamlValidator::validate<utils::Timestamp>(yml, version);
-
-    utils::Timestamp ret_timestamp;
     std::string datetime_str;
     std::string datetime_format("%Y-%m-%d_%H-%M-%S");
     bool local = true;
@@ -339,7 +315,7 @@ utils::Timestamp YamlReader::get<utils::Timestamp>(
         datetime_str = get<std::string>(yml, TIMESTAMP_DATETIME_TAG, version);
         try
         {
-            ret_timestamp = utils::string_to_timestamp(datetime_str, datetime_format, local);
+            object = utils::string_to_timestamp(datetime_str, datetime_format, local);
         }
         catch (const std::exception& e)
         {
@@ -372,7 +348,37 @@ utils::Timestamp YamlReader::get<utils::Timestamp>(
         ns = std::chrono::nanoseconds(get_nonnegative_int(yml, TIMESTAMP_NANOSECONDS_TAG));
     }
 
-    return std::chrono::time_point_cast<utils::Timestamp::duration>(ret_timestamp + ms + us + ns);
+    object = std::chrono::time_point_cast<utils::Timestamp::duration>(object + ms + us + ns);
+}
+
+template <>
+DDSPIPE_YAML_DllAPI
+bool YamlValidator::validate<utils::Timestamp>(
+        const Yaml& yml,
+        const YamlReaderVersion& /* version */)
+{
+    static const std::set<TagType> tags{
+        TIMESTAMP_DATETIME_FORMAT_TAG,
+        TIMESTAMP_LOCAL_TAG,
+        TIMESTAMP_DATETIME_TAG,
+        TIMESTAMP_MILLISECONDS_TAG,
+        TIMESTAMP_MICROSECONDS_TAG,
+        TIMESTAMP_NANOSECONDS_TAG};
+
+    return YamlValidator::validate_tags(yml, tags);
+}
+
+template <>
+DDSPIPE_YAML_DllAPI
+utils::Timestamp YamlReader::get<utils::Timestamp>(
+        const Yaml& yml,
+        const YamlReaderVersion version /* version */)
+{
+    YamlValidator::validate<utils::Timestamp>(yml, version);
+
+    utils::Timestamp object;
+    fill<utils::Timestamp>(object, yml, version);
+    return object;
 }
 
 } /* namespace yaml */
