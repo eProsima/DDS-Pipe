@@ -15,6 +15,7 @@
 #pragma once
 
 #include <cpp_utils/logging/BaseLogConfiguration.hpp>
+#include <cpp_utils/logging/LogFilter.hpp>
 #include <cpp_utils/time/time_utils.hpp>
 #include <cpp_utils/types/Fuzzy.hpp>
 #include <cpp_utils/utils.hpp>
