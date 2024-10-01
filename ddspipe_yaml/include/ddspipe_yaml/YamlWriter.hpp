@@ -65,9 +65,28 @@ void set(
         Yaml& yml,
         const T& value);
 
-//! Set the \c value in a new yaml in \c yml under \c tag .
+/**
+ * @brief Set a new value in \c yml .
+ *
+ * This function is intended to be specialized for different types, defining the method to serialize into YAML
+ * when two possible formats (compact and extended) are available.
+ * Depending on the \c is_compact flag, the serialization will be in either compact or extended format.
+ *
+ * @param[in,out] yaml base yaml where to write the value
+ * @param[in] value value to write
+ * @param[in] is_compact boolean value to set the format of the yaml
+ *
+ * @tparam T type of the value to set in the yaml.
+ */
 template <typename T>
 void set(
+        Yaml& yml,
+        const T& value,
+        const bool is_compact);
+
+//! Set the \c value in a new yaml in \c yml under \c tag .
+template <typename T>
+void set_in_tag(
         Yaml& yml,
         const TagType& tag,
         const T& value);

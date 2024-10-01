@@ -48,6 +48,12 @@ void set_collection(
         Yaml& yml,
         const std::vector<T>& collection);
 
+template <typename T>
+void set_collection(
+        Yaml& yml,
+        const std::vector<T>& collection,
+        const bool is_compact);
+
 template <typename K, typename T>
 void set_map(
         Yaml& yml,
@@ -90,6 +96,15 @@ void set(
 template <typename T>
 void set(
         Yaml& yml,
+        const std::vector<T>& collection,
+        const bool is_compact)
+{
+    set_collection(yml, collection, is_compact);
+}
+
+template <typename T>
+void set(
+        Yaml& yml,
         const std::set<T>& collection)
 {
     set_collection(yml, std::vector<T>(collection.begin(), collection.end()));
@@ -108,7 +123,7 @@ void set(
 ////////////////////////////////////
 
 template <typename T>
-void set(
+void set_in_tag(
         Yaml& yml,
         const TagType& tag,
         const T& value)
@@ -126,6 +141,20 @@ void set_collection(
     {
         Yaml yml_value;
         set<T>(yml_value, v);
+        yml.push_back(yml_value);
+    }
+}
+
+template <typename T>
+void set_collection(
+        Yaml& yml,
+        const std::vector<T>& collection,
+        const bool is_compact)
+{
+    for (const auto& v : collection)
+    {
+        Yaml yml_value;
+        set<T>(yml_value, v, is_compact);
         yml.push_back(yml_value);
     }
 }
