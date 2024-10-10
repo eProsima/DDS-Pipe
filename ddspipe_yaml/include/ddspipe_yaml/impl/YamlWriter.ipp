@@ -52,7 +52,7 @@ template <typename T>
 void set_collection(
         Yaml& yml,
         const std::vector<T>& collection,
-        const bool is_compact);
+        bool is_compact);
 
 template <typename K, typename T>
 void set_map(
@@ -97,7 +97,7 @@ template <typename T>
 void set(
         Yaml& yml,
         const std::vector<T>& collection,
-        const bool is_compact)
+        bool is_compact)
 {
     set_collection(yml, collection, is_compact);
 }
@@ -149,7 +149,7 @@ template <typename T>
 void set_collection(
         Yaml& yml,
         const std::vector<T>& collection,
-        const bool is_compact)
+        bool is_compact)
 {
     for (const auto& v : collection)
     {

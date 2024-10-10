@@ -82,7 +82,7 @@ template <typename T>
 void set(
         Yaml& yml,
         const T& value,
-        const bool is_compact);
+        bool is_compact);
 
 //! Set the \c value in a new yaml in \c yml under \c tag .
 template <typename T>
