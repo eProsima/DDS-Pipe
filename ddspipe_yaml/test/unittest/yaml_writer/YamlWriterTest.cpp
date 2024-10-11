@@ -91,8 +91,8 @@ void set(
         Yaml& yml,
         const test::A& a)
 {
-    set(yml, test::A_VALUE_TAG, a.value);
-    set(yml, test::A_NAME_TAG, a.name);
+    set_in_tag(yml, test::A_VALUE_TAG, a.value);
+    set_in_tag(yml, test::A_NAME_TAG, a.name);
 }
 
 //! Serialize an object B in a yaml
@@ -101,8 +101,8 @@ void set(
         Yaml& yml,
         const test::B& b)
 {
-    set(yml, test::B_ACTIVE_TAG, b.active);
-    set(yml, test::B_A_TAG, b.a);
+    set_in_tag(yml, test::B_ACTIVE_TAG, b.active);
+    set_in_tag(yml, test::B_A_TAG, b.a);
 }
 
 //! Deserialize an object A from a yaml
@@ -393,7 +393,7 @@ TEST(YamlWriterTest, set_specific_type)
 
     // Create yml
     Yaml yml;
-    set(yml, "b", b);
+    set_in_tag(yml, "b", b);
 
     // Check the b tag exists, and some inside
     ASSERT_TRUE(yml["b"]);
@@ -407,7 +407,7 @@ TEST(YamlWriterTest, set_specific_type)
     test::B b2;
     b.a.value = 3;
     Yaml yml2;
-    set(yml2, "b", b2);
+    set_in_tag(yml2, "b", b2);
 
     // Check that ymls are not equal
     ASSERT_NE(

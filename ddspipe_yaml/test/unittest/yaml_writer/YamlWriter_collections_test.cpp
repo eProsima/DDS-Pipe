@@ -71,8 +71,8 @@ void set(
         Yaml& yml,
         const test::A& a)
 {
-    set(yml, test::A_VALUE_TAG, a.value);
-    set(yml, test::A_NAME_TAG, a.name);
+    set_in_tag(yml, test::A_VALUE_TAG, a.value);
+    set_in_tag(yml, test::A_NAME_TAG, a.name);
 }
 
 template <>
@@ -80,8 +80,8 @@ void set(
         Yaml& yml,
         const test::B& b)
 {
-    set(yml, test::B_ACTIVE_TAG, b.active);
-    set(yml, test::B_A_TAG, b.a);
+    set_in_tag(yml, test::B_ACTIVE_TAG, b.active);
+    set_in_tag(yml, test::B_A_TAG, b.a);
 }
 
 template <>
