@@ -5,6 +5,20 @@ The *Forthcoming* section includes those features added in `main` branch that ar
 
 ## Forthcoming
 
+## eProsima DDS Pipe v1.1.0
+
+The upcoming release will include the following *features*:
+* Add templated function to YamlWriter for supporting compact format.
+
+This release includes the following *dependencies update*:
+
+|  | Repository | Old Version | New Version |
+|---|---|---|---|
+| Foonathan Memory Vendor | [eProsima/foonathan_memory_vendor](https://github.com/eProsima/foonathan_memory_vendor) | [v1.3.1](https://github.com/eProsima/foonathan_memory_vendor/releases/tag/v1.3.1) | [v1.3.1](https://github.com/eProsima/foonathan_memory_vendor/releases/tag/v1.3.1) |
+| Fast CDR | [eProsima/Fast-CDR](https://github.com/eProsima/Fast-CDR) | [v2.2.4](https://github.com/eProsima/Fast-CDR/releases/tag/v2.2.4) | [v2.2.5](https://github.com/eProsima/Fast-CDR/releases/tag/v2.2.5) |
+| Fast DDS | [eProsima/Fast-DDS](https://github.com/eProsima/Fast-DDS) | [v3.0.1](https://github.com/eProsima/Fast-DDS/releases/tag/v3.0.1) | [v3.1.0](https://github.com/eProsima/Fast-DDS/releases/tag/v3.1.0) |
+| Dev Utils | [eProsima/dev-utils](https://github.com/eProsima/dev-utils) | [v1.0.0](https://github.com/eProsima/dev-utils/releases/tag/v1.0.0) | [v1.1.0](https://github.com/eProsima/dev-utils/releases/tag/v1.1.0) |
+
 ## eProsima DDS Pipe v1.0.0
 
 The upcoming release will include the following features:
