@@ -330,12 +330,6 @@ void DdsPipe::updated_endpoint_nts_(
 {
     logDebug(DDSPIPE, "Endpoint updated in DDS Pipe core: " << endpoint << ".");
 
-    // Don't send updated information to service topics.
-    if (RpcTopic::is_service_topic(endpoint.topic))
-    {
-        return;
-    }
-
     if (endpoint.active)
     {
         discovered_endpoint_nts_(endpoint);

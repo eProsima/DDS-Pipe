@@ -39,7 +39,6 @@ RpcBridge::RpcBridge(
         const std::shared_ptr<PayloadPool>& payload_pool,
         const std::shared_ptr<utils::SlotThreadPool>& thread_pool)
     : Bridge(participants_database, payload_pool, thread_pool)
-    , init_(false)
     , rpc_topic_(topic)
 {
     logDebug(DDSPIPE_RPCBRIDGE, "Creating RpcBridge " << *this << ".");
@@ -57,103 +56,99 @@ RpcBridge::~RpcBridge()
     logDebug(DDSPIPE_RPCBRIDGE, "RpcBridge " << *this << " destroyed.");
 }
 
-void RpcBridge::init_nts_()
-{
-    EPROSIMA_LOG_INFO(DDSPIPE_RPCBRIDGE, "Creating endpoints in RpcBridge for service " << rpc_topic_ << ".");
-
-    // TODO: remove and use every participant
-    std::set<ParticipantId> ids = participants_->get_rtps_participants_ids();
-
-    // Create a proxy client and server in each RTPS participant
-    for (ParticipantId id: ids)
-    {
-        create_proxy_client_nts_(id);
-        create_proxy_server_nts_(id);
-        if (current_servers_[id].size())
-        {
-            service_registries_[id]->enable();
-        }
-    }
-
-    // TODO: This should not be done
-    // Wait for the new entities created to match before sending data from one side to the other
-    init_ = true;
-    // utils::sleep_for(500);
-}
-
 void RpcBridge::create_proxy_server_nts_(
         ParticipantId participant_id)
 {
+    // TODO: wrap proxies and store them in map to be checked before creating new ones
+    if (reply_writers_.find(participant_id) != reply_writers_.end())
+    {
+        EPROSIMA_LOG_INFO(DDSPIPE_RPCBRIDGE, "Trying to create a proxy server for an already existing participant.");
+        return;
+    }
+    if (request_readers_.find(participant_id) != request_readers_.end())
+    {
+        EPROSIMA_LOG_INFO(DDSPIPE_RPCBRIDGE, "Trying to create a proxy server for an already existing participant.");
+        return;
+    }
+
     std::shared_ptr<IParticipant> participant = participants_->get_participant(participant_id);
 
     reply_writers_[participant_id] = participant->create_writer(rpc_topic_.reply_topic());
+    reply_writers_[participant_id]->enable();
     request_readers_[participant_id] = participant->create_reader(rpc_topic_.request_topic());
+    request_readers_[participant_id]->enable();
 
     create_slot_(request_readers_[participant_id]);
+
+    std::cout << "probando" << std::endl;
 }
 
 void RpcBridge::create_proxy_client_nts_(
         ParticipantId participant_id)
 {
+    // TODO: wrap proxies and store them in map to be checked before creating new ones
+    if (request_writers_.find(participant_id) != request_writers_.end())
+    {
+        EPROSIMA_LOG_INFO(DDSPIPE_RPCBRIDGE, "Trying to create a proxy server for an already existing participant.");
+        return;
+    }
+    if (reply_readers_.find(participant_id) != reply_readers_.end())
+    {
+        EPROSIMA_LOG_INFO(DDSPIPE_RPCBRIDGE, "Trying to create a proxy server for an already existing participant.");
+        return;
+    }
+
     std::shared_ptr<IParticipant> participant = participants_->get_participant(participant_id);
 
     // Safe casting as we are only getting RTPS participants
     request_writers_[participant_id] = participant->create_writer(rpc_topic_.request_topic());
     reply_readers_[participant_id] = participant->create_reader(rpc_topic_.reply_topic());
 
+    // Add wait matched or sleep: it is assumed there is a server available
+    utils::sleep_for(200);
+
+    request_writers_[participant_id]->enable();
+    reply_readers_[participant_id]->enable();
+
     create_slot_(reply_readers_[participant_id]);
 
     // Create service registry associated to this proxy client
     service_registries_[participant_id] = std::make_shared<ServiceRegistry>(rpc_topic_, participant_id);
+    service_registries_[participant_id]->enable();
 }
 
 void RpcBridge::enable() noexcept
 {
     std::lock_guard<std::mutex> lock(mutex_);
 
-    if (!enabled_ && servers_available_())
+    if (enabled_)
     {
-        EPROSIMA_LOG_INFO(DDSPIPE_RPCBRIDGE, "Enabling RpcBridge for service " << rpc_topic_ << ".");
+        EPROSIMA_LOG_INFO(DDSPIPE_RPCBRIDGE, "Trying to enable an already enabled RpcBridge for service " << rpc_topic_ << ".");
+        return;
+    }
 
-        if (!init_)
+    EPROSIMA_LOG_INFO(DDSPIPE_RPCBRIDGE, "Enabling RpcBridge for service " << rpc_topic_ << ".");
+
+    enabled_ = true;
+
+    std::set<ParticipantId> all_ids = participants_->get_rtps_participants_ids();
+    std::set<ParticipantId> servers_to_create;
+    for (auto it = current_servers_.begin(); it != current_servers_.end(); it++)
+    {
+        create_proxy_client_nts_(it->first);
+
+        for (auto id : all_ids)
         {
-            try
+            if (it->first != id)
             {
-                init_nts_();
-            }
-            catch (const utils::InitializationException& e)
-            {
-                EPROSIMA_LOG_ERROR(DDSPIPE_RPCBRIDGE,
-                        "Error while creating endpoints in RpcBridge for service " << rpc_topic_ <<
-                        ". Error code:" << e.what() << ".");
-                return;
+                servers_to_create.insert(id);
             }
         }
+    }
 
-        enabled_ = true;
-
-        // Enable writers before readers, to avoid starting a transmission (not protected with \c mutex_) which may
-        // attempt to write with a yet disabled writer
-
-        for (auto& writer_it : request_writers_)
-        {
-            writer_it.second->enable();
-        }
-
-        for (auto& writer_it : reply_writers_)
-        {
-            writer_it.second->enable();
-        }
-
-        for (auto& reader_it : reply_readers_)
-        {
-            reader_it.second->enable();
-        }
-
-        for (auto& reader_it : request_readers_)
-        {
-            reader_it.second->enable();
-        }
+    for (auto it = servers_to_create.begin(); it != servers_to_create.end(); it++)
+    {
+        create_proxy_server_nts_(*it);
     }
 }
 
@@ -161,61 +156,161 @@ void RpcBridge::disable() noexcept
 {
     std::lock_guard<std::mutex> lock(mutex_);
 
-    if (enabled_)
+    if (!enabled_)
     {
-        EPROSIMA_LOG_INFO(DDSPIPE_RPCBRIDGE, "Disabling RpcBridge for service " << rpc_topic_ << ".");
-
-        enabled_ = false;
-
-        {
-            // Wait for a transmission to finish before disabling endpoints
-            std::unique_lock<std::shared_timed_mutex> lock(on_transmission_mutex_);
-        }
-
-        for (auto& reader_it : request_readers_)
-        {
-            reader_it.second->disable();
-        }
-
-        for (auto& reader_it : reply_readers_)
-        {
-            reader_it.second->disable();
-        }
-
-        for (auto& writer_it : reply_writers_)
-        {
-            writer_it.second->disable();
-        }
-
-        for (auto& writer_it : request_writers_)
-        {
-            writer_it.second->disable();
-        }
+        EPROSIMA_LOG_INFO(DDSPIPE_RPCBRIDGE, "Trying to disable an already disabled RpcBridge for service " << rpc_topic_ << ".");
+        return;
     }
+
+    EPROSIMA_LOG_INFO(DDSPIPE_RPCBRIDGE, "Disabling RpcBridge for service " << rpc_topic_ << ".");
+
+    enabled_ = false;
+
+    {
+        // Wait for a transmission to finish before disabling endpoints
+        std::unique_lock<std::shared_timed_mutex> lock(on_transmission_mutex_);
+    }
+
+    for (auto& reader_it : request_readers_)
+    {
+        reader_it.second->disable();
+        Guid reader_guid = reader_it.second->guid();
+        thread_pool_->remove_slot(tasks_map_[reader_guid].second);
+    }
+
+    for (auto& reader_it : reply_readers_)
+    {
+        Guid reader_guid = reader_it.second->guid();
+        thread_pool_->remove_slot(tasks_map_[reader_guid].second);
+        reader_it.second->disable();
+    }
+
+    for (auto& writer_it : reply_writers_)
+    {
+        writer_it.second->disable();
+    }
+
+    for (auto& writer_it : request_writers_)
+    {
+        writer_it.second->disable();
+    }
+
+    // This should remove all entities
+    request_readers_.clear();
+    reply_readers_.clear();
+    reply_writers_.clear();
+    request_writers_.clear();
+
+    service_registries_.clear();
 }
 
 void RpcBridge::discovered_service(
-        const types::ParticipantId& server_participant_id,
-        const types::GuidPrefix& server_guid_prefix) noexcept
+        const ParticipantId& server_participant_id,
+        const GuidPrefix& server_guid_prefix) noexcept
 {
     current_servers_[server_participant_id].emplace(server_guid_prefix);
-    if (init_)
+
+    if (!enabled_)
     {
-        service_registries_[server_participant_id]->enable();
+        return;
     }
-    else
+
+    if (current_servers_[server_participant_id].size() == 1)
     {
+        create_proxy_client_nts_(server_participant_id);
+
+        std::set<ParticipantId> all_ids = participants_->get_rtps_participants_ids();
+        std::set<ParticipantId> servers_to_create;
+        for (auto id : all_ids)
+        {
+            if (server_participant_id != id)
+            {
+                servers_to_create.insert(id);
+            }
+        }
+        for (auto it = servers_to_create.begin(); it != servers_to_create.end(); it++)
+        {
+            create_proxy_server_nts_(*it);
+        }
     }
 }
 
 void RpcBridge::removed_service(
-        const types::ParticipantId& server_participant_id,
-        const types::GuidPrefix& server_guid_prefix) noexcept
+        const ParticipantId& server_participant_id,
+        const GuidPrefix& server_guid_prefix) noexcept
 {
     current_servers_[server_participant_id].erase(server_guid_prefix);
-    if (!current_servers_[server_participant_id].size() && !servers_available_())
+
+    if (!current_servers_[server_participant_id].size())
     {
-        disable();
+        // Remove proxy client
+
+        auto request_writers_it = request_writers_.find(server_participant_id);
+        if (request_writers_it == request_writers_.end())
+        {
+            // TSNH
+            return;
+        }
+        else
+        {
+            request_writers_it->second->disable();
+            request_writers_.erase(request_writers_it);
+        }
+
+        auto reply_readers_it = reply_readers_.find(server_participant_id);
+        if (reply_readers_it == reply_readers_.end())
+        {
+            // TSNH
+            return;
+        }
+        else
+        {
+            reply_readers_it->second->disable();
+
+            Guid reader_guid = reply_readers_it->second->guid();
+            thread_pool_->remove_slot(tasks_map_[reader_guid].second);
+
+            reply_readers_.erase(reply_readers_it);
+        }
+
+        auto service_registries_it = service_registries_.find(server_participant_id);
+        if (service_registries_it == service_registries_.end())
+        {
+            // TSNH
+            return;
+        }
+        else
+        {
+            service_registries_it->second->disable();
+            service_registries_.erase(service_registries_it);
+        }
+    }
+
+    if (!servers_available_())
+    {
+        std::set<ParticipantId> all_ids = participants_->get_rtps_participants_ids(); // TODO: compute once and store, or change if DDS supported
+        for (auto id : all_ids)
+        {
+            // Remove proxy server (if exists (e.g. normally it will not exist in server_participant_id))
+
+            auto reply_writers_it = reply_writers_.find(id);
+            if (reply_writers_it != reply_writers_.end())
+            {
+                reply_writers_it->second->disable();
+                reply_writers_.erase(reply_writers_it);
+            }
+
+            auto request_readers_it = request_readers_.find(id);
+            if (request_readers_it != request_readers_.end())
+            {
+                request_readers_it->second->disable();
+
+                Guid reader_guid = request_readers_it->second->guid();
+                thread_pool_->remove_slot(tasks_map_[reader_guid].second);
+
+                request_readers_.erase(request_readers_it);
+            }
+        }
     }
 }
 
@@ -298,7 +393,6 @@ void RpcBridge::transmit_(
         utils::ReturnCode ret = reader->take(data);
 
         RpcPayloadData& rpc_data = dynamic_cast<RpcPayloadData&>(*data);
-
 
         // Will never return \c NO_DATA, otherwise would have finished before
         if (ret != utils::ReturnCode::RETCODE_OK)
