@@ -29,12 +29,6 @@ namespace core {
 bool DdsPipeConfiguration::is_valid(
         utils::Formatter& error_msg) const noexcept
 {
-    if (remove_unused_entities && discovery_trigger != DiscoveryTrigger::READER)
-    {
-        error_msg << "A discovery-trigger different from reader is incompatible with remove-unused-entities.";
-        return false;
-    }
-
     return routes.is_valid(error_msg) && topic_routes.is_valid(error_msg);
 }
 

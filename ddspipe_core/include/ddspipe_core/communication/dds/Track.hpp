@@ -124,7 +124,7 @@ public:
      */
     DDSPIPE_CORE_DllAPI
     bool has_writer(
-            const types::ParticipantId& id) noexcept;
+            const types::ParticipantId& id) const noexcept;
 
     /**
      * Check if a track has at least one writer.
@@ -132,7 +132,7 @@ public:
      * Tread safe
      */
     DDSPIPE_CORE_DllAPI
-    bool has_writers() noexcept;
+    bool has_writers() const noexcept;
 
 protected:
 
@@ -209,8 +209,9 @@ protected:
     /**
      * Mutex to prevent simultaneous calls to \c enable and/or \c disable .
      * It manages access to variable \c enabled_ .
+     * It is mutable so it can be used in const methods.
      */
-    std::mutex track_mutex_;
+    mutable std::mutex track_mutex_;
 
     /////
     // Transmit thread part
