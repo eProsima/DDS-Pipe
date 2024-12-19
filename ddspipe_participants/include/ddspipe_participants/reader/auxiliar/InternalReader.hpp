@@ -26,6 +26,7 @@
 #include <ddspipe_core/efficiency/payload/PayloadPool.hpp>
 #include <ddspipe_core/types/participant/ParticipantId.hpp>
 
+#include <ddspipe_participants/library/library_dll.h>
 #include <ddspipe_participants/reader/auxiliar/BaseReader.hpp>
 
 namespace eprosima {
