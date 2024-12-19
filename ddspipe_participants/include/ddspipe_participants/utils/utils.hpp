@@ -41,14 +41,17 @@ core::types::Endpoint create_endpoint_from_info_(
 /**
  * @brief Get the QoS from a Writer from the \c DiscoveryDatabase .
  */
+DDSPIPE_PARTICIPANTS_DllAPI
 core::types::SpecificEndpointQoS specific_qos_of_writer_(
         const core::DiscoveryDatabase& database,
         const core::types::Guid& guid);
 
+DDSPIPE_PARTICIPANTS_DllAPI
 bool come_from_same_participant_(
         const fastdds::rtps::GUID_t src_guid,
         const fastdds::rtps::GUID_t target_guid) noexcept;
 
+DDSPIPE_PARTICIPANTS_DllAPI
 fastdds::rtps::GUID_t guid_from_instance_handle(
         const fastdds::rtps::InstanceHandle_t& ihandle) noexcept;
 
