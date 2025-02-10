@@ -125,14 +125,23 @@ utils::ReturnCode CommonWriter::write_nts_(
     }
     else
     {
-        if (payload_pool_->write(writer_, &rtps_data))
-        {
-            return utils::ReturnCode::RETCODE_OK;
-        }
-        else
-        {
+        eprosima::fastrtps::rtps::WriteParams send_params;
+        auto ret = get_send_params_(send_params, rtps_data);
+        if ( ret == utils::ReturnCode::RETCODE_ERROR) {
             return utils::ReturnCode::RETCODE_ERROR;
+        } else if (ret == utils::ReturnCode::RETCODE_NO_DATA) {
+            if (!payload_pool_->write(writer_, &rtps_data)) {
+                return utils::ReturnCode::RETCODE_ERROR;
+            }
+        } else { // utils::ReturnCode::RETCODE_OK
+            if (!payload_pool_->write(writer_, &rtps_data, send_params))
+            {
+                return utils::ReturnCode::RETCODE_ERROR;
+            }
         }
+
+        fill_sent_data_(send_params, rtps_data);
+        return utils::ReturnCode::RETCODE_OK;
     }
 }
 
@@ -185,6 +194,20 @@ fastdds::dds::DataWriterQos CommonWriter::reckon_writer_qos_() const noexcept
     qos.deadline().period = eprosima::fastrtps::Duration_t(0);
 
     return qos;
+}
+
+utils::ReturnCode CommonWriter::get_send_params_(
+            eprosima::fastrtps::rtps::WriteParams& to_send_params,
+            const core::types::RtpsPayloadData& data) const noexcept
+{
+    return utils::ReturnCode::RETCODE_NO_DATA;
+}
+
+void CommonWriter::fill_sent_data_(
+    const eprosima::fastrtps::rtps::WriteParams& sent_params,
+    core::types::RtpsPayloadData& data_to_fill) const noexcept
+{
+    // Do nothing
 }
 
 } /* namespace dds */

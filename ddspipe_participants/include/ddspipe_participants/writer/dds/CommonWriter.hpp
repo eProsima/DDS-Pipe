@@ -136,6 +136,19 @@ protected:
     fastdds::dds::DataWriterQos
     reckon_writer_qos_() const noexcept;
 
+    DDSPIPE_PARTICIPANTS_DllAPI
+    virtual 
+    utils::ReturnCode
+    get_send_params_(
+        eprosima::fastrtps::rtps::WriteParams& to_send_params,
+        const core::types::RtpsPayloadData& data) const noexcept;
+
+    DDSPIPE_PARTICIPANTS_DllAPI
+    virtual
+    void fill_sent_data_(
+        const eprosima::fastrtps::rtps::WriteParams& sent_params,
+        core::types::RtpsPayloadData& data_to_fill) const noexcept;
+
     /////////////////////////
     // EXTERNAL VARIABLES
     /////////////////////////

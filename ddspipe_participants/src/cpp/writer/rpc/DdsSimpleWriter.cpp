@@ -1,0 +1,71 @@
+// Copyright 2025 Sony Group Corporation.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+#include <fastrtps/rtps/RTPSDomain.h>
+#include <fastrtps/rtps/participant/RTPSParticipant.h>
+#include <fastrtps/rtps/common/CacheChange.h>
+
+#include <cpp_utils/exception/InitializationException.hpp>
+#include <cpp_utils/Log.hpp>
+
+#include <ddspipe_core/types/data/RpcPayloadData.hpp>
+
+#include <ddspipe_participants/efficiency/cache_change/CacheChangePool.hpp>
+#include <ddspipe_participants/writer/rpc/DdsSimpleWriter.hpp>
+#include <ddspipe_participants/types/dds/RouterCacheChange.hpp>
+
+namespace eprosima {
+namespace ddspipe {
+namespace participants {
+namespace rpc {
+
+DdsSimpleWriter::DdsSimpleWriter(
+    const core::types::ParticipantId& participant_id,
+    const core::types::DdsTopic& topic,
+    const std::shared_ptr<core::PayloadPool>& payload_pool,
+    fastdds::dds::DomainParticipant* participant,
+    fastdds::dds::Topic* topic_entity)
+    : CommonWriter(
+        participant_id, topic, payload_pool, participant, topic_entity)
+{
+    // Do nothing
+    //std::cout << "Creating DDS RPC Writer for topic " << topic_ << std::endl;
+}
+
+utils::ReturnCode DdsSimpleWriter::get_send_params_(
+    eprosima::fastrtps::rtps::WriteParams& to_send_params,
+    const core::types::RtpsPayloadData& data) const noexcept
+{
+    const core::types::RpcPayloadData& rpc_data = dynamic_cast<const core::types::RpcPayloadData&>(data);
+
+    if (! rpc_data.write_params.is_set()) {
+        return utils::ReturnCode::RETCODE_ERROR;
+    }
+
+    to_send_params.related_sample_identity() = rpc_data.write_params->related_sample_identity();
+    return utils::ReturnCode::RETCODE_OK;
+}
+
+void DdsSimpleWriter::fill_sent_data_(
+    const eprosima::fastrtps::rtps::WriteParams& sent_params,
+    core::types::RtpsPayloadData& data_to_fill) const noexcept
+{
+    core::types::RpcPayloadData& rpc_data = dynamic_cast<core::types::RpcPayloadData&>(data_to_fill);
+    rpc_data.sent_sequence_number = sent_params.sample_identity().sequence_number();
+}
+
+} /* namespace rpc */
+} /* namespace participants */
+} /* namespace ddspipe */
+} /* namespace eprosima */

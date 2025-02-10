@@ -61,8 +61,7 @@ void RpcBridge::init_nts_()
 {
     logInfo(DDSPIPE_RPCBRIDGE, "Creating endpoints in RpcBridge for service " << rpc_topic_ << ".");
 
-    // TODO: remove and use every participant
-    std::set<ParticipantId> ids = participants_->get_rtps_participants_ids();
+    std::set<ParticipantId> ids = participants_->get_participants_ids();
 
     // Create a proxy client and server in each RTPS participant
     for (ParticipantId id: ids)
@@ -297,9 +296,6 @@ void RpcBridge::transmit_(
         std::unique_ptr<IRoutingData> data;
         utils::ReturnCode ret = reader->take(data);
 
-        RpcPayloadData& rpc_data = dynamic_cast<RpcPayloadData&>(*data);
-
-
         // Will never return \c RETCODE_NO_DATA, otherwise would have finished before
         if (!ret)
         {
@@ -310,6 +306,8 @@ void RpcBridge::transmit_(
                                                                     << ". Skipping data and continue.");
             continue;
         }
+    
+        RpcPayloadData& rpc_data = dynamic_cast<RpcPayloadData&>(*data);
 
         if (RpcTopic::is_request_topic(reader->topic()))
         {
