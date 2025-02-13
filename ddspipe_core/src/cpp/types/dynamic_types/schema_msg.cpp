@@ -335,7 +335,15 @@ std::string generate_dyn_type_schema_from_tree(
             ss << TYPE_SEPARATOR;
 
             // Add types name
-            ss << "MSG: fastdds/" << node.info.type_kind_name << "\n";
+            if (node.info.type_kind_name.find('/') == std::string::npos)
+            {
+                // Append namespace when none present as required by Foxglove (TODO: check for types generated with namespace)
+                ss << "MSG: fastdds/" << node.info.type_kind_name << "\n";
+            }
+            else
+            {
+                ss << "MSG: " << node.info.type_kind_name << "\n";
+            }
 
             // Add next type
             generate_schema_from_node(ss, node);
