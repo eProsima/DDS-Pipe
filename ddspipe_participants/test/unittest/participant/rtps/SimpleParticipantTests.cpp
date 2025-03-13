@@ -44,6 +44,7 @@ public:
     {
         return reckon_participant_attributes_();
     }
+
 };
 
 } // test
@@ -111,9 +112,9 @@ TEST(SimpleParticipantTests, simple_participant_easy_mode_configuration)
 }
 
 int main(
-    int argc,
-    char** argv)
+        int argc,
+        char** argv)
 {
-::testing::InitGoogleTest(&argc, argv);
-return RUN_ALL_TESTS();
+    ::testing::InitGoogleTest(&argc, argv);
+    return RUN_ALL_TESTS();
 }

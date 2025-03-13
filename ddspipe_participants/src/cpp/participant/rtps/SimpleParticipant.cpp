@@ -125,7 +125,7 @@ SimpleParticipant::reckon_participant_attributes_() const
         if (simple_configuration->transport != core::types::TransportDescriptors::builtin)
         {
             EPROSIMA_LOG_WARNING(SIMPLEPARTICIPANT,
-                "Ignoring IP value: Easy mode configuration is incompatible with transport tag configurations.");
+                    "Ignoring IP value: Easy mode configuration is incompatible with transport tag configurations.");
         }
         else
         {
@@ -133,7 +133,7 @@ SimpleParticipant::reckon_participant_attributes_() const
             if (!fastdds::rtps::IPLocator::isIPv4(simple_configuration->easy_mode_ip))
             {
                 EPROSIMA_LOG_WARNING(SIMPLEPARTICIPANT,
-                    "Ignoring Easy Mode IP value. It must be a valid IPv4 address.");
+                        "Ignoring Easy Mode IP value. It must be a valid IPv4 address.");
             }
             else
             {
