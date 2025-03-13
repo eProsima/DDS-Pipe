@@ -14,11 +14,12 @@
 
 #include <memory>
 
+#include <fastdds/rtps/attributes/RTPSParticipantAttributes.hpp>
 #include <fastdds/rtps/participant/RTPSParticipant.hpp>
 #include <fastdds/rtps/RTPSDomain.hpp>
-#include <fastdds/rtps/transport/UDPv4TransportDescriptor.hpp>
 #include <fastdds/rtps/transport/shared_mem/SharedMemTransportDescriptor.hpp>
-#include <fastdds/rtps/attributes/RTPSParticipantAttributes.hpp>
+#include <fastdds/rtps/transport/UDPv4TransportDescriptor.hpp>
+#include <fastdds/utils/IPLocator.hpp>
 
 #include <cpp_utils/exception/ConfigurationException.hpp>
 
@@ -115,6 +116,30 @@ SimpleParticipant::reckon_participant_attributes_() const
             break;
         default:
             break;
+    }
+
+    if (!simple_configuration->easy_mode_ip.empty())
+    {
+        // This option is incompatible with transport tag configurations,
+        // so check that transport is set to the default value (builtin)
+        if (simple_configuration->transport != core::types::TransportDescriptors::builtin)
+        {
+            EPROSIMA_LOG_WARNING(SIMPLEPARTICIPANT,
+                "Ignoring IP value: Easy mode configuration is incompatible with transport tag configurations.");
+        }
+        else
+        {
+            // Check if the IP is a valid IPv4 address
+            if (!fastdds::rtps::IPLocator::isIPv4(simple_configuration->easy_mode_ip))
+            {
+                EPROSIMA_LOG_WARNING(SIMPLEPARTICIPANT,
+                    "Ignoring Easy Mode IP value. It must be a valid IPv4 address.");
+            }
+            else
+            {
+                params.easy_mode_ip = simple_configuration->easy_mode_ip;
+            }
+        }
     }
 
     return params;

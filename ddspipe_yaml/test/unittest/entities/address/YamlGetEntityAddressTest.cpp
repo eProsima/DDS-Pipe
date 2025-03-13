@@ -26,6 +26,7 @@
 #include "test_units/YamlGetEntityAddressTest_get_address_domain.ipp"
 #include "test_units/YamlGetEntityAddressTest_get_address_defaults.ipp"
 #include "test_units/YamlGetEntityAddressTest_ip_and_domain.ipp"
+#include "test_units/YamlGetEntityAddressTest_get_easy_mode_ip.ipp"
 
 int main(
         int argc,

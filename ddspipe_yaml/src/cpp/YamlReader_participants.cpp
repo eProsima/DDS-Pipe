@@ -140,6 +140,11 @@ void YamlReader::fill(
                         version);
     }
 
+    if (YamlReader::is_tag_present(yml, EASY_MODE_TAG))
+    {
+        object.easy_mode_ip = get<participants::types::IpType>(yml, EASY_MODE_TAG, version);
+    }
+
     // Optional get Transport descriptors
     if (YamlReader::is_tag_present(yml, TRANSPORT_DESCRIPTORS_TRANSPORT_TAG))
     {

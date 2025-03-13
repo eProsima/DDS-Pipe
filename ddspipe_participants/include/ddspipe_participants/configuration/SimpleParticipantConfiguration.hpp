@@ -55,6 +55,9 @@ public:
 
     core::types::TransportDescriptors transport {core::types::TransportDescriptors::builtin};
 
+    // IPv4 address of the remote Discovery Server.
+    types::IpType easy_mode_ip {};
+
     core::types::IgnoreParticipantFlags ignore_participant_flags {core::types::IgnoreParticipantFlags::no_filter};
 };
 
