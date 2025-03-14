@@ -134,6 +134,16 @@ void address_to_yaml(
     }
 }
 
+void easy_mode_ip_to_yaml(
+        Yaml& yml,
+        const std::string& ip)
+{
+    add_field_to_yaml(
+        yml,
+        YamlField<participants::types::IpType>(ip),
+        EASY_MODE_TAG);
+}
+
 void participantid_to_yaml(
         Yaml& yml,
         const core::types::ParticipantId& id)
