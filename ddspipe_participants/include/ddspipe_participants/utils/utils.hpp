@@ -55,6 +55,14 @@ DDSPIPE_PARTICIPANTS_DllAPI
 fastdds::rtps::GUID_t guid_from_instance_handle(
         const fastdds::rtps::InstanceHandle_t& ihandle) noexcept;
 
+/**
+ * @brief Unset environment variables that conflict with YAML configuration
+ *
+ * @throw std::runtime_error if an error occurs while unsetting the environment variables.
+ */
+DDSPIPE_PARTICIPANTS_DllAPI
+void unset_configuration_env_vars();
+
 } /* namespace detail */
 } /* namespace participants */
 } /* namespace ddspipe */
