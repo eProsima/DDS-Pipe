@@ -32,7 +32,7 @@ class DdsSimpleReader : public dds::CommonReader
 public:
 
     /**
-     * @brief Construct a new SimpleReader object
+     * @brief Construct a new DdsSimpleReader object
      *
      * Get the Attributes and TopicQoS and create the SimpleReader History and the DDS SimpleReader.
      *

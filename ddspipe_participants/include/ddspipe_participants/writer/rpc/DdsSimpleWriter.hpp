@@ -30,7 +30,7 @@ class DdsSimpleWriter : public dds::CommonWriter
 {
 public:
     /**
-     * @brief Construct a new SimpleWriter object
+     * @brief Construct a new DdsSimpleWriter object
      *
      * Get the Attributes and TopicQoS and create the SimpleWriter History and the DDS SimpleWriter.
      *
