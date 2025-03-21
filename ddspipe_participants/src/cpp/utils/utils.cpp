@@ -150,6 +150,7 @@ void unset_configuration_env_vars()
 {
     const char* env_vars[] = {
         "ROS2_EASY_MODE",
+        "ROS_SUPER_CLIENT"
         "FASTDDS_ENVIRONMENT_FILE",
         "ROS_DISCOVERY_SERVER"
     };

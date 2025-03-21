@@ -56,6 +56,14 @@ SimpleParticipant::reckon_participant_attributes_() const
         throw utils::ConfigurationException("Failed to cast ParticipantConfiguration to SimpleParticipantConfiguration.");
     }
 
+    // Check configuration validity
+    utils::Formatter error_msg;
+    if (!simple_configuration->is_valid(error_msg))
+    {
+        throw utils::ConfigurationException(
+                  utils::Formatter() << "Invalid SimpleParticipantConfiguration: " << error_msg);
+    }
+
     // Configure Participant transports
     if (simple_configuration->transport == core::types::TransportDescriptors::builtin)
     {
@@ -118,29 +126,8 @@ SimpleParticipant::reckon_participant_attributes_() const
             break;
     }
 
-    if (!simple_configuration->easy_mode_ip.empty())
-    {
-        // This option is incompatible with transport tag configurations,
-        // so check that transport is set to the default value (builtin)
-        if (simple_configuration->transport != core::types::TransportDescriptors::builtin)
-        {
-            EPROSIMA_LOG_WARNING(SIMPLEPARTICIPANT,
-                    "Ignoring IP value: Easy mode configuration is incompatible with transport tag configurations.");
-        }
-        else
-        {
-            // Check if the IP is a valid IPv4 address
-            if (!fastdds::rtps::IPLocator::isIPv4(simple_configuration->easy_mode_ip))
-            {
-                EPROSIMA_LOG_WARNING(SIMPLEPARTICIPANT,
-                        "Ignoring Easy Mode IP value. It must be a valid IPv4 address.");
-            }
-            else
-            {
-                params.easy_mode_ip = simple_configuration->easy_mode_ip;
-            }
-        }
-    }
+    // Easy mode IP configuration
+    params.easy_mode_ip = simple_configuration->easy_mode_ip;
 
     return params;
 }

@@ -13,6 +13,7 @@
 // limitations under the License.
 
 #include <cpp_utils/testing/gtest_aux.hpp>
+#include <cpp_utils/exception/ConfigurationException.hpp>
 #include <gtest/gtest.h>
 
 #include <ddspipe_core/efficiency/payload/FastPayloadPool.hpp>
@@ -45,6 +46,16 @@ public:
         return reckon_participant_attributes_();
     }
 
+    static const std::string easy_mode_invalid_transport_error_msg()
+    {
+        return "Easy mode configuration is incompatible with transport tag configurations.";
+    }
+
+    static const std::string easy_mode_invalid_ip_error_msg()
+    {
+        return "Invalid Easy Mode IP value. It must be a valid IPv4 address.";
+    }
+
 };
 
 } // test
@@ -71,6 +82,7 @@ TEST(SimpleParticipantTests, simple_participant_easy_mode_configuration)
     {
         std::shared_ptr<participants::SimpleParticipantConfiguration> conf(
             new participants::SimpleParticipantConfiguration());
+        conf->id = part_id;
         conf->easy_mode_ip = "127.0.0.1";
 
         test::SimpleParticipantTest participant(conf, payload_pool, discovery_database);
@@ -85,29 +97,44 @@ TEST(SimpleParticipantTests, simple_participant_easy_mode_configuration)
     {
         std::shared_ptr<participants::SimpleParticipantConfiguration> conf(
             new participants::SimpleParticipantConfiguration());
+        conf->id = part_id;
         conf->transport = core::types::TransportDescriptors::udp_only;
         conf->easy_mode_ip = "127.0.0.1";
 
         test::SimpleParticipantTest participant(conf, payload_pool, discovery_database);
 
-        // Check that easy mode is not configured
-        fastdds::rtps::RTPSParticipantAttributes att = participant.get_attributes();
-        ASSERT_TRUE(att.easy_mode_ip.empty());
-        participant.init();
+        // Non-valid SimpleParticipantconfiguration: a ConfigurationException should be thrown
+        try
+        {
+            fastdds::rtps::RTPSParticipantAttributes att = participant.get_attributes();
+        }
+        catch (const utils::ConfigurationException& e)
+        {
+            ASSERT_EQ(e.what(), "Invalid SimpleParticipantConfiguration: " +
+                    test::SimpleParticipantTest::easy_mode_invalid_transport_error_msg());
+        }
     }
 
     // Case 3: IP is not a valid IPv4 address
     {
         std::shared_ptr<participants::SimpleParticipantConfiguration> conf(
             new participants::SimpleParticipantConfiguration());
+        conf->id = part_id;
         conf->easy_mode_ip = "Foo";
 
         test::SimpleParticipantTest participant(conf, payload_pool, discovery_database);
 
         // Check that easy mode is configured
-        fastdds::rtps::RTPSParticipantAttributes att = participant.get_attributes();
-        ASSERT_TRUE(att.easy_mode_ip.empty());
-        participant.init();
+        // Non-valid SimpleParticipantconfiguration: a ConfigurationException should be thrown
+        try
+        {
+            fastdds::rtps::RTPSParticipantAttributes att = participant.get_attributes();
+        }
+        catch (const utils::ConfigurationException& e)
+        {
+            ASSERT_EQ(e.what(), "Invalid SimpleParticipantConfiguration: " +
+                    test::SimpleParticipantTest::easy_mode_invalid_ip_error_msg());
+        }
     }
 }
 
