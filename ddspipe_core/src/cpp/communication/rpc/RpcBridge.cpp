@@ -297,9 +297,6 @@ void RpcBridge::transmit_(
         std::unique_ptr<IRoutingData> data;
         utils::ReturnCode ret = reader->take(data);
 
-        RpcPayloadData& rpc_data = dynamic_cast<RpcPayloadData&>(*data);
-
-
         // Will never return \c NO_DATA, otherwise would have finished before
         if (ret != utils::ReturnCode::RETCODE_OK)
         {
@@ -310,6 +307,8 @@ void RpcBridge::transmit_(
                                                                     << ". Skipping data and continue.");
             continue;
         }
+
+        RpcPayloadData& rpc_data = dynamic_cast<RpcPayloadData&>(*data);
 
         if (RpcTopic::is_request_topic(reader->topic()))
         {
