@@ -61,8 +61,7 @@ void RpcBridge::init_nts_()
 {
     logInfo(DDSPIPE_RPCBRIDGE, "Creating endpoints in RpcBridge for service " << rpc_topic_ << ".");
 
-    // TODO: remove and use every participant
-    std::set<ParticipantId> ids = participants_->get_rtps_participants_ids();
+    std::set<ParticipantId> ids = participants_->get_participants_ids();
 
     // Create a proxy client and server in each RTPS participant
     for (ParticipantId id: ids)

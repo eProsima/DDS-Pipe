@@ -142,7 +142,7 @@ utils::ReturnCode CommonReader::take_nts_(
 
     do
     {
-        rtps_data.reset(new RtpsPayloadData());
+        rtps_data.reset(create_data_());
 
         auto ret = reader_->take_next_sample(rtps_data.get(), &info);
 
@@ -287,6 +287,31 @@ void CommonReader::fill_received_data_(
     {
         data_to_fill.kind = ChangeKind::ALIVE;
     }
+}
+
+core::types::Guid CommonReader::guid() const noexcept
+{
+    return reader_->guid();
+}
+
+fastrtps::RecursiveTimedMutex& CommonReader::get_rtps_mutex() const noexcept
+{
+    return mp_mutex_;
+}
+
+uint64_t CommonReader::get_unread_count() const noexcept
+{
+    return reader_->get_unread_count();
+}
+
+core::types::DdsTopic CommonReader::topic() const noexcept
+{
+    return topic_;
+}
+
+RtpsPayloadData* CommonReader::create_data_() const noexcept
+{
+    return new RtpsPayloadData();
 }
 
 } /* namespace dds */
