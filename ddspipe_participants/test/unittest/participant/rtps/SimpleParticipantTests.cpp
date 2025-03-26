@@ -90,7 +90,11 @@ TEST(SimpleParticipantTests, simple_participant_easy_mode_configuration)
         // Check that easy mode is configured
         fastdds::rtps::RTPSParticipantAttributes att = participant.get_attributes();
         ASSERT_EQ(att.easy_mode_ip, "127.0.0.1");
+
+        // Creating a RTPSParticipant with Easy Mode enabled is not supported yet on Windows
+        #ifndef _WIN32
         participant.init();
+        #endif // _WIN32
     }
 
     // Case 2: transport set to non-builtin
