@@ -56,14 +56,6 @@ SimpleParticipant::reckon_participant_attributes_() const
         throw utils::ConfigurationException("Failed to cast ParticipantConfiguration to SimpleParticipantConfiguration.");
     }
 
-    // Check configuration validity
-    utils::Formatter error_msg;
-    if (!simple_configuration->is_valid(error_msg))
-    {
-        throw utils::ConfigurationException(
-                  utils::Formatter() << "Invalid SimpleParticipantConfiguration: " << error_msg);
-    }
-
     // Configure Participant transports
     if (simple_configuration->transport == core::types::TransportDescriptors::builtin)
     {

@@ -59,7 +59,6 @@ CommonParticipant::CommonParticipant(
     , payload_pool_(payload_pool)
     , discovery_database_(discovery_database)
     , domain_id_(domain_id)
-    , rtps_participant_(nullptr)
 {
     // Do nothing
 }

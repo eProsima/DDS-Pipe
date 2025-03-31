@@ -46,14 +46,11 @@ bool SimpleParticipantConfiguration::is_valid(
 
             return false;
         }
-        else
+        // Check if the IP is a valid IPv4 address
+        if (!fastdds::rtps::IPLocator::isIPv4(easy_mode_ip))
         {
-            // Check if the IP is a valid IPv4 address
-            if (!fastdds::rtps::IPLocator::isIPv4(easy_mode_ip))
-            {
-                error_msg << "Invalid Easy Mode IP value. It must be a valid IPv4 address.";
-                return false;
-            }
+            error_msg << "Invalid Easy Mode IP value. It must be a valid IPv4 address.";
+            return false;
         }
     }
 

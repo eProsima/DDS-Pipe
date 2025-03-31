@@ -234,7 +234,7 @@ protected:
     const std::shared_ptr<core::DiscoveryDatabase> discovery_database_;
 
     //! Internal RTPS Participant
-    eprosima::fastdds::rtps::RTPSParticipant* rtps_participant_;
+    eprosima::fastdds::rtps::RTPSParticipant* rtps_participant_{nullptr};
 
     //! Domain Id to create the internal RTPS Participant.
     core::types::DomainId domain_id_;

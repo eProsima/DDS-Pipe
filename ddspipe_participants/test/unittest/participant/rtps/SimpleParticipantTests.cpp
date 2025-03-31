@@ -107,16 +107,14 @@ TEST(SimpleParticipantTests, simple_participant_easy_mode_configuration)
 
         test::SimpleParticipantTest participant(conf, payload_pool, discovery_database);
 
-        // Non-valid SimpleParticipantconfiguration: a ConfigurationException should be thrown
-        try
-        {
-            fastdds::rtps::RTPSParticipantAttributes att = participant.get_attributes();
-        }
-        catch (const utils::ConfigurationException& e)
-        {
-            ASSERT_EQ(e.what(), "Invalid SimpleParticipantConfiguration: " +
-                    test::SimpleParticipantTest::easy_mode_invalid_transport_error_msg());
-        }
+        // Non-valid SimpleParticipantconfiguration: SimpleParticipantConfiguration::is_valid should return false
+        utils::Formatter error_msg;
+        std::ostringstream ss;
+        ASSERT_FALSE(conf->is_valid(error_msg));
+        ss << error_msg;
+        ASSERT_EQ(
+            ss.str(),
+            test::SimpleParticipantTest::easy_mode_invalid_transport_error_msg());
     }
 
     // Case 3: IP is not a valid IPv4 address
@@ -128,17 +126,14 @@ TEST(SimpleParticipantTests, simple_participant_easy_mode_configuration)
 
         test::SimpleParticipantTest participant(conf, payload_pool, discovery_database);
 
-        // Check that easy mode is configured
-        // Non-valid SimpleParticipantconfiguration: a ConfigurationException should be thrown
-        try
-        {
-            fastdds::rtps::RTPSParticipantAttributes att = participant.get_attributes();
-        }
-        catch (const utils::ConfigurationException& e)
-        {
-            ASSERT_EQ(e.what(), "Invalid SimpleParticipantConfiguration: " +
-                    test::SimpleParticipantTest::easy_mode_invalid_ip_error_msg());
-        }
+        // Non-valid SimpleParticipantconfiguration: SimpleParticipantConfiguration::is_valid should return false
+        utils::Formatter error_msg;
+        std::ostringstream ss;
+        ASSERT_FALSE(conf->is_valid(error_msg));
+        ss << error_msg;
+        ASSERT_EQ(
+            ss.str(),
+            test::SimpleParticipantTest::easy_mode_invalid_ip_error_msg());
     }
 }
 
