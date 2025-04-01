@@ -35,6 +35,25 @@ bool SimpleParticipantConfiguration::is_valid(
         return false;
     }
 
+    if (!easy_mode_ip.empty())
+    {
+        // This option is incompatible with transport tag configurations,
+        // so check that transport is set to the default value (builtin)
+        if (transport != core::types::TransportDescriptors::builtin)
+        {
+            error_msg <<
+                "Easy mode configuration is incompatible with transport tag configurations.";
+
+            return false;
+        }
+        // Check if the IP is a valid IPv4 address
+        if (!fastdds::rtps::IPLocator::isIPv4(easy_mode_ip))
+        {
+            error_msg << "Invalid Easy Mode IP value. It must be a valid IPv4 address.";
+            return false;
+        }
+    }
+
     return true;
 }
 

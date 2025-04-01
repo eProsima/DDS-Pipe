@@ -146,6 +146,31 @@ fastdds::rtps::GUID_t guid_from_instance_handle(
     return fastdds::rtps::iHandle2GUID(ihandle);
 }
 
+void unset_configuration_env_vars()
+{
+    const char* env_vars[] = {
+        "ROS2_EASY_MODE",
+        "ROS_SUPER_CLIENT"
+        "FASTDDS_ENVIRONMENT_FILE",
+        "ROS_DISCOVERY_SERVER"
+    };
+
+    for (const char* var : env_vars)
+    {
+    #ifdef _WIN32
+        if (0 != _putenv_s(var, ""))
+        {
+            throw std::runtime_error("Error unsetting " + std::string(var) + " environment variable.");
+        }
+    #else
+        if (0 != unsetenv(var))
+        {
+            throw std::runtime_error("Error unsetting " + std::string(var) + " environment variable.");
+        }
+    #endif // ifdef _WIN32
+    }
+}
+
 } /* namespace detail */
 } /* namespace participants */
 } /* namespace ddspipe */

@@ -94,6 +94,9 @@ constexpr const char* IGNORE_PARTICIPANT_FLAGS_DIFFERENT_PROCESS_TAG("filter_dif
 constexpr const char* IGNORE_PARTICIPANT_FLAGS_SAME_PROCESS_TAG("filter_same_process"); //! Discovery traffic from own process is discarded
 constexpr const char* IGNORE_PARTICIPANT_FLAGS_DIFFERENT_AND_SAME_PROCESS_TAG("filter_different_and_same_process"); //! Discovery traffic from own host is discarded
 
+// ROS 2 Easy Mode configuration related tags
+constexpr const char* EASY_MODE_TAG("ros2-easy-mode"); //! IP of the remote Discovery Server used in Easy Mode
+
 // Simple RTPS related tags
 constexpr const char* DOMAIN_ID_TAG("domain"); //! Domain Id of the participant
 

@@ -1,4 +1,4 @@
-# Copyright 2022 Proyectos y Sistemas de Mantenimiento SL (eProsima).
+# Copyright 2025 Proyectos y Sistemas de Mantenimiento SL (eProsima).
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,38 +12,22 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-################################
-# Yaml GetEntities Adress Test #
-################################
+set(TEST_NAME SimpleParticipantTests)
 
-set(TEST_NAME YamlGetEntityAddressTest)
-
-set(TEST_SOURCES
-        ${PROJECT_SOURCE_DIR}/src/cpp/YamlReader_generic.cpp
-        ${PROJECT_SOURCE_DIR}/src/cpp/YamlReader_participants.cpp
-        ${PROJECT_SOURCE_DIR}/src/cpp/YamlReader_types.cpp
-        YamlGetEntityAddressTest.cpp
+file(GLOB_RECURSE TEST_SOURCES
+    ${PROJECT_SOURCE_DIR}/src/cpp/*.cpp
+    SimpleParticipantTests.cpp
     )
 
 set(TEST_LIST
-        get_transport_protocol
-        get_ip_version
-        get_port
-        get_ip
-        get_easy_mode_ip
-        get_address_ip
-        get_address_domain
-        get_address_defaults
-        ip_and_domain
+        simple_participant_easy_mode_configuration
     )
 
 set(TEST_EXTRA_LIBRARIES
-        yaml-cpp
         fastcdr
         fastdds
         cpp_utils
         ddspipe_core
-        ddspipe_participants
     )
 
 add_unittest_executable(

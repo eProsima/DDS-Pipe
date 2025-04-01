@@ -320,6 +320,9 @@ void CommonParticipant::create_participant_(
         const core::types::DomainId& domain,
         const fastdds::rtps::RTPSParticipantAttributes& participant_attributes)
 {
+    // Unset environment variables that conflict with configuration
+    detail::unset_configuration_env_vars();
+
     EPROSIMA_LOG_INFO(DDSPIPE_RTPS_PARTICIPANT,
             "Creating Participant in domain " << domain);
 

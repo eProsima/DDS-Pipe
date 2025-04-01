@@ -14,11 +14,12 @@
 
 #include <memory>
 
+#include <fastdds/rtps/attributes/RTPSParticipantAttributes.hpp>
 #include <fastdds/rtps/participant/RTPSParticipant.hpp>
 #include <fastdds/rtps/RTPSDomain.hpp>
-#include <fastdds/rtps/transport/UDPv4TransportDescriptor.hpp>
 #include <fastdds/rtps/transport/shared_mem/SharedMemTransportDescriptor.hpp>
-#include <fastdds/rtps/attributes/RTPSParticipantAttributes.hpp>
+#include <fastdds/rtps/transport/UDPv4TransportDescriptor.hpp>
+#include <fastdds/utils/IPLocator.hpp>
 
 #include <cpp_utils/exception/ConfigurationException.hpp>
 
@@ -116,6 +117,9 @@ SimpleParticipant::reckon_participant_attributes_() const
         default:
             break;
     }
+
+    // Easy mode IP configuration
+    params.easy_mode_ip = simple_configuration->easy_mode_ip;
 
     return params;
 }

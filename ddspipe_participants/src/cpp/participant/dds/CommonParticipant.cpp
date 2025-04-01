@@ -395,6 +395,9 @@ fastdds::dds::DomainParticipantQos CommonParticipant::reckon_participant_qos_() 
 
 fastdds::dds::DomainParticipant* CommonParticipant::create_dds_participant_()
 {
+    // Unset environment variables that conflict with configuration
+    detail::unset_configuration_env_vars();
+
     // Set listener mask so reader read its own messages
     fastdds::dds::StatusMask mask;
     mask << fastdds::dds::StatusMask::publication_matched();
