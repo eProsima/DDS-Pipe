@@ -97,6 +97,11 @@ public:
     bool topic_exists(
             const types::DdsTopic& topic) const noexcept;
 
+    DDSPIPE_CORE_DllAPI
+    bool topic_exists(
+            const std::string& topic_name,
+            types::DdsTopic& topic) const noexcept;
+
     //! Whether this guid is in the database
     DDSPIPE_CORE_DllAPI
     bool endpoint_exists(

@@ -88,6 +88,9 @@ RpcTopic::RpcTopic(
     // Set both topic qos as the one found
     request_topic_.topic_qos = topic.topic_qos;
     reply_topic_.topic_qos = topic.topic_qos;
+
+    request_topic_.type_identifiers = fastdds::dds::xtypes::TypeIdentifierPair();
+    reply_topic_.type_identifiers = fastdds::dds::xtypes::TypeIdentifierPair();
 }
 
 RpcTopic::RpcTopic(

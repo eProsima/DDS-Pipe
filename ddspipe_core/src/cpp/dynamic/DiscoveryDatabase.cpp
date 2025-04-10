@@ -95,6 +95,25 @@ bool DiscoveryDatabase::topic_exists(
     return false;
 }
 
+bool DiscoveryDatabase::topic_exists(
+    const std::string& topic_name,
+    types::DdsTopic& topic) const noexcept
+{
+    std::shared_lock<std::shared_timed_mutex> lock(mutex_);
+
+    // Loop over every Endpoint checking if topic matches
+    // It is not required to be reference
+    for (const auto& entity : entities_)
+    {
+        if (entity.second.topic.m_topic_name == topic_name)
+        {
+            topic = entity.second.topic;
+            return true;
+        }
+    }
+    return false;
+}
+
 bool DiscoveryDatabase::endpoint_exists(
         const Guid& guid) const noexcept
 {
