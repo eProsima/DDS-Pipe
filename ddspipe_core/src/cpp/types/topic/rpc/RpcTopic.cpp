@@ -88,6 +88,13 @@ RpcTopic::RpcTopic(
     // Set both topic qos as the one found
     request_topic_.topic_qos = topic.topic_qos;
     reply_topic_.topic_qos = topic.topic_qos;
+
+    // WORKAROUND: Remove type information from RPC topics. Currently the creation of an RPC topic is triggered when
+    // an entity corresponding to the request or reply topics is discovered. This way, the topic and type names of the
+    // other topic conforming the pair is deduced. However it is not possible to deduce the type information, so we
+    // leave this field empty until the creation mechanism is adapted to cover this scenario.
+    request_topic_.type_identifiers = fastdds::dds::xtypes::TypeIdentifierPair();
+    reply_topic_.type_identifiers = fastdds::dds::xtypes::TypeIdentifierPair();
 }
 
 RpcTopic::RpcTopic(
