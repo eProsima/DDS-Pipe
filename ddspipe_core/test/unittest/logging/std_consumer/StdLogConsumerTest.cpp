@@ -42,9 +42,9 @@ TEST(StdLogConsumerTest, print_logs)
 
     // Filter out every log except ours
     log_configuration.verbosity = utils::VerbosityKind::Info;
-    log_configuration.filter[utils::VerbosityKind::Info].set_value("DDSPIPE_TEST");
-    log_configuration.filter[utils::VerbosityKind::Warning].set_value("DDSPIPE_TEST");
-    log_configuration.filter[utils::VerbosityKind::Error].set_value("DDSPIPE_TEST");
+    log_configuration.filter.info.set_value("DDSPIPE_TEST");
+    log_configuration.filter.warning.set_value("DDSPIPE_TEST");
+    log_configuration.filter.error.set_value("DDSPIPE_TEST");
 
     utils::Log::ClearConsumers();
     utils::Log::SetVerbosity(log_configuration.verbosity);
@@ -102,9 +102,9 @@ TEST(StdLogConsumerTest, dont_print_logs)
 
     // Filter out every log except ours
     log_configuration.verbosity = utils::VerbosityKind::Info;
-    log_configuration.filter[utils::VerbosityKind::Info].set_value("DDSPIPE_TEST");
-    log_configuration.filter[utils::VerbosityKind::Warning].set_value("DDSPIPE_TEST");
-    log_configuration.filter[utils::VerbosityKind::Error].set_value("DDSPIPE_TEST");
+    log_configuration.filter.info.set_value("DDSPIPE_TEST");
+    log_configuration.filter.warning.set_value("DDSPIPE_TEST");
+    log_configuration.filter.error.set_value("DDSPIPE_TEST");
 
     utils::Log::ClearConsumers();
     utils::Log::SetVerbosity(log_configuration.verbosity);
