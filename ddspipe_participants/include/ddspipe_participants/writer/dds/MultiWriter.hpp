@@ -57,7 +57,8 @@ public:
             const core::types::DdsTopic& topic,
             const std::shared_ptr<core::PayloadPool>& payload_pool,
             fastdds::dds::DomainParticipant* participant,
-            fastdds::dds::Topic* topic_entity);
+            fastdds::dds::Topic* topic_entity,
+            const bool repeater = false);
 
     /**
      * @brief Destroy the MultiWriter object
@@ -99,6 +100,7 @@ protected:
 
     fastdds::dds::DomainParticipant* dds_participant_;
     fastdds::dds::Topic* dds_topic_;
+    bool repeater_;
 
     /////////////////////////
     // INTERNAL VARIABLES

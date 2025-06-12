@@ -20,7 +20,9 @@
 #include <fastdds/dds/publisher/DataWriter.hpp>
 #include <fastdds/dds/publisher/Publisher.hpp>
 #include <fastdds/dds/publisher/qos/DataWriterQos.hpp>
+#include <fastdds/dds/topic/IContentFilter.hpp>
 #include <fastdds/dds/topic/Topic.hpp>
+#include <fastdds/rtps/common/WriteParams.hpp>
 
 #include <ddspipe_core/efficiency/payload/PayloadPoolMediator.hpp>
 #include <ddspipe_core/types/participant/ParticipantId.hpp>
@@ -99,7 +101,8 @@ protected:
             const core::types::DdsTopic& topic,
             const std::shared_ptr<core::PayloadPool>& payload_pool,
             fastdds::dds::DomainParticipant* participant,
-            fastdds::dds::Topic* topic_entity);
+            fastdds::dds::Topic* topic_entity,
+            const bool repeater);
 
     /////////////////////////
     // IWRITER METHODS
@@ -136,12 +139,19 @@ protected:
     fastdds::dds::DataWriterQos
     reckon_writer_qos_() const noexcept;
 
+    // TODO
+    DDSPIPE_PARTICIPANTS_DllAPI
+    virtual utils::ReturnCode fill_to_send_data_(
+            eprosima::fastdds::rtps::WriteParams& to_send_params,
+            const core::types::RtpsPayloadData& data) const noexcept;
+
     /////////////////////////
     // EXTERNAL VARIABLES
     /////////////////////////
 
     fastdds::dds::DomainParticipant* dds_participant_;
     fastdds::dds::Topic* dds_topic_;
+    bool repeater_;
 
     /////////////////////////
     // INTERNAL VARIABLES
@@ -153,6 +163,7 @@ protected:
 
     fastdds::dds::Publisher* dds_publisher_;
     fastdds::dds::DataWriter* writer_;
+    std::shared_ptr<fastdds::dds::IContentFilter> data_filter_;
 };
 
 } /* namespace dds */

@@ -30,6 +30,8 @@ class SimpleWriter : public CommonWriter
 {
 public:
 
+    // TODO: update docstrings
+
     /**
      * @brief Construct a new SimpleWriter object
      *
@@ -52,7 +54,8 @@ public:
             const core::types::DdsTopic& topic,
             const std::shared_ptr<core::PayloadPool>& payload_pool,
             fastdds::dds::DomainParticipant* participant,
-            fastdds::dds::Topic* topic_entity);
+            fastdds::dds::Topic* topic_entity,
+            const bool repeater = false);
 
 };
 

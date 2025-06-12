@@ -51,7 +51,8 @@ public:
             const std::shared_ptr<core::PayloadPool>& payload_pool,
             const core::types::SpecificEndpointQoS& specific_qos,
             fastdds::dds::DomainParticipant* participant,
-            fastdds::dds::Topic* topic_entity);
+            fastdds::dds::Topic* topic_entity,
+            const bool repeater = false);
 
 protected:
 
