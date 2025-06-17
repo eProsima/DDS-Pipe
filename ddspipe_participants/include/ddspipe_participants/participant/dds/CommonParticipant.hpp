@@ -60,7 +60,7 @@ namespace dds {
  * @warning This Participant class does not support RPC so far.
  * @todo TODO
  */
-class CommonParticipant : public core::IParticipant, public fastdds::dds::DomainParticipantListener
+class CommonParticipant : public core::IParticipant
 {
 public:
 
@@ -112,23 +112,70 @@ public:
     // LISTENER METHODS
     /////////////////////////
 
-    void on_participant_discovery(
-            fastdds::dds::DomainParticipant* participant,
-            fastdds::rtps::ParticipantDiscoveryStatus reason,
-            const fastdds::rtps::ParticipantBuiltinTopicData& info,
-            bool& /*should_be_ignored*/) override;
+    class DDSListener : public fastdds::dds::DomainParticipantListener
+    {
+    public:
 
-    void on_data_reader_discovery(
-            fastdds::dds::DomainParticipant* participant,
-            fastdds::rtps::ReaderDiscoveryStatus reason,
-            const fastdds::dds::SubscriptionBuiltinTopicData& info,
-            bool& /*should_be_ignored*/) override;
+        explicit DDSListener(
+                std::shared_ptr<SimpleParticipantConfiguration> conf,
+                std::shared_ptr<core::DiscoveryDatabase> ddb)
+            : configuration_(conf)
+            , discovery_database_(ddb)
+        {
+        }
 
-    void on_data_writer_discovery(
-            fastdds::dds::DomainParticipant* participant,
-            fastdds::rtps::WriterDiscoveryStatus reason,
-            const fastdds::dds::PublicationBuiltinTopicData& info,
-            bool& /*should_be_ignored*/) override;
+        /**
+         * @brief Override method from \c DomainParticipantListener
+         *
+         * This method is only used for debugging purposes.
+         */
+        void on_participant_discovery(
+                fastdds::dds::DomainParticipant* participant,
+                fastdds::rtps::ParticipantDiscoveryStatus reason,
+                const fastdds::rtps::ParticipantBuiltinTopicData& info,
+                bool& /*should_be_ignored*/) override;
+
+        /**
+         * @brief Override method from \c DomainParticipantListener .
+         *
+         * This method adds to the database the discovered or modified endpoint.
+         */
+        void on_data_reader_discovery(
+                fastdds::dds::DomainParticipant* participant,
+                fastdds::rtps::ReaderDiscoveryStatus reason,
+                const fastdds::dds::SubscriptionBuiltinTopicData& info,
+                bool& /*should_be_ignored*/) override;
+
+        /**
+         * @brief Override method from \c DomainParticipantListener .
+         *
+         * This method adds to the database the discovered or modified endpoint.
+         */
+        void on_data_writer_discovery(
+                fastdds::dds::DomainParticipant* participant,
+                fastdds::rtps::WriterDiscoveryStatus reason,
+                const fastdds::dds::PublicationBuiltinTopicData& info,
+                bool& /*should_be_ignored*/) override;
+
+        //! Getter for GUID of the participant
+        const fastdds::rtps::GUID_t& guid() const;
+
+        //! Setter for GUID of the participant
+        void guid(
+                const fastdds::rtps::GUID_t& guid);
+    private:
+
+        //! GUID of the participant
+        fastdds::rtps::GUID_t guid_;
+        //! Shared pointer to the configuration of the participant
+        const std::shared_ptr<SimpleParticipantConfiguration> configuration_;
+        //! Shared pointer to the discovery database
+        const std::shared_ptr<core::DiscoveryDatabase> discovery_database_;
+
+    };
+
+    //! Unique pointer to the internal DDS Participant Listener
+    std::unique_ptr<fastdds::dds::DomainParticipantListener> dds_participant_listener_;
 
 protected:
 
@@ -158,6 +205,15 @@ protected:
     virtual
     fastdds::dds::DomainParticipant*
     create_dds_participant_();
+
+    /**
+     * @brief Virtual method that creates a listener for the internal DDS Participant.
+     *        It should be overridden if a different listener is needed.
+     */
+    virtual std::unique_ptr<fastdds::dds::DomainParticipantListener> create_listener()
+    {
+        return std::make_unique<DDSListener>(configuration_, discovery_database_);
+    }
 
     /////////////////////////
     // INTERNAL METHODS

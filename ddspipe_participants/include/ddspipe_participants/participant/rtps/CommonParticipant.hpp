@@ -52,7 +52,6 @@ namespace rtps {
  */
 class CommonParticipant
     : public core::IParticipant
-    , public fastdds::rtps::RTPSParticipantListener
 {
 public:
 
@@ -123,41 +122,65 @@ public:
     // RTPS LISTENER METHODS
     /////////////////////////
 
-    /**
-     * @brief Override method from \c RTPSParticipantListener .
-     *
-     * This method only is for debugging purposes.
-     */
-    DDSPIPE_PARTICIPANTS_DllAPI
-    virtual void on_participant_discovery(
-            fastdds::rtps::RTPSParticipant* participant,
-            fastdds::rtps::ParticipantDiscoveryStatus reason,
-            const fastdds::rtps::ParticipantBuiltinTopicData& info,
-            bool& /*should_be_ignored*/) override;
+    class RTPSListener : public fastdds::rtps::RTPSParticipantListener
+    {
+    public:
 
-    /**
-     * @brief Override method from \c RTPSParticipantListener .
-     *
-     * This method adds to database the endpoint discovered or modified.
-     */
-    DDSPIPE_PARTICIPANTS_DllAPI
-    virtual void on_reader_discovery(
-            fastdds::rtps::RTPSParticipant* participant,
-            fastdds::rtps::ReaderDiscoveryStatus reason,
-            const fastdds::rtps::SubscriptionBuiltinTopicData& info,
-            bool& /*should_be_ignored*/) override;
+        explicit RTPSListener(
+                std::shared_ptr<ParticipantConfiguration> conf,
+                std::shared_ptr<core::DiscoveryDatabase> ddb)
+            : configuration_(conf)
+            , discovery_database_(ddb)
+        {
+        }
 
-    /**
-     * @brief Override method from \c RTPSParticipantListener .
-     *
-     * This method adds to database the endpoint discovered or modified.
-     */
-    DDSPIPE_PARTICIPANTS_DllAPI
-    virtual void on_writer_discovery(
-            fastdds::rtps::RTPSParticipant* participant,
-            fastdds::rtps::WriterDiscoveryStatus reason,
-            const fastdds::rtps::PublicationBuiltinTopicData& info,
-            bool& /*should_be_ignored*/) override;
+        /**
+         * @brief Override method from \c RTPSParticipantListener .
+         *
+         * This method is only used for debugging purposes.
+         */
+        DDSPIPE_PARTICIPANTS_DllAPI
+        virtual void on_participant_discovery(
+                fastdds::rtps::RTPSParticipant* participant,
+                fastdds::rtps::ParticipantDiscoveryStatus reason,
+                const fastdds::rtps::ParticipantBuiltinTopicData& info,
+                bool& /*should_be_ignored*/) override;
+
+        /**
+         * @brief Override method from \c RTPSParticipantListener .
+         *
+         * This method adds to database the endpoint discovered or modified.
+         */
+        DDSPIPE_PARTICIPANTS_DllAPI
+        virtual void on_reader_discovery(
+                fastdds::rtps::RTPSParticipant* participant,
+                fastdds::rtps::ReaderDiscoveryStatus reason,
+                const fastdds::rtps::SubscriptionBuiltinTopicData& info,
+                bool& /*should_be_ignored*/) override;
+
+        /**
+         * @brief Override method from \c RTPSParticipantListener .
+         *
+         * This method adds to database the endpoint discovered or modified.
+         */
+        DDSPIPE_PARTICIPANTS_DllAPI
+        virtual void on_writer_discovery(
+                fastdds::rtps::RTPSParticipant* participant,
+                fastdds::rtps::WriterDiscoveryStatus reason,
+                const fastdds::rtps::PublicationBuiltinTopicData& info,
+                bool& /*should_be_ignored*/) override;
+
+    protected:
+
+        //! Shared pointer to the configuration of the participant
+        const std::shared_ptr<ParticipantConfiguration> configuration_;
+        //! Shared pointer to the discovery database
+        const std::shared_ptr<core::DiscoveryDatabase> discovery_database_;
+
+    };
+
+    //! Unique pointer to the internal RTPS Participant Listener
+    std::unique_ptr<fastdds::rtps::RTPSParticipantListener> rtps_participant_listener_;
 
     //////////////////
     // STATIC METHODS
@@ -220,6 +243,17 @@ protected:
      */
     DDSPIPE_PARTICIPANTS_DllAPI
     virtual fastdds::rtps::RTPSParticipantAttributes reckon_participant_attributes_() const;
+
+    /**
+     * @brief Virtual method that creates a listener for the internal RTPS Participant.
+     *        It should be overridden if a different listener is needed.
+     *        This method must be called after the RTPS Participant is created, otherwise no listener will be set.
+     * @return A unique pointer to an RTPS Participant Listener.
+     */
+    virtual std::unique_ptr<fastdds::rtps::RTPSParticipantListener> create_listener()
+    {
+        return std::make_unique<RTPSListener>(configuration_, discovery_database_);
+    }
 
     /////
     // VARIABLES
