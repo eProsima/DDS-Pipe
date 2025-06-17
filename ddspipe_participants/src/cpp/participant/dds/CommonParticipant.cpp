@@ -362,7 +362,6 @@ void CommonParticipant::DDSListener::guid(
     guid_ = guid;
 }
 
-
 CommonParticipant::CommonParticipant(
         const std::shared_ptr<SimpleParticipantConfiguration>& participant_configuration,
         const std::shared_ptr<core::PayloadPool>& payload_pool,

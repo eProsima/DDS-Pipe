@@ -163,6 +163,7 @@ public:
         //! Setter for GUID of the participant
         void guid(
                 const fastdds::rtps::GUID_t& guid);
+
     private:
 
         //! GUID of the participant

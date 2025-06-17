@@ -187,7 +187,8 @@ utils::ReturnCode CommonReader::take_nts_(
             // There has been an error taking the data. Exit.
             return ret;
         }
-    } while (!should_accept_sample_(info));
+    }
+    while (!should_accept_sample_(info));
 
     EPROSIMA_LOG_INFO(DDSPIPE_DDS_READER, "Data taken in " << participant_id_ << " for topic " << topic_ << ".");
 
