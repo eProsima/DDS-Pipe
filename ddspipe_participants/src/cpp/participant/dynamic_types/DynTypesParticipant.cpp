@@ -76,7 +76,7 @@ std::shared_ptr<IReader> DynTypesParticipant::create_reader(
     return rtps::SimpleParticipant::create_reader(topic);
 }
 
-void DynTypesParticipant::on_reader_discovery(
+void DynTypesParticipant::DynRTPSListener::on_reader_discovery(
         fastdds::rtps::RTPSParticipant* participant,
         fastdds::rtps::ReaderDiscoveryStatus reason,
         const fastdds::rtps::SubscriptionBuiltinTopicData& info,
@@ -88,13 +88,13 @@ void DynTypesParticipant::on_reader_discovery(
         const auto type_info = info.type_information.type_information;
         const auto type_name = info.type_name.to_string();
 
-        rtps::CommonParticipant::on_reader_discovery(participant, reason, info, should_be_ignored);
+        rtps::CommonParticipant::RTPSListener::on_reader_discovery(participant, reason, info, should_be_ignored);
 
         notify_type_discovered_(type_info, type_name);
     }
 }
 
-void DynTypesParticipant::on_writer_discovery(
+void DynTypesParticipant::DynRTPSListener::on_writer_discovery(
         fastdds::rtps::RTPSParticipant* participant,
         fastdds::rtps::WriterDiscoveryStatus reason,
         const fastdds::rtps::PublicationBuiltinTopicData& info,
@@ -106,13 +106,13 @@ void DynTypesParticipant::on_writer_discovery(
         const auto type_info = info.type_information.type_information;
         const auto type_name = info.type_name.to_string();
 
-        rtps::CommonParticipant::on_writer_discovery(participant, reason, info, should_be_ignored);
+        rtps::CommonParticipant::RTPSListener::on_writer_discovery(participant, reason, info, should_be_ignored);
 
         notify_type_discovered_(type_info, type_name);
     }
 }
 
-void DynTypesParticipant::notify_type_discovered_(
+void DynTypesParticipant::DynRTPSListener::notify_type_discovered_(
         const fastdds::dds::xtypes::TypeInformation& type_info,
         const std::string& type_name)
 {
@@ -150,7 +150,7 @@ void DynTypesParticipant::notify_type_discovered_(
     // Notify type_identifier
     // NOTE: We assume each type_name corresponds to only one type_identifier
     EPROSIMA_LOG_INFO(DDSPIPE_DYNTYPES_PARTICIPANT,
-            "Participant " << this->id() << " discovered type object " << dyn_type->get_name());
+            "Participant " << configuration_->id << " discovered type object " << dyn_type->get_name());
 
     monitor_type_discovered(type_name);
 
