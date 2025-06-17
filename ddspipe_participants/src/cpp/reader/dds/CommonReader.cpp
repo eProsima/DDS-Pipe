@@ -75,7 +75,7 @@ void CommonReader::init()
     reader_ = dds_subscriber_->create_datareader(
         dds_topic_,
         reckon_reader_qos_(),
-        nullptr,
+        this,
         eprosima::fastdds::dds::StatusMask::all(),
         payload_pool_);
 
@@ -85,10 +85,6 @@ void CommonReader::init()
                   utils::Formatter() << "Error creating DataReader for Participant " <<
                       participant_id_ << " in topic " << topic_ << ".");
     }
-
-    // Set listener after entity creation to avoid SEGFAULT (produced when callback using reader_ is
-    // invoked before the variable is fully set)
-    reader_->set_listener(this);
 
 }
 

@@ -121,10 +121,6 @@ void CommonReader::internal_entities_creation_(
                       participant_id_ << " in topic " << topic_ << ".");
     }
 
-    // Set listener after entity creation to avoid SEGFAULT (produced when callback using rtps_reader_ is
-    // invoked before the variable is fully set)
-    rtps_reader_->set_listener(this);
-
     // Register reader with topic
     if (!rtps_participant_->register_reader(rtps_reader_, topic_description, reader_qos))
     {
