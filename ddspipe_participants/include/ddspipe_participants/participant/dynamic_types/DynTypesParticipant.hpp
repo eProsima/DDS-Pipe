@@ -121,7 +121,8 @@ protected:
     //! Override method from \c CommonParticipant to create the internal RTPS participant listener
     std::unique_ptr<fastdds::rtps::RTPSParticipantListener> create_listener() override
     {
-        return std::make_unique<DynRTPSListener>(configuration_, discovery_database_, type_object_reader_, received_types_);
+        return std::make_unique<DynRTPSListener>(configuration_, discovery_database_, type_object_reader_,
+                       received_types_);
     }
 
     //! Type Object Internal Reader
