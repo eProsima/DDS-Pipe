@@ -118,11 +118,7 @@ public:
 
         explicit DDSListener(
                 std::shared_ptr<SimpleParticipantConfiguration> conf,
-                std::shared_ptr<core::DiscoveryDatabase> ddb)
-            : configuration_(conf)
-            , discovery_database_(ddb)
-        {
-        }
+                std::shared_ptr<core::DiscoveryDatabase> ddb);
 
         /**
          * @brief Override method from \c DomainParticipantListener
@@ -164,7 +160,7 @@ public:
         void guid(
                 const fastdds::rtps::GUID_t& guid);
 
-    private:
+    protected:
 
         //! GUID of the participant
         fastdds::rtps::GUID_t guid_;
@@ -191,6 +187,17 @@ protected:
             const std::shared_ptr<core::DiscoveryDatabase>& discovery_database);
 
     /////////////////////////
+    // VIRTUAL METHODS
+    /////////////////////////
+
+    /**
+     * @brief Virtual method that creates a listener for the internal DDS Participant.
+     *        It should be overridden if a different listener is needed.
+     */
+    DDSPIPE_PARTICIPANTS_DllAPI
+    virtual std::unique_ptr<fastdds::dds::DomainParticipantListener> create_listener_();
+
+    /////////////////////////
     // INTERNAL VIRTUAL METHODS
     /////////////////////////
 
@@ -206,15 +213,6 @@ protected:
     virtual
     fastdds::dds::DomainParticipant*
     create_dds_participant_();
-
-    /**
-     * @brief Virtual method that creates a listener for the internal DDS Participant.
-     *        It should be overridden if a different listener is needed.
-     */
-    virtual std::unique_ptr<fastdds::dds::DomainParticipantListener> create_listener()
-    {
-        return std::make_unique<DDSListener>(configuration_, discovery_database_);
-    }
 
     /////////////////////////
     // INTERNAL METHODS

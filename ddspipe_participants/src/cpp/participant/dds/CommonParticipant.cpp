@@ -54,6 +54,11 @@ CommonParticipant::~CommonParticipant()
     }
 }
 
+std::unique_ptr<fastdds::dds::DomainParticipantListener> CommonParticipant::create_listener_()
+{
+    return std::make_unique<DDSListener>(configuration_, discovery_database_);
+}
+
 void CommonParticipant::init()
 {
     EPROSIMA_LOG_INFO(DDSPIPE_DDS_PARTICIPANT, "Initializing DDS Participant " << id() << ".");
@@ -212,6 +217,14 @@ std::shared_ptr<core::IReader> CommonParticipant::create_reader(
 
         return reader;
     }
+}
+
+CommonParticipant::DDSListener::DDSListener(
+        std::shared_ptr<SimpleParticipantConfiguration> conf,
+        std::shared_ptr<core::DiscoveryDatabase> ddb)
+    : configuration_(conf)
+    , discovery_database_(ddb)
+{
 }
 
 void CommonParticipant::DDSListener::on_participant_discovery(
@@ -414,7 +427,7 @@ fastdds::dds::DomainParticipant* CommonParticipant::create_dds_participant_()
     mask << fastdds::dds::StatusMask::subscription_matched();
 
     // Create the participant listener
-    dds_participant_listener_ = create_listener();
+    dds_participant_listener_ = create_listener_();
 
     return eprosima::fastdds::dds::DomainParticipantFactory::get_instance()->create_participant(
         configuration_->domain,

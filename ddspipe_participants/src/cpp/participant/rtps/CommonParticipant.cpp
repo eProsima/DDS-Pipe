@@ -79,7 +79,15 @@ void CommonParticipant::init()
         participant_attributes_);
 }
 
-void CommonParticipant::RTPSListener::on_participant_discovery(
+CommonParticipant::RtpsListener::RtpsListener(
+        std::shared_ptr<ParticipantConfiguration> conf,
+        std::shared_ptr<core::DiscoveryDatabase> ddb)
+    : configuration_(conf)
+    , discovery_database_(ddb)
+{
+}
+
+void CommonParticipant::RtpsListener::on_participant_discovery(
         fastdds::rtps::RTPSParticipant* participant,
         fastdds::rtps::ParticipantDiscoveryStatus reason,
         const fastdds::rtps::ParticipantBuiltinTopicData& info,
@@ -116,7 +124,7 @@ void CommonParticipant::RTPSListener::on_participant_discovery(
     }
 }
 
-void CommonParticipant::RTPSListener::on_reader_discovery(
+void CommonParticipant::RtpsListener::on_reader_discovery(
         fastdds::rtps::RTPSParticipant* participant,
         fastdds::rtps::ReaderDiscoveryStatus reason,
         const fastdds::rtps::SubscriptionBuiltinTopicData& info,
@@ -161,7 +169,7 @@ void CommonParticipant::RTPSListener::on_reader_discovery(
     }
 }
 
-void CommonParticipant::RTPSListener::on_writer_discovery(
+void CommonParticipant::RtpsListener::on_writer_discovery(
         fastdds::rtps::RTPSParticipant* participant,
         fastdds::rtps::WriterDiscoveryStatus reason,
         const fastdds::rtps::PublicationBuiltinTopicData& info,
@@ -327,7 +335,7 @@ void CommonParticipant::create_participant_(
             "Creating Participant in domain " << domain);
 
     // Create the RTPS Participant Listener
-    rtps_participant_listener_ = create_listener();
+    rtps_participant_listener_ = create_listener_();
 
     // Listener must be set in creation as no callbacks should be missed
     // It is safe to do so here as object is already created and callbacks do not require anything set in this method
@@ -501,6 +509,12 @@ CommonParticipant::reckon_participant_attributes_() const
     add_participant_att_properties_(params);
 
     return params;
+}
+
+std::unique_ptr<fastdds::rtps::RTPSParticipantListener>
+CommonParticipant::create_listener_()
+{
+    return std::make_unique<RtpsListener>(configuration_, discovery_database_);
 }
 
 } /* namespace rtps */
