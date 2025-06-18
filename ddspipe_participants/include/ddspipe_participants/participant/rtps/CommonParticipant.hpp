@@ -122,17 +122,14 @@ public:
     // RTPS LISTENER METHODS
     /////////////////////////
 
-    class RTPSListener : public fastdds::rtps::RTPSParticipantListener
+    class RtpsListener : public fastdds::rtps::RTPSParticipantListener
     {
     public:
 
-        explicit RTPSListener(
+        DDSPIPE_PARTICIPANTS_DllAPI
+        explicit RtpsListener(
                 std::shared_ptr<ParticipantConfiguration> conf,
-                std::shared_ptr<core::DiscoveryDatabase> ddb)
-            : configuration_(conf)
-            , discovery_database_(ddb)
-        {
-        }
+                std::shared_ptr<core::DiscoveryDatabase> ddb);
 
         /**
          * @brief Override method from \c RTPSParticipantListener .
@@ -250,10 +247,8 @@ protected:
      *        This method must be called after the RTPS Participant is created, otherwise no listener will be set.
      * @return A unique pointer to an RTPS Participant Listener.
      */
-    virtual std::unique_ptr<fastdds::rtps::RTPSParticipantListener> create_listener()
-    {
-        return std::make_unique<RTPSListener>(configuration_, discovery_database_);
-    }
+    DDSPIPE_PARTICIPANTS_DllAPI
+    virtual std::unique_ptr<fastdds::rtps::RTPSParticipantListener> create_listener_();
 
     /////
     // VARIABLES

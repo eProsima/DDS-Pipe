@@ -74,20 +74,15 @@ public:
     std::shared_ptr<core::IReader> create_reader(
             const core::ITopic& topic) override;
 
-    class DynRTPSListener : public rtps::CommonParticipant::RTPSListener
+    class DynTypesRtpsListener : public rtps::CommonParticipant::RtpsListener
     {
     public:
 
-        explicit DynRTPSListener(
+        DDSPIPE_PARTICIPANTS_DllAPI
+        explicit DynTypesRtpsListener(
                 std::shared_ptr<ParticipantConfiguration> conf,
                 std::shared_ptr<core::DiscoveryDatabase> ddb,
-                std::shared_ptr<InternalReader> type_object_reader_,
-                std::set<std::string> received_types_)
-            : rtps::CommonParticipant::RTPSListener(conf, ddb)
-            , type_object_reader_(type_object_reader_)
-            , received_types_(received_types_)
-        {
-        }
+                core::types::ParticipantId id);
 
         DDSPIPE_PARTICIPANTS_DllAPI
         void on_reader_discovery(
@@ -103,7 +98,13 @@ public:
                 const fastdds::rtps::PublicationBuiltinTopicData& info,
                 bool& should_be_ignored) override;
 
-    private:
+        //! Type Object Reader getter
+        inline std::shared_ptr<InternalReader> type_object_reader() const
+        {
+            return type_object_reader_;
+        }
+
+    protected:
 
         //! Type Object Internal Reader
         std::shared_ptr<InternalReader> type_object_reader_;
@@ -119,17 +120,7 @@ public:
 protected:
 
     //! Override method from \c CommonParticipant to create the internal RTPS participant listener
-    std::unique_ptr<fastdds::rtps::RTPSParticipantListener> create_listener() override
-    {
-        return std::make_unique<DynRTPSListener>(configuration_, discovery_database_, type_object_reader_,
-                       received_types_);
-    }
-
-    //! Type Object Internal Reader
-    std::shared_ptr<InternalReader> type_object_reader_;
-
-    //! Received types set
-    std::set<std::string> received_types_;
+    std::unique_ptr<fastdds::rtps::RTPSParticipantListener> create_listener_() override;
 };
 
 } /* namespace participants */
