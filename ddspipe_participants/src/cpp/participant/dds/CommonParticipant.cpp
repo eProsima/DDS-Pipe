@@ -96,9 +96,6 @@ void CommonParticipant::init()
     {
         throw utils::InitializationException(STR_ENTRY << "Error enabling DDS Participant " << id() << ".");
     }
-
-    // Set the GUID of the participant in the DDS Listener
-    static_cast<DDSListener*>(dds_participant_listener_.get())->guid(dds_participant_->guid());
 }
 
 core::types::ParticipantId CommonParticipant::id() const noexcept
@@ -265,13 +262,13 @@ void CommonParticipant::DDSListener::on_participant_discovery(
 }
 
 void CommonParticipant::DDSListener::on_data_reader_discovery(
-        fastdds::dds::DomainParticipant*,
+        fastdds::dds::DomainParticipant* participant,
         fastdds::rtps::ReaderDiscoveryStatus reason,
         const fastdds::dds::SubscriptionBuiltinTopicData& info,
         bool& /*should_be_ignored*/)
 {
     // If reader is from other participant, store it in discovery database
-    if (detail::come_from_same_participant_(info.guid, guid()))
+    if (detail::come_from_same_participant_(info.guid, participant->guid()))
     {
         // Come from this participant, do nothing
         return;
@@ -315,13 +312,13 @@ void CommonParticipant::DDSListener::on_data_reader_discovery(
 }
 
 void CommonParticipant::DDSListener::on_data_writer_discovery(
-        fastdds::dds::DomainParticipant*,
+        fastdds::dds::DomainParticipant* participant,
         fastdds::rtps::WriterDiscoveryStatus reason,
         const fastdds::dds::PublicationBuiltinTopicData& info,
         bool& /*should_be_ignored*/)
 {
     // If writer is from other participant, store it in discovery database
-    if (detail::come_from_same_participant_(info.guid, guid()))
+    if (detail::come_from_same_participant_(info.guid, participant->guid()))
     {
         // Come from this participant, do nothing
         return;
@@ -362,17 +359,6 @@ void CommonParticipant::DDSListener::on_data_writer_discovery(
 
         // Do not notify discovery database (design choice that might be changed in the future)
     }
-}
-
-const fastdds::rtps::GUID_t& CommonParticipant::DDSListener::guid() const
-{
-    return guid_;
-}
-
-void CommonParticipant::DDSListener::guid(
-        const fastdds::rtps::GUID_t& guid)
-{
-    guid_ = guid;
 }
 
 CommonParticipant::CommonParticipant(
