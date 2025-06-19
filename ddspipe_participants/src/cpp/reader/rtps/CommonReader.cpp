@@ -107,6 +107,7 @@ void CommonReader::internal_entities_creation_(
     // Create CommonReader
     // Listener must be set in creation as no callbacks should be missed
     // It is safe to do so here as object is already created and callbacks do not require anything set in this method
+    // Also, no data races can ocurr as no callback will be called until this reader is registered
     rtps_reader_ = fastdds::rtps::RTPSDomain::createRTPSReader(
         rtps_participant_,
         non_const_reader_attributes,

@@ -153,17 +153,8 @@ public:
                 const fastdds::dds::PublicationBuiltinTopicData& info,
                 bool& /*should_be_ignored*/) override;
 
-        //! Getter for GUID of the participant
-        const fastdds::rtps::GUID_t& guid() const;
-
-        //! Setter for GUID of the participant
-        void guid(
-                const fastdds::rtps::GUID_t& guid);
-
     protected:
 
-        //! GUID of the participant
-        fastdds::rtps::GUID_t guid_;
         //! Shared pointer to the configuration of the participant
         const std::shared_ptr<SimpleParticipantConfiguration> configuration_;
         //! Shared pointer to the discovery database

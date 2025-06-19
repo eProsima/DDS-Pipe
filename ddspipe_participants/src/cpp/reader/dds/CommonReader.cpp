@@ -86,6 +86,18 @@ void CommonReader::init()
                       participant_id_ << " in topic " << topic_ << ".");
     }
 
+    // Subscriber is created with autoenable set to false, so we need to enable the reader manually.
+    // This is done just to ensure that the reader is not registered before any other method modifying the reader pointer
+    // is called, opening a window for potential data races. Although Fast DDS ensures that this cannot happen, this
+    // procedure protects against future bad practices introducing the aforementioned data races.
+    if (fastdds::dds::RETCODE_OK != reader_->enable())
+    {
+        dds_subscriber_->delete_datareader(reader_);
+        throw utils::InitializationException(
+                  utils::Formatter() << "Error enabling DataReader for Participant " <<
+                      participant_id_ << " in topic " << topic_ << ".");
+    }
+
 }
 
 void CommonReader::on_data_available(
@@ -221,6 +233,7 @@ fastdds::dds::SubscriberQos CommonReader::reckon_subscriber_qos_() const
     {
         qos.partition().push_back("*");
     }
+    qos.entity_factory().autoenable_created_entities = false;
     return qos;
 }
 
