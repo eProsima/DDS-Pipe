@@ -61,35 +61,47 @@ RpcTopic::RpcTopic(
         request_topic_ = topic;
         reply_topic_ = topic;
         reply_topic_.m_topic_name =
-                std::regex_replace(reply_topic_.m_topic_name, std::regex(ROS_TOPIC_REQUEST_PREFIX_STR), ROS_TOPIC_REPLY_PREFIX_STR);
+                std::regex_replace(reply_topic_.m_topic_name, std::regex(
+                            ROS_TOPIC_REQUEST_PREFIX_STR), ROS_TOPIC_REPLY_PREFIX_STR);
         reply_topic_.m_topic_name =
-                std::regex_replace(reply_topic_.m_topic_name, std::regex(ROS_TOPIC_REQUEST_SUFFIX_STR), ROS_TOPIC_REPLY_SUFFIX_STR);
+                std::regex_replace(reply_topic_.m_topic_name, std::regex(
+                            ROS_TOPIC_REQUEST_SUFFIX_STR), ROS_TOPIC_REPLY_SUFFIX_STR);
         reply_topic_.type_name =
-                std::regex_replace(reply_topic_.type_name, std::regex(ROS_TYPE_REQUEST_SUFFIX_STR), ROS_TYPE_REPLY_SUFFIX_STR);
+                std::regex_replace(reply_topic_.type_name, std::regex(
+                            ROS_TYPE_REQUEST_SUFFIX_STR), ROS_TYPE_REPLY_SUFFIX_STR);
 
-        service_name_ = std::regex_replace(topic.m_topic_name, std::regex(ROS_TOPIC_REQUEST_PREFIX_STR + "|" + ROS_TOPIC_REQUEST_SUFFIX_STR), "");
+        service_name_ =
+                std::regex_replace(topic.m_topic_name, std::regex(
+                            ROS_TOPIC_REQUEST_PREFIX_STR + "|" + ROS_TOPIC_REQUEST_SUFFIX_STR), "");
     }
     else if (is_ros2_reply_topic(topic))
     {
         reply_topic_ = topic;
         request_topic_ = topic;
         request_topic_.m_topic_name =
-                std::regex_replace(request_topic_.m_topic_name, std::regex(ROS_TOPIC_REPLY_PREFIX_STR), ROS_TOPIC_REQUEST_PREFIX_STR);
+                std::regex_replace(request_topic_.m_topic_name, std::regex(
+                            ROS_TOPIC_REPLY_PREFIX_STR), ROS_TOPIC_REQUEST_PREFIX_STR);
         request_topic_.m_topic_name =
-                std::regex_replace(request_topic_.m_topic_name, std::regex(ROS_TOPIC_REPLY_SUFFIX_STR), ROS_TOPIC_REQUEST_SUFFIX_STR);
+                std::regex_replace(request_topic_.m_topic_name, std::regex(
+                            ROS_TOPIC_REPLY_SUFFIX_STR), ROS_TOPIC_REQUEST_SUFFIX_STR);
         request_topic_.type_name =
-                std::regex_replace(request_topic_.type_name, std::regex(ROS_TYPE_REPLY_SUFFIX_STR), ROS_TYPE_REQUEST_SUFFIX_STR);
+                std::regex_replace(request_topic_.type_name, std::regex(
+                            ROS_TYPE_REPLY_SUFFIX_STR), ROS_TYPE_REQUEST_SUFFIX_STR);
 
-        service_name_ = std::regex_replace(topic.m_topic_name, std::regex(ROS_TOPIC_REPLY_PREFIX_STR + "|" + ROS_TOPIC_REPLY_SUFFIX_STR), "");
+        service_name_ =
+                std::regex_replace(topic.m_topic_name, std::regex(
+                            ROS_TOPIC_REPLY_PREFIX_STR + "|" + ROS_TOPIC_REPLY_SUFFIX_STR), "");
     }
     else if (is_fastdds_request_topic(topic))
     {
         request_topic_ = topic;
         reply_topic_ = topic;
         reply_topic_.m_topic_name =
-                std::regex_replace(reply_topic_.m_topic_name, std::regex(FASTDDS_TOPIC_REQUEST_SUFFIX_STR), FASTDDS_TOPIC_REPLY_SUFFIX_STR);
+                std::regex_replace(reply_topic_.m_topic_name, std::regex(
+                            FASTDDS_TOPIC_REQUEST_SUFFIX_STR), FASTDDS_TOPIC_REPLY_SUFFIX_STR);
         reply_topic_.type_name =
-                std::regex_replace(reply_topic_.type_name, std::regex(FASTDDS_TYPE_REQUEST_SUFFIX_STR), FASTDDS_TYPE_REPLY_SUFFIX_STR);
+                std::regex_replace(reply_topic_.type_name, std::regex(
+                            FASTDDS_TYPE_REQUEST_SUFFIX_STR), FASTDDS_TYPE_REPLY_SUFFIX_STR);
 
         service_name_ = std::regex_replace(topic.m_topic_name, std::regex(FASTDDS_TOPIC_REQUEST_SUFFIX_STR), "");
     }
@@ -98,9 +110,11 @@ RpcTopic::RpcTopic(
         reply_topic_ = topic;
         request_topic_ = topic;
         request_topic_.m_topic_name =
-                std::regex_replace(request_topic_.m_topic_name, std::regex(FASTDDS_TOPIC_REPLY_SUFFIX_STR), FASTDDS_TOPIC_REQUEST_SUFFIX_STR);
+                std::regex_replace(request_topic_.m_topic_name, std::regex(
+                            FASTDDS_TOPIC_REPLY_SUFFIX_STR), FASTDDS_TOPIC_REQUEST_SUFFIX_STR);
         request_topic_.type_name =
-                std::regex_replace(request_topic_.type_name, std::regex(FASTDDS_TYPE_REPLY_SUFFIX_STR), FASTDDS_TYPE_REQUEST_SUFFIX_STR);
+                std::regex_replace(request_topic_.type_name, std::regex(
+                            FASTDDS_TYPE_REPLY_SUFFIX_STR), FASTDDS_TYPE_REQUEST_SUFFIX_STR);
 
         service_name_ = std::regex_replace(topic.m_topic_name, std::regex(FASTDDS_TOPIC_REPLY_SUFFIX_STR), "");
     }
@@ -150,19 +164,19 @@ const DdsTopic& RpcTopic::reply_topic() const
 }
 
 bool RpcTopic::is_ros2_request_topic(
-    const DdsTopic& topic)
+        const DdsTopic& topic)
 {
     const std::string& m_topic_name = topic.m_topic_name;
     const std::string& type_name = topic.type_name;
 
     bool topic_prefix_ok = m_topic_name.find(ROS_TOPIC_REQUEST_PREFIX_STR) == 0;
     bool topic_suffix_ok = (m_topic_name.size() >= ROS_TOPIC_REQUEST_SUFFIX_STR.size() &&
-        m_topic_name.compare(m_topic_name.size() - ROS_TOPIC_REQUEST_SUFFIX_STR.size(),
+            m_topic_name.compare(m_topic_name.size() - ROS_TOPIC_REQUEST_SUFFIX_STR.size(),
             ROS_TOPIC_REQUEST_SUFFIX_STR.size(),
             ROS_TOPIC_REQUEST_SUFFIX_STR) == 0);
 
     bool type_suffix_ok = (type_name.size() >= ROS_TYPE_REQUEST_SUFFIX_STR.size() &&
-        type_name.compare(type_name.size() - ROS_TYPE_REQUEST_SUFFIX_STR.size(),
+            type_name.compare(type_name.size() - ROS_TYPE_REQUEST_SUFFIX_STR.size(),
             ROS_TYPE_REQUEST_SUFFIX_STR.size(),
             ROS_TYPE_REQUEST_SUFFIX_STR) == 0);
 
@@ -170,19 +184,19 @@ bool RpcTopic::is_ros2_request_topic(
 }
 
 bool RpcTopic::is_ros2_reply_topic(
-    const DdsTopic& topic)
+        const DdsTopic& topic)
 {
     const std::string& m_topic_name = topic.m_topic_name;
     const std::string& type_name = topic.type_name;
 
     bool topic_prefix_ok = m_topic_name.find(ROS_TOPIC_REPLY_PREFIX_STR) == 0;
     bool topic_suffix_ok = (m_topic_name.size() >= ROS_TOPIC_REPLY_SUFFIX_STR.size() &&
-        m_topic_name.compare(m_topic_name.size() - ROS_TOPIC_REPLY_SUFFIX_STR.size(),
+            m_topic_name.compare(m_topic_name.size() - ROS_TOPIC_REPLY_SUFFIX_STR.size(),
             ROS_TOPIC_REPLY_SUFFIX_STR.size(),
             ROS_TOPIC_REPLY_SUFFIX_STR) == 0);
 
     bool type_suffix_ok = (type_name.size() >= ROS_TYPE_REPLY_SUFFIX_STR.size() &&
-        type_name.compare(type_name.size() - ROS_TYPE_REPLY_SUFFIX_STR.size(),
+            type_name.compare(type_name.size() - ROS_TYPE_REPLY_SUFFIX_STR.size(),
             ROS_TYPE_REPLY_SUFFIX_STR.size(),
             ROS_TYPE_REPLY_SUFFIX_STR) == 0);
 
@@ -190,19 +204,19 @@ bool RpcTopic::is_ros2_reply_topic(
 }
 
 bool RpcTopic::is_fastdds_request_topic(
-    const DdsTopic& topic)
+        const DdsTopic& topic)
 {
     const std::string& m_topic_name = topic.m_topic_name;
     const std::string& type_name = topic.type_name;
 
     bool topic_prefix_ok = m_topic_name.find(FASTDDS_TOPIC_REQUEST_PREFIX_STR) == 0;
     bool topic_suffix_ok = (m_topic_name.size() >= FASTDDS_TOPIC_REQUEST_SUFFIX_STR.size() &&
-        m_topic_name.compare(m_topic_name.size() - FASTDDS_TOPIC_REQUEST_SUFFIX_STR.size(),
+            m_topic_name.compare(m_topic_name.size() - FASTDDS_TOPIC_REQUEST_SUFFIX_STR.size(),
             FASTDDS_TOPIC_REQUEST_SUFFIX_STR.size(),
             FASTDDS_TOPIC_REQUEST_SUFFIX_STR) == 0);
 
     bool type_suffix_ok = (type_name.size() >= FASTDDS_TYPE_REQUEST_SUFFIX_STR.size() &&
-        type_name.compare(type_name.size() - FASTDDS_TYPE_REQUEST_SUFFIX_STR.size(),
+            type_name.compare(type_name.size() - FASTDDS_TYPE_REQUEST_SUFFIX_STR.size(),
             FASTDDS_TYPE_REQUEST_SUFFIX_STR.size(),
             FASTDDS_TYPE_REQUEST_SUFFIX_STR) == 0);
 
@@ -210,19 +224,19 @@ bool RpcTopic::is_fastdds_request_topic(
 }
 
 bool RpcTopic::is_fastdds_reply_topic(
-    const DdsTopic& topic)
+        const DdsTopic& topic)
 {
     const std::string& m_topic_name = topic.m_topic_name;
     const std::string& type_name = topic.type_name;
 
     bool topic_prefix_ok = m_topic_name.find(FASTDDS_TOPIC_REPLY_PREFIX_STR) == 0;
     bool topic_suffix_ok = (m_topic_name.size() >= FASTDDS_TOPIC_REPLY_SUFFIX_STR.size() &&
-        m_topic_name.compare(m_topic_name.size() - FASTDDS_TOPIC_REPLY_SUFFIX_STR.size(),
+            m_topic_name.compare(m_topic_name.size() - FASTDDS_TOPIC_REPLY_SUFFIX_STR.size(),
             FASTDDS_TOPIC_REPLY_SUFFIX_STR.size(),
             FASTDDS_TOPIC_REPLY_SUFFIX_STR) == 0);
 
     bool type_suffix_ok = (type_name.size() >= FASTDDS_TYPE_REPLY_SUFFIX_STR.size() &&
-        type_name.compare(type_name.size() - FASTDDS_TYPE_REPLY_SUFFIX_STR.size(),
+            type_name.compare(type_name.size() - FASTDDS_TYPE_REPLY_SUFFIX_STR.size(),
             FASTDDS_TYPE_REPLY_SUFFIX_STR.size(),
             FASTDDS_TYPE_REPLY_SUFFIX_STR) == 0);
 
@@ -230,13 +244,13 @@ bool RpcTopic::is_fastdds_reply_topic(
 }
 
 bool RpcTopic::is_request_topic(
-    const DdsTopic& topic)
+        const DdsTopic& topic)
 {
     return is_ros2_request_topic(topic) || is_fastdds_request_topic(topic);
 }
 
 bool RpcTopic::is_reply_topic(
-    const DdsTopic& topic)
+        const DdsTopic& topic)
 {
     return is_ros2_reply_topic(topic) || is_fastdds_reply_topic(topic);
 }
