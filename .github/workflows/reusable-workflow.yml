@@ -1,7 +1,7 @@
 # Reusable workflow to run the following jobs:
 #
 #   - windows-multiplatform-tests
-#     - [  windows-2019 | windows-2022 ]
+#     - [  windows-2022 ]
 #     - [ Debug | Release ]
 #     - execute tests in different versions of windows with different build types
 #
@@ -88,7 +88,6 @@ jobs:
           - Release
           - Debug
         os:
-          - windows-2019
           - windows-2022
     env:
       workspace_dependencies: 'install'
