@@ -38,12 +38,14 @@ MultiWriter::MultiWriter(
         const DdsTopic& topic,
         const std::shared_ptr<core::PayloadPool>& payload_pool,
         fastdds::dds::DomainParticipant* participant,
-        fastdds::dds::Topic* topic_entity)
+        fastdds::dds::Topic* topic_entity,
+        const bool repeater /* = false */)
     : BaseWriter(participant_id)
     , dds_participant_(participant)
     , dds_topic_(topic_entity)
     , payload_pool_(payload_pool)
     , topic_(topic)
+    , repeater_(repeater)
 {
     // Do nothing
 }
@@ -137,7 +139,8 @@ QoSSpecificWriter* MultiWriter::create_writer_nts_(
         this->payload_pool_,
         data_qos,
         this->dds_participant_,
-        this->dds_topic_);
+        this->dds_topic_,
+        repeater_);
     writer->init();
 
     return writer;

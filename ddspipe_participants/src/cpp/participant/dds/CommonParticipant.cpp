@@ -109,7 +109,7 @@ bool CommonParticipant::is_rtps_kind() const noexcept
 
 bool CommonParticipant::is_repeater() const noexcept
 {
-    return false;
+    return configuration_->is_repeater;
 }
 
 core::types::TopicQoS CommonParticipant::topic_qos() const noexcept
@@ -147,7 +147,8 @@ std::shared_ptr<core::IWriter> CommonParticipant::create_writer(
             dds_topic,
             this->payload_pool_,
             dds_participant_,
-            fastdds_topic);
+            fastdds_topic,
+            configuration_->is_repeater);
     }
     else
     {
@@ -156,7 +157,8 @@ std::shared_ptr<core::IWriter> CommonParticipant::create_writer(
             dds_topic,
             this->payload_pool_,
             dds_participant_,
-            fastdds_topic);
+            fastdds_topic,
+            configuration_->is_repeater);
         writer->init();
 
         return writer;
