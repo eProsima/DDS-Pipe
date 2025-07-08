@@ -340,6 +340,12 @@ void YamlReader::fill(
 
     // Mandatory participant profile
     object.participant_profile = YamlReader::get<std::string>(yml, XML_PARTICIPANT_PROFILE_TAG, version);
+
+    // Optional Repeater
+    if (YamlReader::is_tag_present(yml, IS_REPEATER_TAG))
+    {
+        object.is_repeater = YamlReader::get<bool>(yml, IS_REPEATER_TAG, version);
+    }
 }
 
 template <>

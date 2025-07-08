@@ -193,7 +193,7 @@ protected:
             core::IRoutingData& data) noexcept override;
 
     /**
-     * @brief Auxiliary method used in \c write to fill the cache change to send.
+     * @brief Auxiliary method used in \c write to fill the cache change to send and write params.
      *
      * @param [out] to_send_change_to_fill cache change to be filled and sent.
      * @param [out] to_send_params write params to be filled and sent.
