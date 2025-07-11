@@ -93,7 +93,7 @@ void CommonReader::init()
     if (fastdds::dds::RETCODE_OK != reader_->enable())
     {
         dds_subscriber_->delete_datareader(reader_);
-        dds_subscriber_ = nullptr;
+        reader_ = nullptr;
         throw utils::InitializationException(
                   utils::Formatter() << "Error enabling DataReader for Participant " <<
                       participant_id_ << " in topic " << topic_ << ".");
