@@ -211,7 +211,7 @@ std::shared_ptr<core::IReader> CommonParticipant::create_reader(
     }
 }
 
-CommonParticipant::DDSListener::DDSListener(
+CommonParticipant::DdsListener::DdsListener(
         std::shared_ptr<SimpleParticipantConfiguration> conf,
         std::shared_ptr<core::DiscoveryDatabase> ddb)
     : configuration_(conf)
@@ -220,7 +220,7 @@ CommonParticipant::DDSListener::DDSListener(
     EPROSIMA_LOG_INFO(DDSPIPE_DDS_PARTICIPANT, "Creating DDS Listener for Participant " << conf->id << ".");
 }
 
-void CommonParticipant::DDSListener::on_participant_discovery(
+void CommonParticipant::DdsListener::on_participant_discovery(
         fastdds::dds::DomainParticipant* participant,
         fastdds::rtps::ParticipantDiscoveryStatus reason,
         const fastdds::rtps::ParticipantBuiltinTopicData& info,
@@ -257,7 +257,7 @@ void CommonParticipant::DDSListener::on_participant_discovery(
     }
 }
 
-void CommonParticipant::DDSListener::on_data_reader_discovery(
+void CommonParticipant::DdsListener::on_data_reader_discovery(
         fastdds::dds::DomainParticipant* participant,
         fastdds::rtps::ReaderDiscoveryStatus reason,
         const fastdds::dds::SubscriptionBuiltinTopicData& info,
@@ -307,7 +307,7 @@ void CommonParticipant::DDSListener::on_data_reader_discovery(
     }
 }
 
-void CommonParticipant::DDSListener::on_data_writer_discovery(
+void CommonParticipant::DdsListener::on_data_writer_discovery(
         fastdds::dds::DomainParticipant* participant,
         fastdds::rtps::WriterDiscoveryStatus reason,
         const fastdds::dds::PublicationBuiltinTopicData& info,
@@ -371,7 +371,7 @@ CommonParticipant::CommonParticipant(
 std::unique_ptr<fastdds::dds::DomainParticipantListener> CommonParticipant::create_listener_()
 {
     EPROSIMA_LOG_INFO(DDSPIPE_DDS_PARTICIPANT, "Creating DDS Listener from CommonParticipant.");
-    return std::make_unique<DDSListener>(configuration_, discovery_database_);
+    return std::make_unique<DdsListener>(configuration_, discovery_database_);
 }
 
 fastdds::dds::DomainParticipantQos CommonParticipant::add_qos_properties_(

@@ -112,12 +112,12 @@ public:
     // LISTENER METHODS
     /////////////////////////
 
-    class DDSListener : public fastdds::dds::DomainParticipantListener
+    class DdsListener : public fastdds::dds::DomainParticipantListener
     {
     public:
 
         DDSPIPE_PARTICIPANTS_DllAPI
-        explicit DDSListener(
+        explicit DdsListener(
                 std::shared_ptr<SimpleParticipantConfiguration> conf,
                 std::shared_ptr<core::DiscoveryDatabase> ddb);
 
