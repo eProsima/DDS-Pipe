@@ -54,11 +54,6 @@ CommonParticipant::~CommonParticipant()
     }
 }
 
-std::unique_ptr<fastdds::dds::DomainParticipantListener> CommonParticipant::create_listener_()
-{
-    return std::make_unique<DDSListener>(configuration_, discovery_database_);
-}
-
 void CommonParticipant::init()
 {
     EPROSIMA_LOG_INFO(DDSPIPE_DDS_PARTICIPANT, "Initializing DDS Participant " << id() << ".");
@@ -222,6 +217,7 @@ CommonParticipant::DDSListener::DDSListener(
     : configuration_(conf)
     , discovery_database_(ddb)
 {
+    EPROSIMA_LOG_INFO(DDSPIPE_DDS_PARTICIPANT, "Creating DDS Listener for Participant " << conf->id << ".");
 }
 
 void CommonParticipant::DDSListener::on_participant_discovery(
@@ -372,6 +368,12 @@ CommonParticipant::CommonParticipant(
     // Do nothing
 }
 
+std::unique_ptr<fastdds::dds::DomainParticipantListener> CommonParticipant::create_listener_()
+{
+    EPROSIMA_LOG_INFO(DDSPIPE_DDS_PARTICIPANT, "Creating DDS Listener from CommonParticipant.");
+    return std::make_unique<DDSListener>(configuration_, discovery_database_);
+}
+
 fastdds::dds::DomainParticipantQos CommonParticipant::add_qos_properties_(
         fastdds::dds::DomainParticipantQos& qos) const
 {
@@ -414,6 +416,10 @@ fastdds::dds::DomainParticipant* CommonParticipant::create_dds_participant_()
 
     // Create the participant listener
     dds_participant_listener_ = create_listener_();
+    if (!dds_participant_listener_)
+    {
+        EPROSIMA_LOG_WARNING(DDSPIPE_DDS_PARTICIPANT, "Error creating DDS Participant Listener.");
+    }
 
     return eprosima::fastdds::dds::DomainParticipantFactory::get_instance()->create_participant(
         configuration_->domain,

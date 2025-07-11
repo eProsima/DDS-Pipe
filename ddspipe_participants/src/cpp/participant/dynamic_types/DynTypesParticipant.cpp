@@ -50,6 +50,8 @@ DynTypesParticipant::DynTypesParticipant(
         participant_configuration,
         payload_pool,
         discovery_database)
+    , type_object_reader_(std::make_shared<InternalReader>(
+                this->id()))
 {
     // Do nothing
 }
@@ -78,11 +80,11 @@ std::shared_ptr<IReader> DynTypesParticipant::create_reader(
 DynTypesParticipant::DynTypesRtpsListener::DynTypesRtpsListener(
         std::shared_ptr<ParticipantConfiguration> conf,
         std::shared_ptr<core::DiscoveryDatabase> ddb,
-        core::types::ParticipantId id)
+        std::shared_ptr<InternalReader> internal_reader)
     : rtps::CommonParticipant::RtpsListener(
         conf,
         ddb)
-    , type_object_reader_(std::make_shared<InternalReader>(id))
+    , type_object_reader_(internal_reader)
 {
 }
 
@@ -178,7 +180,7 @@ void DynTypesParticipant::DynTypesRtpsListener::notify_type_discovered_(
 
 std::unique_ptr<fastdds::rtps::RTPSParticipantListener> DynTypesParticipant::create_listener_()
 {
-    return std::make_unique<DynTypesRtpsListener>(configuration_, discovery_database_, id());
+    return std::make_unique<DynTypesRtpsListener>(configuration_, discovery_database_, type_object_reader_);
 }
 
 } /* namespace participants */

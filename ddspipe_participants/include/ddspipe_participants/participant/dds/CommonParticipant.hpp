@@ -116,6 +116,7 @@ public:
     {
     public:
 
+        DDSPIPE_PARTICIPANTS_DllAPI
         explicit DDSListener(
                 std::shared_ptr<SimpleParticipantConfiguration> conf,
                 std::shared_ptr<core::DiscoveryDatabase> ddb);
@@ -125,6 +126,7 @@ public:
          *
          * This method is only used for debugging purposes.
          */
+        DDSPIPE_PARTICIPANTS_DllAPI
         void on_participant_discovery(
                 fastdds::dds::DomainParticipant* participant,
                 fastdds::rtps::ParticipantDiscoveryStatus reason,
@@ -136,6 +138,7 @@ public:
          *
          * This method adds to the database the discovered or modified endpoint.
          */
+        DDSPIPE_PARTICIPANTS_DllAPI
         void on_data_reader_discovery(
                 fastdds::dds::DomainParticipant* participant,
                 fastdds::rtps::ReaderDiscoveryStatus reason,
@@ -147,6 +150,7 @@ public:
          *
          * This method adds to the database the discovered or modified endpoint.
          */
+        DDSPIPE_PARTICIPANTS_DllAPI
         void on_data_writer_discovery(
                 fastdds::dds::DomainParticipant* participant,
                 fastdds::rtps::WriterDiscoveryStatus reason,
@@ -192,15 +196,18 @@ protected:
     // INTERNAL VIRTUAL METHODS
     /////////////////////////
 
+    DDSPIPE_PARTICIPANTS_DllAPI
     virtual
     fastdds::dds::DomainParticipantQos
     add_qos_properties_(
             fastdds::dds::DomainParticipantQos& qos) const;
 
+    DDSPIPE_PARTICIPANTS_DllAPI
     virtual
     fastdds::dds::DomainParticipantQos
     reckon_participant_qos_() const;
 
+    DDSPIPE_PARTICIPANTS_DllAPI
     virtual
     fastdds::dds::DomainParticipant*
     create_dds_participant_();

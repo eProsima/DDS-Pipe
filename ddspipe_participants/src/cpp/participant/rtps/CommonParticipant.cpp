@@ -85,6 +85,7 @@ CommonParticipant::RtpsListener::RtpsListener(
     : configuration_(conf)
     , discovery_database_(ddb)
 {
+    EPROSIMA_LOG_INFO(DDSPIPE_RTPS_PARTICIPANT, "Creating RTPS Listener for Participant " << conf->id << ".");
 }
 
 void CommonParticipant::RtpsListener::on_participant_discovery(
@@ -336,6 +337,10 @@ void CommonParticipant::create_participant_(
 
     // Create the RTPS Participant Listener
     rtps_participant_listener_ = create_listener_();
+    if (!rtps_participant_listener_)
+    {
+        EPROSIMA_LOG_WARNING(DDSPIPE_RTPS_PARTICIPANT, "Error creating RTPS Participant Listener.");
+    }
 
     // Listener must be set in creation as no callbacks should be missed
     // It is safe to do so here as object is already created and callbacks do not require anything set in this method
@@ -514,6 +519,7 @@ CommonParticipant::reckon_participant_attributes_() const
 std::unique_ptr<fastdds::rtps::RTPSParticipantListener>
 CommonParticipant::create_listener_()
 {
+    EPROSIMA_LOG_INFO(DDSPIPE_RTPS_PARTICIPANT, "Creating RTPS Listener from CommonParticipant.");
     return std::make_unique<RtpsListener>(configuration_, discovery_database_);
 }
 
