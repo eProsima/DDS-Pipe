@@ -106,19 +106,6 @@ public:
     // LISTENER METHODS
     /////////////////////////
 
-<<<<<<< HEAD
-    virtual void on_participant_discovery(
-            fastdds::dds::DomainParticipant* participant,
-            fastrtps::rtps::ParticipantDiscoveryInfo&& info) override;
-
-    virtual void on_subscriber_discovery(
-            fastdds::dds::DomainParticipant* participant,
-            fastrtps::rtps::ReaderDiscoveryInfo&& info) override;
-
-    virtual void on_publisher_discovery(
-            fastdds::dds::DomainParticipant* participant,
-            fastrtps::rtps::WriterDiscoveryInfo&& info) override;
-=======
     class DdsListener : public fastdds::dds::DomainParticipantListener
     {
     public:
@@ -136,9 +123,7 @@ public:
         DDSPIPE_PARTICIPANTS_DllAPI
         void on_participant_discovery(
                 fastdds::dds::DomainParticipant* participant,
-                fastdds::rtps::ParticipantDiscoveryStatus reason,
-                const fastdds::rtps::ParticipantBuiltinTopicData& info,
-                bool& /*should_be_ignored*/) override;
+                fastrtps::rtps::ParticipantDiscoveryInfo&& info) override;
 
         /**
          * @brief Override method from \c DomainParticipantListener .
@@ -146,11 +131,9 @@ public:
          * This method adds to the database the discovered or modified endpoint.
          */
         DDSPIPE_PARTICIPANTS_DllAPI
-        void on_data_reader_discovery(
+        void on_subscriber_discovery(
                 fastdds::dds::DomainParticipant* participant,
-                fastdds::rtps::ReaderDiscoveryStatus reason,
-                const fastdds::dds::SubscriptionBuiltinTopicData& info,
-                bool& /*should_be_ignored*/) override;
+                fastrtps::rtps::ReaderDiscoveryInfo&& info) override;
 
         /**
          * @brief Override method from \c DomainParticipantListener .
@@ -158,11 +141,9 @@ public:
          * This method adds to the database the discovered or modified endpoint.
          */
         DDSPIPE_PARTICIPANTS_DllAPI
-        void on_data_writer_discovery(
+        void on_publisher_discovery(
                 fastdds::dds::DomainParticipant* participant,
-                fastdds::rtps::WriterDiscoveryStatus reason,
-                const fastdds::dds::PublicationBuiltinTopicData& info,
-                bool& /*should_be_ignored*/) override;
+                fastrtps::rtps::WriterDiscoveryInfo&& info) override;
 
     protected:
 
@@ -175,7 +156,6 @@ public:
 
     //! Unique pointer to the internal DDS Participant Listener
     std::unique_ptr<fastdds::dds::DomainParticipantListener> dds_participant_listener_;
->>>>>>> ee0e639 (Fix Data Races on DDS-Pipe (#145))
 
 protected:
 
@@ -207,15 +187,6 @@ protected:
     DDSPIPE_PARTICIPANTS_DllAPI
     virtual
     fastdds::dds::DomainParticipantQos
-<<<<<<< HEAD
-=======
-    add_qos_properties_(
-            fastdds::dds::DomainParticipantQos& qos) const;
-
-    DDSPIPE_PARTICIPANTS_DllAPI
-    virtual
-    fastdds::dds::DomainParticipantQos
->>>>>>> ee0e639 (Fix Data Races on DDS-Pipe (#145))
     reckon_participant_qos_() const;
 
     DDSPIPE_PARTICIPANTS_DllAPI

@@ -98,7 +98,7 @@ void CommonReader::init()
     // This is done just to ensure that the reader is not registered before any other method modifying the reader pointer
     // is called, opening a window for potential data races. Although Fast DDS ensures that this cannot happen, this
     // procedure protects against future bad practices introducing the aforementioned data races.
-    if (fastdds::dds::RETCODE_OK != reader_->enable())
+    if (utils::ReturnCode::RETCODE_OK != reader_->enable())
     {
         dds_subscriber_->delete_datareader(reader_);
         reader_ = nullptr;

@@ -80,11 +80,6 @@ void CommonParticipant::init()
         participant_attributes_);
 }
 
-<<<<<<< HEAD
-void CommonParticipant::onParticipantDiscovery(
-        fastrtps::rtps::RTPSParticipant* participant,
-        fastrtps::rtps::ParticipantDiscoveryInfo&& info)
-=======
 CommonParticipant::RtpsListener::RtpsListener(
         std::shared_ptr<ParticipantConfiguration> conf,
         std::shared_ptr<core::DiscoveryDatabase> ddb)
@@ -94,12 +89,9 @@ CommonParticipant::RtpsListener::RtpsListener(
     EPROSIMA_LOG_INFO(DDSPIPE_RTPS_PARTICIPANT, "Creating RTPS Listener for Participant " << conf->id << ".");
 }
 
-void CommonParticipant::RtpsListener::on_participant_discovery(
-        fastdds::rtps::RTPSParticipant* participant,
-        fastdds::rtps::ParticipantDiscoveryStatus reason,
-        const fastdds::rtps::ParticipantBuiltinTopicData& info,
-        bool&)
->>>>>>> ee0e639 (Fix Data Races on DDS-Pipe (#145))
+void CommonParticipant::RtpsListener::onParticipantDiscovery(
+        fastrtps::rtps::RTPSParticipant* participant,
+        fastrtps::rtps::ParticipantDiscoveryInfo&& info)
 {
     if (info.info.m_guid.guidPrefix != participant->getGuid().guidPrefix)
     {
@@ -127,28 +119,14 @@ void CommonParticipant::RtpsListener::on_participant_discovery(
     }
 }
 
-<<<<<<< HEAD
-void CommonParticipant::onReaderDiscovery(
+void CommonParticipant::RtpsListener::onReaderDiscovery(
         fastrtps::rtps::RTPSParticipant* participant,
         fastrtps::rtps::ReaderDiscoveryInfo&& info)
-=======
-void CommonParticipant::RtpsListener::on_reader_discovery(
-        fastdds::rtps::RTPSParticipant* participant,
-        fastdds::rtps::ReaderDiscoveryStatus reason,
-        const fastdds::rtps::SubscriptionBuiltinTopicData& info,
-        bool&)
->>>>>>> ee0e639 (Fix Data Races on DDS-Pipe (#145))
 {
     if (info.info.guid().guidPrefix != participant->getGuid().guidPrefix)
     {
-<<<<<<< HEAD
         core::types::Endpoint info_reader = detail::create_endpoint_from_info_<fastrtps::rtps::ReaderDiscoveryInfo>(
-            info, this->id());
-=======
-        core::types::Endpoint info_reader =
-                detail::create_endpoint_from_info_<fastdds::rtps::SubscriptionBuiltinTopicData>(
             info, configuration_->id);
->>>>>>> ee0e639 (Fix Data Races on DDS-Pipe (#145))
 
         if (info.status == fastrtps::rtps::ReaderDiscoveryInfo::DISCOVERED_READER)
         {
@@ -179,28 +157,14 @@ void CommonParticipant::RtpsListener::on_reader_discovery(
     }
 }
 
-<<<<<<< HEAD
-void CommonParticipant::onWriterDiscovery(
+void CommonParticipant::RtpsListener::onWriterDiscovery(
         fastrtps::rtps::RTPSParticipant* participant,
         fastrtps::rtps::WriterDiscoveryInfo&& info)
-=======
-void CommonParticipant::RtpsListener::on_writer_discovery(
-        fastdds::rtps::RTPSParticipant* participant,
-        fastdds::rtps::WriterDiscoveryStatus reason,
-        const fastdds::rtps::PublicationBuiltinTopicData& info,
-        bool&)
->>>>>>> ee0e639 (Fix Data Races on DDS-Pipe (#145))
 {
     if (info.info.guid().guidPrefix != participant->getGuid().guidPrefix)
     {
-<<<<<<< HEAD
         core::types::Endpoint info_writer = detail::create_endpoint_from_info_<fastrtps::rtps::WriterDiscoveryInfo>(
-            info, this->id());
-=======
-        core::types::Endpoint info_writer =
-                detail::create_endpoint_from_info_<fastdds::rtps::PublicationBuiltinTopicData>(
             info, configuration_->id);
->>>>>>> ee0e639 (Fix Data Races on DDS-Pipe (#145))
 
         if (info.status == fastrtps::rtps::WriterDiscoveryInfo::DISCOVERED_WRITER)
         {
@@ -521,29 +485,13 @@ CommonParticipant::reckon_participant_attributes_(
     return params;
 }
 
-<<<<<<< HEAD
-=======
-fastdds::rtps::RTPSParticipantAttributes
-CommonParticipant::reckon_participant_attributes_() const
-{
-    fastdds::rtps::RTPSParticipantAttributes params;
-
-    // Add Participant name
-    params.setName(configuration_->id.c_str());
-
-    add_participant_att_properties_(params);
-
-    return params;
-}
-
-std::unique_ptr<fastdds::rtps::RTPSParticipantListener>
+std::unique_ptr<fastrtps::rtps::RTPSParticipantListener>
 CommonParticipant::create_listener_()
 {
     EPROSIMA_LOG_INFO(DDSPIPE_RTPS_PARTICIPANT, "Creating RTPS Listener from CommonParticipant.");
     return std::make_unique<RtpsListener>(configuration_, discovery_database_);
 }
 
->>>>>>> ee0e639 (Fix Data Races on DDS-Pipe (#145))
 } /* namespace rtps */
 } /* namespace participants */
 } /* namespace ddspipe */

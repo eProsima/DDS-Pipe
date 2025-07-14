@@ -103,13 +103,9 @@ void CommonReader::internal_entities_creation_(
 
     // Create CommonReader
     // Listener must be set in creation as no callbacks should be missed
-    // It is safe to do so here as object is already created and callbacks do not require anything set in this method
-<<<<<<< HEAD
-    rtps_reader_ = fastrtps::rtps::RTPSDomain::createRTPSReader(
-=======
+    // It is safe to do so here as object is already created and callbacks do not require anything set in this method.
     // Also, no data races can ocurr as no callback will be called until this reader is registered
-    rtps_reader_ = fastdds::rtps::RTPSDomain::createRTPSReader(
->>>>>>> ee0e639 (Fix Data Races on DDS-Pipe (#145))
+    rtps_reader_ = fastrtps::rtps::RTPSDomain::createRTPSReader(
         rtps_participant_,
         non_const_reader_attributes,
         payload_pool_,
@@ -123,13 +119,6 @@ void CommonReader::internal_entities_creation_(
                       participant_id_ << " in topic " << topic_ << ".");
     }
 
-<<<<<<< HEAD
-    // Set listener after entity creation to avoid SEGFAULT (produced when callback using rtps_reader_ is
-    // invoked before the variable is fully set)
-    rtps_reader_->setListener(this);
-
-=======
->>>>>>> ee0e639 (Fix Data Races on DDS-Pipe (#145))
     // Register reader with topic
     if (!rtps_participant_->registerReader(rtps_reader_, topic_attributes, reader_qos))
     {

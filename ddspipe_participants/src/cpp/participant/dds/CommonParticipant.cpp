@@ -249,23 +249,12 @@ void CommonParticipant::DdsListener::on_participant_discovery(
     }
 }
 
-<<<<<<< HEAD
-void CommonParticipant::on_subscriber_discovery(
-        fastdds::dds::DomainParticipant*,
+void CommonParticipant::DdsListener::on_subscriber_discovery(
+        fastdds::dds::DomainParticipant* participant,
         fastrtps::rtps::ReaderDiscoveryInfo&& info)
 {
     // If reader is from other participant, store it in discovery database
-    if (detail::come_from_same_participant_(info.info.guid(), this->dds_participant_->guid()))
-=======
-void CommonParticipant::DdsListener::on_data_reader_discovery(
-        fastdds::dds::DomainParticipant* participant,
-        fastdds::rtps::ReaderDiscoveryStatus reason,
-        const fastdds::dds::SubscriptionBuiltinTopicData& info,
-        bool& /*should_be_ignored*/)
-{
-    // If reader is from other participant, store it in discovery database
-    if (detail::come_from_same_participant_(info.guid, participant->guid()))
->>>>>>> ee0e639 (Fix Data Races on DDS-Pipe (#145))
+    if (detail::come_from_same_participant_(info.info.guid(), participant->guid()))
     {
         // Come from this participant, do nothing
         return;
@@ -273,11 +262,7 @@ void CommonParticipant::DdsListener::on_data_reader_discovery(
 
     // Calculate endpoint info
     core::types::Endpoint info_reader =
-<<<<<<< HEAD
-            detail::create_endpoint_from_info_<fastrtps::rtps::ReaderDiscoveryInfo>(info, id());
-=======
-            detail::create_endpoint_from_info_<fastdds::dds::SubscriptionBuiltinTopicData>(info, configuration_->id);
->>>>>>> ee0e639 (Fix Data Races on DDS-Pipe (#145))
+            detail::create_endpoint_from_info_<fastrtps::rtps::ReaderDiscoveryInfo>(info, configuration_->id);
 
     // If new endpoint discovered
     if (info.status == fastrtps::rtps::ReaderDiscoveryInfo::DISCOVERY_STATUS::DISCOVERED_READER)
@@ -309,23 +294,12 @@ void CommonParticipant::DdsListener::on_data_reader_discovery(
     }
 }
 
-<<<<<<< HEAD
-void CommonParticipant::on_publisher_discovery(
-        fastdds::dds::DomainParticipant*,
+void CommonParticipant::DdsListener::on_publisher_discovery(
+        fastdds::dds::DomainParticipant* participant,
         fastrtps::rtps::WriterDiscoveryInfo&& info)
 {
     // If writer is from other participant, store it in discovery database
-    if (detail::come_from_same_participant_(info.info.guid(), this->dds_participant_->guid()))
-=======
-void CommonParticipant::DdsListener::on_data_writer_discovery(
-        fastdds::dds::DomainParticipant* participant,
-        fastdds::rtps::WriterDiscoveryStatus reason,
-        const fastdds::dds::PublicationBuiltinTopicData& info,
-        bool& /*should_be_ignored*/)
-{
-    // If writer is from other participant, store it in discovery database
-    if (detail::come_from_same_participant_(info.guid, participant->guid()))
->>>>>>> ee0e639 (Fix Data Races on DDS-Pipe (#145))
+    if (detail::come_from_same_participant_(info.info.guid(), participant->guid()))
     {
         // Come from this participant, do nothing
         return;
@@ -333,11 +307,7 @@ void CommonParticipant::DdsListener::on_data_writer_discovery(
 
     // Calculate endpoint info
     core::types::Endpoint info_writer =
-<<<<<<< HEAD
-            detail::create_endpoint_from_info_<fastrtps::rtps::WriterDiscoveryInfo>(info, id());
-=======
-            detail::create_endpoint_from_info_<fastdds::dds::PublicationBuiltinTopicData>(info, configuration_->id);
->>>>>>> ee0e639 (Fix Data Races on DDS-Pipe (#145))
+            detail::create_endpoint_from_info_<fastrtps::rtps::WriterDiscoveryInfo>(info, configuration_->id);
 
     // If new endpoint discovered
     if (info.status == fastrtps::rtps::WriterDiscoveryInfo::DISCOVERY_STATUS::DISCOVERED_WRITER)
@@ -380,18 +350,13 @@ CommonParticipant::CommonParticipant(
     // Do nothing
 }
 
-<<<<<<< HEAD
-fastdds::dds::DomainParticipantQos CommonParticipant::reckon_participant_qos_() const
-=======
 std::unique_ptr<fastdds::dds::DomainParticipantListener> CommonParticipant::create_listener_()
 {
     EPROSIMA_LOG_INFO(DDSPIPE_DDS_PARTICIPANT, "Creating DDS Listener from CommonParticipant.");
     return std::make_unique<DdsListener>(configuration_, discovery_database_);
 }
 
-fastdds::dds::DomainParticipantQos CommonParticipant::add_qos_properties_(
-        fastdds::dds::DomainParticipantQos& qos) const
->>>>>>> ee0e639 (Fix Data Races on DDS-Pipe (#145))
+fastdds::dds::DomainParticipantQos CommonParticipant::reckon_participant_qos_() const
 {
     auto qos = fastdds::dds::DomainParticipantFactory::get_instance()->get_default_participant_qos();
 
