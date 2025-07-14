@@ -69,14 +69,26 @@ std::shared_ptr<IReader> DynTypesParticipant::create_reader(
     // If type object topic, return the internal reader for type objects
     if (core::types::is_type_object_topic(topic))
     {
-        return this->type_object_reader_;
+        return static_cast<DynTypesParticipant::DynTypesRtpsListener*>(rtps_participant_listener_.get())->
+                       type_object_reader();
     }
 
     // If not type object, use the parent method
     return rtps::SimpleParticipant::create_reader(topic);
 }
 
-void DynTypesParticipant::on_reader_discovery(
+DynTypesParticipant::DynTypesRtpsListener::DynTypesRtpsListener(
+        std::shared_ptr<ParticipantConfiguration> conf,
+        std::shared_ptr<core::DiscoveryDatabase> ddb,
+        std::shared_ptr<InternalReader> internal_reader)
+    : rtps::CommonParticipant::RtpsListener(
+        conf,
+        ddb)
+    , type_object_reader_(internal_reader)
+{
+}
+
+void DynTypesParticipant::DynTypesRtpsListener::on_reader_discovery(
         fastdds::rtps::RTPSParticipant* participant,
         fastdds::rtps::ReaderDiscoveryStatus reason,
         const fastdds::rtps::SubscriptionBuiltinTopicData& info,
@@ -88,13 +100,13 @@ void DynTypesParticipant::on_reader_discovery(
         const auto type_info = info.type_information.type_information;
         const auto type_name = info.type_name.to_string();
 
-        rtps::CommonParticipant::on_reader_discovery(participant, reason, info, should_be_ignored);
+        rtps::CommonParticipant::RtpsListener::on_reader_discovery(participant, reason, info, should_be_ignored);
 
         notify_type_discovered_(type_info, type_name);
     }
 }
 
-void DynTypesParticipant::on_writer_discovery(
+void DynTypesParticipant::DynTypesRtpsListener::on_writer_discovery(
         fastdds::rtps::RTPSParticipant* participant,
         fastdds::rtps::WriterDiscoveryStatus reason,
         const fastdds::rtps::PublicationBuiltinTopicData& info,
@@ -106,13 +118,13 @@ void DynTypesParticipant::on_writer_discovery(
         const auto type_info = info.type_information.type_information;
         const auto type_name = info.type_name.to_string();
 
-        rtps::CommonParticipant::on_writer_discovery(participant, reason, info, should_be_ignored);
+        rtps::CommonParticipant::RtpsListener::on_writer_discovery(participant, reason, info, should_be_ignored);
 
         notify_type_discovered_(type_info, type_name);
     }
 }
 
-void DynTypesParticipant::notify_type_discovered_(
+void DynTypesParticipant::DynTypesRtpsListener::notify_type_discovered_(
         const fastdds::dds::xtypes::TypeInformation& type_info,
         const std::string& type_name)
 {
@@ -150,7 +162,7 @@ void DynTypesParticipant::notify_type_discovered_(
     // Notify type_identifier
     // NOTE: We assume each type_name corresponds to only one type_identifier
     EPROSIMA_LOG_INFO(DDSPIPE_DYNTYPES_PARTICIPANT,
-            "Participant " << this->id() << " discovered type object " << dyn_type->get_name());
+            "Participant " << configuration_->id << " discovered type object " << dyn_type->get_name());
 
     monitor_type_discovered(type_name);
 
@@ -164,6 +176,11 @@ void DynTypesParticipant::notify_type_discovered_(
 
     // Insert new data in internal reader queue
     type_object_reader_->simulate_data_reception(std::move(data));
+}
+
+std::unique_ptr<fastdds::rtps::RTPSParticipantListener> DynTypesParticipant::create_listener_()
+{
+    return std::make_unique<DynTypesRtpsListener>(configuration_, discovery_database_, type_object_reader_);
 }
 
 } /* namespace participants */

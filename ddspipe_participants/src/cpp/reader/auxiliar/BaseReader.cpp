@@ -165,7 +165,7 @@ bool BaseReader::should_accept_sample_() noexcept
 
 void BaseReader::on_data_available_() const noexcept
 {
-    if (on_data_available_lambda_set_)
+    if (on_data_available_lambda_set_ && enabled_.load())
     {
         on_data_available_lambda_();
     }

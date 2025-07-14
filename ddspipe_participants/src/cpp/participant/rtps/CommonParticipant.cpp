@@ -79,7 +79,16 @@ void CommonParticipant::init()
         participant_attributes_);
 }
 
-void CommonParticipant::on_participant_discovery(
+CommonParticipant::RtpsListener::RtpsListener(
+        std::shared_ptr<ParticipantConfiguration> conf,
+        std::shared_ptr<core::DiscoveryDatabase> ddb)
+    : configuration_(conf)
+    , discovery_database_(ddb)
+{
+    EPROSIMA_LOG_INFO(DDSPIPE_RTPS_PARTICIPANT, "Creating RTPS Listener for Participant " << conf->id << ".");
+}
+
+void CommonParticipant::RtpsListener::on_participant_discovery(
         fastdds::rtps::RTPSParticipant* participant,
         fastdds::rtps::ParticipantDiscoveryStatus reason,
         const fastdds::rtps::ParticipantBuiltinTopicData& info,
@@ -116,7 +125,7 @@ void CommonParticipant::on_participant_discovery(
     }
 }
 
-void CommonParticipant::on_reader_discovery(
+void CommonParticipant::RtpsListener::on_reader_discovery(
         fastdds::rtps::RTPSParticipant* participant,
         fastdds::rtps::ReaderDiscoveryStatus reason,
         const fastdds::rtps::SubscriptionBuiltinTopicData& info,
@@ -126,14 +135,14 @@ void CommonParticipant::on_reader_discovery(
     {
         core::types::Endpoint info_reader =
                 detail::create_endpoint_from_info_<fastdds::rtps::SubscriptionBuiltinTopicData>(
-            info, this->id());
+            info, configuration_->id);
 
         if (reason == fastdds::rtps::ReaderDiscoveryStatus::DISCOVERED_READER)
         {
             EPROSIMA_LOG_INFO(DDSPIPE_DISCOVERY,
                     "Found in Participant " << configuration_->id << " new Reader " << info.guid << ".");
 
-            this->discovery_database_->add_endpoint(info_reader);
+            discovery_database_->add_endpoint(info_reader);
         }
         else if (reason == fastdds::rtps::ReaderDiscoveryStatus::CHANGED_QOS_READER)
         {
@@ -141,7 +150,7 @@ void CommonParticipant::on_reader_discovery(
                     configuration_->id << " participant : " << "Reader " << info.guid <<
                     " changed TopicQoS.");
 
-            this->discovery_database_->update_endpoint(info_reader);
+            discovery_database_->update_endpoint(info_reader);
         }
         else if (reason == fastdds::rtps::ReaderDiscoveryStatus::REMOVED_READER)
         {
@@ -149,7 +158,7 @@ void CommonParticipant::on_reader_discovery(
                     configuration_->id << " participant : " << "Reader " << info.guid << " removed.");
 
             info_reader.active = false;
-            this->discovery_database_->update_endpoint(info_reader);
+            discovery_database_->update_endpoint(info_reader);
         }
         else if (reason == fastdds::rtps::ReaderDiscoveryStatus::IGNORED_READER)
         {
@@ -161,7 +170,7 @@ void CommonParticipant::on_reader_discovery(
     }
 }
 
-void CommonParticipant::on_writer_discovery(
+void CommonParticipant::RtpsListener::on_writer_discovery(
         fastdds::rtps::RTPSParticipant* participant,
         fastdds::rtps::WriterDiscoveryStatus reason,
         const fastdds::rtps::PublicationBuiltinTopicData& info,
@@ -171,14 +180,14 @@ void CommonParticipant::on_writer_discovery(
     {
         core::types::Endpoint info_writer =
                 detail::create_endpoint_from_info_<fastdds::rtps::PublicationBuiltinTopicData>(
-            info, this->id());
+            info, configuration_->id);
 
         if (reason == fastdds::rtps::WriterDiscoveryStatus::DISCOVERED_WRITER)
         {
             EPROSIMA_LOG_INFO(DDSPIPE_DISCOVERY,
                     "Found in Participant " << configuration_->id << " new Writer " << info.guid << ".");
 
-            this->discovery_database_->add_endpoint(info_writer);
+            discovery_database_->add_endpoint(info_writer);
         }
         else if (reason == fastdds::rtps::WriterDiscoveryStatus::CHANGED_QOS_WRITER)
         {
@@ -186,7 +195,7 @@ void CommonParticipant::on_writer_discovery(
                     configuration_->id << " participant : " << "Writer " << info.guid <<
                     " changed TopicQoS.");
 
-            this->discovery_database_->update_endpoint(info_writer);
+            discovery_database_->update_endpoint(info_writer);
         }
         else if (reason == fastdds::rtps::WriterDiscoveryStatus::REMOVED_WRITER)
         {
@@ -194,7 +203,7 @@ void CommonParticipant::on_writer_discovery(
                     configuration_->id << " participant : " << "Writer " << info.guid << " removed.");
 
             info_writer.active = false;
-            this->discovery_database_->update_endpoint(info_writer);
+            discovery_database_->update_endpoint(info_writer);
         }
         else if (reason == fastdds::rtps::WriterDiscoveryStatus::IGNORED_WRITER)
         {
@@ -326,12 +335,19 @@ void CommonParticipant::create_participant_(
     EPROSIMA_LOG_INFO(DDSPIPE_RTPS_PARTICIPANT,
             "Creating Participant in domain " << domain);
 
+    // Create the RTPS Participant Listener
+    rtps_participant_listener_ = create_listener_();
+    if (!rtps_participant_listener_)
+    {
+        EPROSIMA_LOG_WARNING(DDSPIPE_RTPS_PARTICIPANT, "Error creating RTPS Participant Listener.");
+    }
+
     // Listener must be set in creation as no callbacks should be missed
     // It is safe to do so here as object is already created and callbacks do not require anything set in this method
     rtps_participant_ = fastdds::rtps::RTPSDomain::createParticipant(
         domain,
         participant_attributes,
-        this);
+        rtps_participant_listener_.get());
 
     if (!rtps_participant_)
     {
@@ -498,6 +514,13 @@ CommonParticipant::reckon_participant_attributes_() const
     add_participant_att_properties_(params);
 
     return params;
+}
+
+std::unique_ptr<fastdds::rtps::RTPSParticipantListener>
+CommonParticipant::create_listener_()
+{
+    EPROSIMA_LOG_INFO(DDSPIPE_RTPS_PARTICIPANT, "Creating RTPS Listener from CommonParticipant.");
+    return std::make_unique<RtpsListener>(configuration_, discovery_database_);
 }
 
 } /* namespace rtps */

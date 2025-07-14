@@ -74,31 +74,57 @@ public:
     std::shared_ptr<core::IReader> create_reader(
             const core::ITopic& topic) override;
 
-    DDSPIPE_PARTICIPANTS_DllAPI
-    void on_reader_discovery(
-            fastdds::rtps::RTPSParticipant* participant,
-            fastdds::rtps::ReaderDiscoveryStatus reason,
-            const fastdds::rtps::SubscriptionBuiltinTopicData& info,
-            bool& should_be_ignored) override;
+    class DynTypesRtpsListener : public rtps::CommonParticipant::RtpsListener
+    {
+    public:
 
-    DDSPIPE_PARTICIPANTS_DllAPI
-    void on_writer_discovery(
-            fastdds::rtps::RTPSParticipant* participant,
-            fastdds::rtps::WriterDiscoveryStatus reason,
-            const fastdds::rtps::PublicationBuiltinTopicData& info,
-            bool& should_be_ignored) override;
+        DDSPIPE_PARTICIPANTS_DllAPI
+        explicit DynTypesRtpsListener(
+                std::shared_ptr<ParticipantConfiguration> conf,
+                std::shared_ptr<core::DiscoveryDatabase> ddb,
+                std::shared_ptr<InternalReader> internal_reader);
+
+        DDSPIPE_PARTICIPANTS_DllAPI
+        void on_reader_discovery(
+                fastdds::rtps::RTPSParticipant* participant,
+                fastdds::rtps::ReaderDiscoveryStatus reason,
+                const fastdds::rtps::SubscriptionBuiltinTopicData& info,
+                bool& should_be_ignored) override;
+
+        DDSPIPE_PARTICIPANTS_DllAPI
+        void on_writer_discovery(
+                fastdds::rtps::RTPSParticipant* participant,
+                fastdds::rtps::WriterDiscoveryStatus reason,
+                const fastdds::rtps::PublicationBuiltinTopicData& info,
+                bool& should_be_ignored) override;
+
+        //! Type Object Reader getter
+        inline std::shared_ptr<InternalReader> type_object_reader() const
+        {
+            return type_object_reader_;
+        }
+
+    protected:
+
+        //! Copy of Type Object Internal Reader
+        std::shared_ptr<InternalReader> type_object_reader_;
+        //! Received types set
+        std::set<std::string> received_types_;
+
+        void notify_type_discovered_(
+                const fastdds::dds::xtypes::TypeInformation& type_info,
+                const std::string& type_name);
+
+    };
 
 protected:
 
-    void notify_type_discovered_(
-            const fastdds::dds::xtypes::TypeInformation& type_info,
-            const std::string& type_name);
+    //! Override method from \c CommonParticipant to create the internal RTPS participant listener
+    std::unique_ptr<fastdds::rtps::RTPSParticipantListener> create_listener_() override;
 
     //! Type Object Internal Reader
     std::shared_ptr<InternalReader> type_object_reader_;
 
-    //! Received types set
-    std::set<std::string> received_types_;
 };
 
 } /* namespace participants */
