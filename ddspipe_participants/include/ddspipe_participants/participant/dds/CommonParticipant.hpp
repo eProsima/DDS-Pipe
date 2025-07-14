@@ -54,7 +54,7 @@ namespace dds {
  * @warning This Participant class does not support RPC so far.
  * @todo TODO
  */
-class CommonParticipant : public core::IParticipant, public fastdds::dds::DomainParticipantListener
+class CommonParticipant : public core::IParticipant
 {
 public:
 
@@ -106,6 +106,7 @@ public:
     // LISTENER METHODS
     /////////////////////////
 
+<<<<<<< HEAD
     virtual void on_participant_discovery(
             fastdds::dds::DomainParticipant* participant,
             fastrtps::rtps::ParticipantDiscoveryInfo&& info) override;
@@ -117,6 +118,64 @@ public:
     virtual void on_publisher_discovery(
             fastdds::dds::DomainParticipant* participant,
             fastrtps::rtps::WriterDiscoveryInfo&& info) override;
+=======
+    class DdsListener : public fastdds::dds::DomainParticipantListener
+    {
+    public:
+
+        DDSPIPE_PARTICIPANTS_DllAPI
+        explicit DdsListener(
+                std::shared_ptr<SimpleParticipantConfiguration> conf,
+                std::shared_ptr<core::DiscoveryDatabase> ddb);
+
+        /**
+         * @brief Override method from \c DomainParticipantListener
+         *
+         * This method is only used for debugging purposes.
+         */
+        DDSPIPE_PARTICIPANTS_DllAPI
+        void on_participant_discovery(
+                fastdds::dds::DomainParticipant* participant,
+                fastdds::rtps::ParticipantDiscoveryStatus reason,
+                const fastdds::rtps::ParticipantBuiltinTopicData& info,
+                bool& /*should_be_ignored*/) override;
+
+        /**
+         * @brief Override method from \c DomainParticipantListener .
+         *
+         * This method adds to the database the discovered or modified endpoint.
+         */
+        DDSPIPE_PARTICIPANTS_DllAPI
+        void on_data_reader_discovery(
+                fastdds::dds::DomainParticipant* participant,
+                fastdds::rtps::ReaderDiscoveryStatus reason,
+                const fastdds::dds::SubscriptionBuiltinTopicData& info,
+                bool& /*should_be_ignored*/) override;
+
+        /**
+         * @brief Override method from \c DomainParticipantListener .
+         *
+         * This method adds to the database the discovered or modified endpoint.
+         */
+        DDSPIPE_PARTICIPANTS_DllAPI
+        void on_data_writer_discovery(
+                fastdds::dds::DomainParticipant* participant,
+                fastdds::rtps::WriterDiscoveryStatus reason,
+                const fastdds::dds::PublicationBuiltinTopicData& info,
+                bool& /*should_be_ignored*/) override;
+
+    protected:
+
+        //! Shared pointer to the configuration of the participant
+        const std::shared_ptr<SimpleParticipantConfiguration> configuration_;
+        //! Shared pointer to the discovery database
+        const std::shared_ptr<core::DiscoveryDatabase> discovery_database_;
+
+    };
+
+    //! Unique pointer to the internal DDS Participant Listener
+    std::unique_ptr<fastdds::dds::DomainParticipantListener> dds_participant_listener_;
+>>>>>>> ee0e639 (Fix Data Races on DDS-Pipe (#145))
 
 protected:
 
@@ -131,13 +190,35 @@ protected:
             const std::shared_ptr<core::DiscoveryDatabase>& discovery_database);
 
     /////////////////////////
+    // VIRTUAL METHODS
+    /////////////////////////
+
+    /**
+     * @brief Virtual method that creates a listener for the internal DDS Participant.
+     *        It should be overridden if a different listener is needed.
+     */
+    DDSPIPE_PARTICIPANTS_DllAPI
+    virtual std::unique_ptr<fastdds::dds::DomainParticipantListener> create_listener_();
+
+    /////////////////////////
     // INTERNAL VIRTUAL METHODS
     /////////////////////////
 
+    DDSPIPE_PARTICIPANTS_DllAPI
     virtual
     fastdds::dds::DomainParticipantQos
+<<<<<<< HEAD
+=======
+    add_qos_properties_(
+            fastdds::dds::DomainParticipantQos& qos) const;
+
+    DDSPIPE_PARTICIPANTS_DllAPI
+    virtual
+    fastdds::dds::DomainParticipantQos
+>>>>>>> ee0e639 (Fix Data Races on DDS-Pipe (#145))
     reckon_participant_qos_() const;
 
+    DDSPIPE_PARTICIPANTS_DllAPI
     virtual
     fastdds::dds::DomainParticipant*
     create_dds_participant_();

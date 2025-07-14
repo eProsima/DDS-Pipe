@@ -87,13 +87,15 @@ std::shared_ptr<IReader> DynTypesParticipant::create_reader(
     // If type object topic, return the internal reader for type objects
     if (is_type_object_topic(topic))
     {
-        return this->type_object_reader_;
+        return static_cast<DynTypesParticipant::DynTypesRtpsListener*>(rtps_participant_listener_.get())->
+                       type_object_reader();
     }
 
     // If not type object, use the parent method
     return rtps::SimpleParticipant::create_reader(topic);
 }
 
+<<<<<<< HEAD
 void DynTypesParticipant::on_type_discovery(
         eprosima::fastdds::dds::DomainParticipant* /* participant */,
         const fastrtps::rtps::SampleIdentity& /* request_sample_id */,
@@ -101,9 +103,28 @@ void DynTypesParticipant::on_type_discovery(
         const fastrtps::types::TypeIdentifier* identifier,
         const fastrtps::types::TypeObject* object,
         fastrtps::types::DynamicType_ptr dyn_type)
+=======
+DynTypesParticipant::DynTypesRtpsListener::DynTypesRtpsListener(
+        std::shared_ptr<ParticipantConfiguration> conf,
+        std::shared_ptr<core::DiscoveryDatabase> ddb,
+        std::shared_ptr<InternalReader> internal_reader)
+    : rtps::CommonParticipant::RtpsListener(
+        conf,
+        ddb)
+    , type_object_reader_(internal_reader)
+{
+}
+
+void DynTypesParticipant::DynTypesRtpsListener::on_reader_discovery(
+        fastdds::rtps::RTPSParticipant* participant,
+        fastdds::rtps::ReaderDiscoveryStatus reason,
+        const fastdds::rtps::SubscriptionBuiltinTopicData& info,
+        bool& should_be_ignored)
+>>>>>>> ee0e639 (Fix Data Races on DDS-Pipe (#145))
 {
     if (nullptr != dyn_type)
     {
+<<<<<<< HEAD
         // Register type obj in singleton factory
         TypeObjectFactory::get_instance()->add_type_object(
             dyn_type->get_name(), identifier, object);
@@ -116,6 +137,23 @@ void DynTypesParticipant::on_type_information_received(
         const fastrtps::string_255 /* topic_name */,
         const fastrtps::string_255 type_name,
         const fastrtps::types::TypeInformation& type_information)
+=======
+        // Get type information
+        const auto type_info = info.type_information.type_information;
+        const auto type_name = info.type_name.to_string();
+
+        rtps::CommonParticipant::RtpsListener::on_reader_discovery(participant, reason, info, should_be_ignored);
+
+        notify_type_discovered_(type_info, type_name);
+    }
+}
+
+void DynTypesParticipant::DynTypesRtpsListener::on_writer_discovery(
+        fastdds::rtps::RTPSParticipant* participant,
+        fastdds::rtps::WriterDiscoveryStatus reason,
+        const fastdds::rtps::PublicationBuiltinTopicData& info,
+        bool& should_be_ignored)
+>>>>>>> ee0e639 (Fix Data Races on DDS-Pipe (#145))
 {
     std::string type_name_ = type_name.to_string();
     const TypeIdentifier* type_identifier = nullptr;
@@ -129,6 +167,7 @@ void DynTypesParticipant::on_type_information_received(
         type_object = TypeObjectFactory::get_instance()->get_type_object(type_name_, true);
     }
 
+<<<<<<< HEAD
     // If complete not found, try with minimal
     if (!type_object)
     {
@@ -138,6 +177,9 @@ void DynTypesParticipant::on_type_information_received(
             type_object = TypeObjectFactory::get_instance()->get_type_object(type_name_, false);
         }
     }
+=======
+        rtps::CommonParticipant::RtpsListener::on_writer_discovery(participant, reason, info, should_be_ignored);
+>>>>>>> ee0e639 (Fix Data Races on DDS-Pipe (#145))
 
     // Build dynamic type if type identifier and object found in factory
     if (type_identifier && type_object)
@@ -166,13 +208,54 @@ void DynTypesParticipant::on_type_information_received(
     }
 }
 
+<<<<<<< HEAD
 void DynTypesParticipant::internal_notify_type_object_(
         DynamicType_ptr dynamic_type)
+=======
+void DynTypesParticipant::DynTypesRtpsListener::notify_type_discovered_(
+        const fastdds::dds::xtypes::TypeInformation& type_info,
+        const std::string& type_name)
+>>>>>>> ee0e639 (Fix Data Races on DDS-Pipe (#145))
 {
     logInfo(DDSPIPE_DYNTYPES_PARTICIPANT,
             "Participant " << this->id() << " discovered type object " << dynamic_type->get_name());
 
+<<<<<<< HEAD
     monitor_type_discovered(dynamic_type->get_name());
+=======
+    const auto type_identifier = type_info.complete().typeid_with_size().type_id();
+    fastdds::dds::xtypes::TypeObject dyn_type_object;
+    if (fastdds::dds::RETCODE_OK !=
+            fastdds::dds::DomainParticipantFactory::get_instance()->type_object_registry().get_type_object(
+                type_identifier,
+                dyn_type_object))
+    {
+        EPROSIMA_LOG_INFO(DDSPIPE_DYNTYPES_PARTICIPANT,
+                "Failed to get type object of " << type_name << " type");
+        return;
+    }
+
+    // Create Dynamic Type
+    fastdds::dds::DynamicType::_ref_type dyn_type =
+            fastdds::dds::DynamicTypeBuilderFactory::get_instance()->create_type_w_type_object(
+        dyn_type_object)->build();
+    if (!dyn_type)
+    {
+        EPROSIMA_LOG_WARNING(DDSPIPE_DYNTYPES_PARTICIPANT,
+                "Failed to create Dynamic Type " << type_name);
+        return;
+    }
+
+    // Notify type_identifier
+    // NOTE: We assume each type_name corresponds to only one type_identifier
+    EPROSIMA_LOG_INFO(DDSPIPE_DYNTYPES_PARTICIPANT,
+            "Participant " << configuration_->id << " discovered type object " << dyn_type->get_name());
+
+    monitor_type_discovered(type_name);
+
+    // If not, add it to the received types set
+    received_types_.insert(type_name);
+>>>>>>> ee0e639 (Fix Data Races on DDS-Pipe (#145))
 
     // Create data containing Dynamic Type
     auto data = std::make_unique<DynamicTypeData>();
@@ -182,6 +265,7 @@ void DynTypesParticipant::internal_notify_type_object_(
     type_object_reader_->simulate_data_reception(std::move(data));
 }
 
+<<<<<<< HEAD
 void DynTypesParticipant::initialize_internal_dds_participant_()
 {
 
@@ -298,6 +382,11 @@ void DynTypesParticipant::initialize_internal_dds_participant_()
     {
         throw utils::InitializationException("Error creating DDS Participant.");
     }
+=======
+std::unique_ptr<fastdds::rtps::RTPSParticipantListener> DynTypesParticipant::create_listener_()
+{
+    return std::make_unique<DynTypesRtpsListener>(configuration_, discovery_database_, type_object_reader_);
+>>>>>>> ee0e639 (Fix Data Races on DDS-Pipe (#145))
 }
 
 } /* namespace participants */

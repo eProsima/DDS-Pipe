@@ -82,7 +82,7 @@ void CommonReader::init()
     reader_ = dds_subscriber_->create_datareader(
         dds_topic_,
         reckon_reader_qos_(),
-        nullptr,
+        this,
         eprosima::fastdds::dds::StatusMask::all(),
         payload_pool_);
     #endif // if FASTRTPS_VERSION_MAJOR <= 2 && FASTRTPS_VERSION_MINOR < 13
@@ -94,9 +94,18 @@ void CommonReader::init()
                       participant_id_ << " in topic " << topic_ << ".");
     }
 
-    // Set listener after entity creation to avoid SEGFAULT (produced when callback using reader_ is
-    // invoked before the variable is fully set)
-    reader_->set_listener(this);
+    // Subscriber is created with autoenable set to false, so we need to enable the reader manually.
+    // This is done just to ensure that the reader is not registered before any other method modifying the reader pointer
+    // is called, opening a window for potential data races. Although Fast DDS ensures that this cannot happen, this
+    // procedure protects against future bad practices introducing the aforementioned data races.
+    if (fastdds::dds::RETCODE_OK != reader_->enable())
+    {
+        dds_subscriber_->delete_datareader(reader_);
+        reader_ = nullptr;
+        throw utils::InitializationException(
+                  utils::Formatter() << "Error enabling DataReader for Participant " <<
+                      participant_id_ << " in topic " << topic_ << ".");
+    }
 
 }
 
@@ -198,7 +207,8 @@ utils::ReturnCode CommonReader::take_nts_(
             // There has been an error taking the data. Exit.
             return ret;
         }
-    } while (!should_accept_sample_(info));
+    }
+    while (!should_accept_sample_(info));
 
     logInfo(DDSPIPE_DDS_READER, "Data taken in " << participant_id_ << " for topic " << topic_ << ".");
 
@@ -231,6 +241,7 @@ fastdds::dds::SubscriberQos CommonReader::reckon_subscriber_qos_() const
     {
         qos.partition().push_back("*");
     }
+    qos.entity_factory().autoenable_created_entities = false;
     return qos;
 }
 
