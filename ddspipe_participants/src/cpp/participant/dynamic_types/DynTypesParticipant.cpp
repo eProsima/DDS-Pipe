@@ -87,14 +87,26 @@ std::shared_ptr<IReader> DynTypesParticipant::create_reader(
     // If type object topic, return the internal reader for type objects
     if (is_type_object_topic(topic))
     {
-        return this->type_object_reader_;
+        return static_cast<DynTypesParticipant::DynTypesRtpsListener*>(rtps_participant_listener_.get())->
+                       type_object_reader();
     }
 
     // If not type object, use the parent method
     return rtps::SimpleParticipant::create_reader(topic);
 }
 
-void DynTypesParticipant::on_type_discovery(
+DynTypesParticipant::DynTypesRtpsListener::DynTypesRtpsListener(
+        std::shared_ptr<ParticipantConfiguration> conf,
+        std::shared_ptr<core::DiscoveryDatabase> ddb,
+        std::shared_ptr<InternalReader> internal_reader)
+    : rtps::CommonParticipant::RtpsListener(
+        conf,
+        ddb)
+    , type_object_reader_(internal_reader)
+{
+}
+
+void DynTypesParticipant::DynTypesRtpsListener::on_type_discovery(
         eprosima::fastdds::dds::DomainParticipant* /* participant */,
         const fastrtps::rtps::SampleIdentity& /* request_sample_id */,
         const fastrtps::string_255& /* topic */,
@@ -111,7 +123,7 @@ void DynTypesParticipant::on_type_discovery(
     }
 }
 
-void DynTypesParticipant::on_type_information_received(
+void DynTypesParticipant::DynTypesRtpsListener::on_type_information_received(
         eprosima::fastdds::dds::DomainParticipant* participant,
         const fastrtps::string_255 /* topic_name */,
         const fastrtps::string_255 type_name,
@@ -166,11 +178,11 @@ void DynTypesParticipant::on_type_information_received(
     }
 }
 
-void DynTypesParticipant::internal_notify_type_object_(
+void DynTypesParticipant::DynTypesRtpsListener::internal_notify_type_object_(
         DynamicType_ptr dynamic_type)
 {
     logInfo(DDSPIPE_DYNTYPES_PARTICIPANT,
-            "Participant " << this->id() << " discovered type object " << dynamic_type->get_name());
+            "Participant " << configuration_->id << " discovered type object " << dynamic_type->get_name());
 
     monitor_type_discovered(dynamic_type->get_name());
 
@@ -284,7 +296,9 @@ void DynTypesParticipant::initialize_internal_dds_participant_()
         configuration->domain,
         pqos);
 
-    dds_participant_->set_listener(this);
+    // Note that this listeners also inherits from DomainParticipantListener
+    dds_participant_->set_listener(
+        dynamic_cast<fastdds::dds::DomainParticipantListener*>(rtps_participant_listener_.get()));
 
     dds_participant_->enable();
 
@@ -298,6 +312,11 @@ void DynTypesParticipant::initialize_internal_dds_participant_()
     {
         throw utils::InitializationException("Error creating DDS Participant.");
     }
+}
+
+std::unique_ptr<fastrtps::rtps::RTPSParticipantListener> DynTypesParticipant::create_listener_()
+{
+    return std::make_unique<DynTypesRtpsListener>(configuration_, discovery_database_, type_object_reader_);
 }
 
 } /* namespace participants */

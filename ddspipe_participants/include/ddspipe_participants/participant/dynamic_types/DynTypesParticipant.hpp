@@ -36,7 +36,7 @@ namespace participants {
  *
  * TODO: separate these 2 participants
  */
-class DynTypesParticipant : public rtps::SimpleParticipant, public eprosima::fastdds::dds::DomainParticipantListener
+class DynTypesParticipant : public rtps::SimpleParticipant
 {
 public:
 
@@ -71,26 +71,50 @@ public:
     std::shared_ptr<core::IReader> create_reader(
             const core::ITopic& topic) override;
 
-    DDSPIPE_PARTICIPANTS_DllAPI
-    void on_type_discovery(
-            eprosima::fastdds::dds::DomainParticipant* participant,
-            const eprosima::fastrtps::rtps::SampleIdentity& request_sample_id,
-            const eprosima::fastrtps::string_255& topic,
-            const eprosima::fastrtps::types::TypeIdentifier* identifier,
-            const eprosima::fastrtps::types::TypeObject* object,
-            eprosima::fastrtps::types::DynamicType_ptr dyn_type) override;
+    class DynTypesRtpsListener : public rtps::CommonParticipant::RtpsListener,
+        public eprosima::fastdds::dds::DomainParticipantListener
+    {
+    public:
 
-    DDSPIPE_PARTICIPANTS_DllAPI
-    virtual void on_type_information_received(
-            eprosima::fastdds::dds::DomainParticipant* participant,
-            const eprosima::fastrtps::string_255 topic_name,
-            const eprosima::fastrtps::string_255 type_name,
-            const eprosima::fastrtps::types::TypeInformation& type_information) override;
+        DDSPIPE_PARTICIPANTS_DllAPI
+        explicit DynTypesRtpsListener(
+                std::shared_ptr<ParticipantConfiguration> conf,
+                std::shared_ptr<core::DiscoveryDatabase> ddb,
+                std::shared_ptr<InternalReader> internal_reader);
+
+        DDSPIPE_PARTICIPANTS_DllAPI
+        void on_type_discovery(
+                eprosima::fastdds::dds::DomainParticipant* participant,
+                const eprosima::fastrtps::rtps::SampleIdentity& request_sample_id,
+                const eprosima::fastrtps::string_255& topic,
+                const eprosima::fastrtps::types::TypeIdentifier* identifier,
+                const eprosima::fastrtps::types::TypeObject* object,
+                eprosima::fastrtps::types::DynamicType_ptr dyn_type) override;
+
+        DDSPIPE_PARTICIPANTS_DllAPI
+        virtual void on_type_information_received(
+                eprosima::fastdds::dds::DomainParticipant* participant,
+                const eprosima::fastrtps::string_255 topic_name,
+                const eprosima::fastrtps::string_255 type_name,
+                const eprosima::fastrtps::types::TypeInformation& type_information) override;
+
+        //! Type Object Reader getter
+        inline std::shared_ptr<InternalReader> type_object_reader() const
+        {
+            return type_object_reader_;
+        }
+
+    protected:
+
+        void internal_notify_type_object_(
+                eprosima::fastrtps::types::DynamicType_ptr dynamic_type);
+
+        //! Copy of Type Object Internal Reader
+        std::shared_ptr<InternalReader> type_object_reader_;
+
+    };
 
 protected:
-
-    void internal_notify_type_object_(
-            eprosima::fastrtps::types::DynamicType_ptr dynamic_type);
 
     void initialize_internal_dds_participant_();
 
@@ -98,6 +122,10 @@ protected:
 
     //! Type Object Internal Reader
     std::shared_ptr<InternalReader> type_object_reader_;
+
+    //! Override method from \c CommonParticipant to create the internal RTPS participant listener
+    std::unique_ptr<fastrtps::rtps::RTPSParticipantListener> create_listener_() override;
+
 };
 
 } /* namespace participants */

@@ -54,7 +54,7 @@ namespace dds {
  * @warning This Participant class does not support RPC so far.
  * @todo TODO
  */
-class CommonParticipant : public core::IParticipant, public fastdds::dds::DomainParticipantListener
+class CommonParticipant : public core::IParticipant
 {
 public:
 
@@ -106,17 +106,56 @@ public:
     // LISTENER METHODS
     /////////////////////////
 
-    virtual void on_participant_discovery(
-            fastdds::dds::DomainParticipant* participant,
-            fastrtps::rtps::ParticipantDiscoveryInfo&& info) override;
+    class DdsListener : public fastdds::dds::DomainParticipantListener
+    {
+    public:
 
-    virtual void on_subscriber_discovery(
-            fastdds::dds::DomainParticipant* participant,
-            fastrtps::rtps::ReaderDiscoveryInfo&& info) override;
+        DDSPIPE_PARTICIPANTS_DllAPI
+        explicit DdsListener(
+                std::shared_ptr<SimpleParticipantConfiguration> conf,
+                std::shared_ptr<core::DiscoveryDatabase> ddb);
 
-    virtual void on_publisher_discovery(
-            fastdds::dds::DomainParticipant* participant,
-            fastrtps::rtps::WriterDiscoveryInfo&& info) override;
+        /**
+         * @brief Override method from \c DomainParticipantListener
+         *
+         * This method is only used for debugging purposes.
+         */
+        DDSPIPE_PARTICIPANTS_DllAPI
+        void on_participant_discovery(
+                fastdds::dds::DomainParticipant* participant,
+                fastrtps::rtps::ParticipantDiscoveryInfo&& info) override;
+
+        /**
+         * @brief Override method from \c DomainParticipantListener .
+         *
+         * This method adds to the database the discovered or modified endpoint.
+         */
+        DDSPIPE_PARTICIPANTS_DllAPI
+        void on_subscriber_discovery(
+                fastdds::dds::DomainParticipant* participant,
+                fastrtps::rtps::ReaderDiscoveryInfo&& info) override;
+
+        /**
+         * @brief Override method from \c DomainParticipantListener .
+         *
+         * This method adds to the database the discovered or modified endpoint.
+         */
+        DDSPIPE_PARTICIPANTS_DllAPI
+        void on_publisher_discovery(
+                fastdds::dds::DomainParticipant* participant,
+                fastrtps::rtps::WriterDiscoveryInfo&& info) override;
+
+    protected:
+
+        //! Shared pointer to the configuration of the participant
+        const std::shared_ptr<SimpleParticipantConfiguration> configuration_;
+        //! Shared pointer to the discovery database
+        const std::shared_ptr<core::DiscoveryDatabase> discovery_database_;
+
+    };
+
+    //! Unique pointer to the internal DDS Participant Listener
+    std::unique_ptr<fastdds::dds::DomainParticipantListener> dds_participant_listener_;
 
 protected:
 
@@ -131,13 +170,26 @@ protected:
             const std::shared_ptr<core::DiscoveryDatabase>& discovery_database);
 
     /////////////////////////
+    // VIRTUAL METHODS
+    /////////////////////////
+
+    /**
+     * @brief Virtual method that creates a listener for the internal DDS Participant.
+     *        It should be overridden if a different listener is needed.
+     */
+    DDSPIPE_PARTICIPANTS_DllAPI
+    virtual std::unique_ptr<fastdds::dds::DomainParticipantListener> create_listener_();
+
+    /////////////////////////
     // INTERNAL VIRTUAL METHODS
     /////////////////////////
 
+    DDSPIPE_PARTICIPANTS_DllAPI
     virtual
     fastdds::dds::DomainParticipantQos
     reckon_participant_qos_() const;
 
+    DDSPIPE_PARTICIPANTS_DllAPI
     virtual
     fastdds::dds::DomainParticipant*
     create_dds_participant_();
