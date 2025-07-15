@@ -98,12 +98,6 @@ public:
                 const fastdds::rtps::PublicationBuiltinTopicData& info,
                 bool& should_be_ignored) override;
 
-        //! Type Object Reader getter
-        inline std::shared_ptr<InternalReader> type_object_reader() const
-        {
-            return type_object_reader_;
-        }
-
     protected:
 
         //! Copy of Type Object Internal Reader
@@ -120,6 +114,7 @@ public:
 protected:
 
     //! Override method from \c CommonParticipant to create the internal RTPS participant listener
+    DDSPIPE_PARTICIPANTS_DllAPI
     std::unique_ptr<fastdds::rtps::RTPSParticipantListener> create_listener_() override;
 
     //! Type Object Internal Reader
