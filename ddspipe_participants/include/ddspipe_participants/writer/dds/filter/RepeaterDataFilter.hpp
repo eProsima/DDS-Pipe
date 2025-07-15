@@ -25,9 +25,13 @@ namespace ddspipe {
 namespace participants {
 namespace dds {
 
+/**
+ * Struct containing all relevant information for the RepeaterDataFilter.
+ */
 struct RepeaterWriteData : public fastdds::rtps::WriteParams::UserWriteData
 {
-    fastdds::rtps::GuidPrefix_t last_writer_guid_prefix;  ///< GUID of the writer that sent this change.
+    // GUID of the writer that sent this change.
+    fastdds::rtps::GuidPrefix_t last_writer_guid_prefix;
 };
 
 /**
