@@ -110,20 +110,15 @@ public:
 
 protected:
 
-<<<<<<< HEAD
     void initialize_internal_dds_participant_();
 
     eprosima::fastdds::dds::DomainParticipant* dds_participant_;
-=======
-    //! Override method from \c CommonParticipant to create the internal RTPS participant listener
-    DDSPIPE_PARTICIPANTS_DllAPI
-    std::unique_ptr<fastdds::rtps::RTPSParticipantListener> create_listener_() override;
->>>>>>> 4fde39f (Add export to 'create_listener' (#153))
 
     //! Type Object Internal Reader
     std::shared_ptr<InternalReader> type_object_reader_;
 
     //! Override method from \c CommonParticipant to create the internal RTPS participant listener
+    DDSPIPE_PARTICIPANTS_DllAPI
     std::unique_ptr<fastrtps::rtps::RTPSParticipantListener> create_listener_() override;
 
 };
