@@ -98,12 +98,6 @@ public:
                 const eprosima::fastrtps::string_255 type_name,
                 const eprosima::fastrtps::types::TypeInformation& type_information) override;
 
-        //! Type Object Reader getter
-        inline std::shared_ptr<InternalReader> type_object_reader() const
-        {
-            return type_object_reader_;
-        }
-
     protected:
 
         void internal_notify_type_object_(
@@ -124,6 +118,7 @@ protected:
     std::shared_ptr<InternalReader> type_object_reader_;
 
     //! Override method from \c CommonParticipant to create the internal RTPS participant listener
+    DDSPIPE_PARTICIPANTS_DllAPI
     std::unique_ptr<fastrtps::rtps::RTPSParticipantListener> create_listener_() override;
 
 };

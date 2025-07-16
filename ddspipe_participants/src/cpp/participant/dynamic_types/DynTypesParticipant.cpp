@@ -87,8 +87,7 @@ std::shared_ptr<IReader> DynTypesParticipant::create_reader(
     // If type object topic, return the internal reader for type objects
     if (is_type_object_topic(topic))
     {
-        return static_cast<DynTypesParticipant::DynTypesRtpsListener*>(rtps_participant_listener_.get())->
-                       type_object_reader();
+        return type_object_reader_;
     }
 
     // If not type object, use the parent method
