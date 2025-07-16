@@ -74,6 +74,7 @@ CommonParticipant::~CommonParticipant()
 void CommonParticipant::init()
 {
     participant_attributes_ = reckon_participant_attributes_();
+    add_participant_att_properties_(participant_attributes_);
     create_participant_(
         domain_id_,
         participant_attributes_);
@@ -482,6 +483,17 @@ std::shared_ptr<core::IReader> CommonParticipant::create_reader(
 }
 
 fastdds::rtps::RTPSParticipantAttributes
+CommonParticipant::reckon_participant_attributes_() const
+{
+    fastdds::rtps::RTPSParticipantAttributes params;
+
+    // Add Participant name
+    params.setName(configuration_->id.c_str());
+
+    return params;
+}
+
+void
 CommonParticipant::add_participant_att_properties_(
         fastdds::rtps::RTPSParticipantAttributes& params) const
 {
@@ -499,21 +511,6 @@ CommonParticipant::add_participant_att_properties_(
         "fastdds.application.metadata",
         configuration_->app_metadata,
         "true");
-
-    return params;
-}
-
-fastdds::rtps::RTPSParticipantAttributes
-CommonParticipant::reckon_participant_attributes_() const
-{
-    fastdds::rtps::RTPSParticipantAttributes params;
-
-    // Add Participant name
-    params.setName(configuration_->id.c_str());
-
-    add_participant_att_properties_(params);
-
-    return params;
 }
 
 std::unique_ptr<fastdds::rtps::RTPSParticipantListener>
