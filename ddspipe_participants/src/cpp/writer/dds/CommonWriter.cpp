@@ -170,8 +170,6 @@ fastdds::dds::DataWriterQos CommonWriter::reckon_writer_qos_() const noexcept
 {
     fastdds::dds::DataWriterQos qos = dds_publisher_->get_default_datawriter_qos();
 
-    dds_publisher_->get_default_datawriter_qos();
-
     qos.durability().kind =
             (topic_.topic_qos.is_transient_local())
             ? fastdds::dds::DurabilityQosPolicyKind::TRANSIENT_LOCAL_DURABILITY_QOS

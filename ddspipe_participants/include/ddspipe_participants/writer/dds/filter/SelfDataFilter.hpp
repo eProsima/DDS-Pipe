@@ -12,6 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+/**
+ * @file SelfDataFilter.hpp
+ */
+
 #pragma once
 
 #include <fastdds/dds/topic/IContentFilter.hpp>
@@ -27,16 +31,24 @@ namespace participants {
 namespace dds {
 
 /**
- * This filter allows to not send messages from this Writer to the Readers in the same Participant.
+ * @brief Filter to prevent sending messages from this writer to readers in the same participant.
+ *
+ * This filter ensures that messages originating from this writer are not delivered
+ * to readers that belong to the same participant, avoiding self-data delivery.
  */
 class SelfDataFilter : public fastdds::dds::IContentFilter
 {
 public:
 
     /**
-     * @brief Whether incoming sample is relevant for this reader.
+     * @brief Evaluates whether a message should be sent to a given reader.
      *
-     * @return true if the reader does not belong to same Participant.
+     * This method checks whether the reader belongs to the same participant as the writer.
+     *
+     * @param payload The serialized payload of the message.
+     * @param sample_info Information about the sample for content filtering.
+     * @param reader_guid The GUID of the reader to which the message may be sent.
+     * @return true if the reader does not belong to the same participant.
      * @return false otherwise.
      */
     DDSPIPE_PARTICIPANTS_DllAPI

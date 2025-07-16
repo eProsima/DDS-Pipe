@@ -131,9 +131,25 @@ protected:
     // INTERNAL METHODS
     /////////////////////////
 
+    /**
+     * @brief Get the specific Publisher QoS for the \c DdsTopic associated to this writer.
+     *
+     * This method is used to set the QoS of the Publisher that will be created for this writer.
+     * It takes into account the default publisher QoS and the specific \c DdsTopic QoS of this writer.
+     *
+     * @return The Publisher QoS to be used for this writer.
+     */
     DDSPIPE_PARTICIPANTS_DllAPI
     virtual fastdds::dds::PublisherQos reckon_publisher_qos_() const noexcept;
 
+    /**
+     * @brief Get the specific DataWriter QoS for the \c DdsTopic associated to this writer.
+     *
+     * This method is used to set the QoS of the DataWriter that will be created for this writer.
+     * It takes into account the default data writer QoS and the specific \c DdsTopic QoS of this writer.
+     *
+     * @return The DataWriter QoS to be used for this writer.
+     */
     DDSPIPE_PARTICIPANTS_DllAPI
     virtual fastdds::dds::DataWriterQos reckon_writer_qos_() const noexcept;
 
