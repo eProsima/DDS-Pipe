@@ -374,10 +374,21 @@ std::unique_ptr<fastdds::dds::DomainParticipantListener> CommonParticipant::crea
     return std::make_unique<DdsListener>(configuration_, discovery_database_);
 }
 
-fastdds::dds::DomainParticipantQos CommonParticipant::add_qos_properties_(
+fastdds::dds::DomainParticipantQos CommonParticipant::reckon_participant_qos_() const
+{
+    // Get default DomainParticipantQos
+    auto qos = fastdds::dds::DomainParticipantFactory::get_instance()->get_default_participant_qos();
+
+    // Set participant name
+    qos.name(configuration_->id);
+
+    return qos;
+}
+
+void CommonParticipant::add_qos_properties_(
         fastdds::dds::DomainParticipantQos& qos) const
 {
-    // Enforce ignore local endpoints on XML participants
+    // Ignore the local endpoints so that the reader and writer of the same participant don't match.
     qos.properties().properties().emplace_back(
         "fastdds.ignore_local_endpoints",
         "true");
@@ -391,17 +402,6 @@ fastdds::dds::DomainParticipantQos CommonParticipant::add_qos_properties_(
         "fastdds.application.metadata",
         configuration_->app_metadata,
         "true");
-
-    return qos;
-}
-
-fastdds::dds::DomainParticipantQos CommonParticipant::reckon_participant_qos_() const
-{
-    auto qos = fastdds::dds::DomainParticipantFactory::get_instance()->get_default_participant_qos();
-
-    add_qos_properties_(qos);
-
-    return qos;
 }
 
 fastdds::dds::DomainParticipant* CommonParticipant::create_dds_participant_()
@@ -421,9 +421,12 @@ fastdds::dds::DomainParticipant* CommonParticipant::create_dds_participant_()
         EPROSIMA_LOG_WARNING(DDSPIPE_DDS_PARTICIPANT, "Error creating DDS Participant Listener.");
     }
 
+    auto qos = reckon_participant_qos_();
+    add_qos_properties_(qos);
+
     return eprosima::fastdds::dds::DomainParticipantFactory::get_instance()->create_participant(
         configuration_->domain,
-        reckon_participant_qos_(),
+        qos,
         dds_participant_listener_.get(),
         mask);
 }
