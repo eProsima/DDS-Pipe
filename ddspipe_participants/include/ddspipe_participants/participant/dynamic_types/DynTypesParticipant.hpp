@@ -71,23 +71,6 @@ public:
     std::shared_ptr<core::IReader> create_reader(
             const core::ITopic& topic) override;
 
-    // DynTypesParticipant makes use of both RTPS and DDS listeners
-
-    /**
-     * @brief This class is the RTPS Listener for DynTypesParticipant. It inherits from
-     * \c rtps::CommonParticipant::RtpsListener .
-     */
-    class DynTypesRtpsListener : public rtps::CommonParticipant::RtpsListener
-    {
-    public:
-
-        DDSPIPE_PARTICIPANTS_DllAPI
-        explicit DynTypesRtpsListener(
-                std::shared_ptr<ParticipantConfiguration> conf,
-                std::shared_ptr<core::DiscoveryDatabase> ddb);
-
-    };
-
     /**
      * @brief This class is the DDS Listener for DynTypesParticipant. It inherits directly from
      * \c fastdds::dds::DomainParticipantListener and implements the methods needed to process type objects and
@@ -141,10 +124,6 @@ protected:
 
     //! Type Object Internal Reader
     std::shared_ptr<InternalReader> type_object_reader_;
-
-    //! Override method from \c CommonParticipant to create the internal RTPS participant listener
-    DDSPIPE_PARTICIPANTS_DllAPI
-    std::unique_ptr<fastrtps::rtps::RTPSParticipantListener> create_listener_() override;
 
     //! Method to create the internal DDS participant listener
     DDSPIPE_PARTICIPANTS_DllAPI

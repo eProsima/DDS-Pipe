@@ -94,15 +94,6 @@ std::shared_ptr<IReader> DynTypesParticipant::create_reader(
     return rtps::SimpleParticipant::create_reader(topic);
 }
 
-DynTypesParticipant::DynTypesRtpsListener::DynTypesRtpsListener(
-        std::shared_ptr<ParticipantConfiguration> conf,
-        std::shared_ptr<core::DiscoveryDatabase> ddb)
-    : rtps::CommonParticipant::RtpsListener(
-        conf,
-        ddb)
-{
-}
-
 DynTypesParticipant::DynTypesDdsListener::DynTypesDdsListener(
         std::shared_ptr<InternalReader> type_object_reader,
         core::types::ParticipantId participant_id)
@@ -317,11 +308,6 @@ void DynTypesParticipant::initialize_internal_dds_participant_()
     {
         throw utils::InitializationException("Error creating DDS Participant.");
     }
-}
-
-std::unique_ptr<fastrtps::rtps::RTPSParticipantListener> DynTypesParticipant::create_listener_()
-{
-    return std::make_unique<DynTypesRtpsListener>(configuration_, discovery_database_);
 }
 
 std::unique_ptr<fastdds::dds::DomainParticipantListener> DynTypesParticipant::create_dds_listener_()
