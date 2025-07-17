@@ -71,16 +71,19 @@ public:
     std::shared_ptr<core::IReader> create_reader(
             const core::ITopic& topic) override;
 
-    class DynTypesRtpsListener : public rtps::CommonParticipant::RtpsListener,
-        public eprosima::fastdds::dds::DomainParticipantListener
+    /**
+     * @brief This class is the DDS Listener for DynTypesParticipant. It inherits directly from
+     * \c fastdds::dds::DomainParticipantListener and implements the methods needed to process type objects and
+     * type lookup services.
+     */
+    class DynTypesDdsListener : public eprosima::fastdds::dds::DomainParticipantListener
     {
     public:
 
         DDSPIPE_PARTICIPANTS_DllAPI
-        explicit DynTypesRtpsListener(
-                std::shared_ptr<ParticipantConfiguration> conf,
-                std::shared_ptr<core::DiscoveryDatabase> ddb,
-                std::shared_ptr<InternalReader> internal_reader);
+        explicit DynTypesDdsListener(
+                std::shared_ptr<InternalReader> type_object_reader,
+                core::types::ParticipantId participant_id);
 
         DDSPIPE_PARTICIPANTS_DllAPI
         void on_type_discovery(
@@ -106,6 +109,9 @@ public:
         //! Copy of Type Object Internal Reader
         std::shared_ptr<InternalReader> type_object_reader_;
 
+        //! Participant ID for informative purposes. It is stored in the CommonParticipant (RTPS)
+        core::types::ParticipantId participant_id_;
+
     };
 
 protected:
@@ -114,12 +120,14 @@ protected:
 
     eprosima::fastdds::dds::DomainParticipant* dds_participant_;
 
+    std::unique_ptr<eprosima::fastdds::dds::DomainParticipantListener> dds_participant_listener_;
+
     //! Type Object Internal Reader
     std::shared_ptr<InternalReader> type_object_reader_;
 
-    //! Override method from \c CommonParticipant to create the internal RTPS participant listener
+    //! Method to create the internal DDS participant listener
     DDSPIPE_PARTICIPANTS_DllAPI
-    std::unique_ptr<fastrtps::rtps::RTPSParticipantListener> create_listener_() override;
+    virtual std::unique_ptr<fastdds::dds::DomainParticipantListener> create_dds_listener_();
 
 };
 
