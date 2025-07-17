@@ -13,17 +13,20 @@
 // limitations under the License.
 
 
-#include <fastdds/rtps/RTPSDomain.hpp>
-#include <fastdds/rtps/participant/RTPSParticipant.hpp>
 #include <fastdds/rtps/common/CacheChange.hpp>
+#include <fastdds/rtps/common/WriteParams.hpp>
+#include <fastdds/rtps/participant/RTPSParticipant.hpp>
+#include <fastdds/rtps/RTPSDomain.hpp>
 
 #include <cpp_utils/exception/InitializationException.hpp>
 #include <cpp_utils/Log.hpp>
 #include <cpp_utils/time/time_utils.hpp>
 
 #include <ddspipe_participants/efficiency/cache_change/CacheChangePool.hpp>
-#include <ddspipe_participants/writer/dds/CommonWriter.hpp>
 #include <ddspipe_participants/types/dds/RouterCacheChange.hpp>
+#include <ddspipe_participants/writer/dds/CommonWriter.hpp>
+#include <ddspipe_participants/writer/dds/filter/RepeaterDataFilter.hpp>
+#include <ddspipe_participants/writer/dds/filter/SelfDataFilter.hpp>
 
 namespace eprosima {
 namespace ddspipe {
@@ -83,6 +86,24 @@ void CommonWriter::init()
                   utils::Formatter() << "Error creating DataWriter for Participant " <<
                       participant_id_ << " in topic " << topic_ << ".");
     }
+
+    if (repeater_)
+    {
+        // Use filter writer of origin
+        data_filter_ = std::make_shared<RepeaterDataFilter>();
+    }
+    else
+    {
+        // Use default filter
+        data_filter_ = std::make_shared<SelfDataFilter>();
+    }
+
+    if (fastdds::dds::RETCODE_OK != writer_->set_sample_prefilter(data_filter_))
+    {
+        throw utils::InitializationException(
+                  utils::Formatter() << "Error setting DataWriter prefilter for Participant " <<
+                      participant_id_ << " in topic " << topic_ << ".");
+    }
 }
 
 CommonWriter::CommonWriter(
@@ -90,12 +111,14 @@ CommonWriter::CommonWriter(
         const DdsTopic& topic,
         const std::shared_ptr<core::PayloadPool>& payload_pool,
         fastdds::dds::DomainParticipant* participant,
-        fastdds::dds::Topic* topic_entity)
+        fastdds::dds::Topic* topic_entity,
+        const bool repeater)
     : BaseWriter(participant_id, topic.topic_qos.max_tx_rate)
     , dds_participant_(participant)
     , dds_topic_(topic_entity)
     , payload_pool_(new core::PayloadPoolMediator(payload_pool))
     , topic_(topic)
+    , repeater_(repeater)
     , dds_publisher_(nullptr)
     , writer_(nullptr)
 {
@@ -110,15 +133,23 @@ utils::ReturnCode CommonWriter::write_nts_(
 
     auto& rtps_data = dynamic_cast<core::types::RtpsPayloadData&>(data);
 
-    if (topic_.topic_qos.keyed)
+    fastdds::rtps::WriteParams wparams;
+
+    if (fill_to_send_data_(wparams, rtps_data) != utils::ReturnCode::RETCODE_OK)
     {
-        // TODO check if in case of dispose it must be done something differently
-        return payload_pool_->write(writer_, &rtps_data, rtps_data.instanceHandle);
+        EPROSIMA_LOG_ERROR(DDSPIPE_DDS_WRITER, "Error setting data to send.");
+        return utils::ReturnCode::RETCODE_ERROR;
     }
-    else
-    {
-        return payload_pool_->write(writer_, &rtps_data);
-    }
+
+    // WARNING: At the time of this writing, there is no DataWriter API to write both with parameters and instance handle.
+    // However, the current implementation of write without instance handle always computes its value via type support
+    // (if it corresponds to a keyed topic), so it is equivalent to write with instance handle (and can hence use the
+    // write with params overload to cover all cases). Future developers should be aware of this and might need to
+    // update this method if the DataWriter implementation changes at some point.
+    return payload_pool_->write(writer_, &rtps_data, wparams);
+
+    // TODO: handle dipose case -> DataWriter::write will always send ALIVE changes, so this case must be handled
+    // with additional logic (e.g. by using unregister_instance instead of write).
 }
 
 fastdds::dds::PublisherQos CommonWriter::reckon_publisher_qos_() const noexcept
@@ -138,8 +169,6 @@ fastdds::dds::PublisherQos CommonWriter::reckon_publisher_qos_() const noexcept
 fastdds::dds::DataWriterQos CommonWriter::reckon_writer_qos_() const noexcept
 {
     fastdds::dds::DataWriterQos qos = dds_publisher_->get_default_datawriter_qos();
-
-    dds_publisher_->get_default_datawriter_qos();
 
     qos.durability().kind =
             (topic_.topic_qos.is_transient_local())
@@ -170,6 +199,23 @@ fastdds::dds::DataWriterQos CommonWriter::reckon_writer_qos_() const noexcept
     qos.deadline().period = eprosima::fastdds::dds::Duration_t(0);
 
     return qos;
+}
+
+utils::ReturnCode CommonWriter::fill_to_send_data_(
+        fastdds::rtps::WriteParams& to_send_params,
+        const RtpsPayloadData& data) const noexcept
+{
+    if (repeater_)
+    {
+        auto write_data = std::make_shared<RepeaterWriteData>();
+        write_data->last_writer_guid_prefix = data.source_guid.guidPrefix;
+        to_send_params.user_write_data(write_data);
+    }
+
+    // Set source time stamp to be the original one
+    to_send_params.source_timestamp(data.source_timestamp);
+
+    return utils::ReturnCode::RETCODE_OK;
 }
 
 } /* namespace dds */

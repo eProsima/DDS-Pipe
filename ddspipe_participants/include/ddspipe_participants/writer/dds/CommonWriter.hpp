@@ -20,7 +20,9 @@
 #include <fastdds/dds/publisher/DataWriter.hpp>
 #include <fastdds/dds/publisher/Publisher.hpp>
 #include <fastdds/dds/publisher/qos/DataWriterQos.hpp>
+#include <fastdds/dds/topic/IContentFilter.hpp>
 #include <fastdds/dds/topic/Topic.hpp>
+#include <fastdds/rtps/common/WriteParams.hpp>
 
 #include <ddspipe_core/efficiency/payload/PayloadPoolMediator.hpp>
 #include <ddspipe_core/types/participant/ParticipantId.hpp>
@@ -99,7 +101,8 @@ protected:
             const core::types::DdsTopic& topic,
             const std::shared_ptr<core::PayloadPool>& payload_pool,
             fastdds::dds::DomainParticipant* participant,
-            fastdds::dds::Topic* topic_entity);
+            fastdds::dds::Topic* topic_entity,
+            const bool repeater);
 
     /////////////////////////
     // IWRITER METHODS
@@ -128,13 +131,38 @@ protected:
     // INTERNAL METHODS
     /////////////////////////
 
-    virtual
-    fastdds::dds::PublisherQos
-    reckon_publisher_qos_() const noexcept;
+    /**
+     * @brief Get the specific Publisher QoS for the \c DdsTopic associated to this writer.
+     *
+     * This method is used to set the QoS of the Publisher that will be created for this writer.
+     * It takes into account the default publisher QoS and the specific \c DdsTopic QoS of this writer.
+     *
+     * @return The Publisher QoS to be used for this writer.
+     */
+    DDSPIPE_PARTICIPANTS_DllAPI
+    virtual fastdds::dds::PublisherQos reckon_publisher_qos_() const noexcept;
 
-    virtual
-    fastdds::dds::DataWriterQos
-    reckon_writer_qos_() const noexcept;
+    /**
+     * @brief Get the specific DataWriter QoS for the \c DdsTopic associated to this writer.
+     *
+     * This method is used to set the QoS of the DataWriter that will be created for this writer.
+     * It takes into account the default data writer QoS and the specific \c DdsTopic QoS of this writer.
+     *
+     * @return The DataWriter QoS to be used for this writer.
+     */
+    DDSPIPE_PARTICIPANTS_DllAPI
+    virtual fastdds::dds::DataWriterQos reckon_writer_qos_() const noexcept;
+
+    /**
+     * @brief Auxiliary method used in \c write to fill the sample to send and write params.
+     *
+     * @param [out] to_send_params write params to be filled and sent.
+     * @param [in] data data received that must be sent.
+     */
+    DDSPIPE_PARTICIPANTS_DllAPI
+    virtual utils::ReturnCode fill_to_send_data_(
+            eprosima::fastdds::rtps::WriteParams& to_send_params,
+            const core::types::RtpsPayloadData& data) const noexcept;
 
     /////////////////////////
     // EXTERNAL VARIABLES
@@ -142,6 +170,7 @@ protected:
 
     fastdds::dds::DomainParticipant* dds_participant_;
     fastdds::dds::Topic* dds_topic_;
+    bool repeater_;
 
     /////////////////////////
     // INTERNAL VARIABLES
@@ -153,6 +182,7 @@ protected:
 
     fastdds::dds::Publisher* dds_publisher_;
     fastdds::dds::DataWriter* writer_;
+    std::shared_ptr<fastdds::dds::IContentFilter> data_filter_;
 };
 
 } /* namespace dds */
