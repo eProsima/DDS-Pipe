@@ -89,7 +89,6 @@ void DdsSimpleReader::fill_received_data_(
     fastrtps::rtps::WriteParams write_params{};
     write_params.related_sample_identity() = info.related_sample_identity;
     write_params.sample_identity() = info.sample_identity;
-    write_params.sample_identity().writer_guid() = info.related_sample_identity.writer_guid();
     write_params.source_timestamp() = info.source_timestamp;
     rpc_data.write_params.set_value(write_params);
 

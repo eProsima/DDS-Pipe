@@ -318,7 +318,10 @@ void RpcBridge::transmit_(
 
             SampleIdentity reply_related_sample_identity =
                     rpc_data.write_params.get_reference().sample_identity();
-            reply_related_sample_identity.sequence_number(rpc_data.origin_sequence_number);
+            // Use the reader GUID of the reply for the service client to replace the writer GUID of
+            // the request for the service client
+            reply_related_sample_identity.writer_guid(
+                rpc_data.write_params.get_reference().related_sample_identity().writer_guid());
 
             if (reply_related_sample_identity == SampleIdentity::unknown())
             {
