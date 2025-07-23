@@ -95,7 +95,9 @@ core::types::Endpoint create_common_endpoint_from_info_(
     if (info.type_information.assigned())
     {
         fastdds::dds::xtypes::TypeObject remote_type_object;
-        if (eprosima::fastdds::dds::RETCODE_OK != eprosima::fastdds::dds::DomainParticipantFactory::get_instance()->type_object_registry().get_type_object(
+        if (eprosima::fastdds::dds::RETCODE_OK !=
+                eprosima::fastdds::dds::DomainParticipantFactory::get_instance()->type_object_registry().get_type_object
+                (
                     info.type_information.type_information.complete().typeid_with_size().type_id(),
                     remote_type_object))
         {
@@ -104,14 +106,15 @@ core::types::Endpoint create_common_endpoint_from_info_(
         }
 
         // Build remotely discovered type
-        fastdds::dds::DynamicType::_ref_type remote_type = eprosima::fastdds::dds::DynamicTypeBuilderFactory::get_instance()->create_type_w_type_object(
+        fastdds::dds::DynamicType::_ref_type remote_type =
+                eprosima::fastdds::dds::DynamicTypeBuilderFactory::get_instance()->create_type_w_type_object(
             remote_type_object)->build();
 
         // Serialize DynamicType into its IDL representation
         std::stringstream idl;
         idl_serialize(remote_type, idl);
         endpoint.topic.type_idl = idl.str();
-        }
+    }
 
     // NOTE: ownership is only for Writer
     return endpoint;
