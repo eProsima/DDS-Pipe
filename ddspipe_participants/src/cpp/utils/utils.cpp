@@ -14,6 +14,12 @@
 
 #include <fastdds/rtps/builtin/data/PublicationBuiltinTopicData.hpp>
 #include <fastdds/rtps/builtin/data/SubscriptionBuiltinTopicData.hpp>
+#include <fastdds/dds/domain/DomainParticipantFactory.hpp>
+#include <fastdds/dds/xtypes/dynamic_types/DynamicTypeBuilderFactory.hpp>
+#include <fastdds/dds/xtypes/dynamic_types/DynamicTypeBuilder.hpp>
+
+#include <ddspipe_core/types/dynamic_types/types.hpp>
+#include <fastdds/dds/xtypes/utils.hpp>
 
 #include <cpp_utils/utils.hpp>
 
@@ -85,6 +91,27 @@ core::types::Endpoint create_common_endpoint_from_info_(
 
     // Set participant that discovered
     endpoint.discoverer_participant_id = participant_discoverer_id;
+
+    if (info.type_information.assigned())
+    {
+        fastdds::dds::xtypes::TypeObject remote_type_object;
+        if (eprosima::fastdds::dds::RETCODE_OK != eprosima::fastdds::dds::DomainParticipantFactory::get_instance()->type_object_registry().get_type_object(
+                    info.type_information.type_information.complete().typeid_with_size().type_id(),
+                    remote_type_object))
+        {
+            EPROSIMA_LOG_ERROR(STATISTICS_PARTICIPANT_LISTENER,
+                    "Error getting type object for type " << info.type_name);
+        }
+
+        // Build remotely discovered type
+        fastdds::dds::DynamicType::_ref_type remote_type = eprosima::fastdds::dds::DynamicTypeBuilderFactory::get_instance()->create_type_w_type_object(
+            remote_type_object)->build();
+
+        // Serialize DynamicType into its IDL representation
+        std::stringstream idl;
+        idl_serialize(remote_type, idl);
+        endpoint.topic.type_idl = idl.str();
+        }
 
     // NOTE: ownership is only for Writer
     return endpoint;
