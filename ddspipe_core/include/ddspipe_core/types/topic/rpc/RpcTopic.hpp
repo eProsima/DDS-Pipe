@@ -73,6 +73,26 @@ public:
     static bool is_service_topic(
             const DdsTopic& topic);
 
+    //! Whether a topic is a ROS2 request topic
+    DDSPIPE_CORE_DllAPI
+    static bool is_ros2_request_topic(
+            const DdsTopic& topic);
+
+    //! Whether a topic is a ROS2 reply topic
+    DDSPIPE_CORE_DllAPI
+    static bool is_ros2_reply_topic(
+            const DdsTopic& topic);
+
+    //! Whether a topic is a FastDDS request topic
+    DDSPIPE_CORE_DllAPI
+    static bool is_fastdds_request_topic(
+            const DdsTopic& topic);
+
+    //! Whether a topic is a FastDDS reply topic
+    DDSPIPE_CORE_DllAPI
+    static bool is_fastdds_reply_topic(
+            const DdsTopic& topic);
+
     /**
      * Minor operator
      *
@@ -83,6 +103,21 @@ public:
 
 protected:
 
+    static bool has_prefix(
+            const std::string& str,
+            const std::string& prefix)
+    {
+        return str.find(prefix) == 0;
+    }
+
+    static bool has_suffix(
+            const std::string& str,
+            const std::string& suffix)
+    {
+        return str.size() >= suffix.size() &&
+               str.compare(str.size() - suffix.size(), suffix.size(), suffix) == 0;
+    }
+
     //! Name of the service
     std::string service_name_;
 
@@ -92,11 +127,28 @@ protected:
     //! Topic used for transmitting replies
     DdsTopic reply_topic_;
 
-    static const std::string REQUEST_PREFIX_STR;
-    static const std::string REPLY_PREFIX_STR;
-    static const std::string REQUEST_STR;
-    static const std::string REPLY_STR;
-    static const std::string RESPONSE_STR;
+    //! Prefix used for request topic
+    std::string request_prefix_;
+    //! Suffix used for request topic
+    std::string request_suffix_;
+    //! Prefix used for reply topic
+    std::string reply_prefix_;
+    //! Suffix used for reply topic
+    std::string reply_suffix_;
+
+    static const std::string ROS_TOPIC_REQUEST_PREFIX_STR;
+    static const std::string ROS_TOPIC_REPLY_PREFIX_STR;
+    static const std::string ROS_TOPIC_REQUEST_SUFFIX_STR;
+    static const std::string ROS_TOPIC_REPLY_SUFFIX_STR;
+    static const std::string ROS_TYPE_REQUEST_SUFFIX_STR;
+    static const std::string ROS_TYPE_REPLY_SUFFIX_STR;
+
+    static const std::string FASTDDS_TOPIC_REQUEST_PREFIX_STR;
+    static const std::string FASTDDS_TOPIC_REPLY_PREFIX_STR;
+    static const std::string FASTDDS_TOPIC_REQUEST_SUFFIX_STR;
+    static const std::string FASTDDS_TOPIC_REPLY_SUFFIX_STR;
+    static const std::string FASTDDS_TYPE_REQUEST_SUFFIX_STR;
+    static const std::string FASTDDS_TYPE_REPLY_SUFFIX_STR;
 };
 
 /**
