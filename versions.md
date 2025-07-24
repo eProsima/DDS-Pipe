@@ -5,6 +5,27 @@ The *Forthcoming* section includes those features added in `main` branch that ar
 
 ## Forthcoming
 
+# eProsima DDS Pipe v1.3.0
+
+This release will include the following *features*:
+* Added export to 'create_listener'
+* Support repeater feature in DDS (XML) participants
+
+This release will include the following *internal changes &  bugfixes*:
+* Fix data races on DDS-Pipe
+* Use tsan binaries for TSAN workflow
+* Further isolate atrributes/QoS and properties configuration
+
+This release includes the following *dependencies update*:
+
+|  | Repository | Old Version | New Version |
+|---|---|---|---|
+| Foonathan Memory Vendor | [eProsima/foonathan_memory_vendor](https://github.com/eProsima/foonathan_memory_vendor) | [v1.3.1](https://github.com/eProsima/foonathan_memory_vendor/releases/tag/v1.3.1) | [v1.3.1](https://github.com/eProsima/foonathan_memory_vendor/releases/tag/v1.3.1) |
+| Fast CDR | [eProsima/Fast-CDR](https://github.com/eProsima/Fast-CDR) | [v2.3.0](https://github.com/eProsima/Fast-CDR/releases/tag/v2.3.0) | [v2.3.0](https://github.com/eProsima/Fast-CDR/releases/tag/v2.3.0) |
+| Fast DDS | [eProsima/Fast-DDS](https://github.com/eProsima/Fast-DDS) | [v3.2.2](https://github.com/eProsima/Fast-DDS/releases/tag/v3.2.2) | [v3.3.0](https://github.com/eProsima/Fast-DDS/releases/tag/v3.3.0) |
+| Dev Utils | [eProsima/dev-utils](https://github.com/eProsima/dev-utils) | [v1.2.0](https://github.com/eProsima/dev-utils/releases/tag/v1.2.0) | [v1.3.0](https://github.com/eProsima/dev-utils/releases/tag/v1.3.0) |
+
+
 ## eProsima DDS Pipe v1.2.0
 
 This release will include the following *features*:
