@@ -18,9 +18,7 @@ on:
           - v3
 
       dependencies_artifact_postfix:
-        description: >
-          Postfix name to add to artifact name to download dependencies.
-          This is use to download a specific artifact version from eProsima-CI.
+        description: 'Postfix name to add to artifact name to download dependencies. This is use to download a specific artifact version from eProsima-CI.'
         required: true
         default: '_nightly'
 
@@ -31,11 +29,20 @@ on:
 
 jobs:
 
-  reusable_tests:
+  reusable_tests_ubuntu:
     name: reusable_tests
-    uses: ./.github/workflows/reusable-workflow.yml
+    uses: ./.github/workflows/reusable-ubuntu-ci.yml
     with:
-      custom_version_build: ${{ github.event.inputs.custom_version_build || 'v3' }}
-      dependencies_artifact_postfix: ${{ github.event.inputs.dependencies_artifact_postfix || '_nightly' }}
+      custom_version_build: ${{ inputs.custom_version_build || 'v3' }}
+      dependencies_artifact_postfix: ${{ inputs.dependencies_artifact_postfix || '_nightly' }}
+      ref: ${{ github.ref }}
+    secrets: inherit
+
+  reusable_tests_windows:
+    name: reusable_tests
+    uses: ./.github/workflows/reusable-windows-ci.yml
+    with:
+      custom_version_build: ${{ inputs.custom_version_build || 'v3' }}
+      dependencies_artifact_postfix: ${{ inputs.dependencies_artifact_postfix || '_nightly' }}
       ref: ${{ github.ref }}
     secrets: inherit

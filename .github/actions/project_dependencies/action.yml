@@ -50,6 +50,7 @@ runs:
       with:
         cmake_build_type: ${{ inputs.cmake_build_type }}
 
+    # Dev-Utils artifact already includes Fast DDS
     - name: Download dependencies artifact
       uses: eProsima/eProsima-CI/multiplatform/download_dependency@v0
       with:
