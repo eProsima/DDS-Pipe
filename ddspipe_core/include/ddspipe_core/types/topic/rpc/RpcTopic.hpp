@@ -103,13 +103,19 @@ public:
 
 protected:
 
-    static bool has_prefix(const std::string& str, const std::string& prefix) {
+    static bool has_prefix(
+            const std::string& str,
+            const std::string& prefix)
+    {
         return str.find(prefix) == 0;
     }
 
-    static bool has_suffix(const std::string& str, const std::string& suffix) {
+    static bool has_suffix(
+            const std::string& str,
+            const std::string& suffix)
+    {
         return str.size() >= suffix.size() &&
-            str.compare(str.size() - suffix.size(), suffix.size(), suffix) == 0;
+               str.compare(str.size() - suffix.size(), suffix.size(), suffix) == 0;
     }
 
     //! Name of the service

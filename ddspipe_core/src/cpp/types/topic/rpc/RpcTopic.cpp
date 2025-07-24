@@ -60,44 +60,50 @@ RpcTopic::RpcTopic(
 RpcTopic::RpcTopic(
         const DdsTopic& topic) noexcept
 {
-    if (is_service_topic(topic)) {
-        if (is_ros2_request_topic(topic) || is_ros2_reply_topic(topic)) {
+    if (is_service_topic(topic))
+    {
+        if (is_ros2_request_topic(topic) || is_ros2_reply_topic(topic))
+        {
             request_prefix_ = RpcTopic::ROS_TOPIC_REQUEST_PREFIX_STR;
             request_suffix_ = RpcTopic::ROS_TOPIC_REQUEST_SUFFIX_STR;
             reply_prefix_ = RpcTopic::ROS_TOPIC_REPLY_PREFIX_STR;
             reply_suffix_ = RpcTopic::ROS_TOPIC_REPLY_SUFFIX_STR;
         }
-        else if (is_fastdds_request_topic(topic) || is_fastdds_reply_topic(topic)) {
+        else if (is_fastdds_request_topic(topic) || is_fastdds_reply_topic(topic))
+        {
             request_prefix_ = RpcTopic::FASTDDS_TOPIC_REQUEST_PREFIX_STR;
             request_suffix_ = RpcTopic::FASTDDS_TOPIC_REQUEST_SUFFIX_STR;
             reply_prefix_ = RpcTopic::FASTDDS_TOPIC_REPLY_PREFIX_STR;
             reply_suffix_ = RpcTopic::FASTDDS_TOPIC_REPLY_SUFFIX_STR;
         }
 
-        if (is_request_topic(topic)) {
+        if (is_request_topic(topic))
+        {
             request_topic_ = topic;
             reply_topic_ = topic;
             reply_topic_.m_topic_name =
-                std::regex_replace(reply_topic_.m_topic_name, std::regex(request_prefix_), reply_prefix_);
+                    std::regex_replace(reply_topic_.m_topic_name, std::regex(request_prefix_), reply_prefix_);
             reply_topic_.m_topic_name =
-                std::regex_replace(reply_topic_.m_topic_name, std::regex(request_suffix_), reply_suffix_);
+                    std::regex_replace(reply_topic_.m_topic_name, std::regex(request_suffix_), reply_suffix_);
             reply_topic_.type_name =
-                std::regex_replace(reply_topic_.type_name, std::regex(request_suffix_), reply_suffix_);
+                    std::regex_replace(reply_topic_.type_name, std::regex(request_suffix_), reply_suffix_);
 
             service_name_ =
-                std::regex_replace(topic.m_topic_name, std::regex(request_prefix_ + "|" + request_suffix_), "");
-        } else {
+                    std::regex_replace(topic.m_topic_name, std::regex(request_prefix_ + "|" + request_suffix_), "");
+        }
+        else
+        {
             reply_topic_ = topic;
             request_topic_ = topic;
             request_topic_.m_topic_name =
-                std::regex_replace(request_topic_.m_topic_name, std::regex(reply_prefix_), request_prefix_);
+                    std::regex_replace(request_topic_.m_topic_name, std::regex(reply_prefix_), request_prefix_);
             request_topic_.m_topic_name =
-                std::regex_replace(request_topic_.m_topic_name, std::regex(reply_suffix_), request_suffix_);
+                    std::regex_replace(request_topic_.m_topic_name, std::regex(reply_suffix_), request_suffix_);
             request_topic_.type_name =
-                std::regex_replace(request_topic_.type_name, std::regex(reply_suffix_), request_suffix_);
+                    std::regex_replace(request_topic_.type_name, std::regex(reply_suffix_), request_suffix_);
 
             service_name_ =
-                std::regex_replace(topic.m_topic_name, std::regex(reply_prefix_ + "|" + reply_suffix_), "");
+                    std::regex_replace(topic.m_topic_name, std::regex(reply_prefix_ + "|" + reply_suffix_), "");
         }
 
         reply_topic_.m_internal_type_discriminator = INTERNAL_TOPIC_TYPE_RPC;
@@ -113,7 +119,9 @@ RpcTopic::RpcTopic(
         // leave this field empty until the creation mechanism is adapted to cover this scenario.
         request_topic_.type_identifiers = fastdds::dds::xtypes::TypeIdentifierPair();
         reply_topic_.type_identifiers = fastdds::dds::xtypes::TypeIdentifierPair();
-    } else {
+    }
+    else
+    {
         utils::tsnh(utils::Formatter() << "Attempting to create RpcTopic from invalid topic.");
     }
 }
@@ -187,10 +195,12 @@ bool RpcTopic::is_reply_topic(
 }
 
 bool RpcTopic::is_service_topic (
-        const DdsTopic& topic) {
+        const DdsTopic& topic)
+{
 
     if (is_ros2_request_topic(topic) || is_ros2_reply_topic(topic) ||
-        is_fastdds_request_topic(topic) || is_fastdds_reply_topic(topic)) {
+            is_fastdds_request_topic(topic) || is_fastdds_reply_topic(topic))
+    {
         return true;
     }
 
