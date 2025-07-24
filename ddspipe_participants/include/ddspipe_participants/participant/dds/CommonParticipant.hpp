@@ -199,13 +199,13 @@ protected:
     DDSPIPE_PARTICIPANTS_DllAPI
     virtual
     fastdds::dds::DomainParticipantQos
-    add_qos_properties_(
-            fastdds::dds::DomainParticipantQos& qos) const;
+    reckon_participant_qos_() const;
 
     DDSPIPE_PARTICIPANTS_DllAPI
     virtual
-    fastdds::dds::DomainParticipantQos
-    reckon_participant_qos_() const;
+    void
+    add_qos_properties_(
+            fastdds::dds::DomainParticipantQos& qos) const;
 
     DDSPIPE_PARTICIPANTS_DllAPI
     virtual

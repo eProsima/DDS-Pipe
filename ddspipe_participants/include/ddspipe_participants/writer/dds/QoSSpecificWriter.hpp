@@ -39,8 +39,10 @@ public:
      * @param participant_id    Router Id of the Participant that has created this QoSSpecificWriter.
      * @param topic             Topic that this QoSSpecificWriter subscribes to.
      * @param payload_pool      Shared Payload Pool to received data and take it.
+     * @param specific_qos      Specific QoS of the Endpoint.
      * @param participant       DDS Participant pointer.
      * @param topic_entity      DDS Topic pointer.
+     * @param repeater          If this QoSSpecificWriter is a repeater or not.
      *
      * @throw \c InitializationException in case any creation has failed
      */
@@ -51,7 +53,8 @@ public:
             const std::shared_ptr<core::PayloadPool>& payload_pool,
             const core::types::SpecificEndpointQoS& specific_qos,
             fastdds::dds::DomainParticipant* participant,
-            fastdds::dds::Topic* topic_entity);
+            fastdds::dds::Topic* topic_entity,
+            const bool repeater = false);
 
 protected:
 

@@ -104,9 +104,6 @@ fastdds::dds::DomainParticipantQos XmlParticipant::reckon_participant_qos_() con
         }
     }
 
-    // Set qos properties
-    add_qos_properties_(qos);
-
     return qos;
 }
 

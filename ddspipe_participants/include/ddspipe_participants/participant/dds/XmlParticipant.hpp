@@ -60,6 +60,7 @@ protected:
     // INTERNAL METHODS
     /////////////////////////
 
+    DDSPIPE_PARTICIPANTS_DllAPI
     virtual
     fastdds::dds::DomainParticipantQos
     reckon_participant_qos_() const override;

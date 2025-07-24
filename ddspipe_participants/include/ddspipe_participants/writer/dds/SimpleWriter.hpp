@@ -43,6 +43,7 @@ public:
      * @param payload_pool      Shared Payload Pool to received data and take it.
      * @param participant       DDS Participant pointer.
      * @param topic_entity      DDS Topic pointer.
+     * @param repeater          If this SimpleWriter is a repeater or not.
      *
      * @throw \c InitializationException in case any creation has failed
      */
@@ -52,7 +53,8 @@ public:
             const core::types::DdsTopic& topic,
             const std::shared_ptr<core::PayloadPool>& payload_pool,
             fastdds::dds::DomainParticipant* participant,
-            fastdds::dds::Topic* topic_entity);
+            fastdds::dds::Topic* topic_entity,
+            const bool repeater = false);
 
 };
 
