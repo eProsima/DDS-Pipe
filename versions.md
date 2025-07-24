@@ -10,6 +10,7 @@ The *Forthcoming* section includes those features added in `main` branch that ar
 This release will include the following *features*:
 * Added export to 'create_listener'
 * Support repeater feature in DDS (XML) participants
+* Support Fast DDS basic RPC calls
 
 This release will include the following *internal changes &  bugfixes*:
 * Fix data races on DDS-Pipe
