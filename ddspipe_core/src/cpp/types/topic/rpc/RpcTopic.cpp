@@ -50,93 +50,72 @@ RpcTopic::RpcTopic(
     : service_name_(service_name)
     , request_topic_(request_topic)
     , reply_topic_(reply_topic)
+    , request_prefix_("")
+    , request_suffix_ ("")
+    , reply_prefix_ ("")
+    , reply_suffix_ ("")
 {
 }
 
 RpcTopic::RpcTopic(
         const DdsTopic& topic) noexcept
 {
-    if (is_ros2_request_topic(topic))
-    {
-        request_topic_ = topic;
-        reply_topic_ = topic;
-        reply_topic_.m_topic_name =
-                std::regex_replace(reply_topic_.m_topic_name, std::regex(
-                            ROS_TOPIC_REQUEST_PREFIX_STR), ROS_TOPIC_REPLY_PREFIX_STR);
-        reply_topic_.m_topic_name =
-                std::regex_replace(reply_topic_.m_topic_name, std::regex(
-                            ROS_TOPIC_REQUEST_SUFFIX_STR), ROS_TOPIC_REPLY_SUFFIX_STR);
-        reply_topic_.type_name =
-                std::regex_replace(reply_topic_.type_name, std::regex(
-                            ROS_TYPE_REQUEST_SUFFIX_STR), ROS_TYPE_REPLY_SUFFIX_STR);
+    if (is_service_topic(topic)) {
+        if (is_ros2_request_topic(topic) || is_ros2_reply_topic(topic)) {
+            request_prefix_ = RpcTopic::ROS_TOPIC_REQUEST_PREFIX_STR;
+            request_suffix_ = RpcTopic::ROS_TOPIC_REQUEST_SUFFIX_STR;
+            reply_prefix_ = RpcTopic::ROS_TOPIC_REPLY_PREFIX_STR;
+            reply_suffix_ = RpcTopic::ROS_TOPIC_REPLY_SUFFIX_STR;
+        }
+        else if (is_fastdds_request_topic(topic) || is_fastdds_reply_topic(topic)) {
+            request_prefix_ = RpcTopic::FASTDDS_TOPIC_REQUEST_PREFIX_STR;
+            request_suffix_ = RpcTopic::FASTDDS_TOPIC_REQUEST_SUFFIX_STR;
+            reply_prefix_ = RpcTopic::FASTDDS_TOPIC_REPLY_PREFIX_STR;
+            reply_suffix_ = RpcTopic::FASTDDS_TOPIC_REPLY_SUFFIX_STR;
+        }
 
-        service_name_ =
-                std::regex_replace(topic.m_topic_name, std::regex(
-                            ROS_TOPIC_REQUEST_PREFIX_STR + "|" + ROS_TOPIC_REQUEST_SUFFIX_STR), "");
+        if (is_request_topic(topic)) {
+            request_topic_ = topic;
+            reply_topic_ = topic;
+            reply_topic_.m_topic_name =
+                std::regex_replace(reply_topic_.m_topic_name, std::regex(request_prefix_), reply_prefix_);
+            reply_topic_.m_topic_name =
+                std::regex_replace(reply_topic_.m_topic_name, std::regex(request_suffix_), reply_suffix_);
+            reply_topic_.type_name =
+                std::regex_replace(reply_topic_.type_name, std::regex(request_suffix_), reply_suffix_);
+
+            service_name_ =
+                std::regex_replace(topic.m_topic_name, std::regex(request_prefix_ + "|" + request_suffix_), "");
+        } else {
+            reply_topic_ = topic;
+            request_topic_ = topic;
+            request_topic_.m_topic_name =
+                std::regex_replace(request_topic_.m_topic_name, std::regex(reply_prefix_), request_prefix_);
+            request_topic_.m_topic_name =
+                std::regex_replace(request_topic_.m_topic_name, std::regex(reply_suffix_), request_suffix_);
+            request_topic_.type_name =
+                std::regex_replace(request_topic_.type_name, std::regex(reply_suffix_), request_suffix_);
+
+            service_name_ =
+                std::regex_replace(topic.m_topic_name, std::regex(reply_prefix_ + "|" + reply_suffix_), "");
+        }
+
+        reply_topic_.m_internal_type_discriminator = INTERNAL_TOPIC_TYPE_RPC;
+        request_topic_.m_internal_type_discriminator = INTERNAL_TOPIC_TYPE_RPC;
+
+        // Set both topic qos as the one found
+        request_topic_.topic_qos = topic.topic_qos;
+        reply_topic_.topic_qos = topic.topic_qos;
+
+        // WORKAROUND: Remove type information from RPC topics. Currently the creation of an RPC topic is triggered when
+        // an entity corresponding to the request or reply topics is discovered. This way, the topic and type names of the
+        // other topic conforming the pair is deduced. However it is not possible to deduce the type information, so we
+        // leave this field empty until the creation mechanism is adapted to cover this scenario.
+        request_topic_.type_identifiers = fastdds::dds::xtypes::TypeIdentifierPair();
+        reply_topic_.type_identifiers = fastdds::dds::xtypes::TypeIdentifierPair();
+    } else {
+        utils::tsnh(utils::Formatter() << "Attempting to create RpcTopic from invalid topic.");
     }
-    else if (is_ros2_reply_topic(topic))
-    {
-        reply_topic_ = topic;
-        request_topic_ = topic;
-        request_topic_.m_topic_name =
-                std::regex_replace(request_topic_.m_topic_name, std::regex(
-                            ROS_TOPIC_REPLY_PREFIX_STR), ROS_TOPIC_REQUEST_PREFIX_STR);
-        request_topic_.m_topic_name =
-                std::regex_replace(request_topic_.m_topic_name, std::regex(
-                            ROS_TOPIC_REPLY_SUFFIX_STR), ROS_TOPIC_REQUEST_SUFFIX_STR);
-        request_topic_.type_name =
-                std::regex_replace(request_topic_.type_name, std::regex(
-                            ROS_TYPE_REPLY_SUFFIX_STR), ROS_TYPE_REQUEST_SUFFIX_STR);
-
-        service_name_ =
-                std::regex_replace(topic.m_topic_name, std::regex(
-                            ROS_TOPIC_REPLY_PREFIX_STR + "|" + ROS_TOPIC_REPLY_SUFFIX_STR), "");
-    }
-    else if (is_fastdds_request_topic(topic))
-    {
-        request_topic_ = topic;
-        reply_topic_ = topic;
-        reply_topic_.m_topic_name =
-                std::regex_replace(reply_topic_.m_topic_name, std::regex(
-                            FASTDDS_TOPIC_REQUEST_SUFFIX_STR), FASTDDS_TOPIC_REPLY_SUFFIX_STR);
-        reply_topic_.type_name =
-                std::regex_replace(reply_topic_.type_name, std::regex(
-                            FASTDDS_TYPE_REQUEST_SUFFIX_STR), FASTDDS_TYPE_REPLY_SUFFIX_STR);
-
-        service_name_ = std::regex_replace(topic.m_topic_name, std::regex(FASTDDS_TOPIC_REQUEST_SUFFIX_STR), "");
-    }
-    else if (is_fastdds_reply_topic(topic))
-    {
-        reply_topic_ = topic;
-        request_topic_ = topic;
-        request_topic_.m_topic_name =
-                std::regex_replace(request_topic_.m_topic_name, std::regex(
-                            FASTDDS_TOPIC_REPLY_SUFFIX_STR), FASTDDS_TOPIC_REQUEST_SUFFIX_STR);
-        request_topic_.type_name =
-                std::regex_replace(request_topic_.type_name, std::regex(
-                            FASTDDS_TYPE_REPLY_SUFFIX_STR), FASTDDS_TYPE_REQUEST_SUFFIX_STR);
-
-        service_name_ = std::regex_replace(topic.m_topic_name, std::regex(FASTDDS_TOPIC_REPLY_SUFFIX_STR), "");
-    }
-    else
-    {
-        utils::tsnh(
-            utils::Formatter() << "Attempting to create RpcTopic from invalid topic.");
-    }
-
-    reply_topic_.m_internal_type_discriminator = INTERNAL_TOPIC_TYPE_RPC;
-    request_topic_.m_internal_type_discriminator = INTERNAL_TOPIC_TYPE_RPC;
-
-    // Set both topic qos as the one found
-    request_topic_.topic_qos = topic.topic_qos;
-    reply_topic_.topic_qos = topic.topic_qos;
-
-    // WORKAROUND: Remove type information from RPC topics. Currently the creation of an RPC topic is triggered when
-    // an entity corresponding to the request or reply topics is discovered. This way, the topic and type names of the
-    // other topic conforming the pair is deduced. However it is not possible to deduce the type information, so we
-    // leave this field empty until the creation mechanism is adapted to cover this scenario.
-    request_topic_.type_identifiers = fastdds::dds::xtypes::TypeIdentifierPair();
-    reply_topic_.type_identifiers = fastdds::dds::xtypes::TypeIdentifierPair();
 }
 
 RpcTopic::RpcTopic(
@@ -166,81 +145,33 @@ const DdsTopic& RpcTopic::reply_topic() const
 bool RpcTopic::is_ros2_request_topic(
         const DdsTopic& topic)
 {
-    const std::string& m_topic_name = topic.m_topic_name;
-    const std::string& type_name = topic.type_name;
-
-    bool topic_prefix_ok = m_topic_name.find(ROS_TOPIC_REQUEST_PREFIX_STR) == 0;
-    bool topic_suffix_ok = (m_topic_name.size() >= ROS_TOPIC_REQUEST_SUFFIX_STR.size() &&
-            m_topic_name.compare(m_topic_name.size() - ROS_TOPIC_REQUEST_SUFFIX_STR.size(),
-            ROS_TOPIC_REQUEST_SUFFIX_STR.size(),
-            ROS_TOPIC_REQUEST_SUFFIX_STR) == 0);
-
-    bool type_suffix_ok = (type_name.size() >= ROS_TYPE_REQUEST_SUFFIX_STR.size() &&
-            type_name.compare(type_name.size() - ROS_TYPE_REQUEST_SUFFIX_STR.size(),
-            ROS_TYPE_REQUEST_SUFFIX_STR.size(),
-            ROS_TYPE_REQUEST_SUFFIX_STR) == 0);
-
-    return topic_prefix_ok && topic_suffix_ok && type_suffix_ok;
+    return has_prefix(topic.m_topic_name, RpcTopic::ROS_TOPIC_REQUEST_PREFIX_STR) &&
+           has_suffix(topic.m_topic_name, RpcTopic::ROS_TOPIC_REQUEST_SUFFIX_STR) &&
+           has_suffix(topic.type_name, RpcTopic::ROS_TYPE_REQUEST_SUFFIX_STR);
 }
 
 bool RpcTopic::is_ros2_reply_topic(
         const DdsTopic& topic)
 {
-    const std::string& m_topic_name = topic.m_topic_name;
-    const std::string& type_name = topic.type_name;
-
-    bool topic_prefix_ok = m_topic_name.find(ROS_TOPIC_REPLY_PREFIX_STR) == 0;
-    bool topic_suffix_ok = (m_topic_name.size() >= ROS_TOPIC_REPLY_SUFFIX_STR.size() &&
-            m_topic_name.compare(m_topic_name.size() - ROS_TOPIC_REPLY_SUFFIX_STR.size(),
-            ROS_TOPIC_REPLY_SUFFIX_STR.size(),
-            ROS_TOPIC_REPLY_SUFFIX_STR) == 0);
-
-    bool type_suffix_ok = (type_name.size() >= ROS_TYPE_REPLY_SUFFIX_STR.size() &&
-            type_name.compare(type_name.size() - ROS_TYPE_REPLY_SUFFIX_STR.size(),
-            ROS_TYPE_REPLY_SUFFIX_STR.size(),
-            ROS_TYPE_REPLY_SUFFIX_STR) == 0);
-
-    return topic_prefix_ok && topic_suffix_ok && type_suffix_ok;
+    return has_prefix(topic.m_topic_name, RpcTopic::ROS_TOPIC_REPLY_PREFIX_STR) &&
+           has_suffix(topic.m_topic_name, RpcTopic::ROS_TOPIC_REPLY_SUFFIX_STR) &&
+           has_suffix(topic.type_name, RpcTopic::ROS_TYPE_REPLY_SUFFIX_STR);
 }
 
 bool RpcTopic::is_fastdds_request_topic(
         const DdsTopic& topic)
 {
-    const std::string& m_topic_name = topic.m_topic_name;
-    const std::string& type_name = topic.type_name;
-
-    bool topic_prefix_ok = m_topic_name.find(FASTDDS_TOPIC_REQUEST_PREFIX_STR) == 0;
-    bool topic_suffix_ok = (m_topic_name.size() >= FASTDDS_TOPIC_REQUEST_SUFFIX_STR.size() &&
-            m_topic_name.compare(m_topic_name.size() - FASTDDS_TOPIC_REQUEST_SUFFIX_STR.size(),
-            FASTDDS_TOPIC_REQUEST_SUFFIX_STR.size(),
-            FASTDDS_TOPIC_REQUEST_SUFFIX_STR) == 0);
-
-    bool type_suffix_ok = (type_name.size() >= FASTDDS_TYPE_REQUEST_SUFFIX_STR.size() &&
-            type_name.compare(type_name.size() - FASTDDS_TYPE_REQUEST_SUFFIX_STR.size(),
-            FASTDDS_TYPE_REQUEST_SUFFIX_STR.size(),
-            FASTDDS_TYPE_REQUEST_SUFFIX_STR) == 0);
-
-    return topic_prefix_ok && topic_suffix_ok && type_suffix_ok;
+    return has_prefix(topic.m_topic_name, RpcTopic::FASTDDS_TOPIC_REQUEST_PREFIX_STR) &&
+           has_suffix(topic.m_topic_name, RpcTopic::FASTDDS_TOPIC_REQUEST_SUFFIX_STR) &&
+           has_suffix(topic.type_name, RpcTopic::FASTDDS_TYPE_REQUEST_SUFFIX_STR);
 }
 
 bool RpcTopic::is_fastdds_reply_topic(
         const DdsTopic& topic)
 {
-    const std::string& m_topic_name = topic.m_topic_name;
-    const std::string& type_name = topic.type_name;
-
-    bool topic_prefix_ok = m_topic_name.find(FASTDDS_TOPIC_REPLY_PREFIX_STR) == 0;
-    bool topic_suffix_ok = (m_topic_name.size() >= FASTDDS_TOPIC_REPLY_SUFFIX_STR.size() &&
-            m_topic_name.compare(m_topic_name.size() - FASTDDS_TOPIC_REPLY_SUFFIX_STR.size(),
-            FASTDDS_TOPIC_REPLY_SUFFIX_STR.size(),
-            FASTDDS_TOPIC_REPLY_SUFFIX_STR) == 0);
-
-    bool type_suffix_ok = (type_name.size() >= FASTDDS_TYPE_REPLY_SUFFIX_STR.size() &&
-            type_name.compare(type_name.size() - FASTDDS_TYPE_REPLY_SUFFIX_STR.size(),
-            FASTDDS_TYPE_REPLY_SUFFIX_STR.size(),
-            FASTDDS_TYPE_REPLY_SUFFIX_STR) == 0);
-
-    return topic_prefix_ok && topic_suffix_ok && type_suffix_ok;
+    return has_prefix(topic.m_topic_name, RpcTopic::FASTDDS_TOPIC_REPLY_PREFIX_STR) &&
+           has_suffix(topic.m_topic_name, RpcTopic::FASTDDS_TOPIC_REPLY_SUFFIX_STR) &&
+           has_suffix(topic.type_name, RpcTopic::FASTDDS_TYPE_REPLY_SUFFIX_STR);
 }
 
 bool RpcTopic::is_request_topic(
@@ -255,10 +186,15 @@ bool RpcTopic::is_reply_topic(
     return is_ros2_reply_topic(topic) || is_fastdds_reply_topic(topic);
 }
 
-bool RpcTopic::is_service_topic(
-        const DdsTopic& topic)
-{
-    return is_request_topic(topic) || is_reply_topic(topic);
+bool RpcTopic::is_service_topic (
+        const DdsTopic& topic) {
+
+    if (is_ros2_request_topic(topic) || is_ros2_reply_topic(topic) ||
+        is_fastdds_request_topic(topic) || is_fastdds_reply_topic(topic)) {
+        return true;
+    }
+
+    return false;
 }
 
 bool RpcTopic::operator <(
