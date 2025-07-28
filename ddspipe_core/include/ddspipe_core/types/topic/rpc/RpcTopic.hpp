@@ -135,6 +135,10 @@ protected:
     std::string reply_prefix_;
     //! Suffix used for reply topic
     std::string reply_suffix_;
+    //! Suffix used for request type
+    std::string request_type_suffix_;
+    //! Suffix used for reply type
+    std::string reply_type_suffix_;
 
     static const std::string ROS_TOPIC_REQUEST_PREFIX_STR;
     static const std::string ROS_TOPIC_REPLY_PREFIX_STR;
