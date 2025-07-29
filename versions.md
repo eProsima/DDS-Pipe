@@ -16,6 +16,8 @@ This release will include the following *internal changes &  bugfixes*:
 * Fix data races on DDS-Pipe
 * Use tsan binaries for TSAN workflow
 * Further isolate atrributes/QoS and properties configuration
+* Fixing the incorrect assignation to the type name
+
 This release includes the following **CI improvements**:
 
 * Remove deprecated windows-2019 runner
