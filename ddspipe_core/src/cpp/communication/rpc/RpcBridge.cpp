@@ -61,8 +61,7 @@ void RpcBridge::init_nts_()
 {
     logInfo(DDSPIPE_RPCBRIDGE, "Creating endpoints in RpcBridge for service " << rpc_topic_ << ".");
 
-    // TODO: remove and use every participant
-    std::set<ParticipantId> ids = participants_->get_rtps_participants_ids();
+    std::set<ParticipantId> ids = participants_->get_participants_ids();
 
     // Create a proxy client and server in each RTPS participant
     for (ParticipantId id: ids)
@@ -319,7 +318,10 @@ void RpcBridge::transmit_(
 
             SampleIdentity reply_related_sample_identity =
                     rpc_data.write_params.get_reference().sample_identity();
-            reply_related_sample_identity.sequence_number(rpc_data.origin_sequence_number);
+            // Use the reader GUID of the reply for the service client to replace the writer GUID of
+            // the request for the service client
+            reply_related_sample_identity.writer_guid(
+                rpc_data.write_params.get_reference().related_sample_identity().writer_guid());
 
             if (reply_related_sample_identity == SampleIdentity::unknown())
             {
@@ -377,7 +379,9 @@ void RpcBridge::transmit_(
 
             // A Server could be answering a different client in this same DDS Pipe or a remote client
             // Thus, it must be filtered so only replies to this client are processed.
-            if (rpc_data.write_params.get_reference().sample_identity().writer_guid() != reader->guid())
+            if (!rpc_data.write_params.is_set() ||
+                rpc_data.write_params.get_reference().related_sample_identity().writer_guid()
+                    != reader->guid())
             {
                 logDebug(DDSPIPE_RPCBRIDGE,
                         "RpcBridge for service " << *this << " from reader " << reader->guid() <<
@@ -387,6 +391,8 @@ void RpcBridge::transmit_(
             else
             {
                 std::pair<ParticipantId, SampleIdentity> registry_entry;
+                auto request_sequence_number =
+                    rpc_data.write_params.get_reference().related_sample_identity().sequence_number();
                 {
                     // Wait for request transmission to be finished (entry added to registry)
                     std::lock_guard<std::recursive_mutex> lock(
@@ -394,7 +400,7 @@ void RpcBridge::transmit_(
 
                     // Fetch information required for transmission; which proxy server should send it and with what parameters
                     registry_entry = service_registries_[reader->participant_id()]->get(
-                        rpc_data.write_params.get_reference().sample_identity().sequence_number());
+                        request_sequence_number);
                 }
 
                 // Not valid means:
@@ -416,7 +422,7 @@ void RpcBridge::transmit_(
                     else
                     {
                         service_registries_[reader->participant_id()]->erase(
-                            rpc_data.write_params.get_reference().sample_identity().sequence_number());
+                            request_sequence_number);
                     }
                 }
             }
