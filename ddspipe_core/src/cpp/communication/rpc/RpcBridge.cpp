@@ -391,6 +391,8 @@ void RpcBridge::transmit_(
             else
             {
                 std::pair<ParticipantId, SampleIdentity> registry_entry;
+                auto request_sequence_number =
+                    rpc_data.write_params.get_reference().related_sample_identity().sequence_number();
                 {
                     // Wait for request transmission to be finished (entry added to registry)
                     std::lock_guard<std::recursive_mutex> lock(
@@ -398,7 +400,7 @@ void RpcBridge::transmit_(
 
                     // Fetch information required for transmission; which proxy server should send it and with what parameters
                     registry_entry = service_registries_[reader->participant_id()]->get(
-                        rpc_data.write_params.get_reference().related_sample_identity().sequence_number());
+                        request_sequence_number);
                 }
 
                 // Not valid means:
@@ -420,7 +422,7 @@ void RpcBridge::transmit_(
                     else
                     {
                         service_registries_[reader->participant_id()]->erase(
-                            rpc_data.write_params.get_reference().sample_identity().sequence_number());
+                            request_sequence_number);
                     }
                 }
             }
