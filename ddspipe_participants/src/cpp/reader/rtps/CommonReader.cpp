@@ -205,6 +205,17 @@ void CommonReader::fill_received_data_(
     // Store the new data that has arrived in the Track data
     // Get the writer guid
     data_to_fill.source_guid = received_change.writerGUID;
+
+    auto original_source_guid = received_change.write_params.original_writer_guid();
+    if (original_source_guid == fastdds::rtps::GUID_t::unknown()){
+        // If the original source guid is unknown, this is the first time a router receives this data
+        // and the current source is the original
+        data_to_fill.original_source_guid = data_to_fill.source_guid;
+    } else {
+        // If the original source guid is known, set it
+        data_to_fill.original_source_guid = original_source_guid;
+    }
+
     // Get source timestamp
     data_to_fill.source_timestamp = received_change.sourceTimestamp;
     // Get Participant receiver
