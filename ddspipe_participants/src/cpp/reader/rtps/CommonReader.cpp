@@ -131,7 +131,8 @@ void CommonReader::internal_entities_creation_(
                       " for Simple RTPSReader in Participant " << participant_id_);
     }
 
-    EPROSIMA_LOG_INFO(DDSPIPE_RTPS_READER, "New CommonReader created in Participant " << participant_id_ << " for topic " <<
+    EPROSIMA_LOG_INFO(DDSPIPE_RTPS_READER,
+            "New CommonReader created in Participant " << participant_id_ << " for topic " <<
             topic_ << " with guid " << rtps_reader_->getGuid());
 }
 
@@ -207,11 +208,14 @@ void CommonReader::fill_received_data_(
     data_to_fill.source_guid = received_change.writerGUID;
 
     auto original_source_guid = received_change.write_params.original_writer_guid();
-    if (original_source_guid == fastdds::rtps::GUID_t::unknown()){
+    if (original_source_guid == fastdds::rtps::GUID_t::unknown())
+    {
         // If the original source guid is unknown, this is the first time a router receives this data
         // and the current source is the original
         data_to_fill.original_source_guid = data_to_fill.source_guid;
-    } else {
+    }
+    else
+    {
         // If the original source guid is known, set it
         data_to_fill.original_source_guid = original_source_guid;
     }
@@ -465,7 +469,8 @@ void CommonReader::on_reader_matched(
         if (info.status == fastdds::rtps::MatchingStatus::MATCHED_MATCHING)
         {
             EPROSIMA_LOG_INFO(DDSPIPE_RTPS_COMMONREADER_LISTENER,
-                    "Reader " << *this << " in topic " << topic_.serialize() << " matched with a new Writer with guid " <<
+                    "Reader " << *this << " in topic " << topic_.serialize() <<
+                    " matched with a new Writer with guid " <<
                     info.remoteEndpointGuid);
         }
         else
