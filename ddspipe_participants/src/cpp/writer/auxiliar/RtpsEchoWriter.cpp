@@ -60,7 +60,6 @@ utils::ReturnCode RtpsEchoWriter::write(
                 " in topic: " << topic_.topic_name() <<
                 " payload received: " << rtps_data.payload <<
                 " with specific qos: " << rtps_data.writer_qos <<
-                " with original source: " << rtps_data.original_source_guid <<
                 ".");
     }
 

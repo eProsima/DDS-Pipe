@@ -83,7 +83,7 @@ struct RtpsPayloadData : public core::IRoutingData
     //! Guid of the source entity that has transmit the data
     core::types::Guid source_guid{};
 
-    //! Guid of the first entity that transmitted the data
+    //! Guid of the original entity that transmitted the data for the first time
     core::types::Guid original_source_guid{};
 
     //! Id of the participant from which the Reader has received the data.
