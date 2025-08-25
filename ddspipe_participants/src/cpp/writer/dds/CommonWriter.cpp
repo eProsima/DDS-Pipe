@@ -216,7 +216,7 @@ utils::ReturnCode CommonWriter::fill_to_send_data_(
     to_send_params.source_timestamp(data.source_timestamp);
 
     // Set original writer guid
-    to_send_params.original_writer_guid(data.original_source_guid);
+    to_send_params.original_writer_info(data.original_writer_info);
 
     return utils::ReturnCode::RETCODE_OK;
 }

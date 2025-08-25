@@ -303,17 +303,17 @@ void CommonReader::fill_received_data_(
     // Get the writer guid
     data_to_fill.source_guid = detail::guid_from_instance_handle(info.publication_handle);
 
-    auto original_source_guid = detail::guid_from_instance_handle(info.original_publication_handle);
+    auto original_source_guid = info.original_writer_info.original_writer_guid();
     if (original_source_guid == fastdds::rtps::GUID_t::unknown())
     {
         // If the original source guid is unknown, this is the first time a router receives this data
         // and the current source is the original
-        data_to_fill.original_source_guid = data_to_fill.source_guid;
+        data_to_fill.original_writer_info.original_writer_guid(data_to_fill.source_guid);
     }
     else
     {
         // If the original source guid is known, set it
-        data_to_fill.original_source_guid = original_source_guid;
+        data_to_fill.original_writer_info = info.original_writer_info;
     }
 
     // Get source timestamp
