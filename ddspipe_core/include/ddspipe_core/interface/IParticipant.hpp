@@ -60,6 +60,10 @@ public:
     DDSPIPE_CORE_DllAPI
     virtual types::TopicQoS topic_qos() const noexcept = 0;
 
+    //! The Participant's Topic Partitions.
+    DDSPIPE_CORE_DllAPI
+    virtual std::vector<std::string> topic_partitions() const noexcept = 0;
+
     /**
      * @brief Return a new Writer
      *
