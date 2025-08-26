@@ -305,6 +305,9 @@ utils::Heritable<DistributedTopic> DdsBridge::create_topic_for_participant_nts_(
     // 2. Participant Topic QoS.
     topic->topic_qos.set_qos(participant->topic_qos(), utils::FuzzyLevelValues::fuzzy_level_hard);
 
+    // 3. Topic Partition
+    topic->partition_name = participant->topic_partitions();
+
     return topic;
 }
 

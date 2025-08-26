@@ -69,6 +69,12 @@ core::types::TopicQoS SchemaParticipant::topic_qos() const noexcept
     return configuration_->topic_qos;
 }
 
+std::vector<std::string> SchemaParticipant::topic_partitions() const noexcept
+{
+    // TODO. danip
+    return {};
+}
+
 std::shared_ptr<IWriter> SchemaParticipant::create_writer(
         const ITopic& topic)
 {

@@ -113,6 +113,12 @@ core::types::TopicQoS CommonParticipant::topic_qos() const noexcept
     return configuration_->topic_qos;
 }
 
+std::vector<std::string> CommonParticipant::topic_partitions() const noexcept
+{
+    // TODO. danip
+    return {};
+}
+
 std::shared_ptr<core::IWriter> CommonParticipant::create_writer(
         const core::ITopic& topic)
 {

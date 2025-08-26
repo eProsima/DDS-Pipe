@@ -59,6 +59,16 @@ core::types::Endpoint create_common_endpoint_from_info_(
     }
     // Set Topic with Partitions
     endpoint.topic.topic_qos.use_partitions.set_value(!info.partition.empty());
+    
+    
+    //std::cout << "Enters\t" << info.partition <<"\n";
+    std::vector<std::string> partition_names = info.partition.getNames();
+    for(int i=0;i<partition_names.size();i++){
+        std::cout << partition_names[i] << " - ";
+    }
+    std::cout << "\n";
+    endpoint.specific_partitions = partition_names;
+
     // Set Topic with ownership
     endpoint.topic.topic_qos.ownership_qos.set_value(info.ownership.kind);
     // Set Topic key

@@ -100,6 +100,10 @@ public:
     DDSPIPE_PARTICIPANTS_DllAPI
     core::types::TopicQoS topic_qos() const noexcept override;
 
+    //! Override topic_partitions() IParticipant method
+    DDSPIPE_PARTICIPANTS_DllAPI
+    std::vector<std::string> topic_partitions() const noexcept override;
+
     /**
      * @brief Create a writer object
      *

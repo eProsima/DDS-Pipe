@@ -49,6 +49,11 @@ std::string Topic::topic_name() const noexcept
     return m_topic_name;
 }
 
+/*std::string Topic::topic_partition() const noexcept
+{
+    return partition_name;
+}*/
+
 std::string Topic::serialize() const noexcept
 {
     std::stringstream ss;
@@ -123,6 +128,7 @@ Topic& Topic::operator = (
     this->m_internal_type_discriminator = other.m_internal_type_discriminator;
     this->m_topic_discoverer = other.m_topic_discoverer;
     this->topic_qos = other.topic_qos;
+    this->partition_name = other.partition_name;
 
     return *this;
 }

@@ -48,6 +48,12 @@ core::types::TopicQoS BlankParticipant::topic_qos() const noexcept
     return m_topic_qos;
 }
 
+std::vector<std::string> BlankParticipant::topic_partitions() const noexcept
+{
+    // TODO. danip
+    return {};
+}
+
 std::shared_ptr<core::IWriter> BlankParticipant::create_writer(
         const core::ITopic& topic)
 {
