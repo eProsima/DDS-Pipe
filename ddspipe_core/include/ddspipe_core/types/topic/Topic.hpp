@@ -75,6 +75,10 @@ struct Topic : public ITopic, public IConfiguration
     DDSPIPE_CORE_DllAPI
     virtual std::string topic_name() const noexcept override;
 
+    /*//! ITopic partition
+    DDSPIPE_CORE_DllAPI
+    virtual std::string topic_partition() const noexcept override;*/
+
     DDSPIPE_CORE_DllAPI
     virtual TopicInternalTypeDiscriminator internal_type_discriminator() const noexcept override;
 
@@ -134,6 +138,13 @@ struct Topic : public ITopic, public IConfiguration
      * If the Topic has manually configured Topic QoS, the Topic QoS that are manually configured get overriden.
      */
     types::TopicQoS topic_qos{};
+
+    /**
+     * @brief The Name of the topic Partition.
+     *
+     * e.g.: In ShapeDemos there are the following partitions ("", "A", "B", "C", "D", "*")
+     */
+    std::vector<std::string> partition_name{};
 };
 
 /**
