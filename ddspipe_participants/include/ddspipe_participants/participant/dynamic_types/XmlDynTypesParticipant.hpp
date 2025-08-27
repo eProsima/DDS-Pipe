@@ -14,6 +14,7 @@
 
 /**
  * @file XmlDynTypesParticipant.hpp
+ * @brief Defines the XmlDynTypesParticipant class for routing dynamic types in DDS.
  */
 
 #pragma once
@@ -42,14 +43,20 @@ namespace ddspipe {
 namespace participants {
 
 /**
- * Simple RTPS Participant able to route dynamic types in addition to user data.
- *
+ * @class XmlDynTypesParticipant
+ * @brief A specialized RTPS participant capable of routing dynamic types and user data.
  */
 class XmlDynTypesParticipant : public dds::XmlParticipant
 {
 public:
 
-    // TODO
+    /**
+     * @brief Constructs an XmlDynTypesParticipant.
+     *
+     * @param participant_configuration Shared pointer to the participant configuration.
+     * @param payload_pool Shared pointer to the payload pool.
+     * @param discovery_database Shared pointer to the discovery database.
+     */
     DDSPIPE_PARTICIPANTS_DllAPI
     XmlDynTypesParticipant(
             std::shared_ptr<XmlParticipantConfiguration> participant_configuration,
@@ -57,33 +64,54 @@ public:
             std::shared_ptr<core::DiscoveryDatabase> discovery_database);
 
     /**
-     * @brief Create a writer object
+     * @brief Creates a writer object based on the topic QoS.
      *
-     * Depending on the Topic QoS creates a Basic or Specific Writer.
+     * @param topic The topic for which the writer is created.
+     * @return A shared pointer to the created writer.
      */
     DDSPIPE_PARTICIPANTS_DllAPI
     std::shared_ptr<core::IWriter> create_writer(
             const core::ITopic& topic) override;
 
     /**
-     * @brief Create a reader object
+     * @brief Creates a reader object based on the topic QoS.
      *
-     * Depending on the Topic QoS creates a Basic or Specific Reader.
+     * @param topic The topic for which the reader is created.
+     * @return A shared pointer to the created reader.
      */
     DDSPIPE_PARTICIPANTS_DllAPI
     std::shared_ptr<core::IReader> create_reader(
             const core::ITopic& topic) override;
 
+    /**
+     * @class XmlDynTypesDdsListener
+     * @brief Listener for handling DDS discovery events for dynamic types.
+     */
     class XmlDynTypesDdsListener : public dds::CommonParticipant::DdsListener
     {
     public:
 
+        /**
+         * @brief Constructs an XmlDynTypesDdsListener.
+         *
+         * @param conf Shared pointer to the participant configuration.
+         * @param ddb Shared pointer to the discovery database.
+         * @param internal_reader Shared pointer to the internal reader.
+         */
         DDSPIPE_PARTICIPANTS_DllAPI
         explicit XmlDynTypesDdsListener(
                 std::shared_ptr<SimpleParticipantConfiguration> conf,
                 std::shared_ptr<core::DiscoveryDatabase> ddb,
                 std::shared_ptr<InternalReader> internal_reader);
 
+        /**
+         * @brief Callback for data reader discovery events.
+         *
+         * @param participant The domain participant.
+         * @param reason The discovery reason.
+         * @param info The discovered subscription information.
+         * @param should_be_ignored Whether the reader should be ignored.
+         */
         DDSPIPE_PARTICIPANTS_DllAPI
         void on_data_reader_discovery(
                 fastdds::dds::DomainParticipant* participant,
@@ -91,6 +119,14 @@ public:
                 const fastdds::dds::SubscriptionBuiltinTopicData& info,
                 bool& /*should_be_ignored*/) override;
 
+        /**
+         * @brief Callback for data writer discovery events.
+         *
+         * @param participant The domain participant.
+         * @param reason The discovery reason.
+         * @param info The discovered publication information.
+         * @param should_be_ignored Whether the writer should be ignored.
+         */
         DDSPIPE_PARTICIPANTS_DllAPI
         void on_data_writer_discovery(
                 fastdds::dds::DomainParticipant* participant,
@@ -100,26 +136,35 @@ public:
 
     protected:
 
-        //! Copy of Type Object Internal Reader
+        /// Internal reader for type objects.
         std::shared_ptr<InternalReader> type_object_reader_;
-        //! Received types set
+
+        /// Set of received types.
         std::set<std::string> received_types_;
 
+        /**
+         * @brief Notifies that a type has been discovered.
+         *
+         * @param type_info The discovered type information.
+         * @param type_name The name of the discovered type.
+         */
         void notify_type_discovered_(
                 const fastdds::dds::xtypes::TypeInformation& type_info,
                 const std::string& type_name);
-
     };
 
 protected:
 
-    //! Override method from \c CommonParticipant to create the internal RTPS participant listener
+    /**
+     * @brief Creates the internal RTPS participant listener.
+     *
+     * @return A unique pointer to the created listener.
+     */
     DDSPIPE_PARTICIPANTS_DllAPI
     std::unique_ptr<fastdds::dds::DomainParticipantListener> create_listener_() override;
 
-    //! Type Object Internal Reader
+    /// Internal reader for type objects.
     std::shared_ptr<InternalReader> type_object_reader_;
-
 };
 
 } /* namespace participants */
