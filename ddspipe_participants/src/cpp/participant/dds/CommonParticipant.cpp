@@ -113,10 +113,11 @@ core::types::TopicQoS CommonParticipant::topic_qos() const noexcept
     return configuration_->topic_qos;
 }
 
-std::vector<std::string> CommonParticipant::topic_partitions() const noexcept
+std::map<std::string, std::set<std::string>> CommonParticipant::topic_partitions() const noexcept
 {
     // TODO. danip
-    return {};
+    return partition_names;
+    //return std::set<std::string>{"2.2"};
 }
 
 std::shared_ptr<core::IWriter> CommonParticipant::create_writer(
@@ -376,7 +377,7 @@ CommonParticipant::CommonParticipant(
     // Do nothing
 }
 
-std::unique_ptr<fastdds::dds::DomainParticipantListener> CommonParticipant::create_listener_()
+std::unique_ptr<fastdds::dds::DomainParticipantListener> CommonParticipant::create_listener_(CommonParticipant& parent_class)
 {
     EPROSIMA_LOG_INFO(DDSPIPE_DDS_PARTICIPANT, "Creating DDS Listener from CommonParticipant.");
     return std::make_unique<DdsListener>(configuration_, discovery_database_);
@@ -423,7 +424,7 @@ fastdds::dds::DomainParticipant* CommonParticipant::create_dds_participant_()
     mask << fastdds::dds::StatusMask::subscription_matched();
 
     // Create the participant listener
-    dds_participant_listener_ = create_listener_();
+    dds_participant_listener_ = create_listener_(*this);
     if (!dds_participant_listener_)
     {
         EPROSIMA_LOG_WARNING(DDSPIPE_DDS_PARTICIPANT, "Error creating DDS Participant Listener.");
@@ -491,6 +492,52 @@ fastdds::dds::Topic* CommonParticipant::topic_related_(
     dds_topics_[topic] = dds_topic;
 
     return dds_topic;
+}
+
+bool CommonParticipant::add_topic_partition(
+        const std::string& topic_name,
+        const std::string& partition)
+{
+    if (partition_names.find(topic_name) != partition_names.end())
+    {
+        if (partition_names[topic_name].find(partition) != partition_names[topic_name].end())
+        {
+            // the partition is already in the set
+            return false;
+        }
+    }
+    else
+    {
+        partition_names[topic_name] = std::set<std::string>();
+    }
+
+    partition_names[topic_name].insert(partition);
+
+    return true;
+}
+
+bool CommonParticipant::delete_topic_partition(
+        const std::string& topic_name,
+        const std::string& partition)
+{
+    if (partition_names.find(topic_name) == partition_names.end())
+    {
+        // the topic is not in the dictionary
+        return false;
+    }
+    if (partition_names[topic_name].find(partition) == partition_names[topic_name].end())
+    {
+        // the partition is not in the set
+        return false;
+    }
+
+    partition_names.erase(partition);
+    return true;
+}
+
+void CommonParticipant::clear_topic_partitions()
+{
+    partition_names.clear();
 }
 
 } /* namespace dds */

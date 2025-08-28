@@ -144,7 +144,7 @@ struct Topic : public ITopic, public IConfiguration
      *
      * e.g.: In ShapeDemos there are the following partitions ("", "A", "B", "C", "D", "*")
      */
-    std::vector<std::string> partition_name{};
+    std::set<std::string> partition_name{};
 };
 
 /**

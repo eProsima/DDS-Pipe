@@ -57,7 +57,7 @@ public:
 
     //! Override topic_partitions() IParticipant method
     DDSPIPE_PARTICIPANTS_DllAPI
-    std::vector<std::string> topic_partitions() const noexcept override;
+    std::map<std::string, std::set<std::string>> topic_partitions() const noexcept override;
 
     //! Override create_writer() IParticipant method
     DDSPIPE_PARTICIPANTS_DllAPI
@@ -69,10 +69,28 @@ public:
     std::shared_ptr<core::IReader> create_reader(
             const core::ITopic& topic) override;
 
+    //! Override add_topic_partition() IParticipant method
+    DDSPIPE_PARTICIPANTS_DllAPI
+    bool add_topic_partition(
+            const std::string& topic_name,
+            const std::string& partition) override;
+
+    //! Override delete_topic_partition() IParticipant method
+    DDSPIPE_PARTICIPANTS_DllAPI
+    bool delete_topic_partition(
+            const std::string& topic_name,
+            const std::string& partition) override;
+
+    //! Override clear_topic_partitions() IParticipant method
+    DDSPIPE_PARTICIPANTS_DllAPI
+    void clear_topic_partitions() override;
+
 protected:
 
     //! Participant Id
     const core::types::ParticipantId id_;
+
+    std::map<std::string, std::set<std::string>> partition_names;
 };
 
 } /* namespace participants */
