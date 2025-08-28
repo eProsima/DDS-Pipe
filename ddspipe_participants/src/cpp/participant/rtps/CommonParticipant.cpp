@@ -85,6 +85,18 @@ CommonParticipant::RtpsListener::RtpsListener(
         std::shared_ptr<core::DiscoveryDatabase> ddb)
     : configuration_(conf)
     , discovery_database_(ddb)
+    , parent_class_(nullptr)
+{
+    EPROSIMA_LOG_INFO(DDSPIPE_RTPS_PARTICIPANT, "Creating RTPS Listener for Participant " << conf->id << ".");
+}
+
+CommonParticipant::RtpsListener::RtpsListener(
+        std::shared_ptr<ParticipantConfiguration> conf,
+        std::shared_ptr<core::DiscoveryDatabase> ddb,
+        CommonParticipant& parent_class)
+    : configuration_(conf)
+    , discovery_database_(ddb)
+    , parent_class_(&parent_class)
 {
     EPROSIMA_LOG_INFO(DDSPIPE_RTPS_PARTICIPANT, "Creating RTPS Listener for Participant " << conf->id << ".");
 }
@@ -182,6 +194,18 @@ void CommonParticipant::RtpsListener::on_writer_discovery(
         core::types::Endpoint info_writer =
                 detail::create_endpoint_from_info_<fastdds::rtps::PublicationBuiltinTopicData>(
             info, configuration_->id);
+
+        if(info_writer.specific_partitions[info_writer.topic.m_topic_name].size() == 0)
+        {
+            parent_class_->add_topic_partition(info_writer.topic.m_topic_name, "");
+        }
+        else
+        {
+            for(std::string partition_name: info_writer.specific_partitions[info_writer.topic.m_topic_name])
+            {
+                parent_class_->add_topic_partition(info_writer.topic.m_topic_name, partition_name);
+            }
+        }
 
         if (reason == fastdds::rtps::WriterDiscoveryStatus::DISCOVERED_WRITER)
         {
@@ -326,10 +350,11 @@ core::types::TopicQoS CommonParticipant::topic_qos() const noexcept
     return configuration_->topic_qos;
 }
 
-std::vector<std::string> CommonParticipant::topic_partitions() const noexcept
+std::map<std::string, std::set<std::string>> CommonParticipant::topic_partitions() const noexcept
 {
     // TODO. danip
-    return {};
+    return partition_names;
+    //return std::set<std::string>{"2.1"};
 }
 
 void CommonParticipant::create_participant_(
@@ -343,7 +368,7 @@ void CommonParticipant::create_participant_(
             "Creating Participant in domain " << domain);
 
     // Create the RTPS Participant Listener
-    rtps_participant_listener_ = create_listener_();
+    rtps_participant_listener_ = create_listener_(*this);
     if (!rtps_participant_listener_)
     {
         EPROSIMA_LOG_WARNING(DDSPIPE_RTPS_PARTICIPANT, "Error creating RTPS Participant Listener.");
@@ -520,10 +545,56 @@ CommonParticipant::add_participant_att_properties_(
 }
 
 std::unique_ptr<fastdds::rtps::RTPSParticipantListener>
-CommonParticipant::create_listener_()
+CommonParticipant::create_listener_(CommonParticipant& parent_class)
 {
     EPROSIMA_LOG_INFO(DDSPIPE_RTPS_PARTICIPANT, "Creating RTPS Listener from CommonParticipant.");
-    return std::make_unique<RtpsListener>(configuration_, discovery_database_);
+    return std::make_unique<RtpsListener>(configuration_, discovery_database_, parent_class);
+}
+
+bool CommonParticipant::add_topic_partition(
+        const std::string& topic_name,
+        const std::string& partition)
+{
+    if (partition_names.find(topic_name) != partition_names.end())
+    {
+        if (partition_names[topic_name].find(partition) != partition_names[topic_name].end())
+        {
+            // the partition is already in the set
+            return false;
+        }
+    }
+    else
+    {
+        partition_names[topic_name] = std::set<std::string>();
+    }
+
+    partition_names[topic_name].insert(partition);
+
+    return true;
+}
+
+bool CommonParticipant::delete_topic_partition(
+        const std::string& topic_name,
+        const std::string& partition)
+{
+    if (partition_names.find(topic_name) == partition_names.end())
+    {
+        // the topic is not in the dictionary
+        return false;
+    }
+    if (partition_names[topic_name].find(partition) == partition_names[topic_name].end())
+    {
+        // the partition is not in the set
+        return false;
+    }
+
+    partition_names.erase(partition);
+    return true;
+}
+
+void CommonParticipant::clear_topic_partitions()
+{
+    partition_names.clear();
 }
 
 } /* namespace rtps */
