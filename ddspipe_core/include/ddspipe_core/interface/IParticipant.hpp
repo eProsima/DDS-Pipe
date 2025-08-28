@@ -62,7 +62,7 @@ public:
 
     //! The Participant's Topic Partitions.
     DDSPIPE_CORE_DllAPI
-    virtual std::vector<std::string> topic_partitions() const noexcept = 0;
+    virtual std::map<std::string, std::set<std::string>> topic_partitions() const noexcept = 0;
 
     /**
      * @brief Return a new Writer
@@ -95,6 +95,38 @@ public:
     DDSPIPE_CORE_DllAPI
     virtual std::shared_ptr<IReader> create_reader(
             const ITopic& topic) = 0;
+
+    /**
+     * Add a Partition in the Participant.
+     *
+     * @param [in] partition : Partition name that will be added.
+     *
+     * @return bool if the function adds the partition.
+     */
+    DDSPIPE_CORE_DllAPI
+    virtual bool add_topic_partition(
+            const std::string& topic_name,
+            const std::string& partition) = 0;
+
+    /**
+     * Remove a Partition of the Participant.
+     *
+     * @param [in] partition : Partition name that will be added.
+     *
+     * @return bool if the function adds the partition.
+     */
+    DDSPIPE_CORE_DllAPI
+    virtual bool delete_topic_partition(
+            const std::string& topic_name,
+            const std::string& partition) = 0;
+
+    /**
+     * Clear the Partitions of the Participant.
+     *
+     * @param [in] partition : Partition name that will be added.
+     */
+    DDSPIPE_CORE_DllAPI
+    virtual void clear_topic_partitions() = 0;
 };
 
 } /* namespace core */

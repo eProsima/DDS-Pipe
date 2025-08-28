@@ -59,12 +59,17 @@ core::types::Endpoint create_common_endpoint_from_info_(
     }
     // Set Topic with Partitions
     endpoint.topic.topic_qos.use_partitions.set_value(!info.partition.empty());
-    
-    
-    //std::cout << "Enters\t" << info.partition <<"\n";
-    std::vector<std::string> partition_names = info.partition.getNames();
-    for(int i=0;i<partition_names.size();i++){
-        std::cout << partition_names[i] << " - ";
+
+    // Topic partitions
+    //std::set<std::string> partition_names;
+    std::map<std::string, std::set<std::string>> partition_names;
+    std::vector<std::string> partition_names_vector = info.partition.getNames();
+
+    for(int i = 0; i < partition_names_vector.size(); i++)
+    {
+        //partition_names.insert(partition_names_vector[i]);
+        partition_names[std::string(info.topic_name)].insert(partition_names_vector[i]);
+        std::cout << partition_names_vector[i] << " - ";
     }
     std::cout << "\n";
     endpoint.specific_partitions = partition_names;

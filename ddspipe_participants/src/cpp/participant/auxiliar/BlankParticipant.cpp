@@ -48,10 +48,10 @@ core::types::TopicQoS BlankParticipant::topic_qos() const noexcept
     return m_topic_qos;
 }
 
-std::vector<std::string> BlankParticipant::topic_partitions() const noexcept
+std::map<std::string, std::set<std::string>> BlankParticipant::topic_partitions() const noexcept
 {
     // TODO. danip
-    return {};
+    return partition_names;
 }
 
 std::shared_ptr<core::IWriter> BlankParticipant::create_writer(
@@ -64,6 +64,52 @@ std::shared_ptr<core::IReader> BlankParticipant::create_reader(
         const core::ITopic& topic)
 {
     return std::make_shared<BlankReader>();
+}
+
+bool BlankParticipant::add_topic_partition(
+        const std::string& topic_name,
+        const std::string& partition)
+{
+    if (partition_names.find(topic_name) != partition_names.end())
+    {
+        if (partition_names[topic_name].find(partition) != partition_names[topic_name].end())
+        {
+            // the partition is already in the set
+            return false;
+        }
+    }
+    else
+    {
+        partition_names[topic_name] = std::set<std::string>();
+    }
+
+    partition_names[topic_name].insert(partition);
+
+    return true;
+}
+
+bool BlankParticipant::delete_topic_partition(
+        const std::string& topic_name,
+        const std::string& partition)
+{
+    if (partition_names.find(topic_name) == partition_names.end())
+    {
+        // the topic is not in the dictionary
+        return false;
+    }
+    if (partition_names[topic_name].find(partition) == partition_names[topic_name].end())
+    {
+        // the partition is not in the set
+        return false;
+    }
+
+    partition_names.erase(partition);
+    return true;
+}
+
+void BlankParticipant::clear_topic_partitions()
+{
+    partition_names.clear();
 }
 
 } /* namespace participants */
