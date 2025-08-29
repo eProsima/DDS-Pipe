@@ -17,6 +17,7 @@
 
 #include <fastdds/rtps/common/SerializedPayload.hpp>
 #include <fastdds/rtps/common/SequenceNumber.hpp>
+#include <fastdds/rtps/common/OriginalWriterInfo.hpp>
 
 #include <ddspipe_core/library/library_dll.h>
 #include <ddspipe_core/types/dds/Payload.hpp>
@@ -85,6 +86,9 @@ struct RtpsPayloadData : public core::IRoutingData
 
     //! Id of the participant from which the Reader has received the data.
     core::types::ParticipantId participant_receiver{};
+
+    //! Guid of the original entity that transmitted the data for the first time
+    eprosima::fastdds::rtps::OriginalWriterInfo original_writer_info{};
 };
 
 /**
