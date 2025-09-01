@@ -64,7 +64,7 @@ utils::ReturnCode SchemaWriter::write_nts_(
     {
         EPROSIMA_LOG_WARNING(
             DDSPIPE_SCHEMA_WRITER,
-            "Error writting data in topic " << topic_ << " : <" << e.what() << ">.");
+            "Error writing data in topic " << topic_ << " : <" << e.what() << ">.");
         return utils::ReturnCode::RETCODE_ERROR;
     }
 

@@ -40,24 +40,52 @@ struct RoutesConfiguration : public IConfiguration
     // CONSTRUCTORS
     /////////////////////////
 
-    DDSPIPE_CORE_DllAPI RoutesConfiguration() = default;
+    DDSPIPE_CORE_DllAPI
+    RoutesConfiguration() = default;
 
     /////////////////////////
     // METHODS
     /////////////////////////
 
-    DDSPIPE_CORE_DllAPI virtual bool is_valid(
+    DDSPIPE_CORE_DllAPI
+    bool is_valid(
             utils::Formatter& error_msg) const noexcept override;
 
-    DDSPIPE_CORE_DllAPI bool is_valid(
+    DDSPIPE_CORE_DllAPI
+    bool is_valid(
             utils::Formatter& error_msg,
             const std::map<types::ParticipantId, bool>& participants) const noexcept;
+
+    /**
+     * @brief Returns the writers in each reader's route.
+     *
+     * It returns a map with the readers as keys and the writers in each reader's route as values.
+     *
+     * The first time this method is called, it will calculate the routes and store them in the object.
+     * Subsequent calls will return the stored routes.
+     */
+    DDSPIPE_CORE_DllAPI
+    RoutesMap routes_of_readers(
+            const std::map<types::ParticipantId, bool>& participant_ids) const noexcept;
+
+    /**
+     * @brief Returns the readers in each writer's route.
+     *
+     * It returns a map with the writers as keys and the readers in each writer's route as values.
+     *
+     * The first time this method is called, it will calculate the routes and store them in the object.
+     * Subsequent calls will return the stored routes.
+     */
+    DDSPIPE_CORE_DllAPI
+    RoutesMap routes_of_writers(
+            const std::map<types::ParticipantId, bool>& participant_ids) const noexcept;
 
     /////////////////////////
     // OPERATORS
     /////////////////////////
 
-    DDSPIPE_CORE_DllAPI RoutesMap operator () () const;
+    DDSPIPE_CORE_DllAPI
+    RoutesMap operator () () const;
 
     /////////////////////////
     // VARIABLES

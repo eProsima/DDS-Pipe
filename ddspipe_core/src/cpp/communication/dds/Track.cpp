@@ -68,7 +68,7 @@ Track::~Track()
 {
     logDebug(DDSPIPE_TRACK, "Destroying Track " << *this << ".");
 
-    // Disable reader and writers
+    // Disable the track
     disable();
 
     // Unset callback on the Reader (this is needed as Reader will live longer than Track)
@@ -131,11 +131,7 @@ void Track::disable() noexcept
         // Disabling Reader
         reader_->disable();
 
-        // Disabling Writers
-        for (auto& writer_it : writers_)
-        {
-            writer_it.second->disable();
-        }
+        // Don't disable writers, as they may be used by other tracks
     }
 }
 
@@ -163,16 +159,16 @@ void Track::remove_writer(
 }
 
 bool Track::has_writer(
-        const ParticipantId& id) noexcept
+        const ParticipantId& id) const noexcept
 {
     std::lock_guard<std::mutex> lock(track_mutex_);
     return writers_.count(id) != 0;
 }
 
-bool Track::has_writers() noexcept
+bool Track::has_writers() const noexcept
 {
     std::lock_guard<std::mutex> lock(track_mutex_);
-    return writers_.size() > 0;
+    return !writers_.empty();
 }
 
 bool Track::should_transmit_() noexcept
@@ -265,10 +261,11 @@ void Track::transmit_() noexcept
             {
                 EPROSIMA_LOG_WARNING(
                     DDSPIPE_TRACK,
-                    "Error writting data in Track " << topic_->serialize()
-                                                    << " for writer " << writer_it.second.get()
-                                                    << ". Error code " << ret
-                                                    << ". Skipping data for this writer and continue.");
+                    "Error writing data in Track " << *this
+                                                   << " for writer " << writer_it.second.get()
+                                                   << " in participant " << writer_it.first
+                                                   << ". Error code " << ret
+                                                   << ". Skipping data for this writer and continue.");
                 continue;
             }
         }
