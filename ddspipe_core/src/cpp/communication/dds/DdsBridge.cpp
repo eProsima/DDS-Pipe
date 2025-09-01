@@ -321,7 +321,11 @@ utils::Heritable<DistributedTopic> DdsBridge::create_topic_for_participant_nts_(
     topic->topic_qos.set_qos(participant->topic_qos(), utils::FuzzyLevelValues::fuzzy_level_hard);
 
     // 3. Topic Partition
-    topic->partition_name = participant->topic_partitions()[topic->m_topic_name];
+    // TODO. check if is ddsrecorder or ddsreplayer
+    if(topic->partition_name.size() == 0)
+    {
+        topic->partition_name = participant->topic_partitions()[topic->m_topic_name];
+    }
 
     return topic;
 }
