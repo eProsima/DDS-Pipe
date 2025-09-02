@@ -25,7 +25,7 @@ TopicQoS Endpoint::topic_qos() const noexcept
     return topic.topic_qos;
 }
 
-std::map<std::string, std::set<std::string>> Endpoint::topic_partitions() const noexcept
+std::map<std::string, std::map<std::string, std::string>> Endpoint::topic_partitions() const noexcept
 {
     return specific_partitions;
 }

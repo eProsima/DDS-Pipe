@@ -139,7 +139,7 @@ QoSSpecificWriter* MultiWriter::create_writer_nts_(
 }
 
 // Specific enable/disable do not need to be implemented
-utils::ReturnCode MultiWriter::write_nts_( // TODO. HERE
+utils::ReturnCode MultiWriter::write_nts_(
         core::IRoutingData& data) noexcept
 {
     auto& rtps_data = dynamic_cast<core::types::RtpsPayloadData&>(data);
@@ -148,11 +148,6 @@ utils::ReturnCode MultiWriter::write_nts_( // TODO. HERE
         DDSPIPE_MULTIWRITER,
         "Writing in Partitions Writer " << *this << " a data with qos " << rtps_data.writer_qos << " from " <<
             rtps_data.source_guid);
-
-    for(std::string partition_name: topic_.partition_name)
-    {
-        rtps_data.writer_qos.partitions.push_back(partition_name.c_str());
-    }
 
     // Take Writer
     auto this_qos_writer = get_writer_or_create_(rtps_data.writer_qos);

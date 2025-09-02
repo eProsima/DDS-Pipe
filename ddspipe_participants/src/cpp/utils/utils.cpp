@@ -39,6 +39,9 @@ core::types::Endpoint create_common_endpoint_from_info_(
     // Parse GUID
     endpoint.guid = info.guid;
 
+    std::ostringstream guid_ss;
+    guid_ss << endpoint.guid;
+
     // Parse TopicQoS
     // Durability
     endpoint.topic.topic_qos.durability_qos.set_value(info.durability.durabilityKind());
@@ -65,14 +68,33 @@ core::types::Endpoint create_common_endpoint_from_info_(
     std::map<std::string, std::set<std::string>> partition_names;
     std::vector<std::string> partition_names_vector = info.partition.getNames();
 
-    for(int i = 0; i < partition_names_vector.size(); i++)
+    /*for(int i = 0; i < partition_names_vector.size(); i++)
     {
         //partition_names.insert(partition_names_vector[i]);
         partition_names[std::string(info.topic_name)].insert(partition_names_vector[i]);
-        std::cout << partition_names_vector[i] << " - ";
+        std::cout << partition_names_vector[i] << " | ";
     }
-    std::cout << "\n";
-    endpoint.specific_partitions = partition_names;
+    std::cout << "\n";*/
+
+    std::string partitions_set = "";
+    int partitions_n = partition_names_vector.size();
+    if(partitions_n > 0)
+    {
+        partitions_set = partition_names_vector[0];
+
+        for(int i = 1; i < partitions_n; i++)
+        {
+            partitions_set += "|" + partition_names_vector[i];
+            std::cout << partition_names_vector[i] << " | ";
+        }
+        std::cout << "\n";
+        partition_names[std::string(info.topic_name)].insert(partitions_set);
+    }
+
+
+
+    //endpoint.specific_partitions = partition_names;
+    endpoint.specific_partitions[std::string(info.topic_name)][guid_ss.str()] = partitions_set;
 
     // Set Topic with ownership
     endpoint.topic.topic_qos.ownership_qos.set_value(info.ownership.kind);
