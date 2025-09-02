@@ -113,11 +113,9 @@ core::types::TopicQoS CommonParticipant::topic_qos() const noexcept
     return configuration_->topic_qos;
 }
 
-std::map<std::string, std::set<std::string>> CommonParticipant::topic_partitions() const noexcept
+std::map<std::string, std::map<std::string, std::string>> CommonParticipant::topic_partitions() const noexcept
 {
-    // TODO. danip
     return partition_names;
-    //return std::set<std::string>{"2.2"};
 }
 
 std::shared_ptr<core::IWriter> CommonParticipant::create_writer(
@@ -495,43 +493,48 @@ fastdds::dds::Topic* CommonParticipant::topic_related_(
 }
 
 bool CommonParticipant::add_topic_partition(
-        const std::string& topic_name,
+        const std::string& topic_name, const std::string& writer_name,
         const std::string& partition)
 {
-    if (partition_names.find(topic_name) != partition_names.end())
+    if(partition_names.find(topic_name) != partition_names.end())
     {
-        if (partition_names[topic_name].find(partition) != partition_names[topic_name].end())
+        // the topic exists
+        if(partition_names[topic_name].find(writer_name) != partition_names[topic_name].end())
         {
-            // the partition is already in the set
+            // the writer is already added in the topic
             return false;
         }
     }
     else
     {
-        partition_names[topic_name] = std::set<std::string>();
+        // there is no topic in the dictionary
+        partition_names[topic_name] = std::map<std::string, std::string>();
     }
 
-    partition_names[topic_name].insert(partition);
+    // adds [writer, partition] in the topic
+    partition_names[topic_name][writer_name] = partition;
 
     return true;
 }
 
 bool CommonParticipant::delete_topic_partition(
-        const std::string& topic_name,
+        const std::string& topic_name, const std::string& writer_name,
         const std::string& partition)
 {
-    if (partition_names.find(topic_name) == partition_names.end())
+    if(partition_names.find(topic_name) == partition_names.end())
     {
-        // the topic is not in the dictionary
+        // the topic dont exists
         return false;
     }
-    if (partition_names[topic_name].find(partition) == partition_names[topic_name].end())
+    if(partition_names[topic_name].find(writer_name) != partition_names[topic_name].end())
     {
-        // the partition is not in the set
+        // the writer dont exist in the topic
         return false;
     }
 
-    partition_names.erase(partition);
+    // delete [writer, partition] in the topic
+    partition_names.erase(writer_name);
+
     return true;
 }
 

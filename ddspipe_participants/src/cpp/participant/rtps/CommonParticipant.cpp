@@ -195,15 +195,28 @@ void CommonParticipant::RtpsListener::on_writer_discovery(
                 detail::create_endpoint_from_info_<fastdds::rtps::PublicationBuiltinTopicData>(
             info, configuration_->id);
 
-        if(info_writer.specific_partitions[info_writer.topic.m_topic_name].size() == 0)
+        // TODO. danip (ADD EMPTY PARTITION)
+        /*if(info_writer.specific_partitions[info_writer.topic.m_topic_name].size() == 0)
         {
             parent_class_->add_topic_partition(info_writer.topic.m_topic_name, "");
         }
-        else
+        else*/
+        if(info_writer.specific_partitions[info_writer.topic.m_topic_name].size() != 0)
         {
-            for(std::string partition_name: info_writer.specific_partitions[info_writer.topic.m_topic_name])
+            /*for(std::string partition_name: info_writer.specific_partitions[info_writer.topic.m_topic_name])
             {
                 parent_class_->add_topic_partition(info_writer.topic.m_topic_name, partition_name);
+            }*/
+
+            if(info_writer.specific_partitions.find(info_writer.topic.m_topic_name) != info_writer.specific_partitions.end())
+            {
+                std::ostringstream guid_ss;
+                guid_ss << info.guid;
+
+                std::string partition_name = info_writer.specific_partitions[info_writer.topic.m_topic_name][guid_ss.str()];
+                parent_class_->add_topic_partition(info_writer.topic.m_topic_name, guid_ss.str(), partition_name);
+
+                //std::cout << "GUID: " + guid_ss.str() + "\tTOPIC: " + info_writer.topic.m_topic_name + +"\tPARTITION: " + partition_name + "\n";
             }
         }
 
@@ -350,11 +363,9 @@ core::types::TopicQoS CommonParticipant::topic_qos() const noexcept
     return configuration_->topic_qos;
 }
 
-std::map<std::string, std::set<std::string>> CommonParticipant::topic_partitions() const noexcept
+std::map<std::string, std::map<std::string, std::string>> CommonParticipant::topic_partitions() const noexcept
 {
-    // TODO. danip
     return partition_names;
-    //return std::set<std::string>{"2.1"};
 }
 
 void CommonParticipant::create_participant_(
@@ -424,6 +435,7 @@ std::shared_ptr<core::IWriter> CommonParticipant::create_writer(
     {
         if (dds_topic.partition_name.size() > 0)
         {
+            std::cout << "\t\t1234\t5678: " << dds_topic.partition_name.size() << "\n";
             // Notice that MultiWriter does not require an init call
             return std::make_shared<MultiWriter>(
                 this->id(),
@@ -562,43 +574,48 @@ CommonParticipant::create_listener_(CommonParticipant& parent_class)
 }
 
 bool CommonParticipant::add_topic_partition(
-        const std::string& topic_name,
+        const std::string& topic_name, const std::string& writer_name,
         const std::string& partition)
 {
-    if (partition_names.find(topic_name) != partition_names.end())
+    if(partition_names.find(topic_name) != partition_names.end())
     {
-        if (partition_names[topic_name].find(partition) != partition_names[topic_name].end())
+        // the topic exists
+        if(partition_names[topic_name].find(writer_name) != partition_names[topic_name].end())
         {
-            // the partition is already in the set
+            // the writer is already added in the topic
             return false;
         }
     }
     else
     {
-        partition_names[topic_name] = std::set<std::string>();
+        // there is no topic in the dictionary
+        partition_names[topic_name] = std::map<std::string, std::string>();
     }
 
-    partition_names[topic_name].insert(partition);
+    // adds [writer, partition] in the topic
+    partition_names[topic_name][writer_name] = partition;
 
     return true;
 }
 
 bool CommonParticipant::delete_topic_partition(
-        const std::string& topic_name,
+        const std::string& topic_name, const std::string& writer_name,
         const std::string& partition)
 {
-    if (partition_names.find(topic_name) == partition_names.end())
+    if(partition_names.find(topic_name) == partition_names.end())
     {
-        // the topic is not in the dictionary
+        // the topic dont exists
         return false;
     }
-    if (partition_names[topic_name].find(partition) == partition_names[topic_name].end())
+    if(partition_names[topic_name].find(writer_name) != partition_names[topic_name].end())
     {
-        // the partition is not in the set
+        // the writer dont exist in the topic
         return false;
     }
 
-    partition_names.erase(partition);
+    // delete [writer, partition] in the topic
+    partition_names.erase(writer_name);
+
     return true;
 }
 

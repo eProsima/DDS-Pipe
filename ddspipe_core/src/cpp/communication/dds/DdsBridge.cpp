@@ -133,17 +133,16 @@ void DdsBridge::create_all_tracks_()
         }
     }
 
-    std::set<std::string> curr_partition_map;
+    std::map<std::string, std::string> curr_partition_map;
 
     // get partitions
     for (const auto& id : writers_to_create)
     {
         std::shared_ptr<IParticipant> participant = participants_->get_participant(id);
         const auto topic = create_topic_for_participant_nts_(participant);
-
-        for(std::string curr_partition_name: topic->partition_name)
+        for (const auto& pair : topic->partition_name)
         {
-            curr_partition_map.insert(curr_partition_name);
+            curr_partition_map[pair.first] = pair.second;
         }
     }
 
@@ -320,8 +319,6 @@ utils::Heritable<DistributedTopic> DdsBridge::create_topic_for_participant_nts_(
     // 2. Participant Topic QoS.
     topic->topic_qos.set_qos(participant->topic_qos(), utils::FuzzyLevelValues::fuzzy_level_hard);
 
-    // 3. Topic Partition
-    // TODO. check if is ddsrecorder or ddsreplayer
     if(topic->partition_name.size() == 0)
     {
         topic->partition_name = participant->topic_partitions()[topic->m_topic_name];

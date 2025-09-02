@@ -62,7 +62,7 @@ public:
 
     //! The Participant's Topic Partitions.
     DDSPIPE_CORE_DllAPI
-    virtual std::map<std::string, std::set<std::string>> topic_partitions() const noexcept = 0;
+    virtual std::map<std::string, std::map<std::string, std::string>> topic_partitions() const noexcept = 0;
 
     /**
      * @brief Return a new Writer
@@ -105,7 +105,7 @@ public:
      */
     DDSPIPE_CORE_DllAPI
     virtual bool add_topic_partition(
-            const std::string& topic_name,
+            const std::string& topic_name, const std::string& writer_name,
             const std::string& partition) = 0;
 
     /**
@@ -117,7 +117,7 @@ public:
      */
     DDSPIPE_CORE_DllAPI
     virtual bool delete_topic_partition(
-            const std::string& topic_name,
+            const std::string& topic_name, const std::string& writer_name,
             const std::string& partition) = 0;
 
     /**
