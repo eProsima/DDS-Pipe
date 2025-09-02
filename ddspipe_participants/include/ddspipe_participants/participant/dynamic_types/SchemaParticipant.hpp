@@ -58,7 +58,7 @@ public:
 
     //! Override topic_partitions() IParticipant method
     DDSPIPE_PARTICIPANTS_DllAPI
-    std::map<std::string, std::set<std::string>> topic_partitions() const noexcept override;
+    std::map<std::string, std::map<std::string, std::string>> topic_partitions() const noexcept override;
 
     //! Override create_writer_() IParticipant method
     DDSPIPE_PARTICIPANTS_DllAPI
@@ -73,13 +73,13 @@ public:
     //! Override add_topic_partition() IParticipant method
     DDSPIPE_PARTICIPANTS_DllAPI
     bool add_topic_partition(
-            const std::string& topic_name,
+            const std::string& topic_name, const std::string& writer_name,
             const std::string& partition) override;
 
     //! Override delete_topic_partition() IParticipant method
     DDSPIPE_PARTICIPANTS_DllAPI
     bool delete_topic_partition(
-            const std::string& topic_name,
+            const std::string& topic_name, const std::string& writer_name,
             const std::string& partition) override;
 
     //! Override clear_topic_partitions() IParticipant method
@@ -102,7 +102,8 @@ protected:
 
     std::shared_ptr<ISchemaHandler> schema_handler_;
 
-    std::map<std::string, std::set<std::string>> partition_names;
+    //std::map<std::string, std::set<std::string>> partition_names;
+    std::map<std::string, std::map<std::string, std::string>> partition_names;
 };
 
 } /* namespace participants */
