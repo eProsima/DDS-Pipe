@@ -199,9 +199,8 @@ public:
         const std::shared_ptr<ParticipantConfiguration> configuration_;
         //! Shared pointer to the discovery database
         const std::shared_ptr<core::DiscoveryDatabase> discovery_database_;
-
+        //! Pointer to the parent class of the participant
         CommonParticipant* parent_class_{nullptr};
-
     };
 
     //! Unique pointer to the internal RTPS Participant Listener
@@ -299,7 +298,7 @@ protected:
     //! Participant attributes to create the internal RTPS Participant.
     fastdds::rtps::RTPSParticipantAttributes participant_attributes_;
 
-    //std::map<std::string, std::set<std::string>> partition_names;
+    //! <Topics <Writer_guid, Partitions set >>
     std::map<std::string, std::map<std::string, std::string>> partition_names;
 };
 

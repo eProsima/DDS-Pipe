@@ -75,10 +75,6 @@ struct Topic : public ITopic, public IConfiguration
     DDSPIPE_CORE_DllAPI
     virtual std::string topic_name() const noexcept override;
 
-    /*//! ITopic partition
-    DDSPIPE_CORE_DllAPI
-    virtual std::string topic_partition() const noexcept override;*/
-
     DDSPIPE_CORE_DllAPI
     virtual TopicInternalTypeDiscriminator internal_type_discriminator() const noexcept override;
 
