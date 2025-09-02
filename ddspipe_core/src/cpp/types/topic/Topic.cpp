@@ -49,11 +49,6 @@ std::string Topic::topic_name() const noexcept
     return m_topic_name;
 }
 
-/*std::string Topic::topic_partition() const noexcept
-{
-    return partition_name;
-}*/
-
 std::string Topic::serialize() const noexcept
 {
     std::stringstream ss;

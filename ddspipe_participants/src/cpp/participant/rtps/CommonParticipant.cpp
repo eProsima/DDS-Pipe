@@ -195,29 +195,22 @@ void CommonParticipant::RtpsListener::on_writer_discovery(
                 detail::create_endpoint_from_info_<fastdds::rtps::PublicationBuiltinTopicData>(
             info, configuration_->id);
 
-        // TODO. danip (ADD EMPTY PARTITION)
+        // (ADD EMPTY PARTITION)
         /*if(info_writer.specific_partitions[info_writer.topic.m_topic_name].size() == 0)
         {
             parent_class_->add_topic_partition(info_writer.topic.m_topic_name, "");
-        }
-        else*/
-        if(info_writer.specific_partitions[info_writer.topic.m_topic_name].size() != 0)
+        }*/
+
+        // check if the endpoint has the topic
+        if(info_writer.specific_partitions.find(info_writer.topic.m_topic_name) != info_writer.specific_partitions.end())
         {
-            /*for(std::string partition_name: info_writer.specific_partitions[info_writer.topic.m_topic_name])
-            {
-                parent_class_->add_topic_partition(info_writer.topic.m_topic_name, partition_name);
-            }*/
+            std::ostringstream guid_ss;
+            guid_ss << info.guid;
 
-            if(info_writer.specific_partitions.find(info_writer.topic.m_topic_name) != info_writer.specific_partitions.end())
-            {
-                std::ostringstream guid_ss;
-                guid_ss << info.guid;
+            std::string partition_name = info_writer.specific_partitions[info_writer.topic.m_topic_name][guid_ss.str()];
 
-                std::string partition_name = info_writer.specific_partitions[info_writer.topic.m_topic_name][guid_ss.str()];
-                parent_class_->add_topic_partition(info_writer.topic.m_topic_name, guid_ss.str(), partition_name);
-
-                //std::cout << "GUID: " + guid_ss.str() + "\tTOPIC: " + info_writer.topic.m_topic_name + +"\tPARTITION: " + partition_name + "\n";
-            }
+            // adds in the participant, the topic name, writer_guid and partitions set
+            parent_class_->add_topic_partition(info_writer.topic.m_topic_name, guid_ss.str(), partition_name);
         }
 
         if (reason == fastdds::rtps::WriterDiscoveryStatus::DISCOVERED_WRITER)
@@ -435,7 +428,6 @@ std::shared_ptr<core::IWriter> CommonParticipant::create_writer(
     {
         if (dds_topic.partition_name.size() > 0)
         {
-            std::cout << "\t\t1234\t5678: " << dds_topic.partition_name.size() << "\n";
             // Notice that MultiWriter does not require an init call
             return std::make_shared<MultiWriter>(
                 this->id(),

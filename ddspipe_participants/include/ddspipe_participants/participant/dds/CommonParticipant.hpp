@@ -208,6 +208,8 @@ protected:
     /**
      * @brief Virtual method that creates a listener for the internal DDS Participant.
      *        It should be overridden if a different listener is needed.
+     *
+     * This method adds a pointer to the parent class
      */
     DDSPIPE_PARTICIPANTS_DllAPI
     virtual std::unique_ptr<fastdds::dds::DomainParticipantListener> create_listener_(CommonParticipant& parent_class);
@@ -268,7 +270,7 @@ protected:
     //! DDS Router shared Discovery Database
     const std::shared_ptr<core::DiscoveryDatabase> discovery_database_;
 
-    //std::map<std::string, std::set<std::string>> partition_names;
+    //! <Topics <Writer_guid, Partitions set >>
     std::map<std::string, std::map<std::string, std::string>> partition_names;
 };
 

@@ -64,17 +64,9 @@ core::types::Endpoint create_common_endpoint_from_info_(
     endpoint.topic.topic_qos.use_partitions.set_value(!info.partition.empty());
 
     // Topic partitions
-    //std::set<std::string> partition_names;
+    // get the partitions and add into a string with '|' as delimiter
     std::map<std::string, std::set<std::string>> partition_names;
     std::vector<std::string> partition_names_vector = info.partition.getNames();
-
-    /*for(int i = 0; i < partition_names_vector.size(); i++)
-    {
-        //partition_names.insert(partition_names_vector[i]);
-        partition_names[std::string(info.topic_name)].insert(partition_names_vector[i]);
-        std::cout << partition_names_vector[i] << " | ";
-    }
-    std::cout << "\n";*/
 
     std::string partitions_set = "";
     int partitions_n = partition_names_vector.size();
@@ -85,15 +77,12 @@ core::types::Endpoint create_common_endpoint_from_info_(
         for(int i = 1; i < partitions_n; i++)
         {
             partitions_set += "|" + partition_names_vector[i];
-            std::cout << partition_names_vector[i] << " | ";
         }
-        std::cout << "\n";
+
         partition_names[std::string(info.topic_name)].insert(partitions_set);
     }
 
-
-
-    //endpoint.specific_partitions = partition_names;
+    // adds the topic into the map of <topic, <writer_guid, partitions set>>
     endpoint.specific_partitions[std::string(info.topic_name)][guid_ss.str()] = partitions_set;
 
     // Set Topic with ownership
