@@ -134,6 +134,13 @@ struct Topic : public ITopic, public IConfiguration
      * If the Topic has manually configured Topic QoS, the Topic QoS that are manually configured get overriden.
      */
     types::TopicQoS topic_qos{};
+
+    /**
+     * @brief The Name of the topic Partition.
+     *
+     * e.g.: In ShapeDemos there are the following partitions ("", "A", "B", "C", "D", "*")
+     */
+    std::map<std::string, std::string> partition_name{};
 };
 
 /**

@@ -34,7 +34,8 @@ SimpleReader::SimpleReader(
         reckon_history_attributes_(topic),
         reckon_reader_attributes_(topic),
         reckon_topic_description_(topic),
-        reckon_reader_qos_(topic))
+        reckon_reader_qos_(topic),
+        std::set<std::string>()) // TODO. filter partition
 {
 }
 

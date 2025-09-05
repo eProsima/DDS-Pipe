@@ -17,6 +17,12 @@
 
 #include <ddspipe_core/communication/dds/DdsBridge.hpp>
 
+#include <cpp_utils/utils.hpp>
+
+#include <chrono>
+#include <thread>
+
+
 namespace eprosima {
 namespace ddspipe {
 namespace core {
@@ -30,10 +36,12 @@ DdsBridge::DdsBridge(
         const std::shared_ptr<utils::SlotThreadPool>& thread_pool,
         const RoutesConfiguration& routes_config,
         const bool remove_unused_entities,
-        const std::vector<core::types::ManualTopic>& manual_topics)
+        const std::vector<core::types::ManualTopic>& manual_topics,
+        const std::set<std::string> allowed_partition_list)
     : Bridge(participants_database, payload_pool, thread_pool)
     , topic_(topic)
     , manual_topics_(manual_topics)
+    , allowed_partition_list_(allowed_partition_list)
 {
     logDebug(DDSPIPE_DDSBRIDGE, "Creating DdsBridge " << *this << ".");
 
@@ -133,6 +141,48 @@ void DdsBridge::create_all_tracks_()
         }
     }
 
+    std::map<std::string, std::string> curr_partition_map;
+
+    // Partition filter
+    // this filter is applied if the yaml configuration
+    // has the partitionslist tag.
+    bool pass_partition_filter = allowed_partition_list_.empty();
+
+    //std::this_thread::sleep_for(std::chrono::milliseconds(1));
+
+
+    // get partitions set for the current topic
+    for (const auto& id : writers_to_create)
+    {
+        std::shared_ptr<IParticipant> participant = participants_->get_participant(id);
+        const auto topic = create_topic_for_participant_nts_(participant);
+        for (const auto& pair : topic->partition_name)
+        {
+            curr_partition_map[pair.first] = pair.second;
+
+            /*std::cout << "Writer GUID: " << pair.first << "\tPartition: " << pair.second << ".\t";
+            if(!pass_partition_filter)
+            {
+                for(std::string allowed_partition: allowed_partition_list_)
+                {
+                    if (utils::match_pattern(allowed_partition, pair.second))
+                    {
+                        pass_partition_filter = true;
+                        break;
+                    }
+                }
+            }*/
+        }
+    }
+
+    /*if(!pass_partition_filter)
+    {
+        // sleep to simulate that the writers are created
+        // to avoid possibles race conditions in other topics
+        std::this_thread::sleep_for(std::chrono::milliseconds(1));
+        return;
+    }*/
+
     // Create the writers.
     std::map<ParticipantId, std::shared_ptr<IWriter>> writers;
 
@@ -140,6 +190,8 @@ void DdsBridge::create_all_tracks_()
     {
         std::shared_ptr<IParticipant> participant = participants_->get_participant(id);
         const auto topic = create_topic_for_participant_nts_(participant);
+        // add the partitions set
+        topic->partition_name = curr_partition_map;
         writers[id] = participant->create_writer(*topic);
     }
 
@@ -304,6 +356,12 @@ utils::Heritable<DistributedTopic> DdsBridge::create_topic_for_participant_nts_(
 
     // 2. Participant Topic QoS.
     topic->topic_qos.set_qos(participant->topic_qos(), utils::FuzzyLevelValues::fuzzy_level_hard);
+
+    // 3. Partitions Topic
+    if(topic->partition_name.size() == 0)
+    {
+        topic->partition_name = participant->topic_partitions()[topic->m_topic_name];
+    }
 
     return topic;
 }
