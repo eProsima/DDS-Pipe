@@ -53,6 +53,8 @@ public:
 
     std::set<participants::types::WhitelistType> whitelist {};
 
+    std::set<std::string> partitionlist {};
+
     core::types::TransportDescriptors transport {core::types::TransportDescriptors::builtin};
 
     // IPv4 address of the remote Discovery Server.

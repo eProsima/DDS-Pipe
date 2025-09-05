@@ -54,11 +54,13 @@ CommonParticipant::CommonParticipant(
         const std::shared_ptr<ParticipantConfiguration>& participant_configuration,
         const std::shared_ptr<core::PayloadPool>& payload_pool,
         const std::shared_ptr<core::DiscoveryDatabase>& discovery_database,
-        const core::types::DomainId& domain_id)
+        const core::types::DomainId& domain_id,
+        const std::set<std::string> allowed_partition_list)
     : configuration_(participant_configuration)
     , payload_pool_(payload_pool)
     , discovery_database_(discovery_database)
     , domain_id_(domain_id)
+    , allowed_partition_list_(allowed_partition_list)
 {
     // Do nothing
 }
@@ -195,22 +197,62 @@ void CommonParticipant::RtpsListener::on_writer_discovery(
                 detail::create_endpoint_from_info_<fastdds::rtps::PublicationBuiltinTopicData>(
             info, configuration_->id);
 
-        // (ADD EMPTY PARTITION)
-        /*if(info_writer.specific_partitions[info_writer.topic.m_topic_name].size() == 0)
-        {
-            parent_class_->add_topic_partition(info_writer.topic.m_topic_name, "");
-        }*/
-
         // check if the endpoint has the topic
         if(info_writer.specific_partitions.find(info_writer.topic.m_topic_name) != info_writer.specific_partitions.end())
         {
             std::ostringstream guid_ss;
             guid_ss << info.guid;
 
-            std::string partition_name = info_writer.specific_partitions[info_writer.topic.m_topic_name][guid_ss.str()];
+            std::string partition_names = info_writer.specific_partitions[info_writer.topic.m_topic_name][guid_ss.str()];
+
+            // adding the filter here, it does not add the endpoint to the database
+            // and it throws an error. This error could be avoided by checking if the writer_guid
+            // of the received message is or is not in the database because of the partitions filter.
+            // <time> [DDSPIPE_SpecificQoSReader Error] Received a message from Writer <guid> that is not stored in DB.
+
+            bool pass_partition_filter = parent_class_->allowed_partition_list_.empty();
+
+            //std::cout << "Topic: " << info_writer.topic.m_topic_name << "\tGUID: " << guid_ss.str() << "\tPartition: " << partition_names << "\n";
+
+            std::string curr_partition = "";
+            int i = 0, curr_partition_n = partition_names.size();
+            while(i < curr_partition_n)
+            {
+                // gets a partition from the string of partitions
+                while(i < curr_partition_n && partition_names[i]!='|')
+                {
+                    curr_partition += partition_names[i++];
+                }
+
+                if(curr_partition == "*")
+                {
+                    pass_partition_filter = true;
+                    break;
+                }
+
+                // check if that partition is in the filter of partitions
+                for(std::string allowed_partition: parent_class_->allowed_partition_list_)
+                {
+                    if (utils::match_pattern(allowed_partition, curr_partition))
+                    {
+                        pass_partition_filter = true;
+                        break;
+                    }
+                }
+
+                curr_partition = "";
+                i++;
+            }
+
+            if(!pass_partition_filter)
+            {
+                discovery_database_->add_filtered_endpoint(info.guid);
+                parent_class_->filtered_guidlist.insert(guid_ss.str());
+                return;
+            }
 
             // adds in the participant, the topic name, writer_guid and partitions set
-            parent_class_->add_topic_partition(info_writer.topic.m_topic_name, guid_ss.str(), partition_name);
+            parent_class_->add_topic_partition(info_writer.topic.m_topic_name, guid_ss.str(), partition_names);
         }
 
         if (reason == fastdds::rtps::WriterDiscoveryStatus::DISCOVERED_WRITER)
@@ -426,6 +468,7 @@ std::shared_ptr<core::IWriter> CommonParticipant::create_writer(
     }
     else if (topic.internal_type_discriminator() == core::types::INTERNAL_TOPIC_TYPE_RTPS)
     {
+        // TODO. danip replayer filter?
         if (dds_topic.partition_name.size() > 0)
         {
             // Notice that MultiWriter does not require an init call
@@ -434,7 +477,8 @@ std::shared_ptr<core::IWriter> CommonParticipant::create_writer(
                 dds_topic,
                 this->payload_pool_,
                 rtps_participant_,
-                this->configuration_->is_repeater);
+                this->configuration_->is_repeater,
+                allowed_partition_list_);
         }
         else if (dds_topic.topic_qos.has_partitions() || dds_topic.topic_qos.has_ownership())
         {
@@ -503,7 +547,8 @@ std::shared_ptr<core::IReader> CommonParticipant::create_reader(
                 dds_topic,
                 this->payload_pool_,
                 rtps_participant_,
-                discovery_database_);
+                discovery_database_,
+                filtered_guidlist); // add filter guid list
             reader->init();
 
             return reader;

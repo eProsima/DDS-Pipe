@@ -65,7 +65,8 @@ public:
             const std::shared_ptr<DiscoveryDatabase>& discovery_database,
             const std::shared_ptr<PayloadPool>& payload_pool,
             const std::shared_ptr<ParticipantsDatabase>& participants_database,
-            const std::shared_ptr<utils::SlotThreadPool>& thread_pool);
+            const std::shared_ptr<utils::SlotThreadPool>& thread_pool,
+            const std::set<std::string> allowed_partition_list);
 
     /**
      * @brief Destroy the DdsPipe object
@@ -385,6 +386,9 @@ protected:
 
     //! Thread Pool for tracks
     std::shared_ptr<utils::SlotThreadPool> thread_pool_;
+
+    //! Allowed partitions added in the filter
+    std::set<std::string> allowed_partition_list_;
 
     /////////////////////////
     // INTERNAL DATA STORAGE
