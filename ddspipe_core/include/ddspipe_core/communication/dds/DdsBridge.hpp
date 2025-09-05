@@ -61,7 +61,8 @@ public:
             const std::shared_ptr<utils::SlotThreadPool>& thread_pool,
             const RoutesConfiguration& routes_config,
             const bool remove_unused_entities,
-            const std::vector<core::types::ManualTopic>& manual_topics);
+            const std::vector<core::types::ManualTopic>& manual_topics,
+            const std::set<std::string> allowed_partition_list);
 
     DDSPIPE_CORE_DllAPI
     ~DdsBridge();
@@ -170,6 +171,9 @@ protected:
 
     //! Topics that explicitally set a QoS attribute for this participant.
     std::vector<types::ManualTopic> manual_topics_;
+
+    //! Allowed topics list added in the filter.
+    std::set<std::string> allowed_partition_list_;
 
     /**
      * Inside \c Tracks

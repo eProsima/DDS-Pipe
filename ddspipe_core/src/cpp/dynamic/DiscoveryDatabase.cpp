@@ -210,6 +210,12 @@ utils::ReturnCode DiscoveryDatabase::erase_endpoint_(
     return utils::ReturnCode::RETCODE_OK;
 }
 
+void DiscoveryDatabase::add_filtered_endpoint(
+        const types::Guid guid)
+{
+    entities_filter_.insert(guid);
+}
+
 void DiscoveryDatabase::add_endpoint(
         const Endpoint& new_endpoint)
 {
@@ -228,6 +234,11 @@ void DiscoveryDatabase::erase_endpoint(
     push_item_to_queue_(std::make_tuple(DatabaseOperation::erase, endpoint_to_erase));
 }
 
+bool DiscoveryDatabase::exists_filtered_endpoint(const Guid endpoint_guid)
+{
+    return entities_filter_.find(endpoint_guid) != entities_filter_.end();
+}
+
 Endpoint DiscoveryDatabase::get_endpoint(
         const Guid& endpoint_guid) const
 {
@@ -236,6 +247,11 @@ Endpoint DiscoveryDatabase::get_endpoint(
     auto it = entities_.find(endpoint_guid);
     if (it == entities_.end())
     {
+        if(entities_filter_.find(endpoint_guid) != entities_filter_.end())
+        {
+            return Endpoint{};
+        }
+
         throw utils::InconsistencyException(
                   utils::Formatter() <<
                       "Error retrieving Endpoint with GUID " << endpoint_guid <<
