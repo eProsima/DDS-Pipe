@@ -39,13 +39,15 @@ MultiWriter::MultiWriter(
         const std::shared_ptr<core::PayloadPool>& payload_pool,
         fastdds::dds::DomainParticipant* participant,
         fastdds::dds::Topic* topic_entity,
-        const bool repeater /* = false */)
+        const bool repeater /* = false */,
+        const std::set<std::string> allowed_partition_list)
     : BaseWriter(participant_id)
     , dds_participant_(participant)
     , dds_topic_(topic_entity)
     , payload_pool_(payload_pool)
     , topic_(topic)
     , repeater_(repeater)
+    , allowed_partition_list_(allowed_partition_list)
 {
     // Do nothing
 }

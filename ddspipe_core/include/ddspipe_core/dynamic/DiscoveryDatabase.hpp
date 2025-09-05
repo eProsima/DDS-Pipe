@@ -103,6 +103,22 @@ public:
             const types::Guid& guid) const noexcept;
 
     /**
+     * @brief Insert guid to the filter set
+     *
+     * This method stores the guids that dont pass the partition filter.
+     *
+     * @param [in] new_endpoint: new endpoint to store
+     */
+    DDSPIPE_CORE_DllAPI
+    void add_filtered_endpoint(
+            const types::Guid guid);
+
+    DDSPIPE_CORE_DllAPI
+    bool exists_filtered_endpoint(
+            const types::Guid endpoint_guid);
+
+
+    /**
      * @brief Insert endpoint to the database
      *
      * This method stores an insert operation in an internal queue, being this operation then performed by a
@@ -246,6 +262,10 @@ protected:
 
     //! Database of endpoints indexed by guid
     std::map<types::Guid, types::Endpoint> entities_;
+
+    //! Database of endpoints indexed by guid
+    //std::map<types::Guid, types::Endpoint> entities_filter_;
+    std::set<types::Guid> entities_filter_;
 
     //! Mutex to guard queries to the database
     mutable std::shared_timed_mutex mutex_;

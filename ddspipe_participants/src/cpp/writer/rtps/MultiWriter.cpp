@@ -40,12 +40,14 @@ MultiWriter::MultiWriter(
         const DdsTopic& topic,
         const std::shared_ptr<core::PayloadPool>& payload_pool,
         fastdds::rtps::RTPSParticipant* rtps_participant,
-        const bool repeater /* = false */)
+        const bool repeater /* = false */,
+        const std::set<std::string> allowed_partition_list)
     : BaseWriter(participant_id)
     , payload_pool_(payload_pool)
     , topic_(topic)
     , rtps_participant_(rtps_participant)
     , repeater_(repeater)
+    , allowed_partition_list_(allowed_partition_list)
 {
     // Do nothing
 }
@@ -148,6 +150,17 @@ utils::ReturnCode MultiWriter::write_nts_(
         DDSPIPE_MULTIWRITER,
         "Writing in Partitions Writer " << *this << " a data with qos " << rtps_data.writer_qos << " from " <<
             rtps_data.source_guid);
+
+    // filter partitions
+    // if there is a multiwriter with two writes, one with an allowed topic and other with out
+    // the writer with a blocked partition wont write data.
+    // TODO. danip dont send data to this function when the writer is not enabled because
+    // of a blocked partition
+
+    if(false) // TODO. danip rtps_data.source_guid
+    {
+        return utils::ReturnCode::RETCODE_NOT_ENABLED;
+    }
 
     // Take Writer
     auto this_qos_writer = get_writer_or_create_(rtps_data.writer_qos);
