@@ -244,6 +244,21 @@ void CommonParticipant::RtpsListener::on_writer_discovery(
                 i++;
             }
 
+            // check if the writer has the empty partition
+            if(partition_names == "")
+            {
+                // check if the empty partition is in the allowed partitions
+                for(std::string allowed_partition: parent_class_->allowed_partition_list_)
+                {
+                    if (utils::match_pattern(allowed_partition, ""))
+                    {
+                        // the empty partition is allowed
+                        pass_partition_filter = true;
+                        break;
+                    }
+                }
+            }
+
             if(!pass_partition_filter)
             {
                 discovery_database_->add_filtered_endpoint(info.guid);
