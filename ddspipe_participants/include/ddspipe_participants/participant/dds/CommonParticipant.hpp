@@ -270,7 +270,7 @@ protected:
     //! DDS Router shared Discovery Database
     const std::shared_ptr<core::DiscoveryDatabase> discovery_database_;
 
-    //! <Topics <Writer_guid, Partitions set >>
+    //! <Topics <Writer_guid, Partitions set>>
     std::map<std::string, std::map<std::string, std::string>> partition_names;
 };
 

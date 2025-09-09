@@ -468,19 +468,9 @@ std::shared_ptr<core::IWriter> CommonParticipant::create_writer(
     }
     else if (topic.internal_type_discriminator() == core::types::INTERNAL_TOPIC_TYPE_RTPS)
     {
-        // TODO. danip replayer filter?
-        if (dds_topic.partition_name.size() > 0)
-        {
-            // Notice that MultiWriter does not require an init call
-            return std::make_shared<MultiWriter>(
-                this->id(),
-                dds_topic,
-                this->payload_pool_,
-                rtps_participant_,
-                this->configuration_->is_repeater,
-                allowed_partition_list_);
-        }
-        else if (dds_topic.topic_qos.has_partitions() || dds_topic.topic_qos.has_ownership())
+        if (dds_topic.partition_name.size() > 0 ||
+            dds_topic.topic_qos.has_partitions() ||
+            dds_topic.topic_qos.has_ownership())
         {
             // Notice that MultiWriter does not require an init call
             return std::make_shared<MultiWriter>(

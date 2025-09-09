@@ -57,8 +57,6 @@ public:
 
 protected:
 
-
-
     /**
      * Specializes \c CommonReader method and set the QoS of the data received.
      */
