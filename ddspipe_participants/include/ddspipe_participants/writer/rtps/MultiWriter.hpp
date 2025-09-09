@@ -56,8 +56,7 @@ public:
             const core::types::DdsTopic& topic,
             const std::shared_ptr<core::PayloadPool>& payload_pool,
             fastdds::rtps::RTPSParticipant* rtps_participant,
-            const bool repeater = false,
-            const std::set<std::string> allowed_partition_list = {});
+            const bool repeater = false);
 
     /**
      * @brief Destroy the MultiWriter object
@@ -107,9 +106,6 @@ protected:
 
     //! Whether this Writer is a repeater.
     bool repeater_;
-
-    //! Allowed partitions added by the filter
-    std::set<std::string> allowed_partition_list_;
 };
 
 } /* namespace rtps */

@@ -504,7 +504,7 @@ void DdsPipe::create_new_bridge_nts_(
                         routes_config,
                         configuration_.remove_unused_entities,
                         manual_topics,
-                        enabled ? allowed_partition_list_ : std::set<std::string>()); // TODO. danip
+                        enabled ? allowed_partition_list_ : std::set<std::string>());
 
         if (enabled)
         {

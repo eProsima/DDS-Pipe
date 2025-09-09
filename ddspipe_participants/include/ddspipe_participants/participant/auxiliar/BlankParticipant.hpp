@@ -90,7 +90,7 @@ protected:
     //! Participant Id
     const core::types::ParticipantId id_;
 
-    //! <Topics <Writer_guid, Partitions set >>
+    //! <Topics <Writer_guid, Partitions set>>
     std::map<std::string, std::map<std::string, std::string>> partition_names;
 };
 

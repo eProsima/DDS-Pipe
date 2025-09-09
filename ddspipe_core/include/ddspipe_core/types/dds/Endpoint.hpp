@@ -91,7 +91,7 @@ struct Endpoint
     //! Specific QoS of the entity
     SpecificEndpointQoS specific_qos {};
 
-    //! Specific Partitions of the entity
+    //! Specific Partitions of the endpoint
     std::map<std::string, std::map<std::string, std::string>> specific_partitions;
 
     //! Whether the endpoint is currently active

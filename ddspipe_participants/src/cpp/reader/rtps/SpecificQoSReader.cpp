@@ -45,15 +45,6 @@ SpecificQoSReader::SpecificQoSReader(
 {
 }
 
-/*
-bool SpecificQoSReader::check_filter_partition(const Guid guid)
-{
-    return discovery_database_.exists_filtered_endpoint(guid);
-}
-*/
-
-
-
 void SpecificQoSReader::fill_received_data_(
         const fastdds::rtps::CacheChange_t& received_change,
         core::types::RtpsPayloadData& data_to_fill) const noexcept

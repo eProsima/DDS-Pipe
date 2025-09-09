@@ -102,7 +102,7 @@ protected:
 
     std::shared_ptr<ISchemaHandler> schema_handler_;
 
-    //! <Topics <Writer_guid, Partitions set >>
+    //! <Topics <Writer_guid, Partitions set>>
     std::map<std::string, std::map<std::string, std::string>> partition_names;
 };
 

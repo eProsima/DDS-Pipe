@@ -136,9 +136,15 @@ struct Topic : public ITopic, public IConfiguration
     types::TopicQoS topic_qos{};
 
     /**
-     * @brief The Name of the topic Partition.
+     * @brief The partitions set of the Topic.
+     *
+     * The data is storaged with the following pair: <writer_guid, partition_set>
      *
      * e.g.: In ShapeDemos there are the following partitions ("", "A", "B", "C", "D", "*")
+     *  and a set por partition could be:
+     *  - "A"
+     *  - "A|B" # the writer writes in the two partitions.
+     *  - "*"
      */
     std::map<std::string, std::string> partition_name{};
 };

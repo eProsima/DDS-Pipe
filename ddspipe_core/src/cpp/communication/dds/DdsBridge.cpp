@@ -19,10 +19,6 @@
 
 #include <cpp_utils/utils.hpp>
 
-#include <chrono>
-#include <thread>
-
-
 namespace eprosima {
 namespace ddspipe {
 namespace core {
@@ -143,14 +139,6 @@ void DdsBridge::create_all_tracks_()
 
     std::map<std::string, std::string> curr_partition_map;
 
-    // Partition filter
-    // this filter is applied if the yaml configuration
-    // has the partitionslist tag.
-    bool pass_partition_filter = allowed_partition_list_.empty();
-
-    //std::this_thread::sleep_for(std::chrono::milliseconds(1));
-
-
     // get partitions set for the current topic
     for (const auto& id : writers_to_create)
     {
@@ -159,29 +147,8 @@ void DdsBridge::create_all_tracks_()
         for (const auto& pair : topic->partition_name)
         {
             curr_partition_map[pair.first] = pair.second;
-
-            /*std::cout << "Writer GUID: " << pair.first << "\tPartition: " << pair.second << ".\t";
-            if(!pass_partition_filter)
-            {
-                for(std::string allowed_partition: allowed_partition_list_)
-                {
-                    if (utils::match_pattern(allowed_partition, pair.second))
-                    {
-                        pass_partition_filter = true;
-                        break;
-                    }
-                }
-            }*/
         }
     }
-
-    /*if(!pass_partition_filter)
-    {
-        // sleep to simulate that the writers are created
-        // to avoid possibles race conditions in other topics
-        std::this_thread::sleep_for(std::chrono::milliseconds(1));
-        return;
-    }*/
 
     // Create the writers.
     std::map<ParticipantId, std::shared_ptr<IWriter>> writers;

@@ -299,12 +299,12 @@ protected:
     //! Participant attributes to create the internal RTPS Participant.
     fastdds::rtps::RTPSParticipantAttributes participant_attributes_;
 
-    //! <Topics <Writer_guid, Partitions set >>
+    //! <Topics <Writer_guid, Partitions set>>
     std::map<std::string, std::map<std::string, std::string>> partition_names;
 
     std::set<std::string> allowed_partition_list_;
 
-    std::set<std::string> filtered_guidlist; // TODO. danip upgrade with Guid
+    std::set<std::string> filtered_guidlist;
 };
 
 } /* namespace rtps */
