@@ -79,19 +79,6 @@ std::shared_ptr<IReader> DynTypesParticipant::create_reader(
 DynTypesParticipant::DynTypesRtpsListener::DynTypesRtpsListener(
         std::shared_ptr<ParticipantConfiguration> conf,
         std::shared_ptr<core::DiscoveryDatabase> ddb,
-        std::shared_ptr<InternalReader> internal_reader,
-        CommonParticipant& parent_class)
-    : rtps::CommonParticipant::RtpsListener(
-        conf,
-        ddb,
-        parent_class)
-    , type_object_reader_(internal_reader)
-{
-}
-
-DynTypesParticipant::DynTypesRtpsListener::DynTypesRtpsListener(
-        std::shared_ptr<ParticipantConfiguration> conf,
-        std::shared_ptr<core::DiscoveryDatabase> ddb,
         std::shared_ptr<InternalReader> internal_reader)
     : rtps::CommonParticipant::RtpsListener(
         conf,
@@ -190,9 +177,9 @@ void DynTypesParticipant::DynTypesRtpsListener::notify_type_discovered_(
     type_object_reader_->simulate_data_reception(std::move(data));
 }
 
-std::unique_ptr<fastdds::rtps::RTPSParticipantListener> DynTypesParticipant::create_listener_(CommonParticipant& parent_class)
+std::unique_ptr<fastdds::rtps::RTPSParticipantListener> DynTypesParticipant::create_listener_()
 {
-    return std::make_unique<DynTypesRtpsListener>(configuration_, discovery_database_, type_object_reader_, parent_class);
+    return std::make_unique<DynTypesRtpsListener>(configuration_, discovery_database_, type_object_reader_);
 }
 
 } /* namespace participants */

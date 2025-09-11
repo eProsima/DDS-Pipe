@@ -92,16 +92,6 @@ CommonParticipant::RtpsListener::RtpsListener(
     EPROSIMA_LOG_INFO(DDSPIPE_RTPS_PARTICIPANT, "Creating RTPS Listener for Participant " << conf->id << ".");
 }
 
-CommonParticipant::RtpsListener::RtpsListener(
-        std::shared_ptr<ParticipantConfiguration> conf,
-        std::shared_ptr<core::DiscoveryDatabase> ddb,
-        CommonParticipant& parent_class)
-    : configuration_(conf)
-    , discovery_database_(ddb)
-    , parent_class_(&parent_class)
-{
-    EPROSIMA_LOG_INFO(DDSPIPE_RTPS_PARTICIPANT, "Creating RTPS Listener for Participant " << conf->id << ".");
-}
 
 void CommonParticipant::RtpsListener::on_participant_discovery(
         fastdds::rtps::RTPSParticipant* participant,
@@ -183,6 +173,11 @@ void CommonParticipant::RtpsListener::on_reader_discovery(
             // Do not notify discovery database (design choice that might be changed in the future)
         }
     }
+}
+
+void CommonParticipant::RtpsListener::add_parent_pointer(CommonParticipant& parent)
+{
+    parent_class_= &parent;
 }
 
 void CommonParticipant::RtpsListener::on_writer_discovery(
@@ -429,10 +424,21 @@ void CommonParticipant::create_participant_(
             "Creating Participant in domain " << domain);
 
     // Create the RTPS Participant Listener
-    rtps_participant_listener_ = create_listener_(*this);
+    rtps_participant_listener_ = create_listener_();
+
     if (!rtps_participant_listener_)
     {
         EPROSIMA_LOG_WARNING(DDSPIPE_RTPS_PARTICIPANT, "Error creating RTPS Participant Listener.");
+    }
+
+    auto listener = dynamic_cast<CommonParticipant::RtpsListener*>(rtps_participant_listener_.get());
+    if (listener)
+    {
+        listener->add_parent_pointer(*this);
+    }
+    else
+    {
+        EPROSIMA_LOG_WARNING(DDSPIPE_RTPS_PARTICIPANT, "Error adding parent class of RTPS Participant Listener.");
     }
 
     // Listener must be set in creation as no callbacks should be missed
@@ -609,10 +615,10 @@ CommonParticipant::add_participant_att_properties_(
 }
 
 std::unique_ptr<fastdds::rtps::RTPSParticipantListener>
-CommonParticipant::create_listener_(CommonParticipant& parent_class)
+CommonParticipant::create_listener_()
 {
     EPROSIMA_LOG_INFO(DDSPIPE_RTPS_PARTICIPANT, "Creating RTPS Listener from CommonParticipant.");
-    return std::make_unique<RtpsListener>(configuration_, discovery_database_, parent_class);
+    return std::make_unique<RtpsListener>(configuration_, discovery_database_);
 }
 
 bool CommonParticipant::add_topic_partition(
