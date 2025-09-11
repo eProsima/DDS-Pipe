@@ -192,78 +192,73 @@ void CommonParticipant::RtpsListener::on_writer_discovery(
                 detail::create_endpoint_from_info_<fastdds::rtps::PublicationBuiltinTopicData>(
             info, configuration_->id);
 
-        // check if the endpoint has the topic
-        if(info_writer.specific_partitions.find(info_writer.topic.m_topic_name) != info_writer.specific_partitions.end())
+
+        // get the writer
+        std::ostringstream guid_ss;
+        std::string guid_str;
+
+        guid_ss << info.guid;
+        guid_str = guid_ss.str();
+
+        // get the partitions
+        std::string partition_names = info_writer.specific_partitions[guid_str];
+
+        bool pass_partition_filter = parent_class_->allowed_partition_list_.empty();
+
+        std::string curr_partition = "";
+        int i = 0, curr_partition_n = partition_names.size();
+        while(i < curr_partition_n)
         {
-            std::ostringstream guid_ss;
-            guid_ss << info.guid;
-
-            std::string partition_names = info_writer.specific_partitions[info_writer.topic.m_topic_name][guid_ss.str()];
-
-            // adding the filter here, it does not add the endpoint to the database
-            // and it throws an error. This error could be avoided by checking if the writer_guid
-            // of the received message is or is not in the database because of the partitions filter.
-            // <time> [DDSPIPE_SpecificQoSReader Error] Received a message from Writer <guid> that is not stored in DB.
-
-            bool pass_partition_filter = parent_class_->allowed_partition_list_.empty();
-
-            //std::cout << "Topic: " << info_writer.topic.m_topic_name << "\tGUID: " << guid_ss.str() << "\tPartition: " << partition_names << "\n";
-
-            std::string curr_partition = "";
-            int i = 0, curr_partition_n = partition_names.size();
-            while(i < curr_partition_n)
+            // gets a partition from the string of partitions
+            while(i < curr_partition_n && partition_names[i]!='|')
             {
-                // gets a partition from the string of partitions
-                while(i < curr_partition_n && partition_names[i]!='|')
-                {
-                    curr_partition += partition_names[i++];
-                }
+                curr_partition += partition_names[i++];
+            }
 
-                if(curr_partition == "*")
+            if(curr_partition == "*")
+            {
+                pass_partition_filter = true;
+                break;
+            }
+
+            // check if that partition is in the filter of partitions
+            for(std::string allowed_partition: parent_class_->allowed_partition_list_)
+            {
+                if (utils::match_pattern(allowed_partition, curr_partition))
                 {
                     pass_partition_filter = true;
                     break;
                 }
-
-                // check if that partition is in the filter of partitions
-                for(std::string allowed_partition: parent_class_->allowed_partition_list_)
-                {
-                    if (utils::match_pattern(allowed_partition, curr_partition))
-                    {
-                        pass_partition_filter = true;
-                        break;
-                    }
-                }
-
-                curr_partition = "";
-                i++;
             }
 
-            // check if the writer has the empty partition
-            if(partition_names == "")
-            {
-                // check if the empty partition is in the allowed partitions
-                for(std::string allowed_partition: parent_class_->allowed_partition_list_)
-                {
-                    if (utils::match_pattern(allowed_partition, ""))
-                    {
-                        // the empty partition is allowed
-                        pass_partition_filter = true;
-                        break;
-                    }
-                }
-            }
-
-            if(!pass_partition_filter)
-            {
-                discovery_database_->add_filtered_endpoint(info.guid);
-                parent_class_->filtered_guidlist.insert(guid_ss.str());
-                return;
-            }
-
-            // adds in the participant, the topic name, writer_guid and partitions set
-            parent_class_->add_topic_partition(info_writer.topic.m_topic_name, guid_ss.str(), partition_names);
+            curr_partition = "";
+            i++;
         }
+
+        // check if the writer has the empty partition
+        if(partition_names == "")
+        {
+            // check if the empty partition is in the allowed partitions
+            for(std::string allowed_partition: parent_class_->allowed_partition_list_)
+            {
+                if (utils::match_pattern(allowed_partition, ""))
+                {
+                    // the empty partition is allowed
+                    pass_partition_filter = true;
+                    break;
+                }
+            }
+        }
+
+        if(!pass_partition_filter)
+        {
+            discovery_database_->add_filtered_endpoint(info.guid);
+            parent_class_->filtered_guidlist.insert(guid_str);
+            return;
+        }
+
+        // adds in the participant, the topic name, writer_guid and partitions set
+        parent_class_->add_topic_partition(info_writer.topic.m_topic_name, guid_str, partition_names);
 
         if (reason == fastdds::rtps::WriterDiscoveryStatus::DISCOVERED_WRITER)
         {
