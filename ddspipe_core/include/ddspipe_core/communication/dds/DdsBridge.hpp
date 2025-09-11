@@ -61,8 +61,7 @@ public:
             const std::shared_ptr<utils::SlotThreadPool>& thread_pool,
             const RoutesConfiguration& routes_config,
             const bool remove_unused_entities,
-            const std::vector<core::types::ManualTopic>& manual_topics,
-            const std::set<std::string> allowed_partition_list);
+            const std::vector<core::types::ManualTopic>& manual_topics);
 
     DDSPIPE_CORE_DllAPI
     ~DdsBridge();
@@ -173,7 +172,7 @@ protected:
     std::vector<types::ManualTopic> manual_topics_;
 
     //! Allowed topics list added in the filter.
-    std::set<std::string> allowed_partition_list_;
+    //std::set<std::string> allowed_partition_list_; // TDOO. danip remove
 
     /**
      * Inside \c Tracks
