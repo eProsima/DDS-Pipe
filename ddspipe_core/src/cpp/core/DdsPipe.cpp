@@ -35,15 +35,13 @@ DdsPipe::DdsPipe(
         const std::shared_ptr<DiscoveryDatabase>& discovery_database,
         const std::shared_ptr<PayloadPool>& payload_pool,
         const std::shared_ptr<ParticipantsDatabase>& participants_database,
-        const std::shared_ptr<utils::SlotThreadPool>& thread_pool,
-        const std::set<std::string> allowed_partition_list)
+        const std::shared_ptr<utils::SlotThreadPool>& thread_pool)
     : configuration_(configuration)
     , discovery_database_(discovery_database)
     , payload_pool_(payload_pool)
     , participants_database_(participants_database)
     , thread_pool_(thread_pool)
     , enabled_(false)
-    , allowed_partition_list_(allowed_partition_list)
 {
     logDebug(DDSPIPE, "Creating DDS Pipe.");
 
@@ -503,8 +501,7 @@ void DdsPipe::create_new_bridge_nts_(
                         thread_pool_,
                         routes_config,
                         configuration_.remove_unused_entities,
-                        manual_topics,
-                        enabled ? allowed_partition_list_ : std::set<std::string>());
+                        manual_topics);
 
         if (enabled)
         {

@@ -32,12 +32,10 @@ DdsBridge::DdsBridge(
         const std::shared_ptr<utils::SlotThreadPool>& thread_pool,
         const RoutesConfiguration& routes_config,
         const bool remove_unused_entities,
-        const std::vector<core::types::ManualTopic>& manual_topics,
-        const std::set<std::string> allowed_partition_list)
+        const std::vector<core::types::ManualTopic>& manual_topics)
     : Bridge(participants_database, payload_pool, thread_pool)
     , topic_(topic)
     , manual_topics_(manual_topics)
-    , allowed_partition_list_(allowed_partition_list)
 {
     logDebug(DDSPIPE_DDSBRIDGE, "Creating DdsBridge " << *this << ".");
 

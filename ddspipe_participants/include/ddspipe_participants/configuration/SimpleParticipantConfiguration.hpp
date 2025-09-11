@@ -53,7 +53,7 @@ public:
 
     std::set<participants::types::WhitelistType> whitelist {};
 
-    std::set<std::string> partitionlist {};
+    std::set<std::string> allowed_partition_list {};
 
     core::types::TransportDescriptors transport {core::types::TransportDescriptors::builtin};
 
