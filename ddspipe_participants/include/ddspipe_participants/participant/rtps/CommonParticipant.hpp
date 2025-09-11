@@ -151,12 +151,6 @@ public:
                 std::shared_ptr<ParticipantConfiguration> conf,
                 std::shared_ptr<core::DiscoveryDatabase> ddb);
 
-        DDSPIPE_PARTICIPANTS_DllAPI
-        explicit RtpsListener(
-                std::shared_ptr<ParticipantConfiguration> conf,
-                std::shared_ptr<core::DiscoveryDatabase> ddb,
-                CommonParticipant& parent_class);
-
         /**
          * @brief Override method from \c RTPSParticipantListener .
          *
@@ -192,6 +186,10 @@ public:
                 fastdds::rtps::WriterDiscoveryStatus reason,
                 const fastdds::rtps::PublicationBuiltinTopicData& info,
                 bool& /*should_be_ignored*/) override;
+
+        DDSPIPE_PARTICIPANTS_DllAPI
+        void add_parent_pointer(
+                CommonParticipant& parent);
 
     protected:
 
@@ -276,7 +274,7 @@ protected:
      * @return A unique pointer to an RTPS Participant Listener.
      */
     DDSPIPE_PARTICIPANTS_DllAPI
-    virtual std::unique_ptr<fastdds::rtps::RTPSParticipantListener> create_listener_(CommonParticipant& parent_class);
+    virtual std::unique_ptr<fastdds::rtps::RTPSParticipantListener> create_listener_();
 
     /////
     // VARIABLES

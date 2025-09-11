@@ -212,7 +212,7 @@ protected:
      * This method adds a pointer to the parent class
      */
     DDSPIPE_PARTICIPANTS_DllAPI
-    virtual std::unique_ptr<fastdds::dds::DomainParticipantListener> create_listener_(CommonParticipant& parent_class);
+    virtual std::unique_ptr<fastdds::dds::DomainParticipantListener> create_listener_();
 
     /////////////////////////
     // INTERNAL VIRTUAL METHODS

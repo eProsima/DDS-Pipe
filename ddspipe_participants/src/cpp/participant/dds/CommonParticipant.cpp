@@ -375,7 +375,7 @@ CommonParticipant::CommonParticipant(
     // Do nothing
 }
 
-std::unique_ptr<fastdds::dds::DomainParticipantListener> CommonParticipant::create_listener_(CommonParticipant& parent_class)
+std::unique_ptr<fastdds::dds::DomainParticipantListener> CommonParticipant::create_listener_()
 {
     EPROSIMA_LOG_INFO(DDSPIPE_DDS_PARTICIPANT, "Creating DDS Listener from CommonParticipant.");
     return std::make_unique<DdsListener>(configuration_, discovery_database_);
@@ -422,7 +422,7 @@ fastdds::dds::DomainParticipant* CommonParticipant::create_dds_participant_()
     mask << fastdds::dds::StatusMask::subscription_matched();
 
     // Create the participant listener
-    dds_participant_listener_ = create_listener_(*this);
+    dds_participant_listener_ = create_listener_();
     if (!dds_participant_listener_)
     {
         EPROSIMA_LOG_WARNING(DDSPIPE_DDS_PARTICIPANT, "Error creating DDS Participant Listener.");

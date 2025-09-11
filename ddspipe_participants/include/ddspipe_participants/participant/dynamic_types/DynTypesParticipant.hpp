@@ -82,13 +82,6 @@ public:
         explicit DynTypesRtpsListener(
                 std::shared_ptr<ParticipantConfiguration> conf,
                 std::shared_ptr<core::DiscoveryDatabase> ddb,
-                std::shared_ptr<InternalReader> internal_reader,
-                CommonParticipant& parent_class);
-
-        DDSPIPE_PARTICIPANTS_DllAPI
-        explicit DynTypesRtpsListener(
-                std::shared_ptr<ParticipantConfiguration> conf,
-                std::shared_ptr<core::DiscoveryDatabase> ddb,
                 std::shared_ptr<InternalReader> internal_reader);
 
         DDSPIPE_PARTICIPANTS_DllAPI
@@ -122,7 +115,7 @@ protected:
 
     //! Override method from \c CommonParticipant to create the internal RTPS participant listener
     DDSPIPE_PARTICIPANTS_DllAPI
-    std::unique_ptr<fastdds::rtps::RTPSParticipantListener> create_listener_(CommonParticipant& parent_class) override;
+    std::unique_ptr<fastdds::rtps::RTPSParticipantListener> create_listener_() override;
 
     //! Type Object Internal Reader
     std::shared_ptr<InternalReader> type_object_reader_;
