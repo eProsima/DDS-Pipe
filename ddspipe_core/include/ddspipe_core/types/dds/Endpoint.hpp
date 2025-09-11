@@ -60,7 +60,7 @@ struct Endpoint
 
     //! Partition of the topic
     DDSPIPE_CORE_DllAPI
-    std::map<std::string, std::map<std::string, std::string>> topic_partitions() const noexcept;
+    std::map<std::string, std::string> topic_partitions() const noexcept;
 
     //! Whether the endpoint is a writer
     DDSPIPE_CORE_DllAPI
@@ -92,7 +92,7 @@ struct Endpoint
     SpecificEndpointQoS specific_qos {};
 
     //! Specific Partitions of the endpoint
-    std::map<std::string, std::map<std::string, std::string>> specific_partitions;
+    std::map<std::string, std::string> specific_partitions;
 
     //! Whether the endpoint is currently active
     bool active {true};

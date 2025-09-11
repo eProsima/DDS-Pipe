@@ -83,7 +83,7 @@ core::types::Endpoint create_common_endpoint_from_info_(
     }
 
     // adds the topic into the map of <topic, <writer_guid, partitions set>>
-    endpoint.specific_partitions[std::string(info.topic_name)][guid_ss.str()] = partitions_set;
+    endpoint.specific_partitions[guid_ss.str()] = partitions_set;
 
     // Set Topic with ownership
     endpoint.topic.topic_qos.ownership_qos.set_value(info.ownership.kind);
