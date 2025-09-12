@@ -218,6 +218,14 @@ std::shared_ptr<core::IReader> CommonParticipant::create_reader(
     }
 }
 
+std::shared_ptr<core::IReader> CommonParticipant::create_reader_with_filter(
+        const core::ITopic& topic,
+        const std::string filter)
+{
+    // TODO. danip
+    return std::make_shared<BlankReader>();
+}
+
 CommonParticipant::DdsListener::DdsListener(
         std::shared_ptr<SimpleParticipantConfiguration> conf,
         std::shared_ptr<core::DiscoveryDatabase> ddb)

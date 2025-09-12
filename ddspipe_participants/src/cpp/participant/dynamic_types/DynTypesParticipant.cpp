@@ -76,6 +76,20 @@ std::shared_ptr<IReader> DynTypesParticipant::create_reader(
     return rtps::SimpleParticipant::create_reader(topic);
 }
 
+std::shared_ptr<IReader> DynTypesParticipant::create_reader_with_filter(
+        const ITopic& topic,
+        const std::string filter)
+{
+    // If type object topic, return the internal reader for type objects
+    if (core::types::is_type_object_topic(topic))
+    {
+        return type_object_reader_;
+    }
+
+    // If not type object, use the parent method
+    return rtps::SimpleParticipant::create_reader_with_filter(topic, filter);
+}
+
 DynTypesParticipant::DynTypesRtpsListener::DynTypesRtpsListener(
         std::shared_ptr<ParticipantConfiguration> conf,
         std::shared_ptr<core::DiscoveryDatabase> ddb,

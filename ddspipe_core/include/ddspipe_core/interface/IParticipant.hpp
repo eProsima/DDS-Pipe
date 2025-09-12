@@ -96,6 +96,11 @@ public:
     virtual std::shared_ptr<IReader> create_reader(
             const ITopic& topic) = 0;
 
+    DDSPIPE_CORE_DllAPI
+    virtual std::shared_ptr<IReader> create_reader_with_filter(
+            const ITopic& topic,
+            const std::string filter) = 0;
+
     /**
      * Add a Partition in the Participant.
      *

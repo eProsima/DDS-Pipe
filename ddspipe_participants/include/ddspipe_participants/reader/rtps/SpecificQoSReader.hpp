@@ -55,6 +55,28 @@ public:
             const std::shared_ptr<core::DiscoveryDatabase>& discovery_database,
             const std::set<std::string> blocked_filtered_guidlist);
 
+    /**
+     * @brief Construct a new SpecificQoSReader object with filter partitions
+     *
+     * Get the Attributes and TopicQoS and create the SpecificQoSReader History and the RTPS SpecificQoSReader.
+     *
+     * @param participant_id    Router Id of the Participant that has created this SpecificQoSReader.
+     * @param topic             Topic that this SpecificQoSReader subscribes to.
+     * @param payload_pool      Shared Payload Pool to received data and take it.
+     * @param rtps_participant  RTPS Participant pointer (this is not stored).
+     *
+     * @throw \c InitializationException in case any creation has failed
+     */
+    DDSPIPE_PARTICIPANTS_DllAPI
+    SpecificQoSReader(
+            const core::types::ParticipantId& participant_id,
+            const core::types::DdsTopic& topic,
+            const std::shared_ptr<core::PayloadPool>& payload_pool,
+            fastdds::rtps::RTPSParticipant* rtps_participant,
+            const std::shared_ptr<core::DiscoveryDatabase>& discovery_database,
+            const std::set<std::string> blocked_filtered_guidlist,
+            const std::string filter_partitions);
+
 protected:
 
     /**

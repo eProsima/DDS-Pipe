@@ -74,6 +74,11 @@ public:
     std::shared_ptr<core::IReader> create_reader(
             const core::ITopic& topic) override;
 
+    DDSPIPE_PARTICIPANTS_DllAPI
+    std::shared_ptr<core::IReader> create_reader_with_filter(
+            const core::ITopic& topic,
+            const std::string filter) override;
+
     class DynTypesRtpsListener : public rtps::CommonParticipant::RtpsListener
     {
     public:
