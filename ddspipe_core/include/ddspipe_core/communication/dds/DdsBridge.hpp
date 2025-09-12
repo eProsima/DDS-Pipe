@@ -110,6 +110,10 @@ public:
     void remove_writer(
             const types::ParticipantId& participant_id) noexcept;
 
+    DDSPIPE_CORE_DllAPI
+    void update_readers_track(
+                const std::string filter);
+
 protected:
 
     /**
@@ -121,6 +125,10 @@ protected:
      */
     DDSPIPE_CORE_DllAPI
     void create_all_tracks_();
+
+    DDSPIPE_CORE_DllAPI
+    void create_all_tracks_with_filter(
+        const std::string filter);
 
     /**
      * Add each Participant's IWriters to its Track.
@@ -149,6 +157,11 @@ protected:
     void add_writers_to_tracks_nts_(
             std::map<types::ParticipantId, std::shared_ptr<IWriter>>& writers);
 
+    DDSPIPE_CORE_DllAPI
+    void add_writers_to_tracks_nts_with_filter(
+            std::map<types::ParticipantId, std::shared_ptr<IWriter>>& writers,
+            const std::string filter);
+
     /**
      * @brief Impose the Topic QoS that have been pre-configured for a participant.
      *
@@ -170,6 +183,9 @@ protected:
 
     //! Topics that explicitally set a QoS attribute for this participant.
     std::vector<types::ManualTopic> manual_topics_;
+
+    //! Allowed topics list added in the filter.
+    //std::set<std::string> allowed_partition_list_; // TDOO. danip remove
 
     /**
      * Inside \c Tracks

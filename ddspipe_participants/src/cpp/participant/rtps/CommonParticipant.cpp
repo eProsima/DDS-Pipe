@@ -54,11 +54,13 @@ CommonParticipant::CommonParticipant(
         const std::shared_ptr<ParticipantConfiguration>& participant_configuration,
         const std::shared_ptr<core::PayloadPool>& payload_pool,
         const std::shared_ptr<core::DiscoveryDatabase>& discovery_database,
-        const core::types::DomainId& domain_id)
+        const core::types::DomainId& domain_id,
+        const std::set<std::string> allowed_partition_list)
     : configuration_(participant_configuration)
     , payload_pool_(payload_pool)
     , discovery_database_(discovery_database)
     , domain_id_(domain_id)
+    , allowed_partition_list_(allowed_partition_list)
 {
     // Do nothing
 }
@@ -85,9 +87,11 @@ CommonParticipant::RtpsListener::RtpsListener(
         std::shared_ptr<core::DiscoveryDatabase> ddb)
     : configuration_(conf)
     , discovery_database_(ddb)
+    , parent_class_(nullptr)
 {
     EPROSIMA_LOG_INFO(DDSPIPE_RTPS_PARTICIPANT, "Creating RTPS Listener for Participant " << conf->id << ".");
 }
+
 
 void CommonParticipant::RtpsListener::on_participant_discovery(
         fastdds::rtps::RTPSParticipant* participant,
@@ -171,6 +175,11 @@ void CommonParticipant::RtpsListener::on_reader_discovery(
     }
 }
 
+void CommonParticipant::RtpsListener::add_parent_pointer(CommonParticipant& parent)
+{
+    parent_class_= &parent;
+}
+
 void CommonParticipant::RtpsListener::on_writer_discovery(
         fastdds::rtps::RTPSParticipant* participant,
         fastdds::rtps::WriterDiscoveryStatus reason,
@@ -182,6 +191,74 @@ void CommonParticipant::RtpsListener::on_writer_discovery(
         core::types::Endpoint info_writer =
                 detail::create_endpoint_from_info_<fastdds::rtps::PublicationBuiltinTopicData>(
             info, configuration_->id);
+
+
+        // get the writer
+        std::ostringstream guid_ss;
+        std::string guid_str;
+
+        guid_ss << info.guid;
+        guid_str = guid_ss.str();
+
+        // get the partitions
+        std::string partition_names = info_writer.specific_partitions[guid_str];
+
+        bool pass_partition_filter = parent_class_->allowed_partition_list_.empty();
+
+        std::string curr_partition = "";
+        int i = 0, curr_partition_n = partition_names.size();
+        while(i < curr_partition_n)
+        {
+            // gets a partition from the string of partitions
+            while(i < curr_partition_n && partition_names[i]!='|')
+            {
+                curr_partition += partition_names[i++];
+            }
+
+            if(curr_partition == "*")
+            {
+                pass_partition_filter = true;
+                break;
+            }
+
+            // check if that partition is in the filter of partitions
+            for(std::string allowed_partition: parent_class_->allowed_partition_list_)
+            {
+                if (utils::match_pattern(allowed_partition, curr_partition))
+                {
+                    pass_partition_filter = true;
+                    break;
+                }
+            }
+
+            curr_partition = "";
+            i++;
+        }
+
+        // check if the writer has the empty partition
+        if(partition_names == "")
+        {
+            // check if the empty partition is in the allowed partitions
+            for(std::string allowed_partition: parent_class_->allowed_partition_list_)
+            {
+                if (utils::match_pattern(allowed_partition, ""))
+                {
+                    // the empty partition is allowed
+                    pass_partition_filter = true;
+                    break;
+                }
+            }
+        }
+
+        if(!pass_partition_filter)
+        {
+            discovery_database_->add_filtered_endpoint(info.guid);
+            parent_class_->filtered_guidlist.insert(guid_str);
+            return;
+        }
+
+        // adds in the participant, the topic name, writer_guid and partitions set
+        parent_class_->add_topic_partition(info_writer.topic.m_topic_name, guid_str, partition_names);
 
         if (reason == fastdds::rtps::WriterDiscoveryStatus::DISCOVERED_WRITER)
         {
@@ -326,6 +403,11 @@ core::types::TopicQoS CommonParticipant::topic_qos() const noexcept
     return configuration_->topic_qos;
 }
 
+std::map<std::string, std::map<std::string, std::string>> CommonParticipant::topic_partitions() const noexcept
+{
+    return partition_names;
+}
+
 void CommonParticipant::create_participant_(
         const core::types::DomainId& domain,
         const fastdds::rtps::RTPSParticipantAttributes& participant_attributes)
@@ -338,9 +420,20 @@ void CommonParticipant::create_participant_(
 
     // Create the RTPS Participant Listener
     rtps_participant_listener_ = create_listener_();
+
     if (!rtps_participant_listener_)
     {
         EPROSIMA_LOG_WARNING(DDSPIPE_RTPS_PARTICIPANT, "Error creating RTPS Participant Listener.");
+    }
+
+    auto listener = dynamic_cast<CommonParticipant::RtpsListener*>(rtps_participant_listener_.get());
+    if (listener)
+    {
+        listener->add_parent_pointer(*this);
+    }
+    else
+    {
+        EPROSIMA_LOG_WARNING(DDSPIPE_RTPS_PARTICIPANT, "Error adding parent class of RTPS Participant Listener.");
     }
 
     // Listener must be set in creation as no callbacks should be missed
@@ -391,7 +484,9 @@ std::shared_ptr<core::IWriter> CommonParticipant::create_writer(
     }
     else if (topic.internal_type_discriminator() == core::types::INTERNAL_TOPIC_TYPE_RTPS)
     {
-        if (dds_topic.topic_qos.has_partitions() || dds_topic.topic_qos.has_ownership())
+        if (dds_topic.partition_name.size() > 0 ||
+            dds_topic.topic_qos.has_partitions() ||
+            dds_topic.topic_qos.has_ownership())
         {
             // Notice that MultiWriter does not require an init call
             return std::make_shared<MultiWriter>(
@@ -458,7 +553,72 @@ std::shared_ptr<core::IReader> CommonParticipant::create_reader(
                 dds_topic,
                 this->payload_pool_,
                 rtps_participant_,
-                discovery_database_);
+                discovery_database_,
+                filtered_guidlist); // add filter guid list
+            reader->init();
+
+            return reader;
+        }
+        else
+        {
+            auto reader = std::make_shared<SimpleReader>(
+                this->id(),
+                dds_topic,
+                this->payload_pool_,
+                rtps_participant_);
+            reader->init();
+
+            return reader;
+        }
+    }
+    else
+    {
+        logDevError(DDSPIPE_RTPS_PARTICIPANT, "Incorrect dds Topic in Reader creation.");
+        return std::make_shared<BlankReader>();
+    }
+}
+
+std::shared_ptr<core::IReader> CommonParticipant::create_reader_with_filter(
+        const core::ITopic& topic,
+        const std::string filter)
+{
+    // Can only create DDS Topics
+    const core::types::DdsTopic* dds_topic_ptr = dynamic_cast<const core::types::DdsTopic*>(&topic);
+
+    if (!dds_topic_ptr)
+    {
+        logDebug(DDSPIPE_RTPS_PARTICIPANT, "Not creating Reader for topic " << topic.topic_name());
+        return std::make_shared<BlankReader>();
+    }
+
+    const core::types::DdsTopic& dds_topic = *dds_topic_ptr;
+
+    if (topic.internal_type_discriminator() == core::types::INTERNAL_TOPIC_TYPE_RPC)
+    {
+        logDebug(DDSPIPE_RTPS_PARTICIPANT,
+                "Creating RPC Reader for topic " << topic.topic_name());
+
+        auto reader = std::make_shared<rpc::SimpleReader>(
+            this->id(),
+            dds_topic,
+            this->payload_pool_,
+            rtps_participant_);
+        reader->init();
+
+        return reader;
+    }
+    else if (topic.internal_type_discriminator() == core::types::INTERNAL_TOPIC_TYPE_RTPS)
+    {
+        if (dds_topic.topic_qos.has_partitions() || dds_topic.topic_qos.has_ownership())
+        {
+            auto reader = std::make_shared<SpecificQoSReader>(
+                this->id(),
+                dds_topic,
+                this->payload_pool_,
+                rtps_participant_,
+                discovery_database_,
+                filtered_guidlist,  // add filter guid list
+                filter);            // partition filter
             reader->init();
 
             return reader;
@@ -518,6 +678,57 @@ CommonParticipant::create_listener_()
 {
     EPROSIMA_LOG_INFO(DDSPIPE_RTPS_PARTICIPANT, "Creating RTPS Listener from CommonParticipant.");
     return std::make_unique<RtpsListener>(configuration_, discovery_database_);
+}
+
+bool CommonParticipant::add_topic_partition(
+        const std::string& topic_name, const std::string& writer_name,
+        const std::string& partition)
+{
+    if(partition_names.find(topic_name) != partition_names.end())
+    {
+        // the topic exists
+        if(partition_names[topic_name].find(writer_name) != partition_names[topic_name].end())
+        {
+            // the writer is already added in the topic
+            return false;
+        }
+    }
+    else
+    {
+        // there is no topic in the dictionary
+        partition_names[topic_name] = std::map<std::string, std::string>();
+    }
+
+    // adds [writer, partition] in the topic
+    partition_names[topic_name][writer_name] = partition;
+
+    return true;
+}
+
+bool CommonParticipant::delete_topic_partition(
+        const std::string& topic_name, const std::string& writer_name,
+        const std::string& partition)
+{
+    if(partition_names.find(topic_name) == partition_names.end())
+    {
+        // the topic dont exists
+        return false;
+    }
+    if(partition_names[topic_name].find(writer_name) != partition_names[topic_name].end())
+    {
+        // the writer dont exist in the topic
+        return false;
+    }
+
+    // delete [writer, partition] in the topic
+    partition_names.erase(writer_name);
+
+    return true;
+}
+
+void CommonParticipant::clear_topic_partitions()
+{
+    partition_names.clear();
 }
 
 } /* namespace rtps */

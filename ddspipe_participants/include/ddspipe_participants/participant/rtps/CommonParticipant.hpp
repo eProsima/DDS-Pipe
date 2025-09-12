@@ -100,6 +100,10 @@ public:
     DDSPIPE_PARTICIPANTS_DllAPI
     core::types::TopicQoS topic_qos() const noexcept override;
 
+    //! Override topic_partitions() IParticipant method
+    DDSPIPE_PARTICIPANTS_DllAPI
+    std::map<std::string, std::map<std::string, std::string>> topic_partitions() const noexcept override;
+
     /**
      * @brief Create a writer object
      *
@@ -117,6 +121,27 @@ public:
     DDSPIPE_PARTICIPANTS_DllAPI
     std::shared_ptr<core::IReader> create_reader(
             const core::ITopic& topic) override;
+
+    DDSPIPE_PARTICIPANTS_DllAPI
+    std::shared_ptr<core::IReader> create_reader_with_filter(
+            const core::ITopic& topic,
+            const std::string filter) override;
+
+    //! Override add_topic_partition() IParticipant method
+    DDSPIPE_PARTICIPANTS_DllAPI
+    bool add_topic_partition(
+            const std::string& topic_name, const std::string& writer_name,
+            const std::string& partition) override;
+
+    //! Override delete_topic_partition() IParticipant method
+    DDSPIPE_PARTICIPANTS_DllAPI
+    bool delete_topic_partition(
+            const std::string& topic_name, const std::string& writer_name,
+            const std::string& partition) override;
+
+    //! Override clear_topic_partitions() IParticipant method
+    DDSPIPE_PARTICIPANTS_DllAPI
+    void clear_topic_partitions() override;
 
     /////////////////////////
     // RTPS LISTENER METHODS
@@ -167,13 +192,18 @@ public:
                 const fastdds::rtps::PublicationBuiltinTopicData& info,
                 bool& /*should_be_ignored*/) override;
 
+        DDSPIPE_PARTICIPANTS_DllAPI
+        void add_parent_pointer(
+                CommonParticipant& parent);
+
     protected:
 
         //! Shared pointer to the configuration of the participant
         const std::shared_ptr<ParticipantConfiguration> configuration_;
         //! Shared pointer to the discovery database
         const std::shared_ptr<core::DiscoveryDatabase> discovery_database_;
-
+        //! Pointer to the parent class of the participant
+        CommonParticipant* parent_class_{nullptr};
     };
 
     //! Unique pointer to the internal RTPS Participant Listener
@@ -214,7 +244,8 @@ protected:
             const std::shared_ptr<ParticipantConfiguration>& participant_configuration,
             const std::shared_ptr<core::PayloadPool>& payload_pool,
             const std::shared_ptr<core::DiscoveryDatabase>& discovery_database,
-            const core::types::DomainId& domain_id);
+            const core::types::DomainId& domain_id,
+            const std::set<std::string> allowed_partition_list);
 
     /**
      * @brief Auxiliary method to create the internal RTPS participant.
@@ -270,6 +301,13 @@ protected:
 
     //! Participant attributes to create the internal RTPS Participant.
     fastdds::rtps::RTPSParticipantAttributes participant_attributes_;
+
+    //! <Topics <Writer_guid, Partitions set>>
+    std::map<std::string, std::map<std::string, std::string>> partition_names;
+
+    std::set<std::string> allowed_partition_list_;
+
+    std::set<std::string> filtered_guidlist;
 };
 
 } /* namespace rtps */

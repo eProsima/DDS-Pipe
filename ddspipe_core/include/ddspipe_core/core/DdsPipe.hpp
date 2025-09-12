@@ -126,6 +126,12 @@ public:
     DDSPIPE_CORE_DllAPI
     utils::ReturnCode disable() noexcept;
 
+    DDSPIPE_CORE_DllAPI
+    void update_readers_track(
+        //utils::Heritable<types::DistributedTopic> topic,
+        const std::string topic_name,
+        const std::string filter);
+
 protected:
 
     /////////////////////////
@@ -385,6 +391,9 @@ protected:
 
     //! Thread Pool for tracks
     std::shared_ptr<utils::SlotThreadPool> thread_pool_;
+
+    //! Allowed partitions added in the filter
+    std::set<std::string> allowed_partition_list_;
 
     /////////////////////////
     // INTERNAL DATA STORAGE
