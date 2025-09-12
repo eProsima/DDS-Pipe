@@ -65,6 +65,13 @@ std::shared_ptr<core::IReader> BlankParticipant::create_reader(
     return std::make_shared<BlankReader>();
 }
 
+std::shared_ptr<core::IReader> BlankParticipant::create_reader_with_filter(
+        const core::ITopic& topic,
+        const std::string filter)
+{
+    return std::make_shared<BlankReader>();
+}
+
 bool BlankParticipant::add_topic_partition(
         const std::string& topic_name, const std::string& writer_name,
         const std::string& partition)

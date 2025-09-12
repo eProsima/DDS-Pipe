@@ -162,6 +162,12 @@ void Track::remove_writer(
     writers_.erase(id);
 }
 
+void Track::update_reader()
+{
+    //reader_ = std::move(reader);
+    reader_->disable();
+}
+
 bool Track::has_writer(
         const ParticipantId& id) noexcept
 {

@@ -432,6 +432,66 @@ fastdds::dds::ReaderQos CommonReader::reckon_reader_qos_(
     return properties;
 }
 
+fastdds::dds::ReaderQos CommonReader::filter_reader_qos_(
+        const core::types::DdsTopic& topic,
+        const std::string filter) noexcept
+{
+    fastdds::dds::ReaderQos properties;
+
+    // Set Durability
+    properties.m_durability.kind =
+            (topic.topic_qos.is_transient_local()
+            ? eprosima::fastdds::dds::DurabilityQosPolicyKind_t::TRANSIENT_LOCAL_DURABILITY_QOS
+            : eprosima::fastdds::dds::DurabilityQosPolicyKind_t::VOLATILE_DURABILITY_QOS);
+
+    // Set Reliability
+    properties.m_reliability.kind =
+            (topic.topic_qos.is_reliable()
+            ? eprosima::fastdds::dds::ReliabilityQosPolicyKind::RELIABLE_RELIABILITY_QOS
+            : eprosima::fastdds::dds::ReliabilityQosPolicyKind::BEST_EFFORT_RELIABILITY_QOS);
+
+    // Add the filter partitions
+    /*
+    filter e.g.:
+        - "A|B|C"       // A, B and C
+        - "A|*"         // A and wildcard
+        - "*"           // wildcard
+        - "|A" == "A|"  // empty and A
+        - ""            // empty
+    */
+
+    // TODO. danip add filter
+    int i = 0, n = filter.size();
+    std::string curr_partition = "";
+    while(i < n)
+    {
+        if(filter[i] == '|')
+        {
+            if(curr_partition == filter)
+            {
+                properties.m_partition.push_back(curr_partition.c_str());
+            }
+            
+            curr_partition = "";
+        }
+        else
+        {
+            curr_partition += filter[i];
+        }
+        i++;
+    }
+    // only empty or the last partition in the filter
+    if(curr_partition == filter)
+    {
+        properties.m_partition.push_back(curr_partition.c_str());
+    }
+
+    // If topic is with ownership
+    properties.m_ownership.kind = topic.topic_qos.ownership_qos;
+
+    return properties;
+}
+
 void CommonReader::on_new_cache_change_added(
         fastdds::rtps::RTPSReader* reader,
         const fastdds::rtps::CacheChange_t* const change) noexcept

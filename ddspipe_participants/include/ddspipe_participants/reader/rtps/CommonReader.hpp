@@ -278,6 +278,11 @@ protected:
     static fastdds::dds::ReaderQos reckon_reader_qos_(
             const core::types::DdsTopic& topic) noexcept;
 
+    //! Reader QoS to create RTPS Reader
+    static fastdds::dds::ReaderQos filter_reader_qos_(
+            const core::types::DdsTopic& topic,
+            const std::string filter) noexcept;
+
     /////
     // CommonReader specific methods
 

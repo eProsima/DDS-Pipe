@@ -590,6 +590,25 @@ void DdsPipe::deactivate_all_topics_nts_() noexcept
     }
 }
 
+void DdsPipe::update_readers_track(
+        //utils::Heritable<types::DistributedTopic> topic,
+        const std::string topic_name,
+        const std::string filter)
+{
+    //const auto bridge_it = bridges_.find(topic);
+    for(const auto& pair: bridges_)
+    {
+        
+        if(pair.first->m_topic_name == topic_name)
+        {
+            std::cout << "DdsPipe-\n";
+            pair.second->update_readers_track(filter);
+        }
+    }
+    //if()
+    //bridges_[topic].update_readers_track(filter);
+}
+
 } /* namespace core */
 } /* namespace ddspipe */
 } /* namespace eprosima */

@@ -578,6 +578,70 @@ std::shared_ptr<core::IReader> CommonParticipant::create_reader(
     }
 }
 
+std::shared_ptr<core::IReader> CommonParticipant::create_reader_with_filter(
+        const core::ITopic& topic,
+        const std::string filter)
+{
+    // Can only create DDS Topics
+    const core::types::DdsTopic* dds_topic_ptr = dynamic_cast<const core::types::DdsTopic*>(&topic);
+
+    if (!dds_topic_ptr)
+    {
+        logDebug(DDSPIPE_RTPS_PARTICIPANT, "Not creating Reader for topic " << topic.topic_name());
+        return std::make_shared<BlankReader>();
+    }
+
+    const core::types::DdsTopic& dds_topic = *dds_topic_ptr;
+
+    if (topic.internal_type_discriminator() == core::types::INTERNAL_TOPIC_TYPE_RPC)
+    {
+        logDebug(DDSPIPE_RTPS_PARTICIPANT,
+                "Creating RPC Reader for topic " << topic.topic_name());
+
+        auto reader = std::make_shared<rpc::SimpleReader>(
+            this->id(),
+            dds_topic,
+            this->payload_pool_,
+            rtps_participant_);
+        reader->init();
+
+        return reader;
+    }
+    else if (topic.internal_type_discriminator() == core::types::INTERNAL_TOPIC_TYPE_RTPS)
+    {
+        if (dds_topic.topic_qos.has_partitions() || dds_topic.topic_qos.has_ownership())
+        {
+            auto reader = std::make_shared<SpecificQoSReader>(
+                this->id(),
+                dds_topic,
+                this->payload_pool_,
+                rtps_participant_,
+                discovery_database_,
+                filtered_guidlist,  // add filter guid list
+                filter);            // partition filter
+            reader->init();
+
+            return reader;
+        }
+        else
+        {
+            auto reader = std::make_shared<SimpleReader>(
+                this->id(),
+                dds_topic,
+                this->payload_pool_,
+                rtps_participant_);
+            reader->init();
+
+            return reader;
+        }
+    }
+    else
+    {
+        logDevError(DDSPIPE_RTPS_PARTICIPANT, "Incorrect dds Topic in Reader creation.");
+        return std::make_shared<BlankReader>();
+    }
+}
+
 fastdds::rtps::RTPSParticipantAttributes
 CommonParticipant::reckon_participant_attributes_() const
 {
