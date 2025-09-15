@@ -434,7 +434,7 @@ fastdds::dds::ReaderQos CommonReader::reckon_reader_qos_(
 
 fastdds::dds::ReaderQos CommonReader::filter_reader_qos_(
         const core::types::DdsTopic& topic,
-        const std::string filter) noexcept
+        const std::set<std::string> partitions) noexcept
 {
     fastdds::dds::ReaderQos properties;
 
@@ -461,29 +461,41 @@ fastdds::dds::ReaderQos CommonReader::filter_reader_qos_(
     */
 
     // TODO. danip add filter
-    int i = 0, n = filter.size();
+    /*int i, n;
     std::string curr_partition = "";
-    while(i < n)
+    for(const auto& pair: topic.partition_name)
     {
-        if(filter[i] == '|')
+        i = 0;
+        n = pair.second.size();
+
+        while(i < n)
         {
-            if(curr_partition == filter)
+            if(pair.second[i] == '|')
             {
-                properties.m_partition.push_back(curr_partition.c_str());
+                if(curr_partition == filter)
+                {
+                    properties.m_partition.push_back(curr_partition.c_str());
+                }
+                
+                curr_partition = "";
             }
-            
-            curr_partition = "";
+            else
+            {
+                curr_partition += pair.second[i];
+            }
+            i++;
         }
-        else
-        {
-            curr_partition += filter[i];
-        }
-        i++;
     }
+    
     // only empty or the last partition in the filter
     if(curr_partition == filter)
     {
         properties.m_partition.push_back(curr_partition.c_str());
+    }*/
+
+    for(std::string p: partitions)
+    {
+        properties.m_partition.push_back(p.c_str());
     }
 
     // If topic is with ownership

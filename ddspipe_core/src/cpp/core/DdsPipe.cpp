@@ -292,7 +292,30 @@ void DdsPipe::discovered_endpoint_nts_(
     }
     else if (is_endpoint_relevant_(endpoint))
     {
-        discovered_topic_nts_(utils::Heritable<DdsTopic>::make_heritable(endpoint.topic));
+        // add the partitions of the endpoint in the discovered topic
+        //endpoint.topic.partition_name = endpoint.specific_partitions;
+        core::Endpoint endpoint_2 = endpoint;
+        endpoint_2.topic.partition_name = endpoint.specific_partitions;
+
+        discovered_topic_nts_(utils::Heritable<DdsTopic>::make_heritable(endpoint_2.topic));
+    }
+    //else if(!filter_partition_.empty())
+    else
+    {
+        // there is a filter.
+        // update the track of the topic to
+        // add the partition in the reader if it is in the filter
+
+        const auto bridge_it = bridges_.find(utils::Heritable<DdsTopic>::make_heritable(endpoint.topic));
+        std::ostringstream guid_ss;
+        guid_ss << endpoint.guid;
+        //bridge_it->second->topic_->partition_name[guid_ss.str()]="";
+        bridge_it->second->add_partition_to_topic(guid_ss.str(), endpoint.specific_partitions.find(guid_ss.str())->second);
+
+        if(!filter_partition_.empty())
+        {
+            update_readers_track(endpoint.topic.m_topic_name, filter_partition_);
+        }
     }
 }
 
@@ -494,14 +517,32 @@ void DdsPipe::create_new_bridge_nts_(
         auto routes_config = configuration_.get_routes_config(topic);
         auto manual_topics = configuration_.get_manual_topics(dynamic_cast<const core::ITopic&>(*topic));
 
-        // Create bridge instance
-        auto new_bridge = std::make_unique<DdsBridge>(topic,
-                        participants_database_,
-                        payload_pool_,
-                        thread_pool_,
-                        routes_config,
-                        configuration_.remove_unused_entities,
-                        manual_topics);
+        std::unique_ptr<DdsBridge> new_bridge;
+        if(filter_partition_.empty())
+        {
+            // Create bridge instance
+            new_bridge = std::make_unique<DdsBridge>(topic,
+                            participants_database_,
+                            payload_pool_,
+                            thread_pool_,
+                            routes_config,
+                            configuration_.remove_unused_entities,
+                            manual_topics);
+        }
+        else
+        {
+            // Create bridge instance
+            new_bridge = std::make_unique<DdsBridge>(topic,
+                            participants_database_,
+                            payload_pool_,
+                            thread_pool_,
+                            routes_config,
+                            configuration_.remove_unused_entities,
+                            manual_topics,
+                            filter_partition_);
+        }
+
+        
 
         if (enabled)
         {
@@ -590,23 +631,31 @@ void DdsPipe::deactivate_all_topics_nts_() noexcept
     }
 }
 
-void DdsPipe::update_readers_track(
+bool DdsPipe::update_readers_track(
         //utils::Heritable<types::DistributedTopic> topic,
         const std::string topic_name,
-        const std::string filter)
+        const std::set<std::string> filter_partition_set)
 {
+    bool ret = true;
     //const auto bridge_it = bridges_.find(topic);
     for(const auto& pair: bridges_)
     {
         
         if(pair.first->m_topic_name == topic_name)
         {
-            std::cout << "DdsPipe-\n";
-            pair.second->update_readers_track(filter);
+            ret = pair.second->update_readers_track(filter_partition_set);
         }
     }
     //if()
     //bridges_[topic].update_readers_track(filter);
+
+    return ret;
+}
+
+void DdsPipe::update_filter(
+    const std::set<std::string> filter_partition_set)
+{
+    filter_partition_ = filter_partition_set;
 }
 
 } /* namespace core */

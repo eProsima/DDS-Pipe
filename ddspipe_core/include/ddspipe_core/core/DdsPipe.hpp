@@ -127,10 +127,14 @@ public:
     utils::ReturnCode disable() noexcept;
 
     DDSPIPE_CORE_DllAPI
-    void update_readers_track(
+    bool update_readers_track(
         //utils::Heritable<types::DistributedTopic> topic,
         const std::string topic_name,
-        const std::string filter);
+        const std::set<std::string> filter_partition_set);
+
+    DDSPIPE_CORE_DllAPI
+    void update_filter(
+        const std::set<std::string> filter_partition_set);
 
 protected:
 
@@ -427,6 +431,8 @@ protected:
 
     //! Whether the DdsPipe is currently communicating data or not
     bool enabled_;
+
+    std::set<std::string> filter_partition_;
 
     /**
      * @brief Internal mutex for concurrent calls
