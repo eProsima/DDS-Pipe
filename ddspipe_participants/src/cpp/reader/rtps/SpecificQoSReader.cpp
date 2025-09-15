@@ -52,13 +52,13 @@ SpecificQoSReader::SpecificQoSReader(
         fastdds::rtps::RTPSParticipant* rtps_participant,
         const std::shared_ptr<core::DiscoveryDatabase>& discovery_database,
         const std::set<std::string> blocked_filtered_guidlist,
-        const std::string filter_partitions)
+        const std::set<std::string> partitions)
     : CommonReader(
         participant_id, topic, payload_pool, rtps_participant,
         reckon_history_attributes_(topic),
         reckon_reader_attributes_(topic),
         reckon_topic_description_(topic),
-        filter_reader_qos_(topic, filter_partitions),
+        filter_reader_qos_(topic, partitions),
         blocked_filtered_guidlist)
     , discovery_database_(discovery_database)
 {

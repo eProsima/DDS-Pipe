@@ -142,6 +142,73 @@ void CommonParticipant::RtpsListener::on_reader_discovery(
                 detail::create_endpoint_from_info_<fastdds::rtps::SubscriptionBuiltinTopicData>(
             info, configuration_->id);
 
+        // get the writer
+        std::ostringstream guid_ss;
+        std::string guid_str;
+
+        guid_ss << info.guid;
+        guid_str = guid_ss.str();
+
+        // get the partitions
+        std::string partition_names = info_reader.specific_partitions[guid_str];
+
+        bool pass_partition_filter = parent_class_->allowed_partition_list_.empty();
+
+        std::string curr_partition = "";
+        int i = 0, curr_partition_n = partition_names.size();
+        while(i < curr_partition_n)
+        {
+            // gets a partition from the string of partitions
+            while(i < curr_partition_n && partition_names[i]!='|')
+            {
+                curr_partition += partition_names[i++];
+            }
+
+            if(curr_partition == "*")
+            {
+                pass_partition_filter = true;
+                break;
+            }
+
+            // check if that partition is in the filter of partitions
+            for(std::string allowed_partition: parent_class_->allowed_partition_list_)
+            {
+                if (utils::match_pattern(allowed_partition, curr_partition))
+                {
+                    pass_partition_filter = true;
+                    break;
+                }
+            }
+
+            curr_partition = "";
+            i++;
+        }
+
+        // check if the writer has the empty partition
+        if(partition_names == "")
+        {
+            // check if the empty partition is in the allowed partitions
+            for(std::string allowed_partition: parent_class_->allowed_partition_list_)
+            {
+                if (utils::match_pattern(allowed_partition, ""))
+                {
+                    // the empty partition is allowed
+                    pass_partition_filter = true;
+                    break;
+                }
+            }
+        }
+
+        if(!pass_partition_filter)
+        {
+            discovery_database_->add_filtered_endpoint(info.guid);
+            parent_class_->filtered_guidlist.insert(guid_str);
+            return;
+        }
+
+        // adds in the participant, the topic name, writer_guid and partitions set
+        parent_class_->add_topic_partition(info_reader.topic.m_topic_name, guid_str, partition_names);
+
         if (reason == fastdds::rtps::ReaderDiscoveryStatus::DISCOVERED_READER)
         {
             EPROSIMA_LOG_INFO(DDSPIPE_DISCOVERY,
@@ -580,7 +647,7 @@ std::shared_ptr<core::IReader> CommonParticipant::create_reader(
 
 std::shared_ptr<core::IReader> CommonParticipant::create_reader_with_filter(
         const core::ITopic& topic,
-        const std::string filter)
+        const std::set<std::string> partitions)
 {
     // Can only create DDS Topics
     const core::types::DdsTopic* dds_topic_ptr = dynamic_cast<const core::types::DdsTopic*>(&topic);
@@ -609,31 +676,17 @@ std::shared_ptr<core::IReader> CommonParticipant::create_reader_with_filter(
     }
     else if (topic.internal_type_discriminator() == core::types::INTERNAL_TOPIC_TYPE_RTPS)
     {
-        if (dds_topic.topic_qos.has_partitions() || dds_topic.topic_qos.has_ownership())
-        {
-            auto reader = std::make_shared<SpecificQoSReader>(
-                this->id(),
-                dds_topic,
-                this->payload_pool_,
-                rtps_participant_,
-                discovery_database_,
-                filtered_guidlist,  // add filter guid list
-                filter);            // partition filter
-            reader->init();
+        auto reader = std::make_shared<SpecificQoSReader>(
+            this->id(),
+            dds_topic,
+            this->payload_pool_,
+            rtps_participant_,
+            discovery_database_,
+            filtered_guidlist,  // add filter guid list
+            partitions);            // partition filter
+        reader->init();
 
-            return reader;
-        }
-        else
-        {
-            auto reader = std::make_shared<SimpleReader>(
-                this->id(),
-                dds_topic,
-                this->payload_pool_,
-                rtps_participant_);
-            reader->init();
-
-            return reader;
-        }
+        return reader;
     }
     else
     {

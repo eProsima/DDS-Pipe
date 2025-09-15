@@ -53,6 +53,36 @@ DdsBridge::DdsBridge(
     logDebug(DDSPIPE_DDSBRIDGE, "DdsBridge " << *this << " created.");
 }
 
+DdsBridge::DdsBridge(
+        const utils::Heritable<DistributedTopic>& topic,
+        const std::shared_ptr<ParticipantsDatabase>& participants_database,
+        const std::shared_ptr<PayloadPool>& payload_pool,
+        const std::shared_ptr<utils::SlotThreadPool>& thread_pool,
+        const RoutesConfiguration& routes_config,
+        const bool remove_unused_entities,
+        const std::vector<core::types::ManualTopic>& manual_topics,
+        const std::set<std::string> filter_partition)
+    : Bridge(participants_database, payload_pool, thread_pool)
+    , topic_(topic)
+    , manual_topics_(manual_topics)
+    , filter_partition_(filter_partition)
+{
+    logDebug(DDSPIPE_DDSBRIDGE, "Creating DdsBridge " << *this << ".");
+
+    routes_ = routes_config();
+
+    if (remove_unused_entities && topic->topic_discoverer() != DEFAULT_PARTICIPANT_ID)
+    {
+        create_writer(topic->topic_discoverer());
+    }
+    else
+    {
+        create_all_tracks_with_filter(filter_partition_);
+    }
+
+    logDebug(DDSPIPE_DDSBRIDGE, "DdsBridge " << *this << " created.");
+}
+
 DdsBridge::~DdsBridge()
 {
     logDebug(DDSPIPE_DDSBRIDGE, "Destroying DdsBridge " << *this << ".");
@@ -164,7 +194,8 @@ void DdsBridge::create_all_tracks_()
     add_writers_to_tracks_nts_(writers);
 }
 
-void DdsBridge::create_all_tracks_with_filter(const std::string filter)
+bool DdsBridge::create_all_tracks_with_filter(
+    const std::set<std::string> filter_partition_set)
 {
     std::lock_guard<std::mutex> lock(mutex_);
 
@@ -226,7 +257,7 @@ void DdsBridge::create_all_tracks_with_filter(const std::string filter)
     }
 
     // Add the writers to the tracks they have routes for.
-    add_writers_to_tracks_nts_with_filter(writers, filter);
+    return add_writers_to_tracks_nts_with_filter(writers, filter_partition_set);
 }
 
 void DdsBridge::create_writer(
@@ -245,8 +276,8 @@ void DdsBridge::create_writer(
     add_writer_to_tracks_nts_(participant_id, writer);
 }
 
-void DdsBridge::update_readers_track(
-        const std::string filter)
+bool DdsBridge::update_readers_track(
+        const std::set<std::string> filter_partition_set)
 {
     /*
     //tracks_
@@ -256,7 +287,7 @@ void DdsBridge::update_readers_track(
         pair.second->update_reader();
     }*/
 
-    create_all_tracks_with_filter(filter);
+    return create_all_tracks_with_filter(filter_partition_set);
 }
 
 void DdsBridge::remove_writer(
@@ -376,10 +407,12 @@ void DdsBridge::add_writers_to_tracks_nts_(
     }
 }
 
-void DdsBridge::add_writers_to_tracks_nts_with_filter(
+bool DdsBridge::add_writers_to_tracks_nts_with_filter(
         std::map<ParticipantId, std::shared_ptr<IWriter>>& writers,
-        const std::string filter)
+        const std::set<std::string> filter_partition_set)
 {
+    bool ret = true;
+
     // Add writers to the tracks of the readers in their route.
     // If the readers in their route don't exist, create them with their tracks.
     for (const ParticipantId& id : participants_->get_participants_ids())
@@ -420,43 +453,109 @@ void DdsBridge::add_writers_to_tracks_nts_with_filter(
             continue;
         }
 
-        // The track doesn't exist. Create it.
-        /*std::shared_ptr<IParticipant> participant = participants_->get_participant(id);
-        const auto topic = create_topic_for_participant_nts_(participant);
-        auto reader = participant->create_reader(*topic);
+        bool tmp;
 
-        tracks_[id] = std::make_unique<Track>(
-            topic_,
-            id,
-            std::move(reader),
-            std::move(writers_of_track),
-            payload_pool_,
-            thread_pool_);
-
-        if (enabled_)
-        {
-            tracks_[id]->enable();
-        }*/
-        
-        // The track doesn't exist. Create it.
+        // Update the track.
         std::shared_ptr<IParticipant> participant = participants_->get_participant(id);
         const auto topic = create_topic_for_participant_nts_(participant);
-        auto reader = participant->create_reader_with_filter(*topic, filter);
-        //auto reader = participant->create_reader(*topic); // TODO. danip change to get in the
 
-        tracks_[id] = std::make_unique<Track>(
-            topic_,
-            id,
-            std::move(reader),
-            std::move(writers_of_track),
-            payload_pool_,
-            thread_pool_);
+        //std::set<std::string> filter_partition_set;
+        std::set<std::string> topic_partition_set;
+        // check filter of the topic
+        int i, n;
+        std::string curr_partition;
+        for(const auto& pair: topic->partition_name)
+        {
+            i = 0;
+            n = pair.second.size();
+            curr_partition = "";
 
-        //if (enabled_)
-        //{
-        tracks_[id]->enable();
-        //}
+            while(i < n)
+            {
+                if(pair.second[i] == '|')
+                {
+                    for(const std::string filter_p: filter_partition_set)
+                    {
+                        if(utils::match_pattern(filter_p, curr_partition))
+                        {
+                            topic_partition_set.insert(curr_partition);
+                        }
+                    }
+
+                    curr_partition = "";
+                }
+                else
+                {
+                    curr_partition += pair.second[i];
+                }
+                i++;
+            }
+
+            // empty or last partition
+            for(const std::string filter_p: filter_partition_set)
+            {
+                if(utils::match_pattern(filter_p, curr_partition))
+                {
+                    topic_partition_set.insert(curr_partition);
+                }
+            }
+        }
+
+        // empty
+        /*for(const std::string filter_p: filter_partition_set)
+        {
+            if(utils::match_pattern(filter_p, curr_partition))
+            {
+                topic_partition_set.insert(curr_partition);
+            }
+        }*/
+
+        if(filter_partition_set.empty())
+        {
+            auto reader = participant->create_reader(*topic);
+
+            tracks_[id] = std::make_unique<Track>(
+                topic_,
+                id,
+                std::move(reader),
+                std::move(writers_of_track),
+                payload_pool_,
+                thread_pool_);
+
+            tracks_[id]->enable();
+
+            ret = true;
+        }
+        else
+        {
+            auto reader = participant->create_reader_with_filter(*topic, topic_partition_set);
+
+            if(!topic_partition_set.empty())
+            {
+                tracks_[id] = std::make_unique<Track>(
+                topic_,
+                id,
+                std::move(reader),
+                std::move(writers_of_track),
+                payload_pool_,
+                thread_pool_);
+
+                tracks_[id]->enable();
+            }
+            else
+            {
+                tracks_.erase(id);
+                enabled_ = false;
+            }
+
+            // the last participant
+            ret = !topic_partition_set.empty();
+        }
+
+        
     }
+
+    return ret;
 }
 
 utils::Heritable<DistributedTopic> DdsBridge::create_topic_for_participant_nts_(
@@ -499,6 +598,18 @@ std::ostream& operator <<(
 {
     os << "DdsBridge{" << bridge.topic_ << "}";
     return os;
+}
+
+void DdsBridge::add_filter_partition(
+        const std::set<std::string> filter_partition)
+{
+    filter_partition_ = filter_partition;
+}
+
+void DdsBridge::add_partition_to_topic(
+        std::string guid, std::string partition)
+{
+    topic_->partition_name[guid] = partition;
 }
 
 } /* namespace core */

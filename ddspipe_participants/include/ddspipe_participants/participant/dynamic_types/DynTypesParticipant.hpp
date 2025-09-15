@@ -77,7 +77,7 @@ public:
     DDSPIPE_PARTICIPANTS_DllAPI
     std::shared_ptr<core::IReader> create_reader_with_filter(
             const core::ITopic& topic,
-            const std::string filter) override;
+            const std::set<std::string> partitions) override;
 
     class DynTypesRtpsListener : public rtps::CommonParticipant::RtpsListener
     {

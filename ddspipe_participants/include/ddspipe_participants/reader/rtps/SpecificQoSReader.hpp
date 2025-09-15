@@ -75,7 +75,7 @@ public:
             fastdds::rtps::RTPSParticipant* rtps_participant,
             const std::shared_ptr<core::DiscoveryDatabase>& discovery_database,
             const std::set<std::string> blocked_filtered_guidlist,
-            const std::string filter_partitions);
+            const std::set<std::string> partitions);
 
 protected:
 

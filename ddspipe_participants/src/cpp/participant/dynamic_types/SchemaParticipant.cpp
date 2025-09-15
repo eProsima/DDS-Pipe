@@ -101,7 +101,7 @@ std::shared_ptr<IReader> SchemaParticipant::create_reader(
 
 std::shared_ptr<core::IReader> SchemaParticipant::create_reader_with_filter(
         const core::ITopic& topic,
-        const std::string filter)
+        const std::set<std::string> partitions)
 {
     // TODO. danip
     return std::make_shared<BlankReader>();

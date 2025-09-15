@@ -63,6 +63,32 @@ public:
             const bool remove_unused_entities,
             const std::vector<core::types::ManualTopic>& manual_topics);
 
+    /**
+     * Bridge constructor by required values
+     *
+     * In Bridge construction, the inside \c Tracks are created.
+     * In Bridge construction, a Writer and a Reader are created for each Participant.
+     *
+     * @param topic: Topic of which this Bridge manages communication
+     * @param participant_database: Collection of Participants to manage communication
+     * @param payload_pool: Payload Pool that handles the reservation/release of payloads throughout the DDS Router
+     * @param thread_pool: Shared pool of threads in charge of data transmission.
+     * @param enable: Whether the Bridge should be initialized as enabled
+     *
+     * @throw InitializationException in case \c IWriters or \c IReaders creation fails.
+     */
+    DDSPIPE_CORE_DllAPI
+    DdsBridge(
+            const utils::Heritable<types::DistributedTopic>& topic,
+            const std::shared_ptr<ParticipantsDatabase>& participants_database,
+            const std::shared_ptr<PayloadPool>& payload_pool,
+            const std::shared_ptr<utils::SlotThreadPool>& thread_pool,
+            const RoutesConfiguration& routes_config,
+            const bool remove_unused_entities,
+            const std::vector<core::types::ManualTopic>& manual_topics,
+            const std::set<std::string> filter_partition);
+
+
     DDSPIPE_CORE_DllAPI
     ~DdsBridge();
 
@@ -111,8 +137,16 @@ public:
             const types::ParticipantId& participant_id) noexcept;
 
     DDSPIPE_CORE_DllAPI
-    void update_readers_track(
-                const std::string filter);
+    bool update_readers_track(
+                const std::set<std::string> filter_partition_set);
+
+    DDSPIPE_CORE_DllAPI
+    void add_filter_partition(
+        const std::set<std::string> filter_partition_);
+
+    DDSPIPE_CORE_DllAPI
+    void add_partition_to_topic(
+        std::string guid, std::string partition);
 
 protected:
 
@@ -127,8 +161,8 @@ protected:
     void create_all_tracks_();
 
     DDSPIPE_CORE_DllAPI
-    void create_all_tracks_with_filter(
-        const std::string filter);
+    bool create_all_tracks_with_filter(
+        const std::set<std::string> filter_partition_set);
 
     /**
      * Add each Participant's IWriters to its Track.
@@ -158,9 +192,9 @@ protected:
             std::map<types::ParticipantId, std::shared_ptr<IWriter>>& writers);
 
     DDSPIPE_CORE_DllAPI
-    void add_writers_to_tracks_nts_with_filter(
+    bool add_writers_to_tracks_nts_with_filter(
             std::map<types::ParticipantId, std::shared_ptr<IWriter>>& writers,
-            const std::string filter);
+            const std::set<std::string> filter_partition_set);
 
     /**
      * @brief Impose the Topic QoS that have been pre-configured for a participant.
@@ -185,7 +219,7 @@ protected:
     std::vector<types::ManualTopic> manual_topics_;
 
     //! Allowed topics list added in the filter.
-    //std::set<std::string> allowed_partition_list_; // TDOO. danip remove
+    std::set<std::string> filter_partition_;
 
     /**
      * Inside \c Tracks
