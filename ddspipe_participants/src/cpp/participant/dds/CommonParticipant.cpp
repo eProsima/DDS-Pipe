@@ -222,7 +222,6 @@ std::shared_ptr<core::IReader> CommonParticipant::create_reader_with_filter(
         const core::ITopic& topic,
         const std::set<std::string> partitions)
 {
-    // TODO. danip
     return std::make_shared<BlankReader>();
 }
 

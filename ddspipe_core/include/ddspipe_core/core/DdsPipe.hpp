@@ -128,7 +128,6 @@ public:
 
     DDSPIPE_CORE_DllAPI
     bool update_readers_track(
-        //utils::Heritable<types::DistributedTopic> topic,
         const std::string topic_name,
         const std::set<std::string> filter_partition_set);
 

@@ -451,48 +451,6 @@ fastdds::dds::ReaderQos CommonReader::filter_reader_qos_(
             : eprosima::fastdds::dds::ReliabilityQosPolicyKind::BEST_EFFORT_RELIABILITY_QOS);
 
     // Add the filter partitions
-    /*
-    filter e.g.:
-        - "A|B|C"       // A, B and C
-        - "A|*"         // A and wildcard
-        - "*"           // wildcard
-        - "|A" == "A|"  // empty and A
-        - ""            // empty
-    */
-
-    // TODO. danip add filter
-    /*int i, n;
-    std::string curr_partition = "";
-    for(const auto& pair: topic.partition_name)
-    {
-        i = 0;
-        n = pair.second.size();
-
-        while(i < n)
-        {
-            if(pair.second[i] == '|')
-            {
-                if(curr_partition == filter)
-                {
-                    properties.m_partition.push_back(curr_partition.c_str());
-                }
-                
-                curr_partition = "";
-            }
-            else
-            {
-                curr_partition += pair.second[i];
-            }
-            i++;
-        }
-    }
-    
-    // only empty or the last partition in the filter
-    if(curr_partition == filter)
-    {
-        properties.m_partition.push_back(curr_partition.c_str());
-    }*/
-
     for(std::string p: partitions)
     {
         properties.m_partition.push_back(p.c_str());

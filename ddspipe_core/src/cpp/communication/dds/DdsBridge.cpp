@@ -279,14 +279,6 @@ void DdsBridge::create_writer(
 bool DdsBridge::update_readers_track(
         const std::set<std::string> filter_partition_set)
 {
-    /*
-    //tracks_
-    for(const auto& pair: tracks_)
-    {
-        std::cout << "BRIDGE FOR TRACKS\n";
-        pair.second->update_reader();
-    }*/
-
     return create_all_tracks_with_filter(filter_partition_set);
 }
 
@@ -459,8 +451,7 @@ bool DdsBridge::add_writers_to_tracks_nts_with_filter(
         std::shared_ptr<IParticipant> participant = participants_->get_participant(id);
         const auto topic = create_topic_for_participant_nts_(participant);
 
-        //std::set<std::string> filter_partition_set;
-        std::set<std::string> topic_partition_set;
+        bool pass = false;
         // check filter of the topic
         int i, n;
         std::string curr_partition;
@@ -476,9 +467,11 @@ bool DdsBridge::add_writers_to_tracks_nts_with_filter(
                 {
                     for(const std::string filter_p: filter_partition_set)
                     {
-                        if(utils::match_pattern(filter_p, curr_partition))
+                        if(utils::match_pattern(filter_p, curr_partition) ||
+                            utils::match_pattern(curr_partition, filter_p))
                         {
-                            topic_partition_set.insert(curr_partition);
+                            pass = true;
+                            break;
                         }
                     }
 
@@ -494,21 +487,14 @@ bool DdsBridge::add_writers_to_tracks_nts_with_filter(
             // empty or last partition
             for(const std::string filter_p: filter_partition_set)
             {
-                if(utils::match_pattern(filter_p, curr_partition))
+                if(utils::match_pattern(filter_p, curr_partition) ||
+                    utils::match_pattern(curr_partition, filter_p))
                 {
-                    topic_partition_set.insert(curr_partition);
+                    pass = true;
+                    break;
                 }
             }
         }
-
-        // empty
-        /*for(const std::string filter_p: filter_partition_set)
-        {
-            if(utils::match_pattern(filter_p, curr_partition))
-            {
-                topic_partition_set.insert(curr_partition);
-            }
-        }*/
 
         if(filter_partition_set.empty())
         {
@@ -528,6 +514,13 @@ bool DdsBridge::add_writers_to_tracks_nts_with_filter(
         }
         else
         {
+
+            std::set<std::string> topic_partition_set;
+            if(pass)
+            {
+                topic_partition_set = filter_partition_set;
+            }
+
             auto reader = participant->create_reader_with_filter(*topic, topic_partition_set);
 
             if(!topic_partition_set.empty())
