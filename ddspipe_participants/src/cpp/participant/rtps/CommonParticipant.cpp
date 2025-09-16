@@ -143,7 +143,7 @@ void CommonParticipant::RtpsListener::on_reader_discovery(
             info, configuration_->id);
 
         // get the writer
-        std::ostringstream guid_ss;
+        /*std::ostringstream guid_ss;
         std::string guid_str;
 
         guid_ss << info.guid;
@@ -207,7 +207,7 @@ void CommonParticipant::RtpsListener::on_reader_discovery(
         }
 
         // adds in the participant, the topic name, writer_guid and partitions set
-        parent_class_->add_topic_partition(info_reader.topic.m_topic_name, guid_str, partition_names);
+        parent_class_->add_topic_partition(info_reader.topic.m_topic_name, guid_str, partition_names);*/
 
         if (reason == fastdds::rtps::ReaderDiscoveryStatus::DISCOVERED_READER)
         {

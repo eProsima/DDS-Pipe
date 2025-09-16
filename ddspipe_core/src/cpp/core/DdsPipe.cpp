@@ -308,9 +308,13 @@ void DdsPipe::discovered_endpoint_nts_(
 
         const auto bridge_it = bridges_.find(utils::Heritable<DdsTopic>::make_heritable(endpoint.topic));
         std::ostringstream guid_ss;
-        guid_ss << endpoint.guid;
-        //bridge_it->second->topic_->partition_name[guid_ss.str()]="";
-        bridge_it->second->add_partition_to_topic(guid_ss.str(), endpoint.specific_partitions.find(guid_ss.str())->second);
+        guid_ss << endpoint.guid; // get the source guid
+        // add the specific partition of the endpoint in the bridges topic.
+        if(bridge_it != bridges_.end())
+        {
+            bridge_it->second->add_partition_to_topic(
+                guid_ss.str(), endpoint.specific_partitions.find(guid_ss.str())->second);
+        }
 
         if(!filter_partition_.empty())
         {
@@ -518,6 +522,8 @@ void DdsPipe::create_new_bridge_nts_(
         auto manual_topics = configuration_.get_manual_topics(dynamic_cast<const core::ITopic&>(*topic));
 
         std::unique_ptr<DdsBridge> new_bridge;
+
+        // check if there is a filter partition list
         if(filter_partition_.empty())
         {
             // Create bridge instance
@@ -531,6 +537,9 @@ void DdsPipe::create_new_bridge_nts_(
         }
         else
         {
+            // enters if there is a partitions filter
+            // and the topic was not in the track of bridges
+
             // Create bridge instance
             new_bridge = std::make_unique<DdsBridge>(topic,
                             participants_database_,
@@ -541,8 +550,6 @@ void DdsPipe::create_new_bridge_nts_(
                             manual_topics,
                             filter_partition_);
         }
-
-        
 
         if (enabled)
         {
@@ -632,22 +639,19 @@ void DdsPipe::deactivate_all_topics_nts_() noexcept
 }
 
 bool DdsPipe::update_readers_track(
-        //utils::Heritable<types::DistributedTopic> topic,
         const std::string topic_name,
         const std::set<std::string> filter_partition_set)
 {
     bool ret = true;
-    //const auto bridge_it = bridges_.find(topic);
+
+    // search the track associated with the topic name
     for(const auto& pair: bridges_)
     {
-        
         if(pair.first->m_topic_name == topic_name)
         {
             ret = pair.second->update_readers_track(filter_partition_set);
         }
     }
-    //if()
-    //bridges_[topic].update_readers_track(filter);
 
     return ret;
 }

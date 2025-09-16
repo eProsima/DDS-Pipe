@@ -64,7 +64,7 @@ public:
             const std::vector<core::types::ManualTopic>& manual_topics);
 
     /**
-     * Bridge constructor by required values
+     * Bridge constructor with partition filter.
      *
      * In Bridge construction, the inside \c Tracks are created.
      * In Bridge construction, a Writer and a Reader are created for each Participant.
