@@ -131,6 +131,16 @@ utils::ReturnCode DdsPipe::reload_configuration(
     return reload_allowed_topics_(allowed_topics);
 }
 
+void DdsPipe::reload_filter_partition(
+        const std::set<std::string> filter_partition_set)
+{
+    update_filter(filter_partition_set);
+    for(const auto& pair: bridges_)
+    {
+        pair.second->update_readers_track(filter_partition_set);
+    }
+}
+
 utils::ReturnCode DdsPipe::enable() noexcept
 {
     std::lock_guard<std::mutex> lock(mutex_);
