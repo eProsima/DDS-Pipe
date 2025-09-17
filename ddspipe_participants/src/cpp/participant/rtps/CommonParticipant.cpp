@@ -142,73 +142,6 @@ void CommonParticipant::RtpsListener::on_reader_discovery(
                 detail::create_endpoint_from_info_<fastdds::rtps::SubscriptionBuiltinTopicData>(
             info, configuration_->id);
 
-        // get the writer
-        /*std::ostringstream guid_ss;
-        std::string guid_str;
-
-        guid_ss << info.guid;
-        guid_str = guid_ss.str();
-
-        // get the partitions
-        std::string partition_names = info_reader.specific_partitions[guid_str];
-
-        bool pass_partition_filter = parent_class_->allowed_partition_list_.empty();
-
-        std::string curr_partition = "";
-        int i = 0, curr_partition_n = partition_names.size();
-        while(i < curr_partition_n)
-        {
-            // gets a partition from the string of partitions
-            while(i < curr_partition_n && partition_names[i]!='|')
-            {
-                curr_partition += partition_names[i++];
-            }
-
-            if(curr_partition == "*")
-            {
-                pass_partition_filter = true;
-                break;
-            }
-
-            // check if that partition is in the filter of partitions
-            for(std::string allowed_partition: parent_class_->allowed_partition_list_)
-            {
-                if (utils::match_pattern(allowed_partition, curr_partition))
-                {
-                    pass_partition_filter = true;
-                    break;
-                }
-            }
-
-            curr_partition = "";
-            i++;
-        }
-
-        // check if the writer has the empty partition
-        if(partition_names == "")
-        {
-            // check if the empty partition is in the allowed partitions
-            for(std::string allowed_partition: parent_class_->allowed_partition_list_)
-            {
-                if (utils::match_pattern(allowed_partition, ""))
-                {
-                    // the empty partition is allowed
-                    pass_partition_filter = true;
-                    break;
-                }
-            }
-        }
-
-        if(!pass_partition_filter)
-        {
-            discovery_database_->add_filtered_endpoint(info.guid);
-            parent_class_->filtered_guidlist.insert(guid_str);
-            return;
-        }
-
-        // adds in the participant, the topic name, writer_guid and partitions set
-        parent_class_->add_topic_partition(info_reader.topic.m_topic_name, guid_str, partition_names);*/
-
         if (reason == fastdds::rtps::ReaderDiscoveryStatus::DISCOVERED_READER)
         {
             EPROSIMA_LOG_INFO(DDSPIPE_DISCOVERY,
@@ -270,69 +203,15 @@ void CommonParticipant::RtpsListener::on_writer_discovery(
         // get the partitions
         std::string partition_names = info_writer.specific_partitions[guid_str];
 
-        bool pass_partition_filter = parent_class_->allowed_partition_list_.empty();
-
-        std::string curr_partition = "";
-        int i = 0, curr_partition_n = partition_names.size();
-        while(i < curr_partition_n)
-        {
-            // gets a partition from the string of partitions
-            while(i < curr_partition_n && partition_names[i]!='|')
-            {
-                curr_partition += partition_names[i++];
-            }
-
-            if(curr_partition == "*")
-            {
-                pass_partition_filter = true;
-                break;
-            }
-
-            // check if that partition is in the filter of partitions
-            for(std::string allowed_partition: parent_class_->allowed_partition_list_)
-            {
-                if (utils::match_pattern(allowed_partition, curr_partition))
-                {
-                    pass_partition_filter = true;
-                    break;
-                }
-            }
-
-            curr_partition = "";
-            i++;
-        }
-
-        // check if the writer has the empty partition
-        if(partition_names == "")
-        {
-            // check if the empty partition is in the allowed partitions
-            for(std::string allowed_partition: parent_class_->allowed_partition_list_)
-            {
-                if (utils::match_pattern(allowed_partition, ""))
-                {
-                    // the empty partition is allowed
-                    pass_partition_filter = true;
-                    break;
-                }
-            }
-        }
-
-        if(!pass_partition_filter)
-        {
-            discovery_database_->add_filtered_endpoint(info.guid);
-            parent_class_->filtered_guidlist.insert(guid_str);
-            return;
-        }
-
-        // adds in the participant, the topic name, writer_guid and partitions set
-        parent_class_->add_topic_partition(info_writer.topic.m_topic_name, guid_str, partition_names);
-
         if (reason == fastdds::rtps::WriterDiscoveryStatus::DISCOVERED_WRITER)
         {
             EPROSIMA_LOG_INFO(DDSPIPE_DISCOVERY,
                     "Found in Participant " << configuration_->id << " new Writer " << info.guid << ".");
 
             discovery_database_->add_endpoint(info_writer);
+
+            // adds in the participant, the topic name, writer_guid and partitions set
+            parent_class_->add_topic_partition(info_writer.topic.m_topic_name, guid_str, partition_names);
         }
         else if (reason == fastdds::rtps::WriterDiscoveryStatus::CHANGED_QOS_WRITER)
         {
@@ -341,6 +220,8 @@ void CommonParticipant::RtpsListener::on_writer_discovery(
                     " changed TopicQoS.");
 
             discovery_database_->update_endpoint(info_writer);
+            // update in the participant, the topic name, writer_guid and partitions set
+            parent_class_->update_topic_partition(info_writer.topic.m_topic_name, guid_str, partition_names);
         }
         else if (reason == fastdds::rtps::WriterDiscoveryStatus::REMOVED_WRITER)
         {
@@ -349,6 +230,8 @@ void CommonParticipant::RtpsListener::on_writer_discovery(
 
             info_writer.active = false;
             discovery_database_->update_endpoint(info_writer);
+            // delete in the participant, the topic name, writer_guid and partitions set
+            parent_class_->delete_topic_partition(info_writer.topic.m_topic_name, guid_str, partition_names);
         }
         else if (reason == fastdds::rtps::WriterDiscoveryStatus::IGNORED_WRITER)
         {
@@ -734,13 +617,13 @@ CommonParticipant::create_listener_()
 }
 
 bool CommonParticipant::add_topic_partition(
-        const std::string& topic_name, const std::string& writer_name,
+        const std::string& topic_name, const std::string& writer_guid,
         const std::string& partition)
 {
     if(partition_names.find(topic_name) != partition_names.end())
     {
         // the topic exists
-        if(partition_names[topic_name].find(writer_name) != partition_names[topic_name].end())
+        if(partition_names[topic_name].find(writer_guid) != partition_names[topic_name].end())
         {
             // the writer is already added in the topic
             return false;
@@ -753,13 +636,14 @@ bool CommonParticipant::add_topic_partition(
     }
 
     // adds [writer, partition] in the topic
-    partition_names[topic_name][writer_name] = partition;
+    partition_names[topic_name][writer_guid] = partition;
 
     return true;
 }
 
-bool CommonParticipant::delete_topic_partition(
-        const std::string& topic_name, const std::string& writer_name,
+
+bool CommonParticipant::update_topic_partition(
+        const std::string& topic_name, const std::string& writer_guid,
         const std::string& partition)
 {
     if(partition_names.find(topic_name) == partition_names.end())
@@ -767,14 +651,36 @@ bool CommonParticipant::delete_topic_partition(
         // the topic dont exists
         return false;
     }
-    if(partition_names[topic_name].find(writer_name) != partition_names[topic_name].end())
+    if(partition_names[topic_name].find(writer_guid) == partition_names[topic_name].end())
+    {
+        // the writer dont exist in the topic
+
+        return false;
+    }
+
+    // update [writer, partition] in the topic
+    partition_names[topic_name][writer_guid] = partition;
+
+    return true;
+}
+
+bool CommonParticipant::delete_topic_partition(
+        const std::string& topic_name, const std::string& writer_guid,
+        const std::string& partition)
+{
+    if(partition_names.find(topic_name) == partition_names.end())
+    {
+        // the topic dont exists
+        return false;
+    }
+    if(partition_names[topic_name].find(writer_guid) == partition_names[topic_name].end())
     {
         // the writer dont exist in the topic
         return false;
     }
 
     // delete [writer, partition] in the topic
-    partition_names.erase(writer_name);
+    partition_names.erase(writer_guid);
 
     return true;
 }

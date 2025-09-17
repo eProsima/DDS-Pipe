@@ -168,7 +168,7 @@ void DdsBridge::create_all_tracks_()
     std::map<std::string, std::string> curr_partition_map;
 
     // get partitions set for the current topic
-    for (const auto& id : writers_to_create)
+    /*for (const auto& id : writers_to_create)
     {
         std::shared_ptr<IParticipant> participant = participants_->get_participant(id);
         const auto topic = create_topic_for_participant_nts_(participant);
@@ -176,7 +176,7 @@ void DdsBridge::create_all_tracks_()
         {
             curr_partition_map[pair.first] = pair.second;
         }
-    }
+    }*/
 
     // Create the writers.
     std::map<ParticipantId, std::shared_ptr<IWriter>> writers;
@@ -186,7 +186,7 @@ void DdsBridge::create_all_tracks_()
         std::shared_ptr<IParticipant> participant = participants_->get_participant(id);
         const auto topic = create_topic_for_participant_nts_(participant);
         // add the partitions set
-        topic->partition_name = curr_partition_map;
+        //topic->partition_name = curr_partition_map;
         writers[id] = participant->create_writer(*topic);
     }
 
@@ -496,6 +496,12 @@ bool DdsBridge::add_writers_to_tracks_nts_with_filter(
             }
         }
 
+        /*auto it = tracks_.find(id);
+        if(it != tracks_.end())
+        {
+            tracks_[id]->update_reader();
+        }*/
+
         if(filter_partition_set.empty())
         {
             auto reader = participant->create_reader(*topic);
@@ -521,10 +527,10 @@ bool DdsBridge::add_writers_to_tracks_nts_with_filter(
                 topic_partition_set = filter_partition_set;
             }
 
-            auto reader = participant->create_reader_with_filter(*topic, topic_partition_set);
-
             if(!topic_partition_set.empty())
             {
+                auto reader = participant->create_reader_with_filter(*topic, topic_partition_set);
+
                 tracks_[id] = std::make_unique<Track>(
                 topic_,
                 id,
@@ -544,8 +550,6 @@ bool DdsBridge::add_writers_to_tracks_nts_with_filter(
             // the last participant
             ret = !topic_partition_set.empty();
         }
-
-        
     }
 
     return ret;

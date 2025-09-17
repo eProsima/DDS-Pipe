@@ -104,31 +104,47 @@ public:
     /**
      * Add a Partition in the Participant.
      *
-     * @param [in] partition : Partition name that will be added.
+     * @param [in] topic_name  : The topic.
+     * @param [in] writer_guid : The writer guid.
+     * @param [in] partition   : Partition name that will be added.
      *
      * @return bool if the function adds the partition.
      */
     DDSPIPE_CORE_DllAPI
     virtual bool add_topic_partition(
-            const std::string& topic_name, const std::string& writer_name,
+            const std::string& topic_name, const std::string& writer_guid,
+            const std::string& partition) = 0;
+
+    /**
+     * Update a Partition in the Participant.
+     *
+     * @param [in] topic_name  : The topic.
+     * @param [in] writer_guid : The writer guid.
+     * @param [in] partition : Partition name that will be added.
+     *
+     * @return bool if the function adds the partition.
+     */
+    DDSPIPE_CORE_DllAPI
+    virtual bool update_topic_partition(
+            const std::string& topic_name, const std::string& writer_guid,
             const std::string& partition) = 0;
 
     /**
      * Remove a Partition of the Participant.
      *
+     * @param [in] topic_name  : The topic.
+     * @param [in] writer_guid : The writer guid.
      * @param [in] partition : Partition name that will be added.
      *
      * @return bool if the function adds the partition.
      */
     DDSPIPE_CORE_DllAPI
     virtual bool delete_topic_partition(
-            const std::string& topic_name, const std::string& writer_name,
+            const std::string& topic_name, const std::string& writer_guid,
             const std::string& partition) = 0;
 
     /**
      * Clear the Partitions of the Participant.
-     *
-     * @param [in] partition : Partition name that will be added.
      */
     DDSPIPE_CORE_DllAPI
     virtual void clear_topic_partitions() = 0;
