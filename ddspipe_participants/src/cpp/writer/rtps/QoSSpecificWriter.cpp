@@ -48,7 +48,7 @@ fastdds::dds::WriterQos QoSSpecificWriter::reckon_writer_qos_(
     fastdds::dds::WriterQos qos = CommonWriter::reckon_writer_qos_(topic);
 
     // Set Partitions
-    if (topic.topic_qos.has_partitions())
+    if (topic.topic_qos.has_partitions() || specific_qos.partitions.names().size() > 0)
     {
         qos.m_partition = specific_qos.partitions;
     }
