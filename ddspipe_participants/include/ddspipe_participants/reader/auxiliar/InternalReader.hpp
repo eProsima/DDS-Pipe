@@ -63,6 +63,7 @@ public:
 
 protected:
 
+    DDSPIPE_PARTICIPANTS_DllAPI
     void enable_nts_() noexcept override;
 
     /**
@@ -74,6 +75,7 @@ protected:
      * @return \c RETCODE_OK if data has been correctly taken
      * @return \c RETCODE_NO_DATA if \c data_to_send_ is empty
      */
+    DDSPIPE_PARTICIPANTS_DllAPI
     utils::ReturnCode take_nts_(
             std::unique_ptr<core::IRoutingData>& data) noexcept override;
 
