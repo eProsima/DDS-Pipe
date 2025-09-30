@@ -184,6 +184,7 @@ protected:
      *
      * Implement this method class for a specific enable functionality.
      */
+    DDSPIPE_PARTICIPANTS_DllAPI
     virtual void enable_nts_() noexcept;
 
     /**
@@ -191,6 +192,7 @@ protected:
      *
      * Implement this method class for a specific disable functionality.
      */
+    DDSPIPE_PARTICIPANTS_DllAPI
     virtual void disable_nts_() noexcept;
 
     /**
@@ -198,6 +200,7 @@ protected:
      *
      * Implement this method in every inherited Reader class with take functionality.
      */
+    DDSPIPE_PARTICIPANTS_DllAPI
     virtual utils::ReturnCode take_nts_(
             std::unique_ptr<core::IRoutingData>& data) noexcept = 0;
 
@@ -206,6 +209,7 @@ protected:
      *
      * Implement this method in every inherited Reader class with take functionality.
      */
+    DDSPIPE_PARTICIPANTS_DllAPI
     virtual bool should_accept_sample_() noexcept;
 
     /////////////////////////
