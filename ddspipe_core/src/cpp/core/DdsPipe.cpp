@@ -666,7 +666,7 @@ bool DdsPipe::update_readers_track(
 }
 
 void DdsPipe::update_filter(
-    const std::set<std::string> filter_partition_set)
+        const std::set<std::string> filter_partition_set)
 {
     filter_partition_ = filter_partition_set;
 }

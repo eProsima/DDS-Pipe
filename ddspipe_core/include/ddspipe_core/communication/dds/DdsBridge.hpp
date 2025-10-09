@@ -138,15 +138,16 @@ public:
 
     DDSPIPE_CORE_DllAPI
     bool update_readers_track(
-                const std::set<std::string> filter_partition_set);
+            const std::set<std::string> filter_partition_set);
 
     DDSPIPE_CORE_DllAPI
     void add_filter_partition(
-        const std::set<std::string> filter_partition_);
+            const std::set<std::string> filter_partition_);
 
     DDSPIPE_CORE_DllAPI
     void add_partition_to_topic(
-        std::string guid, std::string partition);
+            std::string guid,
+            std::string partition);
 
 protected:
 
@@ -162,7 +163,7 @@ protected:
 
     DDSPIPE_CORE_DllAPI
     bool create_all_tracks_with_filter(
-        const std::set<std::string> filter_partition_set);
+            const std::set<std::string> filter_partition_set);
 
     /**
      * Add each Participant's IWriters to its Track.

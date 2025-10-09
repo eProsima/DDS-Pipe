@@ -110,7 +110,7 @@ public:
      */
     DDSPIPE_CORE_DllAPI
     void reload_filter_partition(
-        const std::set<std::string> new_filter_partition_set);
+            const std::set<std::string> new_filter_partition_set);
 
     /////////////////////////
     // ENABLING METHODS
@@ -142,12 +142,12 @@ public:
 
     DDSPIPE_CORE_DllAPI
     bool update_readers_track(
-        const std::string topic_name,
-        const std::set<std::string> filter_partition_set);
+            const std::string topic_name,
+            const std::set<std::string> filter_partition_set);
 
     DDSPIPE_CORE_DllAPI
     void update_filter(
-        const std::set<std::string> filter_partition_set);
+            const std::set<std::string> filter_partition_set);
 
 protected:
 

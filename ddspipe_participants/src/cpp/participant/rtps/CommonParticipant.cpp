@@ -92,7 +92,6 @@ CommonParticipant::RtpsListener::RtpsListener(
     EPROSIMA_LOG_INFO(DDSPIPE_RTPS_PARTICIPANT, "Creating RTPS Listener for Participant " << conf->id << ".");
 }
 
-
 void CommonParticipant::RtpsListener::on_participant_discovery(
         fastdds::rtps::RTPSParticipant* participant,
         fastdds::rtps::ParticipantDiscoveryStatus reason,
@@ -175,7 +174,8 @@ void CommonParticipant::RtpsListener::on_reader_discovery(
     }
 }
 
-void CommonParticipant::RtpsListener::add_parent_pointer(CommonParticipant& parent)
+void CommonParticipant::RtpsListener::add_parent_pointer(
+        CommonParticipant& parent)
 {
     parent_class_= &parent;
 }
@@ -435,8 +435,8 @@ std::shared_ptr<core::IWriter> CommonParticipant::create_writer(
     else if (topic.internal_type_discriminator() == core::types::INTERNAL_TOPIC_TYPE_RTPS)
     {
         if (dds_topic.partition_name.size() > 0 ||
-            dds_topic.topic_qos.has_partitions() ||
-            dds_topic.topic_qos.has_ownership())
+                dds_topic.topic_qos.has_partitions() ||
+                dds_topic.topic_qos.has_ownership())
         {
             // Notice that MultiWriter does not require an init call
             return std::make_shared<MultiWriter>(
