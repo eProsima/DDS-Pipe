@@ -167,17 +167,6 @@ void DdsBridge::create_all_tracks_()
 
     std::map<std::string, std::string> curr_partition_map;
 
-    // get partitions set for the current topic
-    /*for (const auto& id : writers_to_create)
-    {
-        std::shared_ptr<IParticipant> participant = participants_->get_participant(id);
-        const auto topic = create_topic_for_participant_nts_(participant);
-        for (const auto& pair : topic->partition_name)
-        {
-            curr_partition_map[pair.first] = pair.second;
-        }
-    }*/
-
     // Create the writers.
     std::map<ParticipantId, std::shared_ptr<IWriter>> writers;
 
@@ -195,7 +184,7 @@ void DdsBridge::create_all_tracks_()
 }
 
 bool DdsBridge::create_all_tracks_with_filter(
-    const std::set<std::string> filter_partition_set)
+        const std::set<std::string> filter_partition_set)
 {
     std::lock_guard<std::mutex> lock(mutex_);
 
@@ -468,7 +457,7 @@ bool DdsBridge::add_writers_to_tracks_nts_with_filter(
                     for (const std::string filter_p: filter_partition_set)
                     {
                         if (utils::match_pattern(filter_p, curr_partition) ||
-                            utils::match_pattern(curr_partition, filter_p))
+                                utils::match_pattern(curr_partition, filter_p))
                         {
                             pass = true;
                             break;
@@ -488,19 +477,13 @@ bool DdsBridge::add_writers_to_tracks_nts_with_filter(
             for (const std::string filter_p: filter_partition_set)
             {
                 if (utils::match_pattern(filter_p, curr_partition) ||
-                    utils::match_pattern(curr_partition, filter_p))
+                        utils::match_pattern(curr_partition, filter_p))
                 {
                     pass = true;
                     break;
                 }
             }
         }
-
-        /*auto it = tracks_.find(id);
-        if (it != tracks_.end())
-        {
-            tracks_[id]->update_reader();
-        }*/
 
         if (filter_partition_set.empty())
         {
@@ -532,12 +515,12 @@ bool DdsBridge::add_writers_to_tracks_nts_with_filter(
                 auto reader = participant->create_reader_with_filter(*topic, topic_partition_set);
 
                 tracks_[id] = std::make_unique<Track>(
-                topic_,
-                id,
-                std::move(reader),
-                std::move(writers_of_track),
-                payload_pool_,
-                thread_pool_);
+                    topic_,
+                    id,
+                    std::move(reader),
+                    std::move(writers_of_track),
+                    payload_pool_,
+                    thread_pool_);
 
                 tracks_[id]->enable();
             }
@@ -604,7 +587,8 @@ void DdsBridge::add_filter_partition(
 }
 
 void DdsBridge::add_partition_to_topic(
-        std::string guid, std::string partition)
+        std::string guid,
+        std::string partition)
 {
     topic_->partition_name[guid] = partition;
 }

@@ -234,7 +234,8 @@ void DiscoveryDatabase::erase_endpoint(
     push_item_to_queue_(std::make_tuple(DatabaseOperation::erase, endpoint_to_erase));
 }
 
-bool DiscoveryDatabase::exists_filtered_endpoint(const Guid endpoint_guid)
+bool DiscoveryDatabase::exists_filtered_endpoint(
+        const Guid endpoint_guid)
 {
     return entities_filter_.find(endpoint_guid) != entities_filter_.end();
 }
