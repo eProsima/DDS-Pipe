@@ -193,7 +193,7 @@ utils::ReturnCode CommonReader::take_nts_(
     std::string source_guid_str = guid_ss.str();
 
     // check if the guid from the current data is filtered by the allowed partition list
-    if(blocked_filtered_guidlist_.find(source_guid_str) != blocked_filtered_guidlist_.end())
+    if (blocked_filtered_guidlist_.find(source_guid_str) != blocked_filtered_guidlist_.end())
     {
         // partition not allowed
 
@@ -451,7 +451,7 @@ fastdds::dds::ReaderQos CommonReader::filter_reader_qos_(
             : eprosima::fastdds::dds::ReliabilityQosPolicyKind::BEST_EFFORT_RELIABILITY_QOS);
 
     // Add the filter partitions
-    for(std::string p: partitions)
+    for (std::string p: partitions)
     {
         properties.m_partition.push_back(p.c_str());
     }

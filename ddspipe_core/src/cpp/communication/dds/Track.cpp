@@ -245,7 +245,7 @@ void Track::transmit_() noexcept
                 continue;
             }
         }
-        else if(ret == utils::ReturnCode::RETCODE_NOT_ENABLED)
+        else if (ret == utils::ReturnCode::RETCODE_NOT_ENABLED)
         {
             // partition filter, blocks this data
             continue;

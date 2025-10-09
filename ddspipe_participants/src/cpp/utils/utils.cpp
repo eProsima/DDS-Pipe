@@ -70,11 +70,11 @@ core::types::Endpoint create_common_endpoint_from_info_(
 
     std::string partitions_set = "";
     int partitions_n = partition_names_vector.size();
-    if(partitions_n > 0)
+    if (partitions_n > 0)
     {
         partitions_set = partition_names_vector[0];
 
-        for(int i = 1; i < partitions_n; i++)
+        for (int i = 1; i < partitions_n; i++)
         {
             partitions_set += "|" + partition_names_vector[i];
         }

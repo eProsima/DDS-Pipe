@@ -112,7 +112,8 @@ public:
      */
     DDSPIPE_CORE_DllAPI
     virtual bool add_topic_partition(
-            const std::string& topic_name, const std::string& writer_guid,
+            const std::string& topic_name,
+            const std::string& writer_guid,
             const std::string& partition) = 0;
 
     /**
@@ -126,7 +127,8 @@ public:
      */
     DDSPIPE_CORE_DllAPI
     virtual bool update_topic_partition(
-            const std::string& topic_name, const std::string& writer_guid,
+            const std::string& topic_name,
+            const std::string& writer_guid,
             const std::string& partition) = 0;
 
     /**
@@ -140,7 +142,8 @@ public:
      */
     DDSPIPE_CORE_DllAPI
     virtual bool delete_topic_partition(
-            const std::string& topic_name, const std::string& writer_guid,
+            const std::string& topic_name,
+            const std::string& writer_guid,
             const std::string& partition) = 0;
 
     /**

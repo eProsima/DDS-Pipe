@@ -617,13 +617,14 @@ CommonParticipant::create_listener_()
 }
 
 bool CommonParticipant::add_topic_partition(
-        const std::string& topic_name, const std::string& writer_guid,
+        const std::string& topic_name,
+        const std::string& writer_guid,
         const std::string& partition)
 {
-    if(partition_names.find(topic_name) != partition_names.end())
+    if (partition_names.find(topic_name) != partition_names.end())
     {
         // the topic exists
-        if(partition_names[topic_name].find(writer_guid) != partition_names[topic_name].end())
+        if (partition_names[topic_name].find(writer_guid) != partition_names[topic_name].end())
         {
             // the writer is already added in the topic
             return false;
@@ -643,15 +644,16 @@ bool CommonParticipant::add_topic_partition(
 
 
 bool CommonParticipant::update_topic_partition(
-        const std::string& topic_name, const std::string& writer_guid,
+        const std::string& topic_name,
+        const std::string& writer_guid,
         const std::string& partition)
 {
-    if(partition_names.find(topic_name) == partition_names.end())
+    if (partition_names.find(topic_name) == partition_names.end())
     {
         // the topic dont exists
         return false;
     }
-    if(partition_names[topic_name].find(writer_guid) == partition_names[topic_name].end())
+    if (partition_names[topic_name].find(writer_guid) == partition_names[topic_name].end())
     {
         // the writer dont exist in the topic
 
@@ -665,15 +667,16 @@ bool CommonParticipant::update_topic_partition(
 }
 
 bool CommonParticipant::delete_topic_partition(
-        const std::string& topic_name, const std::string& writer_guid,
+        const std::string& topic_name,
+        const std::string& writer_guid,
         const std::string& partition)
 {
-    if(partition_names.find(topic_name) == partition_names.end())
+    if (partition_names.find(topic_name) == partition_names.end())
     {
         // the topic dont exists
         return false;
     }
-    if(partition_names[topic_name].find(writer_guid) == partition_names[topic_name].end())
+    if (partition_names[topic_name].find(writer_guid) == partition_names[topic_name].end())
     {
         // the writer dont exist in the topic
         return false;
