@@ -146,7 +146,14 @@ utils::ReturnCode CommonWriter::write_nts_(
     // (if it corresponds to a keyed topic), so it is equivalent to write with instance handle (and can hence use the
     // write with params overload to cover all cases). Future developers should be aware of this and might need to
     // update this method if the DataWriter implementation changes at some point.
-    return payload_pool_->write(writer_, &rtps_data, wparams);
+    auto ret = payload_pool_->write(writer_, &rtps_data, wparams);
+    if (ret != utils::ReturnCode::RETCODE_OK)
+    {
+        return ret;
+    }
+
+    fill_sent_data_(wparams, rtps_data);
+    return utils::ReturnCode::RETCODE_OK;
 
     // TODO: handle dipose case -> DataWriter::write will always send ALIVE changes, so this case must be handled
     // with additional logic (e.g. by using unregister_instance instead of write).
@@ -196,7 +203,9 @@ fastdds::dds::DataWriterQos CommonWriter::reckon_writer_qos_() const noexcept
     }
 
     // Set minimum deadline so it matches with everything
-    qos.deadline().period = eprosima::fastdds::dds::Duration_t(0);
+    // TODO: Comment the below line is a workaround for the issue. For a discussion on this topic,
+    // please refer to: https://github.com/eProsima/DDS-Pipe/issues/146#issuecomment-2944568048
+    // qos.deadline().period = eprosima::fastdds::dds::Duration_t(0);
 
     return qos;
 }
@@ -219,6 +228,13 @@ utils::ReturnCode CommonWriter::fill_to_send_data_(
     to_send_params.original_writer_info(data.original_writer_info);
 
     return utils::ReturnCode::RETCODE_OK;
+}
+
+void CommonWriter::fill_sent_data_(
+    const eprosima::fastdds::rtps::WriteParams& sent_params,
+    core::types::RtpsPayloadData& data_to_fill) const noexcept
+{
+    // Do nothing
 }
 
 } /* namespace dds */
