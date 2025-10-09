@@ -247,7 +247,7 @@ Endpoint DiscoveryDatabase::get_endpoint(
     auto it = entities_.find(endpoint_guid);
     if (it == entities_.end())
     {
-        if(entities_filter_.find(endpoint_guid) != entities_filter_.end())
+        if (entities_filter_.find(endpoint_guid) != entities_filter_.end())
         {
             // data blocked
             return Endpoint{};

@@ -135,7 +135,7 @@ void DdsPipe::reload_filter_partition(
         const std::set<std::string> filter_partition_set)
 {
     update_filter(filter_partition_set);
-    for(const auto& pair: bridges_)
+    for (const auto& pair: bridges_)
     {
         pair.second->update_readers_track(filter_partition_set);
     }
@@ -309,7 +309,6 @@ void DdsPipe::discovered_endpoint_nts_(
 
         discovered_topic_nts_(utils::Heritable<DdsTopic>::make_heritable(endpoint_2.topic));
     }
-    //else if(!filter_partition_.empty())
     else
     {
         // there is a filter.
@@ -320,13 +319,13 @@ void DdsPipe::discovered_endpoint_nts_(
         std::ostringstream guid_ss;
         guid_ss << endpoint.guid; // get the source guid
         // add the specific partition of the endpoint in the bridges topic.
-        if(bridge_it != bridges_.end())
+        if (bridge_it != bridges_.end())
         {
             bridge_it->second->add_partition_to_topic(
                 guid_ss.str(), endpoint.specific_partitions.find(guid_ss.str())->second);
         }
 
-        if(!filter_partition_.empty())
+        if (!filter_partition_.empty())
         {
             update_readers_track(endpoint.topic.m_topic_name, filter_partition_);
         }
@@ -534,7 +533,7 @@ void DdsPipe::create_new_bridge_nts_(
         std::unique_ptr<DdsBridge> new_bridge;
 
         // check if there is a filter partition list
-        if(filter_partition_.empty())
+        if (filter_partition_.empty())
         {
             // Create bridge instance
             new_bridge = std::make_unique<DdsBridge>(topic,
@@ -655,9 +654,9 @@ bool DdsPipe::update_readers_track(
     bool ret = true;
 
     // search the track associated with the topic name
-    for(const auto& pair: bridges_)
+    for (const auto& pair: bridges_)
     {
-        if(pair.first->m_topic_name == topic_name)
+        if (pair.first->m_topic_name == topic_name)
         {
             ret = pair.second->update_readers_track(filter_partition_set);
         }
