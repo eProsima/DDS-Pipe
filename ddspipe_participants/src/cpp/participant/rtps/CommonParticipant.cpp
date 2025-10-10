@@ -177,7 +177,7 @@ void CommonParticipant::RtpsListener::on_reader_discovery(
 void CommonParticipant::RtpsListener::add_parent_pointer(
         CommonParticipant& parent)
 {
-    parent_class_= &parent;
+    parent_class_ = &parent;
 }
 
 void CommonParticipant::RtpsListener::on_writer_discovery(
