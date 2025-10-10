@@ -642,7 +642,6 @@ bool CommonParticipant::add_topic_partition(
     return true;
 }
 
-
 bool CommonParticipant::update_topic_partition(
         const std::string& topic_name,
         const std::string& writer_guid,
