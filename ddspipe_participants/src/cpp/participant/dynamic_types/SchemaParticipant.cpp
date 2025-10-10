@@ -69,6 +69,11 @@ core::types::TopicQoS SchemaParticipant::topic_qos() const noexcept
     return configuration_->topic_qos;
 }
 
+std::map<std::string, std::map<std::string, std::string>> SchemaParticipant::topic_partitions() const noexcept
+{
+    return partition_names;
+}
+
 std::shared_ptr<IWriter> SchemaParticipant::create_writer(
         const ITopic& topic)
 {
@@ -92,6 +97,88 @@ std::shared_ptr<IReader> SchemaParticipant::create_reader(
         const ITopic& /* topic */)
 {
     return std::make_shared<BlankReader>();
+}
+
+std::shared_ptr<core::IReader> SchemaParticipant::create_reader_with_filter(
+        const core::ITopic& topic,
+        const std::set<std::string> partitions)
+{
+    return std::make_shared<BlankReader>();
+}
+
+bool SchemaParticipant::add_topic_partition(
+        const std::string& topic_name,
+        const std::string& writer_guid,
+        const std::string& partition)
+{
+    if (partition_names.find(topic_name) != partition_names.end())
+    {
+        // the topic exists
+        if (partition_names[topic_name].find(writer_guid) != partition_names[topic_name].end())
+        {
+            // the writer is already added in the topic
+            return false;
+        }
+    }
+    else
+    {
+        // there is no topic in the dictionary
+        partition_names[topic_name] = std::map<std::string, std::string>();
+    }
+
+    // adds [writer, partition] in the topic
+    partition_names[topic_name][writer_guid] = partition;
+
+    return true;
+}
+
+bool SchemaParticipant::update_topic_partition(
+        const std::string& topic_name,
+        const std::string& writer_guid,
+        const std::string& partition)
+{
+    if (partition_names.find(topic_name) == partition_names.end())
+    {
+        // the topic dont exists
+        return false;
+    }
+    if (partition_names[topic_name].find(writer_guid) == partition_names[topic_name].end())
+    {
+        // the writer dont exist in the topic
+        return false;
+    }
+
+    // update [writer, partition] in the topic
+    partition_names[topic_name][writer_guid] = partition;
+
+    return true;
+}
+
+bool SchemaParticipant::delete_topic_partition(
+        const std::string& topic_name,
+        const std::string& writer_guid,
+        const std::string& partition)
+{
+    if (partition_names.find(topic_name) == partition_names.end())
+    {
+        // the topic dont exists
+        return false;
+    }
+    if (partition_names[topic_name].find(writer_guid) == partition_names[topic_name].end())
+    {
+        // the writer dont exist in the topic
+        return false;
+    }
+
+    // delete [writer, partition] in the topic
+    partition_names.erase(writer_guid);
+
+    return true;
+}
+
+void SchemaParticipant::clear_topic_partitions()
+{
+    partition_names.clear();
 }
 
 } /* namespace participants */

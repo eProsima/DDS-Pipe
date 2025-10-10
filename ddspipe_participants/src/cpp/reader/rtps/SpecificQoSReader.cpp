@@ -32,13 +32,34 @@ SpecificQoSReader::SpecificQoSReader(
         const core::types::DdsTopic& topic,
         const std::shared_ptr<core::PayloadPool>& payload_pool,
         fastdds::rtps::RTPSParticipant* rtps_participant,
-        const std::shared_ptr<core::DiscoveryDatabase>& discovery_database)
+        const std::shared_ptr<core::DiscoveryDatabase>& discovery_database,
+        const std::set<std::string> blocked_filtered_guidlist)
     : CommonReader(
         participant_id, topic, payload_pool, rtps_participant,
         reckon_history_attributes_(topic),
         reckon_reader_attributes_(topic),
         reckon_topic_description_(topic),
-        reckon_reader_qos_(topic))
+        reckon_reader_qos_(topic),
+        blocked_filtered_guidlist)
+    , discovery_database_(discovery_database)
+{
+}
+
+SpecificQoSReader::SpecificQoSReader(
+        const core::types::ParticipantId& participant_id,
+        const core::types::DdsTopic& topic,
+        const std::shared_ptr<core::PayloadPool>& payload_pool,
+        fastdds::rtps::RTPSParticipant* rtps_participant,
+        const std::shared_ptr<core::DiscoveryDatabase>& discovery_database,
+        const std::set<std::string> blocked_filtered_guidlist,
+        const std::set<std::string> partitions)
+    : CommonReader(
+        participant_id, topic, payload_pool, rtps_participant,
+        reckon_history_attributes_(topic),
+        reckon_reader_attributes_(topic),
+        reckon_topic_description_(topic),
+        filter_reader_qos_(topic, partitions),
+        blocked_filtered_guidlist)
     , discovery_database_(discovery_database)
 {
 }
