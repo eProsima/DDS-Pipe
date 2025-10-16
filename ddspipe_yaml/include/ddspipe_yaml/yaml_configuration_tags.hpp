@@ -43,7 +43,7 @@ constexpr const char* TOPIC_QOS_TAG("qos");                     //! QoS of a top
 constexpr const char* TOPIC_PARTICIPANTS_TAG("participants");   //! List of participants of a topic
 
 // Partitions related tags
-constexpr const char* PARTITIONLIST_TAG("partitions");  //! List of allowed topics
+constexpr const char* PARTITIONLIST_TAG("partitions");  //! List of allowed partitions
 
 // Monitor related tags
 constexpr const char* MONITOR_TAG("monitor"); //! Monitor configuration

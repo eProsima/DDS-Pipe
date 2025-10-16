@@ -49,7 +49,9 @@ public:
      * @param participant_database: Collection of Participants to manage communication
      * @param payload_pool: Payload Pool that handles the reservation/release of payloads throughout the DDS Router
      * @param thread_pool: Shared pool of threads in charge of data transmission.
-     * @param enable: Whether the Bridge should be initialized as enabled
+     * @param routes_config: Configuration encapsulating the routes of a DdsPipe instance.
+     * @param remove_unused_entities: Flag for removing unused entitites in the Bridge.
+     * @param manual_topics: List of topics of the Bridge.
      *
      * @throw InitializationException in case \c IWriters or \c IReaders creation fails.
      */
@@ -73,7 +75,10 @@ public:
      * @param participant_database: Collection of Participants to manage communication
      * @param payload_pool: Payload Pool that handles the reservation/release of payloads throughout the DDS Router
      * @param thread_pool: Shared pool of threads in charge of data transmission.
-     * @param enable: Whether the Bridge should be initialized as enabled
+     * @param routes_config: Configuration encapsulating the routes of a DdsPipe instance.
+     * @param remove_unused_entities: Flag for removing unused entitites in the Bridge.
+     * @param manual_topics: List of topics of the Bridge.
+     * @param filter_partition: Set of partitions used in the filter of the Bridge.
      *
      * @throw InitializationException in case \c IWriters or \c IReaders creation fails.
      */
@@ -137,7 +142,7 @@ public:
             const types::ParticipantId& participant_id) noexcept;
 
     DDSPIPE_CORE_DllAPI
-    bool update_readers_track(
+    void update_readers_track(
             const std::set<std::string> filter_partition_set);
 
     DDSPIPE_CORE_DllAPI
@@ -161,8 +166,16 @@ protected:
     DDSPIPE_CORE_DllAPI
     void create_all_tracks_();
 
+    /**
+     * Create the readers, writers, and tracks that are required by the routes and
+     * satisfy the filter.
+     *
+     * Thread safe
+     *
+     * @throw InitializationException in case \c IWriters or \c IReaders creation fails.
+     */
     DDSPIPE_CORE_DllAPI
-    bool create_all_tracks_with_filter(
+    void create_all_tracks_with_filter(
             const std::set<std::string> filter_partition_set);
 
     /**
@@ -192,8 +205,17 @@ protected:
     void add_writers_to_tracks_nts_(
             std::map<types::ParticipantId, std::shared_ptr<IWriter>>& writers);
 
+    /**
+     * Add each Participant's IWriters to its Track with filter.
+     * If the Participant's IReader doesn't exist, create it.
+     * If the Participant's Track doesn't exist, create it.
+     *
+     * @param writers: The map of ids to writers that are required for the tracks.
+     *
+     * @throw InitializationException in case \c IReaders creation fails.
+     */
     DDSPIPE_CORE_DllAPI
-    bool add_writers_to_tracks_nts_with_filter(
+    void add_writers_to_tracks_with_filter_nts_(
             std::map<types::ParticipantId, std::shared_ptr<IWriter>>& writers,
             const std::set<std::string> filter_partition_set);
 
@@ -219,7 +241,7 @@ protected:
     //! Topics that explicitally set a QoS attribute for this participant.
     std::vector<types::ManualTopic> manual_topics_;
 
-    //! Allowed topics list added in the filter.
+    //! Allowed partitions list added in the filter.
     std::set<std::string> filter_partition_;
 
     /**

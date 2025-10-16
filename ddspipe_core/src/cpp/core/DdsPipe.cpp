@@ -302,12 +302,10 @@ void DdsPipe::discovered_endpoint_nts_(
     }
     else if (is_endpoint_relevant_(endpoint))
     {
-        // add the partitions of the endpoint in the discovered topic
-        //endpoint.topic.partition_name = endpoint.specific_partitions;
-        core::Endpoint endpoint_2 = endpoint;
-        endpoint_2.topic.partition_name = endpoint.specific_partitions;
+        DdsTopic topic_with_partitions = endpoint.topic;
+        topic_with_partitions.partition_name = endpoint.specific_partitions;
 
-        discovered_topic_nts_(utils::Heritable<DdsTopic>::make_heritable(endpoint_2.topic));
+        discovered_topic_nts_(utils::Heritable<DdsTopic>::make_heritable(topic_with_partitions));
     }
     else
     {
@@ -647,22 +645,19 @@ void DdsPipe::deactivate_all_topics_nts_() noexcept
     }
 }
 
-bool DdsPipe::update_readers_track(
+void DdsPipe::update_readers_track(
         const std::string topic_name,
         const std::set<std::string> filter_partition_set)
 {
-    bool ret = true;
 
     // search the track associated with the topic name
     for (const auto& pair: bridges_)
     {
         if (pair.first->m_topic_name == topic_name)
         {
-            ret = pair.second->update_readers_track(filter_partition_set);
+            pair.second->update_readers_track(filter_partition_set);
         }
     }
-
-    return ret;
 }
 
 void DdsPipe::update_filter(

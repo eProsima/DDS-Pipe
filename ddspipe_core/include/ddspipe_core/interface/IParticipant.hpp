@@ -123,7 +123,7 @@ public:
      * @param [in] writer_guid : The writer guid.
      * @param [in] partition : Partition name that will be added.
      *
-     * @return bool if the function adds the partition.
+     * @return bool if the function updates the partition.
      */
     DDSPIPE_CORE_DllAPI
     virtual bool update_topic_partition(
@@ -138,7 +138,7 @@ public:
      * @param [in] writer_guid : The writer guid.
      * @param [in] partition : Partition name that will be added.
      *
-     * @return bool if the function adds the partition.
+     * @return bool if the function deletes the partition.
      */
     DDSPIPE_CORE_DllAPI
     virtual bool delete_topic_partition(

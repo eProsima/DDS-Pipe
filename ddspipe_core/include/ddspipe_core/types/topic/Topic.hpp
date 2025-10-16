@@ -138,10 +138,10 @@ struct Topic : public ITopic, public IConfiguration
     /**
      * @brief The partitions set of the Topic.
      *
-     * The data is storaged with the following pair: <writer_guid, partition_set>
+     * The data is stored with the following pair: <writer_guid, partition_set>
      *
      * e.g.: In ShapeDemos there are the following partitions ("", "A", "B", "C", "D", "*")
-     *  and a set por partition could be:
+     *  and a valid partitions sets could be:
      *  - "A"
      *  - "A|B" # the writer writes in the two partitions.
      *  - "*"

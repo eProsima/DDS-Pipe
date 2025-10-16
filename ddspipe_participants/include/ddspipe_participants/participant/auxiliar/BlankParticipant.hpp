@@ -69,6 +69,7 @@ public:
     std::shared_ptr<core::IReader> create_reader(
             const core::ITopic& topic) override;
 
+    //! Override create_reader_with_filter() IParticipant method
     DDSPIPE_PARTICIPANTS_DllAPI
     std::shared_ptr<core::IReader> create_reader_with_filter(
             const core::ITopic& topic,

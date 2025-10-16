@@ -51,7 +51,8 @@ namespace rtps {
  * @warning This object is not RAII and must be initialized before used.
  */
 class CommonParticipant
-    : public core::IParticipant
+    : public core::IParticipant,
+    public std::enable_shared_from_this<CommonParticipant>
 {
 public:
 
@@ -122,6 +123,11 @@ public:
     std::shared_ptr<core::IReader> create_reader(
             const core::ITopic& topic) override;
 
+    /**
+     * @brief Create a reader object with the filter of partitions
+     *
+     * Depending on the Topic QoS creates a Basic or Specific Reader.
+     */
     DDSPIPE_PARTICIPANTS_DllAPI
     std::shared_ptr<core::IReader> create_reader_with_filter(
             const core::ITopic& topic,
@@ -201,9 +207,12 @@ public:
                 const fastdds::rtps::PublicationBuiltinTopicData& info,
                 bool& /*should_be_ignored*/) override;
 
+        /**
+         * @brief Add the CommonParticipant pointer in its child class RTPSListener
+         */
         DDSPIPE_PARTICIPANTS_DllAPI
         void add_parent_pointer(
-                CommonParticipant& parent);
+                const std::shared_ptr<CommonParticipant>& parent);
 
     protected:
 
@@ -212,7 +221,8 @@ public:
         //! Shared pointer to the discovery database
         const std::shared_ptr<core::DiscoveryDatabase> discovery_database_;
         //! Pointer to the parent class of the participant
-        CommonParticipant* parent_class_{nullptr};
+        std::shared_ptr<CommonParticipant> parent_class_;
+        //CommonParticipant* parent_class_{nullptr};
     };
 
     //! Unique pointer to the internal RTPS Participant Listener

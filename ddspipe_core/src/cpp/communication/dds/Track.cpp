@@ -164,7 +164,6 @@ void Track::remove_writer(
 
 void Track::update_reader()
 {
-    //reader_ = std::move(reader);
     reader_->disable();
 }
 

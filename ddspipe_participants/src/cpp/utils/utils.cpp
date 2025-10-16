@@ -65,7 +65,6 @@ core::types::Endpoint create_common_endpoint_from_info_(
 
     // Topic partitions
     // get the partitions and add into a string with '|' as delimiter
-    std::map<std::string, std::set<std::string>> partition_names;
     std::vector<std::string> partition_names_vector = info.partition.getNames();
 
     std::string partitions_set = "";
@@ -78,8 +77,6 @@ core::types::Endpoint create_common_endpoint_from_info_(
         {
             partitions_set += "|" + partition_names_vector[i];
         }
-
-        partition_names[std::string(info.topic_name)].insert(partitions_set);
     }
 
     // adds the topic into the map of <topic, <writer_guid, partitions set>>

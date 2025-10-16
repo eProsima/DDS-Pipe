@@ -264,7 +264,6 @@ protected:
     std::map<types::Guid, types::Endpoint> entities_;
 
     //! Database of endpoints indexed by guid
-    //std::map<types::Guid, types::Endpoint> entities_filter_;
     std::set<types::Guid> entities_filter_;
 
     //! Mutex to guard queries to the database

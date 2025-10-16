@@ -149,7 +149,6 @@ utils::ReturnCode MultiWriter::write_nts_(
         "Writing in Partitions Writer " << *this << " a data with qos " << rtps_data.writer_qos << " from " <<
             rtps_data.source_guid);
 
-
     // Take Writer
     auto this_qos_writer = get_writer_or_create_(rtps_data.writer_qos);
 

@@ -175,9 +175,9 @@ void CommonParticipant::RtpsListener::on_reader_discovery(
 }
 
 void CommonParticipant::RtpsListener::add_parent_pointer(
-        CommonParticipant& parent)
+        const std::shared_ptr<CommonParticipant>& parent)
 {
-    parent_class_ = &parent;
+    parent_class_ = parent;
 }
 
 void CommonParticipant::RtpsListener::on_writer_discovery(
@@ -370,7 +370,6 @@ void CommonParticipant::create_participant_(
 
     // Create the RTPS Participant Listener
     rtps_participant_listener_ = create_listener_();
-
     if (!rtps_participant_listener_)
     {
         EPROSIMA_LOG_WARNING(DDSPIPE_RTPS_PARTICIPANT, "Error creating RTPS Participant Listener.");
@@ -379,7 +378,8 @@ void CommonParticipant::create_participant_(
     auto listener = dynamic_cast<CommonParticipant::RtpsListener*>(rtps_participant_listener_.get());
     if (listener)
     {
-        listener->add_parent_pointer(*this);
+        listener->add_parent_pointer(shared_from_this());
+
     }
     else
     {

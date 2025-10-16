@@ -165,8 +165,6 @@ void DdsBridge::create_all_tracks_()
         }
     }
 
-    std::map<std::string, std::string> curr_partition_map;
-
     // Create the writers.
     std::map<ParticipantId, std::shared_ptr<IWriter>> writers;
 
@@ -174,8 +172,6 @@ void DdsBridge::create_all_tracks_()
     {
         std::shared_ptr<IParticipant> participant = participants_->get_participant(id);
         const auto topic = create_topic_for_participant_nts_(participant);
-        // add the partitions set
-        //topic->partition_name = curr_partition_map;
         writers[id] = participant->create_writer(*topic);
     }
 
@@ -183,7 +179,7 @@ void DdsBridge::create_all_tracks_()
     add_writers_to_tracks_nts_(writers);
 }
 
-bool DdsBridge::create_all_tracks_with_filter(
+void DdsBridge::create_all_tracks_with_filter(
         const std::set<std::string> filter_partition_set)
 {
     std::lock_guard<std::mutex> lock(mutex_);
@@ -246,7 +242,7 @@ bool DdsBridge::create_all_tracks_with_filter(
     }
 
     // Add the writers to the tracks they have routes for.
-    return add_writers_to_tracks_nts_with_filter(writers, filter_partition_set);
+    add_writers_to_tracks_with_filter_nts_(writers, filter_partition_set);
 }
 
 void DdsBridge::create_writer(
@@ -265,10 +261,10 @@ void DdsBridge::create_writer(
     add_writer_to_tracks_nts_(participant_id, writer);
 }
 
-bool DdsBridge::update_readers_track(
+void DdsBridge::update_readers_track(
         const std::set<std::string> filter_partition_set)
 {
-    return create_all_tracks_with_filter(filter_partition_set);
+    create_all_tracks_with_filter(filter_partition_set);
 }
 
 void DdsBridge::remove_writer(
@@ -388,12 +384,10 @@ void DdsBridge::add_writers_to_tracks_nts_(
     }
 }
 
-bool DdsBridge::add_writers_to_tracks_nts_with_filter(
+void DdsBridge::add_writers_to_tracks_with_filter_nts_(
         std::map<ParticipantId, std::shared_ptr<IWriter>>& writers,
         const std::set<std::string> filter_partition_set)
 {
-    bool ret = true;
-
     // Add writers to the tracks of the readers in their route.
     // If the readers in their route don't exist, create them with their tracks.
     for (const ParticipantId& id : participants_->get_participants_ids())
@@ -498,8 +492,6 @@ bool DdsBridge::add_writers_to_tracks_nts_with_filter(
                 thread_pool_);
 
             tracks_[id]->enable();
-
-            ret = true;
         }
         else
         {
@@ -529,13 +521,8 @@ bool DdsBridge::add_writers_to_tracks_nts_with_filter(
                 tracks_.erase(id);
                 enabled_ = false;
             }
-
-            // the last participant
-            ret = !topic_partition_set.empty();
         }
     }
-
-    return ret;
 }
 
 utils::Heritable<DistributedTopic> DdsBridge::create_topic_for_participant_nts_(

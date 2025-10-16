@@ -141,7 +141,7 @@ public:
     utils::ReturnCode disable() noexcept;
 
     DDSPIPE_CORE_DllAPI
-    bool update_readers_track(
+    void update_readers_track(
             const std::string topic_name,
             const std::set<std::string> filter_partition_set);
 
@@ -445,6 +445,7 @@ protected:
     //! Whether the DdsPipe is currently communicating data or not
     bool enabled_;
 
+    //! Allowed partitions list added in the filter.
     std::set<std::string> filter_partition_;
 
     /**

@@ -85,7 +85,6 @@ std::shared_ptr<IReader> DynTypesParticipant::create_reader_with_filter(
     {
         return type_object_reader_;
     }
-    bool tmp;
 
     // If not type object, use the parent method
     return rtps::SimpleParticipant::create_reader_with_filter(topic, partitions);
