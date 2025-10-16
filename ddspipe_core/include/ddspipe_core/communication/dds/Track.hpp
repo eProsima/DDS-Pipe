@@ -134,6 +134,9 @@ public:
     DDSPIPE_CORE_DllAPI
     bool has_writers() noexcept;
 
+    DDSPIPE_CORE_DllAPI
+    void update_reader();
+
 protected:
 
     /*
