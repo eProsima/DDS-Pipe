@@ -212,7 +212,7 @@ public:
          */
         DDSPIPE_PARTICIPANTS_DllAPI
         void add_parent_pointer(
-                const std::shared_ptr<CommonParticipant>& parent);
+                CommonParticipant& parent);
 
     protected:
 
@@ -221,8 +221,7 @@ public:
         //! Shared pointer to the discovery database
         const std::shared_ptr<core::DiscoveryDatabase> discovery_database_;
         //! Pointer to the parent class of the participant
-        std::shared_ptr<CommonParticipant> parent_class_;
-        //CommonParticipant* parent_class_{nullptr};
+        CommonParticipant* parent_class_{nullptr};
     };
 
     //! Unique pointer to the internal RTPS Participant Listener

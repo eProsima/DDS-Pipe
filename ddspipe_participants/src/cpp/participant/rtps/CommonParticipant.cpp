@@ -175,9 +175,9 @@ void CommonParticipant::RtpsListener::on_reader_discovery(
 }
 
 void CommonParticipant::RtpsListener::add_parent_pointer(
-        const std::shared_ptr<CommonParticipant>& parent)
+        CommonParticipant& parent)
 {
-    parent_class_ = parent;
+    parent_class_ = &parent;
 }
 
 void CommonParticipant::RtpsListener::on_writer_discovery(
@@ -378,8 +378,7 @@ void CommonParticipant::create_participant_(
     auto listener = dynamic_cast<CommonParticipant::RtpsListener*>(rtps_participant_listener_.get());
     if (listener)
     {
-        listener->add_parent_pointer(shared_from_this());
-
+        listener->add_parent_pointer(*this);
     }
     else
     {
