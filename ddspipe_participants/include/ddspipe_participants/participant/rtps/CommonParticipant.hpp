@@ -51,8 +51,7 @@ namespace rtps {
  * @warning This object is not RAII and must be initialized before used.
  */
 class CommonParticipant
-    : public core::IParticipant,
-    public std::enable_shared_from_this<CommonParticipant>
+    : public core::IParticipant
 {
 public:
 
