@@ -203,9 +203,7 @@ fastdds::dds::DataWriterQos CommonWriter::reckon_writer_qos_() const noexcept
     }
 
     // Set minimum deadline so it matches with everything
-    // TODO: Comment the below line is a workaround for the issue. For a discussion on this topic,
-    // please refer to: https://github.com/eProsima/DDS-Pipe/issues/146#issuecomment-2944568048
-    // qos.deadline().period = eprosima::fastdds::dds::Duration_t(0);
+    qos.deadline().period = eprosima::fastdds::dds::Duration_t(0);
 
     return qos;
 }
