@@ -433,7 +433,9 @@ std::shared_ptr<core::IWriter> CommonParticipant::create_writer(
     }
     else if (topic.internal_type_discriminator() == core::types::INTERNAL_TOPIC_TYPE_RTPS)
     {
-        if (dds_topic.partition_name.size() > 0 ||
+        if ((dds_topic.partition_name.size() > 0 &&
+                (dds_topic.partition_name.size() != 1 ||
+                dds_topic.partition_name.begin()->second != "")) ||
                 dds_topic.topic_qos.has_partitions() ||
                 dds_topic.topic_qos.has_ownership())
         {
