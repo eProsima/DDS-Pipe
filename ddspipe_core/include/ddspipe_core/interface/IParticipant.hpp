@@ -96,6 +96,19 @@ public:
     virtual std::shared_ptr<IReader> create_reader(
             const ITopic& topic) = 0;
 
+    /**
+     * @brief Return a new Reader
+     *
+     * Each reader is associated with a \c Bridge with the topic \c topic .
+     * This reader will receive messages in this topic.
+     *
+     * @param [in] topic : Topic that this Reader will work with.
+     * @param [in] partitions: List of allowed partitions
+     *
+     * @return Reader in this Participant referring this topic
+     *
+     * @throw \c InitializationException in case the reader creation fails.
+     */
     DDSPIPE_CORE_DllAPI
     virtual std::shared_ptr<IReader> create_reader_with_filter(
             const ITopic& topic,

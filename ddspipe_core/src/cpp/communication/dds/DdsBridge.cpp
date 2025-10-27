@@ -218,17 +218,6 @@ void DdsBridge::create_all_tracks_with_filter(
 
     std::map<std::string, std::string> curr_partition_map;
 
-    // get partitions set for the current topic
-    for (const auto& id : writers_to_create)
-    {
-        std::shared_ptr<IParticipant> participant = participants_->get_participant(id);
-        const auto topic = create_topic_for_participant_nts_(participant);
-        for (const auto& pair : topic->partition_name)
-        {
-            curr_partition_map[pair.first] = pair.second;
-        }
-    }
-
     // Create the writers.
     std::map<ParticipantId, std::shared_ptr<IWriter>> writers;
 
@@ -236,8 +225,6 @@ void DdsBridge::create_all_tracks_with_filter(
     {
         std::shared_ptr<IParticipant> participant = participants_->get_participant(id);
         const auto topic = create_topic_for_participant_nts_(participant);
-        // add the partitions set
-        topic->partition_name = curr_partition_map;
         writers[id] = participant->create_writer(*topic);
     }
 
