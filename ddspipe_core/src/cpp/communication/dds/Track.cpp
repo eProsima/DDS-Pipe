@@ -162,6 +162,11 @@ void Track::remove_writer(
     writers_.erase(id);
 }
 
+void Track::update_reader()
+{
+    reader_->disable();
+}
+
 bool Track::has_writer(
         const ParticipantId& id) noexcept
 {
@@ -238,6 +243,11 @@ void Track::transmit_() noexcept
                 // While setting status to 1 again, the value is still >=1 so no other thread will start
                 continue;
             }
+        }
+        else if (ret == utils::ReturnCode::RETCODE_NOT_ENABLED)
+        {
+            // partition filter, blocks this data
+            continue;
         }
         else if (ret != utils::ReturnCode::RETCODE_OK)
         {

@@ -134,6 +134,19 @@ struct Topic : public ITopic, public IConfiguration
      * If the Topic has manually configured Topic QoS, the Topic QoS that are manually configured get overriden.
      */
     types::TopicQoS topic_qos{};
+
+    /**
+     * @brief The partitions set of the Topic.
+     *
+     * The data is stored with the following pair: <writer_guid, partition_set>
+     *
+     * e.g.: In ShapeDemos there are the following partitions ("", "A", "B", "C", "D", "*")
+     *  and a valid partitions sets could be:
+     *  - "A"
+     *  - "A|B" # the writer writes in the two partitions.
+     *  - "*"
+     */
+    std::map<std::string, std::string> partition_name{};
 };
 
 /**

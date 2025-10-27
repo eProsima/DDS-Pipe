@@ -131,6 +131,16 @@ utils::ReturnCode DdsPipe::reload_configuration(
     return reload_allowed_topics_(allowed_topics);
 }
 
+void DdsPipe::reload_filter_partition(
+        const std::set<std::string> filter_partition_set)
+{
+    update_filter(filter_partition_set);
+    for (const auto& pair: bridges_)
+    {
+        pair.second->update_readers_track(filter_partition_set);
+    }
+}
+
 utils::ReturnCode DdsPipe::enable() noexcept
 {
     std::lock_guard<std::mutex> lock(mutex_);
@@ -292,7 +302,31 @@ void DdsPipe::discovered_endpoint_nts_(
     }
     else if (is_endpoint_relevant_(endpoint))
     {
-        discovered_topic_nts_(utils::Heritable<DdsTopic>::make_heritable(endpoint.topic));
+        DdsTopic topic_with_partitions = endpoint.topic;
+        topic_with_partitions.partition_name = endpoint.specific_partitions;
+
+        discovered_topic_nts_(utils::Heritable<DdsTopic>::make_heritable(topic_with_partitions));
+    }
+    else
+    {
+        // there is a filter.
+        // update the track of the topic to
+        // add the partition in the reader if it is in the filter
+
+        const auto bridge_it = bridges_.find(utils::Heritable<DdsTopic>::make_heritable(endpoint.topic));
+        std::ostringstream guid_ss;
+        guid_ss << endpoint.guid; // get the source guid
+        // add the specific partition of the endpoint in the bridges topic.
+        if (bridge_it != bridges_.end())
+        {
+            bridge_it->second->add_partition_to_topic(
+                guid_ss.str(), endpoint.specific_partitions.find(guid_ss.str())->second);
+        }
+
+        if (!filter_partition_.empty())
+        {
+            update_readers_track(endpoint.topic.m_topic_name, filter_partition_);
+        }
     }
 }
 
@@ -494,14 +528,35 @@ void DdsPipe::create_new_bridge_nts_(
         auto routes_config = configuration_.get_routes_config(topic);
         auto manual_topics = configuration_.get_manual_topics(dynamic_cast<const core::ITopic&>(*topic));
 
-        // Create bridge instance
-        auto new_bridge = std::make_unique<DdsBridge>(topic,
-                        participants_database_,
-                        payload_pool_,
-                        thread_pool_,
-                        routes_config,
-                        configuration_.remove_unused_entities,
-                        manual_topics);
+        std::unique_ptr<DdsBridge> new_bridge;
+
+        // check if there is a filter partition list
+        if (filter_partition_.empty())
+        {
+            // Create bridge instance
+            new_bridge = std::make_unique<DdsBridge>(topic,
+                            participants_database_,
+                            payload_pool_,
+                            thread_pool_,
+                            routes_config,
+                            configuration_.remove_unused_entities,
+                            manual_topics);
+        }
+        else
+        {
+            // enters if there is a partitions filter
+            // and the topic was not in the track of bridges
+
+            // Create bridge instance
+            new_bridge = std::make_unique<DdsBridge>(topic,
+                            participants_database_,
+                            payload_pool_,
+                            thread_pool_,
+                            routes_config,
+                            configuration_.remove_unused_entities,
+                            manual_topics,
+                            filter_partition_);
+        }
 
         if (enabled)
         {
@@ -588,6 +643,27 @@ void DdsPipe::deactivate_all_topics_nts_() noexcept
         // Deactivate all topics
         deactivate_topic_nts_(it.first);
     }
+}
+
+void DdsPipe::update_readers_track(
+        const std::string topic_name,
+        const std::set<std::string> filter_partition_set)
+{
+
+    // search the track associated with the topic name
+    for (const auto& pair: bridges_)
+    {
+        if (pair.first->m_topic_name == topic_name)
+        {
+            pair.second->update_readers_track(filter_partition_set);
+        }
+    }
+}
+
+void DdsPipe::update_filter(
+        const std::set<std::string> filter_partition_set)
+{
+    filter_partition_ = filter_partition_set;
 }
 
 } /* namespace core */

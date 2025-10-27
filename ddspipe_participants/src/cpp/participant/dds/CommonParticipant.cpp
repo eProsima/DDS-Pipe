@@ -113,6 +113,11 @@ core::types::TopicQoS CommonParticipant::topic_qos() const noexcept
     return configuration_->topic_qos;
 }
 
+std::map<std::string, std::map<std::string, std::string>> CommonParticipant::topic_partitions() const noexcept
+{
+    return partition_names;
+}
+
 std::shared_ptr<core::IWriter> CommonParticipant::create_writer(
         const core::ITopic& topic)
 {
@@ -211,6 +216,13 @@ std::shared_ptr<core::IReader> CommonParticipant::create_reader(
 
         return reader;
     }
+}
+
+std::shared_ptr<core::IReader> CommonParticipant::create_reader_with_filter(
+        const core::ITopic& topic,
+        const std::set<std::string> partitions)
+{
+    return std::make_shared<BlankReader>();
 }
 
 CommonParticipant::DdsListener::DdsListener(
@@ -485,6 +497,81 @@ fastdds::dds::Topic* CommonParticipant::topic_related_(
     dds_topics_[topic] = dds_topic;
 
     return dds_topic;
+}
+
+bool CommonParticipant::add_topic_partition(
+        const std::string& topic_name,
+        const std::string& writer_guid,
+        const std::string& partition)
+{
+    if (partition_names.find(topic_name) != partition_names.end())
+    {
+        // the topic exists
+        if (partition_names[topic_name].find(writer_guid) != partition_names[topic_name].end())
+        {
+            // the writer is already added in the topic
+            return false;
+        }
+    }
+    else
+    {
+        // there is no topic in the dictionary
+        partition_names[topic_name] = std::map<std::string, std::string>();
+    }
+
+    // adds [writer, partition] in the topic
+    partition_names[topic_name][writer_guid] = partition;
+
+    return true;
+}
+
+bool CommonParticipant::update_topic_partition(
+        const std::string& topic_name,
+        const std::string& writer_guid,
+        const std::string& partition)
+{
+    if (partition_names.find(topic_name) == partition_names.end())
+    {
+        // the topic dont exists
+        return false;
+    }
+    if (partition_names[topic_name].find(writer_guid) == partition_names[topic_name].end())
+    {
+        // the writer dont exist in the topic
+        return false;
+    }
+
+    // update [writer, partition] in the topic
+    partition_names[topic_name][writer_guid] = partition;
+
+    return true;
+}
+
+bool CommonParticipant::delete_topic_partition(
+        const std::string& topic_name,
+        const std::string& writer_guid,
+        const std::string& partition)
+{
+    if (partition_names.find(topic_name) == partition_names.end())
+    {
+        // the topic dont exists
+        return false;
+    }
+    if (partition_names[topic_name].find(writer_guid) == partition_names[topic_name].end())
+    {
+        // the writer dont exist in the topic
+        return false;
+    }
+
+    // delete [writer, partition] in the topic
+    partition_names.erase(writer_guid);
+
+    return true;
+}
+
+void CommonParticipant::clear_topic_partitions()
+{
+    partition_names.clear();
 }
 
 } /* namespace dds */

@@ -197,7 +197,8 @@ protected:
             const fastdds::rtps::HistoryAttributes& history_attributes,
             const fastdds::rtps::ReaderAttributes& reader_attributes,
             const fastdds::rtps::TopicDescription& topic_desc,
-            const fastdds::dds::ReaderQos& reader_qos);
+            const fastdds::dds::ReaderQos& reader_qos,
+            const std::set<std::string> allowed_partition_list);
 
     // Specific enable/disable do not need to be implemented
 
@@ -277,6 +278,11 @@ protected:
     static fastdds::dds::ReaderQos reckon_reader_qos_(
             const core::types::DdsTopic& topic) noexcept;
 
+    //! Reader QoS to create RTPS Reader
+    static fastdds::dds::ReaderQos filter_reader_qos_(
+            const core::types::DdsTopic& topic,
+            const std::set<std::string> partitions) noexcept;
+
     /////
     // CommonReader specific methods
 
@@ -326,6 +332,9 @@ protected:
 
     //! Reader QoS to create the internal RTPS Reader.
     fastdds::dds::ReaderQos reader_qos_;
+
+    //! Allowed partitions added by the filter
+    std::set<std::string> blocked_filtered_guidlist_;
 };
 
 } /* namespace rtps */

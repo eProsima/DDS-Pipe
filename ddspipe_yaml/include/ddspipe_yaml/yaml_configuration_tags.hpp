@@ -42,6 +42,9 @@ constexpr const char* TOPIC_TYPE_NAME_TAG("type");              //! Type name of
 constexpr const char* TOPIC_QOS_TAG("qos");                     //! QoS of a topic
 constexpr const char* TOPIC_PARTICIPANTS_TAG("participants");   //! List of participants of a topic
 
+// Partitions related tags
+constexpr const char* PARTITIONLIST_TAG("partitions");  //! List of allowed partitions
+
 // Monitor related tags
 constexpr const char* MONITOR_TAG("monitor"); //! Monitor configuration
 constexpr const char* MONITOR_DOMAIN_TAG("domain"); //! Domain Id of the monitor's participant

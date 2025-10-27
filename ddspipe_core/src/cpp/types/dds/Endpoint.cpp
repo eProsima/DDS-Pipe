@@ -25,6 +25,11 @@ TopicQoS Endpoint::topic_qos() const noexcept
     return topic.topic_qos;
 }
 
+std::map<std::string, std::string> Endpoint::topic_partitions() const noexcept
+{
+    return specific_partitions;
+}
+
 bool Endpoint::is_writer() const noexcept
 {
     return kind == EndpointKind::writer;
