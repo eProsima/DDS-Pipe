@@ -645,8 +645,6 @@ void DdsPipe::create_new_bridge_nts_(
 void DdsPipe::create_new_service_nts_(
         const RpcTopic& topic) noexcept
 {
-    std::lock_guard<std::mutex> lock(bridges_mutex_);
-
     EPROSIMA_LOG_INFO(DDSPIPE, "Creating Service: " << topic << ".");
 
     // Endpoints not created until enabled for the first time, so no exception can be thrown
