@@ -106,11 +106,22 @@ public:
      * @return \c RETCODE_OK if the new std::set has been updated correctly.
      * @return \c RETCODE_ERROR if any other error has occurred.
      *
-     * @note This method calls \c update_readers_track() of all Topic bridges, to update the DataReaders.
+     * @note This method calls \c update_readers_track_nts() of all Topic bridges, to update the DataReaders.
      */
     DDSPIPE_CORE_DllAPI
     void reload_filter_partition(
             const std::set<std::string> new_filter_partition_set);
+
+    // TODO: docs
+    DDSPIPE_CORE_DllAPI
+    void update_readers_track(
+            const std::string topic_name,
+            const std::set<std::string> filter_partition_set);
+
+    // TODO: docs
+    DDSPIPE_CORE_DllAPI
+    void update_filter(
+            const std::set<std::string> filter_partition_set);
 
     /////////////////////////
     // ENABLING METHODS
@@ -139,15 +150,6 @@ public:
      */
     DDSPIPE_CORE_DllAPI
     utils::ReturnCode disable() noexcept;
-
-    DDSPIPE_CORE_DllAPI
-    void update_readers_track(
-            const std::string topic_name,
-            const std::set<std::string> filter_partition_set);
-
-    DDSPIPE_CORE_DllAPI
-    void update_filter(
-            const std::set<std::string> filter_partition_set);
 
 protected:
 
@@ -368,6 +370,15 @@ protected:
      * @brief Disable all Bridges
      */
     void deactivate_all_topics_nts_() noexcept;
+
+    // TODO: docs
+    void update_readers_track_nts_(
+            const std::string topic_name,
+            const std::set<std::string> filter_partition_set);
+
+    // TODO: docs
+    void update_filter_nts_(
+            const std::set<std::string> filter_partition_set);
 
     //////////////////////////
     // CONFIGURATION VARIABLES
