@@ -134,7 +134,8 @@ utils::ReturnCode DdsPipe::reload_configuration(
 void DdsPipe::reload_filter_partition(
         const std::set<std::string> filter_partition_set)
 {
-    update_filter(filter_partition_set);
+    std::lock_guard<std::mutex> lock(mutex_);
+    update_filter_nts_(filter_partition_set);
     for (const auto& pair: bridges_)
     {
         pair.second->update_readers_track(filter_partition_set);
@@ -325,7 +326,7 @@ void DdsPipe::discovered_endpoint_nts_(
 
         if (!filter_partition_.empty())
         {
-            update_readers_track(endpoint.topic.m_topic_name, filter_partition_);
+            update_readers_track_nts_(endpoint.topic.m_topic_name, filter_partition_);
         }
     }
 }
@@ -645,7 +646,7 @@ void DdsPipe::deactivate_all_topics_nts_() noexcept
     }
 }
 
-void DdsPipe::update_readers_track(
+void DdsPipe::update_readers_track_nts_(
         const std::string topic_name,
         const std::set<std::string> filter_partition_set)
 {
@@ -660,10 +661,25 @@ void DdsPipe::update_readers_track(
     }
 }
 
-void DdsPipe::update_filter(
+void DdsPipe::update_filter_nts_(
         const std::set<std::string> filter_partition_set)
 {
     filter_partition_ = filter_partition_set;
+}
+
+void DdsPipe::update_readers_track(
+        const std::string topic_name,
+        const std::set<std::string> filter_partition_set)
+{
+    std::lock_guard<std::mutex> lock(mutex_);
+    update_readers_track_nts_(topic_name, filter_partition_set);
+}
+
+void DdsPipe::update_filter(
+        const std::set<std::string> filter_partition_set)
+{
+    std::lock_guard<std::mutex> lock(mutex_);
+    update_filter_nts_(filter_partition_set);
 }
 
 } /* namespace core */
