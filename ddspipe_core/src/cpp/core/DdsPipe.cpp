@@ -490,10 +490,7 @@ void DdsPipe::discovered_topic_nts_(
             current_topics_.emplace(topic, false);
 
             // decide activation under lock, perform it after unlocking
-            if (enabled_ && allowed_topics_->is_topic_allowed(*topic))
-            {
-                need_activate = true;
-            }
+            need_activate = enabled_ && allowed_topics_->is_topic_allowed(*topic);
         }
         else if (configuration_.remove_unused_entities && topic->topic_discoverer() != DEFAULT_PARTICIPANT_ID)
         {
@@ -589,8 +586,15 @@ void DdsPipe::create_new_bridge_nts_(
 
         std::unique_ptr<DdsBridge> new_bridge;
 
+        bool filter_partition_empty;
+        {
+            // Avoid possible datarace with partitions filter
+            std::lock_guard<std::mutex> lock(bridges_mutex_);
+            filter_partition_empty = filter_partition_.empty();
+        }
+
         // check if there is a filter partition list
-        if (filter_partition_.empty())
+        if (filter_partition_empty)
         {
             // Create bridge instance
             new_bridge = std::make_unique<DdsBridge>(topic,
@@ -667,12 +671,7 @@ void DdsPipe::activate_topic_nts_(
     {
         std::lock_guard<std::mutex> lock(bridges_mutex_);
         auto it = bridges_.find(topic);
-        if (it == bridges_.end())
-        {
-            // Create without holding the lock during enable
-            // (create_new_bridge_nts_ already handles the two-phase internally)
-        }
-        else
+        if (it != bridges_.end())
         {
             to_enable = it->second.get();
         }
@@ -764,6 +763,9 @@ void DdsPipe::update_readers_track(
 void DdsPipe::update_filter(
         const std::set<std::string> filter_partition_set)
 {
+    // Avoid possible datarace with partitions filter
+    std::lock_guard<std::mutex> lock(bridges_mutex_);
+
     filter_partition_ = filter_partition_set;
 }
 
