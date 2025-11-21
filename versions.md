@@ -5,6 +5,29 @@ The *Forthcoming* section includes those features added in `main` branch that ar
 
 ## Forthcoming
 
+# eProsima DDS Pipe v1.4.0
+
+This release will include the following **features**:
+* New XML Dynamic Types participant
+* Support `original_writer_info` forwarding
+* Support `partitions` in DDS-Record-Replay & Fast-DDS-spy
+
+This release will include the following **internal changes &  bugfixes**:
+* Expose `BaseReader` and `InternalReader` functions in Windows DLLs
+* Fix thread sanitizer warnings with partitions
+
+This release includes the following **CI improvements**:
+* Fix nightly CI
+
+This release includes the following *dependencies update*:
+
+|  | Repository | Old Version | New Version |
+|---|---|---|---|
+| Foonathan Memory Vendor | [eProsima/foonathan_memory_vendor](https://github.com/eProsima/foonathan_memory_vendor) | [v1.3.1](https://github.com/eProsima/foonathan_memory_vendor/releases/tag/v1.3.1) | [v1.3.1](https://github.com/eProsima/foonathan_memory_vendor/releases/tag/v1.3.1) |
+| Fast CDR | [eProsima/Fast-CDR](https://github.com/eProsima/Fast-CDR) | [v2.3.0](https://github.com/eProsima/Fast-CDR/releases/tag/v2.3.0) | [v2.3.4](https://github.com/eProsima/Fast-CDR/releases/tag/v2.3.4) |
+| Fast DDS | [eProsima/Fast-DDS](https://github.com/eProsima/Fast-DDS) | [v3.3.0](https://github.com/eProsima/Fast-DDS/releases/tag/v3.3.0) | [v3.4.1](https://github.com/eProsima/Fast-DDS/releases/tag/v3.4.1) |
+| Dev Utils | [eProsima/dev-utils](https://github.com/eProsima/dev-utils) | [v1.3.0](https://github.com/eProsima/dev-utils/releases/tag/v1.3.0) | [v1.4.0](https://github.com/eProsima/dev-utils/releases/tag/v1.4.0) |
+
 # eProsima DDS Pipe v1.3.0
 
 This release will include the following *features*:
