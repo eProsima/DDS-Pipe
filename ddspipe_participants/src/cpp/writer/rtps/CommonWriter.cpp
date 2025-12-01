@@ -228,7 +228,8 @@ utils::ReturnCode CommonWriter::fill_to_send_data_(
     }
 
     // Set keys in case topic has keys
-    if (topic_.topic_qos.keyed)
+    // Would it make sense tyo check if instance is defined here?
+    if (topic_.topic_qos.keyed && data.instanceHandle.isDefined())
     {
         to_send_change_to_fill->instanceHandle = data.instanceHandle;
     }

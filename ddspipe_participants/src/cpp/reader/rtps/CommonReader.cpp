@@ -252,7 +252,7 @@ void CommonReader::fill_received_data_(
     }
 
     // Set Instance Handle to data_to_fill
-    if (topic_.topic_qos.keyed)
+    if (topic_.topic_qos.keyed && data_to_fill.instanceHandle.isDefined())
     {
         data_to_fill.instanceHandle = received_change.instanceHandle;
     }

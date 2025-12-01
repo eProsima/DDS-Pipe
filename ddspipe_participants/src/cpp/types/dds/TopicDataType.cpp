@@ -105,13 +105,18 @@ uint32_t TopicDataType::calculate_serialized_size(
 bool TopicDataType::compute_key(
         fastdds::rtps::SerializedPayload_t& payload,
         fastdds::rtps::InstanceHandle_t& handle,
-        bool /* = false */)
+        bool /*false*/)
 {
     // NOTE: This method returns false because Fast DDS always sends the KEY_HASH in inline QoS.
     // As a result, the reader will never call this method when communicating with a Fast DDS writer.
-    // This would only be needed if receiving data from another DDS vendor that omits the KEY_HASH.
-    // Workaround in that case (different DDS vendor that omits KEY_HASH): set expects_inline_qos_ to
-    // true in DataReaderQos
+    // This would only be needed if receiving data from another DDS vendor that omits the KEY_HASH in
+    // inline QoS AND if the router does not know how to compute that key. Thus, there is no way to
+    // find the corresponding instance.
+    // In that case, using RTPS (Simple) participants in the router may be of help, since they don't
+    // handle instances at all and will leave that logic to the endpoints.
+    // Another workaround for that case (different DDS vendor that omits KEY_HASH and compute_key unknown to router)
+    // could be to set expects_inline_qos_ to true in the DataReaderQos, since that should force the writer to
+    // send inline QoS with the KEY_HASH. However, this depends on the DDS vendor implementation.
     return false;
 }
 
