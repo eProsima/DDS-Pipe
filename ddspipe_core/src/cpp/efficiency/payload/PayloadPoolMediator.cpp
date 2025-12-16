@@ -71,6 +71,32 @@ utils::ReturnCode PayloadPoolMediator::write(
     return writer->write(data, handle);
 }
 
+utils::ReturnCode PayloadPoolMediator::dispose(
+        fastdds::dds::DataWriter* writer,
+        types::RtpsPayloadData* data,
+        const fastdds::rtps::InstanceHandle_t& handle)
+{
+    // Lock the mutex_ to ensure that the payload hasn't changed when we retrieve it in get_payload.
+    std::lock_guard<std::mutex> lock(mutex_);
+
+    payload_ = &data->payload;
+
+    return writer->dispose(data, handle);
+}
+
+utils::ReturnCode PayloadPoolMediator::unregister_instance(
+        fastdds::dds::DataWriter* writer,
+        types::RtpsPayloadData* data,
+        const fastdds::rtps::InstanceHandle_t& handle)
+{
+    // Lock the mutex_ to ensure that the payload hasn't changed when we retrieve it in get_payload.
+    std::lock_guard<std::mutex> lock(mutex_);
+
+    payload_ = &data->payload;
+
+    return writer->unregister_instance(data, handle);
+}
+
 bool PayloadPoolMediator::get_payload(
         uint32_t size,
         eprosima::fastdds::rtps::SerializedPayload_t& payload)
