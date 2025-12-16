@@ -166,7 +166,7 @@ utils::ReturnCode CommonWriter::write_nts_(
     // slow if they don't have payloads attached, but it is left this way in order to ensure compatibility with other
     // vendors and the standard.
 
-    switch(rtps_data.kind){
+    switch (rtps_data.kind){
         case core::types::ChangeKind::ALIVE:
             // WARNING: At the time of this writing, there is no DataWriter API to write both with parameters and instance handle.
             // However, the current implementation of write without instance handle always computes its value via type support
@@ -181,7 +181,7 @@ utils::ReturnCode CommonWriter::write_nts_(
         case core::types::ChangeKind::NOT_ALIVE_DISPOSED_UNREGISTERED:
         {
             utils::ReturnCode ret = payload_pool_->dispose(writer_, &rtps_data, rtps_data.instanceHandle);
-            if(ret != utils::ReturnCode::RETCODE_OK)
+            if (ret != utils::ReturnCode::RETCODE_OK)
             {
                 return ret;
             }
