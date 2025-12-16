@@ -112,7 +112,6 @@ void CommonReader::on_data_available(
     // received is not possible with the current API. Thus, the Monitor will be notified once for each on_data_available
     // and the number of messages received will be slightly inaccurate.
     monitor_msg_rx(topic_, participant_id_);
-
     if (enabled_)
     {
         on_data_available_();
@@ -333,7 +332,7 @@ void CommonReader::fill_received_data_(
                 break;
 
             case fastdds::dds::InstanceStateKind::NOT_ALIVE_NO_WRITERS_INSTANCE_STATE:
-                data_to_fill.kind = ChangeKind::NOT_ALIVE_DISPOSED_UNREGISTERED;
+                data_to_fill.kind = ChangeKind::NOT_ALIVE_UNREGISTERED;
                 break;
 
             default:
