@@ -258,6 +258,11 @@ fastdds::dds::DataWriterQos CommonWriter::reckon_writer_qos_() const noexcept
     // Set minimum deadline so it matches with everything
     qos.deadline().period = eprosima::fastdds::dds::Duration_t(0);
 
+    // Setting this to false keeps the behavior of the original writer
+    // If only _D (only dispose) was sent, the expected is that only _D (only dispose) is forwarded
+    // If only U_ (only unregister) was sent, the expected is that only U_ (only unregister) is forwarded
+    qos.writer_data_lifecycle().autodispose_unregistered_instances = false;
+
     return qos;
 }
 
