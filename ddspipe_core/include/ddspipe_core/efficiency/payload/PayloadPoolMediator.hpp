@@ -136,7 +136,8 @@ public:
      *
      * @return ReturnCode::OK if the instance is correctly disposed or a ReturnCode related to the specific error otherwise.
      */
-    DDSPIPE_CORE_DllAPI utils::ReturnCode dispose(
+    DDSPIPE_CORE_DllAPI
+    utils::ReturnCode dispose(
             fastdds::dds::DataWriter* writer,
             types::RtpsPayloadData* data,
             const fastdds::rtps::InstanceHandle_t& handle);
@@ -156,7 +157,8 @@ public:
      *
      * @return ReturnCode::OK if the instance is correctly unregistered or a ReturnCode related to the specific error otherwise.
      */
-    DDSPIPE_CORE_DllAPI utils::ReturnCode unregister_instance(
+    DDSPIPE_CORE_DllAPI
+    utils::ReturnCode unregister_instance(
             fastdds::dds::DataWriter* writer,
             types::RtpsPayloadData* data,
             const fastdds::rtps::InstanceHandle_t& handle);
