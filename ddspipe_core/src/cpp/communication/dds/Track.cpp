@@ -296,7 +296,7 @@ void Track::transmit_() noexcept
 
             ret = writer_it.second->write(*data);
 
-            if (ret() != utils::ReturnCode::RETCODE_OK)
+            if (ret != utils::ReturnCode::RETCODE_OK)
             {
                 EPROSIMA_LOG_WARNING(
                     DDSPIPE_TRACK,
