@@ -150,6 +150,7 @@ void CommonReader::on_data_available(
     // received is not possible with the current API. Thus, the Monitor will be notified once for each on_data_available
     // and the number of messages received will be slightly inaccurate.
     monitor_msg_rx(topic_, participant_id_);
+
     if (enabled_)
     {
         on_data_available_();
@@ -374,6 +375,9 @@ void CommonReader::fill_received_data_(
                 break;
 
             default:
+                EPROSIMA_LOG_WARNING(DDSPIPE_DDS_READER,
+                        "Received unknown InstanceStateKind from Fast DDS: " << static_cast<int>(info.instance_state) <<
+                        ". Setting ChangeKind to NOT_ALIVE_UNREGISTERED by default.");
                 data_to_fill.kind = ChangeKind::NOT_ALIVE_UNREGISTERED;
                 break;
         }

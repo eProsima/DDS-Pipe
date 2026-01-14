@@ -181,7 +181,7 @@ utils::ReturnCode CommonWriter::write_nts_(
         case core::types::ChangeKind::NOT_ALIVE_DISPOSED_UNREGISTERED:
         {
             utils::ReturnCode ret = payload_pool_->dispose(writer_, &rtps_data, rtps_data.instanceHandle);
-            if (ret != utils::ReturnCode::RETCODE_OK)
+            if (ret == utils::ReturnCode::RETCODE_OK)
             {
                 return ret;
             }
