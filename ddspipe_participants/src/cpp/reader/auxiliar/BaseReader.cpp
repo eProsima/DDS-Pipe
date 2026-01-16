@@ -186,6 +186,7 @@ void BaseReader::disable_nts_() noexcept
     // It does nothing. Override this method so it has functionality.
 }
 
+// TODO. juan
 core::types::Guid BaseReader::guid() const
 {
     throw utils::UnsupportedException("guid method not allowed for non RTPS readers.");
@@ -204,6 +205,18 @@ uint64_t BaseReader::get_unread_count() const
 core::types::DdsTopic BaseReader::topic() const
 {
     throw utils::UnsupportedException("topic method not allowed for non RTPS readers.");
+}
+
+void BaseReader::update_partitions(
+        std::set<std::string> partitions_set)
+{
+    //throw utils::UnsupportedException("topic method not allowed for non RTPS readers.");
+}
+
+void BaseReader::update_content_topic_filter(
+        std::string expression)
+{
+    //throw utils::UnsupportedException("topic method not allowed for non RTPS readers.");
 }
 
 std::ostream& operator <<(

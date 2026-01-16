@@ -130,6 +130,16 @@ public:
     DDSPIPE_CORE_DllAPI
     virtual types::DdsTopic topic() const = 0;
 
+    // TODO bool/retcode
+    DDSPIPE_CORE_DllAPI
+    virtual void update_partitions(
+            std::set<std::string> partitions_set) = 0;
+
+    // TODO bool/retcode
+    DDSPIPE_CORE_DllAPI
+    virtual void update_content_topic_filter(
+            std::string expression) = 0;
+
     DDSPIPE_CORE_DllAPI
     virtual types::ParticipantId participant_id() const = 0;
     /////////////////////////

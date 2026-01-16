@@ -158,6 +158,12 @@ core::types::DdsTopic CommonReader::topic() const noexcept
     return topic_;
 }
 
+// void CommonReader::update_content_topic_filter(std::string expression)
+// {
+//     return;
+//     //filtered_topic_->set_filter_expression(expression, {});
+// }
+
 utils::ReturnCode CommonReader::take_nts_(
         std::unique_ptr<core::IRoutingData>& data) noexcept
 {

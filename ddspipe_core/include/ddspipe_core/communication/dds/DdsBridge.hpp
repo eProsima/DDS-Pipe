@@ -154,6 +154,20 @@ public:
             std::string guid,
             std::string partition);
 
+    /**
+     * TODO
+     */
+    DDSPIPE_CORE_DllAPI
+    void update_partitions(
+            std::set<std::string> partitions_set);
+
+    /**
+     * TODO
+     */
+    DDSPIPE_CORE_DllAPI
+    void update_topic_filter(
+            const std::string& expression);
+
 protected:
 
     /**

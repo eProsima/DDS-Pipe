@@ -19,6 +19,15 @@
 
 #include <cpp_utils/utils.hpp>
 
+#include <fastdds/dds/domain/DomainParticipant.hpp>
+#include <fastdds/dds/domain/DomainParticipantFactory.hpp>
+#include <fastdds/dds/subscriber/DataReader.hpp>
+#include <fastdds/dds/subscriber/DataReaderListener.hpp>
+#include <fastdds/dds/subscriber/qos/DataReaderQos.hpp>
+#include <fastdds/dds/subscriber/SampleInfo.hpp>
+#include <fastdds/dds/subscriber/Subscriber.hpp>
+#include <fastdds/dds/topic/TypeSupport.hpp>
+
 namespace eprosima {
 namespace ddspipe {
 namespace core {
@@ -355,6 +364,8 @@ void DdsBridge::add_writers_to_tracks_nts_(
             const auto topic = create_topic_for_participant_nts_(participant);
             auto reader = participant->create_reader(*topic);
 
+            //reader->get
+
             tracks_[id] = std::make_unique<Track>(
                 topic_,
                 id,
@@ -368,6 +379,24 @@ void DdsBridge::add_writers_to_tracks_nts_(
                 tracks_[id]->enable();
             }
         }
+    }
+}
+
+void DdsBridge::update_partitions(
+        std::set<std::string> partitions_set)
+{
+    for(const auto& track: tracks_)
+    {
+        track.second->update_reader_partitions(partitions_set);
+    }
+}
+
+void DdsBridge::update_topic_filter(
+        const std::string& expression)
+{
+    for(const auto& track: tracks_)
+    {
+        track.second->update_reader_content_filter(expression);
     }
 }
 

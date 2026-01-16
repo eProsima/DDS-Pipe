@@ -24,6 +24,8 @@
 #include <ddspipe_participants/reader/dds/CommonReader.hpp>
 #include <ddspipe_participants/types/dds/TopicDataType.hpp>
 
+#include <fastdds/dds/xtypes/dynamic_types/DynamicType.hpp>
+
 #include <utils/utils.hpp>
 
 namespace eprosima {
@@ -69,11 +71,52 @@ void CommonReader::init()
                       participant_id_ << " in topic " << topic_ << ".");
     }
 
+    // TODO. danip
+
+    auto topic_tmp = dds_participant_->find_topic(topic_.topic_name(), 10);
+
+    std::string type_name = topic_tmp->get_type_name();
+
+
+    /*std::string type_name = topic_tmp->get_type_name();
+    
+    eprosima::fastdds::dds::xtypes::TypeObjectPair type_objects;
+    auto& reg = eprosima::fastdds::dds::DomainParticipantFactory::get_instance()->type_object_registry();
+
+    if (eprosima::fastdds::dds::RETCODE_OK != reg.get_type_objects(type_name, type_objects))
+    {
+        std::cerr << "No TypeObject registered for type: " << type_name << "\n";
+        // For fastddsgen types: generate with -typeobject / don’t disable TypeObjectSupport
+        return;
+    }*/
+
+    
+
+    
+    //dds_participant_->type
+
+    //std::string expression;
+    //expression = "message like '*'";
+    //std::vector<std::string> parameters = { "20" };
+
+    auto tmp = filtered_topic_;
+
+    filtered_topic_ = dds_participant_->create_contentfilteredtopic(topic_.topic_name() + "_filtered", topic_tmp, "", {});
+    //filtered_topic_ = dds_participant_->create_contentfilteredtopic(topic_.topic_name() + "_filtered", topic_tmp, "message like 'H*'", {});
+    if (nullptr == filtered_topic_)
+    {
+        // Error
+        std::cout << "ERROR CREATING CONTENT FILTERTOPIC\n";
+        filtered_topic_ = tmp;
+        filtered_topic_->set_filter_expression("", {});
+    }
+
     // Create CommonReader
     // Listener must be set in creation as no callbacks should be missed
     // It is safe to do so here as object is already created and callbacks do not require anything set in this method
     reader_ = dds_subscriber_->create_datareader(
-        dds_topic_,
+        //dds_topic_,
+        filtered_topic_,
         reckon_reader_qos_(),
         this,
         eprosima::fastdds::dds::StatusMask::all(),
@@ -90,6 +133,8 @@ void CommonReader::init()
     // This is done just to ensure that the reader is not registered before any other method modifying the reader pointer
     // is called, opening a window for potential data races. Although Fast DDS ensures that this cannot happen, this
     // procedure protects against future bad practices introducing the aforementioned data races.
+
+    // if (!spy_filter)
     if (fastdds::dds::RETCODE_OK != reader_->enable())
     {
         dds_subscriber_->delete_datareader(reader_);
@@ -222,6 +267,10 @@ utils::ReturnCode CommonReader::take_nts_(
 
 void CommonReader::enable_nts_() noexcept
 {
+    // TODO. danip
+    // if (spy_filter)
+    // reader_->enable();
+
     // Notify messages reception in case any were received while disabled
     // NOTE: unlike in the RTPS case, samples received while disabled will be processed even if the topic is best_effort
     on_data_available_();
@@ -346,6 +395,30 @@ void CommonReader::fill_received_data_(
     {
         data_to_fill.kind = ChangeKind::ALIVE;
     }
+}
+
+void CommonReader::update_partitions(
+        std::set<std::string> partitions_set)
+{
+    fastdds::dds::SubscriberQos sub_qos = fastdds::dds::SUBSCRIBER_QOS_DEFAULT;
+    for(const std::string& partition: partitions_set)
+    {
+        sub_qos.partition().push_back(partition.c_str());
+    }
+
+    dds_subscriber_->set_qos(sub_qos);
+}
+
+void CommonReader::update_content_topic_filter(std::string expression)
+{
+    // partitions
+    /*fastdds::dds::SubscriberQos sub_qos = fastdds::dds::SUBSCRIBER_QOS_DEFAULT;
+    sub_qos.partition().push_back(expression.c_str());
+    dds_subscriber_->set_qos(sub_qos);*/
+
+
+    // content_topicfilter
+    filtered_topic_->set_filter_expression(expression, {});
 }
 
 } /* namespace dds */
