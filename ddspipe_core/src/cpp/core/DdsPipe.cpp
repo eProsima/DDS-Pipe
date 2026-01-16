@@ -760,6 +760,41 @@ void DdsPipe::update_readers_track(
     }
 }
 
+void DdsPipe::update_partitions(
+        std::set<std::string> partitions_set)
+{
+    // get the targets (with lock)
+    std::vector<DdsBridge*> targets;
+    {
+        std::lock_guard<std::mutex> lock(bridges_mutex_);
+
+        for (const auto& pair : bridges_)
+        {
+            pair.second->update_partitions(partitions_set);
+        }
+    }
+}
+
+void DdsPipe::update_content_filter(
+        const std::string& topic_name,
+        const std::string& expression)
+{
+    // get the targets (with lock)
+    std::vector<DdsBridge*> targets;
+    {
+        std::lock_guard<std::mutex> lock(bridges_mutex_);
+
+        for (const auto& pair : bridges_)
+        {
+            if(pair.first->m_topic_name == topic_name)
+            {
+                pair.second->update_topic_filter(expression);
+            }
+        }
+    }
+}
+
+
 void DdsPipe::update_filter(
         const std::set<std::string> filter_partition_set)
 {

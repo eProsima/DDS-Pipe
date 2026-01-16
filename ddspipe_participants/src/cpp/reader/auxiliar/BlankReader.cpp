@@ -64,6 +64,19 @@ core::types::DdsTopic BlankReader::topic() const
     throw utils::UnsupportedException("topic method not allowed for non RTPS readers.");
 }
 
+void BlankReader::update_partitions(
+        std::set<std::string> partitions_set)
+{
+    //throw utils::UnsupportedException("topic method not allowed for non RTPS readers.");
+}
+
+void BlankReader::update_content_topic_filter(
+        std::string expression)
+{
+    //throw utils::UnsupportedException("topic method not allowed for non RTPS readers.");
+    return;
+}
+
 core::types::ParticipantId BlankReader::participant_id() const
 {
     throw utils::UnsupportedException("participant_id method not allowed for non RTPS readers.");

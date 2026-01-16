@@ -181,6 +181,22 @@ void SchemaParticipant::clear_topic_partitions()
     partition_names.clear();
 }
 
+eprosima::fastdds::dds::ContentFilteredTopic* SchemaParticipant::create_contentfilteredtopic(
+        const std::string& name,
+        eprosima::fastdds::dds::Topic* related_topic,
+        const std::string& filter_expression,
+        const std::vector<std::string>& expression_parameters)
+{
+    return nullptr;
+}
+
+eprosima::fastdds::dds::Topic* SchemaParticipant::find_topic(
+        const std::string& topic_name,
+        const fastdds::dds::Duration_t& timeout)
+{
+    return nullptr;
+}
+
 } /* namespace participants */
 } /* namespace ddspipe */
 } /* namespace eprosima */

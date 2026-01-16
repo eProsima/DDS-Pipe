@@ -61,6 +61,15 @@ public:
     void simulate_data_reception(
             std::unique_ptr<core::IRoutingData>&& data) noexcept;
 
+    //! Update method to change the partitions in the content_topicfilter
+    DDSPIPE_PARTICIPANTS_DllAPI
+    void update_partitions(
+            std::set<std::string> partitions_set) override;
+
+    DDSPIPE_PARTICIPANTS_DllAPI
+    void update_content_topic_filter(
+            std::string expression) override;
+
 protected:
 
     DDSPIPE_PARTICIPANTS_DllAPI

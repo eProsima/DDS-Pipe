@@ -693,6 +693,28 @@ void CommonParticipant::clear_topic_partitions()
     partition_names.clear();
 }
 
+eprosima::fastdds::dds::ContentFilteredTopic* CommonParticipant::create_contentfilteredtopic(
+        const std::string& name,
+        eprosima::fastdds::dds::Topic* related_topic,
+        const std::string& filter_expression,
+        const std::vector<std::string>& expression_parameters)
+{
+    return nullptr;
+
+    /*return rtps_participant_->create_contentfilteredtopic(
+            name,
+            related_topic,
+            filter_expression,
+            expression_parameters);*/
+}
+
+eprosima::fastdds::dds::Topic* CommonParticipant::find_topic(
+        const std::string& topic_name,
+        const fastdds::dds::Duration_t& timeout)
+{
+    return nullptr;
+}
+
 } /* namespace rtps */
 } /* namespace participants */
 } /* namespace ddspipe */

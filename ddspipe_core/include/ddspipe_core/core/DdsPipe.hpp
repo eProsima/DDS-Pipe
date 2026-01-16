@@ -149,6 +149,15 @@ public:
     void update_filter(
             const std::set<std::string> filter_partition_set);
 
+    DDSPIPE_CORE_DllAPI
+    void update_partitions(
+        std::set<std::string> partitions_set);
+
+    DDSPIPE_CORE_DllAPI
+    void update_content_filter(
+            const std::string& topic_name,
+            const std::string& expression);
+
 protected:
 
     /////////////////////////

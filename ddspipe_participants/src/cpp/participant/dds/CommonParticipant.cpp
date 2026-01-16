@@ -190,6 +190,7 @@ std::shared_ptr<core::IReader> CommonParticipant::create_reader(
     // Get the DDS Topic associated (create it if it does not exist)
     fastdds::dds::Topic* fastdds_topic = topic_related_(dds_topic);
 
+    // TODO. danip
     if (dds_topic.topic_qos.has_partitions() || dds_topic.topic_qos.has_ownership())
     {
         // Notice that MultiReader does not require an init call
@@ -573,6 +574,45 @@ void CommonParticipant::clear_topic_partitions()
 {
     partition_names.clear();
 }
+
+eprosima::fastdds::dds::ContentFilteredTopic* CommonParticipant::create_contentfilteredtopic(
+        const std::string& name,
+        eprosima::fastdds::dds::Topic* related_topic,
+        const std::string& filter_expression,
+        const std::vector<std::string>& expression_parameters)
+{
+    //return nullptr;
+    //auto participant = fastdds::dds::DomainParticipantFactory::get_instance();
+
+    return dds_participant_->create_contentfilteredtopic(
+            name,
+            related_topic,
+            filter_expression,
+            expression_parameters);
+}
+
+eprosima::fastdds::dds::Topic* CommonParticipant::find_topic(
+        const std::string& topic_name,
+        const fastdds::dds::Duration_t& timeout)
+{
+    return dds_participant_->find_topic(topic_name, timeout);
+}
+
+// TODO. danip
+/*eprosima::fastdds::dds::ContentFilteredTopic* create_filtered_topic(
+        const std::string& filtered_name,
+        eprosima::fastdds::dds::Topic* base_topic,
+        const std::string& filter_expression,
+        const std::vector<std::string>& parameters)
+{
+    auto participant = fastdds::dds::DomainParticipantFactory::get_instance();
+
+    return participant->create_contentfilteredtopic(
+            filtered_name,
+            base_topic,
+            filter_expression,
+            parameters);
+}*/
 
 } /* namespace dds */
 } /* namespace participants */
