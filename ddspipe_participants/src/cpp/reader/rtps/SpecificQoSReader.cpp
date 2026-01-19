@@ -40,7 +40,8 @@ SpecificQoSReader::SpecificQoSReader(
         reckon_reader_attributes_(topic),
         reckon_topic_description_(topic),
         reckon_reader_qos_(topic),
-        blocked_filtered_guidlist)
+        blocked_filtered_guidlist,
+        false) // TODO. danip
     , discovery_database_(discovery_database)
 {
 }
@@ -59,7 +60,8 @@ SpecificQoSReader::SpecificQoSReader(
         reckon_reader_attributes_(topic),
         reckon_topic_description_(topic),
         filter_reader_qos_(topic, partitions),
-        blocked_filtered_guidlist)
+        blocked_filtered_guidlist,
+        false) // TODO. danip
     , discovery_database_(discovery_database)
 {
 }

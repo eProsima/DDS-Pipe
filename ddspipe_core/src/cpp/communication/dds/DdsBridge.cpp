@@ -62,36 +62,6 @@ DdsBridge::DdsBridge(
     logDebug(DDSPIPE_DDSBRIDGE, "DdsBridge " << *this << " created.");
 }
 
-DdsBridge::DdsBridge(
-        const utils::Heritable<DistributedTopic>& topic,
-        const std::shared_ptr<ParticipantsDatabase>& participants_database,
-        const std::shared_ptr<PayloadPool>& payload_pool,
-        const std::shared_ptr<utils::SlotThreadPool>& thread_pool,
-        const RoutesConfiguration& routes_config,
-        const bool remove_unused_entities,
-        const std::vector<core::types::ManualTopic>& manual_topics,
-        const std::set<std::string> filter_partition)
-    : Bridge(participants_database, payload_pool, thread_pool)
-    , topic_(topic)
-    , manual_topics_(manual_topics)
-    , filter_partition_(filter_partition)
-{
-    logDebug(DDSPIPE_DDSBRIDGE, "Creating DdsBridge " << *this << ".");
-
-    routes_ = routes_config();
-
-    if (remove_unused_entities && topic->topic_discoverer() != DEFAULT_PARTICIPANT_ID)
-    {
-        create_writer(topic->topic_discoverer());
-    }
-    else
-    {
-        create_all_tracks_with_filter(filter_partition_);
-    }
-
-    logDebug(DDSPIPE_DDSBRIDGE, "DdsBridge " << *this << " created.");
-}
-
 DdsBridge::~DdsBridge()
 {
     logDebug(DDSPIPE_DDSBRIDGE, "Destroying DdsBridge " << *this << ".");
@@ -188,59 +158,6 @@ void DdsBridge::create_all_tracks_()
     add_writers_to_tracks_nts_(writers);
 }
 
-void DdsBridge::create_all_tracks_with_filter(
-        const std::set<std::string> filter_partition_set)
-{
-    std::lock_guard<std::mutex> lock(mutex_);
-
-    const auto& ids = participants_->get_participants_ids();
-
-    // Figure out what writers need to be created
-    std::set<ParticipantId> writers_to_create;
-
-    for (const ParticipantId& id : ids)
-    {
-        const auto& routes_it = routes_.find(id);
-
-        if (routes_it != routes_.end())
-        {
-            // The reader has a route. Create only the writers in the route.
-
-            // We are not going to modify the writers_ids in this route. We can get the writers_ids by reference.
-            const auto& writers_ids = routes_it->second;
-            writers_to_create.insert(writers_ids.begin(), writers_ids.end());
-        }
-        else
-        {
-            // The reader doesn't have a route. Create every writer (+ itself if repeater)
-            auto writers_ids = ids;
-
-            if (!participants_->get_participant(id)->is_repeater())
-            {
-                // The participant is not a repeater. Do not add its writer.
-                writers_ids.erase(id);
-            }
-
-            writers_to_create.insert(writers_ids.begin(), writers_ids.end());
-        }
-    }
-
-    std::map<std::string, std::string> curr_partition_map;
-
-    // Create the writers.
-    std::map<ParticipantId, std::shared_ptr<IWriter>> writers;
-
-    for (const auto& id : writers_to_create)
-    {
-        std::shared_ptr<IParticipant> participant = participants_->get_participant(id);
-        const auto topic = create_topic_for_participant_nts_(participant);
-        writers[id] = participant->create_writer(*topic);
-    }
-
-    // Add the writers to the tracks they have routes for.
-    add_writers_to_tracks_with_filter_nts_(writers, filter_partition_set);
-}
-
 void DdsBridge::create_writer(
         const ParticipantId& participant_id)
 {
@@ -255,12 +172,6 @@ void DdsBridge::create_writer(
 
     // Add the writer to the tracks it has routes for.
     add_writer_to_tracks_nts_(participant_id, writer);
-}
-
-void DdsBridge::update_readers_track(
-        const std::set<std::string> filter_partition_set)
-{
-    create_all_tracks_with_filter(filter_partition_set);
 }
 
 void DdsBridge::remove_writer(
@@ -400,147 +311,6 @@ void DdsBridge::update_topic_filter(
     }
 }
 
-void DdsBridge::add_writers_to_tracks_with_filter_nts_(
-        std::map<ParticipantId, std::shared_ptr<IWriter>>& writers,
-        const std::set<std::string> filter_partition_set)
-{
-    // Add writers to the tracks of the readers in their route.
-    // If the readers in their route don't exist, create them with their tracks.
-    for (const ParticipantId& id : participants_->get_participants_ids())
-    {
-        // Select the necessary writers
-        std::map<ParticipantId, std::shared_ptr<IWriter>> writers_of_track;
-
-        const auto& routes_it = routes_.find(id);
-
-        if (routes_it != routes_.end())
-        {
-            // The reader has a route. Add only the writers in the route.
-            const auto& writers_in_route = routes_it->second;
-
-            for (const auto& writer_id : writers_in_route)
-            {
-                if (writers.count(writer_id) >= 1)
-                {
-                    writers_of_track[writer_id] = writers[writer_id];
-                }
-            }
-        }
-        else
-        {
-            // The reader doesn't have a route. Add every writer (+ itself if repeater)
-            writers_of_track = writers;
-
-            if (!participants_->get_participant(id)->is_repeater())
-            {
-                // The participant is not a repeater. Do not add its writer.
-                writers_of_track.erase(id);
-            }
-        }
-
-        if (writers_of_track.size() == 0)
-        {
-            // There are no writers in the route. There is nothing to do. Skip participant.
-            continue;
-        }
-
-        bool tmp;
-
-        // Update the track.
-        std::shared_ptr<IParticipant> participant = participants_->get_participant(id);
-        const auto topic = create_topic_for_participant_nts_(participant);
-
-        bool pass = false;
-        // check filter of the topic
-        int i, n;
-        std::string curr_partition;
-        for (const auto& pair: topic->partition_name)
-        {
-            i = 0;
-            n = pair.second.size();
-            curr_partition = "";
-
-            while (i < n)
-            {
-                if (pair.second[i] == '|')
-                {
-                    for (const std::string filter_p: filter_partition_set)
-                    {
-                        if (utils::match_pattern(filter_p, curr_partition) ||
-                                utils::match_pattern(curr_partition, filter_p))
-                        {
-                            pass = true;
-                            break;
-                        }
-                    }
-
-                    curr_partition = "";
-                }
-                else
-                {
-                    curr_partition += pair.second[i];
-                }
-                i++;
-            }
-
-            // empty or last partition
-            for (const std::string filter_p: filter_partition_set)
-            {
-                if (utils::match_pattern(filter_p, curr_partition) ||
-                        utils::match_pattern(curr_partition, filter_p))
-                {
-                    pass = true;
-                    break;
-                }
-            }
-        }
-
-        if (filter_partition_set.empty())
-        {
-            auto reader = participant->create_reader(*topic);
-
-            tracks_[id] = std::make_unique<Track>(
-                topic_,
-                id,
-                std::move(reader),
-                std::move(writers_of_track),
-                payload_pool_,
-                thread_pool_);
-
-            tracks_[id]->enable();
-        }
-        else
-        {
-
-            std::set<std::string> topic_partition_set;
-            if (pass)
-            {
-                topic_partition_set = filter_partition_set;
-            }
-
-            if (!topic_partition_set.empty())
-            {
-                auto reader = participant->create_reader_with_filter(*topic, topic_partition_set);
-
-                tracks_[id] = std::make_unique<Track>(
-                    topic_,
-                    id,
-                    std::move(reader),
-                    std::move(writers_of_track),
-                    payload_pool_,
-                    thread_pool_);
-
-                tracks_[id]->enable();
-            }
-            else
-            {
-                tracks_.erase(id);
-                enabled_ = false;
-            }
-        }
-    }
-}
-
 utils::Heritable<DistributedTopic> DdsBridge::create_topic_for_participant_nts_(
         const std::shared_ptr<IParticipant>& participant) noexcept
 {
@@ -581,19 +351,6 @@ std::ostream& operator <<(
 {
     os << "DdsBridge{" << bridge.topic_ << "}";
     return os;
-}
-
-void DdsBridge::add_filter_partition(
-        const std::set<std::string> filter_partition)
-{
-    filter_partition_ = filter_partition;
-}
-
-void DdsBridge::add_partition_to_topic(
-        std::string guid,
-        std::string partition)
-{
-    topic_->partition_name[guid] = partition;
 }
 
 } /* namespace core */

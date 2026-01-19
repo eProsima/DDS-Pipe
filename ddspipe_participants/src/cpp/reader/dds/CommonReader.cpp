@@ -74,41 +74,18 @@ void CommonReader::init()
     // TODO. danip
 
     auto topic_tmp = dds_participant_->find_topic(topic_.topic_name(), 10);
-
-    std::string type_name = topic_tmp->get_type_name();
-
-
-    /*std::string type_name = topic_tmp->get_type_name();
-    
-    eprosima::fastdds::dds::xtypes::TypeObjectPair type_objects;
-    auto& reg = eprosima::fastdds::dds::DomainParticipantFactory::get_instance()->type_object_registry();
-
-    if (eprosima::fastdds::dds::RETCODE_OK != reg.get_type_objects(type_name, type_objects))
-    {
-        std::cerr << "No TypeObject registered for type: " << type_name << "\n";
-        // For fastddsgen types: generate with -typeobject / don’t disable TypeObjectSupport
-        return;
-    }*/
-
-    
-
-    
-    //dds_participant_->type
-
-    //std::string expression;
-    //expression = "message like '*'";
-    //std::vector<std::string> parameters = { "20" };
-
-    auto tmp = filtered_topic_;
+    //auto tmp = filtered_topic_;
 
     filtered_topic_ = dds_participant_->create_contentfilteredtopic(topic_.topic_name() + "_filtered", topic_tmp, "", {});
-    //filtered_topic_ = dds_participant_->create_contentfilteredtopic(topic_.topic_name() + "_filtered", topic_tmp, "message like 'H*'", {});
     if (nullptr == filtered_topic_)
     {
-        // Error
-        std::cout << "ERROR CREATING CONTENT FILTERTOPIC\n";
+        throw utils::InitializationException(
+                  utils::Formatter() << "Error creating ContenTopicFilter for Participant " <<
+                      participant_id_ << " in topic " << topic_ << ".");
+
+        /*std::cout << "ERROR CREATING CONTENT FILTERTOPIC\n";
         filtered_topic_ = tmp;
-        filtered_topic_->set_filter_expression("", {});
+        filtered_topic_->set_filter_expression("", {});*/
     }
 
     // Create CommonReader
@@ -134,14 +111,16 @@ void CommonReader::init()
     // is called, opening a window for potential data races. Although Fast DDS ensures that this cannot happen, this
     // procedure protects against future bad practices introducing the aforementioned data races.
 
-    // if (!spy_filter)
-    if (fastdds::dds::RETCODE_OK != reader_->enable())
+    if (!is_fastddsspy_)
     {
-        dds_subscriber_->delete_datareader(reader_);
-        reader_ = nullptr;
-        throw utils::InitializationException(
-                  utils::Formatter() << "Error enabling DataReader for Participant " <<
-                      participant_id_ << " in topic " << topic_ << ".");
+        if (fastdds::dds::RETCODE_OK != reader_->enable())
+        {
+            dds_subscriber_->delete_datareader(reader_);
+            reader_ = nullptr;
+            throw utils::InitializationException(
+                    utils::Formatter() << "Error enabling DataReader for Participant " <<
+                        participant_id_ << " in topic " << topic_ << ".");
+        }
     }
 
 }
@@ -202,7 +181,8 @@ CommonReader::CommonReader(
         const DdsTopic& topic,
         const std::shared_ptr<core::PayloadPool>& payload_pool,
         fastdds::dds::DomainParticipant* participant,
-        fastdds::dds::Topic* topic_entity)
+        fastdds::dds::Topic* topic_entity,
+        bool is_fastddsspy)
     : BaseReader(participant_id, topic.topic_qos.max_rx_rate, topic.topic_qos.downsampling)
     , dds_participant_(participant)
     , dds_topic_(topic_entity)
@@ -210,6 +190,7 @@ CommonReader::CommonReader(
     , topic_(topic)
     , dds_subscriber_(nullptr)
     , reader_(nullptr)
+    , is_fastddsspy_(is_fastddsspy)
 {
     // Do nothing
 }
@@ -267,7 +248,7 @@ utils::ReturnCode CommonReader::take_nts_(
 
 void CommonReader::enable_nts_() noexcept
 {
-    // TODO. danip
+    // TODO. danip check?
     // if (spy_filter)
     // reader_->enable();
 
@@ -397,6 +378,9 @@ void CommonReader::fill_received_data_(
     }
 }
 
+// TODO. danip
+//  change to not use a default sub qos
+//  use the current qos
 void CommonReader::update_partitions(
         std::set<std::string> partitions_set)
 {
@@ -411,14 +395,18 @@ void CommonReader::update_partitions(
 
 void CommonReader::update_content_topic_filter(std::string expression)
 {
-    // partitions
-    /*fastdds::dds::SubscriberQos sub_qos = fastdds::dds::SUBSCRIBER_QOS_DEFAULT;
-    sub_qos.partition().push_back(expression.c_str());
-    dds_subscriber_->set_qos(sub_qos);*/
-
-
     // content_topicfilter
     filtered_topic_->set_filter_expression(expression, {});
+
+    // Enable the reader
+    if (fastdds::dds::RETCODE_OK != reader_->enable())
+    {
+        dds_subscriber_->delete_datareader(reader_);
+        reader_ = nullptr;
+        throw utils::InitializationException(
+                  utils::Formatter() << "Error enabling DataReader for Participant " <<
+                      participant_id_ << " in topic " << topic_ << ".");
+    }
 }
 
 } /* namespace dds */

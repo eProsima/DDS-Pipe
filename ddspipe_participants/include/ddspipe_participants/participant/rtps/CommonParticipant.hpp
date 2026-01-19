@@ -122,41 +122,6 @@ public:
     std::shared_ptr<core::IReader> create_reader(
             const core::ITopic& topic) override;
 
-    /**
-     * @brief Create a reader object with the filter of partitions
-     *
-     * Depending on the Topic QoS creates a Basic or Specific Reader.
-     */
-    DDSPIPE_PARTICIPANTS_DllAPI
-    std::shared_ptr<core::IReader> create_reader_with_filter(
-            const core::ITopic& topic,
-            const std::set<std::string> partitions) override;
-
-    //! Override add_topic_partition() IParticipant method
-    DDSPIPE_PARTICIPANTS_DllAPI
-    bool add_topic_partition(
-            const std::string& topic_name,
-            const std::string& writer_guid,
-            const std::string& partition) override;
-
-    //! Override update_topic_partition() IParticipant method
-    DDSPIPE_PARTICIPANTS_DllAPI
-    bool update_topic_partition(
-            const std::string& topic_name,
-            const std::string& writer_guid,
-            const std::string& partition) override;
-
-    //! Override delete_topic_partition() IParticipant method
-    DDSPIPE_PARTICIPANTS_DllAPI
-    bool delete_topic_partition(
-            const std::string& topic_name,
-            const std::string& writer_guid,
-            const std::string& partition) override;
-
-    //! Override clear_topic_partitions() IParticipant method
-    DDSPIPE_PARTICIPANTS_DllAPI
-    void clear_topic_partitions() override;
-
     //! Override create_contentfilteredtopic() IParticipant method
     DDSPIPE_PARTICIPANTS_DllAPI
     eprosima::fastdds::dds::ContentFilteredTopic* create_contentfilteredtopic(

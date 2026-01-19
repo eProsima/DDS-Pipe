@@ -98,20 +98,6 @@ public:
     utils::ReturnCode reload_configuration(
             const DdsPipeConfiguration& new_configuration);
 
-    /**
-     * @brief Reload the filter partitions set.
-     *
-     * @param [in] new_filter_partition_set : new filter partition set.
-     *
-     * @return \c RETCODE_OK if the new std::set has been updated correctly.
-     * @return \c RETCODE_ERROR if any other error has occurred.
-     *
-     * @note This method calls \c update_readers_track() of all Topic bridges, to update the DataReaders.
-     */
-    DDSPIPE_CORE_DllAPI
-    void reload_filter_partition(
-            const std::set<std::string> new_filter_partition_set);
-
     /////////////////////////
     // ENABLING METHODS
     /////////////////////////
@@ -139,15 +125,6 @@ public:
      */
     DDSPIPE_CORE_DllAPI
     utils::ReturnCode disable() noexcept;
-
-    DDSPIPE_CORE_DllAPI
-    void update_readers_track(
-            const std::string topic_name,
-            const std::set<std::string> filter_partition_set);
-
-    DDSPIPE_CORE_DllAPI
-    void update_filter(
-            const std::set<std::string> filter_partition_set);
 
     DDSPIPE_CORE_DllAPI
     void update_partitions(
