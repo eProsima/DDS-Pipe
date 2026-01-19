@@ -74,16 +74,6 @@ public:
     std::shared_ptr<core::IReader> create_reader(
             const core::ITopic& topic) override;
 
-    /**
-     * @brief Create a reader object with the filter of partitions
-     *
-     * Depending on the Topic QoS creates a Basic or Specific Reader.
-     */
-    DDSPIPE_PARTICIPANTS_DllAPI
-    std::shared_ptr<core::IReader> create_reader_with_filter(
-            const core::ITopic& topic,
-            const std::set<std::string> partitions) override;
-
     class DynTypesRtpsListener : public rtps::CommonParticipant::RtpsListener
     {
     public:

@@ -206,7 +206,8 @@ protected:
             const fastdds::rtps::ReaderAttributes& reader_attributes,
             const fastdds::rtps::TopicDescription& topic_desc,
             const fastdds::dds::ReaderQos& reader_qos,
-            const std::set<std::string> allowed_partition_list);
+            const std::set<std::string> allowed_partition_list,
+            bool is_fastddsspy);
 
     // Specific enable/disable do not need to be implemented
 

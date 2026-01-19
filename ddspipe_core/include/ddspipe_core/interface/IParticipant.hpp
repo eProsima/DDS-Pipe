@@ -97,76 +97,7 @@ public:
     virtual std::shared_ptr<IReader> create_reader(
             const ITopic& topic) = 0;
 
-    /**
-     * @brief Return a new Reader
-     *
-     * Each reader is associated with a \c Bridge with the topic \c topic .
-     * This reader will receive messages in this topic.
-     *
-     * @param [in] topic : Topic that this Reader will work with.
-     * @param [in] partitions: List of allowed partitions
-     *
-     * @return Reader in this Participant referring this topic
-     *
-     * @throw \c InitializationException in case the reader creation fails.
-     */
-    DDSPIPE_CORE_DllAPI
-    virtual std::shared_ptr<IReader> create_reader_with_filter(
-            const ITopic& topic,
-            const std::set<std::string> partitions) = 0;
-
-    /**
-     * Add a Partition in the Participant.
-     *
-     * @param [in] topic_name  : The topic.
-     * @param [in] writer_guid : The writer guid.
-     * @param [in] partition   : Partition name that will be added.
-     *
-     * @return bool if the function adds the partition.
-     */
-    DDSPIPE_CORE_DllAPI
-    virtual bool add_topic_partition(
-            const std::string& topic_name,
-            const std::string& writer_guid,
-            const std::string& partition) = 0;
-
-    /**
-     * Update a Partition in the Participant.
-     *
-     * @param [in] topic_name  : The topic.
-     * @param [in] writer_guid : The writer guid.
-     * @param [in] partition : Partition name that will be added.
-     *
-     * @return bool if the function updates the partition.
-     */
-    DDSPIPE_CORE_DllAPI
-    virtual bool update_topic_partition(
-            const std::string& topic_name,
-            const std::string& writer_guid,
-            const std::string& partition) = 0;
-
-    /**
-     * Remove a Partition of the Participant.
-     *
-     * @param [in] topic_name  : The topic.
-     * @param [in] writer_guid : The writer guid.
-     * @param [in] partition : Partition name that will be added.
-     *
-     * @return bool if the function deletes the partition.
-     */
-    DDSPIPE_CORE_DllAPI
-    virtual bool delete_topic_partition(
-            const std::string& topic_name,
-            const std::string& writer_guid,
-            const std::string& partition) = 0;
-
-    /**
-     * Clear the Partitions of the Participant.
-     */
-    DDSPIPE_CORE_DllAPI
-    virtual void clear_topic_partitions() = 0;
-
-    /**
+    /** TODO. danip
      * Create a content filtered topic.
      */
     DDSPIPE_CORE_DllAPI
@@ -176,7 +107,7 @@ public:
             const std::string& filter_expression,
             const std::vector<std::string>& expression_parameters) = 0;
 
-    /**
+    /** TODO. danip
      * Find a topic by name
      */
     DDSPIPE_CORE_DllAPI

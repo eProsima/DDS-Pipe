@@ -31,7 +31,7 @@ SimpleReader::SimpleReader(
         fastdds::dds::DomainParticipant* participant,
         fastdds::dds::Topic* topic_entity)
     : CommonReader(
-        participant_id, topic, payload_pool, participant, topic_entity)
+        participant_id, topic, payload_pool, participant, topic_entity, false) // TODO. danip
 {
     // Do nothing
 }

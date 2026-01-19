@@ -46,7 +46,8 @@ CommonReader::CommonReader(
         const fastdds::rtps::ReaderAttributes& reader_attributes,
         const fastdds::rtps::TopicDescription& topic_description,
         const fastdds::dds::ReaderQos& reader_qos,
-        const std::set<std::string> blocked_filtered_guidlist)
+        const std::set<std::string> blocked_filtered_guidlist,
+        bool is_fastddsspy)
     : BaseReader(participant_id, topic.topic_qos.max_rx_rate, topic.topic_qos.downsampling)
     , rtps_participant_(rtps_participant)
     , payload_pool_(payload_pool)

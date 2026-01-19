@@ -44,11 +44,13 @@ using namespace eprosima::ddspipe::core;
 XmlDynTypesParticipant::XmlDynTypesParticipant(
         std::shared_ptr<XmlParticipantConfiguration> participant_configuration,
         std::shared_ptr<PayloadPool> payload_pool,
-        std::shared_ptr<DiscoveryDatabase> discovery_database)
+        std::shared_ptr<DiscoveryDatabase> discovery_database,
+        bool is_fastddsspy)
     : XmlParticipant(
         participant_configuration,
         payload_pool,
-        discovery_database)
+        discovery_database,
+        is_fastddsspy)
     , type_object_reader_(std::make_shared<InternalReader>(
                 this->id()))
 {
