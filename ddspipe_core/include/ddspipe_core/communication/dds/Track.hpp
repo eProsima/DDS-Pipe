@@ -251,7 +251,7 @@ protected:
     /**
      * Boolean use to update fastddsspy filter
      */
-    std::atomic<bool> is_fastddsspy;
+    std::atomic<bool> has_filter_;
 
     /**
      * Mutex to guard while the Track is sending a message so it could not be disabled.

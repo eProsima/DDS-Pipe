@@ -201,7 +201,7 @@ std::shared_ptr<core::IReader> CommonParticipant::create_reader(
             dds_participant_,
             fastdds_topic,
             discovery_database_,
-            is_fastddsspy_); // TODO. danip HEREEEE
+            has_filter_); // TODO. danip HEREEEE
         reader->init();
 
         return reader;
@@ -213,7 +213,8 @@ std::shared_ptr<core::IReader> CommonParticipant::create_reader(
             dds_topic,
             this->payload_pool_,
             dds_participant_,
-            fastdds_topic);
+            fastdds_topic,
+            has_filter_); // TODO. danip HEREEEE
         reader->init();
 
         return reader;
@@ -370,11 +371,11 @@ CommonParticipant::CommonParticipant(
         const std::shared_ptr<SimpleParticipantConfiguration>& participant_configuration,
         const std::shared_ptr<core::PayloadPool>& payload_pool,
         const std::shared_ptr<core::DiscoveryDatabase>& discovery_database,
-        bool is_fastddsspy)
+        bool has_filter)
     : configuration_(participant_configuration)
     , payload_pool_(payload_pool)
     , discovery_database_(discovery_database)
-    , is_fastddsspy_(is_fastddsspy)
+    , has_filter_(has_filter)
 {
     // Do nothing
 }

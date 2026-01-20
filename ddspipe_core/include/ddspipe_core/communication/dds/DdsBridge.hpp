@@ -113,6 +113,11 @@ public:
     void remove_writer(
             const types::ParticipantId& participant_id) noexcept;
 
+    DDSPIPE_CORE_DllAPI
+    void add_partition_to_topic(
+            std::string guid,
+            std::string partition);
+
     /**
      * TODO
      */

@@ -111,7 +111,7 @@ void CommonReader::init()
     // is called, opening a window for potential data races. Although Fast DDS ensures that this cannot happen, this
     // procedure protects against future bad practices introducing the aforementioned data races.
 
-    if (!is_fastddsspy_)
+    if (!has_filter_)
     {
         if (fastdds::dds::RETCODE_OK != reader_->enable())
         {
@@ -182,7 +182,7 @@ CommonReader::CommonReader(
         const std::shared_ptr<core::PayloadPool>& payload_pool,
         fastdds::dds::DomainParticipant* participant,
         fastdds::dds::Topic* topic_entity,
-        bool is_fastddsspy)
+        bool has_filter)
     : BaseReader(participant_id, topic.topic_qos.max_rx_rate, topic.topic_qos.downsampling)
     , dds_participant_(participant)
     , dds_topic_(topic_entity)
@@ -190,7 +190,7 @@ CommonReader::CommonReader(
     , topic_(topic)
     , dds_subscriber_(nullptr)
     , reader_(nullptr)
-    , is_fastddsspy_(is_fastddsspy)
+    , has_filter_(has_filter)
 {
     // Do nothing
 }
@@ -391,12 +391,6 @@ void CommonReader::update_partitions(
     }
 
     dds_subscriber_->set_qos(sub_qos);
-}
-
-void CommonReader::update_content_topic_filter(std::string expression)
-{
-    // content_topicfilter
-    filtered_topic_->set_filter_expression(expression, {});
 
     // Enable the reader
     if (fastdds::dds::RETCODE_OK != reader_->enable())
@@ -407,6 +401,12 @@ void CommonReader::update_content_topic_filter(std::string expression)
                   utils::Formatter() << "Error enabling DataReader for Participant " <<
                       participant_id_ << " in topic " << topic_ << ".");
     }
+}
+
+void CommonReader::update_content_topic_filter(std::string expression)
+{
+    // content_topicfilter
+    filtered_topic_->set_filter_expression(expression, {});
 }
 
 } /* namespace dds */

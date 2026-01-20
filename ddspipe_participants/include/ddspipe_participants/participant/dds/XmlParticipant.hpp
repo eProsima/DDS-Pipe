@@ -37,7 +37,7 @@ public:
             const std::shared_ptr<XmlParticipantConfiguration>& participant_configuration,
             const std::shared_ptr<core::PayloadPool>& payload_pool,
             const std::shared_ptr<core::DiscoveryDatabase>& discovery_database,
-            bool is_fastddsspy = false);
+            bool has_filter = false);
 
     /**
      * Specialized parent call so if it fails returns a blank one.
@@ -54,6 +54,13 @@ public:
     DDSPIPE_PARTICIPANTS_DllAPI
     std::shared_ptr<core::IReader> create_reader(
             const core::ITopic& topic) override;
+
+    DDSPIPE_PARTICIPANTS_DllAPI
+    void update_filters(
+        const int flag,
+        std::set<std::string> partitions = std::set<std::string>(),
+        const std::string& topic_name = "",
+        const std::string& expression = "");
 
 protected:
 
@@ -72,6 +79,13 @@ protected:
 
     //! Participant configuration
     const XmlParticipantConfiguration& xml_specific_configuration_;
+
+    // Boolean to check if the created participant has filter
+    bool has_filter_;
+    // Filter partitions set
+    std::set<std::string> partition_filter_set_;
+    // Filter content_topicfilter dict
+    std::map<std::string, std::string> topic_filter_dict_;
 };
 
 } /* namespace dds */

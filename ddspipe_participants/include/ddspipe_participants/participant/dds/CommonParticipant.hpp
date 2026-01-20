@@ -198,7 +198,7 @@ protected:
             const std::shared_ptr<SimpleParticipantConfiguration>& participant_configuration,
             const std::shared_ptr<core::PayloadPool>& payload_pool,
             const std::shared_ptr<core::DiscoveryDatabase>& discovery_database,
-            bool is_fastddsspy);
+            bool has_filter);
 
     /////////////////////////
     // VIRTUAL METHODS
@@ -272,7 +272,7 @@ protected:
     //! <Topics <Writer_guid, Partitions set>>
     std::map<std::string, std::map<std::string, std::string>> partition_names;
 
-    bool is_fastddsspy_;
+    bool has_filter_;
 };
 
 } /* namespace dds */

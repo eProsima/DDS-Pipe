@@ -63,7 +63,7 @@ Track::Track(
 
     // Initialized to false, only fastddspy
     // will change this value
-    is_fastddsspy = false;
+    has_filter_ = false;
 
     logDebug(DDSPIPE_TRACK, "Track " << *this << " created.");
 }
@@ -110,7 +110,7 @@ void Track::enable() noexcept
             writer_it.second->enable();
         }
 
-        if(is_fastddsspy)
+        if(has_filter_)
         {
             reader_->update_content_topic_filter("");
             reader_->update_partitions(std::set<std::string>());

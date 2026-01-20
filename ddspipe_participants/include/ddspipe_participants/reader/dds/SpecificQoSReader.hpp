@@ -55,7 +55,7 @@ public:
             fastdds::dds::DomainParticipant* participant,
             fastdds::dds::Topic* topic_entity,
             const std::shared_ptr<core::DiscoveryDatabase>& discovery_database,
-            bool is_fastddsspy);
+            bool has_filter);
 
 protected:
 
