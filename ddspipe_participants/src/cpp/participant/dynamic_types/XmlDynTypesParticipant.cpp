@@ -45,12 +45,12 @@ XmlDynTypesParticipant::XmlDynTypesParticipant(
         std::shared_ptr<XmlParticipantConfiguration> participant_configuration,
         std::shared_ptr<PayloadPool> payload_pool,
         std::shared_ptr<DiscoveryDatabase> discovery_database,
-        bool is_fastddsspy)
+        bool has_filter)
     : XmlParticipant(
         participant_configuration,
         payload_pool,
         discovery_database,
-        is_fastddsspy)
+        has_filter)
     , type_object_reader_(std::make_shared<InternalReader>(
                 this->id()))
 {

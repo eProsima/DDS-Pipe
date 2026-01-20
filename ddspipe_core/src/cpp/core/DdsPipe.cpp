@@ -131,6 +131,30 @@ utils::ReturnCode DdsPipe::reload_configuration(
     return reload_allowed_topics_(allowed_topics);
 }
 
+// void DdsPipe::reload_filter_partition(
+//         const std::set<std::string> filter_partition_set)
+// {
+//     update_filter(filter_partition_set);
+
+//     std::vector<DdsBridge*> targets;
+//     {
+//         std::lock_guard<std::mutex> lock(bridges_mutex_);
+
+//         for (const auto& bridge : bridges_)
+//         {
+//             if (bridge.second)
+//             {
+//                 targets.push_back(bridge.second.get());
+//             }
+//         }
+//     }
+
+//     for (auto* target : targets)
+//     {
+//         target->update_readers_track(filter_partition_set);
+//     }
+// }
+
 utils::ReturnCode DdsPipe::enable() noexcept
 {
     std::lock_guard<std::mutex> lock(mutex_);
@@ -292,7 +316,40 @@ void DdsPipe::discovered_endpoint_nts_(
     }
     else if (is_endpoint_relevant_(endpoint))
     {
-        discovered_topic_nts_(utils::Heritable<DdsTopic>::make_heritable(endpoint.topic));
+        DdsTopic topic_with_partitions = endpoint.topic;
+        topic_with_partitions.partition_name = endpoint.specific_partitions;
+
+        discovered_topic_nts_(utils::Heritable<DdsTopic>::make_heritable(topic_with_partitions));
+    }
+    else
+    {
+        // there is a filter.
+        // update the track of the topic to
+        // add the partition in the reader if it is in the filter
+
+        // update partitions under bridges_mutex_
+        {
+            std::lock_guard<std::mutex> lock(bridges_mutex_);
+
+            const auto bridge_it = bridges_.find(utils::Heritable<DdsTopic>::make_heritable(endpoint.topic));
+            // add the specific partition of the endpoint in the bridges topic.
+            if (bridge_it != bridges_.end())
+            {
+                std::ostringstream guid_ss;
+                guid_ss << endpoint.guid;
+
+                const auto part_it = endpoint.specific_partitions.find(guid_ss.str());
+                if (part_it != endpoint.specific_partitions.end())
+                {
+                    bridge_it->second->add_partition_to_topic(guid_ss.str(), part_it->second);
+                }
+            }
+        }
+        // update readers outside the lock
+        // if (!filter_partition_.empty()) // TODO. danip
+        // {
+        //     update_readers_track(endpoint.topic.m_topic_name, filter_partition_);
+        // }
     }
 }
 

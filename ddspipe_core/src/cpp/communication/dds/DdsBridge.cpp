@@ -353,6 +353,13 @@ std::ostream& operator <<(
     return os;
 }
 
+void DdsBridge::add_partition_to_topic(
+        std::string guid,
+        std::string partition)
+{
+    topic_->partition_name[guid] = partition;
+}
+
 } /* namespace core */
 } /* namespace ddspipe */
 } /* namespace eprosima */

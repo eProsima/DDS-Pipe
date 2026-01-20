@@ -29,9 +29,10 @@ SimpleReader::SimpleReader(
         const core::types::DdsTopic& topic,
         const std::shared_ptr<core::PayloadPool>& payload_pool,
         fastdds::dds::DomainParticipant* participant,
-        fastdds::dds::Topic* topic_entity)
+        fastdds::dds::Topic* topic_entity,
+        bool has_filter)
     : CommonReader(
-        participant_id, topic, payload_pool, participant, topic_entity, false) // TODO. danip
+        participant_id, topic, payload_pool, participant, topic_entity, has_filter) // TODO. danip
 {
     // Do nothing
 }
