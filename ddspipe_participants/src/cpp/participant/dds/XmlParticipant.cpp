@@ -79,9 +79,6 @@ std::shared_ptr<core::IReader> XmlParticipant::create_reader(
 
         if (has_filter_)
         {
-            // Update the partitions
-            ret->update_partitions(partition_filter_set_);
-
             // Check if the topic has a 'content_topicfilter' filter active
             auto content_topicfilter_it = topic_filter_dict_.find(topic.topic_name());
             std::string expression = "";
@@ -93,6 +90,9 @@ std::shared_ptr<core::IReader> XmlParticipant::create_reader(
             //  in this function, the reader is enabled
             //  (to ensure safety updates of filters)
             ret->update_content_topic_filter(expression);
+
+            // Update the partitions
+            ret->update_partitions(partition_filter_set_);
         }
 
         return ret;
