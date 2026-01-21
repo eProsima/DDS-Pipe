@@ -582,6 +582,15 @@ eprosima::fastdds::dds::Topic* CommonParticipant::find_topic(
     return nullptr;
 }
 
+void CommonParticipant::update_filters(
+        const int flag,
+        std::set<std::string> partitions,
+        const std::string& topic_name,
+        const std::string& expression)
+{
+    // Nothing
+}
+
 } /* namespace rtps */
 } /* namespace participants */
 } /* namespace ddspipe */

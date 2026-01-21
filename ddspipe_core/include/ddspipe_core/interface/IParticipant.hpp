@@ -115,6 +115,16 @@ public:
         const std::string& topic_name,
         const fastdds::dds::Duration_t& timeout) = 0;
 
+    /** TODO. danip
+     * Find a topic by name
+     */
+    DDSPIPE_CORE_DllAPI
+    virtual void update_filters(
+        const int flag,
+        std::set<std::string> partitions,
+        const std::string& topic_name,
+        const std::string& expression) = 0;
+
 };
 
 } /* namespace core */
