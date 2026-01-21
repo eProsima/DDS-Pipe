@@ -28,9 +28,6 @@
 #include <fastdds/rtps/reader/RTPSReader.hpp>
 #include <fastdds/utils/TimedMutex.hpp>
 
-// TODO. danip
-//#include <fastdds/dds/topic/Topic.hpp>
-
 #include <ddspipe_core/types/dds/Guid.hpp>
 #include <ddspipe_core/types/topic/dds/DdsTopic.hpp>
 #include <ddspipe_core/types/participant/ParticipantId.hpp>
@@ -83,6 +80,15 @@ public:
      */
     DDSPIPE_PARTICIPANTS_DllAPI
     void init();
+
+    //! Update method to change the partitions in the content_topicfilter
+    DDSPIPE_PARTICIPANTS_DllAPI
+    void update_partitions(
+            std::set<std::string> partitions_set) override;
+
+    DDSPIPE_PARTICIPANTS_DllAPI
+    void update_content_topic_filter(
+            std::string expression) override;
 
     /////////////////////////
     // RTPS LISTENER METHODS
@@ -325,6 +331,8 @@ protected:
     core::types::DdsTopic topic_;
 
     //eprosima::fastdds::dds::ContentFilteredTopic* filtered_topic_;
+    //std::string filter;
+    bool has_filter_;
 
     //! RTPS Reader pointer
     fastdds::rtps::RTPSReader* rtps_reader_;

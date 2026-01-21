@@ -520,6 +520,15 @@ eprosima::fastdds::dds::Topic* CommonParticipant::find_topic(
     return dds_participant_->find_topic(topic_name, timeout);
 }
 
+void CommonParticipant::update_filters(
+        const int flag,
+        std::set<std::string> partitions,
+        const std::string& topic_name,
+        const std::string& expression)
+{
+    // Nothing
+}
+
 // TODO. danip
 /*eprosima::fastdds::dds::ContentFilteredTopic* create_filtered_topic(
         const std::string& filtered_name,

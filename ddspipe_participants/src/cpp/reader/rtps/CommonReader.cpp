@@ -159,11 +159,47 @@ core::types::DdsTopic CommonReader::topic() const noexcept
     return topic_;
 }
 
-// void CommonReader::update_content_topic_filter(std::string expression)
-// {
-//     return;
-//     //filtered_topic_->set_filter_expression(expression, {});
-// }
+// TODO. danip
+//  change to not use a default sub qos
+//  use the current qos
+void CommonReader::update_partitions(
+        std::set<std::string> partitions_set)
+{
+    //fastdds::dds::ReaderQos sub_qos = SUBSCRIBER_QOS_DEFAULT;
+    
+    //reader_qos_.m_partition 
+    // for(const std::string& partition: partitions_set)
+    // {
+    //     sub_qos.partition().push_back(partition.c_str());
+    // }
+
+    auto& part_qos = reader_qos_.m_partition;
+    part_qos.clear();
+
+    for (const auto& p : partitions_set)
+    {
+        part_qos.push_back(p.c_str());
+    }
+
+    rtps_participant_->update_reader(rtps_reader_, reader_qos_);
+    //dds_subscriber_->set_qos(sub_qos);
+
+    // Enable the reader
+    /*if (fastdds::dds::RETCODE_OK != rtps_reader_->enable())
+    {
+        dds_subscriber_->delete_datareader(rtps_reader_);
+        rtps_reader_ = nullptr;
+        throw utils::InitializationException(
+                  utils::Formatter() << "Error enabling DataReader for Participant " <<
+                      participant_id_ << " in topic " << topic_ << ".");
+    }*/
+}
+
+void CommonReader::update_content_topic_filter(std::string expression)
+{
+    // content_topicfilter
+    //filtered_topic_->set_filter_expression(expression, {});
+}
 
 utils::ReturnCode CommonReader::take_nts_(
         std::unique_ptr<core::IRoutingData>& data) noexcept

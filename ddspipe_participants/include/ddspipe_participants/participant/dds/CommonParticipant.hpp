@@ -126,6 +126,14 @@ public:
             const std::string& topic_name,
             const fastdds::dds::Duration_t& timeout) override;
 
+    //! Override update_filters() IParticipant method
+    DDSPIPE_PARTICIPANTS_DllAPI
+    virtual void update_filters(
+            const int flag,
+            std::set<std::string> partitions,
+            const std::string& topic_name,
+            const std::string& expression) override;
+
     /////////////////////////
     // LISTENER METHODS
     /////////////////////////

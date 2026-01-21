@@ -81,6 +81,15 @@ eprosima::fastdds::dds::Topic* BlankParticipant::find_topic(
     return nullptr;
 }
 
+void BlankParticipant::update_filters(
+        const int flag,
+        std::set<std::string> partitions,
+        const std::string& topic_name,
+        const std::string& expression)
+{
+    // Nothing
+}
+
 } /* namespace participants */
 } /* namespace ddspipe */
 } /* namespace eprosima */
