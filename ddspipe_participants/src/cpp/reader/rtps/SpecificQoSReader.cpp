@@ -33,7 +33,8 @@ SpecificQoSReader::SpecificQoSReader(
         const std::shared_ptr<core::PayloadPool>& payload_pool,
         fastdds::rtps::RTPSParticipant* rtps_participant,
         const std::shared_ptr<core::DiscoveryDatabase>& discovery_database,
-        const std::set<std::string> blocked_filtered_guidlist)
+        const std::set<std::string> blocked_filtered_guidlist,
+        bool has_filter)
     : CommonReader(
         participant_id, topic, payload_pool, rtps_participant,
         reckon_history_attributes_(topic),
@@ -41,7 +42,7 @@ SpecificQoSReader::SpecificQoSReader(
         reckon_topic_description_(topic),
         reckon_reader_qos_(topic),
         blocked_filtered_guidlist,
-        false) // TODO. danip
+        has_filter) // TODO. danip
     , discovery_database_(discovery_database)
 {
 }

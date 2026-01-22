@@ -45,7 +45,8 @@ public:
     SimpleParticipant(
             const std::shared_ptr<SimpleParticipantConfiguration>& participant_configuration,
             const std::shared_ptr<core::PayloadPool>& payload_pool,
-            const std::shared_ptr<core::DiscoveryDatabase>& discovery_database);
+            const std::shared_ptr<core::DiscoveryDatabase>& discovery_database,
+            bool has_filter);
 
 protected:
 

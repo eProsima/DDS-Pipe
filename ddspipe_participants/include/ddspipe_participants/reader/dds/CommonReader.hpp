@@ -66,7 +66,9 @@ public:
     virtual ~CommonReader();
 
     DDSPIPE_PARTICIPANTS_DllAPI
-    void init();
+    void init(
+            const std::set<std::string> partitions_set,
+            const std::string content_topicfilter_expression);
 
     //! Update method to change the partitions in the content_topicfilter
     DDSPIPE_PARTICIPANTS_DllAPI

@@ -45,11 +45,13 @@ using namespace eprosima::ddspipe::core;
 DynTypesParticipant::DynTypesParticipant(
         std::shared_ptr<SimpleParticipantConfiguration> participant_configuration,
         std::shared_ptr<PayloadPool> payload_pool,
-        std::shared_ptr<DiscoveryDatabase> discovery_database)
+        std::shared_ptr<DiscoveryDatabase> discovery_database,
+        bool has_filter)
     : SimpleParticipant(
         participant_configuration,
         payload_pool,
-        discovery_database)
+        discovery_database,
+        has_filter)
     , type_object_reader_(std::make_shared<InternalReader>(
                 this->id()))
 {

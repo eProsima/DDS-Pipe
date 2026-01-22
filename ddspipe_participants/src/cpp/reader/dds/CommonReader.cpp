@@ -54,7 +54,10 @@ CommonReader::~CommonReader()
             participant_id_ << " for topic " << topic_);
 }
 
-void CommonReader::init()
+void CommonReader::init(
+        const std::set<std::string> partitions_set,
+        const std::string content_topicfilter_expression
+)
 {
     EPROSIMA_LOG_INFO(DDSPIPE_DDS_READER,
             "Initializing reader in " << participant_id_ << " for topic " << topic_ << ".");
@@ -71,21 +74,39 @@ void CommonReader::init()
                       participant_id_ << " in topic " << topic_ << ".");
     }
 
+    // If the reader has an active filter
+    // change the qos partition before creating the datareader.
+    if(has_filter_)
+    {
+        // Get the current subscriber qos
+        fastdds::dds::SubscriberQos sub_qos = dds_subscriber_->get_qos();
+        // Remove all partitions from the qos
+        sub_qos.partition().clear();
+        // Add the filter partitions
+        for(const std::string& partition: partitions_set)
+        {
+            sub_qos.partition().push_back(partition.c_str());
+        }
+        // Update the subscriber qos
+        dds_subscriber_->set_qos(sub_qos);
+    }
+
     // TODO. danip
-
+    // Might be better get the topic using a function variable
+    // rather than a new function in IParticipant
     auto topic_tmp = dds_participant_->find_topic(topic_.topic_name(), 10);
-    //auto tmp = filtered_topic_;
 
-    filtered_topic_ = dds_participant_->create_contentfilteredtopic(topic_.topic_name() + "_filtered", topic_tmp, "", {});
+    // Create the filtered topic with the expression given
+    // if 'has_filter_' is false the expression will be ""
+    // no contentfilter is being applied
+    filtered_topic_ = dds_participant_->create_contentfilteredtopic(
+            topic_.topic_name() + "_filtered", topic_tmp,
+            content_topicfilter_expression, {});
     if (nullptr == filtered_topic_)
     {
         throw utils::InitializationException(
                   utils::Formatter() << "Error creating ContenTopicFilter for Participant " <<
                       participant_id_ << " in topic " << topic_ << ".");
-
-        /*std::cout << "ERROR CREATING CONTENT FILTERTOPIC\n";
-        filtered_topic_ = tmp;
-        filtered_topic_->set_filter_expression("", {});*/
     }
 
     // Create CommonReader
@@ -93,7 +114,7 @@ void CommonReader::init()
     // It is safe to do so here as object is already created and callbacks do not require anything set in this method
     reader_ = dds_subscriber_->create_datareader(
         //dds_topic_,
-        filtered_topic_,
+        filtered_topic_, // Using new filtered topic
         reckon_reader_qos_(),
         this,
         eprosima::fastdds::dds::StatusMask::all(),
@@ -111,18 +132,15 @@ void CommonReader::init()
     // is called, opening a window for potential data races. Although Fast DDS ensures that this cannot happen, this
     // procedure protects against future bad practices introducing the aforementioned data races.
 
-    if (!has_filter_)
+    // if (!has_filter_) // TODO. danip remove
+    if (fastdds::dds::RETCODE_OK != reader_->enable())
     {
-        if (fastdds::dds::RETCODE_OK != reader_->enable())
-        {
-            dds_subscriber_->delete_datareader(reader_);
-            reader_ = nullptr;
-            throw utils::InitializationException(
-                    utils::Formatter() << "Error enabling DataReader for Participant " <<
-                        participant_id_ << " in topic " << topic_ << ".");
-        }
+        dds_subscriber_->delete_datareader(reader_);
+        reader_ = nullptr;
+        throw utils::InitializationException(
+                utils::Formatter() << "Error enabling DataReader for Participant " <<
+                    participant_id_ << " in topic " << topic_ << ".");
     }
-
 }
 
 void CommonReader::on_data_available(
@@ -384,7 +402,8 @@ void CommonReader::fill_received_data_(
 void CommonReader::update_partitions(
         std::set<std::string> partitions_set)
 {
-    fastdds::dds::SubscriberQos sub_qos = fastdds::dds::SUBSCRIBER_QOS_DEFAULT;
+    fastdds::dds::SubscriberQos sub_qos = dds_subscriber_->get_qos();
+    sub_qos.partition().clear();
     for(const std::string& partition: partitions_set)
     {
         sub_qos.partition().push_back(partition.c_str());
@@ -392,15 +411,17 @@ void CommonReader::update_partitions(
 
     dds_subscriber_->set_qos(sub_qos);
 
+    // dont need to, the reader is created with the filter information
+
     // Enable the reader
-    if (fastdds::dds::RETCODE_OK != reader_->enable())
-    {
-        dds_subscriber_->delete_datareader(reader_);
-        reader_ = nullptr;
-        throw utils::InitializationException(
-                  utils::Formatter() << "Error enabling DataReader for Participant " <<
-                      participant_id_ << " in topic " << topic_ << ".");
-    }
+    // if (fastdds::dds::RETCODE_OK != reader_->enable())
+    // {
+    //     dds_subscriber_->delete_datareader(reader_);
+    //     reader_ = nullptr;
+    //     throw utils::InitializationException(
+    //               utils::Formatter() << "Error enabling DataReader for Participant " <<
+    //                   participant_id_ << " in topic " << topic_ << ".");
+    // }
 }
 
 void CommonReader::update_content_topic_filter(std::string expression)

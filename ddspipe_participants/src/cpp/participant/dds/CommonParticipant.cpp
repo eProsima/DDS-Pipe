@@ -180,6 +180,16 @@ std::shared_ptr<core::IReader> CommonParticipant::create_reader(
 
     const core::types::DdsTopic& dds_topic = *topic_ptr;
 
+    // TODO. danip aqui
+    // contenttopicfilter
+    std::string content_topic_filter_expr = "";
+    std::set<std::string> partitions_set;
+    if(has_filter_)
+    {
+        content_topic_filter_expr = topic_filter_dict_[dds_topic.m_topic_name];
+        partitions_set = partition_filter_set_;
+    }
+
     // Check that it is RTPS topic
     if (dds_topic.internal_type_discriminator() != core::types::INTERNAL_TOPIC_TYPE_RTPS)
     {
@@ -202,7 +212,9 @@ std::shared_ptr<core::IReader> CommonParticipant::create_reader(
             fastdds_topic,
             discovery_database_,
             has_filter_); // TODO. danip HEREEEE
-        reader->init();
+        // TODO. danip aqui
+        // añadir a la funcion la lista de particiones y la expresion del topico
+        reader->init(partitions_set, content_topic_filter_expr);
 
         return reader;
     }
@@ -215,7 +227,9 @@ std::shared_ptr<core::IReader> CommonParticipant::create_reader(
             dds_participant_,
             fastdds_topic,
             has_filter_); // TODO. danip HEREEEE
-        reader->init();
+        // TODO. danip aqui
+        // añadir a la funcion la lista de particiones y la expresion del topico
+        reader->init(partitions_set, content_topic_filter_expr);
 
         return reader;
     }
@@ -527,6 +541,16 @@ void CommonParticipant::update_filters(
         const std::string& expression)
 {
     // Nothing
+    if (flag == 0)
+    {
+        // partitions
+        partition_filter_set_ = partitions;
+    }
+    else
+    {
+        // content_topicfilter
+        topic_filter_dict_[topic_name] = expression;
+    }
 }
 
 // TODO. danip
