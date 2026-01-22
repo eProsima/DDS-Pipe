@@ -647,11 +647,11 @@ void DdsPipe::deactivate_all_topics_nts_() noexcept
     }
 }
 
-void DdsPipe::update_partitions(
+void DdsPipe::update_partitions( // participant_id
         std::set<std::string> partitions_set)
 {
     // get the targets (with lock)
-    std::vector<DdsBridge*> targets;
+    std::vector<DdsBridge*> targets; // TODO. danip remove
     {
         std::lock_guard<std::mutex> lock(bridges_mutex_);
 

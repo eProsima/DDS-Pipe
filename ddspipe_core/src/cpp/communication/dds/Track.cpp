@@ -61,10 +61,6 @@ Track::Track(
         transmit_task_id_,
         std::bind(&Track::transmit_, this));
 
-    // Initialized to false, only fastddspy
-    // will change this value
-    has_filter_ = false;
-
     logDebug(DDSPIPE_TRACK, "Track " << *this << " created.");
 }
 
@@ -108,12 +104,6 @@ void Track::enable() noexcept
         for (auto& writer_it : writers_)
         {
             writer_it.second->enable();
-        }
-
-        if(has_filter_)
-        {
-            reader_->update_content_topic_filter("");
-            reader_->update_partitions(std::set<std::string>());
         }
 
         // Enabling reader

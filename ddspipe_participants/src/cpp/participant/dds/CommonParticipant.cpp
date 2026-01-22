@@ -183,11 +183,9 @@ std::shared_ptr<core::IReader> CommonParticipant::create_reader(
     // TODO. danip aqui
     // contenttopicfilter
     std::string content_topic_filter_expr = "";
-    std::set<std::string> partitions_set;
-    if(has_filter_)
+    if(topic_filter_dict_.find(dds_topic.m_topic_name) != topic_filter_dict_.end())
     {
         content_topic_filter_expr = topic_filter_dict_[dds_topic.m_topic_name];
-        partitions_set = partition_filter_set_;
     }
 
     // Check that it is RTPS topic
@@ -210,11 +208,10 @@ std::shared_ptr<core::IReader> CommonParticipant::create_reader(
             this->payload_pool_,
             dds_participant_,
             fastdds_topic,
-            discovery_database_,
-            has_filter_); // TODO. danip HEREEEE
+            discovery_database_);
         // TODO. danip aqui
         // añadir a la funcion la lista de particiones y la expresion del topico
-        reader->init(partitions_set, content_topic_filter_expr);
+        reader->init(partition_filter_set_, content_topic_filter_expr);
 
         return reader;
     }
@@ -225,11 +222,10 @@ std::shared_ptr<core::IReader> CommonParticipant::create_reader(
             dds_topic,
             this->payload_pool_,
             dds_participant_,
-            fastdds_topic,
-            has_filter_); // TODO. danip HEREEEE
+            fastdds_topic);
         // TODO. danip aqui
         // añadir a la funcion la lista de particiones y la expresion del topico
-        reader->init(partitions_set, content_topic_filter_expr);
+        reader->init(partition_filter_set_, content_topic_filter_expr);
 
         return reader;
     }
@@ -384,12 +380,10 @@ void CommonParticipant::DdsListener::on_data_writer_discovery(
 CommonParticipant::CommonParticipant(
         const std::shared_ptr<SimpleParticipantConfiguration>& participant_configuration,
         const std::shared_ptr<core::PayloadPool>& payload_pool,
-        const std::shared_ptr<core::DiscoveryDatabase>& discovery_database,
-        bool has_filter)
+        const std::shared_ptr<core::DiscoveryDatabase>& discovery_database)
     : configuration_(participant_configuration)
     , payload_pool_(payload_pool)
     , discovery_database_(discovery_database)
-    , has_filter_(has_filter)
 {
     // Do nothing
 }
@@ -511,29 +505,6 @@ fastdds::dds::Topic* CommonParticipant::topic_related_(
     return dds_topic;
 }
 
-eprosima::fastdds::dds::ContentFilteredTopic* CommonParticipant::create_contentfilteredtopic(
-        const std::string& name,
-        eprosima::fastdds::dds::Topic* related_topic,
-        const std::string& filter_expression,
-        const std::vector<std::string>& expression_parameters)
-{
-    //return nullptr;
-    //auto participant = fastdds::dds::DomainParticipantFactory::get_instance();
-
-    return dds_participant_->create_contentfilteredtopic(
-            name,
-            related_topic,
-            filter_expression,
-            expression_parameters);
-}
-
-eprosima::fastdds::dds::Topic* CommonParticipant::find_topic(
-        const std::string& topic_name,
-        const fastdds::dds::Duration_t& timeout)
-{
-    return dds_participant_->find_topic(topic_name, timeout);
-}
-
 void CommonParticipant::update_filters(
         const int flag,
         std::set<std::string> partitions,
@@ -552,22 +523,6 @@ void CommonParticipant::update_filters(
         topic_filter_dict_[topic_name] = expression;
     }
 }
-
-// TODO. danip
-/*eprosima::fastdds::dds::ContentFilteredTopic* create_filtered_topic(
-        const std::string& filtered_name,
-        eprosima::fastdds::dds::Topic* base_topic,
-        const std::string& filter_expression,
-        const std::vector<std::string>& parameters)
-{
-    auto participant = fastdds::dds::DomainParticipantFactory::get_instance();
-
-    return participant->create_contentfilteredtopic(
-            filtered_name,
-            base_topic,
-            filter_expression,
-            parameters);
-}*/
 
 } /* namespace dds */
 } /* namespace participants */

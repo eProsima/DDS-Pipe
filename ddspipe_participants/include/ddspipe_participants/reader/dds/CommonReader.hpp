@@ -119,8 +119,7 @@ protected:
             const core::types::DdsTopic& topic,
             const std::shared_ptr<core::PayloadPool>& payload_pool,
             fastdds::dds::DomainParticipant* participant,
-            fastdds::dds::Topic* topic_entity,
-            bool has_filter);
+            fastdds::dds::Topic* topic_entity);
 
     // Specific enable/disable do not need to be implemented
 
@@ -186,8 +185,6 @@ protected:
 
     core::types::DdsTopic topic_;
     eprosima::fastdds::dds::ContentFilteredTopic* filtered_topic_;
-    //std::string filter;
-    bool has_filter_;
 
     fastdds::dds::Subscriber* dds_subscriber_;
     fastdds::dds::DataReader* reader_;

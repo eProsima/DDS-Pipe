@@ -61,8 +61,7 @@ public:
     XmlDynTypesParticipant(
             std::shared_ptr<XmlParticipantConfiguration> participant_configuration,
             std::shared_ptr<core::PayloadPool> payload_pool,
-            std::shared_ptr<core::DiscoveryDatabase> discovery_database,
-            bool has_filter = false);
+            std::shared_ptr<core::DiscoveryDatabase> discovery_database);
 
     /**
      * @brief Creates a writer object based on the topic QoS.

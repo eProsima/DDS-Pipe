@@ -98,24 +98,6 @@ public:
             const ITopic& topic) = 0;
 
     /** TODO. danip
-     * Create a content filtered topic.
-     */
-    DDSPIPE_CORE_DllAPI
-    virtual eprosima::fastdds::dds::ContentFilteredTopic* create_contentfilteredtopic(
-            const std::string& name,
-            eprosima::fastdds::dds::Topic* related_topic,
-            const std::string& filter_expression,
-            const std::vector<std::string>& expression_parameters) = 0;
-
-    /** TODO. danip
-     * Find a topic by name
-     */
-    DDSPIPE_CORE_DllAPI
-    virtual eprosima::fastdds::dds::Topic* find_topic(
-        const std::string& topic_name,
-        const fastdds::dds::Duration_t& timeout) = 0;
-
-    /** TODO. danip
      * Find a topic by name
      */
     DDSPIPE_CORE_DllAPI
