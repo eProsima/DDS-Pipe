@@ -55,12 +55,12 @@ public:
     std::shared_ptr<core::IReader> create_reader(
             const core::ITopic& topic) override;
 
-    DDSPIPE_PARTICIPANTS_DllAPI
-    void update_filters(
-        const int flag,
-        std::set<std::string> partitions = std::set<std::string>(),
-        const std::string& topic_name = "",
-        const std::string& expression = "") override;
+//     DDSPIPE_PARTICIPANTS_DllAPI
+//     void update_filters(
+//         const int flag,
+//         std::set<std::string> partitions = std::set<std::string>(),
+//         const std::string& topic_name = "",
+//         const std::string& expression = "") override;
 
 protected:
 
@@ -82,10 +82,11 @@ protected:
 
     // Boolean to check if the created participant has filter
     bool has_filter_;
-    // Filter partitions set
-    std::set<std::string> partition_filter_set_;
-    // Filter content_topicfilter dict
-    std::map<std::string, std::string> topic_filter_dict_;
+    // TODO. danip aqui eliminar
+//     // Filter partitions set
+//     std::set<std::string> partition_filter_set_;
+//     // Filter content_topicfilter dict
+//     std::map<std::string, std::string> topic_filter_dict_;
 };
 
 } /* namespace dds */

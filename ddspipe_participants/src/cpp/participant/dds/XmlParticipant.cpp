@@ -77,23 +77,23 @@ std::shared_ptr<core::IReader> XmlParticipant::create_reader(
         std::shared_ptr<core::IReader> ret =
             CommonParticipant::create_reader(topic);
 
-        if (has_filter_)
-        {
-            // Check if the topic has a 'content_topicfilter' filter active
-            auto content_topicfilter_it = topic_filter_dict_.find(topic.topic_name());
-            std::string expression = "";
-            if(content_topicfilter_it != topic_filter_dict_.end())
-            {
-                expression = content_topicfilter_it->second;
-            }
-            // Update content_topicfilter expression
-            //  in this function, the reader is enabled
-            //  (to ensure safety updates of filters)
-            ret->update_content_topic_filter(expression);
+        // if (has_filter_)
+        // {
+        //     // Check if the topic has a 'content_topicfilter' filter active
+        //     auto content_topicfilter_it = topic_filter_dict_.find(topic.topic_name());
+        //     std::string expression = "";
+        //     if(content_topicfilter_it != topic_filter_dict_.end())
+        //     {
+        //         expression = content_topicfilter_it->second;
+        //     }
+        //     // Update content_topicfilter expression
+        //     //  in this function, the reader is enabled
+        //     //  (to ensure safety updates of filters)
+        //     ret->update_content_topic_filter(expression);
 
-            // Update the partitions
-            ret->update_partitions(partition_filter_set_);
-        }
+        //     // Update the partitions
+        //     ret->update_partitions(partition_filter_set_);
+        // }
 
         return ret;
     }
@@ -130,25 +130,26 @@ fastdds::dds::DomainParticipantQos XmlParticipant::reckon_participant_qos_() con
     return qos;
 }
 
-// TODO. danip
-void XmlParticipant::update_filters(
-        const int flag,
-        std::set<std::string> partitions,
-        const std::string& topic_name,
-        const std::string& expression)
-{
+// // TODO. danip
+// void XmlParticipant::update_filters(
+//         const int flag,
+//         std::set<std::string> partitions,
+//         const std::string& topic_name,
+//         const std::string& expression)
+// {
+//     // nothing
 
-    if (flag == 0)
-    {
-        // partitions
-        partition_filter_set_ = partitions;
-    }
-    else
-    {
-        // content_topicfilter
-        topic_filter_dict_[topic_name] = expression;
-    }
-}
+//     // if (flag == 0)
+//     // {
+//     //     // partitions
+//     //     partition_filter_set_ = partitions;
+//     // }
+//     // else
+//     // {
+//     //     // content_topicfilter
+//     //     topic_filter_dict_[topic_name] = expression;
+//     // }
+// }
 
 } /* namespace dds */
 } /* namespace participants */

@@ -59,6 +59,7 @@ CommonReader::CommonReader(
     , topic_description_(topic_description)
     , reader_qos_(reader_qos)
     , blocked_filtered_guidlist_(blocked_filtered_guidlist)
+    , has_filter_(has_filter)
 {
     // Do nothing.
 }
@@ -86,20 +87,23 @@ CommonReader::~CommonReader()
             participant_id_ << " for topic " << topic_);
 }
 
-void CommonReader::init()
+void CommonReader::init(
+        const std::set<std::string> partitions_set)
 {
     internal_entities_creation_(
         history_attributes_,
         reader_attributes_,
         topic_description_,
-        reader_qos_);
+        reader_qos_,
+        partitions_set);
 }
 
 void CommonReader::internal_entities_creation_(
         const fastdds::rtps::HistoryAttributes& history_attributes,
         const fastdds::rtps::ReaderAttributes& reader_attributes,
         const fastdds::rtps::TopicDescription& topic_description,
-        const fastdds::dds::ReaderQos& reader_qos)
+        const fastdds::dds::ReaderQos& reader_qos,
+        const std::set<std::string> partitions_set)
 {
     // Copy reader attributes because fast needs it non const (do not ask why)
     fastdds::rtps::ReaderAttributes non_const_reader_attributes = reader_attributes;
@@ -125,8 +129,22 @@ void CommonReader::internal_entities_creation_(
                       participant_id_ << " in topic " << topic_ << ".");
     }
 
+    if(has_filter_)
+    {
+        auto& sub_part_qos = reader_qos_.m_partition;
+        // Clear the partitions
+        sub_part_qos.clear();
+        // Add the partitions from the filter
+        for (const auto& partition : partitions_set)
+        {
+            sub_part_qos.push_back(partition.c_str());
+        }
+
+        // no content topic filter
+    }
+
     // Register reader with topic
-    if (!rtps_participant_->register_reader(rtps_reader_, topic_description, reader_qos))
+    if (!rtps_participant_->register_reader(rtps_reader_, topic_description, reader_qos_))
     {
         // In case it fails, remove reader and throw exception
         fastdds::rtps::RTPSDomain::removeRTPSReader(rtps_reader_);
@@ -159,46 +177,25 @@ core::types::DdsTopic CommonReader::topic() const noexcept
     return topic_;
 }
 
-// TODO. danip
-//  change to not use a default sub qos
-//  use the current qos
 void CommonReader::update_partitions(
         std::set<std::string> partitions_set)
 {
-    //fastdds::dds::ReaderQos sub_qos = SUBSCRIBER_QOS_DEFAULT;
-    
-    //reader_qos_.m_partition 
-    // for(const std::string& partition: partitions_set)
-    // {
-    //     sub_qos.partition().push_back(partition.c_str());
-    // }
-
-    auto& part_qos = reader_qos_.m_partition;
-    part_qos.clear();
-
-    for (const auto& p : partitions_set)
+    // Get the partitions from the reader qos
+    auto& sub_part_qos = reader_qos_.m_partition;
+    // Clear the partitions
+    sub_part_qos.clear();
+    // Add the partitions from the filter
+    for (const auto& partition : partitions_set)
     {
-        part_qos.push_back(p.c_str());
+        sub_part_qos.push_back(partition.c_str());
     }
-
+    // Update the reader with the new partitions
     rtps_participant_->update_reader(rtps_reader_, reader_qos_);
-    //dds_subscriber_->set_qos(sub_qos);
-
-    // Enable the reader
-    /*if (fastdds::dds::RETCODE_OK != rtps_reader_->enable())
-    {
-        dds_subscriber_->delete_datareader(rtps_reader_);
-        rtps_reader_ = nullptr;
-        throw utils::InitializationException(
-                  utils::Formatter() << "Error enabling DataReader for Participant " <<
-                      participant_id_ << " in topic " << topic_ << ".");
-    }*/
 }
 
 void CommonReader::update_content_topic_filter(std::string expression)
 {
-    // content_topicfilter
-    //filtered_topic_->set_filter_expression(expression, {});
+    // Nothing
 }
 
 utils::ReturnCode CommonReader::take_nts_(

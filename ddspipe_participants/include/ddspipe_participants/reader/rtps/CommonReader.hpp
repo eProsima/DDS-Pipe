@@ -79,7 +79,8 @@ public:
      * @pre this method can only be called once.
      */
     DDSPIPE_PARTICIPANTS_DllAPI
-    void init();
+    void init(
+            const std::set<std::string> partitions_set);
 
     //! Update method to change the partitions in the content_topicfilter
     DDSPIPE_PARTICIPANTS_DllAPI
@@ -225,7 +226,8 @@ protected:
             const fastdds::rtps::HistoryAttributes& history_attributes,
             const fastdds::rtps::ReaderAttributes& reader_attributes,
             const fastdds::rtps::TopicDescription& topic_desc,
-            const fastdds::dds::ReaderQos& reader_qos);
+            const fastdds::dds::ReaderQos& reader_qos,
+            const std::set<std::string> partitions_set);
 
     /**
      * @brief Return an allocated object

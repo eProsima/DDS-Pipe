@@ -39,7 +39,8 @@ DiscoveryServerParticipant::DiscoveryServerParticipant(
         payload_pool,
         discovery_database,
         participant_configuration->domain,
-        participant_configuration->allowed_partition_list)
+        participant_configuration->allowed_partition_list,
+        false)
 {
 }
 

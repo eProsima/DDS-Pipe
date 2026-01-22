@@ -281,6 +281,10 @@ protected:
     std::map<std::string, std::map<std::string, std::string>> partition_names;
 
     bool has_filter_;
+    // Filter partitions set
+    std::set<std::string> partition_filter_set_;
+    // Filter content_topicfilter dict
+    std::map<std::string, std::string> topic_filter_dict_;
 };
 
 } /* namespace dds */

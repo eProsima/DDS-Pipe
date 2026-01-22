@@ -249,7 +249,8 @@ protected:
             const std::shared_ptr<core::PayloadPool>& payload_pool,
             const std::shared_ptr<core::DiscoveryDatabase>& discovery_database,
             const core::types::DomainId& domain_id,
-            const std::set<std::string> allowed_partition_list);
+            const std::set<std::string> allowed_partition_list,// TODO. danip
+            bool has_filter);
 
     /**
      * @brief Auxiliary method to create the internal RTPS participant.
@@ -306,12 +307,16 @@ protected:
     //! Participant attributes to create the internal RTPS Participant.
     fastdds::rtps::RTPSParticipantAttributes participant_attributes_;
 
+// TODO. danip remove
     //! <Topics <Writer_guid, Partitions set>>
     std::map<std::string, std::map<std::string, std::string>> partition_names;
-
     std::set<std::string> allowed_partition_list_;
-
     std::set<std::string> filtered_guidlist;
+//
+
+    bool has_filter_;
+    // Filter partitions set
+    std::set<std::string> partition_filter_set_;
 };
 
 } /* namespace rtps */

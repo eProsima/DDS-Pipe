@@ -55,12 +55,14 @@ CommonParticipant::CommonParticipant(
         const std::shared_ptr<core::PayloadPool>& payload_pool,
         const std::shared_ptr<core::DiscoveryDatabase>& discovery_database,
         const core::types::DomainId& domain_id,
-        const std::set<std::string> allowed_partition_list)
+        const std::set<std::string> allowed_partition_list, // TODO. danip
+        bool has_filter)
     : configuration_(participant_configuration)
     , payload_pool_(payload_pool)
     , discovery_database_(discovery_database)
     , domain_id_(domain_id)
     , allowed_partition_list_(allowed_partition_list)
+    , has_filter_(has_filter)
 {
     // Do nothing
 }
@@ -484,7 +486,7 @@ std::shared_ptr<core::IReader> CommonParticipant::create_reader(
             dds_topic,
             this->payload_pool_,
             rtps_participant_);
-        reader->init();
+        reader->init(partition_filter_set_);
 
         return reader;
     }
@@ -498,8 +500,9 @@ std::shared_ptr<core::IReader> CommonParticipant::create_reader(
                 this->payload_pool_,
                 rtps_participant_,
                 discovery_database_,
-                filtered_guidlist); // add filter guid list
-            reader->init();
+                filtered_guidlist, // add filter guid list // TODO. danip
+                has_filter_);
+            reader->init(partition_filter_set_);
 
             return reader;
         }
@@ -510,7 +513,7 @@ std::shared_ptr<core::IReader> CommonParticipant::create_reader(
                 dds_topic,
                 this->payload_pool_,
                 rtps_participant_);
-            reader->init();
+            reader->init(partition_filter_set_);
 
             return reader;
         }
@@ -588,7 +591,16 @@ void CommonParticipant::update_filters(
         const std::string& topic_name,
         const std::string& expression)
 {
-    // Nothing
+    if (flag == 0)
+    {
+        // partitions
+        partition_filter_set_ = partitions;
+    }
+    else
+    {
+        // content_topicfilter
+        // nothing
+    }
 }
 
 } /* namespace rtps */
