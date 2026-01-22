@@ -54,8 +54,7 @@ public:
             const std::shared_ptr<core::PayloadPool>& payload_pool,
             fastdds::rtps::RTPSParticipant* rtps_participant,
             const std::shared_ptr<core::DiscoveryDatabase>& discovery_database,
-            const std::set<std::string> blocked_filtered_guidlist,
-            bool hast_partitions);
+            const std::set<std::string> blocked_filtered_guidlist);
 
     /**
      * @brief Construct a new SpecificQoSReader object with filter partitions

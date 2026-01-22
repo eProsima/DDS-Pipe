@@ -122,20 +122,6 @@ public:
     std::shared_ptr<core::IReader> create_reader(
             const core::ITopic& topic) override;
 
-    //! Override create_contentfilteredtopic() IParticipant method
-    DDSPIPE_PARTICIPANTS_DllAPI
-    eprosima::fastdds::dds::ContentFilteredTopic* create_contentfilteredtopic(
-            const std::string& name,
-            eprosima::fastdds::dds::Topic* related_topic,
-            const std::string& filter_expression,
-            const std::vector<std::string>& expression_parameters) override;
-
-    //! Override find_topic() IParticipant method
-    DDSPIPE_PARTICIPANTS_DllAPI
-    virtual eprosima::fastdds::dds::Topic* find_topic(
-            const std::string& topic_name,
-            const fastdds::dds::Duration_t& timeout) override;
-
     //! Override update_filters() IParticipant method
     DDSPIPE_PARTICIPANTS_DllAPI
     virtual void update_filters(
@@ -249,8 +235,7 @@ protected:
             const std::shared_ptr<core::PayloadPool>& payload_pool,
             const std::shared_ptr<core::DiscoveryDatabase>& discovery_database,
             const core::types::DomainId& domain_id,
-            const std::set<std::string> allowed_partition_list,// TODO. danip
-            bool has_filter);
+            const std::set<std::string> allowed_partition_list); // TODO. danip check
 
     /**
      * @brief Auxiliary method to create the internal RTPS participant.
@@ -314,7 +299,7 @@ protected:
     std::set<std::string> filtered_guidlist;
 //
 
-    bool has_filter_;
+
     // Filter partitions set
     std::set<std::string> partition_filter_set_;
 };

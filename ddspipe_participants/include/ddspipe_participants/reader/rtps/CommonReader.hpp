@@ -213,8 +213,7 @@ protected:
             const fastdds::rtps::ReaderAttributes& reader_attributes,
             const fastdds::rtps::TopicDescription& topic_desc,
             const fastdds::dds::ReaderQos& reader_qos,
-            const std::set<std::string> allowed_partition_list,
-            bool has_filter);
+            const std::set<std::string> allowed_partition_list);
 
     // Specific enable/disable do not need to be implemented
 
@@ -331,10 +330,6 @@ protected:
 
     //!
     core::types::DdsTopic topic_;
-
-    //eprosima::fastdds::dds::ContentFilteredTopic* filtered_topic_;
-    //std::string filter;
-    bool has_filter_;
 
     //! RTPS Reader pointer
     fastdds::rtps::RTPSReader* rtps_reader_;

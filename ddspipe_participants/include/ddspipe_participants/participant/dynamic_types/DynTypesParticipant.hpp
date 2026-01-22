@@ -54,8 +54,7 @@ public:
     DynTypesParticipant(
             std::shared_ptr<SimpleParticipantConfiguration> participant_configuration,
             std::shared_ptr<core::PayloadPool> payload_pool,
-            std::shared_ptr<core::DiscoveryDatabase> discovery_database,
-            bool has_filter);
+            std::shared_ptr<core::DiscoveryDatabase> discovery_database);
 
     /**
      * @brief Create a writer object

@@ -54,8 +54,7 @@ public:
             const std::shared_ptr<core::PayloadPool>& payload_pool,
             fastdds::dds::DomainParticipant* participant,
             fastdds::dds::Topic* topic_entity,
-            const std::shared_ptr<core::DiscoveryDatabase>& discovery_database,
-            bool has_filter);
+            const std::shared_ptr<core::DiscoveryDatabase>& discovery_database);
 
 protected:
 

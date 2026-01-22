@@ -33,15 +33,13 @@ namespace rtps {
 SimpleParticipant::SimpleParticipant(
         const std::shared_ptr<SimpleParticipantConfiguration>& participant_configuration,
         const std::shared_ptr<core::PayloadPool>& payload_pool,
-        const std::shared_ptr<core::DiscoveryDatabase>& discovery_database,
-        bool has_filter)
+        const std::shared_ptr<core::DiscoveryDatabase>& discovery_database)
     : CommonParticipant(
         participant_configuration,
         payload_pool,
         discovery_database,
         participant_configuration->domain,
-        participant_configuration->allowed_partition_list,
-        has_filter) // TODO. danip
+        participant_configuration->allowed_partition_list)
 {
 }
 

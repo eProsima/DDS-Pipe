@@ -76,7 +76,7 @@ void CommonReader::init(
 
     // If the reader has an active filter
     // change the qos partition before creating the datareader.
-    if(has_filter_)
+    if (partitions_set.size() > 0)
     {
         // Get the current subscriber qos
         fastdds::dds::SubscriberQos sub_qos = dds_subscriber_->get_qos();
@@ -97,7 +97,7 @@ void CommonReader::init(
     auto topic_tmp = dds_participant_->find_topic(topic_.topic_name(), 10);
 
     // Create the filtered topic with the expression given
-    // if 'has_filter_' is false the expression will be ""
+    // if any filter is active the expression will be ""
     // no contentfilter is being applied
     filtered_topic_ = dds_participant_->create_contentfilteredtopic(
             topic_.topic_name() + "_filtered", topic_tmp,
@@ -132,7 +132,6 @@ void CommonReader::init(
     // is called, opening a window for potential data races. Although Fast DDS ensures that this cannot happen, this
     // procedure protects against future bad practices introducing the aforementioned data races.
 
-    // if (!has_filter_) // TODO. danip remove
     if (fastdds::dds::RETCODE_OK != reader_->enable())
     {
         dds_subscriber_->delete_datareader(reader_);
@@ -199,8 +198,7 @@ CommonReader::CommonReader(
         const DdsTopic& topic,
         const std::shared_ptr<core::PayloadPool>& payload_pool,
         fastdds::dds::DomainParticipant* participant,
-        fastdds::dds::Topic* topic_entity,
-        bool has_filter)
+        fastdds::dds::Topic* topic_entity)
     : BaseReader(participant_id, topic.topic_qos.max_rx_rate, topic.topic_qos.downsampling)
     , dds_participant_(participant)
     , dds_topic_(topic_entity)
@@ -208,7 +206,6 @@ CommonReader::CommonReader(
     , topic_(topic)
     , dds_subscriber_(nullptr)
     , reader_(nullptr)
-    , has_filter_(has_filter)
 {
     // Do nothing
 }

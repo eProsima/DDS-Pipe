@@ -112,20 +112,6 @@ public:
     std::shared_ptr<core::IReader> create_reader(
             const core::ITopic& topic) override;
 
-    //! Override create_contentfilteredtopic() IParticipant method
-    DDSPIPE_PARTICIPANTS_DllAPI
-    eprosima::fastdds::dds::ContentFilteredTopic* create_contentfilteredtopic(
-            const std::string& name,
-            eprosima::fastdds::dds::Topic* related_topic,
-            const std::string& filter_expression,
-            const std::vector<std::string>& expression_parameters) override;
-
-    //! Override find_topic() IParticipant method
-    DDSPIPE_PARTICIPANTS_DllAPI
-    virtual eprosima::fastdds::dds::Topic* find_topic(
-            const std::string& topic_name,
-            const fastdds::dds::Duration_t& timeout) override;
-
     //! Override update_filters() IParticipant method
     DDSPIPE_PARTICIPANTS_DllAPI
     virtual void update_filters(
@@ -205,8 +191,7 @@ protected:
     CommonParticipant(
             const std::shared_ptr<SimpleParticipantConfiguration>& participant_configuration,
             const std::shared_ptr<core::PayloadPool>& payload_pool,
-            const std::shared_ptr<core::DiscoveryDatabase>& discovery_database,
-            bool has_filter);
+            const std::shared_ptr<core::DiscoveryDatabase>& discovery_database);
 
     /////////////////////////
     // VIRTUAL METHODS
@@ -280,7 +265,6 @@ protected:
     //! <Topics <Writer_guid, Partitions set>>
     std::map<std::string, std::map<std::string, std::string>> partition_names;
 
-    bool has_filter_;
     // Filter partitions set
     std::set<std::string> partition_filter_set_;
     // Filter content_topicfilter dict

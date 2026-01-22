@@ -46,8 +46,7 @@ CommonReader::CommonReader(
         const fastdds::rtps::ReaderAttributes& reader_attributes,
         const fastdds::rtps::TopicDescription& topic_description,
         const fastdds::dds::ReaderQos& reader_qos,
-        const std::set<std::string> blocked_filtered_guidlist,
-        bool has_filter)
+        const std::set<std::string> blocked_filtered_guidlist)
     : BaseReader(participant_id, topic.topic_qos.max_rx_rate, topic.topic_qos.downsampling)
     , rtps_participant_(rtps_participant)
     , payload_pool_(payload_pool)
@@ -59,7 +58,6 @@ CommonReader::CommonReader(
     , topic_description_(topic_description)
     , reader_qos_(reader_qos)
     , blocked_filtered_guidlist_(blocked_filtered_guidlist)
-    , has_filter_(has_filter)
 {
     // Do nothing.
 }
@@ -129,7 +127,7 @@ void CommonReader::internal_entities_creation_(
                       participant_id_ << " in topic " << topic_ << ".");
     }
 
-    if(has_filter_)
+    if(partitions_set.size() > 0)
     {
         auto& sub_part_qos = reader_qos_.m_partition;
         // Clear the partitions
@@ -176,7 +174,7 @@ core::types::DdsTopic CommonReader::topic() const noexcept
 {
     return topic_;
 }
-
+ 
 void CommonReader::update_partitions(
         std::set<std::string> partitions_set)
 {

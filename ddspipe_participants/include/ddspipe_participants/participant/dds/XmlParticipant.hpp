@@ -36,8 +36,7 @@ public:
     XmlParticipant(
             const std::shared_ptr<XmlParticipantConfiguration>& participant_configuration,
             const std::shared_ptr<core::PayloadPool>& payload_pool,
-            const std::shared_ptr<core::DiscoveryDatabase>& discovery_database,
-            bool has_filter = false);
+            const std::shared_ptr<core::DiscoveryDatabase>& discovery_database);
 
     /**
      * Specialized parent call so if it fails returns a blank one.
@@ -81,7 +80,7 @@ protected:
     const XmlParticipantConfiguration& xml_specific_configuration_;
 
     // Boolean to check if the created participant has filter
-    bool has_filter_;
+    
     // TODO. danip aqui eliminar
 //     // Filter partitions set
 //     std::set<std::string> partition_filter_set_;

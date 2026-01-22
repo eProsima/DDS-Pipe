@@ -55,14 +55,12 @@ CommonParticipant::CommonParticipant(
         const std::shared_ptr<core::PayloadPool>& payload_pool,
         const std::shared_ptr<core::DiscoveryDatabase>& discovery_database,
         const core::types::DomainId& domain_id,
-        const std::set<std::string> allowed_partition_list, // TODO. danip
-        bool has_filter)
+        const std::set<std::string> allowed_partition_list) // TODO. danip check
     : configuration_(participant_configuration)
     , payload_pool_(payload_pool)
     , discovery_database_(discovery_database)
     , domain_id_(domain_id)
     , allowed_partition_list_(allowed_partition_list)
-    , has_filter_(has_filter)
 {
     // Do nothing
 }
@@ -500,8 +498,7 @@ std::shared_ptr<core::IReader> CommonParticipant::create_reader(
                 this->payload_pool_,
                 rtps_participant_,
                 discovery_database_,
-                filtered_guidlist, // add filter guid list // TODO. danip
-                has_filter_);
+                filtered_guidlist); // add filter guid list // TODO. danip
             reader->init(partition_filter_set_);
 
             return reader;
@@ -561,28 +558,6 @@ CommonParticipant::create_listener_()
 {
     EPROSIMA_LOG_INFO(DDSPIPE_RTPS_PARTICIPANT, "Creating RTPS Listener from CommonParticipant.");
     return std::make_unique<RtpsListener>(configuration_, discovery_database_);
-}
-
-eprosima::fastdds::dds::ContentFilteredTopic* CommonParticipant::create_contentfilteredtopic(
-        const std::string& name,
-        eprosima::fastdds::dds::Topic* related_topic,
-        const std::string& filter_expression,
-        const std::vector<std::string>& expression_parameters)
-{
-    return nullptr;
-
-    /*return rtps_participant_->create_contentfilteredtopic(
-            name,
-            related_topic,
-            filter_expression,
-            expression_parameters);*/
-}
-
-eprosima::fastdds::dds::Topic* CommonParticipant::find_topic(
-        const std::string& topic_name,
-        const fastdds::dds::Duration_t& timeout)
-{
-    return nullptr;
 }
 
 void CommonParticipant::update_filters(

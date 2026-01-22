@@ -99,22 +99,6 @@ std::shared_ptr<IReader> SchemaParticipant::create_reader(
     return std::make_shared<BlankReader>();
 }
 
-eprosima::fastdds::dds::ContentFilteredTopic* SchemaParticipant::create_contentfilteredtopic(
-        const std::string& name,
-        eprosima::fastdds::dds::Topic* related_topic,
-        const std::string& filter_expression,
-        const std::vector<std::string>& expression_parameters)
-{
-    return nullptr;
-}
-
-eprosima::fastdds::dds::Topic* SchemaParticipant::find_topic(
-        const std::string& topic_name,
-        const fastdds::dds::Duration_t& timeout)
-{
-    return nullptr;
-}
-
 void SchemaParticipant::update_filters(
         const int flag,
         std::set<std::string> partitions,

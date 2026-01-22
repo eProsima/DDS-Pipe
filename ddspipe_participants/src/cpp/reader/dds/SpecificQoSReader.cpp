@@ -33,10 +33,9 @@ SpecificQoSReader::SpecificQoSReader(
         const std::shared_ptr<core::PayloadPool>& payload_pool,
         fastdds::dds::DomainParticipant* participant,
         fastdds::dds::Topic* topic_entity,
-        const std::shared_ptr<core::DiscoveryDatabase>& discovery_database,
-        bool has_filter)
+        const std::shared_ptr<core::DiscoveryDatabase>& discovery_database)
     : CommonReader(
-        participant_id, topic, payload_pool, participant, topic_entity, has_filter)
+        participant_id, topic, payload_pool, participant, topic_entity)
     , discovery_database_(discovery_database)
 {
 }
