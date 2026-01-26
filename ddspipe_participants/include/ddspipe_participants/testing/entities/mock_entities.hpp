@@ -116,10 +116,6 @@ public:
     utils::ReturnCode take_nts_(
             std::unique_ptr<core::IRoutingData>& data) noexcept override;
 
-//     DDSPIPE_PARTICIPANTS_DllAPI
-//     virtual void update_content_topic_filter(
-//             std::string expression) override;
-
 protected:
 
     virtual void enable_nts_() noexcept override;

@@ -53,8 +53,9 @@ public:
 
     std::set<participants::types::WhitelistType> whitelist {};
 
-    std::set<std::string> allowed_partition_list {}; // TODO. danip not remove
-    std::map<std::string, std::string> content_topic_filter_dict {}; // TODO. danip not remove
+    // yaml filters
+    std::set<std::string> allowed_partition_list {};
+    std::map<std::string, std::string> content_topic_filter_dict {};
 
     core::types::TransportDescriptors transport {core::types::TransportDescriptors::builtin};
 

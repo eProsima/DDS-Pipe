@@ -45,8 +45,7 @@ CommonReader::CommonReader(
         const fastdds::rtps::HistoryAttributes& history_attributes,
         const fastdds::rtps::ReaderAttributes& reader_attributes,
         const fastdds::rtps::TopicDescription& topic_description,
-        const fastdds::dds::ReaderQos& reader_qos,
-        const std::set<std::string> blocked_filtered_guidlist)
+        const fastdds::dds::ReaderQos& reader_qos)
     : BaseReader(participant_id, topic.topic_qos.max_rx_rate, topic.topic_qos.downsampling)
     , rtps_participant_(rtps_participant)
     , payload_pool_(payload_pool)
@@ -57,7 +56,6 @@ CommonReader::CommonReader(
     , reader_attributes_(reader_attributes)
     , topic_description_(topic_description)
     , reader_qos_(reader_qos)
-    , blocked_filtered_guidlist_(blocked_filtered_guidlist)
 {
     // Do nothing.
 }
@@ -174,7 +172,7 @@ core::types::DdsTopic CommonReader::topic() const noexcept
 {
     return topic_;
 }
- 
+
 void CommonReader::update_partitions(
         std::set<std::string> partitions_set)
 {
@@ -229,15 +227,6 @@ utils::ReturnCode CommonReader::take_nts_(
     std::ostringstream guid_ss;
     guid_ss << data_ptr->source_guid;
     std::string source_guid_str = guid_ss.str();
-
-    // TODO. danip remove?
-    // check if the guid from the current data is filtered by the allowed partition list
-    /*if (blocked_filtered_guidlist_.find(source_guid_str) != blocked_filtered_guidlist_.end())
-    {
-        // partition not allowed
-        rtps_reader_->get_history()->remove_change(received_change);
-        return utils::ReturnCode::RETCODE_NOT_ENABLED;
-    }*/
 
     data.reset(data_ptr);
 

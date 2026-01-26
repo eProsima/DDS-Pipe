@@ -395,9 +395,6 @@ protected:
     //! Thread Pool for tracks
     std::shared_ptr<utils::SlotThreadPool> thread_pool_;
 
-    //! Allowed partitions added in the filter
-    std::set<std::string> allowed_partition_list_;
-
     /////////////////////////
     // INTERNAL DATA STORAGE
     /////////////////////////

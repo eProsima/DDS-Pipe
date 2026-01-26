@@ -54,13 +54,11 @@ CommonParticipant::CommonParticipant(
         const std::shared_ptr<ParticipantConfiguration>& participant_configuration,
         const std::shared_ptr<core::PayloadPool>& payload_pool,
         const std::shared_ptr<core::DiscoveryDatabase>& discovery_database,
-        const core::types::DomainId& domain_id,
-        const std::set<std::string> allowed_partition_list) // TODO. danip check
+        const core::types::DomainId& domain_id)
     : configuration_(participant_configuration)
     , payload_pool_(payload_pool)
     , discovery_database_(discovery_database)
     , domain_id_(domain_id)
-    , allowed_partition_list_(allowed_partition_list)
 {
     // Do nothing
 }
@@ -199,9 +197,6 @@ void CommonParticipant::RtpsListener::on_writer_discovery(
 
         guid_ss << info.guid;
         guid_str = guid_ss.str();
-
-        // get the partitions
-        std::string partition_names = info_writer.specific_partitions[guid_str];
 
         if (reason == fastdds::rtps::WriterDiscoveryStatus::DISCOVERED_WRITER)
         {
@@ -497,8 +492,7 @@ std::shared_ptr<core::IReader> CommonParticipant::create_reader(
                 dds_topic,
                 this->payload_pool_,
                 rtps_participant_,
-                discovery_database_,
-                filtered_guidlist);
+                discovery_database_);
 
             // Add the filters data structures
             // if these filters are empty, the filters are not applied.

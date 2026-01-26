@@ -162,12 +162,6 @@ void MockReader::enable_nts_() noexcept
     }
 }
 
-// void MockReader::update_content_topic_filter(std::string expression)
-// {
-//     return;
-//     //filtered_topic_->set_filter_expression(expression, {});
-// }
-
 MockWriter::MockWriter(
         const core::types::ParticipantId& id)
     : BaseWriter(id)

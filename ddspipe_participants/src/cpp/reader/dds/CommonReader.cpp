@@ -113,7 +113,6 @@ void CommonReader::init(
     // Listener must be set in creation as no callbacks should be missed
     // It is safe to do so here as object is already created and callbacks do not require anything set in this method
     reader_ = dds_subscriber_->create_datareader(
-        //dds_topic_,
         filtered_topic_, // Using new filtered topic
         reckon_reader_qos_(),
         this,
@@ -131,7 +130,6 @@ void CommonReader::init(
     // This is done just to ensure that the reader is not registered before any other method modifying the reader pointer
     // is called, opening a window for potential data races. Although Fast DDS ensures that this cannot happen, this
     // procedure protects against future bad practices introducing the aforementioned data races.
-
     if (fastdds::dds::RETCODE_OK != reader_->enable())
     {
         dds_subscriber_->delete_datareader(reader_);
@@ -263,10 +261,6 @@ utils::ReturnCode CommonReader::take_nts_(
 
 void CommonReader::enable_nts_() noexcept
 {
-    // TODO. danip check?
-    // if (spy_filter)
-    // reader_->enable();
-
     // Notify messages reception in case any were received while disabled
     // NOTE: unlike in the RTPS case, samples received while disabled will be processed even if the topic is best_effort
     on_data_available_();
@@ -393,9 +387,6 @@ void CommonReader::fill_received_data_(
     }
 }
 
-// TODO. danip
-//  change to not use a default sub qos
-//  use the current qos
 void CommonReader::update_partitions(
         std::set<std::string> partitions_set)
 {
@@ -407,18 +398,6 @@ void CommonReader::update_partitions(
     }
 
     dds_subscriber_->set_qos(sub_qos);
-
-    // dont need to, the reader is created with the filter information
-
-    // Enable the reader
-    // if (fastdds::dds::RETCODE_OK != reader_->enable())
-    // {
-    //     dds_subscriber_->delete_datareader(reader_);
-    //     reader_ = nullptr;
-    //     throw utils::InitializationException(
-    //               utils::Formatter() << "Error enabling DataReader for Participant " <<
-    //                   participant_id_ << " in topic " << topic_ << ".");
-    // }
 }
 
 void CommonReader::update_content_topic_filter(std::string expression)

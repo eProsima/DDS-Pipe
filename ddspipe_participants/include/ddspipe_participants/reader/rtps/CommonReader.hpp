@@ -87,6 +87,7 @@ public:
     void update_partitions(
             std::set<std::string> partitions_set) override;
 
+    //! Update method to change the expression in the content_topicfilter
     DDSPIPE_PARTICIPANTS_DllAPI
     void update_content_topic_filter(
             std::string expression) override;
@@ -207,8 +208,7 @@ protected:
             const fastdds::rtps::HistoryAttributes& history_attributes,
             const fastdds::rtps::ReaderAttributes& reader_attributes,
             const fastdds::rtps::TopicDescription& topic_desc,
-            const fastdds::dds::ReaderQos& reader_qos,
-            const std::set<std::string> allowed_partition_list);
+            const fastdds::dds::ReaderQos& reader_qos);
 
     // Specific enable/disable do not need to be implemented
 
@@ -343,9 +343,6 @@ protected:
 
     //! Reader QoS to create the internal RTPS Reader.
     fastdds::dds::ReaderQos reader_qos_;
-
-    //! Allowed partitions added by the filter
-    std::set<std::string> blocked_filtered_guidlist_;
 };
 
 } /* namespace rtps */
