@@ -53,8 +53,7 @@ public:
             const core::types::DdsTopic& topic,
             const std::shared_ptr<core::PayloadPool>& payload_pool,
             fastdds::rtps::RTPSParticipant* rtps_participant,
-            const std::shared_ptr<core::DiscoveryDatabase>& discovery_database,
-            const std::set<std::string> blocked_filtered_guidlist);
+            const std::shared_ptr<core::DiscoveryDatabase>& discovery_database);
 
 protected:
 

@@ -619,9 +619,13 @@ void DdsPipe::deactivate_all_topics_nts_() noexcept
     }
 }
 
-void DdsPipe::update_partitions( // participant_id
+void DdsPipe::update_partitions(
         std::set<std::string> partitions_set)
 {
+    // TODO.
+    // In the future it could be interesting to update the partitions
+    // by participant_id. For DDS-Router
+
     {
         std::lock_guard<std::mutex> lock(bridges_mutex_);
         // TODO. danip check mutex

@@ -53,13 +53,6 @@ public:
     /////////////////////////
 
     utils::Fuzzy<std::string> raw {};
-        // "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n" \
-        // "<profiles xmlns=\"http://www.eprosima.com\">"
-        // "    <participant profile_name=\"participant_profile\">" \
-        // "        <domainId>0</domainId>" \
-        // "        <rtps></rtps>" \
-        // "    </participant>"\
-        // "</profiles>"};
     std::set<std::string> files {};
 };
 

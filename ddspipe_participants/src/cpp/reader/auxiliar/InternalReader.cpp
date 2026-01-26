@@ -85,13 +85,12 @@ utils::ReturnCode InternalReader::take_nts_(
 void InternalReader::update_partitions(
         std::set<std::string> partitions_set)
 {
-    //throw utils::UnsupportedException("topic method not allowed for non RTPS readers.");
+    // Nothing
 }
 
 void InternalReader::update_content_topic_filter(std::string expression)
 {
-    return;
-    //filtered_topic_->set_filter_expression(expression, {});
+    // Nothing
 }
 
 } /* namespace participants */

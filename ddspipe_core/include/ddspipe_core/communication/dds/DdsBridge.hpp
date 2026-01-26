@@ -113,20 +113,30 @@ public:
     void remove_writer(
             const types::ParticipantId& participant_id) noexcept;
 
+    /**
+     * Adds a partition with its respective guid.
+     *
+     * @param guid: Guid of the endpoint.
+     * @param partition: Partition that is going to be added.
+     */
     DDSPIPE_CORE_DllAPI
     void add_partition_to_topic(
             std::string guid,
             std::string partition);
 
     /**
-     * TODO
+     * Function that updates the partition set of all bridges.
+     *
+     * @param partitions_set: Set of partitions
      */
     DDSPIPE_CORE_DllAPI
     void update_partitions(
             std::set<std::string> partitions_set);
 
     /**
-     * TODO
+     * Function that updates the content filtered topic of all bridges
+     *
+     * @param expression: The expression of the filter.
      */
     DDSPIPE_CORE_DllAPI
     void update_topic_filter(

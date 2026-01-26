@@ -54,13 +54,6 @@ public:
     std::shared_ptr<core::IReader> create_reader(
             const core::ITopic& topic) override;
 
-//     DDSPIPE_PARTICIPANTS_DllAPI
-//     void update_filters(
-//         const int flag,
-//         std::set<std::string> partitions = std::set<std::string>(),
-//         const std::string& topic_name = "",
-//         const std::string& expression = "") override;
-
 protected:
 
     /////////////////////////
@@ -78,7 +71,6 @@ protected:
 
     //! Participant configuration
     const XmlParticipantConfiguration& xml_specific_configuration_;
-
 };
 
 } /* namespace dds */
