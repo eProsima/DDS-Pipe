@@ -80,6 +80,8 @@ struct WildcardDdsFilterTopic : public IFilterTopic
     //! The subset of manually configured Topic QoS.
     utils::Fuzzy<types::TopicQoS> topic_qos;
 
+    utils::Fuzzy<std::string> content_topic_filter;
+
 protected:
 
     /////////////////////////

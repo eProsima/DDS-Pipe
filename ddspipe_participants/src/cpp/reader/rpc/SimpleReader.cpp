@@ -38,7 +38,7 @@ SimpleReader::SimpleReader(
         reckon_reader_attributes_(topic),
         reckon_topic_description_(topic),
         reckon_reader_qos_(topic),
-        std::set<std::string>()) // TODO. dnaip
+        std::set<std::string>()) // TODO. danip
 {
     EPROSIMA_LOG_INFO(DDSPIPE_RPC_READER, "Creating RPC Reader for topic " << topic_);
 }

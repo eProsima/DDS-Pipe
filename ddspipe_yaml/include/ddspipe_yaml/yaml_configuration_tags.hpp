@@ -41,6 +41,7 @@ constexpr const char* TOPIC_NAME_TAG("name");                   //! Name of a to
 constexpr const char* TOPIC_TYPE_NAME_TAG("type");              //! Type name of a topic
 constexpr const char* TOPIC_QOS_TAG("qos");                     //! QoS of a topic
 constexpr const char* TOPIC_PARTICIPANTS_TAG("participants");   //! List of participants of a topic
+constexpr const char* CONTENT_TOPICFILTER_LIST_TAG("filter");  //! content_filter
 
 // Partitions related tags
 constexpr const char* PARTITIONLIST_TAG("partitions");  //! List of allowed partitions
@@ -158,6 +159,7 @@ constexpr const char* TOPIC_ROUTES_TAG("topic-routes"); // Topic specific forwar
 
 // Advanced configuration
 constexpr const char* SPECS_TAG("specs"); //! Specs options for DDS Router configuration
+constexpr const char* RTPS_ENABLED_TAG("rtps"); //! RTPS flag
 constexpr const char* SPECS_QOS_TAG("qos"); //! Global Topic QoS
 constexpr const char* NUMBER_THREADS_TAG("threads"); //! Number of threads to configure the thread pool
 constexpr const char* WAIT_ALL_ACKED_TIMEOUT_TAG("wait-all-acked-timeout"); //! Wait for a maximum of *wait-all-acked-timeout* ms until all msgs sent by reliable writers are acknowledged by their matched readers

@@ -110,27 +110,6 @@ fastdds::dds::DomainParticipantQos XmlParticipant::reckon_participant_qos_() con
     return qos;
 }
 
-// // TODO. danip
-// void XmlParticipant::update_filters(
-//         const int flag,
-//         std::set<std::string> partitions,
-//         const std::string& topic_name,
-//         const std::string& expression)
-// {
-//     // nothing
-
-//     // if (flag == 0)
-//     // {
-//     //     // partitions
-//     //     partition_filter_set_ = partitions;
-//     // }
-//     // else
-//     // {
-//     //     // content_topicfilter
-//     //     topic_filter_dict_[topic_name] = expression;
-//     // }
-// }
-
 } /* namespace dds */
 } /* namespace participants */
 } /* namespace ddspipe */

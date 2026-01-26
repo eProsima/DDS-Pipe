@@ -187,11 +187,6 @@ public:
     DDSPIPE_PARTICIPANTS_DllAPI
     core::types::DdsTopic topic() const noexcept override;
 
-//     // TODO. danip
-//     DDSPIPE_PARTICIPANTS_DllAPI
-//     void update_content_topic_filter(
-//             std::string expression);
-
 protected:
 
     /**
