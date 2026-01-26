@@ -230,13 +230,14 @@ utils::ReturnCode CommonReader::take_nts_(
     guid_ss << data_ptr->source_guid;
     std::string source_guid_str = guid_ss.str();
 
+    // TODO. danip remove?
     // check if the guid from the current data is filtered by the allowed partition list
-    if (blocked_filtered_guidlist_.find(source_guid_str) != blocked_filtered_guidlist_.end())
+    /*if (blocked_filtered_guidlist_.find(source_guid_str) != blocked_filtered_guidlist_.end())
     {
         // partition not allowed
         rtps_reader_->get_history()->remove_change(received_change);
         return utils::ReturnCode::RETCODE_NOT_ENABLED;
-    }
+    }*/
 
     data.reset(data_ptr);
 

@@ -209,8 +209,8 @@ std::shared_ptr<core::IReader> CommonParticipant::create_reader(
             dds_participant_,
             fastdds_topic,
             discovery_database_);
-        // TODO. danip aqui
-        // añadir a la funcion la lista de particiones y la expresion del topico
+        // Add the filters data structures
+        // if these filters are empty, the filters are not applied.
         reader->init(partition_filter_set_, content_topic_filter_expr);
 
         return reader;
@@ -223,8 +223,8 @@ std::shared_ptr<core::IReader> CommonParticipant::create_reader(
             this->payload_pool_,
             dds_participant_,
             fastdds_topic);
-        // TODO. danip aqui
-        // añadir a la funcion la lista de particiones y la expresion del topico
+        // Add the filters data structures
+        // if these filters are empty, the filters are not applied.
         reader->init(partition_filter_set_, content_topic_filter_expr);
 
         return reader;

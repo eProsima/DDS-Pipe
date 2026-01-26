@@ -562,6 +562,12 @@ void YamlReader::fill(
     {
         fill<TopicQoS>(object.topic_qos, get_value_in_tag(yml, TOPIC_QOS_TAG), version);
     }
+
+    // Optional content topic filter
+    if (is_tag_present(yml, CONTENT_TOPICFILTER_LIST_TAG))
+    {
+        object.content_topic_filter.set_value(get<std::string>(yml, CONTENT_TOPICFILTER_LIST_TAG, version));
+    }
 }
 
 template <>

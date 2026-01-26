@@ -131,30 +131,6 @@ utils::ReturnCode DdsPipe::reload_configuration(
     return reload_allowed_topics_(allowed_topics);
 }
 
-// void DdsPipe::reload_filter_partition(
-//         const std::set<std::string> filter_partition_set)
-// {
-//     update_filter(filter_partition_set);
-
-//     std::vector<DdsBridge*> targets;
-//     {
-//         std::lock_guard<std::mutex> lock(bridges_mutex_);
-
-//         for (const auto& bridge : bridges_)
-//         {
-//             if (bridge.second)
-//             {
-//                 targets.push_back(bridge.second.get());
-//             }
-//         }
-//     }
-
-//     for (auto* target : targets)
-//     {
-//         target->update_readers_track(filter_partition_set);
-//     }
-// }
-
 utils::ReturnCode DdsPipe::enable() noexcept
 {
     std::lock_guard<std::mutex> lock(mutex_);
@@ -330,6 +306,7 @@ void DdsPipe::discovered_endpoint_nts_(
         // update partitions under bridges_mutex_
         {
             std::lock_guard<std::mutex> lock(bridges_mutex_);
+            // TODO. danip check mutex
 
             const auto bridge_it = bridges_.find(utils::Heritable<DdsTopic>::make_heritable(endpoint.topic));
             // add the specific partition of the endpoint in the bridges topic.
@@ -345,11 +322,6 @@ void DdsPipe::discovered_endpoint_nts_(
                 }
             }
         }
-        // update readers outside the lock
-        // if (!filter_partition_.empty()) // TODO. danip
-        // {
-        //     update_readers_track(endpoint.topic.m_topic_name, filter_partition_);
-        // }
     }
 }
 
@@ -650,10 +622,9 @@ void DdsPipe::deactivate_all_topics_nts_() noexcept
 void DdsPipe::update_partitions( // participant_id
         std::set<std::string> partitions_set)
 {
-    // get the targets (with lock)
-    std::vector<DdsBridge*> targets; // TODO. danip remove
     {
         std::lock_guard<std::mutex> lock(bridges_mutex_);
+        // TODO. danip check mutex
 
         for (const auto& pair : bridges_)
         {

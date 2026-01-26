@@ -97,8 +97,13 @@ public:
     virtual std::shared_ptr<IReader> create_reader(
             const ITopic& topic) = 0;
 
-    /** TODO. danip
-     * Find a topic by name
+    /**
+     * Update the filters data structures of the participant
+     *
+     * @param [in] flag       : Flag to update the partitions or topic filter.
+     * @param [in] partitions : Set of partitions for the new filter of partitions.
+     * @param [in] topic_name : Name of the topic.
+     * @param [in] expression : Expression for the Content Filtered Topic
      */
     DDSPIPE_CORE_DllAPI
     virtual void update_filters(

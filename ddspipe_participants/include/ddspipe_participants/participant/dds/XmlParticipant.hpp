@@ -79,13 +79,6 @@ protected:
     //! Participant configuration
     const XmlParticipantConfiguration& xml_specific_configuration_;
 
-    // Boolean to check if the created participant has filter
-    
-    // TODO. danip aqui eliminar
-//     // Filter partitions set
-//     std::set<std::string> partition_filter_set_;
-//     // Filter content_topicfilter dict
-//     std::map<std::string, std::string> topic_filter_dict_;
 };
 
 } /* namespace dds */

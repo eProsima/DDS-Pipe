@@ -498,7 +498,10 @@ std::shared_ptr<core::IReader> CommonParticipant::create_reader(
                 this->payload_pool_,
                 rtps_participant_,
                 discovery_database_,
-                filtered_guidlist); // add filter guid list // TODO. danip
+                filtered_guidlist);
+
+            // Add the filters data structures
+            // if these filters are empty, the filters are not applied.
             reader->init(partition_filter_set_);
 
             return reader;
@@ -510,6 +513,8 @@ std::shared_ptr<core::IReader> CommonParticipant::create_reader(
                 dds_topic,
                 this->payload_pool_,
                 rtps_participant_);
+            // Add the filters data structures
+            // if these filters are empty, the filters are not applied.
             reader->init(partition_filter_set_);
 
             return reader;
