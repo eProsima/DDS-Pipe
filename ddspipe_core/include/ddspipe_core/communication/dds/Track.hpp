@@ -139,7 +139,7 @@ public:
 
     DDSPIPE_CORE_DllAPI
     void update_reader_partitions(
-        std::set<std::string> partitions_set);
+            std::set<std::string> partitions_set);
 
     DDSPIPE_CORE_DllAPI
     void update_reader_content_filter(

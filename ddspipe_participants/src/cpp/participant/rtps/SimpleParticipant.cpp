@@ -53,7 +53,8 @@ SimpleParticipant::reckon_participant_attributes_() const
 
     if (simple_configuration == nullptr)
     {
-        throw utils::ConfigurationException("Failed to cast ParticipantConfiguration to SimpleParticipantConfiguration.");
+        throw utils::ConfigurationException(
+                  "Failed to cast ParticipantConfiguration to SimpleParticipantConfiguration.");
     }
 
     // Configure Participant transports
@@ -68,7 +69,8 @@ SimpleParticipant::reckon_participant_attributes_() const
             params.userTransports.push_back(shm_transport);
 
             std::shared_ptr<eprosima::fastdds::rtps::UDPv4TransportDescriptor> udp_transport =
-                    create_descriptor<eprosima::fastdds::rtps::UDPv4TransportDescriptor>(simple_configuration->whitelist);
+                    create_descriptor<eprosima::fastdds::rtps::UDPv4TransportDescriptor>(
+                simple_configuration->whitelist);
             params.userTransports.push_back(udp_transport);
         }
     }

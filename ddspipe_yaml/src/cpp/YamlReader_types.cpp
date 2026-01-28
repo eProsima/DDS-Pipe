@@ -50,7 +50,7 @@ namespace yaml {
 using namespace eprosima::ddspipe::core::types;
 using namespace eprosima::ddspipe::participants::types;
 
-template <>
+template<>
 DDSPIPE_YAML_DllAPI
 TransportDescriptors YamlReader::get<TransportDescriptors>(
         const Yaml& yml,
@@ -58,14 +58,14 @@ TransportDescriptors YamlReader::get<TransportDescriptors>(
 {
     return get_enumeration<TransportDescriptors>(
         yml,
-                {
-                    {TRANSPORT_DESCRIPTORS_BUILTIN_TAG, TransportDescriptors::builtin},
-                    {TRANSPORT_DESCRIPTORS_UDP_TAG, TransportDescriptors::udp_only},
-                    {TRANSPORT_DESCRIPTORS_SHM_TAG, TransportDescriptors::shm_only}
-                });
+        {
+            {TRANSPORT_DESCRIPTORS_BUILTIN_TAG, TransportDescriptors::builtin},
+            {TRANSPORT_DESCRIPTORS_UDP_TAG, TransportDescriptors::udp_only},
+            {TRANSPORT_DESCRIPTORS_SHM_TAG, TransportDescriptors::shm_only}
+        });
 }
 
-template <>
+template<>
 DDSPIPE_YAML_DllAPI
 IgnoreParticipantFlags YamlReader::get<IgnoreParticipantFlags>(
         const Yaml& yml,
@@ -73,17 +73,17 @@ IgnoreParticipantFlags YamlReader::get<IgnoreParticipantFlags>(
 {
     return get_enumeration<IgnoreParticipantFlags>(
         yml,
-                {
-                    {IGNORE_PARTICIPANT_FLAGS_NO_FILTER_TAG, IgnoreParticipantFlags::no_filter},
-                    {IGNORE_PARTICIPANT_FLAGS_DIFFERENT_HOST_TAG, IgnoreParticipantFlags::filter_different_host},
-                    {IGNORE_PARTICIPANT_FLAGS_DIFFERENT_PROCESS_TAG, IgnoreParticipantFlags::filter_different_process},
-                    {IGNORE_PARTICIPANT_FLAGS_SAME_PROCESS_TAG, IgnoreParticipantFlags::filter_same_process},
-                    {IGNORE_PARTICIPANT_FLAGS_DIFFERENT_AND_SAME_PROCESS_TAG,
-                     IgnoreParticipantFlags::filter_different_and_same_process},
-                });
+        {
+            {IGNORE_PARTICIPANT_FLAGS_NO_FILTER_TAG, IgnoreParticipantFlags::no_filter},
+            {IGNORE_PARTICIPANT_FLAGS_DIFFERENT_HOST_TAG, IgnoreParticipantFlags::filter_different_host},
+            {IGNORE_PARTICIPANT_FLAGS_DIFFERENT_PROCESS_TAG, IgnoreParticipantFlags::filter_different_process},
+            {IGNORE_PARTICIPANT_FLAGS_SAME_PROCESS_TAG, IgnoreParticipantFlags::filter_same_process},
+            {IGNORE_PARTICIPANT_FLAGS_DIFFERENT_AND_SAME_PROCESS_TAG,
+             IgnoreParticipantFlags::filter_different_and_same_process},
+        });
 }
 
-template <>
+template<>
 DDSPIPE_YAML_DllAPI
 YamlReaderVersion YamlReader::get<YamlReaderVersion>(
         const Yaml& yml,
@@ -91,17 +91,17 @@ YamlReaderVersion YamlReader::get<YamlReaderVersion>(
 {
     return get_enumeration<YamlReaderVersion>(
         yml,
-                {
-                    {VERSION_TAG_V_1_0, YamlReaderVersion::V_1_0},
-                    {VERSION_TAG_V_2_0, YamlReaderVersion::V_2_0},
-                    {VERSION_TAG_V_3_0, YamlReaderVersion::V_3_0},
-                    {VERSION_TAG_V_3_1, YamlReaderVersion::V_3_1},
-                    {VERSION_TAG_V_4_0, YamlReaderVersion::V_4_0},
-                    {VERSION_TAG_V_5_0, YamlReaderVersion::V_5_0},
-                });
+        {
+            {VERSION_TAG_V_1_0, YamlReaderVersion::V_1_0},
+            {VERSION_TAG_V_2_0, YamlReaderVersion::V_2_0},
+            {VERSION_TAG_V_3_0, YamlReaderVersion::V_3_0},
+            {VERSION_TAG_V_3_1, YamlReaderVersion::V_3_1},
+            {VERSION_TAG_V_4_0, YamlReaderVersion::V_4_0},
+            {VERSION_TAG_V_5_0, YamlReaderVersion::V_5_0},
+        });
 }
 
-template <>
+template<>
 DDSPIPE_YAML_DllAPI
 TransportProtocol YamlReader::get<TransportProtocol>(
         const Yaml& yml,
@@ -109,13 +109,13 @@ TransportProtocol YamlReader::get<TransportProtocol>(
 {
     return get_enumeration<TransportProtocol>(
         yml,
-                {
-                    {ADDRESS_TRANSPORT_TCP_TAG, TransportProtocol::tcp},
-                    {ADDRESS_TRANSPORT_UDP_TAG, TransportProtocol::udp}
-                });
+        {
+            {ADDRESS_TRANSPORT_TCP_TAG, TransportProtocol::tcp},
+            {ADDRESS_TRANSPORT_UDP_TAG, TransportProtocol::udp}
+        });
 }
 
-template <>
+template<>
 DDSPIPE_YAML_DllAPI
 IpVersion YamlReader::get<IpVersion>(
         const Yaml& yml,
@@ -123,13 +123,13 @@ IpVersion YamlReader::get<IpVersion>(
 {
     return get_enumeration<IpVersion>(
         yml,
-                {
-                    {ADDRESS_IP_VERSION_V4_TAG, IpVersion::v4},
-                    {ADDRESS_IP_VERSION_V6_TAG, IpVersion::v6},
-                });
+        {
+            {ADDRESS_IP_VERSION_V4_TAG, IpVersion::v4},
+            {ADDRESS_IP_VERSION_V6_TAG, IpVersion::v6},
+        });
 }
 
-template <>
+template<>
 DDSPIPE_YAML_DllAPI
 PortType YamlReader::get<PortType>(
         const Yaml& yml,
@@ -139,7 +139,7 @@ PortType YamlReader::get<PortType>(
     return PortType(get_scalar<PortType>(yml));
 }
 
-template <>
+template<>
 DDSPIPE_YAML_DllAPI
 DomainId YamlReader::get<DomainId>(
         const Yaml& yml,
@@ -151,7 +151,7 @@ DomainId YamlReader::get<DomainId>(
     return domain;
 }
 
-template <>
+template<>
 DDSPIPE_YAML_DllAPI
 GuidPrefix YamlReader::get<GuidPrefix>(
         const Yaml& yml,
@@ -191,7 +191,7 @@ GuidPrefix YamlReader::get<GuidPrefix>(
     }
 }
 
-template <>
+template<>
 DDSPIPE_YAML_DllAPI
 Address YamlReader::get<Address>(
         const Yaml& yml,
@@ -302,7 +302,7 @@ Address YamlReader::get<Address>(
     }
 }
 
-template <>
+template<>
 DDSPIPE_YAML_DllAPI
 void YamlReader::fill(
         core::DdsPublishingConfiguration& object,
@@ -325,7 +325,7 @@ void YamlReader::fill(
     }
 }
 
-template <>
+template<>
 DDSPIPE_YAML_DllAPI
 core::DdsPublishingConfiguration YamlReader::get(
         const Yaml& yml,
@@ -340,7 +340,7 @@ core::DdsPublishingConfiguration YamlReader::get(
 * QoS                   *
 ************************/
 
-template <>
+template<>
 DDSPIPE_YAML_DllAPI
 void YamlReader::fill(
         TopicQoS& object,
@@ -428,7 +428,7 @@ void YamlReader::fill(
 * LOGGING CONFIGURATION *
 ************************/
 
-template <>
+template<>
 DDSPIPE_YAML_DllAPI
 void YamlReader::fill<utils::LogFilter>(
         utils::LogFilter& object,
@@ -451,7 +451,7 @@ void YamlReader::fill<utils::LogFilter>(
     }
 }
 
-template <>
+template<>
 DDSPIPE_YAML_DllAPI
 utils::LogFilter YamlReader::get(
         const Yaml& yml,
@@ -462,7 +462,7 @@ utils::LogFilter YamlReader::get(
     return object;
 }
 
-template <>
+template<>
 DDSPIPE_YAML_DllAPI
 void YamlReader::fill(
         core::DdsPipeLogConfiguration& object,
@@ -487,11 +487,11 @@ void YamlReader::fill(
         object.verbosity = get_enumeration<utils::VerbosityKind>(
             yml,
             LOG_VERBOSITY_TAG,
-                    {
-                        {LOG_VERBOSITY_INFO_TAG, utils::VerbosityKind::Info},
-                        {LOG_VERBOSITY_WARNING_TAG, utils::VerbosityKind::Warning},
-                        {LOG_VERBOSITY_ERROR_TAG, utils::VerbosityKind::Error}
-                    });
+            {
+                {LOG_VERBOSITY_INFO_TAG, utils::VerbosityKind::Info},
+                {LOG_VERBOSITY_WARNING_TAG, utils::VerbosityKind::Warning},
+                {LOG_VERBOSITY_ERROR_TAG, utils::VerbosityKind::Error}
+            });
     }
 
     // Filter optional
@@ -501,7 +501,7 @@ void YamlReader::fill(
     }
 }
 
-template <>
+template<>
 DDSPIPE_YAML_DllAPI
 core::DdsPipeLogConfiguration YamlReader::get(
         const Yaml& yml,
@@ -516,7 +516,7 @@ core::DdsPipeLogConfiguration YamlReader::get(
 * TOPICS                *
 ************************/
 
-template <>
+template<>
 DDSPIPE_YAML_DllAPI
 void YamlReader::fill(
         DdsTopic& object,
@@ -530,7 +530,7 @@ void YamlReader::fill(
     object.type_name = get<std::string>(yml, TOPIC_TYPE_NAME_TAG, version);
 }
 
-template <>
+template<>
 DDSPIPE_YAML_DllAPI
 DdsTopic YamlReader::get(
         const Yaml& yml,
@@ -541,7 +541,7 @@ DdsTopic YamlReader::get(
     return object;
 }
 
-template <>
+template<>
 DDSPIPE_YAML_DllAPI
 void YamlReader::fill(
         WildcardDdsFilterTopic& object,
@@ -570,7 +570,7 @@ void YamlReader::fill(
     }
 }
 
-template <>
+template<>
 DDSPIPE_YAML_DllAPI
 WildcardDdsFilterTopic YamlReader::get(
         const Yaml& yml,
@@ -581,7 +581,7 @@ WildcardDdsFilterTopic YamlReader::get(
     return object;
 }
 
-template <>
+template<>
 DDSPIPE_YAML_DllAPI
 void YamlReader::fill(
         ManualTopic& object,
@@ -598,7 +598,7 @@ void YamlReader::fill(
     }
 }
 
-template <>
+template<>
 DDSPIPE_YAML_DllAPI
 ManualTopic YamlReader::get(
         const Yaml& yml,
@@ -611,7 +611,7 @@ ManualTopic YamlReader::get(
     return object;
 }
 
-template <>
+template<>
 DDSPIPE_YAML_DllAPI
 utils::Heritable<DistributedTopic> YamlReader::get(
         const Yaml& yml,
@@ -623,7 +623,7 @@ utils::Heritable<DistributedTopic> YamlReader::get(
     return topic;
 }
 
-template <>
+template<>
 DDSPIPE_YAML_DllAPI
 utils::Heritable<IFilterTopic> YamlReader::get(
         const Yaml& yml,
@@ -639,7 +639,7 @@ utils::Heritable<IFilterTopic> YamlReader::get(
 * TLS CONFIGURATION     *
 ************************/
 
-template <>
+template<>
 DDSPIPE_YAML_DllAPI
 void YamlReader::fill(
         TlsConfiguration& object,
@@ -715,7 +715,7 @@ void YamlReader::fill(
     }
 }
 
-template <>
+template<>
 DDSPIPE_YAML_DllAPI
 TlsConfiguration YamlReader::get(
         const Yaml& yml,

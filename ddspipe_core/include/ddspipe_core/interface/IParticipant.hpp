@@ -107,10 +107,10 @@ public:
      */
     DDSPIPE_CORE_DllAPI
     virtual void update_filters(
-        const int flag,
-        std::set<std::string> partitions,
-        const std::string& topic_name,
-        const std::string& expression) = 0;
+            const int flag,
+            std::set<std::string> partitions,
+            const std::string& topic_name,
+            const std::string& expression) = 0;
 
 };
 

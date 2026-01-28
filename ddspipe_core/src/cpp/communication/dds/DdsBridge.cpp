@@ -285,7 +285,7 @@ void DdsBridge::add_writers_to_tracks_nts_(
 void DdsBridge::update_partitions(
         std::set<std::string> partitions_set)
 {
-    for(const auto& track: tracks_)
+    for (const auto& track: tracks_)
     {
         track.second->update_reader_partitions(partitions_set);
     }
@@ -294,7 +294,7 @@ void DdsBridge::update_partitions(
 void DdsBridge::update_topic_filter(
         const std::string& expression)
 {
-    for(const auto& track: tracks_)
+    for (const auto& track: tracks_)
     {
         track.second->update_reader_content_filter(expression);
     }

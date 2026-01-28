@@ -141,10 +141,10 @@ std::shared_ptr<core::IWriter> CommonParticipant::create_writer(
     fastdds::dds::Topic* fastdds_topic = topic_related_(dds_topic);
 
     if ((dds_topic.partition_name.size() > 0 &&
-                (dds_topic.partition_name.size() != 1 ||
-                dds_topic.partition_name.begin()->second != "")) ||
-                dds_topic.topic_qos.has_partitions() ||
-                dds_topic.topic_qos.has_ownership())
+            (dds_topic.partition_name.size() != 1 ||
+            dds_topic.partition_name.begin()->second != "")) ||
+            dds_topic.topic_qos.has_partitions() ||
+            dds_topic.topic_qos.has_ownership())
     {
         // Notice that MultiWriter does not require an init call
         return std::make_shared<MultiWriter>(
@@ -186,7 +186,7 @@ std::shared_ptr<core::IReader> CommonParticipant::create_reader(
 
     // contenttopicfilter
     std::string content_topic_filter_expr = "";
-    if(topic_filter_dict_.find(dds_topic.m_topic_name) != topic_filter_dict_.end())
+    if (topic_filter_dict_.find(dds_topic.m_topic_name) != topic_filter_dict_.end())
     {
         content_topic_filter_expr = topic_filter_dict_[dds_topic.m_topic_name];
     }
