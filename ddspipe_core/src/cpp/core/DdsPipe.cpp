@@ -648,7 +648,7 @@ void DdsPipe::update_content_filter(
 
         for (const auto& pair : bridges_)
         {
-            if(pair.first->m_topic_name == topic_name)
+            if (pair.first->m_topic_name == topic_name)
             {
                 pair.second->update_topic_filter(expression);
             }

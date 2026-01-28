@@ -83,7 +83,7 @@ void CommonReader::init(
         // Remove all partitions from the qos
         sub_qos.partition().clear();
         // Add the filter partitions
-        for(const std::string& partition: partitions_set)
+        for (const std::string& partition: partitions_set)
         {
             sub_qos.partition().push_back(partition.c_str());
         }
@@ -100,8 +100,8 @@ void CommonReader::init(
     // if any filter is active the expression will be ""
     // no contentfilter is being applied
     filtered_topic_ = dds_participant_->create_contentfilteredtopic(
-            topic_.topic_name() + "_filtered", topic_tmp,
-            content_topicfilter_expression, {});
+        topic_.topic_name() + "_filtered", topic_tmp,
+        content_topicfilter_expression, {});
     if (nullptr == filtered_topic_)
     {
         throw utils::InitializationException(
@@ -135,8 +135,8 @@ void CommonReader::init(
         dds_subscriber_->delete_datareader(reader_);
         reader_ = nullptr;
         throw utils::InitializationException(
-                utils::Formatter() << "Error enabling DataReader for Participant " <<
-                    participant_id_ << " in topic " << topic_ << ".");
+                  utils::Formatter() << "Error enabling DataReader for Participant " <<
+                      participant_id_ << " in topic " << topic_ << ".");
     }
 }
 
@@ -392,7 +392,7 @@ void CommonReader::update_partitions(
 {
     fastdds::dds::SubscriberQos sub_qos = dds_subscriber_->get_qos();
     sub_qos.partition().clear();
-    for(const std::string& partition: partitions_set)
+    for (const std::string& partition: partitions_set)
     {
         sub_qos.partition().push_back(partition.c_str());
     }
@@ -400,7 +400,8 @@ void CommonReader::update_partitions(
     dds_subscriber_->set_qos(sub_qos);
 }
 
-void CommonReader::update_content_topic_filter(std::string expression)
+void CommonReader::update_content_topic_filter(
+        std::string expression)
 {
     // content_topicfilter
     filtered_topic_->set_filter_expression(expression, {});

@@ -125,7 +125,7 @@ void CommonReader::internal_entities_creation_(
                       participant_id_ << " in topic " << topic_ << ".");
     }
 
-    if(partitions_set.size() > 0)
+    if (partitions_set.size() > 0)
     {
         auto& sub_part_qos = reader_qos_.m_partition;
         // Clear the partitions
@@ -189,7 +189,8 @@ void CommonReader::update_partitions(
     rtps_participant_->update_reader(rtps_reader_, reader_qos_);
 }
 
-void CommonReader::update_content_topic_filter(std::string expression)
+void CommonReader::update_content_topic_filter(
+        std::string expression)
 {
     // Nothing
 }

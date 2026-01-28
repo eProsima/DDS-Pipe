@@ -88,7 +88,8 @@ void InternalReader::update_partitions(
     // Nothing
 }
 
-void InternalReader::update_content_topic_filter(std::string expression)
+void InternalReader::update_content_topic_filter(
+        std::string expression)
 {
     // Nothing
 }

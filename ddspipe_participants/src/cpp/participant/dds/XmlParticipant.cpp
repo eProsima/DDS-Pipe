@@ -73,7 +73,7 @@ std::shared_ptr<core::IReader> XmlParticipant::create_reader(
     try
     {
         std::shared_ptr<core::IReader> ret =
-            CommonParticipant::create_reader(topic);
+                CommonParticipant::create_reader(topic);
 
         return ret;
     }
