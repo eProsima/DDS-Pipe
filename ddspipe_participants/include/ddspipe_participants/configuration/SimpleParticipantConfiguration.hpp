@@ -53,7 +53,9 @@ public:
 
     std::set<participants::types::WhitelistType> whitelist {};
 
+    // yaml filters
     std::set<std::string> allowed_partition_list {};
+    std::map<std::string, std::string> content_topic_filter_dict {};
 
     core::types::TransportDescriptors transport {core::types::TransportDescriptors::builtin};
 

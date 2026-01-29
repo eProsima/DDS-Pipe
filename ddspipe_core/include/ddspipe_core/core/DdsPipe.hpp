@@ -98,20 +98,6 @@ public:
     utils::ReturnCode reload_configuration(
             const DdsPipeConfiguration& new_configuration);
 
-    /**
-     * @brief Reload the filter partitions set.
-     *
-     * @param [in] new_filter_partition_set : new filter partition set.
-     *
-     * @return \c RETCODE_OK if the new std::set has been updated correctly.
-     * @return \c RETCODE_ERROR if any other error has occurred.
-     *
-     * @note This method calls \c update_readers_track() of all Topic bridges, to update the DataReaders.
-     */
-    DDSPIPE_CORE_DllAPI
-    void reload_filter_partition(
-            const std::set<std::string> new_filter_partition_set);
-
     /////////////////////////
     // ENABLING METHODS
     /////////////////////////
@@ -141,13 +127,13 @@ public:
     utils::ReturnCode disable() noexcept;
 
     DDSPIPE_CORE_DllAPI
-    void update_readers_track(
-            const std::string topic_name,
-            const std::set<std::string> filter_partition_set);
+    void update_partitions(
+            std::set<std::string> partitions_set);
 
     DDSPIPE_CORE_DllAPI
-    void update_filter(
-            const std::set<std::string> filter_partition_set);
+    void update_content_filter(
+            const std::string& topic_name,
+            const std::string& expression);
 
 protected:
 
@@ -409,9 +395,6 @@ protected:
     //! Thread Pool for tracks
     std::shared_ptr<utils::SlotThreadPool> thread_pool_;
 
-    //! Allowed partitions added in the filter
-    std::set<std::string> allowed_partition_list_;
-
     /////////////////////////
     // INTERNAL DATA STORAGE
     /////////////////////////
@@ -452,11 +435,6 @@ protected:
      * @brief Internal mutex for concurrent calls
      */
     mutable std::mutex mutex_;
-
-    /**
-     * @brief Internal mutex for bridges
-     */
-    mutable std::mutex bridges_mutex_;
 };
 
 } /* namespace core */

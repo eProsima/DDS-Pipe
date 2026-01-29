@@ -19,6 +19,7 @@
 #include <ddspipe_core/types/dds/TopicQoS.hpp>
 #include <ddspipe_core/types/participant/ParticipantId.hpp>
 #include <ddspipe_core/types/topic/Topic.hpp>
+#include <fastdds/dds/domain/DomainParticipant.hpp>
 
 namespace eprosima {
 namespace ddspipe {
@@ -97,73 +98,20 @@ public:
             const ITopic& topic) = 0;
 
     /**
-     * @brief Return a new Reader
+     * Update the filters data structures of the participant
      *
-     * Each reader is associated with a \c Bridge with the topic \c topic .
-     * This reader will receive messages in this topic.
-     *
-     * @param [in] topic : Topic that this Reader will work with.
-     * @param [in] partitions: List of allowed partitions
-     *
-     * @return Reader in this Participant referring this topic
-     *
-     * @throw \c InitializationException in case the reader creation fails.
+     * @param [in] flag       : Flag to update the partitions or topic filter.
+     * @param [in] partitions : Set of partitions for the new filter of partitions.
+     * @param [in] topic_name : Name of the topic.
+     * @param [in] expression : Expression for the Content Filtered Topic
      */
     DDSPIPE_CORE_DllAPI
-    virtual std::shared_ptr<IReader> create_reader_with_filter(
-            const ITopic& topic,
-            const std::set<std::string> partitions) = 0;
-
-    /**
-     * Add a Partition in the Participant.
-     *
-     * @param [in] topic_name  : The topic.
-     * @param [in] writer_guid : The writer guid.
-     * @param [in] partition   : Partition name that will be added.
-     *
-     * @return bool if the function adds the partition.
-     */
-    DDSPIPE_CORE_DllAPI
-    virtual bool add_topic_partition(
+    virtual void update_filters(
+            const int flag,
+            std::set<std::string> partitions,
             const std::string& topic_name,
-            const std::string& writer_guid,
-            const std::string& partition) = 0;
+            const std::string& expression) = 0;
 
-    /**
-     * Update a Partition in the Participant.
-     *
-     * @param [in] topic_name  : The topic.
-     * @param [in] writer_guid : The writer guid.
-     * @param [in] partition : Partition name that will be added.
-     *
-     * @return bool if the function updates the partition.
-     */
-    DDSPIPE_CORE_DllAPI
-    virtual bool update_topic_partition(
-            const std::string& topic_name,
-            const std::string& writer_guid,
-            const std::string& partition) = 0;
-
-    /**
-     * Remove a Partition of the Participant.
-     *
-     * @param [in] topic_name  : The topic.
-     * @param [in] writer_guid : The writer guid.
-     * @param [in] partition : Partition name that will be added.
-     *
-     * @return bool if the function deletes the partition.
-     */
-    DDSPIPE_CORE_DllAPI
-    virtual bool delete_topic_partition(
-            const std::string& topic_name,
-            const std::string& writer_guid,
-            const std::string& partition) = 0;
-
-    /**
-     * Clear the Partitions of the Participant.
-     */
-    DDSPIPE_CORE_DllAPI
-    virtual void clear_topic_partitions() = 0;
 };
 
 } /* namespace core */

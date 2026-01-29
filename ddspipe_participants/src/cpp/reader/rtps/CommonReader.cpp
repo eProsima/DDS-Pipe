@@ -45,8 +45,7 @@ CommonReader::CommonReader(
         const fastdds::rtps::HistoryAttributes& history_attributes,
         const fastdds::rtps::ReaderAttributes& reader_attributes,
         const fastdds::rtps::TopicDescription& topic_description,
-        const fastdds::dds::ReaderQos& reader_qos,
-        const std::set<std::string> blocked_filtered_guidlist)
+        const fastdds::dds::ReaderQos& reader_qos)
     : BaseReader(participant_id, topic.topic_qos.max_rx_rate, topic.topic_qos.downsampling)
     , rtps_participant_(rtps_participant)
     , payload_pool_(payload_pool)
@@ -57,7 +56,6 @@ CommonReader::CommonReader(
     , reader_attributes_(reader_attributes)
     , topic_description_(topic_description)
     , reader_qos_(reader_qos)
-    , blocked_filtered_guidlist_(blocked_filtered_guidlist)
 {
     // Do nothing.
 }
@@ -85,20 +83,23 @@ CommonReader::~CommonReader()
             participant_id_ << " for topic " << topic_);
 }
 
-void CommonReader::init()
+void CommonReader::init(
+        const std::set<std::string> partitions_set)
 {
     internal_entities_creation_(
         history_attributes_,
         reader_attributes_,
         topic_description_,
-        reader_qos_);
+        reader_qos_,
+        partitions_set);
 }
 
 void CommonReader::internal_entities_creation_(
         const fastdds::rtps::HistoryAttributes& history_attributes,
         const fastdds::rtps::ReaderAttributes& reader_attributes,
         const fastdds::rtps::TopicDescription& topic_description,
-        const fastdds::dds::ReaderQos& reader_qos)
+        const fastdds::dds::ReaderQos& reader_qos,
+        const std::set<std::string> partitions_set)
 {
     // Copy reader attributes because fast needs it non const (do not ask why)
     fastdds::rtps::ReaderAttributes non_const_reader_attributes = reader_attributes;
@@ -124,8 +125,22 @@ void CommonReader::internal_entities_creation_(
                       participant_id_ << " in topic " << topic_ << ".");
     }
 
+    if (partitions_set.size() > 0)
+    {
+        auto& sub_part_qos = reader_qos_.m_partition;
+        // Clear the partitions
+        sub_part_qos.clear();
+        // Add the partitions from the filter
+        for (const auto& partition : partitions_set)
+        {
+            sub_part_qos.push_back(partition.c_str());
+        }
+
+        // no content topic filter
+    }
+
     // Register reader with topic
-    if (!rtps_participant_->register_reader(rtps_reader_, topic_description, reader_qos))
+    if (!rtps_participant_->register_reader(rtps_reader_, topic_description, reader_qos_))
     {
         // In case it fails, remove reader and throw exception
         fastdds::rtps::RTPSDomain::removeRTPSReader(rtps_reader_);
@@ -156,6 +171,28 @@ uint64_t CommonReader::get_unread_count() const noexcept
 core::types::DdsTopic CommonReader::topic() const noexcept
 {
     return topic_;
+}
+
+void CommonReader::update_partitions(
+        std::set<std::string> partitions_set)
+{
+    // Get the partitions from the reader qos
+    auto& sub_part_qos = reader_qos_.m_partition;
+    // Clear the partitions
+    sub_part_qos.clear();
+    // Add the partitions from the filter
+    for (const auto& partition : partitions_set)
+    {
+        sub_part_qos.push_back(partition.c_str());
+    }
+    // Update the reader with the new partitions
+    rtps_participant_->update_reader(rtps_reader_, reader_qos_);
+}
+
+void CommonReader::update_content_topic_filter(
+        std::string expression)
+{
+    // Nothing
 }
 
 utils::ReturnCode CommonReader::take_nts_(
@@ -191,14 +228,6 @@ utils::ReturnCode CommonReader::take_nts_(
     std::ostringstream guid_ss;
     guid_ss << data_ptr->source_guid;
     std::string source_guid_str = guid_ss.str();
-
-    // check if the guid from the current data is filtered by the allowed partition list
-    if (blocked_filtered_guidlist_.find(source_guid_str) != blocked_filtered_guidlist_.end())
-    {
-        // partition not allowed
-        rtps_reader_->get_history()->remove_change(received_change);
-        return utils::ReturnCode::RETCODE_NOT_ENABLED;
-    }
 
     data.reset(data_ptr);
 

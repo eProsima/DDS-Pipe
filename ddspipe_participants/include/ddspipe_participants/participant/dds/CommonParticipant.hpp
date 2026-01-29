@@ -112,40 +112,13 @@ public:
     std::shared_ptr<core::IReader> create_reader(
             const core::ITopic& topic) override;
 
-    /**
-     * @brief Create a reader object with the filter of partitions
-     *
-     * Depending on the Topic QoS creates a Basic or Specific Reader.
-     */
+    //! Override update_filters() IParticipant method
     DDSPIPE_PARTICIPANTS_DllAPI
-    std::shared_ptr<core::IReader> create_reader_with_filter(
-            const core::ITopic& topic,
-            const std::set<std::string> partitions) override;
-
-    //! Override add_topic_partition() IParticipant method
-    DDSPIPE_PARTICIPANTS_DllAPI
-    bool add_topic_partition(
+    virtual void update_filters(
+            const int flag,
+            std::set<std::string> partitions,
             const std::string& topic_name,
-            const std::string& writer_guid,
-            const std::string& partition) override;
-
-    //! Override update_topic_partition() IParticipant method
-    DDSPIPE_PARTICIPANTS_DllAPI
-    bool update_topic_partition(
-            const std::string& topic_name,
-            const std::string& writer_guid,
-            const std::string& partition) override;
-
-    //! Override delete_topic_partition() IParticipant method
-    DDSPIPE_PARTICIPANTS_DllAPI
-    bool delete_topic_partition(
-            const std::string& topic_name,
-            const std::string& writer_guid,
-            const std::string& partition) override;
-
-    //! Override clear_topic_partitions() IParticipant method
-    DDSPIPE_PARTICIPANTS_DllAPI
-    void clear_topic_partitions() override;
+            const std::string& expression) override;
 
     /////////////////////////
     // LISTENER METHODS
@@ -291,6 +264,11 @@ protected:
 
     //! <Topics <Writer_guid, Partitions set>>
     std::map<std::string, std::map<std::string, std::string>> partition_names;
+
+    // Filter partitions set
+    std::set<std::string> partition_filter_set_;
+    // Filter content_topicfilter dict
+    std::map<std::string, std::string> topic_filter_dict_;
 };
 
 } /* namespace dds */

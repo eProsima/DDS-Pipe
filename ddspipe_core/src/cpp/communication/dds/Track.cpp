@@ -167,6 +167,22 @@ void Track::update_reader()
     reader_->disable();
 }
 
+void Track::update_reader_partitions(
+        std::set<std::string> partitions_set)
+{
+    reader_->disable();
+    reader_->update_partitions(partitions_set);
+    reader_->enable();
+}
+
+void Track::update_reader_content_filter(
+        const std::string& expression)
+{
+    reader_->disable();
+    reader_->update_content_topic_filter(expression);
+    reader_->enable();
+}
+
 bool Track::has_writer(
         const ParticipantId& id) noexcept
 {
