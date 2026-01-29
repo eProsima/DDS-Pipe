@@ -91,9 +91,6 @@ void CommonReader::init(
         dds_subscriber_->set_qos(sub_qos);
     }
 
-    // TODO. danip
-    // Might be better get the topic using a function variable
-    // rather than a new function in IParticipant
     auto topic_tmp = dds_participant_->find_topic(topic_.topic_name(), 10);
 
     // Create the filtered topic with the expression given
