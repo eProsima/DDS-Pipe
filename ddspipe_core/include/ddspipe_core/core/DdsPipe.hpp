@@ -127,6 +127,10 @@ public:
     utils::ReturnCode disable() noexcept;
 
     DDSPIPE_CORE_DllAPI
+    void update_filter(
+            const std::set<std::string> filter_partition_set);
+
+    DDSPIPE_CORE_DllAPI
     void update_partitions(
             std::set<std::string> partitions_set);
 

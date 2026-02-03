@@ -322,7 +322,7 @@ void DdsPipe::discovered_endpoint_nts_(
                 }
             }
         }
-        update_partitions(filter_partition_);
+
         // update readers outside the lock
         if (!filter_partition_.empty())
         {
@@ -677,6 +677,15 @@ void DdsPipe::update_content_filter(
             pair.second->update_topic_filter(expression);
         }
     }
+}
+
+void DdsPipe::update_filter(
+        const std::set<std::string> filter_partition_set)
+{
+    // Avoid possible datarace with partitions filter
+    std::lock_guard<std::mutex> lock(bridges_mutex_);
+
+    filter_partition_ = filter_partition_set;
 }
 
 } /* namespace core */
