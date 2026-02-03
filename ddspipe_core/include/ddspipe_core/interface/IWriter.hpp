@@ -82,6 +82,11 @@ public:
     DDSPIPE_CORE_DllAPI
     virtual utils::ReturnCode write(
             IRoutingData& data) noexcept = 0;
+
+    //! Update method to change the topic_partitions
+    DDSPIPE_CORE_DllAPI
+    virtual void update_topic_partitions(
+            std::map<std::string, std::string> partition_name) = 0;
 };
 
 } /* namespace core */

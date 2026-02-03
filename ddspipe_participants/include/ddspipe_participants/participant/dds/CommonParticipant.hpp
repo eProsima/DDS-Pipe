@@ -112,16 +112,6 @@ public:
     std::shared_ptr<core::IReader> create_reader(
             const core::ITopic& topic) override;
 
-    /**
-     * @brief Create a reader object with the filter of partitions
-     *
-     * Depending on the Topic QoS creates a Basic or Specific Reader.
-     */
-    DDSPIPE_PARTICIPANTS_DllAPI
-    std::shared_ptr<core::IReader> create_reader_with_filter(
-            const core::ITopic& topic,
-            const std::set<std::string> partitions) override;
-
     //! Override add_topic_partition() IParticipant method
     DDSPIPE_PARTICIPANTS_DllAPI
     bool add_topic_partition(
@@ -146,6 +136,14 @@ public:
     //! Override clear_topic_partitions() IParticipant method
     DDSPIPE_PARTICIPANTS_DllAPI
     void clear_topic_partitions() override;
+
+    //! Override update_filters() IParticipant method
+    DDSPIPE_PARTICIPANTS_DllAPI
+    virtual void update_filters(
+            const int flag,
+            std::set<std::string> partitions,
+            const std::string& topic_name,
+            const std::string& expression) override;
 
     /////////////////////////
     // LISTENER METHODS
@@ -196,12 +194,21 @@ public:
                 const fastdds::dds::PublicationBuiltinTopicData& info,
                 bool& /*should_be_ignored*/) override;
 
+        /**
+         * @brief Add the CommonParticipant pointer in its child class DDSListener
+         */
+        DDSPIPE_PARTICIPANTS_DllAPI
+        void add_parent_pointer(
+                CommonParticipant& parent);
+
     protected:
 
         //! Shared pointer to the configuration of the participant
         const std::shared_ptr<SimpleParticipantConfiguration> configuration_;
         //! Shared pointer to the discovery database
         const std::shared_ptr<core::DiscoveryDatabase> discovery_database_;
+        //! Pointer to the parent class of the participant
+        CommonParticipant* parent_class_{nullptr};
 
     };
 
@@ -291,6 +298,11 @@ protected:
 
     //! <Topics <Writer_guid, Partitions set>>
     std::map<std::string, std::map<std::string, std::string>> partition_names;
+
+    // Filter partitions set
+    std::set<std::string> partition_filter_set_;
+    // Filter content_topicfilter dict
+    std::map<std::string, std::string> topic_filter_dict_;
 };
 
 } /* namespace dds */

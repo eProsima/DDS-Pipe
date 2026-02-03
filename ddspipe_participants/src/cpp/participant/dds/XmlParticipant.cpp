@@ -72,7 +72,10 @@ std::shared_ptr<core::IReader> XmlParticipant::create_reader(
 {
     try
     {
-        return CommonParticipant::create_reader(topic);
+        std::shared_ptr<core::IReader> ret =
+                CommonParticipant::create_reader(topic);
+
+        return ret;
     }
     catch (const utils::InitializationException& e)
     {

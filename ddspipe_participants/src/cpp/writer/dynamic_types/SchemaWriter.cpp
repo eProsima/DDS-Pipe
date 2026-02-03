@@ -44,6 +44,13 @@ SchemaWriter::SchemaWriter(
     // Do nothing
 }
 
+void SchemaWriter::update_topic_partitions(
+        std::map<std::string, std::string> partition_name)
+{
+    // TODO. DANIP
+    topic_.partition_name = partition_name;
+}
+
 utils::ReturnCode SchemaWriter::write_nts_(
         core::IRoutingData& data) noexcept
 {

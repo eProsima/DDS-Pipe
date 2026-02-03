@@ -37,8 +37,7 @@ SimpleReader::SimpleReader(
         reckon_history_attributes_(topic),
         reckon_reader_attributes_(topic),
         reckon_topic_description_(topic),
-        reckon_reader_qos_(topic),
-        std::set<std::string>())
+        reckon_reader_qos_(topic))
 {
     EPROSIMA_LOG_INFO(DDSPIPE_RPC_READER, "Creating RPC Reader for topic " << topic_);
 }

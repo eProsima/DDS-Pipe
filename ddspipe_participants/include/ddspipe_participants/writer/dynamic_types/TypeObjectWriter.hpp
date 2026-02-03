@@ -54,6 +54,9 @@ protected:
     utils::ReturnCode write_nts_(
             core::IRoutingData& data) noexcept override;
 
+    void update_topic_partitions(
+            std::map<std::string, std::string> partition_name) override;
+
     std::shared_ptr<ISchemaHandler> schema_handler_;
 };
 

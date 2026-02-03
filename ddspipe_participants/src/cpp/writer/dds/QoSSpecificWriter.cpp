@@ -38,12 +38,11 @@ QoSSpecificWriter::QoSSpecificWriter(
 
 fastdds::dds::PublisherQos QoSSpecificWriter::reckon_publisher_qos_() const noexcept
 {
-    // NOTE: this does not handle different partitions
     fastdds::dds::PublisherQos qos = dds_participant_->get_default_publisher_qos();
 
-    if (topic_.topic_qos.has_partitions())
+    if (topic_.topic_qos.has_partitions() || specific_qos_.partitions.names().size() > 0)
     {
-        qos.partition(specific_qos_.partitions);
+        qos.partition() = specific_qos_.partitions;
     }
 
     return qos;

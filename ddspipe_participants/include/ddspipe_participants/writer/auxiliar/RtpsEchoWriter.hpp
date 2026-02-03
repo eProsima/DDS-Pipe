@@ -52,6 +52,9 @@ protected:
     virtual utils::ReturnCode write(
             core::IRoutingData& data) noexcept override;
 
+    virtual void update_topic_partitions(
+            std::map<std::string, std::string> partition_name) override;
+
     //! Topic that this Writer refers to
     core::types::DdsTopic topic_;
 
