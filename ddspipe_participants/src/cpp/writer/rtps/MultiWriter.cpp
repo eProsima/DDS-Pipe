@@ -160,6 +160,12 @@ utils::ReturnCode MultiWriter::write_nts_(
     return this_qos_writer->write(data);
 }
 
+void MultiWriter::update_topic_partitions(
+        std::map<std::string, std::string> partition_name)
+{
+    // TODO. DANIP
+}
+
 } /* namespace rtps */
 } /* namespace participants */
 } /* namespace ddspipe */

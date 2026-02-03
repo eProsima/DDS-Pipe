@@ -67,6 +67,12 @@ utils::ReturnCode TypeObjectWriter::write_nts_(
     return utils::ReturnCode::RETCODE_OK;
 }
 
+void TypeObjectWriter::update_topic_partitions(
+        std::map<std::string, std::string> partition_name)
+{
+    // TODO. DANIP
+}
+
 } /* namespace participants */
 } /* namespace ddspipe */
 } /* namespace eprosima */

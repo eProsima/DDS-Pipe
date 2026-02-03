@@ -66,6 +66,12 @@ utils::ReturnCode RtpsEchoWriter::write(
     return utils::ReturnCode::RETCODE_OK;
 }
 
+void RtpsEchoWriter::update_topic_partitions(
+        std::map<std::string, std::string> partition_name)
+{
+    // TODO. DANIP
+}
+
 } /* namespace participants */
 } /* namespace ddspipe */
 } /* namespace eprosima */

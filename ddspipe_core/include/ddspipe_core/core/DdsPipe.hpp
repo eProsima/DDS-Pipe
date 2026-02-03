@@ -435,6 +435,11 @@ protected:
      * @brief Internal mutex for concurrent calls
      */
     mutable std::mutex mutex_;
+
+    /**
+     * @brief Internal mutex for bridges
+     */
+    mutable std::mutex bridges_mutex_;
 };
 
 } /* namespace core */

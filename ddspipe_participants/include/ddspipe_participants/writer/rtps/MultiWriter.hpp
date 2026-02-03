@@ -82,6 +82,9 @@ protected:
     virtual utils::ReturnCode write_nts_(
             core::IRoutingData& data) noexcept override;
 
+    virtual void update_topic_partitions(
+            std::map<std::string, std::string> partition_name) override;
+
     bool exist_partition_(
             const core::types::SpecificEndpointQoS& data_qos);
     QoSSpecificWriter* get_writer_or_create_(

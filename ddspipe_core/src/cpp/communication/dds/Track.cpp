@@ -167,6 +167,15 @@ void Track::update_reader()
     reader_->disable();
 }
 
+void Track::update_writers_topic_partitions(
+        std::map<std::string, std::string> partition_name)
+{
+    for(const auto& writer: writers_)
+    {
+        writer.second->update_topic_partitions(partition_name);
+    }
+}
+
 void Track::update_reader_partitions(
         std::set<std::string> partitions_set)
 {
