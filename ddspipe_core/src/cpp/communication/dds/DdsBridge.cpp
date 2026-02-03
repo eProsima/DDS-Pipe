@@ -287,6 +287,7 @@ void DdsBridge::update_partitions(
 {
     for (const auto& track: tracks_)
     {
+        track.second->update_writers_topic_partitions(topic_->partition_name);
         track.second->update_reader_partitions(partitions_set);
     }
 }
@@ -305,6 +306,7 @@ utils::Heritable<DistributedTopic> DdsBridge::create_topic_for_participant_nts_(
 {
     // Make a copy of the Topic to customize it according to the Participant's configured QoS.
     utils::Heritable<DistributedTopic> topic = topic_->copy();
+    std::cout << "\tDDSBRIDGE. create_topic" << topic_->partition_name.size() << "\n";
 
     // Impose the Topic QoS that have been pre-configured for the Bridge's topic.
     // set_qos only overwrites the Topic QoS that have been set with a lower FuzzyLevel.
@@ -347,6 +349,7 @@ void DdsBridge::add_partition_to_topic(
         std::string partition)
 {
     topic_->partition_name[guid] = partition;
+    std::cout << "\tDDSBRIDGE. add_partition_to_topic" << topic_->partition_name.size() << "\n";
 }
 
 } /* namespace core */

@@ -205,6 +205,10 @@ protected:
             eprosima::fastdds::rtps::WriteParams& to_send_params,
             const core::types::RtpsPayloadData& data) const noexcept;
 
+    DDSPIPE_PARTICIPANTS_DllAPI
+    virtual void update_topic_partitions(
+            std::map<std::string, std::string> partition_name) override;
+
     /**
      * @brief Auxiliary method used after \c write to fill data value.
      *

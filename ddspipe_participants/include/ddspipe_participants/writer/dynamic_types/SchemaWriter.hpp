@@ -45,6 +45,11 @@ public:
             std::shared_ptr<core::PayloadPool> payload_pool,
             std::shared_ptr<ISchemaHandler> schema_handler);
 
+    //! Update method to change the topic_partitions
+    DDSPIPE_PARTICIPANTS_DllAPI
+    void update_topic_partitions(
+            std::map<std::string, std::string> partition_name) override;
+
 protected:
 
     /**

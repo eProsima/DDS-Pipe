@@ -152,6 +152,12 @@ utils::ReturnCode CommonWriter::write_nts_(
     // with additional logic (e.g. by using unregister_instance instead of write).
 }
 
+void CommonWriter::update_topic_partitions(
+        std::map<std::string, std::string> partition_name)
+{
+    // TODO. DANIP
+}
+
 fastdds::dds::PublisherQos CommonWriter::reckon_publisher_qos_() const noexcept
 {
     // NOTE: this does not handle different partitions

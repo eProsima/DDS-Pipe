@@ -184,6 +184,12 @@ utils::ReturnCode MockWriter::write_nts_(
     return utils::ReturnCode::RETCODE_OK;
 }
 
+void MockWriter::update_topic_partitions(
+        std::map<std::string, std::string> partition_name)
+{
+    // TODO. DANIP
+}
+
 MockRoutingData MockWriter::wait_data()
 {
     waiter_.wait_and_decrement();

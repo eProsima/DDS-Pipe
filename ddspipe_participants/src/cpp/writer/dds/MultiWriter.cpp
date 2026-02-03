@@ -146,6 +146,12 @@ QoSSpecificWriter* MultiWriter::create_writer_nts_(
     return writer;
 }
 
+void MultiWriter::update_topic_partitions(
+        std::map<std::string, std::string> partition_name)
+{
+    // TODO. DANIP
+}
+
 } /* namespace dds */
 } /* namespace participants */
 } /* namespace ddspipe */

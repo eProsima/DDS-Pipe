@@ -119,6 +119,12 @@ bool BaseWriter::should_send_sample_() noexcept
     return true;
 }
 
+void BaseWriter::update_topic_partitions(
+        std::map<std::string, std::string> /* partition_name */)
+{
+    // Do nothing
+}
+
 std::ostream& operator <<(
         std::ostream& os,
         const BaseWriter& writer)

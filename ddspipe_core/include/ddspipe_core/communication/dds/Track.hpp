@@ -138,6 +138,10 @@ public:
     void update_reader();
 
     DDSPIPE_CORE_DllAPI
+    void update_writers_topic_partitions(
+            std::map<std::string, std::string> partition_name);
+
+    DDSPIPE_CORE_DllAPI
     void update_reader_partitions(
             std::set<std::string> partitions_set);
 

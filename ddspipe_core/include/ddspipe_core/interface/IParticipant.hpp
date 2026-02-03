@@ -98,6 +98,57 @@ public:
             const ITopic& topic) = 0;
 
     /**
+     * Add a Partition in the Participant.
+     *
+     * @param [in] topic_name  : The topic.
+     * @param [in] writer_guid : The writer guid.
+     * @param [in] partition   : Partition name that will be added.
+     *
+     * @return bool if the function adds the partition.
+     */
+    DDSPIPE_CORE_DllAPI
+    virtual bool add_topic_partition(
+            const std::string& topic_name,
+            const std::string& writer_guid,
+            const std::string& partition) = 0;
+
+    /**
+     * Update a Partition in the Participant.
+     *
+     * @param [in] topic_name  : The topic.
+     * @param [in] writer_guid : The writer guid.
+     * @param [in] partition : Partition name that will be added.
+     *
+     * @return bool if the function updates the partition.
+     */
+    DDSPIPE_CORE_DllAPI
+    virtual bool update_topic_partition(
+            const std::string& topic_name,
+            const std::string& writer_guid,
+            const std::string& partition) = 0;
+
+    /**
+     * Remove a Partition of the Participant.
+     *
+     * @param [in] topic_name  : The topic.
+     * @param [in] writer_guid : The writer guid.
+     * @param [in] partition : Partition name that will be added.
+     *
+     * @return bool if the function deletes the partition.
+     */
+    DDSPIPE_CORE_DllAPI
+    virtual bool delete_topic_partition(
+            const std::string& topic_name,
+            const std::string& writer_guid,
+            const std::string& partition) = 0;
+
+    /**
+     * Clear the Partitions of the Participant.
+     */
+    DDSPIPE_CORE_DllAPI
+    virtual void clear_topic_partitions() = 0;
+
+    /**
      * Update the filters data structures of the participant
      *
      * @param [in] flag       : Flag to update the partitions or topic filter.

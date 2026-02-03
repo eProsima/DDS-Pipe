@@ -214,6 +214,12 @@ utils::ReturnCode CommonWriter::write_nts_(
     return utils::ReturnCode::RETCODE_OK;
 }
 
+void CommonWriter::update_topic_partitions(
+        std::map<std::string, std::string> partition_name)
+{
+    // TODO. DANIP
+}
+
 utils::ReturnCode CommonWriter::fill_to_send_data_(
         fastdds::rtps::CacheChange_t* to_send_change_to_fill,
         fastdds::rtps::WriteParams& to_send_params,

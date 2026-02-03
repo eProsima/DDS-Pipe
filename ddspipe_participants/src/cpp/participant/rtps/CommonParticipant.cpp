@@ -198,12 +198,17 @@ void CommonParticipant::RtpsListener::on_writer_discovery(
         guid_ss << info.guid;
         guid_str = guid_ss.str();
 
+        // get the partitions
+        std::string partition_names = info_writer.specific_partitions[guid_str];
+
         if (reason == fastdds::rtps::WriterDiscoveryStatus::DISCOVERED_WRITER)
         {
             EPROSIMA_LOG_INFO(DDSPIPE_DISCOVERY,
                     "Found in Participant " << configuration_->id << " new Writer " << info.guid << ".");
 
             discovery_database_->add_endpoint(info_writer);
+            // adds in the participant, the topic name, writer_guid and partitions set
+            parent_class_->add_topic_partition(info_writer.topic.m_topic_name, guid_str, partition_names);
         }
         else if (reason == fastdds::rtps::WriterDiscoveryStatus::CHANGED_QOS_WRITER)
         {
@@ -212,6 +217,8 @@ void CommonParticipant::RtpsListener::on_writer_discovery(
                     " changed TopicQoS.");
 
             discovery_database_->update_endpoint(info_writer);
+            // update in the participant, the topic name, writer_guid and partitions set
+            parent_class_->update_topic_partition(info_writer.topic.m_topic_name, guid_str, partition_names);
         }
         else if (reason == fastdds::rtps::WriterDiscoveryStatus::REMOVED_WRITER)
         {
@@ -220,6 +227,8 @@ void CommonParticipant::RtpsListener::on_writer_discovery(
 
             info_writer.active = false;
             discovery_database_->update_endpoint(info_writer);
+            // delete in the participant, the topic name, writer_guid and partitions set
+            parent_class_->delete_topic_partition(info_writer.topic.m_topic_name, guid_str, partition_names);
         }
         else if (reason == fastdds::rtps::WriterDiscoveryStatus::IGNORED_WRITER)
         {
@@ -557,6 +566,83 @@ CommonParticipant::create_listener_()
 {
     EPROSIMA_LOG_INFO(DDSPIPE_RTPS_PARTICIPANT, "Creating RTPS Listener from CommonParticipant.");
     return std::make_unique<RtpsListener>(configuration_, discovery_database_);
+}
+
+bool CommonParticipant::add_topic_partition(
+        const std::string& topic_name,
+        const std::string& writer_guid,
+        const std::string& partition)
+{
+    std::cout << "Writer guid: " << writer_guid << "\n";
+    if (partition_names.find(topic_name) != partition_names.end())
+    {
+        // the topic exists
+        if (partition_names[topic_name].find(writer_guid) != partition_names[topic_name].end())
+        {
+            // the writer is already added in the topic
+            return false;
+        }
+    }
+    else
+    {
+        // there is no topic in the dictionary
+        partition_names[topic_name] = std::map<std::string, std::string>();
+    }
+
+    // adds [writer, partition] in the topic
+    partition_names[topic_name][writer_guid] = partition;
+
+    return true;
+}
+
+bool CommonParticipant::update_topic_partition(
+        const std::string& topic_name,
+        const std::string& writer_guid,
+        const std::string& partition)
+{
+    if (partition_names.find(topic_name) == partition_names.end())
+    {
+        // the topic dont exists
+        return false;
+    }
+    if (partition_names[topic_name].find(writer_guid) == partition_names[topic_name].end())
+    {
+        // the writer dont exist in the topic
+
+        return false;
+    }
+
+    // update [writer, partition] in the topic
+    partition_names[topic_name][writer_guid] = partition;
+
+    return true;
+}
+
+bool CommonParticipant::delete_topic_partition(
+        const std::string& topic_name,
+        const std::string& writer_guid,
+        const std::string& partition)
+{
+    if (partition_names.find(topic_name) == partition_names.end())
+    {
+        // the topic dont exists
+        return false;
+    }
+    if (partition_names[topic_name].find(writer_guid) == partition_names[topic_name].end())
+    {
+        // the writer dont exist in the topic
+        return false;
+    }
+
+    // delete [writer, partition] in the topic
+    partition_names.erase(writer_guid);
+
+    return true;
+}
+
+void CommonParticipant::clear_topic_partitions()
+{
+    partition_names.clear();
 }
 
 void CommonParticipant::update_filters(

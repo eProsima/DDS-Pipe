@@ -42,6 +42,11 @@ public:
     DDSPIPE_PARTICIPANTS_DllAPI
     utils::ReturnCode write(
             core::IRoutingData& data) noexcept override;
+
+    //! Update method to change the topic_partitions
+    DDSPIPE_PARTICIPANTS_DllAPI
+    void update_topic_partitions(
+            std::map<std::string, std::string> partition_name) override;
 };
 
 } /* namespace participants */

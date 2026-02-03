@@ -33,6 +33,12 @@ utils::ReturnCode InternalWriter::write_nts_(
     return callback_(data);
 }
 
+void InternalWriter::update_topic_partitions(
+        std::map<std::string, std::string> partition_name)
+{
+    // TODO. DANIP
+}
+
 } /* namespace participants */
 } /* namespace ddspipe */
 } /* namespace eprosima */

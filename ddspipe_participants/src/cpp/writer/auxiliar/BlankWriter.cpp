@@ -33,6 +33,12 @@ utils::ReturnCode BlankWriter::write(
     return utils::ReturnCode::RETCODE_OK;
 }
 
+void BlankWriter::update_topic_partitions(
+        std::map<std::string, std::string> /* partition_name */)
+{
+    // Do nothing
+}
+
 } /* namespace participants */
 } /* namespace ddspipe */
 } /* namespace eprosima */
