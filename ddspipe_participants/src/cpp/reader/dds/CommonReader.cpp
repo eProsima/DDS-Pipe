@@ -143,8 +143,6 @@ void CommonReader::on_data_available(
     EPROSIMA_LOG_INFO(DDSPIPE_DDS_READER,
             "On data available in reader in " << participant_id_ << " for topic " << topic_ << ".");
 
-    //std::cout << "On data available in reader in " << participant_id_ << " for topic " << topic_ << "\n";
-
     // The CommonReader notifies the reception of a message to the Monitor when a on_data_available event is received.
     // An on_data_available event can be received with more than one message, but figuring out the number of messages
     // received is not possible with the current API. Thus, the Monitor will be notified once for each on_data_available

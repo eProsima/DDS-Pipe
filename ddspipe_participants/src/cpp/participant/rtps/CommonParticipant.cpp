@@ -573,7 +573,6 @@ bool CommonParticipant::add_topic_partition(
         const std::string& writer_guid,
         const std::string& partition)
 {
-    std::cout << "Writer guid: " << writer_guid << "\n";
     if (partition_names.find(topic_name) != partition_names.end())
     {
         // the topic exists
