@@ -105,15 +105,6 @@ public:
 protected:
 
     /**
-     * Creates all proxy clients and servers associated to this bridge.
-     *
-     * Called only once in execution (controlled by \c init_ flag).
-     *
-     * @throw InitializationException in case \c IWriters or \c IReaders creation fails.
-     */
-    void init_nts_(); // throws exception, caught in enable
-
-    /**
      * Create a RTPS Reader in request topic and a RTPS Writer in reply topic.
      *
      * @param participant_id: Participant where proxy server is to be created
@@ -157,9 +148,6 @@ protected:
 
     //! Whether there are any servers in the database
     bool servers_available_() const noexcept;
-
-    //! Flag set to true when proxy clients and servers are created, so it can only be done once
-    bool init_;
 
     //! Proxy servers endpoints
     std::map<types::ParticipantId, std::shared_ptr<IReader>> request_readers_;
