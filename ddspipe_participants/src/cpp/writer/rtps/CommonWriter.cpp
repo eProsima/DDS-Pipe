@@ -94,8 +94,8 @@ CommonWriter::~CommonWriter()
         delete rtps_history_;
     }
 
-    EPROSIMA_LOG_INFO(DDSPIPE_RTPS_COMMONWRITER, "Deleting CommonWriter created in Participant " <<
-            participant_id_ << " for topic " << topic_);
+    EPROSIMA_LOG_INFO(DDSPIPE_RTPS_COMMONWRITER, "Deleting CommonWriter created in Participant "
+            << participant_id_ << " for topic " << topic_);
 }
 
 void CommonWriter::init()
@@ -117,14 +117,14 @@ void CommonWriter::on_writer_matched(
         if (info.status == fastdds::rtps::MatchingStatus::MATCHED_MATCHING)
         {
             EPROSIMA_LOG_INFO(DDSPIPE_RTPS_COMMONWRITER_LISTENER,
-                    "Writer " << *this << " in topic " << topic_.serialize() << " matched with a new Reader with guid " <<
-                    info.remoteEndpointGuid);
+                    "Writer " << *this << " in topic " << topic_.serialize() << " matched with a new Reader with guid "
+                              << info.remoteEndpointGuid);
         }
         else
         {
             EPROSIMA_LOG_INFO(DDSPIPE_RTPS_COMMONWRITER_LISTENER,
-                    "Writer " << *this << " in topic " << topic_.serialize() << " unmatched with Reader " <<
-                    info.remoteEndpointGuid);
+                    "Writer " << *this << " in topic " << topic_.serialize() << " unmatched with Reader "
+                              << info.remoteEndpointGuid);
         }
     }
 }
@@ -145,8 +145,8 @@ void CommonWriter::on_offered_incompatible_qos(
         fastdds::dds::PolicyMask qos) noexcept
 {
     EPROSIMA_LOG_WARNING(DDSPIPE_RTPS_COMMONWRITER_LISTENER,
-            "Writer " << *this << " found a remote Reader with incompatible QoS: " <<
-            utils::qos_policy_mask_to_string(qos));
+            "Writer " << *this << " found a remote Reader with incompatible QoS: "
+                      << utils::qos_policy_mask_to_string(qos));
 }
 
 bool CommonWriter::come_from_this_participant_(
@@ -189,8 +189,8 @@ utils::ReturnCode CommonWriter::write_nts_(
     }
 
     logDebug(DDSPIPE_RTPS_COMMONWRITER,
-            "CommonWriter " << *this << " sending payload " << rtps_data.payload << " from " <<
-            rtps_data.source_guid);
+            "CommonWriter " << *this << " sending payload " << rtps_data.payload << " from "
+                            << rtps_data.source_guid);
 
     // Get params to write (if set)
     fastdds::rtps::WriteParams write_params;
@@ -310,8 +310,8 @@ void CommonWriter::internal_entities_creation_(
     if (!rtps_writer_)
     {
         throw utils::InitializationException(
-                  utils::Formatter() << "Error creating Simple RTPSWriter for Participant " <<
-                      participant_id_ << " in topic " << topic_ << ".");
+                  utils::Formatter() << "Error creating Simple RTPSWriter for Participant "
+                                     << participant_id_ << " in topic " << topic_ << ".");
     }
 
     // Register writer with topic
@@ -319,8 +319,9 @@ void CommonWriter::internal_entities_creation_(
     {
         // In case it fails, remove writer and throw exception
         fastdds::rtps::RTPSDomain::removeRTPSWriter(rtps_writer_);
-        throw utils::InitializationException(utils::Formatter() << "Error registering topic " << topic_ <<
-                      " for Simple RTPSWriter in Participant " << participant_id_);
+        throw utils::InitializationException(utils::Formatter() << "Error registering topic " << topic_
+                                                                << " for Simple RTPSWriter in Participant "
+                                                                << participant_id_);
     }
 
     if (repeater_)
@@ -338,9 +339,9 @@ void CommonWriter::internal_entities_creation_(
 
     EPROSIMA_LOG_INFO(
         DDSPIPE_RTPS_COMMONWRITER,
-        "New CommonWriter created in Participant " << participant_id_ <<
-            " for topic " << topic_ <<
-            " with guid " << rtps_writer_->getGuid());
+        "New CommonWriter created in Participant " << participant_id_
+                                                   << " for topic " << topic_
+                                                   << " with guid " << rtps_writer_->getGuid());
 }
 
 fastdds::rtps::HistoryAttributes CommonWriter::reckon_history_attributes_(

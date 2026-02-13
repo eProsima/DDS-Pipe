@@ -52,8 +52,8 @@ CommonWriter::~CommonWriter()
         dds_participant_->delete_publisher(dds_publisher_);
     }
 
-    EPROSIMA_LOG_INFO(DDSPIPE_DDS_WRITER, "Deleting CommonWriter created in Participant " <<
-            participant_id_ << " for topic " << topic_);
+    EPROSIMA_LOG_INFO(DDSPIPE_DDS_WRITER, "Deleting CommonWriter created in Participant "
+            << participant_id_ << " for topic " << topic_);
 }
 
 void CommonWriter::init()
@@ -69,8 +69,8 @@ void CommonWriter::init()
     if (!dds_publisher_)
     {
         throw utils::InitializationException(
-                  utils::Formatter() << "Error creating Publisher for Participant " <<
-                      participant_id_ << " in topic " << topic_ << ".");
+                  utils::Formatter() << "Error creating Publisher for Participant "
+                                     << participant_id_ << " in topic " << topic_ << ".");
     }
 
     writer_ = dds_publisher_->create_datawriter(
@@ -83,8 +83,8 @@ void CommonWriter::init()
     if (!writer_)
     {
         throw utils::InitializationException(
-                  utils::Formatter() << "Error creating DataWriter for Participant " <<
-                      participant_id_ << " in topic " << topic_ << ".");
+                  utils::Formatter() << "Error creating DataWriter for Participant "
+                                     << participant_id_ << " in topic " << topic_ << ".");
     }
 
     if (repeater_)
@@ -101,8 +101,8 @@ void CommonWriter::init()
     if (fastdds::dds::RETCODE_OK != writer_->set_sample_prefilter(data_filter_))
     {
         throw utils::InitializationException(
-                  utils::Formatter() << "Error setting DataWriter prefilter for Participant " <<
-                      participant_id_ << " in topic " << topic_ << ".");
+                  utils::Formatter() << "Error setting DataWriter prefilter for Participant "
+                                     << participant_id_ << " in topic " << topic_ << ".");
     }
 }
 

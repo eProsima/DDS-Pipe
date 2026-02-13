@@ -50,8 +50,8 @@ CommonReader::~CommonReader()
         dds_participant_->delete_subscriber(dds_subscriber_);
     }
 
-    EPROSIMA_LOG_INFO(DDSPIPE_DDS_READER, "Deleting CommonReader created in Participant " <<
-            participant_id_ << " for topic " << topic_);
+    EPROSIMA_LOG_INFO(DDSPIPE_DDS_READER, "Deleting CommonReader created in Participant "
+            << participant_id_ << " for topic " << topic_);
 }
 
 void CommonReader::init(
@@ -70,8 +70,8 @@ void CommonReader::init(
     if (!dds_subscriber_)
     {
         throw utils::InitializationException(
-                  utils::Formatter() << "Error creating Subscriber for Participant " <<
-                      participant_id_ << " in topic " << topic_ << ".");
+                  utils::Formatter() << "Error creating Subscriber for Participant "
+                                     << participant_id_ << " in topic " << topic_ << ".");
     }
 
     // If the reader has an active filter
@@ -102,8 +102,8 @@ void CommonReader::init(
     if (nullptr == filtered_topic_)
     {
         throw utils::InitializationException(
-                  utils::Formatter() << "Error creating ContenTopicFilter for Participant " <<
-                      participant_id_ << " in topic " << topic_ << ".");
+                  utils::Formatter() << "Error creating ContenTopicFilter for Participant "
+                                     << participant_id_ << " in topic " << topic_ << ".");
     }
 
     // Create CommonReader
@@ -119,8 +119,8 @@ void CommonReader::init(
     if (!reader_)
     {
         throw utils::InitializationException(
-                  utils::Formatter() << "Error creating DataReader for Participant " <<
-                      participant_id_ << " in topic " << topic_ << ".");
+                  utils::Formatter() << "Error creating DataReader for Participant "
+                                     << participant_id_ << " in topic " << topic_ << ".");
     }
 
     // Subscriber is created with autoenable set to false, so we need to enable the reader manually.
@@ -132,8 +132,8 @@ void CommonReader::init(
         dds_subscriber_->delete_datareader(reader_);
         reader_ = nullptr;
         throw utils::InitializationException(
-                  utils::Formatter() << "Error enabling DataReader for Participant " <<
-                      participant_id_ << " in topic " << topic_ << ".");
+                  utils::Formatter() << "Error enabling DataReader for Participant "
+                                     << participant_id_ << " in topic " << topic_ << ".");
     }
 }
 
@@ -181,8 +181,8 @@ void CommonReader::on_inconsistent_topic(
         fastdds::dds::InconsistentTopicStatus status)
 {
     EPROSIMA_LOG_WARNING(DDSPIPE_DDS_READER,
-            "TOPIC_MISMATCH_TYPE | Reader " << *this <<
-            " found a remote Writer with same topic name but incompatible type");
+            "TOPIC_MISMATCH_TYPE | Reader " << *this
+                                            << " found a remote Writer with same topic name but incompatible type");
 
     monitor_type_mismatch(topic_);
     monitor_error("TYPE_MISMATCH");

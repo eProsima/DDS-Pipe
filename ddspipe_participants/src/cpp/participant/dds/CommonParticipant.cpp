@@ -259,8 +259,8 @@ void CommonParticipant::DdsListener::on_participant_discovery(
         else if (reason == fastdds::rtps::ParticipantDiscoveryStatus::CHANGED_QOS_PARTICIPANT)
         {
             EPROSIMA_LOG_INFO(DDSPIPE_DISCOVERY,
-                    configuration_->id << " participant : " << "Participant " << info.guid <<
-                    " changed QoS.");
+                    configuration_->id << " participant : " << "Participant " << info.guid
+                                       << " changed QoS.");
         }
         else if (reason == fastdds::rtps::ParticipantDiscoveryStatus::REMOVED_PARTICIPANT)
         {
@@ -335,7 +335,6 @@ void CommonParticipant::DdsListener::add_parent_pointer(
 {
     parent_class_ = &parent;
 }
-
 
 void CommonParticipant::DdsListener::on_data_writer_discovery(
         fastdds::dds::DomainParticipant* participant,

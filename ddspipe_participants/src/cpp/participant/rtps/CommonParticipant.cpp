@@ -106,8 +106,8 @@ void CommonParticipant::RtpsListener::on_participant_discovery(
         else if (reason == fastdds::rtps::ParticipantDiscoveryStatus::CHANGED_QOS_PARTICIPANT)
         {
             EPROSIMA_LOG_INFO(DDSPIPE_DISCOVERY,
-                    configuration_->id << " participant : " << "Participant " << info.guid <<
-                    " changed QoS.");
+                    configuration_->id << " participant : " << "Participant " << info.guid
+                                       << " changed QoS.");
         }
         else if (reason == fastdds::rtps::ParticipantDiscoveryStatus::REMOVED_PARTICIPANT)
         {
@@ -149,8 +149,8 @@ void CommonParticipant::RtpsListener::on_reader_discovery(
         else if (reason == fastdds::rtps::ReaderDiscoveryStatus::CHANGED_QOS_READER)
         {
             EPROSIMA_LOG_INFO(DDSPIPE_DISCOVERY,
-                    configuration_->id << " participant : " << "Reader " << info.guid <<
-                    " changed TopicQoS.");
+                    configuration_->id << " participant : " << "Reader " << info.guid
+                                       << " changed TopicQoS.");
 
             discovery_database_->update_endpoint(info_reader);
         }
@@ -213,8 +213,8 @@ void CommonParticipant::RtpsListener::on_writer_discovery(
         else if (reason == fastdds::rtps::WriterDiscoveryStatus::CHANGED_QOS_WRITER)
         {
             EPROSIMA_LOG_INFO(DDSPIPE_DISCOVERY,
-                    configuration_->id << " participant : " << "Writer " << info.guid <<
-                    " changed TopicQoS.");
+                    configuration_->id << " participant : " << "Writer " << info.guid
+                                       << " changed TopicQoS.");
 
             discovery_database_->update_endpoint(info_writer);
             // update in the participant, the topic name, writer_guid and partitions set
@@ -396,9 +396,10 @@ void CommonParticipant::create_participant_(
     }
 
     EPROSIMA_LOG_INFO(DDSPIPE_RTPS_PARTICIPANT,
-            "New Participant created with id " << this->id() <<
-            " in domain " << domain << " with guid " << rtps_participant_->getGuid() <<
-            (this->is_repeater() ? " (repeater)" : " (non repeater)"));
+            "New Participant created with id " << this->id()
+                                               << " in domain " << domain << " with guid "
+                                               << rtps_participant_->getGuid()
+                                               << (this->is_repeater() ? " (repeater)" : " (non repeater)"));
 }
 
 std::shared_ptr<core::IWriter> CommonParticipant::create_writer(

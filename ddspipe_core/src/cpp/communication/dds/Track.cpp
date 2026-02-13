@@ -88,8 +88,8 @@ void Track::enable() noexcept
     if (!enabled_)
     {
         EPROSIMA_LOG_INFO(DDSPIPE_TRACK,
-                "Enabling Track " << reader_participant_id_ << " for topic " << topic_->serialize() <<
-                ".");
+                "Enabling Track " << reader_participant_id_ << " for topic " << topic_->serialize()
+                                  << ".");
         enabled_ = true;
 
         // As it is going to start again, it should be checked as no more data, in case it wasnt set as it
@@ -118,8 +118,8 @@ void Track::disable() noexcept
     if (enabled_)
     {
         EPROSIMA_LOG_INFO(DDSPIPE_TRACK,
-                "Disabling Track " << reader_participant_id_ << " for topic " << topic_->serialize() <<
-                ".");
+                "Disabling Track " << reader_participant_id_ << " for topic " << topic_->serialize()
+                                   << ".");
 
         // Do disable before stop in the mutex so the Track is forced to stop in next iteration
         enabled_ = false;
@@ -170,7 +170,7 @@ void Track::update_reader()
 void Track::update_writers_topic_partitions(
         const std::map<std::string, std::string>& partition_name)
 {
-    for(const auto& writer: writers_)
+    for (const auto& writer: writers_)
     {
         writer.second->update_topic_partitions(partition_name);
     }
@@ -284,8 +284,8 @@ void Track::transmit_() noexcept
         }
 
         logDebug(DDSPIPE_TRACK,
-                "Track " << reader_participant_id_ << " for topic " << topic_->serialize() <<
-                " transmitting data from remote endpoint.");
+                "Track " << reader_participant_id_ << " for topic " << topic_->serialize()
+                         << " transmitting data from remote endpoint.");
 
         // Send data through writers
         for (auto& writer_it : writers_)

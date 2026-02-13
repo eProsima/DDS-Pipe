@@ -77,8 +77,9 @@ fastdds::rtps::RTPSParticipantAttributes InitialPeersParticipant::reckon_partici
         {
             // Invalid address, continue with next one
             EPROSIMA_LOG_WARNING(DDSPIPE_INITIALPEERS_PARTICIPANT,
-                    "Discard listening address: " << address <<
-                    " in Participant " << initial_peers_configuration->id << " initialization.");
+                    "Discard listening address: " << address
+                                                  << " in Participant " << initial_peers_configuration->id
+                                                  << " initialization.");
             continue;
         }
 
@@ -210,8 +211,9 @@ fastdds::rtps::RTPSParticipantAttributes InitialPeersParticipant::reckon_partici
         {
             // Invalid connection address, continue with next one
             EPROSIMA_LOG_WARNING(DDSPIPE_INITIALPEERS_PARTICIPANT,
-                    "Discard connection address: " << connection_address <<
-                    " in Participant " << initial_peers_configuration->id << " initialization.");
+                    "Discard connection address: " << connection_address
+                                                   << " in Participant " << initial_peers_configuration->id
+                                                   << " initialization.");
             continue;
         }
 
@@ -262,8 +264,8 @@ fastdds::rtps::RTPSParticipantAttributes InitialPeersParticipant::reckon_partici
         params.builtin.initialPeersList.push_back(locator);
 
         logDebug(DDSPIPE_INITIALPEERS_PARTICIPANT,
-                "Add connection address " << connection_address <<
-                " to Participant " << initial_peers_configuration->id << ".");
+                "Add connection address " << connection_address
+                                          << " to Participant " << initial_peers_configuration->id << ".");
     }
 
     /////

@@ -50,8 +50,8 @@ DdsPipe::DdsPipe(
     if (!configuration_.is_valid(error_msg, participants_database_->get_participants_repeater_map()))
     {
         throw utils::ConfigurationException(
-                  utils::Formatter() <<
-                      "Configuration for DDS Pipe is invalid: " << error_msg);
+                  utils::Formatter()
+                      << "Configuration for DDS Pipe is invalid: " << error_msg);
     }
 
     // Initialize the allowed topics
@@ -120,8 +120,8 @@ utils::ReturnCode DdsPipe::reload_configuration(
     if (!new_configuration.is_valid(error_msg, participants_database_->get_participants_repeater_map()))
     {
         throw utils::ConfigurationException(
-                  utils::Formatter() <<
-                      "Configuration for Reload DDS Pipe is invalid: " << error_msg);
+                  utils::Formatter()
+                      << "Configuration for Reload DDS Pipe is invalid: " << error_msg);
     }
 
     auto allowed_topics = std::make_shared<ddspipe::core::AllowedTopicList>(
@@ -317,7 +317,7 @@ void DdsPipe::discovered_endpoint_nts_(
                 const auto part_it = endpoint.specific_partitions.find(guid_ss.str());
                 if (part_it != endpoint.specific_partitions.end())
                 {
-                    int x=10;
+                    int x = 10;
                     bridge_it->second->add_partition_to_topic(guid_ss.str(), part_it->second);
                 }
             }
@@ -576,8 +576,8 @@ void DdsPipe::create_new_bridge_nts_(
     catch (const utils::InitializationException& e)
     {
         EPROSIMA_LOG_ERROR(DDSPIPE,
-                "Error creating Bridge for topic " << topic <<
-                ". Error code:" << e.what() << ".");
+                "Error creating Bridge for topic " << topic
+                                                   << ". Error code:" << e.what() << ".");
     }
 }
 

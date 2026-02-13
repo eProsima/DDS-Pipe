@@ -79,8 +79,8 @@ CommonReader::~CommonReader()
         delete rtps_history_;
     }
 
-    EPROSIMA_LOG_INFO(DDSPIPE_RTPS_READER, "Deleting CommonReader created in Participant " <<
-            participant_id_ << " for topic " << topic_);
+    EPROSIMA_LOG_INFO(DDSPIPE_RTPS_READER, "Deleting CommonReader created in Participant "
+            << participant_id_ << " for topic " << topic_);
 }
 
 void CommonReader::init(
@@ -121,8 +121,8 @@ void CommonReader::internal_entities_creation_(
     if (!rtps_reader_)
     {
         throw utils::InitializationException(
-                  utils::Formatter() << "Error creating Simple RTPSReader for Participant " <<
-                      participant_id_ << " in topic " << topic_ << ".");
+                  utils::Formatter() << "Error creating Simple RTPSReader for Participant "
+                                     << participant_id_ << " in topic " << topic_ << ".");
     }
 
     if (partitions_set.size() > 0)
@@ -144,13 +144,14 @@ void CommonReader::internal_entities_creation_(
     {
         // In case it fails, remove reader and throw exception
         fastdds::rtps::RTPSDomain::removeRTPSReader(rtps_reader_);
-        throw utils::InitializationException(utils::Formatter() << "Error registering topic " << topic_ <<
-                      " for Simple RTPSReader in Participant " << participant_id_);
+        throw utils::InitializationException(utils::Formatter() << "Error registering topic " << topic_
+                                                                << " for Simple RTPSReader in Participant "
+                                                                << participant_id_);
     }
 
     EPROSIMA_LOG_INFO(DDSPIPE_RTPS_READER,
-            "New CommonReader created in Participant " << participant_id_ << " for topic " <<
-            topic_ << " with guid " << rtps_reader_->getGuid());
+            "New CommonReader created in Participant " << participant_id_ << " for topic "
+                                                       << topic_ << " with guid " << rtps_reader_->getGuid());
 }
 
 core::types::Guid CommonReader::guid() const noexcept
@@ -293,8 +294,9 @@ void CommonReader::fill_received_data_(
     // Implement specific class for filling it.
 
     logDebug(DDSPIPE_RTPS_COMMONREADER_LISTENER,
-            "Data transmiting to track from Reader " << *this << " with payload " <<
-            data_to_fill.payload << " from remote writer " << data_to_fill.source_guid);
+            "Data transmiting to track from Reader " << *this << " with payload "
+                                                     << data_to_fill.payload << " from remote writer "
+                                                     << data_to_fill.source_guid);
 
 }
 
@@ -503,8 +505,8 @@ void CommonReader::on_new_cache_change_added(
         {
             // Call Track callback (by calling BaseReader callback method)
             logDebug(DDSPIPE_RTPS_COMMONREADER_LISTENER,
-                    "Data arrived to Reader " << *this << " with payload " << change->serializedPayload << " from " <<
-                    change->writerGUID);
+                    "Data arrived to Reader " << *this << " with payload " << change->serializedPayload << " from "
+                                              << change->writerGUID);
             on_data_available_();
         }
         else
@@ -543,15 +545,15 @@ void CommonReader::on_reader_matched(
         if (info.status == fastdds::rtps::MatchingStatus::MATCHED_MATCHING)
         {
             EPROSIMA_LOG_INFO(DDSPIPE_RTPS_COMMONREADER_LISTENER,
-                    "Reader " << *this << " in topic " << topic_.serialize() <<
-                    " matched with a new Writer with guid " <<
-                    info.remoteEndpointGuid);
+                    "Reader " << *this << " in topic " << topic_.serialize()
+                              << " matched with a new Writer with guid "
+                              << info.remoteEndpointGuid);
         }
         else
         {
             EPROSIMA_LOG_INFO(DDSPIPE_RTPS_COMMONREADER_LISTENER,
-                    "Reader " << *this << " in topic " << topic_.serialize() << " unmatched with Writer " <<
-                    info.remoteEndpointGuid);
+                    "Reader " << *this << " in topic " << topic_.serialize() << " unmatched with Writer "
+                              << info.remoteEndpointGuid);
         }
     }
 }
@@ -561,8 +563,8 @@ void CommonReader::on_requested_incompatible_qos(
         eprosima::fastdds::dds::PolicyMask qos) noexcept
 {
     EPROSIMA_LOG_WARNING(DDSPIPE_RTPS_COMMONREADER_LISTENER,
-            "TOPIC_MISMATCH_QOS | Reader " << *this << " found a remote Writer with incompatible QoS: " <<
-            utils::qos_policy_mask_to_string(qos));
+            "TOPIC_MISMATCH_QOS | Reader " << *this << " found a remote Writer with incompatible QoS: "
+                                           << utils::qos_policy_mask_to_string(qos));
 
     monitor_qos_mismatch(topic_);
     monitor_error("QOS_MISMATCH");
@@ -611,8 +613,9 @@ void CommonReader::on_incompatible_type(
         fastdds::rtps::RTPSReader* reader) noexcept
 {
     EPROSIMA_LOG_WARNING(DDSPIPE_RTPS_COMMONREADER_LISTENER,
-            "TOPIC_MISMATCH_TYPE | Reader " << *this <<
-            " discovered a Writer with a matching Topic name but with an incompatible type");
+            "TOPIC_MISMATCH_TYPE | Reader " << *this
+                                            <<
+                            " discovered a Writer with a matching Topic name but with an incompatible type");
 
     monitor_type_mismatch(topic_);
     monitor_error("TYPE_MISMATCH");

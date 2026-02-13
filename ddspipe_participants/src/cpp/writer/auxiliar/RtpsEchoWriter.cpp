@@ -33,8 +33,8 @@ RtpsEchoWriter::RtpsEchoWriter(
 {
     logDebug(
         DDSPIPE_BASEWRITER,
-        "Creating Echo Writer with verbose: " <<
-            (verbose_ ? "active" : "inactive") << ".");
+        "Creating Echo Writer with verbose: "
+            << (verbose_ ? "active" : "inactive") << ".");
 }
 
 utils::ReturnCode RtpsEchoWriter::write(
@@ -47,20 +47,20 @@ utils::ReturnCode RtpsEchoWriter::write(
     {
         logUser(
             DDSPIPE_ECHO_DATA,
-            "Received data in Participant: " << rtps_data.participant_receiver <<
-                " in topic: " << topic_.topic_name() <<
-                ".");
+            "Received data in Participant: " << rtps_data.participant_receiver
+                                             << " in topic: " << topic_.topic_name()
+                                             << ".");
     }
     else
     {
         logUser(
             DDSPIPE_ECHO_DATA,
-            "In Endpoint: " << rtps_data.source_guid <<
-                " from Participant: " << rtps_data.participant_receiver <<
-                " in topic: " << topic_.topic_name() <<
-                " payload received: " << rtps_data.payload <<
-                " with specific qos: " << rtps_data.writer_qos <<
-                ".");
+            "In Endpoint: " << rtps_data.source_guid
+                            << " from Participant: " << rtps_data.participant_receiver
+                            << " in topic: " << topic_.topic_name()
+                            << " payload received: " << rtps_data.payload
+                            << " with specific qos: " << rtps_data.writer_qos
+                            << ".");
     }
 
     return utils::ReturnCode::RETCODE_OK;

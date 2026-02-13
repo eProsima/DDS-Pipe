@@ -62,8 +62,8 @@ MultiWriter::~MultiWriter()
         delete writer.second;
     }
 
-    EPROSIMA_LOG_INFO(DDSPIPE_RTPS_WRITER, "Deleting MultiWriter created in Participant " <<
-            participant_id_ << " for topic " << topic_);
+    EPROSIMA_LOG_INFO(DDSPIPE_RTPS_WRITER, "Deleting MultiWriter created in Participant "
+            << participant_id_ << " for topic " << topic_);
 }
 
 void MultiWriter::enable_() noexcept
@@ -146,8 +146,8 @@ utils::ReturnCode MultiWriter::write_nts_(
 
     logDebug(
         DDSPIPE_MULTIWRITER,
-        "Writing in Partitions Writer " << *this << " a data with qos " << rtps_data.writer_qos << " from " <<
-            rtps_data.source_guid);
+        "Writing in Partitions Writer " << *this << " a data with qos " << rtps_data.writer_qos << " from "
+                                        << rtps_data.source_guid);
 
     // Take Writer
     auto this_qos_writer = get_writer_or_create_(rtps_data.writer_qos);
