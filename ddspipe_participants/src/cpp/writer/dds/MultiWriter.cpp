@@ -147,7 +147,7 @@ QoSSpecificWriter* MultiWriter::create_writer_nts_(
 }
 
 void MultiWriter::update_topic_partitions(
-        std::map<std::string, std::string> partition_name)
+        const std::map<std::string, std::string>& partition_name)
 {
     // TODO. DANIP
 }

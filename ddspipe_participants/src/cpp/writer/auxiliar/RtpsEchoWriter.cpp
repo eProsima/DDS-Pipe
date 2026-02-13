@@ -67,7 +67,7 @@ utils::ReturnCode RtpsEchoWriter::write(
 }
 
 void RtpsEchoWriter::update_topic_partitions(
-        std::map<std::string, std::string> partition_name)
+        const std::map<std::string, std::string>& partition_name)
 {
     // TODO. DANIP
 }

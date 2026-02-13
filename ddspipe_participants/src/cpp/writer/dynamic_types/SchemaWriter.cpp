@@ -45,7 +45,7 @@ SchemaWriter::SchemaWriter(
 }
 
 void SchemaWriter::update_topic_partitions(
-        std::map<std::string, std::string> partition_name)
+        const std::map<std::string, std::string>& partition_name)
 {
     // TODO. DANIP
     topic_.partition_name = partition_name;

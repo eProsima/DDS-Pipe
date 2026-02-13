@@ -283,7 +283,7 @@ void DdsBridge::add_writers_to_tracks_nts_(
 }
 
 void DdsBridge::update_partitions(
-        std::set<std::string> partitions_set)
+        const std::set<std::string>& partitions_set)
 {
     for (const auto& track: tracks_)
     {

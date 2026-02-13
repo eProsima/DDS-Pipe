@@ -55,7 +55,7 @@ protected:
             core::IRoutingData& data) noexcept override;
 
     void update_topic_partitions(
-            std::map<std::string, std::string> partition_name) override;
+            const std::map<std::string, std::string>& partition_name) override;
 
     std::shared_ptr<ISchemaHandler> schema_handler_;
 };

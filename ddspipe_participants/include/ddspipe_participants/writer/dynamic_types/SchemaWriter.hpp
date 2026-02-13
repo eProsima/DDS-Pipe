@@ -48,7 +48,7 @@ public:
     //! Update method to change the topic_partitions
     DDSPIPE_PARTICIPANTS_DllAPI
     void update_topic_partitions(
-            std::map<std::string, std::string> partition_name) override;
+            const std::map<std::string, std::string>& partition_name) override;
 
 protected:
 

@@ -207,13 +207,13 @@ core::types::DdsTopic BaseReader::topic() const
 }
 
 void BaseReader::update_partitions(
-        std::set<std::string> partitions_set)
+        const std::set<std::string>& partitions_set)
 {
     // Nothing
 }
 
 void BaseReader::update_content_topic_filter(
-        std::string expression)
+        const std::string& expression)
 {
     // Nothing
 }

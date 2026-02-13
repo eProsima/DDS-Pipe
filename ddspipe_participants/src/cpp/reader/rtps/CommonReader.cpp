@@ -84,7 +84,7 @@ CommonReader::~CommonReader()
 }
 
 void CommonReader::init(
-        const std::set<std::string> partitions_set)
+        const std::set<std::string>& partitions_set)
 {
     internal_entities_creation_(
         history_attributes_,
@@ -99,7 +99,7 @@ void CommonReader::internal_entities_creation_(
         const fastdds::rtps::ReaderAttributes& reader_attributes,
         const fastdds::rtps::TopicDescription& topic_description,
         const fastdds::dds::ReaderQos& reader_qos,
-        const std::set<std::string> partitions_set)
+        const std::set<std::string>& partitions_set)
 {
     // Copy reader attributes because fast needs it non const (do not ask why)
     fastdds::rtps::ReaderAttributes non_const_reader_attributes = reader_attributes;
@@ -174,7 +174,7 @@ core::types::DdsTopic CommonReader::topic() const noexcept
 }
 
 void CommonReader::update_partitions(
-        std::set<std::string> partitions_set)
+        const std::set<std::string>& partitions_set)
 {
     // Get the partitions from the reader qos
     auto& sub_part_qos = reader_qos_.m_partition;
@@ -190,7 +190,7 @@ void CommonReader::update_partitions(
 }
 
 void CommonReader::update_content_topic_filter(
-        std::string expression)
+        const std::string& expression)
 {
     // Nothing
 }

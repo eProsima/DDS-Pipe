@@ -65,13 +65,13 @@ core::types::DdsTopic BlankReader::topic() const
 }
 
 void BlankReader::update_partitions(
-        std::set<std::string> partitions_set)
+        const std::set<std::string>& partitions_set)
 {
     // Nothing
 }
 
 void BlankReader::update_content_topic_filter(
-        std::string expression)
+        const std::string& expression)
 {
     // Nothing
     return;

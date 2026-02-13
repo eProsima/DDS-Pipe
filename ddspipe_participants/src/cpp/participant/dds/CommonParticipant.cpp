@@ -550,7 +550,7 @@ void CommonParticipant::update_filters(
     if (flag == 0)
     {
         // partitions
-        partition_filter_set_ = partitions;
+        partition_filter_set_ = std::move(partitions);
     }
     else
     {

@@ -133,12 +133,12 @@ public:
     //! Update method to change the partitions in the content_topicfilter
     DDSPIPE_CORE_DllAPI
     virtual void update_partitions(
-            std::set<std::string> partitions_set) = 0;
+            const std::set<std::string>& partitions_set) = 0;
 
     //! Update method to change the expression in the content_topicfilter
     DDSPIPE_CORE_DllAPI
     virtual void update_content_topic_filter(
-            std::string expression) = 0;
+            const std::string& expression) = 0;
 
     DDSPIPE_CORE_DllAPI
     virtual types::ParticipantId participant_id() const = 0;

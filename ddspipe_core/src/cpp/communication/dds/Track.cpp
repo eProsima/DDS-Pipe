@@ -168,7 +168,7 @@ void Track::update_reader()
 }
 
 void Track::update_writers_topic_partitions(
-        std::map<std::string, std::string> partition_name)
+        const std::map<std::string, std::string>& partition_name)
 {
     for(const auto& writer: writers_)
     {
@@ -177,7 +177,7 @@ void Track::update_writers_topic_partitions(
 }
 
 void Track::update_reader_partitions(
-        std::set<std::string> partitions_set)
+        const std::set<std::string>& partitions_set)
 {
     reader_->disable();
     reader_->update_partitions(partitions_set);

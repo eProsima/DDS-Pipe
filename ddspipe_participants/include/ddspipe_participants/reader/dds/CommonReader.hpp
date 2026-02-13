@@ -67,18 +67,18 @@ public:
 
     DDSPIPE_PARTICIPANTS_DllAPI
     void init(
-            const std::set<std::string> partitions_set,
-            const std::string content_topicfilter_expression);
+            const std::set<std::string>& partitions_set,
+            const std::string& content_topicfilter_expression);
 
     //! Update method to change the partitions in the content_topicfilter
     DDSPIPE_PARTICIPANTS_DllAPI
     void update_partitions(
-            std::set<std::string> partitions_set) override;
+            const std::set<std::string>& partitions_set) override;
 
     //! Update method to change the expression in the content_topicfilter
     DDSPIPE_PARTICIPANTS_DllAPI
     void update_content_topic_filter(
-            std::string expression) override;
+            const std::string& expression) override;
 
     /////////////////////////
     // RTPS LISTENER METHODS

@@ -132,7 +132,7 @@ public:
 
     DDSPIPE_CORE_DllAPI
     void update_partitions(
-            std::set<std::string> partitions_set);
+            const std::set<std::string>& partitions_set);
 
     DDSPIPE_CORE_DllAPI
     void update_content_filter(

@@ -120,7 +120,7 @@ bool BaseWriter::should_send_sample_() noexcept
 }
 
 void BaseWriter::update_topic_partitions(
-        std::map<std::string, std::string> /* partition_name */)
+        const std::map<std::string, std::string>& /* partition_name */)
 {
     // Do nothing
 }

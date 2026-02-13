@@ -55,8 +55,8 @@ CommonReader::~CommonReader()
 }
 
 void CommonReader::init(
-        const std::set<std::string> partitions_set,
-        const std::string content_topicfilter_expression
+        const std::set<std::string>& partitions_set,
+        const std::string& content_topicfilter_expression
 )
 {
     EPROSIMA_LOG_INFO(DDSPIPE_DDS_READER,
@@ -385,7 +385,7 @@ void CommonReader::fill_received_data_(
 }
 
 void CommonReader::update_partitions(
-        std::set<std::string> partitions_set)
+        const std::set<std::string>& partitions_set)
 {
     fastdds::dds::SubscriberQos sub_qos = dds_subscriber_->get_qos();
     sub_qos.partition().clear();
@@ -398,7 +398,7 @@ void CommonReader::update_partitions(
 }
 
 void CommonReader::update_content_topic_filter(
-        std::string expression)
+        const std::string& expression)
 {
     // content_topicfilter
     filtered_topic_->set_filter_expression(expression, {});

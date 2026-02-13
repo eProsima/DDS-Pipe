@@ -34,7 +34,7 @@ utils::ReturnCode BlankWriter::write(
 }
 
 void BlankWriter::update_topic_partitions(
-        std::map<std::string, std::string> /* partition_name */)
+        const std::map<std::string, std::string>& /* partition_name */)
 {
     // Do nothing
 }

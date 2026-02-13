@@ -83,13 +83,13 @@ utils::ReturnCode InternalReader::take_nts_(
 }
 
 void InternalReader::update_partitions(
-        std::set<std::string> partitions_set)
+        const std::set<std::string>& partitions_set)
 {
     // Nothing
 }
 
 void InternalReader::update_content_topic_filter(
-        std::string expression)
+        const std::string& expression)
 {
     // Nothing
 }

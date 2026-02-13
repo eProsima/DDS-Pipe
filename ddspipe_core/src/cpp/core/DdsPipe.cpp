@@ -654,7 +654,7 @@ void DdsPipe::deactivate_all_topics_nts_() noexcept
 }
 
 void DdsPipe::update_partitions(
-        std::set<std::string> partitions_set)
+        const std::set<std::string>& partitions_set)
 {
     // TODO.
     // In the future it could be interesting to update the partitions
@@ -685,7 +685,7 @@ void DdsPipe::update_filter(
     // Avoid possible datarace with partitions filter
     std::lock_guard<std::mutex> lock(bridges_mutex_);
 
-    filter_partition_ = filter_partition_set;
+    filter_partition_ = std::move(filter_partition_set);
 }
 
 } /* namespace core */

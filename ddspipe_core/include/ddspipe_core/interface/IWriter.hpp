@@ -86,7 +86,7 @@ public:
     //! Update method to change the topic_partitions
     DDSPIPE_CORE_DllAPI
     virtual void update_topic_partitions(
-            std::map<std::string, std::string> partition_name) = 0;
+            const std::map<std::string, std::string>& partition_name) = 0;
 };
 
 } /* namespace core */

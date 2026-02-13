@@ -80,17 +80,17 @@ public:
      */
     DDSPIPE_PARTICIPANTS_DllAPI
     void init(
-            const std::set<std::string> partitions_set);
+            const std::set<std::string>& partitions_set);
 
     //! Update method to change the partitions in the content_topicfilter
     DDSPIPE_PARTICIPANTS_DllAPI
     void update_partitions(
-            std::set<std::string> partitions_set) override;
+            const std::set<std::string>& partitions_set) override;
 
     //! Update method to change the expression in the content_topicfilter
     DDSPIPE_PARTICIPANTS_DllAPI
     void update_content_topic_filter(
-            std::string expression) override;
+            const std::string& expression) override;
 
     /////////////////////////
     // RTPS LISTENER METHODS
@@ -221,7 +221,7 @@ protected:
             const fastdds::rtps::ReaderAttributes& reader_attributes,
             const fastdds::rtps::TopicDescription& topic_desc,
             const fastdds::dds::ReaderQos& reader_qos,
-            const std::set<std::string> partitions_set);
+            const std::set<std::string>& partitions_set);
 
     /**
      * @brief Return an allocated object
