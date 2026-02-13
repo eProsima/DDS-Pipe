@@ -280,7 +280,7 @@ DiscoveryServerParticipant::reckon_participant_attributes_() const
             EPROSIMA_LOG_WARNING(DDSPIPE_DISCOVERYSERVER_PARTICIPANT,
                     "Creating Participant " << discovery_server_configuration->id
                                             <<
-                                    " without listening or connection addresses. It will not communicate with any other Participant.");
+                    " without listening or connection addresses. It will not communicate with any other Participant.");
         }
     }
 

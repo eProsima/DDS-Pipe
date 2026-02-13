@@ -615,7 +615,7 @@ void CommonReader::on_incompatible_type(
     EPROSIMA_LOG_WARNING(DDSPIPE_RTPS_COMMONREADER_LISTENER,
             "TOPIC_MISMATCH_TYPE | Reader " << *this
                                             <<
-                            " discovered a Writer with a matching Topic name but with an incompatible type");
+            " discovered a Writer with a matching Topic name but with an incompatible type");
 
     monitor_type_mismatch(topic_);
     monitor_error("TYPE_MISMATCH");
