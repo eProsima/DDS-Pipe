@@ -187,7 +187,7 @@ utils::ReturnCode MockWriter::write_nts_(
 void MockWriter::update_topic_partitions(
         const std::map<std::string, std::string>& partition_name)
 {
-    // TODO. DANIP
+    // Do nothing
 }
 
 MockRoutingData MockWriter::wait_data()

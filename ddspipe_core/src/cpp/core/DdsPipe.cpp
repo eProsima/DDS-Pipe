@@ -317,7 +317,6 @@ void DdsPipe::discovered_endpoint_nts_(
                 const auto part_it = endpoint.specific_partitions.find(guid_ss.str());
                 if (part_it != endpoint.specific_partitions.end())
                 {
-                    int x = 10;
                     bridge_it->second->add_partition_to_topic(guid_ss.str(), part_it->second);
                 }
             }
@@ -326,38 +325,10 @@ void DdsPipe::discovered_endpoint_nts_(
         // update readers outside the lock
         if (!filter_partition_.empty())
         {
-            //update_readers_track(endpoint.topic.m_topic_name, filter_partition_);
             update_partitions(filter_partition_);
         }
     }
 }
-
-// void DdsPipe::update_readers_track(
-//         const std::string topic_name,
-//         const std::set<std::string> filter_partition_set)
-// {
-//     // get the targets (with lock)
-//     std::vector<DdsBridge*> targets;
-//     {
-//         std::lock_guard<std::mutex> lock(bridges_mutex_);
-
-//         for (const auto& pair : bridges_)
-//         {
-//             if (pair.first->m_topic_name == topic_name && pair.second)
-//             {
-//                 targets.push_back(pair.second.get());
-//             }
-//         }
-//     }
-
-//     // update readers outside the lock
-//     for (auto* target : targets)
-//     {
-//         target->update_readers_track(filter_partition_set);
-//     }
-// }
-
-
 
 void DdsPipe::removed_endpoint_nts_(
         const Endpoint& endpoint) noexcept

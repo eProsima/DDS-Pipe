@@ -70,7 +70,7 @@ utils::ReturnCode TypeObjectWriter::write_nts_(
 void TypeObjectWriter::update_topic_partitions(
         const std::map<std::string, std::string>& partition_name)
 {
-    // TODO. DANIP
+    // Do Nothing
 }
 
 } /* namespace participants */

@@ -163,7 +163,7 @@ utils::ReturnCode MultiWriter::write_nts_(
 void MultiWriter::update_topic_partitions(
         const std::map<std::string, std::string>& partition_name)
 {
-    // TODO. DANIP
+    topic_.partition_name = partition_name;
 }
 
 } /* namespace rtps */

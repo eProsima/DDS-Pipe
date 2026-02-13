@@ -126,14 +126,34 @@ public:
     DDSPIPE_CORE_DllAPI
     utils::ReturnCode disable() noexcept;
 
+    /**
+     * @brief Update the stored partitions filter.
+     *
+     * This method replaces the current partitions filter used by the pipe.
+     *
+     * @param [in] filter_partition_set : new partitions filter.
+     */
     DDSPIPE_CORE_DllAPI
     void update_filter(
             const std::set<std::string> filter_partition_set);
 
+    /**
+     * @brief Update the partitions in every DDS topic bridge.
+     *
+     * @param [in] partitions_set : set of partitions to apply.
+     */
     DDSPIPE_CORE_DllAPI
     void update_partitions(
             const std::set<std::string>& partitions_set);
 
+    /**
+     * @brief Update the content filter expression for one topic.
+     *
+     * The expression is applied to bridges whose topic name matches \c topic_name.
+     *
+     * @param [in] topic_name : topic where the filter must be updated.
+     * @param [in] expression : new content filter expression.
+     */
     DDSPIPE_CORE_DllAPI
     void update_content_filter(
             const std::string& topic_name,

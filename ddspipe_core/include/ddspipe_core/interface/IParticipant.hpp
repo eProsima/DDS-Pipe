@@ -19,7 +19,6 @@
 #include <ddspipe_core/types/dds/TopicQoS.hpp>
 #include <ddspipe_core/types/participant/ParticipantId.hpp>
 #include <ddspipe_core/types/topic/Topic.hpp>
-#include <fastdds/dds/domain/DomainParticipant.hpp>
 
 namespace eprosima {
 namespace ddspipe {

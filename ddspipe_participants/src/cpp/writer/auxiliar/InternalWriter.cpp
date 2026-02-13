@@ -36,7 +36,7 @@ utils::ReturnCode InternalWriter::write_nts_(
 void InternalWriter::update_topic_partitions(
         const std::map<std::string, std::string>& partition_name)
 {
-    // TODO. DANIP
+    // Do Nothing
 }
 
 } /* namespace participants */
