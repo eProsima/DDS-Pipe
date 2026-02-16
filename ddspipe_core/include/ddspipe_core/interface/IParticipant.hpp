@@ -148,17 +148,22 @@ public:
     virtual void clear_topic_partitions() = 0;
 
     /**
-     * Update the filters data structures of the participant
+     * Update the partition filter data structure of the participant
      *
-     * @param [in] flag       : Flag to update the partitions or topic filter.
      * @param [in] partitions : Set of partitions for the new filter of partitions.
+     */
+    DDSPIPE_CORE_DllAPI
+    virtual void update_partitions(
+            std::set<std::string> partitions) = 0;
+
+    /**
+     * Update the content_topicfilter data structure of the participant
+     *
      * @param [in] topic_name : Name of the topic.
      * @param [in] expression : Expression for the Content Filtered Topic
      */
     DDSPIPE_CORE_DllAPI
-    virtual void update_filters(
-            const int flag,
-            std::set<std::string> partitions,
+    virtual void update_content_topicfilter(
             const std::string& topic_name,
             const std::string& expression) = 0;
 

@@ -303,22 +303,17 @@ void DdsPipe::discovered_endpoint_nts_(
         // update the track of the topic to
         // add the partition in the reader if it is in the filter
 
-        // update partitions under bridges_mutex_
+        const auto bridge_it = bridges_.find(utils::Heritable<DdsTopic>::make_heritable(endpoint.topic));
+        // add the specific partition of the endpoint in the bridges topic.
+        if (bridge_it != bridges_.end())
         {
-            std::lock_guard<std::mutex> lock(bridges_mutex_);
+            std::ostringstream guid_ss;
+            guid_ss << endpoint.guid;
 
-            const auto bridge_it = bridges_.find(utils::Heritable<DdsTopic>::make_heritable(endpoint.topic));
-            // add the specific partition of the endpoint in the bridges topic.
-            if (bridge_it != bridges_.end())
+            const auto part_it = endpoint.specific_partitions.find(guid_ss.str());
+            if (part_it != endpoint.specific_partitions.end())
             {
-                std::ostringstream guid_ss;
-                guid_ss << endpoint.guid;
-
-                const auto part_it = endpoint.specific_partitions.find(guid_ss.str());
-                if (part_it != endpoint.specific_partitions.end())
-                {
-                    bridge_it->second->add_partition_to_topic(guid_ss.str(), part_it->second);
-                }
+                bridge_it->second->add_partition_to_topic(guid_ss.str(), part_it->second);
             }
         }
 
@@ -653,9 +648,6 @@ void DdsPipe::update_content_filter(
 void DdsPipe::update_filter(
         const std::set<std::string> filter_partition_set)
 {
-    // Avoid possible datarace with partitions filter
-    std::lock_guard<std::mutex> lock(bridges_mutex_);
-
     filter_partition_ = std::move(filter_partition_set);
 }
 

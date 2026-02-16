@@ -94,11 +94,14 @@ public:
     DDSPIPE_PARTICIPANTS_DllAPI
     void clear_topic_partitions() override;
 
-    //! Override update_filters() IParticipant method
+    //! Override update_partitions() IParticipant method
     DDSPIPE_PARTICIPANTS_DllAPI
-    virtual void update_filters(
-            const int flag,
-            std::set<std::string> partitions,
+    virtual void update_partitions(
+            std::set<std::string> partitions) override;
+
+    //! Override update_content_topicfilter() IParticipant method
+    DDSPIPE_PARTICIPANTS_DllAPI
+    virtual void update_content_topicfilter(
             const std::string& topic_name,
             const std::string& expression) override;
 

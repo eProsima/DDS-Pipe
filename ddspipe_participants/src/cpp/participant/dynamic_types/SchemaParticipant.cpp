@@ -175,9 +175,13 @@ void SchemaParticipant::clear_topic_partitions()
     partition_names.clear();
 }
 
-void SchemaParticipant::update_filters(
-        const int flag,
-        std::set<std::string> partitions,
+void SchemaParticipant::update_partitions(
+        std::set<std::string> partitions)
+{
+    // Nothing
+}
+
+void SchemaParticipant::update_content_topicfilter(
         const std::string& topic_name,
         const std::string& expression)
 {

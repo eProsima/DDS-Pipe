@@ -141,9 +141,13 @@ void BlankParticipant::clear_topic_partitions()
     partition_names.clear();
 }
 
-void BlankParticipant::update_filters(
-        const int flag,
-        std::set<std::string> partitions,
+void BlankParticipant::update_partitions(
+        std::set<std::string> partitions)
+{
+    // Nothing
+}
+
+void BlankParticipant::update_content_topicfilter(
         const std::string& topic_name,
         const std::string& expression)
 {

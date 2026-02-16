@@ -645,22 +645,17 @@ void CommonParticipant::clear_topic_partitions()
     partition_names.clear();
 }
 
-void CommonParticipant::update_filters(
-        const int flag,
-        std::set<std::string> partitions,
+void CommonParticipant::update_partitions(
+        std::set<std::string> partitions)
+{
+    partition_filter_set_ = std::move(partitions);
+}
+
+void CommonParticipant::update_content_topicfilter(
         const std::string& topic_name,
         const std::string& expression)
 {
-    if (flag == 0)
-    {
-        // partitions
-        partition_filter_set_ = std::move(partitions);
-    }
-    else
-    {
-        // content_topicfilter
-        // nothing
-    }
+    // Nothing
 }
 
 } /* namespace rtps */
