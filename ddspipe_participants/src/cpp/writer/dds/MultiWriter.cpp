@@ -102,6 +102,18 @@ utils::ReturnCode MultiWriter::write_nts_(
     return this_qos_writer->write(data);
 }
 
+void MultiWriter::update_partitions(
+        const std::set<std::string>& partitions_set)
+{
+    // Nothing
+}
+
+void MultiWriter::update_content_topic_filter(
+        const std::string& expression)
+{
+    // Nothing
+}
+
 QoSSpecificWriter* MultiWriter::get_writer_or_create_(
         const core::types::SpecificEndpointQoS& data_qos)
 {
@@ -141,7 +153,8 @@ QoSSpecificWriter* MultiWriter::create_writer_nts_(
         this->dds_participant_,
         this->dds_topic_,
         repeater_);
-    writer->init();
+    // No filters
+    writer->init(std::set<std::string>(), "");
 
     return writer;
 }

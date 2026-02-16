@@ -98,14 +98,16 @@ CommonWriter::~CommonWriter()
             << participant_id_ << " for topic " << topic_);
 }
 
-void CommonWriter::init()
+void CommonWriter::init(
+        const std::set<std::string>& partitions_set)
 {
     internal_entities_creation_(
         history_attributes_,
         writer_attributes_,
         topic_description_,
         writer_qos_,
-        pool_configuration_);
+        pool_configuration_,
+        partitions_set);
 }
 
 void CommonWriter::on_writer_matched(
@@ -214,6 +216,28 @@ utils::ReturnCode CommonWriter::write_nts_(
     return utils::ReturnCode::RETCODE_OK;
 }
 
+void CommonWriter::update_partitions(
+        const std::set<std::string>& partitions_set)
+{
+    // Get the partitions from the reader qos
+    auto& pub_part_qos = writer_qos_.m_partition;
+    // Clear the partitions
+    pub_part_qos.clear();
+    // Add the partitions from the filter
+    for (const auto& partition : partitions_set)
+    {
+        pub_part_qos.push_back(partition.c_str());
+    }
+    // Update the reader with the new partitions
+    rtps_participant_->update_writer(rtps_writer_, writer_qos_);
+}
+
+void CommonWriter::update_content_topic_filter(
+        const std::string& /* expression */)
+{
+    // Nothing
+}
+
 void CommonWriter::update_topic_partitions(
         const std::map<std::string, std::string>& partition_name)
 {
@@ -275,7 +299,8 @@ void CommonWriter::internal_entities_creation_(
         const fastdds::rtps::WriterAttributes& writer_attributes,
         const fastdds::rtps::TopicDescription& topic_description,
         const fastdds::dds::WriterQos& writer_qos,
-        const utils::PoolConfiguration& pool_configuration)
+        const utils::PoolConfiguration& pool_configuration,
+        const std::set<std::string>& partitions_set)
 {
     // Copy writer attributes because fast needs it non const (do not ask why)
     fastdds::rtps::WriterAttributes non_const_writer_attributes = writer_attributes;

@@ -130,6 +130,13 @@ std::shared_ptr<core::IWriter> CommonParticipant::create_writer(
     }
     const core::types::DdsTopic& dds_topic = *topic_ptr;
 
+    // contenttopicfilter
+    std::string content_topic_filter_expr = "";
+    if (topic_filter_dict_.find(dds_topic.m_topic_name) != topic_filter_dict_.end())
+    {
+        content_topic_filter_expr = topic_filter_dict_[dds_topic.m_topic_name];
+    }
+
     // Check that it is RTPS topic
     if (dds_topic.internal_type_discriminator() != core::types::INTERNAL_TOPIC_TYPE_RTPS)
     {
@@ -164,7 +171,7 @@ std::shared_ptr<core::IWriter> CommonParticipant::create_writer(
             dds_participant_,
             fastdds_topic,
             configuration_->is_repeater);
-        writer->init();
+        writer->init(partition_filter_set_, content_topic_filter_expr);
 
         return writer;
     }

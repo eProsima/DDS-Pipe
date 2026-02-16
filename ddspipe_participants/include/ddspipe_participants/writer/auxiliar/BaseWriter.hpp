@@ -89,6 +89,16 @@ public:
     virtual utils::ReturnCode write(
             core::IRoutingData& data) noexcept override;
 
+    //! Update method to change the partitions in the content_topicfilter
+    DDSPIPE_PARTICIPANTS_DllAPI
+    virtual void update_partitions(
+            const std::set<std::string>& partitions_set) override;
+
+    //! Update method to change the expression in the content_topicfilter
+    DDSPIPE_PARTICIPANTS_DllAPI
+    virtual void update_content_topic_filter(
+            const std::string& expression) override;
+
     //! Update method to change the topic_partitions
     DDSPIPE_PARTICIPANTS_DllAPI
     void update_topic_partitions(

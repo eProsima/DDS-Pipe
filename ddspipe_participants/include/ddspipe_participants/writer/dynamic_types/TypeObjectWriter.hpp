@@ -54,6 +54,17 @@ protected:
     utils::ReturnCode write_nts_(
             core::IRoutingData& data) noexcept override;
 
+    //! Update method to change the partitions in the content_topicfilter
+    DDSPIPE_PARTICIPANTS_DllAPI
+    virtual void update_partitions(
+            const std::set<std::string>& partitions_set) override;
+
+    //! Update method to change the expression in the content_topicfilter
+    DDSPIPE_PARTICIPANTS_DllAPI
+    virtual void update_content_topic_filter(
+            const std::string& expression) override;
+
+    //! Update method to change the topic_partitions
     void update_topic_partitions(
             const std::map<std::string, std::string>& partition_name) override;
 

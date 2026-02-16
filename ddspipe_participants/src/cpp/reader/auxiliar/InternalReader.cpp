@@ -89,7 +89,7 @@ void InternalReader::update_partitions(
 }
 
 void InternalReader::update_content_topic_filter(
-        const std::string& expression)
+        const std::string& /* expression */)
 {
     // Nothing
 }

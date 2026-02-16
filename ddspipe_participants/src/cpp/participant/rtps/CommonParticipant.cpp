@@ -425,7 +425,7 @@ std::shared_ptr<core::IWriter> CommonParticipant::create_writer(
             this->payload_pool_,
             rtps_participant_,
             this->configuration_->is_repeater);
-        writer->init();
+        writer->init(partition_filter_set_);
 
         return writer;
     }
@@ -453,7 +453,7 @@ std::shared_ptr<core::IWriter> CommonParticipant::create_writer(
                 this->payload_pool_,
                 rtps_participant_,
                 this->configuration_->is_repeater);
-            writer->init();
+            writer->init(partition_filter_set_);
 
             return writer;
         }

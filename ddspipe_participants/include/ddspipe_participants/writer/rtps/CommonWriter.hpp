@@ -96,7 +96,8 @@ public:
      * @pre this method can only be called once.
      */
     DDSPIPE_PARTICIPANTS_DllAPI
-    void init();
+    void init(
+            const std::set<std::string>& partitions_set);
 
     /////////////////////////
     // RTPS LISTENER METHODS
@@ -205,6 +206,17 @@ protected:
             eprosima::fastdds::rtps::WriteParams& to_send_params,
             const core::types::RtpsPayloadData& data) const noexcept;
 
+    //! Update method to change the partitions in the content_topicfilter
+    DDSPIPE_PARTICIPANTS_DllAPI
+    virtual void update_partitions(
+            const std::set<std::string>& partitions_set) override;
+
+    //! Update method to change the expression in the content_topicfilter
+    DDSPIPE_PARTICIPANTS_DllAPI
+    virtual void update_content_topic_filter(
+            const std::string& expression) override;
+
+    //! Update method to change the topic_partitions
     DDSPIPE_PARTICIPANTS_DllAPI
     virtual void update_topic_partitions(
             const std::map<std::string, std::string>& partition_name) override;
@@ -236,7 +248,8 @@ protected:
             const fastdds::rtps::WriterAttributes& writer_attributes,
             const fastdds::rtps::TopicDescription& topic_description,
             const fastdds::dds::WriterQos& writer_qos,
-            const utils::PoolConfiguration& pool_configuration);
+            const utils::PoolConfiguration& pool_configuration,
+            const std::set<std::string>& partitions_set);
 
     /**
      * @brief History Attributes to create RTPS Writer History

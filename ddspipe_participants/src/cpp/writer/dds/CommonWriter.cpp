@@ -56,7 +56,10 @@ CommonWriter::~CommonWriter()
             << participant_id_ << " for topic " << topic_);
 }
 
-void CommonWriter::init()
+void CommonWriter::init(
+        const std::set<std::string>& partitions_set,
+        const std::string& content_topicfilter_expression
+)
 {
     EPROSIMA_LOG_INFO(DDSPIPE_DDS_WRITER,
             "Initializing writer in " << participant_id_ << " for topic " << topic_ << ".");
@@ -73,8 +76,40 @@ void CommonWriter::init()
                                      << participant_id_ << " in topic " << topic_ << ".");
     }
 
+    // If the reader has an active filter
+    // change the qos partition before creating the datareader.
+    if (partitions_set.size() > 0)
+    {
+        // Get the current subscriber qos
+        fastdds::dds::PublisherQos pub_qos = dds_publisher_->get_qos();
+        // Remove all partitions from the qos
+        pub_qos.partition().clear();
+        // Add the filter partitions
+        for (const std::string& partition: partitions_set)
+        {
+            pub_qos.partition().push_back(partition.c_str());
+        }
+        // Update the subscriber qos
+        dds_publisher_->set_qos(pub_qos);
+    }
+
+    auto topic_tmp = dds_participant_->find_topic(topic_.topic_name(), 10);
+
+    // Create the filtered topic with the expression given
+    // if any filter is active the expression will be ""
+    // no contentfilter is being applied
+    filtered_topic_ = dds_participant_->create_contentfilteredtopic(
+        topic_.topic_name() + "_filtered", topic_tmp,
+        content_topicfilter_expression, {});
+    if (nullptr == filtered_topic_)
+    {
+        throw utils::InitializationException(
+                  utils::Formatter() << "Error creating ContenTopicFilter for Participant "
+                                     << participant_id_ << " in topic " << topic_ << ".");
+    }
+
     writer_ = dds_publisher_->create_datawriter(
-        dds_topic_,
+        dds_topic_, //filtered_topic_, //TODO. danip
         reckon_writer_qos_(),
         nullptr,
         eprosima::fastdds::dds::StatusMask::all(),
@@ -150,6 +185,26 @@ utils::ReturnCode CommonWriter::write_nts_(
 
     // TODO: handle dipose case -> DataWriter::write will always send ALIVE changes, so this case must be handled
     // with additional logic (e.g. by using unregister_instance instead of write).
+}
+
+void CommonWriter::update_partitions(
+        const std::set<std::string>& partitions_set)
+{
+    fastdds::dds::PublisherQos pub_qos = dds_publisher_->get_qos();
+    pub_qos.partition().clear();
+    for (const std::string& partition: partitions_set)
+    {
+        pub_qos.partition().push_back(partition.c_str());
+    }
+
+    dds_publisher_->set_qos(pub_qos);
+}
+
+void CommonWriter::update_content_topic_filter(
+        const std::string& expression)
+{
+    // content_topicfilter
+    filtered_topic_->set_filter_expression(expression, {});
 }
 
 void CommonWriter::update_topic_partitions(
