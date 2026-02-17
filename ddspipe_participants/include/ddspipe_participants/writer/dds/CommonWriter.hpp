@@ -75,8 +75,7 @@ public:
      */
     DDSPIPE_PARTICIPANTS_DllAPI
     void init(
-            const std::set<std::string>& partitions_set,
-            const std::string& content_topicfilter_expression);
+            const std::set<std::string>& partitions_set);
 
     /////////////////////
     // STATIC ATTRIBUTES
@@ -171,11 +170,6 @@ protected:
     virtual void update_partitions(
             const std::set<std::string>& partitions_set) override;
 
-    //! Update method to change the expression in the content_topicfilter
-    DDSPIPE_PARTICIPANTS_DllAPI
-    virtual void update_content_topic_filter(
-            const std::string& expression) override;
-
     //! Update method to change the topic_partitions
     DDSPIPE_PARTICIPANTS_DllAPI
     virtual void update_topic_partitions(
@@ -196,7 +190,6 @@ protected:
     std::shared_ptr<core::PayloadPoolMediator> payload_pool_;
 
     core::types::DdsTopic topic_;
-    eprosima::fastdds::dds::ContentFilteredTopic* filtered_topic_;
 
     fastdds::dds::Publisher* dds_publisher_;
     fastdds::dds::DataWriter* writer_;

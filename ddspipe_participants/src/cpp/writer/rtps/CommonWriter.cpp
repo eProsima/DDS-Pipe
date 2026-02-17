@@ -232,12 +232,6 @@ void CommonWriter::update_partitions(
     rtps_participant_->update_writer(rtps_writer_, writer_qos_);
 }
 
-void CommonWriter::update_content_topic_filter(
-        const std::string& /* expression */)
-{
-    // Nothing
-}
-
 void CommonWriter::update_topic_partitions(
         const std::map<std::string, std::string>& partition_name)
 {

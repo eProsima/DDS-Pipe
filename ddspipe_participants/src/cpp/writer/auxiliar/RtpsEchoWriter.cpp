@@ -72,12 +72,6 @@ void RtpsEchoWriter::update_partitions(
     // Nothing
 }
 
-void RtpsEchoWriter::update_content_topic_filter(
-        const std::string& /* expression */)
-{
-    // Nothing
-}
-
 void RtpsEchoWriter::update_topic_partitions(
         const std::map<std::string, std::string>& partition_name)
 {

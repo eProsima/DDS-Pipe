@@ -90,11 +90,6 @@ public:
     virtual void update_partitions(
             const std::set<std::string>& partitions_set) = 0;
 
-    //! Update method to change the expression in the content_topicfilter
-    DDSPIPE_CORE_DllAPI
-    virtual void update_content_topic_filter(
-            const std::string& expression) = 0;
-
     //! Update method to change the topic_partitions
     DDSPIPE_CORE_DllAPI
     virtual void update_topic_partitions(

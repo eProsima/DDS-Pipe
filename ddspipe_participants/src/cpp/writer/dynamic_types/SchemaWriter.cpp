@@ -50,12 +50,6 @@ void SchemaWriter::update_partitions(
     // Nothing
 }
 
-void SchemaWriter::update_content_topic_filter(
-        const std::string& /* expression */)
-{
-    // Nothing
-}
-
 void SchemaWriter::update_topic_partitions(
         const std::map<std::string, std::string>& partition_name)
 {

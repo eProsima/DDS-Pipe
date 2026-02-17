@@ -108,12 +108,6 @@ void MultiWriter::update_partitions(
     // Nothing
 }
 
-void MultiWriter::update_content_topic_filter(
-        const std::string& expression)
-{
-    // Nothing
-}
-
 QoSSpecificWriter* MultiWriter::get_writer_or_create_(
         const core::types::SpecificEndpointQoS& data_qos)
 {
@@ -154,7 +148,7 @@ QoSSpecificWriter* MultiWriter::create_writer_nts_(
         this->dds_topic_,
         repeater_);
     // No filters
-    writer->init(std::set<std::string>(), "");
+    writer->init(std::set<std::string>());
 
     return writer;
 }

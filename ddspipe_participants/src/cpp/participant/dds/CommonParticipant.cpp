@@ -171,7 +171,7 @@ std::shared_ptr<core::IWriter> CommonParticipant::create_writer(
             dds_participant_,
             fastdds_topic,
             configuration_->is_repeater);
-        writer->init(partition_filter_set_, content_topic_filter_expr);
+        writer->init(partition_filter_set_);
 
         return writer;
     }

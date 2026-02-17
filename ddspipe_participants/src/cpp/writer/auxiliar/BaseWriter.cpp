@@ -125,12 +125,6 @@ void BaseWriter::update_partitions(
     // Nothing
 }
 
-void BaseWriter::update_content_topic_filter(
-        const std::string& /* expression */)
-{
-    // Nothing
-}
-
 void BaseWriter::update_topic_partitions(
         const std::map<std::string, std::string>& /* partition_name */)
 {

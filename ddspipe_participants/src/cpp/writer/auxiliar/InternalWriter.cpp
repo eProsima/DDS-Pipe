@@ -39,12 +39,6 @@ void InternalWriter::update_partitions(
     // Nothing
 }
 
-void InternalWriter::update_content_topic_filter(
-        const std::string& /* expression */)
-{
-    // Nothing
-}
-
 void InternalWriter::update_topic_partitions(
         const std::map<std::string, std::string>& partition_name)
 {

@@ -167,12 +167,6 @@ void MultiWriter::update_partitions(
     // Nothing
 }
 
-void MultiWriter::update_content_topic_filter(
-        const std::string& expression)
-{
-    // Nothing
-}
-
 void MultiWriter::update_topic_partitions(
         const std::map<std::string, std::string>& partition_name)
 {

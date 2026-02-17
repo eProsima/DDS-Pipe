@@ -73,12 +73,6 @@ void TypeObjectWriter::update_partitions(
     // Nothing
 }
 
-void TypeObjectWriter::update_content_topic_filter(
-        const std::string& /* expression */)
-{
-    // Nothing
-}
-
 void TypeObjectWriter::update_topic_partitions(
         const std::map<std::string, std::string>& partition_name)
 {

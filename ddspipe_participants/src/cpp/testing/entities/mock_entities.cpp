@@ -190,12 +190,6 @@ void MockWriter::update_partitions(
     // Nothing
 }
 
-void MockWriter::update_content_topic_filter(
-        const std::string& /* expression */)
-{
-    // Nothing
-}
-
 void MockWriter::update_topic_partitions(
         const std::map<std::string, std::string>& partition_name)
 {
