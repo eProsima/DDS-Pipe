@@ -14,6 +14,8 @@
 
 #pragma once
 
+#include <set>
+
 #include <cpp_utils/ReturnCode.hpp>
 
 #include <ddspipe_core/interface/IRoutingData.hpp>
@@ -82,6 +84,16 @@ public:
     DDSPIPE_CORE_DllAPI
     virtual utils::ReturnCode write(
             IRoutingData& data) noexcept = 0;
+
+    //! Update method to change the partitions in the content_topicfilter
+    DDSPIPE_CORE_DllAPI
+    virtual void update_partitions(
+            const std::set<std::string>& partitions_set) = 0;
+
+    //! Update method to change the topic_partitions
+    DDSPIPE_CORE_DllAPI
+    virtual void update_topic_partitions(
+            const std::map<std::string, std::string>& partition_name) = 0;
 };
 
 } /* namespace core */

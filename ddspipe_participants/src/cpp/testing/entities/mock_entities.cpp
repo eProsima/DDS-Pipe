@@ -184,6 +184,18 @@ utils::ReturnCode MockWriter::write_nts_(
     return utils::ReturnCode::RETCODE_OK;
 }
 
+void MockWriter::update_partitions(
+        const std::set<std::string>& /* partitions_set */)
+{
+    // Nothing
+}
+
+void MockWriter::update_topic_partitions(
+        const std::map<std::string, std::string>& partition_name)
+{
+    // Do nothing
+}
+
 MockRoutingData MockWriter::wait_data()
 {
     waiter_.wait_and_decrement();

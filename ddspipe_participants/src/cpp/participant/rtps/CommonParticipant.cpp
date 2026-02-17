@@ -54,13 +54,11 @@ CommonParticipant::CommonParticipant(
         const std::shared_ptr<ParticipantConfiguration>& participant_configuration,
         const std::shared_ptr<core::PayloadPool>& payload_pool,
         const std::shared_ptr<core::DiscoveryDatabase>& discovery_database,
-        const core::types::DomainId& domain_id,
-        const std::set<std::string> allowed_partition_list)
+        const core::types::DomainId& domain_id)
     : configuration_(participant_configuration)
     , payload_pool_(payload_pool)
     , discovery_database_(discovery_database)
     , domain_id_(domain_id)
-    , allowed_partition_list_(allowed_partition_list)
 {
     // Do nothing
 }
@@ -108,8 +106,8 @@ void CommonParticipant::RtpsListener::on_participant_discovery(
         else if (reason == fastdds::rtps::ParticipantDiscoveryStatus::CHANGED_QOS_PARTICIPANT)
         {
             EPROSIMA_LOG_INFO(DDSPIPE_DISCOVERY,
-                    configuration_->id << " participant : " << "Participant " << info.guid <<
-                    " changed QoS.");
+                    configuration_->id << " participant : " << "Participant " << info.guid
+                                       << " changed QoS.");
         }
         else if (reason == fastdds::rtps::ParticipantDiscoveryStatus::REMOVED_PARTICIPANT)
         {
@@ -151,8 +149,8 @@ void CommonParticipant::RtpsListener::on_reader_discovery(
         else if (reason == fastdds::rtps::ReaderDiscoveryStatus::CHANGED_QOS_READER)
         {
             EPROSIMA_LOG_INFO(DDSPIPE_DISCOVERY,
-                    configuration_->id << " participant : " << "Reader " << info.guid <<
-                    " changed TopicQoS.");
+                    configuration_->id << " participant : " << "Reader " << info.guid
+                                       << " changed TopicQoS.");
 
             discovery_database_->update_endpoint(info_reader);
         }
@@ -209,15 +207,14 @@ void CommonParticipant::RtpsListener::on_writer_discovery(
                     "Found in Participant " << configuration_->id << " new Writer " << info.guid << ".");
 
             discovery_database_->add_endpoint(info_writer);
-
             // adds in the participant, the topic name, writer_guid and partitions set
             parent_class_->add_topic_partition(info_writer.topic.m_topic_name, guid_str, partition_names);
         }
         else if (reason == fastdds::rtps::WriterDiscoveryStatus::CHANGED_QOS_WRITER)
         {
             EPROSIMA_LOG_INFO(DDSPIPE_DISCOVERY,
-                    configuration_->id << " participant : " << "Writer " << info.guid <<
-                    " changed TopicQoS.");
+                    configuration_->id << " participant : " << "Writer " << info.guid
+                                       << " changed TopicQoS.");
 
             discovery_database_->update_endpoint(info_writer);
             // update in the participant, the topic name, writer_guid and partitions set
@@ -399,9 +396,10 @@ void CommonParticipant::create_participant_(
     }
 
     EPROSIMA_LOG_INFO(DDSPIPE_RTPS_PARTICIPANT,
-            "New Participant created with id " << this->id() <<
-            " in domain " << domain << " with guid " << rtps_participant_->getGuid() <<
-            (this->is_repeater() ? " (repeater)" : " (non repeater)"));
+            "New Participant created with id " << this->id()
+                                               << " in domain " << domain << " with guid "
+                                               << rtps_participant_->getGuid()
+                                               << (this->is_repeater() ? " (repeater)" : " (non repeater)"));
 }
 
 std::shared_ptr<core::IWriter> CommonParticipant::create_writer(
@@ -427,7 +425,7 @@ std::shared_ptr<core::IWriter> CommonParticipant::create_writer(
             this->payload_pool_,
             rtps_participant_,
             this->configuration_->is_repeater);
-        writer->init();
+        writer->init(partition_filter_set_);
 
         return writer;
     }
@@ -455,7 +453,7 @@ std::shared_ptr<core::IWriter> CommonParticipant::create_writer(
                 this->payload_pool_,
                 rtps_participant_,
                 this->configuration_->is_repeater);
-            writer->init();
+            writer->init(partition_filter_set_);
 
             return writer;
         }
@@ -491,7 +489,7 @@ std::shared_ptr<core::IReader> CommonParticipant::create_reader(
             dds_topic,
             this->payload_pool_,
             rtps_participant_);
-        reader->init();
+        reader->init(partition_filter_set_);
 
         return reader;
     }
@@ -504,9 +502,11 @@ std::shared_ptr<core::IReader> CommonParticipant::create_reader(
                 dds_topic,
                 this->payload_pool_,
                 rtps_participant_,
-                discovery_database_,
-                filtered_guidlist); // add filter guid list
-            reader->init();
+                discovery_database_);
+
+            // Add the filters data structures
+            // if these filters are empty, the filters are not applied.
+            reader->init(partition_filter_set_);
 
             return reader;
         }
@@ -517,60 +517,12 @@ std::shared_ptr<core::IReader> CommonParticipant::create_reader(
                 dds_topic,
                 this->payload_pool_,
                 rtps_participant_);
-            reader->init();
+            // Add the filters data structures
+            // if these filters are empty, the filters are not applied.
+            reader->init(partition_filter_set_);
 
             return reader;
         }
-    }
-    else
-    {
-        logDevError(DDSPIPE_RTPS_PARTICIPANT, "Incorrect dds Topic in Reader creation.");
-        return std::make_shared<BlankReader>();
-    }
-}
-
-std::shared_ptr<core::IReader> CommonParticipant::create_reader_with_filter(
-        const core::ITopic& topic,
-        const std::set<std::string> partitions)
-{
-    // Can only create DDS Topics
-    const core::types::DdsTopic* dds_topic_ptr = dynamic_cast<const core::types::DdsTopic*>(&topic);
-
-    if (!dds_topic_ptr)
-    {
-        logDebug(DDSPIPE_RTPS_PARTICIPANT, "Not creating Reader for topic " << topic.topic_name());
-        return std::make_shared<BlankReader>();
-    }
-
-    const core::types::DdsTopic& dds_topic = *dds_topic_ptr;
-
-    if (topic.internal_type_discriminator() == core::types::INTERNAL_TOPIC_TYPE_RPC)
-    {
-        logDebug(DDSPIPE_RTPS_PARTICIPANT,
-                "Creating RPC Reader for topic " << topic.topic_name());
-
-        auto reader = std::make_shared<rpc::SimpleReader>(
-            this->id(),
-            dds_topic,
-            this->payload_pool_,
-            rtps_participant_);
-        reader->init();
-
-        return reader;
-    }
-    else if (topic.internal_type_discriminator() == core::types::INTERNAL_TOPIC_TYPE_RTPS)
-    {
-        auto reader = std::make_shared<SpecificQoSReader>(
-            this->id(),
-            dds_topic,
-            this->payload_pool_,
-            rtps_participant_,
-            discovery_database_,
-            filtered_guidlist,  // add filter guid list
-            partitions);            // partition filter
-        reader->init();
-
-        return reader;
     }
     else
     {
@@ -691,6 +643,19 @@ bool CommonParticipant::delete_topic_partition(
 void CommonParticipant::clear_topic_partitions()
 {
     partition_names.clear();
+}
+
+void CommonParticipant::update_partitions(
+        std::set<std::string> partitions)
+{
+    partition_filter_set_ = std::move(partitions);
+}
+
+void CommonParticipant::update_content_topicfilter(
+        const std::string& topic_name,
+        const std::string& expression)
+{
+    // Nothing
 }
 
 } /* namespace rtps */

@@ -82,6 +82,15 @@ protected:
     virtual utils::ReturnCode write_nts_(
             core::IRoutingData& data) noexcept override;
 
+    //! Update method to change the partitions in the content_topicfilter
+    DDSPIPE_PARTICIPANTS_DllAPI
+    virtual void update_partitions(
+            const std::set<std::string>& partitions_set) override;
+
+    //! Update method to change the topic_partitions
+    virtual void update_topic_partitions(
+            const std::map<std::string, std::string>& partition_name) override;
+
     bool exist_partition_(
             const core::types::SpecificEndpointQoS& data_qos);
     QoSSpecificWriter* get_writer_or_create_(

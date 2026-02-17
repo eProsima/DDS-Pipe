@@ -52,6 +52,14 @@ protected:
     virtual utils::ReturnCode write(
             core::IRoutingData& data) noexcept override;
 
+    //! Update method to change the partitions in the content_topicfilter
+    virtual void update_partitions(
+            const std::set<std::string>& partitions_set) override;
+
+    //! Update method to change the topic_partitions
+    virtual void update_topic_partitions(
+            const std::map<std::string, std::string>& partition_name) override;
+
     //! Topic that this Writer refers to
     core::types::DdsTopic topic_;
 

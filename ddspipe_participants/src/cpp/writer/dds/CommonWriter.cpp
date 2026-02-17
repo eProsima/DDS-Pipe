@@ -52,11 +52,13 @@ CommonWriter::~CommonWriter()
         dds_participant_->delete_publisher(dds_publisher_);
     }
 
-    EPROSIMA_LOG_INFO(DDSPIPE_DDS_WRITER, "Deleting CommonWriter created in Participant " <<
-            participant_id_ << " for topic " << topic_);
+    EPROSIMA_LOG_INFO(DDSPIPE_DDS_WRITER, "Deleting CommonWriter created in Participant "
+            << participant_id_ << " for topic " << topic_);
 }
 
-void CommonWriter::init()
+void CommonWriter::init(
+        const std::set<std::string>& partitions_set
+)
 {
     EPROSIMA_LOG_INFO(DDSPIPE_DDS_WRITER,
             "Initializing writer in " << participant_id_ << " for topic " << topic_ << ".");
@@ -69,9 +71,28 @@ void CommonWriter::init()
     if (!dds_publisher_)
     {
         throw utils::InitializationException(
-                  utils::Formatter() << "Error creating Publisher for Participant " <<
-                      participant_id_ << " in topic " << topic_ << ".");
+                  utils::Formatter() << "Error creating Publisher for Participant "
+                                     << participant_id_ << " in topic " << topic_ << ".");
     }
+
+    // If the reader has an active filter
+    // change the qos partition before creating the datareader.
+    if (partitions_set.size() > 0)
+    {
+        // Get the current subscriber qos
+        fastdds::dds::PublisherQos pub_qos = dds_publisher_->get_qos();
+        // Remove all partitions from the qos
+        pub_qos.partition().clear();
+        // Add the filter partitions
+        for (const std::string& partition: partitions_set)
+        {
+            pub_qos.partition().push_back(partition.c_str());
+        }
+        // Update the subscriber qos
+        dds_publisher_->set_qos(pub_qos);
+    }
+
+    auto topic_tmp = dds_participant_->find_topic(topic_.topic_name(), 10);
 
     writer_ = dds_publisher_->create_datawriter(
         dds_topic_,
@@ -83,8 +104,8 @@ void CommonWriter::init()
     if (!writer_)
     {
         throw utils::InitializationException(
-                  utils::Formatter() << "Error creating DataWriter for Participant " <<
-                      participant_id_ << " in topic " << topic_ << ".");
+                  utils::Formatter() << "Error creating DataWriter for Participant "
+                                     << participant_id_ << " in topic " << topic_ << ".");
     }
 
     if (repeater_)
@@ -101,8 +122,8 @@ void CommonWriter::init()
     if (fastdds::dds::RETCODE_OK != writer_->set_sample_prefilter(data_filter_))
     {
         throw utils::InitializationException(
-                  utils::Formatter() << "Error setting DataWriter prefilter for Participant " <<
-                      participant_id_ << " in topic " << topic_ << ".");
+                  utils::Formatter() << "Error setting DataWriter prefilter for Participant "
+                                     << participant_id_ << " in topic " << topic_ << ".");
     }
 }
 
@@ -150,6 +171,25 @@ utils::ReturnCode CommonWriter::write_nts_(
 
     // TODO: handle dipose case -> DataWriter::write will always send ALIVE changes, so this case must be handled
     // with additional logic (e.g. by using unregister_instance instead of write).
+}
+
+void CommonWriter::update_partitions(
+        const std::set<std::string>& partitions_set)
+{
+    fastdds::dds::PublisherQos pub_qos = dds_publisher_->get_qos();
+    pub_qos.partition().clear();
+    for (const std::string& partition: partitions_set)
+    {
+        pub_qos.partition().push_back(partition.c_str());
+    }
+
+    dds_publisher_->set_qos(pub_qos);
+}
+
+void CommonWriter::update_topic_partitions(
+        const std::map<std::string, std::string>& partition_name)
+{
+    topic_.partition_name = partition_name;
 }
 
 fastdds::dds::PublisherQos CommonWriter::reckon_publisher_qos_() const noexcept

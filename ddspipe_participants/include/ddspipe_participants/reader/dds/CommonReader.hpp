@@ -66,7 +66,19 @@ public:
     virtual ~CommonReader();
 
     DDSPIPE_PARTICIPANTS_DllAPI
-    void init();
+    void init(
+            const std::set<std::string>& partitions_set,
+            const std::string& content_topicfilter_expression);
+
+    //! Update method to change the partitions in the content_topicfilter
+    DDSPIPE_PARTICIPANTS_DllAPI
+    void update_partitions(
+            const std::set<std::string>& partitions_set) override;
+
+    //! Update method to change the expression in the content_topicfilter
+    DDSPIPE_PARTICIPANTS_DllAPI
+    void update_content_topic_filter(
+            const std::string& expression) override;
 
     /////////////////////////
     // RTPS LISTENER METHODS
@@ -173,6 +185,7 @@ protected:
     const std::shared_ptr<core::PayloadPool>& payload_pool_;
 
     core::types::DdsTopic topic_;
+    eprosima::fastdds::dds::ContentFilteredTopic* filtered_topic_{nullptr};
 
     fastdds::dds::Subscriber* dds_subscriber_;
     fastdds::dds::DataReader* reader_;

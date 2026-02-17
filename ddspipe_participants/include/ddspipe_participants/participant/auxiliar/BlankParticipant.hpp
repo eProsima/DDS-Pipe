@@ -69,12 +69,6 @@ public:
     std::shared_ptr<core::IReader> create_reader(
             const core::ITopic& topic) override;
 
-    //! Override create_reader_with_filter() IParticipant method
-    DDSPIPE_PARTICIPANTS_DllAPI
-    std::shared_ptr<core::IReader> create_reader_with_filter(
-            const core::ITopic& topic,
-            const std::set<std::string> partitions) override;
-
     //! Override add_topic_partition() IParticipant method
     DDSPIPE_PARTICIPANTS_DllAPI
     bool add_topic_partition(
@@ -99,6 +93,17 @@ public:
     //! Override clear_topic_partitions() IParticipant method
     DDSPIPE_PARTICIPANTS_DllAPI
     void clear_topic_partitions() override;
+
+    //! Override update_partitions() IParticipant method
+    DDSPIPE_PARTICIPANTS_DllAPI
+    virtual void update_partitions(
+            std::set<std::string> partitions) override;
+
+    //! Override update_content_topicfilter() IParticipant method
+    DDSPIPE_PARTICIPANTS_DllAPI
+    virtual void update_content_topicfilter(
+            const std::string& topic_name,
+            const std::string& expression) override;
 
 protected:
 

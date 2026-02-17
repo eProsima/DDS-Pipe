@@ -206,6 +206,18 @@ core::types::DdsTopic BaseReader::topic() const
     throw utils::UnsupportedException("topic method not allowed for non RTPS readers.");
 }
 
+void BaseReader::update_partitions(
+        const std::set<std::string>& /* partitions_set */)
+{
+    // Nothing
+}
+
+void BaseReader::update_content_topic_filter(
+        const std::string& /* expression */)
+{
+    // Nothing
+}
+
 std::ostream& operator <<(
         std::ostream& os,
         const BaseReader& reader)

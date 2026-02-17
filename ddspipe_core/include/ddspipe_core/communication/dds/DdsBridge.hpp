@@ -65,34 +65,6 @@ public:
             const bool remove_unused_entities,
             const std::vector<core::types::ManualTopic>& manual_topics);
 
-    /**
-     * Bridge constructor with partition filter.
-     *
-     * In Bridge construction, the inside \c Tracks are created.
-     * In Bridge construction, a Writer and a Reader are created for each Participant.
-     *
-     * @param topic: Topic of which this Bridge manages communication
-     * @param participant_database: Collection of Participants to manage communication
-     * @param payload_pool: Payload Pool that handles the reservation/release of payloads throughout the DDS Router
-     * @param thread_pool: Shared pool of threads in charge of data transmission.
-     * @param routes_config: Configuration encapsulating the routes of a DdsPipe instance.
-     * @param remove_unused_entities: Flag for removing unused entitites in the Bridge.
-     * @param manual_topics: List of topics of the Bridge.
-     * @param filter_partition: Set of partitions used in the filter of the Bridge.
-     *
-     * @throw InitializationException in case \c IWriters or \c IReaders creation fails.
-     */
-    DDSPIPE_CORE_DllAPI
-    DdsBridge(
-            const utils::Heritable<types::DistributedTopic>& topic,
-            const std::shared_ptr<ParticipantsDatabase>& participants_database,
-            const std::shared_ptr<PayloadPool>& payload_pool,
-            const std::shared_ptr<utils::SlotThreadPool>& thread_pool,
-            const RoutesConfiguration& routes_config,
-            const bool remove_unused_entities,
-            const std::vector<core::types::ManualTopic>& manual_topics,
-            const std::set<std::string> filter_partition);
-
 
     DDSPIPE_CORE_DllAPI
     ~DdsBridge();
@@ -141,18 +113,34 @@ public:
     void remove_writer(
             const types::ParticipantId& participant_id) noexcept;
 
-    DDSPIPE_CORE_DllAPI
-    void update_readers_track(
-            const std::set<std::string> filter_partition_set);
-
-    DDSPIPE_CORE_DllAPI
-    void add_filter_partition(
-            const std::set<std::string> filter_partition_);
-
+    /**
+     * Adds a partition with its respective guid.
+     *
+     * @param guid: Guid of the endpoint.
+     * @param partition: Partition that is going to be added.
+     */
     DDSPIPE_CORE_DllAPI
     void add_partition_to_topic(
             std::string guid,
             std::string partition);
+
+    /**
+     * Function that updates the partition set of all bridges.
+     *
+     * @param partitions_set: Set of partitions
+     */
+    DDSPIPE_CORE_DllAPI
+    void update_partitions(
+            const std::set<std::string>& partitions_set);
+
+    /**
+     * Function that updates the content filtered topic of all bridges
+     *
+     * @param expression: The expression of the filter.
+     */
+    DDSPIPE_CORE_DllAPI
+    void update_topic_filter(
+            const std::string& expression);
 
 protected:
 
@@ -165,18 +153,6 @@ protected:
      */
     DDSPIPE_CORE_DllAPI
     void create_all_tracks_();
-
-    /**
-     * Create the readers, writers, and tracks that are required by the routes and
-     * satisfy the filter.
-     *
-     * Thread safe
-     *
-     * @throw InitializationException in case \c IWriters or \c IReaders creation fails.
-     */
-    DDSPIPE_CORE_DllAPI
-    void create_all_tracks_with_filter(
-            const std::set<std::string> filter_partition_set);
 
     /**
      * Add each Participant's IWriters to its Track.
@@ -204,20 +180,6 @@ protected:
     DDSPIPE_CORE_DllAPI
     void add_writers_to_tracks_nts_(
             std::map<types::ParticipantId, std::shared_ptr<IWriter>>& writers);
-
-    /**
-     * Add each Participant's IWriters to its Track with filter.
-     * If the Participant's IReader doesn't exist, create it.
-     * If the Participant's Track doesn't exist, create it.
-     *
-     * @param writers: The map of ids to writers that are required for the tracks.
-     *
-     * @throw InitializationException in case \c IReaders creation fails.
-     */
-    DDSPIPE_CORE_DllAPI
-    void add_writers_to_tracks_with_filter_nts_(
-            std::map<types::ParticipantId, std::shared_ptr<IWriter>>& writers,
-            const std::set<std::string> filter_partition_set);
 
     /**
      * @brief Impose the Topic QoS that have been pre-configured for a participant.

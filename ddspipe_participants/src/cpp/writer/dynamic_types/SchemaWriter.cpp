@@ -44,6 +44,20 @@ SchemaWriter::SchemaWriter(
     // Do nothing
 }
 
+void SchemaWriter::update_partitions(
+        const std::set<std::string>& /* partitions_set */)
+{
+    // Nothing
+}
+
+void SchemaWriter::update_topic_partitions(
+        const std::map<std::string, std::string>& partition_name)
+{
+    std::lock_guard<std::recursive_mutex> lock(mutex_);
+
+    topic_.partition_name = partition_name;
+}
+
 utils::ReturnCode SchemaWriter::write_nts_(
         core::IRoutingData& data) noexcept
 {

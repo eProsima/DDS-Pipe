@@ -65,13 +65,6 @@ std::shared_ptr<core::IReader> BlankParticipant::create_reader(
     return std::make_shared<BlankReader>();
 }
 
-std::shared_ptr<core::IReader> BlankParticipant::create_reader_with_filter(
-        const core::ITopic& topic,
-        const std::set<std::string> partitions)
-{
-    return std::make_shared<BlankReader>();
-}
-
 bool BlankParticipant::add_topic_partition(
         const std::string& topic_name,
         const std::string& writer_guid,
@@ -111,6 +104,7 @@ bool BlankParticipant::update_topic_partition(
     if (partition_names[topic_name].find(writer_guid) == partition_names[topic_name].end())
     {
         // the writer dont exist in the topic
+
         return false;
     }
 
@@ -145,6 +139,19 @@ bool BlankParticipant::delete_topic_partition(
 void BlankParticipant::clear_topic_partitions()
 {
     partition_names.clear();
+}
+
+void BlankParticipant::update_partitions(
+        std::set<std::string> partitions)
+{
+    // Nothing
+}
+
+void BlankParticipant::update_content_topicfilter(
+        const std::string& topic_name,
+        const std::string& expression)
+{
+    // Nothing
 }
 
 } /* namespace participants */

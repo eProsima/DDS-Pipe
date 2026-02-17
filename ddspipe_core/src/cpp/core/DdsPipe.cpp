@@ -50,8 +50,8 @@ DdsPipe::DdsPipe(
     if (!configuration_.is_valid(error_msg, participants_database_->get_participants_repeater_map()))
     {
         throw utils::ConfigurationException(
-                  utils::Formatter() <<
-                      "Configuration for DDS Pipe is invalid: " << error_msg);
+                  utils::Formatter()
+                      << "Configuration for DDS Pipe is invalid: " << error_msg);
     }
 
     // Initialize the allowed topics
@@ -120,8 +120,8 @@ utils::ReturnCode DdsPipe::reload_configuration(
     if (!new_configuration.is_valid(error_msg, participants_database_->get_participants_repeater_map()))
     {
         throw utils::ConfigurationException(
-                  utils::Formatter() <<
-                      "Configuration for Reload DDS Pipe is invalid: " << error_msg);
+                  utils::Formatter()
+                      << "Configuration for Reload DDS Pipe is invalid: " << error_msg);
     }
 
     auto allowed_topics = std::make_shared<ddspipe::core::AllowedTopicList>(
@@ -129,30 +129,6 @@ utils::ReturnCode DdsPipe::reload_configuration(
         new_configuration.blocklist);
 
     return reload_allowed_topics_(allowed_topics);
-}
-
-void DdsPipe::reload_filter_partition(
-        const std::set<std::string> filter_partition_set)
-{
-    update_filter(filter_partition_set);
-
-    std::vector<DdsBridge*> targets;
-    {
-        std::lock_guard<std::mutex> lock(bridges_mutex_);
-
-        for (const auto& bridge : bridges_)
-        {
-            if (bridge.second)
-            {
-                targets.push_back(bridge.second.get());
-            }
-        }
-    }
-
-    for (auto* target : targets)
-    {
-        target->update_readers_track(filter_partition_set);
-    }
 }
 
 utils::ReturnCode DdsPipe::enable() noexcept
@@ -327,28 +303,24 @@ void DdsPipe::discovered_endpoint_nts_(
         // update the track of the topic to
         // add the partition in the reader if it is in the filter
 
-        // update partitions under bridges_mutex_
+        const auto bridge_it = bridges_.find(utils::Heritable<DdsTopic>::make_heritable(endpoint.topic));
+        // add the specific partition of the endpoint in the bridge topic.
+        if (bridge_it != bridges_.end())
         {
-            std::lock_guard<std::mutex> lock(bridges_mutex_);
+            std::ostringstream guid_ss;
+            guid_ss << endpoint.guid;
 
-            const auto bridge_it = bridges_.find(utils::Heritable<DdsTopic>::make_heritable(endpoint.topic));
-            // add the specific partition of the endpoint in the bridges topic.
-            if (bridge_it != bridges_.end())
+            const auto part_it = endpoint.specific_partitions.find(guid_ss.str());
+            if (part_it != endpoint.specific_partitions.end())
             {
-                std::ostringstream guid_ss;
-                guid_ss << endpoint.guid;
-
-                const auto part_it = endpoint.specific_partitions.find(guid_ss.str());
-                if (part_it != endpoint.specific_partitions.end())
-                {
-                    bridge_it->second->add_partition_to_topic(guid_ss.str(), part_it->second);
-                }
+                bridge_it->second->add_partition_to_topic(guid_ss.str(), part_it->second);
             }
         }
+
         // update readers outside the lock
         if (!filter_partition_.empty())
         {
-            update_readers_track(endpoint.topic.m_topic_name, filter_partition_);
+            update_partitions_nts_(filter_partition_);
         }
     }
 }
@@ -370,8 +342,6 @@ void DdsPipe::removed_endpoint_nts_(
     }
     else if (configuration_.remove_unused_entities && is_endpoint_relevant_(endpoint))
     {
-        std::lock_guard<std::mutex> lock(bridges_mutex_);
-
         const auto& topic = utils::Heritable<DdsTopic>::make_heritable(endpoint.topic);
 
         // Remove the subscriber from the topic.
@@ -475,42 +445,24 @@ void DdsPipe::discovered_topic_nts_(
 {
     EPROSIMA_LOG_INFO(DDSPIPE, "Discovered topic: " << topic << " by: " << topic->topic_discoverer() << ".");
 
-    bool need_activate = false;
-    DdsBridge* to_create_writer = nullptr;
-    ParticipantId writer_pid{};
+    // Check if the bridge (and the topic) already exist.
+    auto it_bridge = bridges_.find(topic);
 
+    if (it_bridge == bridges_.end())
     {
-        std::lock_guard<std::mutex> lock(bridges_mutex_);
+        // Add topic to current_topics as not activated
+        current_topics_.emplace(topic, false);
 
-        // Check if the bridge (and the topic) already exist.
-        auto it_bridge = bridges_.find(topic);
-        if (it_bridge == bridges_.end())
+        // If Pipe is enabled and topic allowed, activate it
+        if (enabled_ && allowed_topics_->is_topic_allowed(*topic))
         {
-            // Add topic to current_topics as not activated
-            current_topics_.emplace(topic, false);
-
-            // decide activation under lock, perform it after unlocking
-            need_activate = enabled_ && allowed_topics_->is_topic_allowed(*topic);
-        }
-        else if (configuration_.remove_unused_entities && topic->topic_discoverer() != DEFAULT_PARTICIPANT_ID)
-        {
-            // The bridge already exists.
-            // Create a writer in the participant who discovered it.
-            // (out of the lock)
-            to_create_writer = it_bridge->second.get();
-            writer_pid = topic->topic_discoverer();
+            activate_topic_nts_(topic);
         }
     }
-
-    // call out of lock
-    if (to_create_writer)
+    else if (configuration_.remove_unused_entities && topic->topic_discoverer() != DEFAULT_PARTICIPANT_ID)
     {
-        to_create_writer->create_writer(writer_pid);
-    }
-    // if Pipe is enabled and topic allowed, activate it
-    if (need_activate)
-    {
-        activate_topic_nts_(topic);
+        // The bridge already exists. Create a writer in the participant who discovered it.
+        it_bridge->second->create_writer(topic->topic_discoverer());
     }
 }
 
@@ -521,30 +473,27 @@ void DdsPipe::discovered_service_nts_(
 {
     EPROSIMA_LOG_INFO(DDSPIPE, "Discovered service: " << topic << ".");
 
-    RpcBridge* bridge = nullptr;
-    bool should_enable = false;
+    auto it_bridge = rpc_bridges_.find(topic);
+
+    if (it_bridge == rpc_bridges_.end())
     {
-        std::lock_guard<std::mutex> lock(bridges_mutex_);
+        // Create RpcBridge even if topic not allowed, as we need to store server in database
+        create_new_service_nts_(topic);
 
-        auto it_bridge = rpc_bridges_.find(topic);
-
-        if (it_bridge == rpc_bridges_.end())
+        if (allowed_topics_->is_service_allowed(topic))
         {
-            // Create RpcBridge even if topic not allowed, as we need to store server in database
-            create_new_service_nts_(topic);
-            current_services_[topic] = allowed_topics_->is_service_allowed(topic);
-
-            it_bridge = rpc_bridges_.find(topic);
+            current_services_[topic] = true;
         }
-        bridge = it_bridge->second.get();
-        should_enable = enabled_ && current_services_[topic];
+        else
+        {
+            current_services_[topic] = false;
+        }
     }
 
-    // Calls outside the lock
-    bridge->discovered_service(server_participant_id, server_guid_prefix);
-    if (should_enable)
+    rpc_bridges_[topic]->discovered_service(server_participant_id, server_guid_prefix);
+    if (enabled_ && current_services_[topic])
     {
-        bridge->enable();
+        rpc_bridges_[topic]->enable();
     }
 }
 
@@ -555,21 +504,11 @@ void DdsPipe::removed_service_nts_(
 {
     EPROSIMA_LOG_INFO(DDSPIPE, "Removed service: " << topic << ".");
 
-    RpcBridge* bridge = nullptr;
+    auto it_bridge = rpc_bridges_.find(topic);
+
+    if (it_bridge != rpc_bridges_.end())
     {
-        std::lock_guard<std::mutex> lock(bridges_mutex_);
-
-        auto it_bridge = rpc_bridges_.find(topic);
-
-        if (it_bridge != rpc_bridges_.end())
-        {
-            bridge = it_bridge->second.get();
-        }
-    }
-
-    if (bridge)
-    {
-        bridge->removed_service(server_participant_id, server_guid_prefix);
+        rpc_bridges_[topic]->removed_service(server_participant_id, server_guid_prefix);
     }
 }
 
@@ -584,65 +523,27 @@ void DdsPipe::create_new_bridge_nts_(
         auto routes_config = configuration_.get_routes_config(topic);
         auto manual_topics = configuration_.get_manual_topics(dynamic_cast<const core::ITopic&>(*topic));
 
-        std::unique_ptr<DdsBridge> new_bridge;
+        // Create bridge instance
+        auto new_bridge = std::make_unique<DdsBridge>(topic,
+                        participants_database_,
+                        payload_pool_,
+                        thread_pool_,
+                        routes_config,
+                        configuration_.remove_unused_entities,
+                        manual_topics);
 
-        bool filter_partition_empty;
+        if (enabled)
         {
-            // Avoid possible datarace with partitions filter
-            std::lock_guard<std::mutex> lock(bridges_mutex_);
-            filter_partition_empty = filter_partition_.empty();
+            new_bridge->enable();
         }
 
-        // check if there is a filter partition list
-        if (filter_partition_empty)
-        {
-            // Create bridge instance
-            new_bridge = std::make_unique<DdsBridge>(topic,
-                            participants_database_,
-                            payload_pool_,
-                            thread_pool_,
-                            routes_config,
-                            configuration_.remove_unused_entities,
-                            manual_topics);
-        }
-        else
-        {
-            // enters if there is a partitions filter
-            // and the topic was not in the track of bridges
-
-            // Create bridge instance
-            new_bridge = std::make_unique<DdsBridge>(topic,
-                            participants_database_,
-                            payload_pool_,
-                            thread_pool_,
-                            routes_config,
-                            configuration_.remove_unused_entities,
-                            manual_topics,
-                            filter_partition_);
-        }
-
-        DdsBridge* to_enable = nullptr;
-        {
-            std::lock_guard<std::mutex> lock(bridges_mutex_);
-            auto& slot = bridges_[topic];
-            slot = std::move(new_bridge);
-            if (enabled)
-            {
-                to_enable = slot.get();
-            }
-        }
-
-        // enable without the lock
-        if (to_enable)
-        {
-            to_enable->enable();
-        }
+        bridges_[topic] = std::move(new_bridge);
     }
     catch (const utils::InitializationException& e)
     {
         EPROSIMA_LOG_ERROR(DDSPIPE,
-                "Error creating Bridge for topic " << topic <<
-                ". Error code:" << e.what() << ".");
+                "Error creating Bridge for topic " << topic
+                                                   << ". Error code:" << e.what() << ".");
     }
 }
 
@@ -661,29 +562,20 @@ void DdsPipe::activate_topic_nts_(
     EPROSIMA_LOG_INFO(DDSPIPE, "Activating topic: " << topic << ".");
 
     // Modify current_topics_ and set this topic as active
-    {
-        std::lock_guard<std::mutex> lock(bridges_mutex_);
-        current_topics_[topic] = true;
-    }
+    current_topics_[topic] = true;
 
     // Enable bridge. In case it is already enabled nothing should happen
-    DdsBridge* to_enable = nullptr;
+    auto it_bridge = bridges_.find(topic);
+
+    if (it_bridge == bridges_.end())
     {
-        std::lock_guard<std::mutex> lock(bridges_mutex_);
-        auto it = bridges_.find(topic);
-        if (it != bridges_.end())
-        {
-            to_enable = it->second.get();
-        }
-    }
-    if (!to_enable)
-    {
-        // Will enable after inserting (outside the lock) inside create_new_bridge_nts_
+        // The Bridge did not exist
         create_new_bridge_nts_(topic, true);
     }
     else
     {
-        to_enable->enable();
+        // The Bridge already exists
+        it_bridge->second->enable();
     }
 }
 
@@ -692,24 +584,16 @@ void DdsPipe::deactivate_topic_nts_(
 {
     EPROSIMA_LOG_INFO(DDSPIPE, "Deactivating topic: " << topic << ".");
 
-    DdsBridge* to_disable = nullptr;
+    // Modify current_topics_ and set this topic as not active
+    current_topics_[topic] = false;
+
+    // Disable bridge. In case it is already disabled nothing should happen
+    auto it_bridge = bridges_.find(topic);
+
+    if (it_bridge != bridges_.end())
     {
-        std::lock_guard<std::mutex> lock(bridges_mutex_);
-
-        // Modify current_topics_ and set this topic as not active
-        current_topics_[topic] = false;
-
-        // Disable bridge. In case it is already disabled nothing should happen
-        auto it_bridge = bridges_.find(topic);
-        if (it_bridge != bridges_.end())
-        {
-            to_disable = it_bridge->second.get();
-        }
-    }
-
-    if (to_disable)
-    {
-        to_disable->disable();
+        // The Bridge already exists
+        it_bridge->second->disable();
     }
     // If the Bridge does not exist, there is no need to create it
 }
@@ -735,38 +619,48 @@ void DdsPipe::deactivate_all_topics_nts_() noexcept
     }
 }
 
-void DdsPipe::update_readers_track(
-        const std::string topic_name,
-        const std::set<std::string> filter_partition_set)
+void DdsPipe::update_partitions(
+        const std::set<std::string>& partitions_set)
 {
-    // get the targets (with lock)
-    std::vector<DdsBridge*> targets;
-    {
-        std::lock_guard<std::mutex> lock(bridges_mutex_);
+    std::lock_guard<std::mutex> lock(mutex_);
 
-        for (const auto& pair : bridges_)
-        {
-            if (pair.first->m_topic_name == topic_name && pair.second)
-            {
-                targets.push_back(pair.second.get());
-            }
-        }
+    update_partitions_nts_(partitions_set);
+}
+
+void DdsPipe::update_partitions_nts_(
+        const std::set<std::string>& partitions_set)
+{
+    // TODO.
+    // In the future it could be interesting to update the partitions
+    // by participant_id. For DDS-Router
+
+    for (const auto& pair : bridges_)
+    {
+        pair.second->update_partitions(partitions_set);
     }
+}
 
-    // update readers outside the lock
-    for (auto* target : targets)
+void DdsPipe::update_content_filter(
+        const std::string& topic_name,
+        const std::string& expression)
+{
+    std::lock_guard<std::mutex> lock(mutex_);
+
+    for (const auto& pair : bridges_)
     {
-        target->update_readers_track(filter_partition_set);
+        if (pair.first->m_topic_name == topic_name)
+        {
+            pair.second->update_topic_filter(expression);
+        }
     }
 }
 
 void DdsPipe::update_filter(
         const std::set<std::string> filter_partition_set)
 {
-    // Avoid possible datarace with partitions filter
-    std::lock_guard<std::mutex> lock(bridges_mutex_);
+    std::lock_guard<std::mutex> lock(mutex_);
 
-    filter_partition_ = filter_partition_set;
+    filter_partition_ = std::move(filter_partition_set);
 }
 
 } /* namespace core */

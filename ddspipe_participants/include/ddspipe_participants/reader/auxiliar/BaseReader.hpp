@@ -144,6 +144,16 @@ public:
 
     DDSPIPE_PARTICIPANTS_DllAPI
     core::types::DdsTopic topic() const override;
+
+    //! Update method to change the partitions in the content_topicfilter
+    DDSPIPE_PARTICIPANTS_DllAPI
+    void update_partitions(
+            const std::set<std::string>& partitions_set) override;
+
+    //! Update method to change the expression in the content_topicfilter
+    DDSPIPE_PARTICIPANTS_DllAPI
+    void update_content_topic_filter(
+            const std::string& expression) override;
     /////////////////////////
 
 protected:

@@ -58,8 +58,8 @@ MultiWriter::~MultiWriter()
         writer.second->disable();
     }
 
-    EPROSIMA_LOG_INFO(DDSPIPE_RTPS_WRITER, "Deleting MultiWriter created in Participant " <<
-            participant_id_ << " for topic " << topic_);
+    EPROSIMA_LOG_INFO(DDSPIPE_RTPS_WRITER, "Deleting MultiWriter created in Participant "
+            << participant_id_ << " for topic " << topic_);
 }
 
 void MultiWriter::enable_() noexcept
@@ -88,8 +88,8 @@ utils::ReturnCode MultiWriter::write_nts_(
 
     logDebug(
         DDSPIPE_MULTIWRITER,
-        "Writing in Partitions Writer " << *this << " a data with qos " << rtps_data.writer_qos << " from " <<
-            rtps_data.source_guid);
+        "Writing in Partitions Writer " << *this << " a data with qos " << rtps_data.writer_qos << " from "
+                                        << rtps_data.source_guid);
 
     // Take Writer
     auto this_qos_writer = get_writer_or_create_(rtps_data.writer_qos);
@@ -100,6 +100,12 @@ utils::ReturnCode MultiWriter::write_nts_(
 
     // Write
     return this_qos_writer->write(data);
+}
+
+void MultiWriter::update_partitions(
+        const std::set<std::string>& partitions_set)
+{
+    // Nothing
 }
 
 QoSSpecificWriter* MultiWriter::get_writer_or_create_(
@@ -141,9 +147,16 @@ QoSSpecificWriter* MultiWriter::create_writer_nts_(
         this->dds_participant_,
         this->dds_topic_,
         repeater_);
-    writer->init();
+    // No filters
+    writer->init(std::set<std::string>());
 
     return writer;
+}
+
+void MultiWriter::update_topic_partitions(
+        const std::map<std::string, std::string>& partition_name)
+{
+    topic_.partition_name = partition_name;
 }
 
 } /* namespace dds */

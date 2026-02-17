@@ -67,6 +67,18 @@ utils::ReturnCode TypeObjectWriter::write_nts_(
     return utils::ReturnCode::RETCODE_OK;
 }
 
+void TypeObjectWriter::update_partitions(
+        const std::set<std::string>& /* partitions_set */)
+{
+    // Nothing
+}
+
+void TypeObjectWriter::update_topic_partitions(
+        const std::map<std::string, std::string>& partition_name)
+{
+    // Do Nothing
+}
+
 } /* namespace participants */
 } /* namespace ddspipe */
 } /* namespace eprosima */

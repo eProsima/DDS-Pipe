@@ -82,6 +82,18 @@ utils::ReturnCode InternalReader::take_nts_(
     return utils::ReturnCode::RETCODE_OK;
 }
 
+void InternalReader::update_partitions(
+        const std::set<std::string>& partitions_set)
+{
+    // Nothing
+}
+
+void InternalReader::update_content_topic_filter(
+        const std::string& /* expression */)
+{
+    // Nothing
+}
+
 } /* namespace participants */
 } /* namespace ddspipe */
 } /* namespace eprosima */

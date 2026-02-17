@@ -79,7 +79,18 @@ public:
      * @pre this method can only be called once.
      */
     DDSPIPE_PARTICIPANTS_DllAPI
-    void init();
+    void init(
+            const std::set<std::string>& partitions_set);
+
+    //! Update method to change the partitions in the content_topicfilter
+    DDSPIPE_PARTICIPANTS_DllAPI
+    void update_partitions(
+            const std::set<std::string>& partitions_set) override;
+
+    //! Update method to change the expression in the content_topicfilter
+    DDSPIPE_PARTICIPANTS_DllAPI
+    void update_content_topic_filter(
+            const std::string& expression) override;
 
     /////////////////////////
     // RTPS LISTENER METHODS
@@ -197,8 +208,7 @@ protected:
             const fastdds::rtps::HistoryAttributes& history_attributes,
             const fastdds::rtps::ReaderAttributes& reader_attributes,
             const fastdds::rtps::TopicDescription& topic_desc,
-            const fastdds::dds::ReaderQos& reader_qos,
-            const std::set<std::string> allowed_partition_list);
+            const fastdds::dds::ReaderQos& reader_qos);
 
     // Specific enable/disable do not need to be implemented
 
@@ -210,7 +220,8 @@ protected:
             const fastdds::rtps::HistoryAttributes& history_attributes,
             const fastdds::rtps::ReaderAttributes& reader_attributes,
             const fastdds::rtps::TopicDescription& topic_desc,
-            const fastdds::dds::ReaderQos& reader_qos);
+            const fastdds::dds::ReaderQos& reader_qos,
+            const std::set<std::string>& partitions_set);
 
     /**
      * @brief Return an allocated object
@@ -332,9 +343,6 @@ protected:
 
     //! Reader QoS to create the internal RTPS Reader.
     fastdds::dds::ReaderQos reader_qos_;
-
-    //! Allowed partitions added by the filter
-    std::set<std::string> blocked_filtered_guidlist_;
 };
 
 } /* namespace rtps */

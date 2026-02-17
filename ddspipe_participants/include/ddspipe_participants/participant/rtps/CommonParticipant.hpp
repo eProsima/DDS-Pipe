@@ -122,16 +122,6 @@ public:
     std::shared_ptr<core::IReader> create_reader(
             const core::ITopic& topic) override;
 
-    /**
-     * @brief Create a reader object with the filter of partitions
-     *
-     * Depending on the Topic QoS creates a Basic or Specific Reader.
-     */
-    DDSPIPE_PARTICIPANTS_DllAPI
-    std::shared_ptr<core::IReader> create_reader_with_filter(
-            const core::ITopic& topic,
-            const std::set<std::string> partitions) override;
-
     //! Override add_topic_partition() IParticipant method
     DDSPIPE_PARTICIPANTS_DllAPI
     bool add_topic_partition(
@@ -156,6 +146,17 @@ public:
     //! Override clear_topic_partitions() IParticipant method
     DDSPIPE_PARTICIPANTS_DllAPI
     void clear_topic_partitions() override;
+
+    //! Override update_partitions() IParticipant method
+    DDSPIPE_PARTICIPANTS_DllAPI
+    virtual void update_partitions(
+            std::set<std::string> partitions) override;
+
+    //! Override update_content_topicfilter() IParticipant method
+    DDSPIPE_PARTICIPANTS_DllAPI
+    virtual void update_content_topicfilter(
+            const std::string& topic_name,
+            const std::string& expression) override;
 
     /////////////////////////
     // RTPS LISTENER METHODS
@@ -261,8 +262,7 @@ protected:
             const std::shared_ptr<ParticipantConfiguration>& participant_configuration,
             const std::shared_ptr<core::PayloadPool>& payload_pool,
             const std::shared_ptr<core::DiscoveryDatabase>& discovery_database,
-            const core::types::DomainId& domain_id,
-            const std::set<std::string> allowed_partition_list);
+            const core::types::DomainId& domain_id);
 
     /**
      * @brief Auxiliary method to create the internal RTPS participant.
@@ -322,9 +322,8 @@ protected:
     //! <Topics <Writer_guid, Partitions set>>
     std::map<std::string, std::map<std::string, std::string>> partition_names;
 
-    std::set<std::string> allowed_partition_list_;
-
-    std::set<std::string> filtered_guidlist;
+    // Filter partitions set
+    std::set<std::string> partition_filter_set_;
 };
 
 } /* namespace rtps */

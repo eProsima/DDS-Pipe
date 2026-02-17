@@ -88,8 +88,8 @@ void Track::enable() noexcept
     if (!enabled_)
     {
         EPROSIMA_LOG_INFO(DDSPIPE_TRACK,
-                "Enabling Track " << reader_participant_id_ << " for topic " << topic_->serialize() <<
-                ".");
+                "Enabling Track " << reader_participant_id_ << " for topic " << topic_->serialize()
+                                  << ".");
         enabled_ = true;
 
         // As it is going to start again, it should be checked as no more data, in case it wasnt set as it
@@ -118,8 +118,8 @@ void Track::disable() noexcept
     if (enabled_)
     {
         EPROSIMA_LOG_INFO(DDSPIPE_TRACK,
-                "Disabling Track " << reader_participant_id_ << " for topic " << topic_->serialize() <<
-                ".");
+                "Disabling Track " << reader_participant_id_ << " for topic " << topic_->serialize()
+                                   << ".");
 
         // Do disable before stop in the mutex so the Track is forced to stop in next iteration
         enabled_ = false;
@@ -165,6 +165,31 @@ void Track::remove_writer(
 void Track::update_reader()
 {
     reader_->disable();
+}
+
+void Track::update_writers_topic_partitions(
+        const std::map<std::string, std::string>& partition_name)
+{
+    for (const auto& writer: writers_)
+    {
+        writer.second->update_topic_partitions(partition_name);
+    }
+}
+
+void Track::update_reader_partitions(
+        const std::set<std::string>& partitions_set)
+{
+    reader_->disable();
+    reader_->update_partitions(partitions_set);
+    reader_->enable();
+}
+
+void Track::update_reader_content_filter(
+        const std::string& expression)
+{
+    reader_->disable();
+    reader_->update_content_topic_filter(expression);
+    reader_->enable();
 }
 
 bool Track::has_writer(
@@ -259,8 +284,8 @@ void Track::transmit_() noexcept
         }
 
         logDebug(DDSPIPE_TRACK,
-                "Track " << reader_participant_id_ << " for topic " << topic_->serialize() <<
-                " transmitting data from remote endpoint.");
+                "Track " << reader_participant_id_ << " for topic " << topic_->serialize()
+                         << " transmitting data from remote endpoint.");
 
         // Send data through writers
         for (auto& writer_it : writers_)

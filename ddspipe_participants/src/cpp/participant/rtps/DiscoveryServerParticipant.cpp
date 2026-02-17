@@ -38,8 +38,7 @@ DiscoveryServerParticipant::DiscoveryServerParticipant(
         participant_configuration,
         payload_pool,
         discovery_database,
-        participant_configuration->domain,
-        participant_configuration->allowed_partition_list)
+        participant_configuration->domain)
 {
 }
 
@@ -83,8 +82,9 @@ DiscoveryServerParticipant::reckon_participant_attributes_() const
         {
             // Invalid address, continue with next one
             EPROSIMA_LOG_WARNING(DDSPIPE_DISCOVERYSERVER_PARTICIPANT,
-                    "Discard listening address: " << address <<
-                    " in Participant " << discovery_server_configuration->id << " initialization.");
+                    "Discard listening address: " << address
+                                                  << " in Participant " << discovery_server_configuration->id
+                                                  << " initialization.");
             continue;
         }
 
@@ -216,8 +216,8 @@ DiscoveryServerParticipant::reckon_participant_attributes_() const
         {
             // Invalid connection address, continue with next one
             EPROSIMA_LOG_WARNING(DDSPIPE_DISCOVERYSERVER_PARTICIPANT,
-                    "Discard connection address with remote server in Participant " <<
-                    discovery_server_configuration->id << " initialization.");
+                    "Discard connection address with remote server in Participant "
+                    << discovery_server_configuration->id << " initialization.");
             continue;
         }
 
@@ -259,8 +259,8 @@ DiscoveryServerParticipant::reckon_participant_attributes_() const
         params.builtin.discovery_config.m_DiscoveryServers.push_back(locator);
 
         logDebug(DDSPIPE_DISCOVERYSERVER_PARTICIPANT,
-                "Add connection address " << address << " to Server Participant " <<
-                discovery_server_configuration->id << ".");
+                "Add connection address " << address << " to Server Participant "
+                                          << discovery_server_configuration->id << ".");
     }
 
     /////
@@ -278,7 +278,8 @@ DiscoveryServerParticipant::reckon_participant_attributes_() const
         if (!has_connection_addresses)
         {
             EPROSIMA_LOG_WARNING(DDSPIPE_DISCOVERYSERVER_PARTICIPANT,
-                    "Creating Participant " << discovery_server_configuration->id <<
+                    "Creating Participant " << discovery_server_configuration->id
+                                            <<
                     " without listening or connection addresses. It will not communicate with any other Participant.");
         }
     }
@@ -349,8 +350,8 @@ DiscoveryServerParticipant::reckon_participant_attributes_() const
     }
 
     logDebug(DDSPIPE_DISCOVERYSERVER_PARTICIPANT,
-            "Configured Participant " << discovery_server_configuration->id << " with server guid: " <<
-            discovery_server_guid_prefix);
+            "Configured Participant " << discovery_server_configuration->id << " with server guid: "
+                                      << discovery_server_guid_prefix);
 
     return params;
 }
