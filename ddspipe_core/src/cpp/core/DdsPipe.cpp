@@ -303,29 +303,24 @@ void DdsPipe::discovered_endpoint_nts_(
         // update the track of the topic to
         // add the partition in the reader if it is in the filter
 
-        // update partitions under bridges_mutex_
+        const auto bridge_it = bridges_.find(utils::Heritable<DdsTopic>::make_heritable(endpoint.topic));
+        // add the specific partition of the endpoint in the bridge topic.
+        if (bridge_it != bridges_.end())
         {
-            std::lock_guard<std::mutex> lock(bridges_mutex_);
+            std::ostringstream guid_ss;
+            guid_ss << endpoint.guid;
 
-            const auto bridge_it = bridges_.find(utils::Heritable<DdsTopic>::make_heritable(endpoint.topic));
-            // add the specific partition of the endpoint in the bridges topic.
-            if (bridge_it != bridges_.end())
+            const auto part_it = endpoint.specific_partitions.find(guid_ss.str());
+            if (part_it != endpoint.specific_partitions.end())
             {
-                std::ostringstream guid_ss;
-                guid_ss << endpoint.guid;
-
-                const auto part_it = endpoint.specific_partitions.find(guid_ss.str());
-                if (part_it != endpoint.specific_partitions.end())
-                {
-                    bridge_it->second->add_partition_to_topic(guid_ss.str(), part_it->second);
-                }
+                bridge_it->second->add_partition_to_topic(guid_ss.str(), part_it->second);
             }
         }
 
         // update readers outside the lock
         if (!filter_partition_.empty())
         {
-            update_partitions(filter_partition_);
+            update_partitions_nts_(filter_partition_);
         }
     }
 }
@@ -627,6 +622,14 @@ void DdsPipe::deactivate_all_topics_nts_() noexcept
 void DdsPipe::update_partitions(
         const std::set<std::string>& partitions_set)
 {
+    std::lock_guard<std::mutex> lock(mutex_);
+
+    update_partitions_nts_(partitions_set);
+}
+
+void DdsPipe::update_partitions_nts_(
+        const std::set<std::string>& partitions_set)
+{
     // TODO.
     // In the future it could be interesting to update the partitions
     // by participant_id. For DDS-Router
@@ -641,6 +644,8 @@ void DdsPipe::update_content_filter(
         const std::string& topic_name,
         const std::string& expression)
 {
+    std::lock_guard<std::mutex> lock(mutex_);
+
     for (const auto& pair : bridges_)
     {
         if (pair.first->m_topic_name == topic_name)
@@ -653,8 +658,7 @@ void DdsPipe::update_content_filter(
 void DdsPipe::update_filter(
         const std::set<std::string> filter_partition_set)
 {
-    // Avoid possible datarace with partitions filter
-    std::lock_guard<std::mutex> lock(bridges_mutex_);
+    std::lock_guard<std::mutex> lock(mutex_);
 
     filter_partition_ = std::move(filter_partition_set);
 }

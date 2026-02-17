@@ -379,6 +379,14 @@ protected:
      */
     void deactivate_all_topics_nts_() noexcept;
 
+    /**
+     * @brief Update partitions for all bridges.
+     *
+     * This method must be called with \c mutex_ locked.
+     */
+    void update_partitions_nts_(
+            const std::set<std::string>& partitions_set);
+
     //////////////////////////
     // CONFIGURATION VARIABLES
     //////////////////////////
@@ -459,11 +467,6 @@ protected:
      * @brief Internal mutex for concurrent calls
      */
     mutable std::mutex mutex_;
-
-    /**
-     * @brief Internal mutex for bridges
-     */
-    mutable std::mutex bridges_mutex_;
 };
 
 } /* namespace core */

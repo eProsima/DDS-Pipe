@@ -59,6 +59,8 @@ void SchemaWriter::update_content_topic_filter(
 void SchemaWriter::update_topic_partitions(
         const std::map<std::string, std::string>& partition_name)
 {
+    std::lock_guard<std::recursive_mutex> lock(mutex_);
+
     topic_.partition_name = partition_name;
 }
 
