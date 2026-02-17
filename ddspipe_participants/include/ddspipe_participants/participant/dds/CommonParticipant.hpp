@@ -148,8 +148,6 @@ public:
             const std::string& topic_name,
             const std::string& expression) override;
 
-    // TODO. danip separate
-
     /////////////////////////
     // LISTENER METHODS
     /////////////////////////
@@ -162,6 +160,9 @@ public:
         explicit DdsListener(
                 std::shared_ptr<SimpleParticipantConfiguration> conf,
                 std::shared_ptr<core::DiscoveryDatabase> ddb);
+
+        DDSPIPE_PARTICIPANTS_DllAPI
+        virtual ~DdsListener();
 
         /**
          * @brief Override method from \c DomainParticipantListener

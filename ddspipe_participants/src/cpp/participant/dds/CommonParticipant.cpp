@@ -250,6 +250,11 @@ CommonParticipant::DdsListener::DdsListener(
     EPROSIMA_LOG_INFO(DDSPIPE_DDS_PARTICIPANT, "Creating DDS Listener for Participant " << conf->id << ".");
 }
 
+CommonParticipant::DdsListener::~DdsListener()
+{
+    parent_class_ = nullptr;
+}
+
 void CommonParticipant::DdsListener::on_participant_discovery(
         fastdds::dds::DomainParticipant* participant,
         fastdds::rtps::ParticipantDiscoveryStatus reason,

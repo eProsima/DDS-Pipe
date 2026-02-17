@@ -48,6 +48,8 @@ CommonReader::~CommonReader()
         }
 
         dds_participant_->delete_subscriber(dds_subscriber_);
+        dds_participant_->delete_contentfilteredtopic(filtered_topic_);
+        filtered_topic_ = nullptr;
     }
 
     EPROSIMA_LOG_INFO(DDSPIPE_DDS_READER, "Deleting CommonReader created in Participant "
@@ -401,7 +403,10 @@ void CommonReader::update_content_topic_filter(
         const std::string& expression)
 {
     // content_topicfilter
-    filtered_topic_->set_filter_expression(expression, {});
+    if (filtered_topic_ != nullptr)
+    {
+        filtered_topic_->set_filter_expression(expression, {});
+    }
 }
 
 } /* namespace dds */

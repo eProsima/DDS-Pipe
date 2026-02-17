@@ -185,7 +185,7 @@ protected:
     const std::shared_ptr<core::PayloadPool>& payload_pool_;
 
     core::types::DdsTopic topic_;
-    eprosima::fastdds::dds::ContentFilteredTopic* filtered_topic_;
+    eprosima::fastdds::dds::ContentFilteredTopic* filtered_topic_{nullptr};
 
     fastdds::dds::Subscriber* dds_subscriber_;
     fastdds::dds::DataReader* reader_;
