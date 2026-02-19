@@ -376,7 +376,8 @@ void CommonReader::fill_received_data_(
 
             default:
                 EPROSIMA_LOG_WARNING(DDSPIPE_DDS_READER,
-                        "Received unknown InstanceStateKind from Fast DDS: " << static_cast<int>(info.instance_state) <<
+                        "Received unknown InstanceStateKind from Fast DDS: " << static_cast<int>(info.instance_state)
+                                                                             <<
                         ". Setting ChangeKind to NOT_ALIVE_UNREGISTERED by default.");
                 data_to_fill.kind = ChangeKind::NOT_ALIVE_UNREGISTERED;
                 break;
