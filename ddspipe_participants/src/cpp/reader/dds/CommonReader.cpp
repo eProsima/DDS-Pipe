@@ -215,11 +215,6 @@ utils::ReturnCode CommonReader::take_nts_(
 
     EPROSIMA_LOG_INFO(DDSPIPE_DDS_READER, "Taking data in " << participant_id_ << " for topic " << topic_ << ".");
 
-    // Check if there is data available
-    if (!(reader_->get_unread_count() > 0))
-    {
-        return utils::ReturnCode::RETCODE_NO_DATA;
-    }
 
     std::unique_ptr<RtpsPayloadData> rtps_data;
     fastdds::dds::SampleInfo info;
@@ -375,7 +370,15 @@ void CommonReader::fill_received_data_(
                 data_to_fill.kind = ChangeKind::NOT_ALIVE_DISPOSED;
                 break;
 
+            case fastdds::dds::InstanceStateKind::NOT_ALIVE_NO_WRITERS_INSTANCE_STATE:
+                data_to_fill.kind = ChangeKind::NOT_ALIVE_UNREGISTERED;
+                break;
+
             default:
+                EPROSIMA_LOG_WARNING(DDSPIPE_DDS_READER,
+                        "Received unknown InstanceStateKind from Fast DDS: " << static_cast<int>(info.instance_state)
+                                                                             <<
+                        ". Setting ChangeKind to NOT_ALIVE_UNREGISTERED by default.");
                 data_to_fill.kind = ChangeKind::NOT_ALIVE_UNREGISTERED;
                 break;
         }

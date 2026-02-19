@@ -122,6 +122,48 @@ public:
             const fastdds::rtps::InstanceHandle_t& handle);
 
     /**
+     * @brief dispose \c data with a \c writer avoiding copying the \c data from and to the same \c PayloadPool.
+     *
+     * Save the \c data and call the \c dispose in the \c writer with \c data as an argument.
+     *
+     * @warning This method locks the \c mutex to avoid retrieving the \c data saved in another call to \c write.
+     *
+     * Thread safe.
+     *
+     * @param writer the writer who has to dispose the \c data.
+     * @param data the data to be disposed by the \c writer.
+     * @param handle the instance handle to be used by the \c writer.
+     *
+     * @return ReturnCode::OK if the instance is correctly disposed or a ReturnCode related to the specific error otherwise.
+     */
+    DDSPIPE_CORE_DllAPI
+    utils::ReturnCode dispose(
+            fastdds::dds::DataWriter* writer,
+            types::RtpsPayloadData* data,
+            const fastdds::rtps::InstanceHandle_t& handle);
+
+    /**
+     * @brief unregister \c data with a \c writer avoiding copying the \c data from and to the same \c PayloadPool.
+     *
+     * Save the \c data and call the \c unregister_instance in the \c writer with \c data as an argument.
+     *
+     * @warning This method locks the \c mutex to avoid retrieving the \c data saved in another call to \c write.
+     *
+     * Thread safe.
+     *
+     * @param writer the writer who has to unregister the \c data.
+     * @param data the data to be unregistered by the \c writer.
+     * @param handle the instance handle to be used by the \c writer.
+     *
+     * @return ReturnCode::OK if the instance is correctly unregistered or a ReturnCode related to the specific error otherwise.
+     */
+    DDSPIPE_CORE_DllAPI
+    utils::ReturnCode unregister_instance(
+            fastdds::dds::DataWriter* writer,
+            types::RtpsPayloadData* data,
+            const fastdds::rtps::InstanceHandle_t& handle);
+
+    /**
      * Instead of reserving a block of memory of \c size in the \c payload_pool, we can redirect the call to
      * \c get_payload providing the \c payload (that we saved in the call to \c write) and the \c payload_pool.
      *
