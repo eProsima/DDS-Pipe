@@ -46,6 +46,15 @@ void SpecificQoSReader::fill_received_data_(
 {
     CommonReader::fill_received_data_(info, data_to_fill);
 
+    // During endpoint teardown, last cache changes can be processed after endpoint removal.
+    if (!data_to_fill.source_guid.is_valid())
+    {
+        logDebug(
+            DDSPIPE_SpecificQoSReader,
+            "Skipping writer QoS lookup for invalid writer GUID " << data_to_fill.source_guid << ".");
+        return;
+    }
+
     // Find qos of writer
     try
     {
