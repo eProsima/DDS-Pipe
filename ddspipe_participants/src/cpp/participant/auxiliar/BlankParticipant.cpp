@@ -142,7 +142,7 @@ void BlankParticipant::clear_topic_partitions()
 }
 
 void BlankParticipant::update_partitions(
-        std::set<std::string> partitions)
+        const std::set<std::string>& partitions)
 {
     // Nothing
 }
