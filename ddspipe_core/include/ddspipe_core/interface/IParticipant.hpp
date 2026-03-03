@@ -154,7 +154,7 @@ public:
      */
     DDSPIPE_CORE_DllAPI
     virtual void update_partitions(
-            std::set<std::string> partitions) = 0;
+            const std::set<std::string>& partitions) = 0;
 
     /**
      * Update the content_topicfilter data structure of the participant

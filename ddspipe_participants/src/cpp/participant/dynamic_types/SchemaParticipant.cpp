@@ -176,7 +176,7 @@ void SchemaParticipant::clear_topic_partitions()
 }
 
 void SchemaParticipant::update_partitions(
-        std::set<std::string> partitions)
+        const std::set<std::string>& partitions)
 {
     // Nothing
 }

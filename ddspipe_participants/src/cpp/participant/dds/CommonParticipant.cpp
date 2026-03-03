@@ -553,7 +553,7 @@ fastdds::dds::Topic* CommonParticipant::topic_related_(
 }
 
 void CommonParticipant::update_partitions(
-        std::set<std::string> partitions)
+        const std::set<std::string>& partitions)
 {
     partition_filter_set_ = std::move(partitions);
 }
