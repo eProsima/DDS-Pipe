@@ -18,6 +18,8 @@
 
 #include <fastcdr/FastBuffer.h>
 #include <fastcdr/Cdr.h>
+#include <fastdds/dds/xtypes/dynamic_types/DynamicPubSubType.hpp>
+#include <fastdds/dds/xtypes/dynamic_types/DynamicTypeBuilderFactory.hpp>
 
 #include <ddspipe_participants/types/dds/TopicDataType.hpp>
 
@@ -105,30 +107,113 @@ uint32_t TopicDataType::calculate_serialized_size(
 bool TopicDataType::compute_key(
         fastdds::rtps::SerializedPayload_t& payload,
         fastdds::rtps::InstanceHandle_t& handle,
-        bool /* = false */)
+        bool force_md5)
 {
-    // NOTE: This method returns false because Fast DDS always sends the KEY_HASH in inline QoS.
-    // As a result, the reader will never call this method when communicating with a Fast DDS writer.
-    // This would only be needed if receiving data from another DDS vendor that omits the KEY_HASH.
-    // Workaround in that case (different DDS vendor that omits KEY_HASH): set expects_inline_qos_ to
-    // true in DataReaderQos
-    return false;
+    if (!is_compute_key_provided)
+    {
+        return false;
+    }
+
+    if (!initialize_dynamic_type_())
+    {
+        EPROSIMA_LOG_WARNING(DDSPIPE_DDS_TYPESUPPORT,
+                "Failed to initialize dynamic type to compute key for " << type_name_ << ".");
+        return false;
+    }
+
+    fastdds::dds::DynamicPubSubType pub_sub_type(dynamic_type_);
+    return pub_sub_type.compute_key(payload, handle, force_md5);
 }
 
 bool TopicDataType::compute_key(
         const void* const data,
         fastdds::rtps::InstanceHandle_t& handle,
-        bool /* = false */)
+        bool force_md5)
 {
     if (is_compute_key_provided)
     {
-        // Load the instanceHandle from data into handle
         const auto p = static_cast<const DataType*>(data);
-        handle = p->instanceHandle;
-        return true;
+
+        // Fast path: key already available in routing data.
+        if (p->instanceHandle.isDefined())
+        {
+            handle = p->instanceHandle;
+            return true;
+        }
+
+        // Fallback path: compute key from serialized payload when handle is not present.
+        if (p->payload.data != nullptr && p->payload.length > 0)
+        {
+            fastdds::rtps::SerializedPayload_t payload(p->payload.length);
+            if (!payload.copy(&p->payload))
+            {
+                return false;
+            }
+
+            return compute_key(payload, handle, force_md5);
+        }
+
+        return false;
     }
 
     return false;
+}
+
+bool TopicDataType::initialize_dynamic_type_() const
+{
+    if (dynamic_type_)
+    {
+        return true;
+    }
+
+    std::lock_guard<std::mutex> lock(dynamic_type_mtx_);
+    if (dynamic_type_)
+    {
+        return true;
+    }
+
+    fastdds::dds::xtypes::TypeInformation type_information;
+
+    auto& registry = fastdds::dds::DomainParticipantFactory::get_instance()->type_object_registry();
+
+    auto try_get_type_information = [&](const fastdds::dds::xtypes::TypeIdentifierPair& identifiers) -> bool
+            {
+                return fastdds::dds::RETCODE_OK == registry.get_type_information(identifiers, type_information);
+            };
+
+    if (!try_get_type_information(type_identifiers_))
+    {
+        fastdds::dds::xtypes::TypeIdentifierPair complete_only;
+        complete_only.type_identifier1(type_identifiers_.type_identifier1());
+
+        if (!try_get_type_information(complete_only))
+        {
+            fastdds::dds::xtypes::TypeIdentifierPair minimal_only;
+            minimal_only.type_identifier2(type_identifiers_.type_identifier2());
+
+            if (!try_get_type_information(minimal_only))
+            {
+                return false;
+            }
+        }
+    }
+
+    const auto complete_type_identifier = type_information.complete().typeid_with_size().type_id();
+    fastdds::dds::xtypes::TypeObject type_object;
+    if (fastdds::dds::RETCODE_OK != registry.get_type_object(complete_type_identifier, type_object))
+    {
+        return false;
+    }
+
+    auto dyn_type_builder = fastdds::dds::DynamicTypeBuilderFactory::get_instance()->create_type_w_type_object(
+        type_object);
+    if (!dyn_type_builder)
+    {
+        return false;
+    }
+
+    dynamic_type_ = dyn_type_builder->build();
+    return dynamic_type_ != nullptr;
 }
 
 void* TopicDataType::create_data()
