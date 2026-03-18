@@ -108,6 +108,8 @@ protected:
     //! Lazily created dynamic type used to compute key from serialized payload.
     mutable fastdds::dds::DynamicType::_ref_type dynamic_type_{};
     mutable std::mutex dynamic_type_mtx_;
+    //! Set to true if dynamic type initialization permanently failed (missing dependencies)
+    mutable bool dynamic_type_init_failed_{false};
 
     DDSPIPE_PARTICIPANTS_DllAPI
     bool initialize_dynamic_type_() const;

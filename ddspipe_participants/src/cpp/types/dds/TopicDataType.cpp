@@ -20,6 +20,7 @@
 #include <fastcdr/Cdr.h>
 #include <fastdds/dds/xtypes/dynamic_types/DynamicPubSubType.hpp>
 #include <fastdds/dds/xtypes/dynamic_types/DynamicTypeBuilderFactory.hpp>
+#include <fastdds/dds/xtypes/type_representation/TypeObjectUtils.hpp>
 
 #include <ddspipe_participants/types/dds/TopicDataType.hpp>
 
@@ -48,6 +49,17 @@ TopicDataType::TopicDataType(
 
     // Set Type Identifiers
     type_identifiers_ = type_identifiers;
+
+    // Eagerly try to build the dynamic type for keyed topics
+    // If it fails (e.g. dependency types missing from registry), disable key computation
+    // so the DataWriter does not drop data on the first write attempt
+    if (keyed_ && !initialize_dynamic_type_())
+    {
+        EPROSIMA_LOG_WARNING(DDSPIPE_DDS_TYPESUPPORT,
+                "Cannot build dynamic type for keyed topic "
+                << type_name_ << ". Key computation will be disabled for this topic.");
+        is_compute_key_provided = false;
+    }
 }
 
 TopicDataType::~TopicDataType()
@@ -116,8 +128,12 @@ bool TopicDataType::compute_key(
 
     if (!initialize_dynamic_type_())
     {
+        // Dynamic type could not be built (missing dependency types in registry)
+        // Disable key computation so data is not dropped and future writes skip this path
         EPROSIMA_LOG_WARNING(DDSPIPE_DDS_TYPESUPPORT,
-                "Failed to initialize dynamic type to compute key for " << type_name_ << ".");
+                "Cannot compute key for type "
+                << type_name_ << ": dynamic type unavailable. Disabling key computation.");
+        is_compute_key_provided = false;
         return false;
     }
 
@@ -166,10 +182,25 @@ bool TopicDataType::initialize_dynamic_type_() const
         return true;
     }
 
+    if (dynamic_type_init_failed_)
+    {
+        return false;
+    }
+
     std::lock_guard<std::mutex> lock(dynamic_type_mtx_);
+
+    // Handles the race where two threads both pas the first check,
+    // then one acquires the lock and sets dynamic_type_init_failed_ = true
+    // Without this second check, the other thread would proceed to retry initialization
+    // after the first thread already determined its a permanent failure
     if (dynamic_type_)
     {
         return true;
+    }
+
+    if (dynamic_type_init_failed_)
+    {
+        return false;
     }
 
     fastdds::dds::xtypes::TypeInformation type_information;
@@ -193,6 +224,7 @@ bool TopicDataType::initialize_dynamic_type_() const
 
             if (!try_get_type_information(minimal_only))
             {
+                dynamic_type_init_failed_ = true;
                 return false;
             }
         }
@@ -202,6 +234,24 @@ bool TopicDataType::initialize_dynamic_type_() const
     fastdds::dds::xtypes::TypeObject type_object;
     if (fastdds::dds::RETCODE_OK != registry.get_type_object(complete_type_identifier, type_object))
     {
+        dynamic_type_init_failed_ = true;
+        return false;
+    }
+
+    // Pre-check consistency before calling create_type_w_type_object
+    // If dependencies are missing from the registry, skip type creation entirely
+    // to avoid noisy error logs from internal FastDDS type creation functions
+    try
+    {
+        fastdds::dds::xtypes::TypeObjectUtils::type_object_consistency(type_object);
+    }
+    catch (const fastdds::dds::xtypes::InvalidArgumentError&)
+    {
+        EPROSIMA_LOG_WARNING(DDSPIPE_DDS_TYPESUPPORT,
+                "TypeObject for "
+                << type_name_ << " has unresolvable dependencies. "
+                << "Skipping dynamic type creation.");
+        dynamic_type_init_failed_ = true;
         return false;
     }
 
@@ -209,10 +259,15 @@ bool TopicDataType::initialize_dynamic_type_() const
         type_object);
     if (!dyn_type_builder)
     {
+        dynamic_type_init_failed_ = true;
         return false;
     }
 
     dynamic_type_ = dyn_type_builder->build();
+    if (!dynamic_type_)
+    {
+        dynamic_type_init_failed_ = true;
+    }
     return dynamic_type_ != nullptr;
 }
 
