@@ -463,6 +463,9 @@ protected:
     //! Allowed partitions list added in the filter.
     std::set<std::string> filter_partition_;
 
+    //! Current partitions configured in readers through \c update_partitions.
+    std::set<std::string> reader_partitions_;
+
     /**
      * @brief Internal mutex for concurrent calls
      */

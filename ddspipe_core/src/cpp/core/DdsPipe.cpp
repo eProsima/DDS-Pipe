@@ -299,12 +299,11 @@ void DdsPipe::discovered_endpoint_nts_(
     }
     else
     {
-        // there is a filter.
-        // update the track of the topic to
-        // add the partition in the reader if it is in the filter
+        // Another endpoint from an already tracked topic/participant was discovered
+        // Refresh bridge partition metadata and reader partition QoS
 
         const auto bridge_it = bridges_.find(utils::Heritable<DdsTopic>::make_heritable(endpoint.topic));
-        // add the specific partition of the endpoint in the bridge topic.
+        // Add the specific partition of the endpoint in the bridge topic
         if (bridge_it != bridges_.end())
         {
             std::ostringstream guid_ss;
@@ -317,10 +316,15 @@ void DdsPipe::discovered_endpoint_nts_(
             }
         }
 
-        // update readers outside the lock
-        if (!filter_partition_.empty())
+        // Refresh this bridge so writers receive the updated guid->partition map
+        // Also refresh reader partitions using
+        // filter (if set), otherwise
+        // the current reader partition configuration
+        if (bridge_it != bridges_.end())
         {
-            update_partitions_nts_(filter_partition_);
+            const auto& partitions_to_apply =
+                    filter_partition_.empty() ? reader_partitions_ : filter_partition_;
+            bridge_it->second->update_partitions(partitions_to_apply);
         }
     }
 }
@@ -624,6 +628,7 @@ void DdsPipe::update_partitions(
 {
     std::lock_guard<std::mutex> lock(mutex_);
 
+    reader_partitions_ = partitions_set;
     update_partitions_nts_(partitions_set);
 }
 

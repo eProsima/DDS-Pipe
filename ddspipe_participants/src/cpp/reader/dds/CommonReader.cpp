@@ -35,6 +35,25 @@ namespace dds {
 
 using namespace eprosima::ddspipe::core::types;
 
+static void apply_reader_partitions_(
+        fastdds::dds::PartitionQosPolicy& partition_qos,
+        const std::set<std::string>& partitions_filter)
+{
+    partition_qos.clear();
+
+    // Empty filter means no filter: subscribe to all partitions
+    if (partitions_filter.empty())
+    {
+        partition_qos.push_back("*");
+        return;
+    }
+
+    for (const std::string& partition : partitions_filter)
+    {
+        partition_qos.push_back(partition.c_str());
+    }
+}
+
 CommonReader::~CommonReader()
 {
     // This variables should be set, otherwise the creation should have fail
@@ -76,22 +95,11 @@ void CommonReader::init(
                                      << participant_id_ << " in topic " << topic_ << ".");
     }
 
-    // If the reader has an active filter
-    // change the qos partition before creating the datareader.
-    if (partitions_set.size() > 0)
-    {
-        // Get the current subscriber qos
-        fastdds::dds::SubscriberQos sub_qos = dds_subscriber_->get_qos();
-        // Remove all partitions from the qos
-        sub_qos.partition().clear();
-        // Add the filter partitions
-        for (const std::string& partition: partitions_set)
-        {
-            sub_qos.partition().push_back(partition.c_str());
-        }
-        // Update the subscriber qos
-        dds_subscriber_->set_qos(sub_qos);
-    }
+    // Update subscriber partitions before creating the datareader
+    // Empty filter means subscribe to all partitions ("*")
+    fastdds::dds::SubscriberQos sub_qos = dds_subscriber_->get_qos();
+    apply_reader_partitions_(sub_qos.partition(), partitions_set);
+    dds_subscriber_->set_qos(sub_qos);
 
     auto topic_tmp = dds_participant_->find_topic(topic_.topic_name(), 10);
 
@@ -263,10 +271,6 @@ void CommonReader::enable_nts_() noexcept
 fastdds::dds::SubscriberQos CommonReader::reckon_subscriber_qos_() const
 {
     fastdds::dds::SubscriberQos qos = dds_participant_->get_default_subscriber_qos();
-    if (topic_.topic_qos.has_partitions())
-    {
-        qos.partition().push_back("*");
-    }
     qos.entity_factory().autoenable_created_entities = false;
     return qos;
 }
@@ -393,12 +397,7 @@ void CommonReader::update_partitions(
         const std::set<std::string>& partitions_set)
 {
     fastdds::dds::SubscriberQos sub_qos = dds_subscriber_->get_qos();
-    sub_qos.partition().clear();
-    for (const std::string& partition: partitions_set)
-    {
-        sub_qos.partition().push_back(partition.c_str());
-    }
-
+    apply_reader_partitions_(sub_qos.partition(), partitions_set);
     dds_subscriber_->set_qos(sub_qos);
 }
 

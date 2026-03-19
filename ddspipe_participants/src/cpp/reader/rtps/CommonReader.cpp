@@ -37,6 +37,25 @@ namespace rtps {
 using namespace eprosima::ddspipe::core::types;
 using eprosima::ddspipe::core::types::operator <<;
 
+static void apply_reader_partitions_(
+        fastdds::dds::PartitionQosPolicy& partition_qos,
+        const std::set<std::string>& partitions_filter)
+{
+    partition_qos.clear();
+
+    // Empty filter means no filter: subscribe to all partitions
+    if (partitions_filter.empty())
+    {
+        partition_qos.push_back("*");
+        return;
+    }
+
+    for (const std::string& partition : partitions_filter)
+    {
+        partition_qos.push_back(partition.c_str());
+    }
+}
+
 CommonReader::CommonReader(
         const ParticipantId& participant_id,
         const DdsTopic& topic,
@@ -125,19 +144,9 @@ void CommonReader::internal_entities_creation_(
                                      << participant_id_ << " in topic " << topic_ << ".");
     }
 
-    if (partitions_set.size() > 0)
-    {
-        auto& sub_part_qos = reader_qos_.m_partition;
-        // Clear the partitions
-        sub_part_qos.clear();
-        // Add the partitions from the filter
-        for (const auto& partition : partitions_set)
-        {
-            sub_part_qos.push_back(partition.c_str());
-        }
-
-        // no content topic filter
-    }
+    // Update reader partitions before registration
+    // Empty filter means subscribe to all partitions ("*")
+    apply_reader_partitions_(reader_qos_.m_partition, partitions_set);
 
     // Register reader with topic
     if (!rtps_participant_->register_reader(rtps_reader_, topic_description, reader_qos_))
@@ -177,15 +186,7 @@ core::types::DdsTopic CommonReader::topic() const noexcept
 void CommonReader::update_partitions(
         const std::set<std::string>& partitions_set)
 {
-    // Get the partitions from the reader qos
-    auto& sub_part_qos = reader_qos_.m_partition;
-    // Clear the partitions
-    sub_part_qos.clear();
-    // Add the partitions from the filter
-    for (const auto& partition : partitions_set)
-    {
-        sub_part_qos.push_back(partition.c_str());
-    }
+    apply_reader_partitions_(reader_qos_.m_partition, partitions_set);
     // Update the reader with the new partitions
     rtps_participant_->update_reader(rtps_reader_, reader_qos_);
 }
