@@ -314,14 +314,11 @@ void DdsPipe::discovered_endpoint_nts_(
             {
                 bridge_it->second->add_partition_to_topic(guid_ss.str(), part_it->second);
             }
-        }
 
-        // Refresh this bridge so writers receive the updated guid->partition map
-        // Also refresh reader partitions using
-        // filter (if set), otherwise
-        // the current reader partition configuration
-        if (bridge_it != bridges_.end())
-        {
+            // Refresh this bridge so writers receive the updated guid->partition map
+            // Also refresh reader partitions using
+            // filter (if set), otherwise
+            // the current reader partition configuration
             const auto& partitions_to_apply =
                     filter_partition_.empty() ? reader_partitions_ : filter_partition_;
             bridge_it->second->update_partitions(partitions_to_apply);

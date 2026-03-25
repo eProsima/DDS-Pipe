@@ -177,6 +177,7 @@ bool TopicDataType::compute_key(
 
 bool TopicDataType::initialize_dynamic_type_() const
 {
+    // Double-check pattern less lock overhead
     if (dynamic_type_)
     {
         return true;
