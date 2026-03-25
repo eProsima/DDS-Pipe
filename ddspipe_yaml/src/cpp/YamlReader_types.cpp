@@ -147,7 +147,22 @@ DomainId YamlReader::get<DomainId>(
 {
     // Domain id required
     DomainId domain;
-    domain.domain_id = get_scalar<DomainIdType>(yml);
+
+    // Read as signed integer so negative values can be validated uniformly
+    // by higher-level configuration checks instead of failing with a YAML cast error
+    const auto domain_value = get_scalar<long long>(yml);
+    const auto max_domain_id = static_cast<long long>(DomainId::MAX_DOMAIN_ID);
+
+    if (domain_value < 0 || domain_value > max_domain_id)
+    {
+        // Mark as invalid and let configuration validation report a clear range error
+        domain.domain_id = static_cast<DomainIdType>(DomainId::MAX_DOMAIN_ID + 1);
+    }
+    else
+    {
+        domain.domain_id = static_cast<DomainIdType>(domain_value);
+    }
+
     return domain;
 }
 
