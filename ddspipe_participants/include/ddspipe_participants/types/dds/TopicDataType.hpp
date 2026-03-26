@@ -15,12 +15,14 @@
 #pragma once
 
 #include <memory>
+#include <mutex>
 #include <string>
 
 #include <fastdds/dds/core/policy/QosPolicies.hpp>
 #include <fastdds/dds/core/ReturnCode.hpp>
 #include <fastdds/dds/domain/DomainParticipantFactory.hpp>
 #include <fastdds/dds/topic/TopicDataType.hpp>
+#include <fastdds/dds/xtypes/dynamic_types/DynamicType.hpp>
 #include <fastdds/dds/xtypes/type_representation/detail/dds_xtypes_typeobject.hpp>
 #include <fastdds/rtps/common/InstanceHandle.hpp>
 #include <fastdds/rtps/common/SerializedPayload.hpp>
@@ -102,6 +104,16 @@ protected:
     const bool keyed_;
 
     std::shared_ptr<core::PayloadPool> payload_pool_;
+
+    //! Lazily created dynamic type used to compute key from serialized payload.
+    mutable fastdds::dds::DynamicType::_ref_type dynamic_type_{};
+    mutable std::mutex dynamic_type_mtx_;
+    //! Set to true if dynamic type initialization permanently failed due to structural errors.
+    //! Missing dependencies are treated as transient and retried.
+    mutable bool dynamic_type_init_failed_{false};
+
+    DDSPIPE_PARTICIPANTS_DllAPI
+    bool initialize_dynamic_type_() const;
 
 };
 
