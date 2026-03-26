@@ -17,6 +17,9 @@
  *
  */
 
+#include <cmath>
+#include <limits>
+
 #include <cpp_utils/Log.hpp>
 #include <cpp_utils/memory/Heritable.hpp>
 #include <cpp_utils/utils.hpp>
@@ -148,15 +151,16 @@ DomainId YamlReader::get<DomainId>(
     // Domain id required
     DomainId domain;
 
-    // Read as signed integer so negative values can be validated uniformly
-    // by higher-level configuration checks instead of failing with a YAML cast error
-    const auto domain_value = get_scalar<long long>(yml);
-    const auto max_domain_id = static_cast<long long>(DomainId::MAX_DOMAIN_ID);
+    // Read as double so numeric YAML values such as 0.5 do not fail with a cast error
+    // Invalid values are marked and validated later in the configuration checks
+    const auto domain_value = get_scalar<double>(yml);
+    const auto max_domain_id = static_cast<double>(DomainId::MAX_DOMAIN_ID);
+    const bool is_integer_domain = std::floor(domain_value) == domain_value;
 
-    if (domain_value < 0 || domain_value > max_domain_id)
+    if (!std::isfinite(domain_value) || !is_integer_domain || domain_value < 0 || domain_value > max_domain_id)
     {
         // Mark as invalid and let configuration validation report a clear range error
-        domain.domain_id = static_cast<DomainIdType>(DomainId::MAX_DOMAIN_ID + 1);
+        domain.domain_id = static_cast<DomainIdType>(max_domain_id + 1);
     }
     else
     {
@@ -330,7 +334,21 @@ void YamlReader::fill(
     // Optional domain
     if (is_tag_present(yml, DDS_PUBLISHING_DOMAIN_TAG))
     {
-        object.domain = get<DomainIdType>(yml, DDS_PUBLISHING_DOMAIN_TAG, version);
+        // Read as double so numeric YAML values such as 0.5 do not fail with a cast error.
+        // Invalid values are marked and validated later in the configuration checks.
+        const auto domain_value = get<double>(yml, DDS_PUBLISHING_DOMAIN_TAG, version);
+        const auto max_domain_value = static_cast<double>(std::numeric_limits<DomainIdType>::max());
+        const bool is_integer_domain = std::floor(domain_value) == domain_value;
+
+        if (!std::isfinite(domain_value) || !is_integer_domain || domain_value < 0 || domain_value > max_domain_value)
+        {
+            // Mark as invalid and let configuration validation report a clear range error
+            object.domain = static_cast<DomainIdType>(max_domain_value + 1);
+        }
+        else
+        {
+            object.domain = static_cast<DomainIdType>(domain_value);
+        }
     }
 
     // Optional topic name
