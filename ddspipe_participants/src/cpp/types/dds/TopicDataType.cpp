@@ -51,14 +51,13 @@ TopicDataType::TopicDataType(
     type_identifiers_ = type_identifiers;
 
     // Eagerly try to build the dynamic type for keyed topics
-    // If it fails (e.g. dependency types missing from registry), disable key computation
-    // so the DataWriter does not drop data on the first write attempt
+    // This may fail transiently if dependency TypeObjects have not been received yet
+    // Keep key capability enabled and retry later on demand
     if (keyed_ && !initialize_dynamic_type_())
     {
         EPROSIMA_LOG_WARNING(DDSPIPE_DDS_TYPESUPPORT,
                 "Cannot build dynamic type for keyed topic "
-                << type_name_ << ". Key computation will be disabled for this topic.");
-        is_compute_key_provided = false;
+                << type_name_ << " yet. Will retry when needed.");
     }
 }
 
@@ -128,12 +127,11 @@ bool TopicDataType::compute_key(
 
     if (!initialize_dynamic_type_())
     {
-        // Dynamic type could not be built (missing dependency types in registry)
-        // Disable key computation so data is not dropped and future writes skip this path
+        // Dynamic type is not available yet (or permanently failed due to structural errors)
+        // Keep capability enabled so future calls can retry when dependencies arrive
         EPROSIMA_LOG_WARNING(DDSPIPE_DDS_TYPESUPPORT,
                 "Cannot compute key for type "
-                << type_name_ << ": dynamic type unavailable. Disabling key computation.");
-        is_compute_key_provided = false;
+                << type_name_ << ": dynamic type unavailable.");
         return false;
     }
 
@@ -177,23 +175,10 @@ bool TopicDataType::compute_key(
 
 bool TopicDataType::initialize_dynamic_type_() const
 {
-    // Double-check pattern less lock overhead
-    if (dynamic_type_)
-    {
-        return true;
-    }
-
-    if (dynamic_type_init_failed_)
-    {
-        return false;
-    }
-
     std::lock_guard<std::mutex> lock(dynamic_type_mtx_);
 
-    // Handles the race where two threads both pas the first check,
-    // then one acquires the lock and sets dynamic_type_init_failed_ = true
-    // Without this second check, the other thread would proceed to retry initialization
-    // after the first thread already determined its a permanent failure
+    // Another thread may have initialized or permanently failed initialization
+    // before this thread acquired the mutex
     if (dynamic_type_)
     {
         return true;
@@ -225,7 +210,7 @@ bool TopicDataType::initialize_dynamic_type_() const
 
             if (!try_get_type_information(minimal_only))
             {
-                dynamic_type_init_failed_ = true;
+                // Missing type information may be transient while dependency types are still arriving
                 return false;
             }
         }
@@ -235,7 +220,7 @@ bool TopicDataType::initialize_dynamic_type_() const
     fastdds::dds::xtypes::TypeObject type_object;
     if (fastdds::dds::RETCODE_OK != registry.get_type_object(complete_type_identifier, type_object))
     {
-        dynamic_type_init_failed_ = true;
+        // Missing type object may be transient while dependency types are still arriving
         return false;
     }
 
@@ -251,8 +236,7 @@ bool TopicDataType::initialize_dynamic_type_() const
         EPROSIMA_LOG_WARNING(DDSPIPE_DDS_TYPESUPPORT,
                 "TypeObject for "
                 << type_name_ << " has unresolvable dependencies. "
-                << "Skipping dynamic type creation.");
-        dynamic_type_init_failed_ = true;
+                << "Skipping dynamic type creation for now.");
         return false;
     }
 
