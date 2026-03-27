@@ -337,7 +337,7 @@ void YamlReader::fill(
         // Read as double so numeric YAML values such as 0.5 do not fail with a cast error.
         // Invalid values are marked and validated later in the configuration checks.
         const auto domain_value = get<double>(yml, DDS_PUBLISHING_DOMAIN_TAG, version);
-        const auto max_domain_value = static_cast<double>(std::numeric_limits<DomainIdType>::max());
+        const auto max_domain_value = static_cast<double>(DomainId::MAX_DOMAIN_ID);
         const bool is_integer_domain = std::floor(domain_value) == domain_value;
 
         if (!std::isfinite(domain_value) || !is_integer_domain || domain_value < 0 || domain_value > max_domain_value)
