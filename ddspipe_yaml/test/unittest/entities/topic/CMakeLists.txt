@@ -24,6 +24,7 @@ set(TEST_SOURCES
         ${PROJECT_SOURCE_DIR}/src/cpp/YamlReader_participants.cpp
         ${PROJECT_SOURCE_DIR}/src/cpp/YamlReader_types.cpp
         ${PROJECT_SOURCE_DIR}/src/cpp/YamlManager.cpp
+        ${PROJECT_SOURCE_DIR}/src/cpp/YamlValidator.cpp
 
     )
 

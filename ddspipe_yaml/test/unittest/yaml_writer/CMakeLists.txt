@@ -20,6 +20,7 @@ set(TEST_NAME YamlWriterTest)
 
 set(TEST_SOURCES
         ${PROJECT_SOURCE_DIR}/src/cpp/YamlReader_generic.cpp
+        ${PROJECT_SOURCE_DIR}/src/cpp/YamlValidator.cpp
         ${PROJECT_SOURCE_DIR}/src/cpp/YamlWriter.cpp
         YamlWriterTest.cpp
     )
@@ -61,6 +62,7 @@ set(TEST_NAME YamlWriter_collections_test)
 
 set(TEST_SOURCES
         ${PROJECT_SOURCE_DIR}/src/cpp/YamlReader_generic.cpp
+        ${PROJECT_SOURCE_DIR}/src/cpp/YamlValidator.cpp
         ${PROJECT_SOURCE_DIR}/src/cpp/YamlWriter.cpp
         YamlWriter_collections_test.cpp
     )
