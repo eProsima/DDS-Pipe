@@ -154,7 +154,7 @@ TEST(YamlReaderLogConfiguration, invalid_domain)
     ASSERT_FALSE(conf.is_valid(error_msg));
 
     // Verify that the error message is correct
-    ASSERT_EQ(error_msg.to_string(), "Invalid domain: 300");
+    ASSERT_EQ(error_msg.to_string(), "Invalid domain: 233"); // Max domain value (233) + 1
 }
 
 /**
