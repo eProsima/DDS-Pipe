@@ -32,7 +32,7 @@ bool DdsPublishingConfiguration::is_valid(
         return true;
     }
 
-    if (domain < 0 || domain > 255)
+    if (domain > types::DomainId::MAX_DOMAIN_ID)
     {
         error_msg << "Invalid domain: " << domain;
         return false;

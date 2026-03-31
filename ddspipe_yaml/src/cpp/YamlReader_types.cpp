@@ -17,6 +17,9 @@
  *
  */
 
+#include <cmath>
+#include <limits>
+
 #include <cpp_utils/Log.hpp>
 #include <cpp_utils/memory/Heritable.hpp>
 #include <cpp_utils/utils.hpp>
@@ -49,6 +52,25 @@ namespace yaml {
 
 using namespace eprosima::ddspipe::core::types;
 using namespace eprosima::ddspipe::participants::types;
+
+static void check_and_set_domain_(
+        const double domain_value,
+        DomainIdType& domain_id)
+{
+    const auto max_domain_value = static_cast<double>(DomainId::MAX_DOMAIN_ID);
+    const bool is_integer_domain = std::floor(domain_value) == domain_value;
+
+    if (!std::isfinite(domain_value) || !is_integer_domain ||
+            domain_value < 0 || domain_value > max_domain_value)
+    {
+        // Mark as invalid and let configuration validation report a clear range error
+        domain_id = static_cast<DomainIdType>(max_domain_value + 1);
+    }
+    else
+    {
+        domain_id = static_cast<DomainIdType>(domain_value);
+    }
+}
 
 template<>
 DDSPIPE_YAML_DllAPI
@@ -147,7 +169,11 @@ DomainId YamlReader::get<DomainId>(
 {
     // Domain id required
     DomainId domain;
-    domain.domain_id = get_scalar<DomainIdType>(yml);
+
+    // Read as double so numeric YAML values such as 0.5 do not fail with a cast error
+    // Invalid values are marked and validated later in the configuration checks
+    check_and_set_domain_(get_scalar<double>(yml), domain.domain_id);
+
     return domain;
 }
 
@@ -315,7 +341,9 @@ void YamlReader::fill(
     // Optional domain
     if (is_tag_present(yml, DDS_PUBLISHING_DOMAIN_TAG))
     {
-        object.domain = get<DomainIdType>(yml, DDS_PUBLISHING_DOMAIN_TAG, version);
+        // Read as double so numeric YAML values such as 0.5 do not fail with a cast error.
+        // Invalid values are marked and validated later in the configuration checks.
+        check_and_set_domain_(get<double>(yml, DDS_PUBLISHING_DOMAIN_TAG, version), object.domain);
     }
 
     // Optional topic name
