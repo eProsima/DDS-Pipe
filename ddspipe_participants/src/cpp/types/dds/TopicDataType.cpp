@@ -18,9 +18,6 @@
 
 #include <fastcdr/FastBuffer.h>
 #include <fastcdr/Cdr.h>
-#include <fastdds/dds/xtypes/dynamic_types/DynamicPubSubType.hpp>
-#include <fastdds/dds/xtypes/dynamic_types/DynamicTypeBuilderFactory.hpp>
-#include <fastdds/dds/xtypes/type_representation/TypeObjectUtils.hpp>
 
 #include <ddspipe_participants/types/dds/TopicDataType.hpp>
 
@@ -49,16 +46,6 @@ TopicDataType::TopicDataType(
 
     // Set Type Identifiers
     type_identifiers_ = type_identifiers;
-
-    // Eagerly try to build the dynamic type for keyed topics
-    // This may fail transiently if dependency TypeObjects have not been received yet
-    // Keep key capability enabled and retry later on demand
-    if (keyed_ && !initialize_dynamic_type_())
-    {
-        EPROSIMA_LOG_WARNING(DDSPIPE_DDS_TYPESUPPORT,
-                "Cannot build dynamic type for keyed topic "
-                << type_name_ << " yet. Will retry when needed.");
-    }
 }
 
 TopicDataType::~TopicDataType()
@@ -118,142 +105,30 @@ uint32_t TopicDataType::calculate_serialized_size(
 bool TopicDataType::compute_key(
         fastdds::rtps::SerializedPayload_t& payload,
         fastdds::rtps::InstanceHandle_t& handle,
-        bool force_md5)
+        bool /* = false */)
 {
-    if (!is_compute_key_provided)
-    {
-        return false;
-    }
-
-    if (!initialize_dynamic_type_())
-    {
-        // Dynamic type is not available yet (or permanently failed due to structural errors)
-        // Keep capability enabled so future calls can retry when dependencies arrive
-        EPROSIMA_LOG_WARNING(DDSPIPE_DDS_TYPESUPPORT,
-                "Cannot compute key for type "
-                << type_name_ << ": dynamic type unavailable.");
-        return false;
-    }
-
-    fastdds::dds::DynamicPubSubType pub_sub_type(dynamic_type_);
-    return pub_sub_type.compute_key(payload, handle, force_md5);
+    // NOTE: This method returns false because Fast DDS always sends the KEY_HASH in inline QoS.
+    // As a result, the reader will never call this method when communicating with a Fast DDS writer.
+    // This would only be needed if receiving data from another DDS vendor that omits the KEY_HASH.
+    // Workaround in that case (different DDS vendor that omits KEY_HASH): set expects_inline_qos_ to
+    // true in DataReaderQos
+    return false;
 }
 
 bool TopicDataType::compute_key(
         const void* const data,
         fastdds::rtps::InstanceHandle_t& handle,
-        bool force_md5)
+        bool /* = false */)
 {
     if (is_compute_key_provided)
     {
+        // Load the instanceHandle from data into handle
         const auto p = static_cast<const DataType*>(data);
-
-        // Fast path: key already available in routing data.
-        if (p->instanceHandle.isDefined())
-        {
-            handle = p->instanceHandle;
-            return true;
-        }
-
-        // Fallback path: compute key from serialized payload when handle is not present.
-        if (p->payload.data != nullptr && p->payload.length > 0)
-        {
-            fastdds::rtps::SerializedPayload_t payload(p->payload.length);
-            if (!payload.copy(&p->payload))
-            {
-                return false;
-            }
-
-            return compute_key(payload, handle, force_md5);
-        }
-
-        return false;
-    }
-
-    return false;
-}
-
-bool TopicDataType::initialize_dynamic_type_() const
-{
-    std::lock_guard<std::mutex> lock(dynamic_type_mtx_);
-
-    // Another thread may have initialized or permanently failed initialization
-    // before this thread acquired the mutex
-    if (dynamic_type_)
-    {
+        handle = p->instanceHandle;
         return true;
     }
 
-    if (dynamic_type_init_failed_)
-    {
-        return false;
-    }
-
-    fastdds::dds::xtypes::TypeInformation type_information;
-
-    auto& registry = fastdds::dds::DomainParticipantFactory::get_instance()->type_object_registry();
-
-    auto try_get_type_information = [&](const fastdds::dds::xtypes::TypeIdentifierPair& identifiers) -> bool
-            {
-                return fastdds::dds::RETCODE_OK == registry.get_type_information(identifiers, type_information);
-            };
-
-    if (!try_get_type_information(type_identifiers_))
-    {
-        fastdds::dds::xtypes::TypeIdentifierPair complete_only;
-        complete_only.type_identifier1(type_identifiers_.type_identifier1());
-
-        if (!try_get_type_information(complete_only))
-        {
-            fastdds::dds::xtypes::TypeIdentifierPair minimal_only;
-            minimal_only.type_identifier2(type_identifiers_.type_identifier2());
-
-            if (!try_get_type_information(minimal_only))
-            {
-                // Missing type information may be transient while dependency types are still arriving
-                return false;
-            }
-        }
-    }
-
-    const auto complete_type_identifier = type_information.complete().typeid_with_size().type_id();
-    fastdds::dds::xtypes::TypeObject type_object;
-    if (fastdds::dds::RETCODE_OK != registry.get_type_object(complete_type_identifier, type_object))
-    {
-        // Missing type object may be transient while dependency types are still arriving
-        return false;
-    }
-
-    // Pre-check consistency before calling create_type_w_type_object
-    // If dependencies are missing from the registry, skip type creation entirely
-    // to avoid noisy error logs from internal FastDDS type creation functions
-    try
-    {
-        fastdds::dds::xtypes::TypeObjectUtils::type_object_consistency(type_object);
-    }
-    catch (const fastdds::dds::xtypes::InvalidArgumentError&)
-    {
-        EPROSIMA_LOG_WARNING(DDSPIPE_DDS_TYPESUPPORT,
-                "TypeObject for "
-                << type_name_ << " has unresolvable dependencies. "
-                << "Skipping dynamic type creation for now.");
-        return false;
-    }
-
-    auto dyn_type_builder = fastdds::dds::DynamicTypeBuilderFactory::get_instance()->create_type_w_type_object(
-        type_object);
-    if (!dyn_type_builder)
-    {
-        dynamic_type_init_failed_ = true;
-        return false;
-    }
-
-    dynamic_type_ = dyn_type_builder->build();
-    if (!dynamic_type_)
-    {
-        dynamic_type_init_failed_ = true;
-    }
-    return dynamic_type_ != nullptr;
+    return false;
 }
 
 void* TopicDataType::create_data()
