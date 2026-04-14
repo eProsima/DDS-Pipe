@@ -5,6 +5,34 @@ The *Forthcoming* section includes those features added in `main` branch that ar
 
 ## Forthcoming
 
+# eProsima DDS Pipe v1.5.0
+
+This release will include the following **features**:
+* Support `ContentFiltered Topic` filter DDS-Record-Replay & Fast-DDS-spy
+    * Removed TopicDataType unnecessary code
+    * Add const reference in 'update_partitions()'
+* Refine the filter update implementation to update `qos` instead of deleting and recreating writers/readers
+
+This release will include the following **bugfixes**:
+* Forward unregister and dispose messages
+* Replace invalid `domain-id` core-dump with clean validation errors
+* Handle datarace after writer shutdown
+* Fix XML profiles in `DDS-Record-Replay`
+
+This release includes the following **CI improvements**:
+* Upgrade Linters CI runner image to `ubuntu-24.04`
+* Update foonathan version to 1.4.1
+
+
+This release includes the following *dependencies update*:
+
+|  | Repository | Old Version | New Version |
+|---|---|---|---|
+| Foonathan Memory Vendor | [eProsima/foonathan_memory_vendor](https://github.com/eProsima/foonathan_memory_vendor) | [v1.3.1](https://github.com/eProsima/foonathan_memory_vendor/releases/tag/v1.3.1) | [v1.4.1](https://github.com/eProsima/foonathan_memory_vendor/releases/tag/v1.4.1) |
+| Fast CDR | [eProsima/Fast-CDR](https://github.com/eProsima/Fast-CDR) | [v2.3.4](https://github.com/eProsima/Fast-CDR/releases/tag/v2.3.4) | [v2.3.5](https://github.com/eProsima/Fast-CDR/releases/tag/v2.3.5) |
+| Fast DDS | [eProsima/Fast-DDS](https://github.com/eProsima/Fast-DDS) | [v3.5.0](https://github.com/eProsima/Fast-DDS/releases/tag/v3.5.0) | [v3.6.0](https://github.com/eProsima/Fast-DDS/releases/tag/v3.6.0) |
+| Dev Utils | [eProsima/dev-utils](https://github.com/eProsima/dev-utils) | [v1.4.0](https://github.com/eProsima/dev-utils/releases/tag/v1.4.0) | [v1.5.0](https://github.com/eProsima/dev-utils/releases/tag/v1.5.0) |
+
 # eProsima DDS Pipe v1.4.0
 
 This release will include the following **features**:
