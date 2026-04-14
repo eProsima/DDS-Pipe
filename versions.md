@@ -9,6 +9,8 @@ The *Forthcoming* section includes those features added in `main` branch that ar
 
 This release will include the following **features**:
 * Support `ContentFiltered Topic` filter DDS-Record-Replay & Fast-DDS-spy
+    * Removed TopicDataType unnecessary code
+    * Add const reference in 'update_partitions()'
 * Refine the filter update implementation to update `qos` instead of deleting and recreating writers/readers
 
 This release will include the following **bugfixes**:
