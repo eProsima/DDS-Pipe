@@ -14,11 +14,14 @@
 
 #pragma once
 
+#include <condition_variable>
 #include <mutex>
+#include <set>
 
 #include <cpp_utils/ReturnCode.hpp>
 #include <cpp_utils/time/time_utils.hpp>
 
+#include <ddspipe_core/communication/rpc/IMatchableEndpoint.hpp>
 #include <fastdds/dds/domain/DomainParticipant.hpp>
 #include <fastdds/dds/subscriber/DataReader.hpp>
 #include <fastdds/dds/subscriber/DataReaderListener.hpp>
@@ -47,7 +50,8 @@ namespace dds {
  *
  * @warning This object is not RAII and must be initialized before used.
  */
-class CommonReader : public BaseReader, public fastdds::dds::DataReaderListener, public fastdds::dds::TopicListener
+class CommonReader : public BaseReader, public fastdds::dds::DataReaderListener, public fastdds::dds::TopicListener,
+    public core::IMatchableEndpoint
 {
 public:
 
@@ -87,6 +91,10 @@ public:
     virtual void on_data_available(
             fastdds::dds::DataReader* reader);
 
+    virtual void on_subscription_matched(
+            fastdds::dds::DataReader* reader,
+            const fastdds::dds::SubscriptionMatchedStatus& info) override;
+
     virtual void on_sample_lost(
             fastdds::dds::DataReader* reader,
             const fastdds::dds::SampleLostStatus& status);
@@ -118,6 +126,26 @@ public:
 
     DDSPIPE_PARTICIPANTS_DllAPI
     core::types::DdsTopic topic() const noexcept override;
+
+    DDSPIPE_PARTICIPANTS_DllAPI
+    bool wait_until_matched(
+            uint32_t number_of_endpoints,
+            utils::Duration_ms timeout_ms) const noexcept override;
+
+    DDSPIPE_PARTICIPANTS_DllAPI
+    bool wait_until_matched(
+            const core::types::Guid& endpoint_guid,
+            utils::Duration_ms timeout_ms) const noexcept override;
+
+    DDSPIPE_PARTICIPANTS_DllAPI
+    bool wait_until_unmatched(
+            uint32_t number_of_endpoints,
+            utils::Duration_ms timeout_ms) const noexcept override;
+
+    DDSPIPE_PARTICIPANTS_DllAPI
+    bool wait_until_unmatched(
+            const core::types::Guid& endpoint_guid,
+            utils::Duration_ms timeout_ms) const noexcept override;
 
 protected:
 
@@ -218,6 +246,10 @@ protected:
 
     fastdds::dds::Subscriber* dds_subscriber_;
     fastdds::dds::DataReader* reader_;
+
+    mutable std::mutex matched_writers_mutex_;
+    mutable std::condition_variable matched_writers_cv_;
+    std::set<core::types::Guid> matched_writers_;
 };
 
 } /* namespace dds */

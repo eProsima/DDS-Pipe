@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-
 #include <fastdds/rtps/common/CacheChange.hpp>
 #include <fastdds/rtps/common/WriteParams.hpp>
 #include <fastdds/rtps/participant/RTPSParticipant.hpp>
@@ -27,6 +26,8 @@
 #include <ddspipe_participants/writer/dds/CommonWriter.hpp>
 #include <ddspipe_participants/writer/dds/filter/RepeaterDataFilter.hpp>
 #include <ddspipe_participants/writer/dds/filter/SelfDataFilter.hpp>
+
+#include <utils/utils.hpp>
 
 namespace eprosima {
 namespace ddspipe {
@@ -97,7 +98,7 @@ void CommonWriter::init(
     writer_ = dds_publisher_->create_datawriter(
         dds_topic_,
         reckon_writer_qos_(),
-        nullptr,
+        this,
         eprosima::fastdds::dds::StatusMask::all(),
         payload_pool_);
 
@@ -144,6 +145,118 @@ CommonWriter::CommonWriter(
     , writer_(nullptr)
 {
     // Do nothing
+}
+
+void CommonWriter::on_publication_matched(
+        fastdds::dds::DataWriter*,
+        const fastdds::dds::PublicationMatchedStatus& info)
+{
+    const Guid remote_reader_guid = detail::guid_from_instance_handle(info.last_subscription_handle);
+
+    if (!detail::come_from_same_participant_(remote_reader_guid, dds_participant_->guid()))
+    {
+        bool notify_waiters = false;
+        {
+            std::lock_guard<std::mutex> lock(matched_readers_mutex_);
+            if (info.current_count_change > 0)
+            {
+                notify_waiters = matched_readers_.insert(remote_reader_guid).second;
+            }
+            else if (info.current_count_change < 0)
+            {
+                notify_waiters = matched_readers_.erase(remote_reader_guid) > 0;
+            }
+        }
+
+        if (notify_waiters)
+        {
+            matched_readers_cv_.notify_all();
+        }
+
+        if (info.current_count_change > 0)
+        {
+            EPROSIMA_LOG_INFO(DDSPIPE_DDS_WRITER,
+                    "Writer " << *this << " in topic " << topic_.serialize()
+                              << " matched with a new Reader with guid " << remote_reader_guid);
+        }
+        else if (info.current_count_change < 0)
+        {
+            EPROSIMA_LOG_INFO(DDSPIPE_DDS_WRITER,
+                    "Writer " << *this << " in topic " << topic_.serialize()
+                              << " unmatched with Reader " << remote_reader_guid);
+        }
+    }
+}
+
+bool CommonWriter::wait_until_matched(
+        uint32_t number_of_endpoints,
+        utils::Duration_ms timeout_ms) const noexcept
+{
+    if (number_of_endpoints == 0)
+    {
+        return true;
+    }
+
+    std::unique_lock<std::mutex> lock(matched_readers_mutex_);
+    return matched_readers_cv_.wait_for(
+        lock,
+        std::chrono::milliseconds(timeout_ms),
+        [&]()
+        {
+            return matched_readers_.size() >= number_of_endpoints;
+        });
+}
+
+bool CommonWriter::wait_until_matched(
+        const core::types::Guid& endpoint_guid,
+        utils::Duration_ms timeout_ms) const noexcept
+{
+    if (!endpoint_guid.is_valid())
+    {
+        return false;
+    }
+
+    std::unique_lock<std::mutex> lock(matched_readers_mutex_);
+    return matched_readers_cv_.wait_for(
+        lock,
+        std::chrono::milliseconds(timeout_ms),
+        [&]()
+        {
+            return matched_readers_.count(endpoint_guid) > 0;
+        });
+}
+
+bool CommonWriter::wait_until_unmatched(
+        uint32_t number_of_endpoints,
+        utils::Duration_ms timeout_ms) const noexcept
+{
+    std::unique_lock<std::mutex> lock(matched_readers_mutex_);
+    return matched_readers_cv_.wait_for(
+        lock,
+        std::chrono::milliseconds(timeout_ms),
+        [&]()
+        {
+            return matched_readers_.size() <= number_of_endpoints;
+        });
+}
+
+bool CommonWriter::wait_until_unmatched(
+        const core::types::Guid& endpoint_guid,
+        utils::Duration_ms timeout_ms) const noexcept
+{
+    if (!endpoint_guid.is_valid())
+    {
+        return true;
+    }
+
+    std::unique_lock<std::mutex> lock(matched_readers_mutex_);
+    return matched_readers_cv_.wait_for(
+        lock,
+        std::chrono::milliseconds(timeout_ms),
+        [&]()
+        {
+            return matched_readers_.count(endpoint_guid) == 0;
+        });
 }
 
 // Specific enable/disable do not need to be implemented

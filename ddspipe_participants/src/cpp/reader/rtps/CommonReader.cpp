@@ -178,6 +178,77 @@ uint64_t CommonReader::get_unread_count() const noexcept
     return rtps_reader_->get_unread_count();
 }
 
+bool CommonReader::wait_until_matched(
+        uint32_t number_of_endpoints,
+        utils::Duration_ms timeout_ms) const noexcept
+{
+    if (number_of_endpoints == 0)
+    {
+        return true;
+    }
+
+    std::unique_lock<std::mutex> lock(matched_writers_mutex_);
+    return matched_writers_cv_.wait_for(
+        lock,
+        std::chrono::milliseconds(timeout_ms),
+        [&]()
+        {
+            return matched_writers_.size() >= number_of_endpoints;
+        });
+}
+
+bool CommonReader::wait_until_matched(
+        const core::types::Guid& endpoint_guid,
+        utils::Duration_ms timeout_ms) const noexcept
+{
+    if (!endpoint_guid.is_valid())
+    {
+        return false;
+    }
+
+    std::unique_lock<std::mutex> lock(matched_writers_mutex_);
+    return matched_writers_cv_.wait_for(
+        lock,
+        std::chrono::milliseconds(timeout_ms),
+        [&]()
+        {
+            return matched_writers_.count(endpoint_guid) > 0;
+        });
+}
+
+bool CommonReader::wait_until_unmatched(
+        uint32_t number_of_endpoints,
+        utils::Duration_ms timeout_ms) const noexcept
+{
+    std::unique_lock<std::mutex> lock(matched_writers_mutex_);
+    return matched_writers_cv_.wait_for(
+        lock,
+        std::chrono::milliseconds(timeout_ms),
+        [&]()
+        {
+            return matched_writers_.size() <= number_of_endpoints;
+        });
+}
+
+bool CommonReader::wait_until_unmatched(
+        const core::types::Guid& endpoint_guid,
+        utils::Duration_ms timeout_ms) const noexcept
+{
+    if (!endpoint_guid.is_valid())
+    {
+        return true;
+    }
+
+    std::unique_lock<std::mutex> lock(matched_writers_mutex_);
+    return matched_writers_cv_.wait_for(
+        lock,
+        std::chrono::milliseconds(timeout_ms),
+        [&]()
+        {
+            return matched_writers_.count(endpoint_guid) == 0;
+        });
+}
+
 core::types::DdsTopic CommonReader::topic() const noexcept
 {
     return topic_;
@@ -543,15 +614,38 @@ void CommonReader::on_reader_matched(
 {
     if (!come_from_this_participant_(info.remoteEndpointGuid))
     {
+        bool notify_waiters = false;
+        {
+            std::lock_guard<std::mutex> lock(matched_writers_mutex_);
+            if (info.status == fastdds::rtps::MatchingStatus::MATCHED_MATCHING)
+            {
+                notify_waiters = matched_writers_.insert(info.remoteEndpointGuid).second;
+            }
+            else if (info.status == fastdds::rtps::MatchingStatus::REMOVED_MATCHING)
+            {
+                notify_waiters = matched_writers_.erase(info.remoteEndpointGuid) > 0;
+            }
+        }
+
         if (info.status == fastdds::rtps::MatchingStatus::MATCHED_MATCHING)
         {
+            if (notify_waiters)
+            {
+                matched_writers_cv_.notify_all();
+            }
+
             EPROSIMA_LOG_INFO(DDSPIPE_RTPS_COMMONREADER_LISTENER,
                     "Reader " << *this << " in topic " << topic_.serialize()
                               << " matched with a new Writer with guid "
                               << info.remoteEndpointGuid);
         }
-        else
+        else if (info.status == fastdds::rtps::MatchingStatus::REMOVED_MATCHING)
         {
+            if (notify_waiters)
+            {
+                matched_writers_cv_.notify_all();
+            }
+
             EPROSIMA_LOG_INFO(DDSPIPE_RTPS_COMMONREADER_LISTENER,
                     "Reader " << *this << " in topic " << topic_.serialize() << " unmatched with Writer "
                               << info.remoteEndpointGuid);

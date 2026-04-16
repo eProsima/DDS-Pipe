@@ -14,11 +14,14 @@
 
 #pragma once
 
+#include <condition_variable>
 #include <mutex>
+#include <set>
 
 #include <cpp_utils/ReturnCode.hpp>
 #include <cpp_utils/time/time_utils.hpp>
 
+#include <ddspipe_core/communication/rpc/IMatchableEndpoint.hpp>
 #include <fastdds/dds/subscriber/qos/ReaderQos.hpp>
 #include <fastdds/rtps/attributes/HistoryAttributes.hpp>
 #include <fastdds/rtps/attributes/ReaderAttributes.hpp>
@@ -48,7 +51,7 @@ namespace rtps {
  *
  * @warning This object is not RAII and must be initialized before used.
  */
-class CommonReader : public BaseReader, public fastdds::rtps::ReaderListener
+class CommonReader : public BaseReader, public fastdds::rtps::ReaderListener, public core::IMatchableEndpoint
 {
 public:
 
@@ -184,6 +187,26 @@ public:
     //! Get number of unread cache changes in internal RTPS reader
     DDSPIPE_PARTICIPANTS_DllAPI
     uint64_t get_unread_count() const noexcept override;
+
+    DDSPIPE_PARTICIPANTS_DllAPI
+    bool wait_until_matched(
+            uint32_t number_of_endpoints,
+            utils::Duration_ms timeout_ms) const noexcept override;
+
+    DDSPIPE_PARTICIPANTS_DllAPI
+    bool wait_until_matched(
+            const core::types::Guid& endpoint_guid,
+            utils::Duration_ms timeout_ms) const noexcept override;
+
+    DDSPIPE_PARTICIPANTS_DllAPI
+    bool wait_until_unmatched(
+            uint32_t number_of_endpoints,
+            utils::Duration_ms timeout_ms) const noexcept override;
+
+    DDSPIPE_PARTICIPANTS_DllAPI
+    bool wait_until_unmatched(
+            const core::types::Guid& endpoint_guid,
+            utils::Duration_ms timeout_ms) const noexcept override;
 
     DDSPIPE_PARTICIPANTS_DllAPI
     core::types::DdsTopic topic() const noexcept override;
@@ -343,6 +366,11 @@ protected:
 
     //! Reader QoS to create the internal RTPS Reader.
     fastdds::dds::ReaderQos reader_qos_;
+
+    //! Set of currently matched remote writers.
+    mutable std::mutex matched_writers_mutex_;
+    mutable std::condition_variable matched_writers_cv_;
+    std::set<core::types::Guid> matched_writers_;
 };
 
 } /* namespace rtps */

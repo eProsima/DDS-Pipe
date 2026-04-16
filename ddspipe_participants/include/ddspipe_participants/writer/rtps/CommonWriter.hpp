@@ -15,7 +15,11 @@
 #pragma once
 
 #include <atomic>
+#include <condition_variable>
+#include <mutex>
+#include <set>
 
+#include <ddspipe_core/communication/rpc/IMatchableEndpoint.hpp>
 #include <cpp_utils/pool/IPool.hpp>
 #include <cpp_utils/ReturnCode.hpp>
 #include <cpp_utils/time/time_utils.hpp>
@@ -65,7 +69,7 @@ namespace rtps {
  *
  * @warning This object is not RAII and must be initialized before used.
  */
-class CommonWriter : public BaseWriter, public fastdds::rtps::WriterListener
+class CommonWriter : public BaseWriter, public fastdds::rtps::WriterListener, public core::IMatchableEndpoint
 {
 public:
 
@@ -147,6 +151,26 @@ public:
     //! Maximum time that a RELIABLE RTPSWriter will wait to receive the acknowledgements relative to all sent messages.
     DDSPIPE_PARTICIPANTS_DllAPI
     static std::atomic<utils::Duration_ms> wait_all_acked_timeout;
+
+    DDSPIPE_PARTICIPANTS_DllAPI
+    bool wait_until_matched(
+            uint32_t number_of_endpoints,
+            utils::Duration_ms timeout_ms) const noexcept override;
+
+    DDSPIPE_PARTICIPANTS_DllAPI
+    bool wait_until_matched(
+            const core::types::Guid& endpoint_guid,
+            utils::Duration_ms timeout_ms) const noexcept override;
+
+    DDSPIPE_PARTICIPANTS_DllAPI
+    bool wait_until_unmatched(
+            uint32_t number_of_endpoints,
+            utils::Duration_ms timeout_ms) const noexcept override;
+
+    DDSPIPE_PARTICIPANTS_DllAPI
+    bool wait_until_unmatched(
+            const core::types::Guid& endpoint_guid,
+            utils::Duration_ms timeout_ms) const noexcept override;
 
 protected:
 
@@ -313,6 +337,11 @@ protected:
 
     //! Pool Configuration to create the internal History.
     utils::PoolConfiguration pool_configuration_;
+
+    //! Set of currently matched remote readers.
+    mutable std::mutex matched_readers_mutex_;
+    mutable std::condition_variable matched_readers_cv_;
+    std::set<core::types::Guid> matched_readers_;
 };
 
 } /* namespace rtps */

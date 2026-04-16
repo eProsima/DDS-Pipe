@@ -24,6 +24,7 @@
 #include <cpp_utils/Log.hpp>
 #include <cpp_utils/utils.hpp>
 
+#include <ddspipe_core/communication/rpc/IMatchableEndpoint.hpp>
 #include <ddspipe_core/types/data/RpcPayloadData.hpp>
 #include <ddspipe_core/communication/rpc/RpcBridge.hpp>
 
@@ -32,6 +33,49 @@ namespace ddspipe {
 namespace core {
 
 using namespace eprosima::ddspipe::core::types;
+
+namespace {
+
+constexpr utils::Duration_ms RPC_PROXY_MATCH_TIMEOUT_MS = 1000u;
+
+template<typename EndpointType>
+std::shared_ptr<IMatchableEndpoint> as_matchable_endpoint(
+        const std::shared_ptr<EndpointType>& endpoint) noexcept
+{
+    return std::dynamic_pointer_cast<IMatchableEndpoint>(endpoint);
+}
+
+void verify_matchable_reader(
+        const std::shared_ptr<IReader>& reader,
+        const RpcTopic& rpc_topic,
+        const ParticipantId& participant_id,
+        const char* endpoint_description)
+{
+    if (!as_matchable_endpoint(reader))
+    {
+        throw utils::InitializationException(
+                  utils::Formatter() << "Error creating " << endpoint_description << " for service "
+                                     << rpc_topic << " in participant " << participant_id
+                                     << ": endpoint does not support match waiting.");
+    }
+}
+
+void verify_matchable_writer(
+        const std::shared_ptr<IWriter>& writer,
+        const RpcTopic& rpc_topic,
+        const ParticipantId& participant_id,
+        const char* endpoint_description)
+{
+    if (!as_matchable_endpoint(writer))
+    {
+        throw utils::InitializationException(
+                  utils::Formatter() << "Error creating " << endpoint_description << " for service "
+                                     << rpc_topic << " in participant " << participant_id
+                                     << ": endpoint does not support match waiting.");
+    }
+}
+
+} // namespace
 
 RpcBridge::RpcBridge(
         const RpcTopic& topic,
@@ -75,10 +119,7 @@ void RpcBridge::init_nts_()
         }
     }
 
-    // TODO: This should not be done
-    // Wait for the new entities created to match before sending data from one side to the other
     init_ = true;
-    // utils::sleep_for(500);
 }
 
 void RpcBridge::create_proxy_server_nts_(
@@ -88,6 +129,9 @@ void RpcBridge::create_proxy_server_nts_(
 
     reply_writers_[participant_id] = participant->create_writer(rpc_topic_.reply_topic());
     request_readers_[participant_id] = participant->create_reader(rpc_topic_.request_topic());
+
+    verify_matchable_writer(reply_writers_[participant_id], rpc_topic_, participant_id, "proxy reply writer");
+    verify_matchable_reader(request_readers_[participant_id], rpc_topic_, participant_id, "proxy request reader");
 
     create_slot_(request_readers_[participant_id]);
 }
@@ -100,6 +144,9 @@ void RpcBridge::create_proxy_client_nts_(
     // Safe casting as we are only getting RTPS participants
     request_writers_[participant_id] = participant->create_writer(rpc_topic_.request_topic());
     reply_readers_[participant_id] = participant->create_reader(rpc_topic_.reply_topic());
+
+    verify_matchable_writer(request_writers_[participant_id], rpc_topic_, participant_id, "proxy request writer");
+    verify_matchable_reader(reply_readers_[participant_id], rpc_topic_, participant_id, "proxy reply reader");
 
     create_slot_(reply_readers_[participant_id]);
 
@@ -339,6 +386,29 @@ void RpcBridge::transmit_(
                         continue;
                     }
 
+                    auto matchable_request_writer = as_matchable_endpoint(request_writers_[service_registry.first]);
+                    if (!matchable_request_writer)
+                    {
+                        EPROSIMA_LOG_ERROR(DDSPIPE_RPCBRIDGE,
+                                "RpcBridge for service " << rpc_topic_ <<
+                                " found a proxy request writer in participant " << service_registry.first <<
+                                " without match waiting support.");
+                        continue;
+                    }
+
+                    if (!matchable_request_writer->wait_until_matched(
+                                1u,
+                                RPC_PROXY_MATCH_TIMEOUT_MS))
+                    {
+                        EPROSIMA_LOG_WARNING(DDSPIPE_RPCBRIDGE,
+                                "RpcBridge for service " << rpc_topic_ <<
+                                " timed out waiting for proxy request writer in participant " <<
+                                service_registry.first <<
+                                " to match a remote server before forwarding request from " <<
+                                rpc_data.source_guid << ".");
+                        continue;
+                    }
+
                     // Perform write + add entry to registry atomically -> avoid reply processed before entry added to registry
                     std::lock_guard<std::recursive_mutex> lock(service_registry.second->get_mutex());
 
@@ -402,6 +472,32 @@ void RpcBridge::transmit_(
                 // TODO: recheck ParticipantId non valid
                 if (!registry_entry.first.empty())
                 {
+                    const Guid destination_reader_guid =
+                            registry_entry.second.writer_guid();
+
+                    auto matchable_reply_writer = as_matchable_endpoint(reply_writers_[registry_entry.first]);
+                    if (!matchable_reply_writer)
+                    {
+                        EPROSIMA_LOG_ERROR(DDSPIPE_RPCBRIDGE,
+                                "RpcBridge for service " << rpc_topic_ <<
+                                " found a proxy reply writer in participant " << registry_entry.first <<
+                                " without match waiting support.");
+                        continue;
+                    }
+
+                    if (!matchable_reply_writer->wait_until_matched(
+                                destination_reader_guid,
+                                RPC_PROXY_MATCH_TIMEOUT_MS))
+                    {
+                        EPROSIMA_LOG_WARNING(DDSPIPE_RPCBRIDGE,
+                                "RpcBridge for service " << rpc_topic_ <<
+                                " timed out waiting for proxy reply writer in participant " <<
+                                registry_entry.first <<
+                                " to match destination reader " << destination_reader_guid <<
+                                " before forwarding reply from " << rpc_data.source_guid << ".");
+                        continue;
+                    }
+
                     rpc_data.write_params.set_level();
                     rpc_data.write_params.get_reference().related_sample_identity(registry_entry.second);
 
