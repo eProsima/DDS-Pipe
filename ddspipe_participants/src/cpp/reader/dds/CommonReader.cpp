@@ -294,6 +294,13 @@ utils::ReturnCode CommonReader::take_nts_(
         return utils::ReturnCode::RETCODE_ERROR;
     }
 
+    if (rtps_data->payload.length == 0 && !topic_.topic_qos.keyed)
+    {
+        // This sample should not be propagated
+        assert(info.instance_state != fastdds::dds::InstanceStateKind::ALIVE_INSTANCE_STATE);
+        return utils::ReturnCode::RETCODE_ERROR;
+    }
+
     fill_received_data_(info, *rtps_data);
 
     // data is a unique_ptr; the memory will be handled correctly.
