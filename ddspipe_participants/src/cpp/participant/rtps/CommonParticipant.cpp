@@ -34,13 +34,13 @@
 #include <ddspipe_participants/library/library_dll.h>
 #include <ddspipe_participants/participant/rtps/CommonParticipant.hpp>
 #include <ddspipe_participants/reader/auxiliar/BlankReader.hpp>
-#include <ddspipe_participants/reader/rpc/SimpleReader.hpp>
 #include <ddspipe_participants/reader/rtps/SimpleReader.hpp>
+#include <ddspipe_participants/reader/rtps/SimpleRpcReader.hpp>
 #include <ddspipe_participants/reader/rtps/SpecificQoSReader.hpp>
 #include <ddspipe_participants/writer/auxiliar/BlankWriter.hpp>
-#include <ddspipe_participants/writer/rpc/SimpleWriter.hpp>
 #include <ddspipe_participants/writer/rtps/MultiWriter.hpp>
 #include <ddspipe_participants/writer/rtps/QoSSpecificWriter.hpp>
+#include <ddspipe_participants/writer/rtps/SimpleRpcWriter.hpp>
 #include <ddspipe_participants/writer/rtps/SimpleWriter.hpp>
 
 #include <utils/utils.hpp>
@@ -138,6 +138,8 @@ void CommonParticipant::RtpsListener::on_reader_discovery(
         core::types::Endpoint info_reader =
                 detail::create_endpoint_from_info_<fastdds::rtps::SubscriptionBuiltinTopicData>(
             info, configuration_->id);
+
+        std::cout << "Reader discovered in Participant " << configuration_->id << ": " << info_reader.guid << "." << std::endl;
 
         if (reason == fastdds::rtps::ReaderDiscoveryStatus::DISCOVERED_READER)
         {
@@ -419,7 +421,7 @@ std::shared_ptr<core::IWriter> CommonParticipant::create_writer(
     {
         logDebug(DDSPIPE_RTPS_PARTICIPANT,
                 "Creating RPC Writer for topic " << topic.topic_name());
-        auto writer = std::make_shared<rpc::SimpleWriter>(
+        auto writer = std::make_shared<SimpleRpcWriter>(
             this->id(),
             dds_topic,
             this->payload_pool_,
@@ -484,7 +486,7 @@ std::shared_ptr<core::IReader> CommonParticipant::create_reader(
         logDebug(DDSPIPE_RTPS_PARTICIPANT,
                 "Creating RPC Reader for topic " << topic.topic_name());
 
-        auto reader = std::make_shared<rpc::SimpleReader>(
+        auto reader = std::make_shared<SimpleRpcReader>(
             this->id(),
             dds_topic,
             this->payload_pool_,

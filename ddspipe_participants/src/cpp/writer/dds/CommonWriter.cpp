@@ -166,6 +166,7 @@ utils::ReturnCode CommonWriter::write_nts_(
     // slow if they don't have payloads attached, but it is left this way in order to ensure compatibility with other
     // vendors and the standard.
 
+    utils::ReturnCode ret = utils::ReturnCode::RETCODE_OK;
     switch (rtps_data.kind){
         case core::types::ChangeKind::ALIVE:
             // WARNING: At the time of this writing, there is no DataWriter API to write both with parameters and instance handle.
@@ -173,17 +174,20 @@ utils::ReturnCode CommonWriter::write_nts_(
             // (if it corresponds to a keyed topic), so it is equivalent to write with instance handle (and can hence use the
             // write with params overload to cover all cases). Future developers should be aware of this and might need to
             // update this method if the DataWriter implementation changes at some point.
-            return payload_pool_->write(writer_, &rtps_data, wparams);
+            ret = payload_pool_->write(writer_, &rtps_data, wparams);
+            break;
         case core::types::ChangeKind::NOT_ALIVE_DISPOSED:
-            return payload_pool_->dispose(writer_, &rtps_data, rtps_data.instanceHandle);
+            ret = payload_pool_->dispose(writer_, &rtps_data, rtps_data.instanceHandle);
+            break;
         case core::types::ChangeKind::NOT_ALIVE_UNREGISTERED:
-            return payload_pool_->unregister_instance(writer_, &rtps_data, rtps_data.instanceHandle);
+            ret = payload_pool_->unregister_instance(writer_, &rtps_data, rtps_data.instanceHandle);
+            break;
         case core::types::ChangeKind::NOT_ALIVE_DISPOSED_UNREGISTERED:
         {
-            utils::ReturnCode ret = payload_pool_->dispose(writer_, &rtps_data, rtps_data.instanceHandle);
+            ret = payload_pool_->dispose(writer_, &rtps_data, rtps_data.instanceHandle);
             if (ret == utils::ReturnCode::RETCODE_OK)
             {
-                return ret;
+                break;
             }
             return payload_pool_->unregister_instance(writer_, &rtps_data, rtps_data.instanceHandle);
         }
@@ -191,6 +195,17 @@ utils::ReturnCode CommonWriter::write_nts_(
             EPROSIMA_LOG_ERROR(DDSPIPE_DDS_WRITER, "Unknown RtpsPayloadData kind.");
             return utils::ReturnCode::RETCODE_ERROR;
     }
+
+    if (ret != utils::ReturnCode::RETCODE_OK)
+    {
+        EPROSIMA_LOG_ERROR(DDSPIPE_DDS_WRITER, "Error writing data.");
+        return ret;
+    }
+
+    // Fill sent data info after write
+    fill_sent_data_(wparams, rtps_data);
+
+    return ret;
 }
 
 void CommonWriter::update_partitions(
@@ -284,6 +299,13 @@ utils::ReturnCode CommonWriter::fill_to_send_data_(
     to_send_params.original_writer_info(data.original_writer_info);
 
     return utils::ReturnCode::RETCODE_OK;
+}
+
+void CommonWriter::fill_sent_data_(
+        const fastdds::rtps::WriteParams& params,
+        core::types::RtpsPayloadData& data_to_fill) const noexcept
+{
+    // Do nothing
 }
 
 } /* namespace dds */

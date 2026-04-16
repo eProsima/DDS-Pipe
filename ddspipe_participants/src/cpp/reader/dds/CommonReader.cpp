@@ -229,7 +229,7 @@ utils::ReturnCode CommonReader::take_nts_(
 
     do
     {
-        rtps_data.reset(new RtpsPayloadData());
+        rtps_data.reset(create_data_());
 
         auto ret = reader_->take_next_sample(rtps_data.get(), &info);
 
@@ -266,6 +266,26 @@ void CommonReader::enable_nts_() noexcept
     // Notify messages reception in case any were received while disabled
     // NOTE: unlike in the RTPS case, samples received while disabled will be processed even if the topic is best_effort
     on_data_available_();
+}
+
+core::types::Guid CommonReader::guid() const noexcept
+{
+    return reader_->guid();
+}
+
+fastdds::RecursiveTimedMutex& CommonReader::get_rtps_mutex() const noexcept
+{
+    return reader_->get_rtps_mutex();
+}
+
+uint64_t CommonReader::get_unread_count() const noexcept
+{
+    return reader_->get_unread_count();
+}
+
+core::types::DdsTopic CommonReader::topic() const noexcept
+{
+    return topic_;
 }
 
 fastdds::dds::SubscriberQos CommonReader::reckon_subscriber_qos_() const
@@ -330,6 +350,11 @@ bool CommonReader::should_accept_sample_(
     }
 
     return BaseReader::should_accept_sample_();
+}
+
+RtpsPayloadData* CommonReader::create_data_() const noexcept
+{
+    return new RtpsPayloadData();
 }
 
 void CommonReader::fill_received_data_(

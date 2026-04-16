@@ -99,6 +99,26 @@ public:
             fastdds::dds::Topic* topic,
             fastdds::dds::InconsistentTopicStatus status);
 
+    /////////////////////////
+    // RPC REQUIRED METHODS
+    /////////////////////////
+    // TODO remove these methods once the double reference is solved
+
+    //! Get GUID of internal RTPS reader
+    DDSPIPE_PARTICIPANTS_DllAPI
+    core::types::Guid guid() const noexcept override;
+
+    //! Get internal RTPS reader mutex
+    DDSPIPE_PARTICIPANTS_DllAPI
+    fastdds::RecursiveTimedMutex& get_rtps_mutex() const noexcept override;
+
+    //! Get number of unread cache changes in internal RTPS reader
+    DDSPIPE_PARTICIPANTS_DllAPI
+    uint64_t get_unread_count() const noexcept override;
+
+    DDSPIPE_PARTICIPANTS_DllAPI
+    core::types::DdsTopic topic() const noexcept override;
+
 protected:
 
     /////////////////////////
@@ -166,6 +186,15 @@ protected:
     virtual bool should_accept_sample_(
             const fastdds::dds::SampleInfo& info) noexcept;
 
+    /**
+     * @brief Return an allocated object
+     *
+     * @attention this method allocates memory.
+     */
+    DDSPIPE_PARTICIPANTS_DllAPI
+    virtual core::types::RtpsPayloadData* create_data_() const noexcept;
+
+    // TODO: review exports
     virtual void fill_received_data_(
             const fastdds::dds::SampleInfo& info,
             core::types::RtpsPayloadData& data_to_fill) const noexcept;
