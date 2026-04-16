@@ -22,29 +22,17 @@
 namespace eprosima {
 namespace ddspipe {
 namespace participants {
-namespace rpc {
+namespace rtps {
 
 /**
  * Base RTPS Reader concrete class that implements abstract CommonReader one.
  */
-class SimpleReader : public rtps::CommonReader
+class SimpleRpcReader : public CommonReader
 {
 public:
 
-    /**
-     * @brief Construct a new SimpleReader object
-     *
-     * Get the Attributes and TopicQoS and create the SimpleReader History and the RTPS SimpleReader.
-     *
-     * @param participant_id    Router Id of the Participant that has created this SimpleReader.
-     * @param topic             Topic that this SimpleReader subscribes to.
-     * @param payload_pool      Shared Payload Pool to received data and take it.
-     * @param rtps_participant  RTPS Participant pointer (this is not stored).
-     *
-     * @throw \c InitializationException in case any creation has failed
-     */
     DDSPIPE_PARTICIPANTS_DllAPI
-    SimpleReader(
+    SimpleRpcReader(
             const core::types::ParticipantId& participant_id,
             const core::types::DdsTopic& topic,
             const std::shared_ptr<core::PayloadPool>& payload_pool,
@@ -62,7 +50,7 @@ public:
             core::types::RtpsPayloadData& data_to_fill) const noexcept override;
 };
 
-} /* namespace rpc */
+} /* namespace rtps */
 } /* namespace participants */
 } /* namespace ddspipe */
 } /* namespace eprosima */

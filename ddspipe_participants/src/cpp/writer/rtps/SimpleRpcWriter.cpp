@@ -23,7 +23,7 @@
 #include <ddspipe_core/types/data/RpcPayloadData.hpp>
 
 #include <ddspipe_participants/efficiency/cache_change/CacheChangePool.hpp>
-#include <ddspipe_participants/writer/rpc/SimpleWriter.hpp>
+#include <ddspipe_participants/writer/rtps/SimpleRpcWriter.hpp>
 #include <ddspipe_participants/writer/rtps/filter/RepeaterDataFilter.hpp>
 #include <ddspipe_participants/writer/rtps/filter/SelfDataFilter.hpp>
 #include <ddspipe_participants/types/dds/RouterCacheChange.hpp>
@@ -31,9 +31,9 @@
 namespace eprosima {
 namespace ddspipe {
 namespace participants {
-namespace rpc {
+namespace rtps {
 
-SimpleWriter::SimpleWriter(
+SimpleRpcWriter::SimpleRpcWriter(
         const core::types::ParticipantId& participant_id,
         const core::types::DdsTopic& topic,
         const std::shared_ptr<core::PayloadPool>& payload_pool,
@@ -50,7 +50,7 @@ SimpleWriter::SimpleWriter(
     EPROSIMA_LOG_INFO(DDSPIPE_RPC_WRITER, "Creating RPC Writer for topic " << topic_);
 }
 
-utils::ReturnCode SimpleWriter::fill_to_send_data_(
+utils::ReturnCode SimpleRpcWriter::fill_to_send_data_(
         fastdds::rtps::CacheChange_t* to_send_change_to_fill,
         fastdds::rtps::WriteParams& to_send_params,
         const core::types::RtpsPayloadData& data) const noexcept
@@ -69,7 +69,7 @@ utils::ReturnCode SimpleWriter::fill_to_send_data_(
     return utils::ReturnCode::RETCODE_OK;
 }
 
-void SimpleWriter::fill_sent_data_(
+void SimpleRpcWriter::fill_sent_data_(
         const fastdds::rtps::WriteParams& sent_params,
         core::types::RtpsPayloadData& data_to_fill) const noexcept
 {
@@ -81,7 +81,7 @@ void SimpleWriter::fill_sent_data_(
     rpc_data.sent_sequence_number = sent_params.sample_identity().sequence_number();
 }
 
-} /* namespace rpc */
+} /* namespace rtps */
 } /* namespace participants */
 } /* namespace ddspipe */
 } /* namespace eprosima */

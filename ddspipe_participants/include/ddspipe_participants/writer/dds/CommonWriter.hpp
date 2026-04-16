@@ -166,6 +166,17 @@ protected:
             eprosima::fastdds::rtps::WriteParams& to_send_params,
             const core::types::RtpsPayloadData& data) const noexcept;
 
+    /**
+     * @brief Auxiliary method used after \c write to fill data value.
+     *
+     * @param [in] to_send_params write params of the cache change sent.
+     * @param [out] data data to be filled with params.
+     */
+    DDSPIPE_PARTICIPANTS_DllAPI
+    virtual void fill_sent_data_(
+            const eprosima::fastdds::rtps::WriteParams& sent_params,
+            core::types::RtpsPayloadData& data_to_fill) const noexcept;
+
 
 
     /////////////////////////
