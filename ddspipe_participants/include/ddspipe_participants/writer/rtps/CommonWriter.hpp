@@ -19,6 +19,7 @@
 #include <mutex>
 #include <set>
 
+#include <ddspipe_core/communication/rpc/IMatchableEndpoint.hpp>
 #include <cpp_utils/pool/IPool.hpp>
 #include <cpp_utils/ReturnCode.hpp>
 #include <cpp_utils/time/time_utils.hpp>
@@ -68,7 +69,7 @@ namespace rtps {
  *
  * @warning This object is not RAII and must be initialized before used.
  */
-class CommonWriter : public BaseWriter, public fastdds::rtps::WriterListener
+class CommonWriter : public BaseWriter, public fastdds::rtps::WriterListener, public core::IMatchableEndpoint
 {
 public:
 
@@ -160,6 +161,26 @@ public:
     //! Maximum time that a RELIABLE RTPSWriter will wait to receive the acknowledgements relative to all sent messages.
     DDSPIPE_PARTICIPANTS_DllAPI
     static std::atomic<utils::Duration_ms> wait_all_acked_timeout;
+
+    DDSPIPE_PARTICIPANTS_DllAPI
+    bool wait_until_matched(
+            uint32_t number_of_endpoints,
+            utils::Duration_ms timeout_ms) const noexcept override;
+
+    DDSPIPE_PARTICIPANTS_DllAPI
+    bool wait_until_matched(
+            const core::types::Guid& endpoint_guid,
+            utils::Duration_ms timeout_ms) const noexcept override;
+
+    DDSPIPE_PARTICIPANTS_DllAPI
+    bool wait_until_unmatched(
+            uint32_t number_of_endpoints,
+            utils::Duration_ms timeout_ms) const noexcept override;
+
+    DDSPIPE_PARTICIPANTS_DllAPI
+    bool wait_until_unmatched(
+            const core::types::Guid& endpoint_guid,
+            utils::Duration_ms timeout_ms) const noexcept override;
 
 protected:
 
@@ -320,7 +341,7 @@ protected:
     utils::PoolConfiguration pool_configuration_;
 
     //! GUIDs of the Readers (external to this Participant) currently matched with this Writer
-    std::set<fastdds::rtps::GUID_t> matched_readers_;
+    std::set<core::types::Guid> matched_readers_;
 
     //! Protects \c matched_readers_ and coordinates \c wait_reader_matched
     mutable std::mutex matched_readers_mutex_;
