@@ -333,11 +333,10 @@ bool CommonReader::should_accept_sample_(
     // remote readers. However, those remote readers will still receive a NOT_ALIVE_NO_WRITERS_INSTANCE_STATE
     // sample when their associated writers' leaseDurationPeriod expires. Thus, we opt to reject samples
     // whose instance state is NOT_ALIVE_NO_WRITERS when they are emitted from a keyless topic.
-    // The same reasoning applied to NOT_ALIVE_DISPOSED_INSTANCE_STATE, because there is no way to forward
-    // that status change at the moment.
+    // The same reasoning applied to any NOT_ALIVE_INSTANCE_STATE, because there is no way to forward
+    // that changes at the moment.
     if (!topic_.topic_qos.keyed &&
-            (info.instance_state == fastdds::dds::InstanceStateKind::NOT_ALIVE_NO_WRITERS_INSTANCE_STATE ||
-            info.instance_state == fastdds::dds::InstanceStateKind::NOT_ALIVE_DISPOSED_INSTANCE_STATE))
+            (info.instance_state & fastdds::dds::NOT_ALIVE_INSTANCE_STATE))
     {
         return false;
     }
