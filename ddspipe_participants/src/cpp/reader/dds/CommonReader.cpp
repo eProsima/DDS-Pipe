@@ -223,7 +223,6 @@ utils::ReturnCode CommonReader::take_nts_(
 
     EPROSIMA_LOG_INFO(DDSPIPE_DDS_READER, "Taking data in " << participant_id_ << " for topic " << topic_ << ".");
 
-
     std::unique_ptr<RtpsPayloadData> rtps_data;
     fastdds::dds::SampleInfo info;
 
@@ -325,6 +324,19 @@ bool CommonReader::should_accept_sample_(
     if (detail::come_from_same_participant_(
                 detail::guid_from_instance_handle(info.publication_handle),
                 this->dds_participant_->guid()))
+    {
+        return false;
+    }
+
+    // At the time of this writing, the DDS API does not allow to send DISPOSE or UNREGISTER messages
+    // in keyless topics, and there is no way to request a state transition on the instances living in the
+    // remote readers. However, those remote readers will still receive a NOT_ALIVE_NO_WRITERS_INSTANCE_STATE
+    // sample when their associated writers' leaseDurationPeriod expires. Thus, we opt to reject samples
+    // whose instance state is NOT_ALIVE_NO_WRITERS when they are emitted from a keyless topic.
+    // The same reasoning applied to any NOT_ALIVE_INSTANCE_STATE, because there is no way to forward
+    // that changes at the moment.
+    if (!topic_.topic_qos.keyed &&
+            (info.instance_state & fastdds::dds::NOT_ALIVE_INSTANCE_STATE))
     {
         return false;
     }
