@@ -121,7 +121,7 @@ void CommonReader::init(
     // It is safe to do so here as object is already created and callbacks do not require anything set in this method
     reader_ = dds_subscriber_->create_datareader(
         filtered_topic_, // Using new filtered topic
-        reckon_reader_qos_(),
+        reckon_reader_qos_(topic_.topic_name()),
         this,
         eprosima::fastdds::dds::StatusMask::all(),
         payload_pool_);
@@ -274,9 +274,16 @@ fastdds::dds::SubscriberQos CommonReader::reckon_subscriber_qos_() const
     return qos;
 }
 
-fastdds::dds::DataReaderQos CommonReader::reckon_reader_qos_() const
+fastdds::dds::DataReaderQos CommonReader::reckon_reader_qos_(
+        const std::string& topic_name) const
 {
-    fastdds::dds::DataReaderQos qos = dds_subscriber_->get_default_datareader_qos();
+    fastdds::dds::DataReaderQos qos;
+    fastdds::dds::ReturnCode_t ret_xml_qos = dds_subscriber_->get_datareader_qos_from_profile(topic_name, qos);
+
+    if (ret_xml_qos != fastdds::dds::RETCODE_OK)
+    {
+        qos = dds_subscriber_->get_default_datareader_qos();
+    }
 
     // IMPORTANT
     // As we do not have access to TypeSupport, we do not know the size of the key
