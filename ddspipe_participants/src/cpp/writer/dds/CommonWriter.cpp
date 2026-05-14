@@ -96,7 +96,7 @@ void CommonWriter::init(
 
     writer_ = dds_publisher_->create_datawriter(
         dds_topic_,
-        reckon_writer_qos_(),
+        reckon_writer_qos_(topic_.topic_name()),
         nullptr,
         eprosima::fastdds::dds::StatusMask::all(),
         payload_pool_);
@@ -226,9 +226,16 @@ fastdds::dds::PublisherQos CommonWriter::reckon_publisher_qos_() const noexcept
     return qos;
 }
 
-fastdds::dds::DataWriterQos CommonWriter::reckon_writer_qos_() const noexcept
+fastdds::dds::DataWriterQos CommonWriter::reckon_writer_qos_(
+        const std::string& topic_name) const noexcept
 {
-    fastdds::dds::DataWriterQos qos = dds_publisher_->get_default_datawriter_qos();
+    fastdds::dds::DataWriterQos qos;
+    fastdds::dds::ReturnCode_t ret_xml_qos = dds_publisher_->get_datawriter_qos_from_profile(topic_name, qos);
+
+    if (ret_xml_qos != fastdds::dds::RETCODE_OK)
+    {
+        qos = dds_publisher_->get_default_datawriter_qos();
+    }
 
     qos.durability().kind =
             (topic_.topic_qos.is_transient_local())
