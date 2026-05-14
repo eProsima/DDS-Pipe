@@ -30,6 +30,10 @@
 #include <ddspipe_participants/participant/dds/XmlParticipant.hpp>
 #include <ddspipe_participants/testing/entities/mock_entities.hpp>
 #include <ddspipe_participants/testing/random_values.hpp>
+#include <ddspipe_participants/reader/auxiliar/BlankReader.hpp>
+#include <ddspipe_participants/writer/auxiliar/BlankWriter.hpp>
+#include <ddspipe_participants/xml/XmlHandler.hpp>
+#include <ddspipe_participants/xml/XmlHandlerConfiguration.hpp>
 
 using namespace eprosima;
 using namespace eprosima::ddspipe;
@@ -240,6 +244,107 @@ TEST(ParticipantsCreationgTest, ddspipe_all_creation_builtin_topic)
         );
 
     // Let everything destroy itself
+}
+
+/**
+ * Test that writer creation falls back correctly depending on whether a matching XML profile exists.
+ *
+ * CASES:
+ * - Topic name matches a loaded XML DataWriter profile  -> writer created via profile (not a BlankWriter)
+ * - Topic name has no matching XML profile              -> writer created via fallback QoS (not a BlankWriter)
+ */
+TEST(ParticipantsCreationgTest, writer_topic_profile_lookup)
+{
+    // Load an XML profile whose name matches the topic we will use in the first case
+    participants::XmlHandlerConfiguration xml_conf;
+    xml_conf.raw.set_value(
+        R"(<?xml version="1.0" encoding="utf-8"?>
+        <dds xmlns="http://www.eprosima.com">
+            <profiles>
+                <data_writer profile_name="topic_with_profile">
+                    <historyMemoryPolicy>DYNAMIC</historyMemoryPolicy>
+                </data_writer>
+            </profiles>
+        </dds>)");
+    ASSERT_EQ(participants::XmlHandler::load_xml(xml_conf), utils::ReturnCode::RETCODE_OK);
+
+    std::shared_ptr<core::PayloadPool> payload_pool(new core::FastPayloadPool());
+    std::shared_ptr<core::DiscoveryDatabase> discovery_database(new core::DiscoveryDatabase());
+
+    std::shared_ptr<participants::XmlParticipantConfiguration> conf(
+        new participants::XmlParticipantConfiguration());
+    conf->id = core::types::ParticipantId("TestParticipant");
+
+    participants::dds::XmlParticipant participant(conf, payload_pool, discovery_database);
+    participant.init();
+
+    // Case 1: profile exists for this topic name -> profile path taken
+    core::types::DdsTopic topic_with_profile;
+    topic_with_profile.m_topic_name = "topic_with_profile";
+    topic_with_profile.type_name = "TestType";
+
+    auto writer_with_profile = participant.create_writer(topic_with_profile);
+    EXPECT_NE(nullptr, writer_with_profile);
+    EXPECT_EQ(nullptr, dynamic_cast<participants::BlankWriter*>(writer_with_profile.get()));
+
+    // Case 2: no profile for this topic name -> fallback path taken
+    core::types::DdsTopic topic_without_profile;
+    topic_without_profile.m_topic_name = "topic_without_profile";
+    topic_without_profile.type_name = "TestType";
+
+    auto writer_without_profile = participant.create_writer(topic_without_profile);
+    EXPECT_NE(nullptr, writer_without_profile);
+    EXPECT_EQ(nullptr, dynamic_cast<participants::BlankWriter*>(writer_without_profile.get()));
+}
+
+/**
+ * Test that reader creation falls back correctly depending on whether a matching XML profile exists.
+ *
+ * CASES:
+ * - Topic name matches a loaded XML DataReader profile  -> reader created via profile (not a BlankReader)
+ * - Topic name has no matching XML profile              -> reader created via fallback QoS (not a BlankReader)
+ */
+TEST(ParticipantsCreationgTest, reader_topic_profile_lookup)
+{
+    participants::XmlHandlerConfiguration xml_conf;
+    xml_conf.raw.set_value(
+        R"(<?xml version="1.0" encoding="utf-8"?>
+        <dds xmlns="http://www.eprosima.com">
+            <profiles>
+                <data_reader profile_name="topic_with_reader_profile">
+                    <historyMemoryPolicy>DYNAMIC</historyMemoryPolicy>
+                </data_reader>
+            </profiles>
+        </dds>)");
+    ASSERT_EQ(participants::XmlHandler::load_xml(xml_conf), utils::ReturnCode::RETCODE_OK);
+
+    std::shared_ptr<core::PayloadPool> payload_pool(new core::FastPayloadPool());
+    std::shared_ptr<core::DiscoveryDatabase> discovery_database(new core::DiscoveryDatabase());
+
+    std::shared_ptr<participants::XmlParticipantConfiguration> conf(
+        new participants::XmlParticipantConfiguration());
+    conf->id = core::types::ParticipantId("TestReaderParticipant");
+
+    participants::dds::XmlParticipant participant(conf, payload_pool, discovery_database);
+    participant.init();
+
+    // Case 1: profile exists for this topic name -> profile path taken
+    core::types::DdsTopic topic_with_profile;
+    topic_with_profile.m_topic_name = "topic_with_reader_profile";
+    topic_with_profile.type_name = "TestType";
+
+    auto reader_with_profile = participant.create_reader(topic_with_profile);
+    EXPECT_NE(nullptr, reader_with_profile);
+    EXPECT_EQ(nullptr, dynamic_cast<participants::BlankReader*>(reader_with_profile.get()));
+
+    // Case 2: no profile for this topic name -> fallback path taken
+    core::types::DdsTopic topic_without_profile;
+    topic_without_profile.m_topic_name = "topic_without_reader_profile";
+    topic_without_profile.type_name = "TestType";
+
+    auto reader_without_profile = participant.create_reader(topic_without_profile);
+    EXPECT_NE(nullptr, reader_without_profile);
+    EXPECT_EQ(nullptr, dynamic_cast<participants::BlankReader*>(reader_without_profile.get()));
 }
 
 int main(

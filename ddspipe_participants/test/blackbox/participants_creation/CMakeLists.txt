@@ -22,6 +22,8 @@ set(TEST_LIST
         default_configuration
         creation_trivial
         ddspipe_all_creation_builtin_topic
+        writer_topic_profile_lookup
+        reader_topic_profile_lookup
     )
 
 set(TEST_NEEDED_SOURCES
