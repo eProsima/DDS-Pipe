@@ -31,18 +31,49 @@
 #include <ddspipe_participants/testing/entities/mock_entities.hpp>
 #include <ddspipe_participants/testing/random_values.hpp>
 #include <ddspipe_participants/reader/auxiliar/BlankReader.hpp>
+#include <ddspipe_participants/reader/dds/SimpleReader.hpp>
 #include <ddspipe_participants/writer/auxiliar/BlankWriter.hpp>
+#include <ddspipe_participants/writer/dds/SimpleWriter.hpp>
 #include <ddspipe_participants/xml/XmlHandler.hpp>
 #include <ddspipe_participants/xml/XmlHandlerConfiguration.hpp>
+#include <fastdds/dds/domain/DomainParticipantFactory.hpp>
+
+#include <ddspipe_participants/types/dds/TopicDataType.hpp>
 
 using namespace eprosima;
 using namespace eprosima::ddspipe;
 
 namespace test {
 
+class TestableWriter : public participants::dds::SimpleWriter
+{
+public:
+
+    using SimpleWriter::SimpleWriter;
+
+    fastdds::dds::DataWriter* get_dds_writer()
+    {
+        return writer_;
+    }
+
+};
+
+class TestableReader : public participants::dds::SimpleReader
+{
+public:
+
+    using SimpleReader::SimpleReader;
+
+    fastdds::dds::DataReader* get_dds_reader()
+    {
+        return reader_;
+    }
+
+};
+
 constexpr const unsigned int N_THREADS = 2;
 
-} // test
+} // namespace test
 
 /**
  * Test to check default participant configuration values.
@@ -250,8 +281,8 @@ TEST(ParticipantsCreationgTest, ddspipe_all_creation_builtin_topic)
  * Test that writer creation falls back correctly depending on whether a matching XML profile exists.
  *
  * CASES:
- * - Topic name matches a loaded XML DataWriter profile  -> writer created via profile (not a BlankWriter)
- * - Topic name has no matching XML profile              -> writer created via fallback QoS (not a BlankWriter)
+ * - Topic name matches a loaded XML DataWriter profile  -> QoS comes from profile (DYNAMIC history memory policy)
+ * - Topic name has no matching XML profile              -> QoS comes from default (PREALLOCATED_WITH_REALLOC)
  */
 TEST(ParticipantsCreationgTest, writer_topic_profile_lookup)
 {
@@ -261,7 +292,7 @@ TEST(ParticipantsCreationgTest, writer_topic_profile_lookup)
         R"(<?xml version="1.0" encoding="utf-8"?>
         <dds xmlns="http://www.eprosima.com">
             <profiles>
-                <data_writer profile_name="topic_with_profile">
+                <data_writer profile_name="writer_topic_with_profile">
                     <historyMemoryPolicy>DYNAMIC</historyMemoryPolicy>
                 </data_writer>
             </profiles>
@@ -269,40 +300,76 @@ TEST(ParticipantsCreationgTest, writer_topic_profile_lookup)
     ASSERT_EQ(participants::XmlHandler::load_xml(xml_conf), utils::ReturnCode::RETCODE_OK);
 
     std::shared_ptr<core::PayloadPool> payload_pool(new core::FastPayloadPool());
-    std::shared_ptr<core::DiscoveryDatabase> discovery_database(new core::DiscoveryDatabase());
 
-    std::shared_ptr<participants::XmlParticipantConfiguration> conf(
-        new participants::XmlParticipantConfiguration());
-    conf->id = core::types::ParticipantId("TestParticipant");
+    // Create a raw DDS DomainParticipant to back the writer
+    auto dds_participant =
+            fastdds::dds::DomainParticipantFactory::get_instance()->create_participant(
+        0,
+        fastdds::dds::PARTICIPANT_QOS_DEFAULT);
+    ASSERT_NE(nullptr, dds_participant);
 
-    participants::dds::XmlParticipant participant(conf, payload_pool, discovery_database);
-    participant.init();
+    core::types::ParticipantId part_id("WriterProfileTestPart");
 
-    // Case 1: profile exists for this topic name -> profile path taken
-    core::types::DdsTopic topic_with_profile;
-    topic_with_profile.m_topic_name = "topic_with_profile";
-    topic_with_profile.type_name = "TestType";
+    auto register_type_and_topic = [&](const std::string& topic_name, const std::string& type_name)
+            -> fastdds::dds::Topic*
+            {
+                fastdds::dds::TypeSupport type_support(
+                    new participants::dds::TopicDataType(
+                        payload_pool,
+                        type_name,
+                        fastdds::dds::xtypes::TypeIdentifierPair(),
+                        false));
+                dds_participant->register_type(type_support);
+                return dds_participant->create_topic(
+                    topic_name,
+                    type_name,
+                    dds_participant->get_default_topic_qos());
+            };
 
-    auto writer_with_profile = participant.create_writer(topic_with_profile);
-    EXPECT_NE(nullptr, writer_with_profile);
-    EXPECT_EQ(nullptr, dynamic_cast<participants::BlankWriter*>(writer_with_profile.get()));
+    // Case 1: profile exists -> DYNAMIC_RESERVE_MEMORY_MODE
+    {
+        core::types::DdsTopic topic;
+        topic.m_topic_name = "writer_topic_with_profile";
+        topic.type_name = "WriterProfileType";
 
-    // Case 2: no profile for this topic name -> fallback path taken
-    core::types::DdsTopic topic_without_profile;
-    topic_without_profile.m_topic_name = "topic_without_profile";
-    topic_without_profile.type_name = "TestType";
+        auto dds_topic = register_type_and_topic(topic.m_topic_name, topic.type_name);
+        ASSERT_NE(nullptr, dds_topic);
 
-    auto writer_without_profile = participant.create_writer(topic_without_profile);
-    EXPECT_NE(nullptr, writer_without_profile);
-    EXPECT_EQ(nullptr, dynamic_cast<participants::BlankWriter*>(writer_without_profile.get()));
+        test::TestableWriter writer(part_id, topic, payload_pool, dds_participant, dds_topic);
+        writer.init({});
+
+        fastdds::dds::DataWriterQos qos;
+        writer.get_dds_writer()->get_qos(qos);
+        EXPECT_EQ(fastdds::rtps::DYNAMIC_RESERVE_MEMORY_MODE, qos.endpoint().history_memory_policy);
+    }
+
+    // Case 2: no profile -> PREALLOCATED_WITH_REALLOC_MEMORY_MODE (Fast DDS default)
+    {
+        core::types::DdsTopic topic;
+        topic.m_topic_name = "writer_topic_without_profile";
+        topic.type_name = "WriterNoProfileType";
+
+        auto dds_topic = register_type_and_topic(topic.m_topic_name, topic.type_name);
+        ASSERT_NE(nullptr, dds_topic);
+
+        test::TestableWriter writer(part_id, topic, payload_pool, dds_participant, dds_topic);
+        writer.init({});
+
+        fastdds::dds::DataWriterQos qos;
+        writer.get_dds_writer()->get_qos(qos);
+        EXPECT_EQ(fastdds::rtps::PREALLOCATED_WITH_REALLOC_MEMORY_MODE,
+                qos.endpoint().history_memory_policy);
+    }
+
+    fastdds::dds::DomainParticipantFactory::get_instance()->delete_participant(dds_participant);
 }
 
 /**
  * Test that reader creation falls back correctly depending on whether a matching XML profile exists.
  *
  * CASES:
- * - Topic name matches a loaded XML DataReader profile  -> reader created via profile (not a BlankReader)
- * - Topic name has no matching XML profile              -> reader created via fallback QoS (not a BlankReader)
+ * - Topic name matches a loaded XML DataReader profile  -> QoS comes from profile (DYNAMIC history memory policy)
+ * - Topic name has no matching XML profile              -> QoS comes from default (PREALLOCATED_WITH_REALLOC)
  */
 TEST(ParticipantsCreationgTest, reader_topic_profile_lookup)
 {
@@ -311,7 +378,7 @@ TEST(ParticipantsCreationgTest, reader_topic_profile_lookup)
         R"(<?xml version="1.0" encoding="utf-8"?>
         <dds xmlns="http://www.eprosima.com">
             <profiles>
-                <data_reader profile_name="topic_with_reader_profile">
+                <data_reader profile_name="reader_topic_with_profile">
                     <historyMemoryPolicy>DYNAMIC</historyMemoryPolicy>
                 </data_reader>
             </profiles>
@@ -319,32 +386,68 @@ TEST(ParticipantsCreationgTest, reader_topic_profile_lookup)
     ASSERT_EQ(participants::XmlHandler::load_xml(xml_conf), utils::ReturnCode::RETCODE_OK);
 
     std::shared_ptr<core::PayloadPool> payload_pool(new core::FastPayloadPool());
-    std::shared_ptr<core::DiscoveryDatabase> discovery_database(new core::DiscoveryDatabase());
 
-    std::shared_ptr<participants::XmlParticipantConfiguration> conf(
-        new participants::XmlParticipantConfiguration());
-    conf->id = core::types::ParticipantId("TestReaderParticipant");
+    // Create a raw DDS DomainParticipant to back the reader
+    auto dds_participant =
+            fastdds::dds::DomainParticipantFactory::get_instance()->create_participant(
+        0,
+        fastdds::dds::PARTICIPANT_QOS_DEFAULT);
+    ASSERT_NE(nullptr, dds_participant);
 
-    participants::dds::XmlParticipant participant(conf, payload_pool, discovery_database);
-    participant.init();
+    core::types::ParticipantId part_id("ReaderProfileTestPart");
 
-    // Case 1: profile exists for this topic name -> profile path taken
-    core::types::DdsTopic topic_with_profile;
-    topic_with_profile.m_topic_name = "topic_with_reader_profile";
-    topic_with_profile.type_name = "TestType";
+    auto register_type_and_topic = [&](const std::string& topic_name, const std::string& type_name)
+            -> fastdds::dds::Topic*
+            {
+                fastdds::dds::TypeSupport type_support(
+                    new participants::dds::TopicDataType(
+                        payload_pool,
+                        type_name,
+                        fastdds::dds::xtypes::TypeIdentifierPair(),
+                        false));
+                dds_participant->register_type(type_support);
+                return dds_participant->create_topic(
+                    topic_name,
+                    type_name,
+                    dds_participant->get_default_topic_qos());
+            };
 
-    auto reader_with_profile = participant.create_reader(topic_with_profile);
-    EXPECT_NE(nullptr, reader_with_profile);
-    EXPECT_EQ(nullptr, dynamic_cast<participants::BlankReader*>(reader_with_profile.get()));
+    // Case 1: profile exists -> DYNAMIC_RESERVE_MEMORY_MODE
+    {
+        core::types::DdsTopic topic;
+        topic.m_topic_name = "reader_topic_with_profile";
+        topic.type_name = "ReaderProfileType";
 
-    // Case 2: no profile for this topic name -> fallback path taken
-    core::types::DdsTopic topic_without_profile;
-    topic_without_profile.m_topic_name = "topic_without_reader_profile";
-    topic_without_profile.type_name = "TestType";
+        auto dds_topic = register_type_and_topic(topic.m_topic_name, topic.type_name);
+        ASSERT_NE(nullptr, dds_topic);
 
-    auto reader_without_profile = participant.create_reader(topic_without_profile);
-    EXPECT_NE(nullptr, reader_without_profile);
-    EXPECT_EQ(nullptr, dynamic_cast<participants::BlankReader*>(reader_without_profile.get()));
+        test::TestableReader reader(part_id, topic, payload_pool, dds_participant, dds_topic);
+        reader.init({}, "");
+
+        fastdds::dds::DataReaderQos qos;
+        reader.get_dds_reader()->get_qos(qos);
+        EXPECT_EQ(fastdds::rtps::DYNAMIC_RESERVE_MEMORY_MODE, qos.endpoint().history_memory_policy);
+    }
+
+    // Case 2: no profile -> PREALLOCATED_WITH_REALLOC_MEMORY_MODE (Fast DDS default)
+    {
+        core::types::DdsTopic topic;
+        topic.m_topic_name = "reader_topic_without_profile";
+        topic.type_name = "ReaderNoProfileType";
+
+        auto dds_topic = register_type_and_topic(topic.m_topic_name, topic.type_name);
+        ASSERT_NE(nullptr, dds_topic);
+
+        test::TestableReader reader(part_id, topic, payload_pool, dds_participant, dds_topic);
+        reader.init({}, "");
+
+        fastdds::dds::DataReaderQos qos;
+        reader.get_dds_reader()->get_qos(qos);
+        EXPECT_EQ(fastdds::rtps::PREALLOCATED_WITH_REALLOC_MEMORY_MODE,
+                qos.endpoint().history_memory_policy);
+    }
+
+    fastdds::dds::DomainParticipantFactory::get_instance()->delete_participant(dds_participant);
 }
 
 int main(
