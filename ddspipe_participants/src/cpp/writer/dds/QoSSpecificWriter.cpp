@@ -48,10 +48,11 @@ fastdds::dds::PublisherQos QoSSpecificWriter::reckon_publisher_qos_() const noex
     return qos;
 }
 
-fastdds::dds::DataWriterQos QoSSpecificWriter::reckon_writer_qos_() const noexcept
+fastdds::dds::DataWriterQos QoSSpecificWriter::reckon_writer_qos_(
+        const std::string& topic_name) const noexcept
 {
     // Get QoS from parent class
-    fastdds::dds::DataWriterQos qos = CommonWriter::reckon_writer_qos_();
+    fastdds::dds::DataWriterQos qos = CommonWriter::reckon_writer_qos_(topic_.topic_name());
 
     // Set Ownership
     if (topic_.topic_qos.has_ownership())
