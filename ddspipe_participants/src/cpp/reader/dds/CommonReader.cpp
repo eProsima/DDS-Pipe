@@ -278,11 +278,36 @@ fastdds::dds::DataReaderQos CommonReader::reckon_reader_qos_(
         const std::string& topic_name) const
 {
     fastdds::dds::DataReaderQos qos;
-    fastdds::dds::ReturnCode_t ret_xml_qos = dds_subscriber_->get_datareader_qos_from_profile(topic_name, qos);
 
-    if (ret_xml_qos != fastdds::dds::RETCODE_OK)
+    // Don't override XML with YAML Qos
+    if (fastdds::dds::RETCODE_OK != dds_subscriber_->get_datareader_qos_from_profile(topic_name, qos))
     {
         qos = dds_subscriber_->get_default_datareader_qos();
+
+        qos.durability().kind =
+                (topic_.topic_qos.is_transient_local())
+                ? fastdds::dds::DurabilityQosPolicyKind::TRANSIENT_LOCAL_DURABILITY_QOS
+                : fastdds::dds::DurabilityQosPolicyKind::VOLATILE_DURABILITY_QOS;
+
+        qos.reliability().kind =
+                (topic_.topic_qos.is_reliable())
+                ? fastdds::dds::ReliabilityQosPolicyKind::RELIABLE_RELIABILITY_QOS
+                : fastdds::dds::ReliabilityQosPolicyKind::BEST_EFFORT_RELIABILITY_QOS;
+
+        qos.ownership().kind =
+                (topic_.topic_qos.has_ownership())
+                ? fastdds::dds::OwnershipQosPolicyKind::EXCLUSIVE_OWNERSHIP_QOS
+                : fastdds::dds::OwnershipQosPolicyKind::SHARED_OWNERSHIP_QOS;
+
+        if (topic_.topic_qos.history_depth == 0U)
+        {
+            qos.history().kind = eprosima::fastdds::dds::HistoryQosPolicyKind::KEEP_ALL_HISTORY_QOS;
+        }
+        else
+        {
+            qos.history().kind = eprosima::fastdds::dds::HistoryQosPolicyKind::KEEP_LAST_HISTORY_QOS;
+            qos.history().depth = topic_.topic_qos.history_depth;
+        }
     }
 
     // IMPORTANT
@@ -294,31 +319,6 @@ fastdds::dds::DataReaderQos CommonReader::reckon_reader_qos_(
     if (topic_.topic_qos.keyed)
     {
         qos.expects_inline_qos(true);
-    }
-
-    qos.durability().kind =
-            (topic_.topic_qos.is_transient_local())
-            ? fastdds::dds::DurabilityQosPolicyKind::TRANSIENT_LOCAL_DURABILITY_QOS
-            : fastdds::dds::DurabilityQosPolicyKind::VOLATILE_DURABILITY_QOS;
-
-    qos.reliability().kind =
-            (topic_.topic_qos.is_reliable())
-            ? fastdds::dds::ReliabilityQosPolicyKind::RELIABLE_RELIABILITY_QOS
-            : fastdds::dds::ReliabilityQosPolicyKind::BEST_EFFORT_RELIABILITY_QOS;
-
-    qos.ownership().kind =
-            (topic_.topic_qos.has_ownership())
-            ? fastdds::dds::OwnershipQosPolicyKind::EXCLUSIVE_OWNERSHIP_QOS
-            : fastdds::dds::OwnershipQosPolicyKind::SHARED_OWNERSHIP_QOS;
-
-    if (topic_.topic_qos.history_depth == 0U)
-    {
-        qos.history().kind = eprosima::fastdds::dds::HistoryQosPolicyKind::KEEP_ALL_HISTORY_QOS;
-    }
-    else
-    {
-        qos.history().kind = eprosima::fastdds::dds::HistoryQosPolicyKind::KEEP_LAST_HISTORY_QOS;
-        qos.history().depth = topic_.topic_qos.history_depth;
     }
 
     return qos;
