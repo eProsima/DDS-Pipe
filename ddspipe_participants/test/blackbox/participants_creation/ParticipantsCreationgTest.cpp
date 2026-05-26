@@ -450,6 +450,202 @@ TEST(ParticipantsCreationgTest, reader_topic_profile_lookup)
     fastdds::dds::DomainParticipantFactory::get_instance()->delete_participant(dds_participant);
 }
 
+/**
+ * Test that xml_override flag makes YAML QoS take precedence over a matching XML profile.
+ *
+ * CASES:
+ * - xml_override = false, profile exists -> QoS comes from XML profile (DYNAMIC history memory policy)
+ * - xml_override = true,  profile exists -> QoS comes from YAML (RELIABLE reliability, set via topic_qos)
+ */
+TEST(ParticipantsCreationgTest, writer_xml_override)
+{
+    // Load an XML profile that sets DYNAMIC memory policy and BEST_EFFORT reliability
+    participants::XmlHandlerConfiguration xml_conf;
+    xml_conf.raw.set_value(
+        R"(<?xml version="1.0" encoding="utf-8"?>
+        <dds xmlns="http://www.eprosima.com">
+            <profiles>
+                <data_writer profile_name="writer_override_topic">
+                    <historyMemoryPolicy>DYNAMIC</historyMemoryPolicy>
+                    <qos>
+                        <reliability>
+                            <kind>BEST_EFFORT</kind>
+                        </reliability>
+                    </qos>
+                </data_writer>
+            </profiles>
+        </dds>)");
+    ASSERT_EQ(participants::XmlHandler::load_xml(xml_conf), utils::ReturnCode::RETCODE_OK);
+
+    std::shared_ptr<core::PayloadPool> payload_pool(new core::FastPayloadPool());
+
+    auto dds_participant =
+            fastdds::dds::DomainParticipantFactory::get_instance()->create_participant(
+        0,
+        fastdds::dds::PARTICIPANT_QOS_DEFAULT);
+    ASSERT_NE(nullptr, dds_participant);
+
+    core::types::ParticipantId part_id("WriterOverrideTestPart");
+
+    auto register_type_and_topic = [&](const std::string& topic_name, const std::string& type_name)
+            -> fastdds::dds::Topic*
+            {
+                fastdds::dds::TypeSupport type_support(
+                    new participants::dds::TopicDataType(
+                        payload_pool,
+                        type_name,
+                        fastdds::dds::xtypes::TypeIdentifierPair(),
+                        false));
+                dds_participant->register_type(type_support);
+                return dds_participant->create_topic(
+                    topic_name,
+                    type_name,
+                    dds_participant->get_default_topic_qos());
+            };
+
+    // Register one type and create the topic once — both cases reuse it
+    const std::string topic_name = "writer_override_topic";
+    const std::string type_name = "WriterOverrideType";
+
+    auto dds_topic = register_type_and_topic(topic_name, type_name);
+    ASSERT_NE(nullptr, dds_topic);
+
+    // Case 1: xml_override = false
+    {
+        core::types::DdsTopic topic;
+        topic.m_topic_name = topic_name;
+        topic.type_name = type_name;
+        topic.topic_qos.reliability_qos = core::types::ReliabilityKind::RELIABLE;
+
+        test::TestableWriter writer(part_id, topic, payload_pool, dds_participant, dds_topic,
+                false /* repeater */, false /* xml_override */);
+        writer.init({});
+
+        fastdds::dds::DataWriterQos qos;
+        writer.get_dds_writer()->get_qos(qos);
+
+        EXPECT_EQ(fastdds::rtps::DYNAMIC_RESERVE_MEMORY_MODE, qos.endpoint().history_memory_policy);
+        EXPECT_EQ(fastdds::dds::BEST_EFFORT_RELIABILITY_QOS, qos.reliability().kind);
+    }
+
+    // Case 2: xml_override = true
+    {
+        core::types::DdsTopic topic;
+        topic.m_topic_name = topic_name;
+        topic.type_name = type_name;
+        topic.topic_qos.reliability_qos = core::types::ReliabilityKind::RELIABLE;
+
+        test::TestableWriter writer(part_id, topic, payload_pool, dds_participant, dds_topic,
+                false /* repeater */, true /* xml_override */);
+        writer.init({});
+
+        fastdds::dds::DataWriterQos qos;
+        writer.get_dds_writer()->get_qos(qos);
+
+        EXPECT_EQ(fastdds::dds::RELIABLE_RELIABILITY_QOS, qos.reliability().kind);
+    }
+
+    fastdds::dds::DomainParticipantFactory::get_instance()->delete_participant(dds_participant);
+}
+
+/**
+ * Test that xml_override flag makes YAML QoS take precedence over a matching XML profile for readers.
+ *
+ * CASES:
+ * - xml_override = false, profile exists -> QoS comes from XML profile (BEST_EFFORT reliability)
+ * - xml_override = true,  profile exists -> QoS comes from YAML (RELIABLE reliability, set via topic_qos)
+ */
+TEST(ParticipantsCreationgTest, reader_xml_override)
+{
+    // Load an XML profile that sets DYNAMIC memory policy and BEST_EFFORT reliability
+    participants::XmlHandlerConfiguration xml_conf;
+    xml_conf.raw.set_value(
+        R"(<?xml version="1.0" encoding="utf-8"?>
+        <dds xmlns="http://www.eprosima.com">
+            <profiles>
+                <data_reader profile_name="reader_override_topic">
+                    <historyMemoryPolicy>DYNAMIC</historyMemoryPolicy>
+                    <qos>
+                        <reliability>
+                            <kind>BEST_EFFORT</kind>
+                        </reliability>
+                    </qos>
+                </data_reader>
+            </profiles>
+        </dds>)");
+    ASSERT_EQ(participants::XmlHandler::load_xml(xml_conf), utils::ReturnCode::RETCODE_OK);
+
+    std::shared_ptr<core::PayloadPool> payload_pool(new core::FastPayloadPool());
+
+    auto dds_participant =
+            fastdds::dds::DomainParticipantFactory::get_instance()->create_participant(
+        0,
+        fastdds::dds::PARTICIPANT_QOS_DEFAULT);
+    ASSERT_NE(nullptr, dds_participant);
+
+    core::types::ParticipantId part_id("ReaderOverrideTestPart");
+
+    auto register_type_and_topic = [&](const std::string& topic_name, const std::string& type_name)
+            -> fastdds::dds::Topic*
+            {
+                fastdds::dds::TypeSupport type_support(
+                    new participants::dds::TopicDataType(
+                        payload_pool,
+                        type_name,
+                        fastdds::dds::xtypes::TypeIdentifierPair(),
+                        false));
+                dds_participant->register_type(type_support);
+                return dds_participant->create_topic(
+                    topic_name,
+                    type_name,
+                    dds_participant->get_default_topic_qos());
+            };
+
+    // Register one type and create the topic once — both cases reuse it
+    const std::string topic_name = "reader_override_topic";
+    const std::string type_name = "ReaderOverrideType";
+
+    auto dds_topic = register_type_and_topic(topic_name, type_name);
+    ASSERT_NE(nullptr, dds_topic);
+
+    // Case 1: xml_override = false
+    {
+        core::types::DdsTopic topic;
+        topic.m_topic_name = topic_name;
+        topic.type_name = type_name;
+        topic.topic_qos.reliability_qos = core::types::ReliabilityKind::RELIABLE;
+
+        test::TestableReader reader(part_id, topic, payload_pool, dds_participant, dds_topic,
+                false /* xml_override */);
+        reader.init({}, "");
+
+        fastdds::dds::DataReaderQos qos;
+        reader.get_dds_reader()->get_qos(qos);
+
+        EXPECT_EQ(fastdds::rtps::DYNAMIC_RESERVE_MEMORY_MODE, qos.endpoint().history_memory_policy);
+        EXPECT_EQ(fastdds::dds::BEST_EFFORT_RELIABILITY_QOS, qos.reliability().kind);
+    }
+
+    // Case 2: xml_override = true
+    {
+        core::types::DdsTopic topic;
+        topic.m_topic_name = topic_name;
+        topic.type_name = type_name;
+        topic.topic_qos.reliability_qos = core::types::ReliabilityKind::RELIABLE;
+
+        test::TestableReader reader(part_id, topic, payload_pool, dds_participant, dds_topic,
+                true /* xml_override */);
+        reader.init({}, "");
+
+        fastdds::dds::DataReaderQos qos;
+        reader.get_dds_reader()->get_qos(qos);
+
+        EXPECT_EQ(fastdds::dds::RELIABLE_RELIABILITY_QOS, qos.reliability().kind);
+    }
+
+    fastdds::dds::DomainParticipantFactory::get_instance()->delete_participant(dds_participant);
+}
+
 int main(
         int argc,
         char** argv)
