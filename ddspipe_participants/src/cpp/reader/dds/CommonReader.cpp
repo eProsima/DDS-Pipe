@@ -203,10 +203,12 @@ CommonReader::CommonReader(
         const DdsTopic& topic,
         const std::shared_ptr<core::PayloadPool>& payload_pool,
         fastdds::dds::DomainParticipant* participant,
-        fastdds::dds::Topic* topic_entity)
+        fastdds::dds::Topic* topic_entity,
+        const bool xml_override /* = false */)
     : BaseReader(participant_id, topic.topic_qos.max_rx_rate, topic.topic_qos.downsampling)
     , dds_participant_(participant)
     , dds_topic_(topic_entity)
+    , xml_override_(xml_override)
     , payload_pool_(payload_pool)
     , topic_(topic)
     , dds_subscriber_(nullptr)
@@ -279,10 +281,15 @@ fastdds::dds::DataReaderQos CommonReader::reckon_reader_qos_(
 {
     fastdds::dds::DataReaderQos qos;
 
-    // Don't override XML with YAML Qos
-    if (fastdds::dds::RETCODE_OK != dds_subscriber_->get_datareader_qos_from_profile(topic_name, qos))
+    bool xml_profile_found =
+            (fastdds::dds::RETCODE_OK == dds_subscriber_->get_datareader_qos_from_profile(topic_name, qos));
+
+    if (!xml_profile_found || xml_override_)
     {
-        qos = dds_subscriber_->get_default_datareader_qos();
+        if (!xml_profile_found)
+        {
+            qos = dds_subscriber_->get_default_datareader_qos();
+        }
 
         qos.durability().kind =
                 (topic_.topic_qos.is_transient_local())

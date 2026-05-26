@@ -171,6 +171,12 @@ void YamlReader::fill(
     {
         fill<TopicQoS>(object.topic_qos, get_value_in_tag(yml, PARTICIPANT_QOS_TAG), version);
     }
+
+    // Optional xml-override flag
+    if (YamlReader::is_tag_present(yml, XML_OVERRIDE_TAG))
+    {
+        object.xml_override = get<bool>(yml, XML_OVERRIDE_TAG, version);
+    }
 }
 
 template<>

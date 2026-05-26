@@ -103,7 +103,8 @@ protected:
             const std::shared_ptr<core::PayloadPool>& payload_pool,
             fastdds::dds::DomainParticipant* participant,
             fastdds::dds::Topic* topic_entity,
-            const bool repeater);
+            const bool repeater,
+            const bool xml_override = false);
 
     /////////////////////////
     // IWRITER METHODS
@@ -183,6 +184,7 @@ protected:
     fastdds::dds::DomainParticipant* dds_participant_;
     fastdds::dds::Topic* dds_topic_;
     bool repeater_;
+    bool xml_override_;
 
     /////////////////////////
     // INTERNAL VARIABLES

@@ -133,13 +133,15 @@ CommonWriter::CommonWriter(
         const std::shared_ptr<core::PayloadPool>& payload_pool,
         fastdds::dds::DomainParticipant* participant,
         fastdds::dds::Topic* topic_entity,
-        const bool repeater)
+        const bool repeater,
+        const bool xml_override /* = false */)
     : BaseWriter(participant_id, topic.topic_qos.max_tx_rate)
     , dds_participant_(participant)
     , dds_topic_(topic_entity)
     , payload_pool_(new core::PayloadPoolMediator(payload_pool))
     , topic_(topic)
     , repeater_(repeater)
+    , xml_override_(xml_override)
     , dds_publisher_(nullptr)
     , writer_(nullptr)
 {
@@ -231,9 +233,15 @@ fastdds::dds::DataWriterQos CommonWriter::reckon_writer_qos_(
 {
     fastdds::dds::DataWriterQos qos;
 
-    if (fastdds::dds::RETCODE_OK != dds_publisher_->get_datawriter_qos_from_profile(topic_name, qos))
+    bool xml_profile_found =
+            (fastdds::dds::RETCODE_OK == dds_publisher_->get_datawriter_qos_from_profile(topic_name, qos));
+
+    if (!xml_profile_found || xml_override_)
     {
-        qos = dds_publisher_->get_default_datawriter_qos();
+        if (!xml_profile_found)
+        {
+            qos = dds_publisher_->get_default_datawriter_qos();
+        }
 
         qos.durability().kind =
                 (topic_.topic_qos.is_transient_local())

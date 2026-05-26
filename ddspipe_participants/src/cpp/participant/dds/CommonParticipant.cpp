@@ -160,7 +160,8 @@ std::shared_ptr<core::IWriter> CommonParticipant::create_writer(
             this->payload_pool_,
             dds_participant_,
             fastdds_topic,
-            configuration_->is_repeater);
+            configuration_->is_repeater,
+            configuration_->xml_override);
     }
     else
     {
@@ -170,7 +171,8 @@ std::shared_ptr<core::IWriter> CommonParticipant::create_writer(
             this->payload_pool_,
             dds_participant_,
             fastdds_topic,
-            configuration_->is_repeater);
+            configuration_->is_repeater,
+            configuration_->xml_override);
         writer->init(partition_filter_set_);
 
         return writer;
@@ -217,7 +219,8 @@ std::shared_ptr<core::IReader> CommonParticipant::create_reader(
             this->payload_pool_,
             dds_participant_,
             fastdds_topic,
-            discovery_database_);
+            discovery_database_,
+            configuration_->xml_override);
         // Add the filters data structures
         // if these filters are empty, the filters are not applied.
         reader->init(partition_filter_set_, content_topic_filter_expr);
@@ -231,7 +234,8 @@ std::shared_ptr<core::IReader> CommonParticipant::create_reader(
             dds_topic,
             this->payload_pool_,
             dds_participant_,
-            fastdds_topic);
+            fastdds_topic,
+            configuration_->xml_override);
         // Add the filters data structures
         // if these filters are empty, the filters are not applied.
         reader->init(partition_filter_set_, content_topic_filter_expr);

@@ -54,7 +54,8 @@ public:
             const core::types::SpecificEndpointQoS& specific_qos,
             fastdds::dds::DomainParticipant* participant,
             fastdds::dds::Topic* topic_entity,
-            const bool repeater = false);
+            const bool repeater = false,
+            const bool xml_override = false);
 
 protected:
 
