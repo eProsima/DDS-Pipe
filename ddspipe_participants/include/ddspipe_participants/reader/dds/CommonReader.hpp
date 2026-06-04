@@ -121,7 +121,7 @@ protected:
             const std::shared_ptr<core::PayloadPool>& payload_pool,
             fastdds::dds::DomainParticipant* participant,
             fastdds::dds::Topic* topic_entity,
-            const bool xml_override = false);
+            const bool yaml_qos_override = true);
 
     // Specific enable/disable do not need to be implemented
 
@@ -162,7 +162,7 @@ protected:
     virtual
     fastdds::dds::DataReaderQos
     reckon_reader_qos_(
-            const std::string& topic_name) const;
+            const std::string& profile_name) const;
 
     //! Whether a sample received should be processed
     virtual bool should_accept_sample_(
@@ -179,7 +179,7 @@ protected:
 
     fastdds::dds::DomainParticipant* dds_participant_;
     fastdds::dds::Topic* dds_topic_;
-    bool xml_override_;
+    bool yaml_qos_override_;
 
     /////////////////////////
     // INTERNAL VARIABLES

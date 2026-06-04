@@ -60,7 +60,7 @@ public:
             fastdds::dds::DomainParticipant* participant,
             fastdds::dds::Topic* topic_entity,
             const bool repeater = false,
-            const bool xml_override = false);
+            const bool yaml_qos_override = true);
 
     /**
      * @brief Destroy the MultiWriter object
@@ -111,7 +111,7 @@ protected:
     fastdds::dds::DomainParticipant* dds_participant_;
     fastdds::dds::Topic* dds_topic_;
     bool repeater_;
-    bool xml_override_;
+    bool yaml_qos_override_;
 
     /////////////////////////
     // INTERNAL VARIABLES

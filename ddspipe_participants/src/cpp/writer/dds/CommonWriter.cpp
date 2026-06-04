@@ -134,14 +134,14 @@ CommonWriter::CommonWriter(
         fastdds::dds::DomainParticipant* participant,
         fastdds::dds::Topic* topic_entity,
         const bool repeater,
-        const bool xml_override /* = false */)
+        const bool yaml_qos_override /* = true */)
     : BaseWriter(participant_id, topic.topic_qos.max_tx_rate)
     , dds_participant_(participant)
     , dds_topic_(topic_entity)
     , payload_pool_(new core::PayloadPoolMediator(payload_pool))
     , topic_(topic)
     , repeater_(repeater)
-    , xml_override_(xml_override)
+    , yaml_qos_override_(yaml_qos_override)
     , dds_publisher_(nullptr)
     , writer_(nullptr)
 {
@@ -236,7 +236,7 @@ fastdds::dds::DataWriterQos CommonWriter::reckon_writer_qos_(
     bool xml_profile_found =
             (fastdds::dds::RETCODE_OK == dds_publisher_->get_datawriter_qos_from_profile(topic_name, qos));
 
-    if (!xml_profile_found || xml_override_)
+    if (!xml_profile_found || yaml_qos_override_)
     {
         if (!xml_profile_found)
         {

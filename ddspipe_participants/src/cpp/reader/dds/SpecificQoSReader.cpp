@@ -34,9 +34,9 @@ SpecificQoSReader::SpecificQoSReader(
         fastdds::dds::DomainParticipant* participant,
         fastdds::dds::Topic* topic_entity,
         const std::shared_ptr<core::DiscoveryDatabase>& discovery_database,
-        const bool xml_override /* = false */)
+        const bool yaml_qos_override /* = true */)
     : CommonReader(
-        participant_id, topic, payload_pool, participant, topic_entity, xml_override)
+        participant_id, topic, payload_pool, participant, topic_entity, yaml_qos_override)
     , discovery_database_(discovery_database)
 {
 }

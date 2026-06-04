@@ -55,7 +55,7 @@ public:
             fastdds::dds::DomainParticipant* participant,
             fastdds::dds::Topic* topic_entity,
             const std::shared_ptr<core::DiscoveryDatabase>& discovery_database,
-            const bool xml_override = false);
+            const bool yaml_qos_override = true);
 
 protected:
 

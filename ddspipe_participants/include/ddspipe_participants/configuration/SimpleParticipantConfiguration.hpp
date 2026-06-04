@@ -63,9 +63,6 @@ public:
     types::IpType easy_mode_ip {};
 
     core::types::IgnoreParticipantFlags ignore_participant_flags {core::types::IgnoreParticipantFlags::no_filter};
-
-    // XML override
-    bool xml_override {false};
 };
 
 } /* namespace participants */

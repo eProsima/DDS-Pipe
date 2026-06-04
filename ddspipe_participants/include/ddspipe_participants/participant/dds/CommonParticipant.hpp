@@ -251,6 +251,12 @@ protected:
     /////////////////////////
 
     DDSPIPE_PARTICIPANTS_DllAPI
+    virtual bool endpoint_qos_mode_() const noexcept
+    {
+        return false;
+    }
+
+    DDSPIPE_PARTICIPANTS_DllAPI
     virtual
     fastdds::dds::DomainParticipantQos
     reckon_participant_qos_() const;
