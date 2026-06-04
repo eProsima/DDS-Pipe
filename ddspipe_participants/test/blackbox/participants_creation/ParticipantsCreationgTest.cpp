@@ -451,11 +451,11 @@ TEST(ParticipantsCreationgTest, reader_topic_profile_lookup)
 }
 
 /**
- * Test that xml_override flag makes YAML QoS take precedence over a matching XML profile.
+ * Test that endpoint_qos_mode controls whether YAML QoS overrides a matching XML profile for writers.
  *
  * CASES:
- * - xml_override = false, profile exists -> QoS comes from XML profile (DYNAMIC history memory policy)
- * - xml_override = true,  profile exists -> QoS comes from YAML (RELIABLE reliability, set via topic_qos)
+ * - XML_STANDALONE, profile exists -> QoS comes from XML profile
+ * - XML_OVERRIDABLE, profile exists -> QoS comes from YAML
  */
 TEST(ParticipantsCreationgTest, writer_xml_override)
 {
@@ -503,14 +503,13 @@ TEST(ParticipantsCreationgTest, writer_xml_override)
                     dds_participant->get_default_topic_qos());
             };
 
-    // Register one type and create the topic once — both cases reuse it
     const std::string topic_name = "writer_override_topic";
     const std::string type_name = "WriterOverrideType";
 
     auto dds_topic = register_type_and_topic(topic_name, type_name);
     ASSERT_NE(nullptr, dds_topic);
 
-    // Case 1: xml_override = false
+    // Case 1: XML_STANDALONE
     {
         core::types::DdsTopic topic;
         topic.m_topic_name = topic_name;
@@ -518,7 +517,7 @@ TEST(ParticipantsCreationgTest, writer_xml_override)
         topic.topic_qos.reliability_qos = core::types::ReliabilityKind::RELIABLE;
 
         test::TestableWriter writer(part_id, topic, payload_pool, dds_participant, dds_topic,
-                false /* repeater */, false /* xml_override */);
+                false /* repeater */, false /* yaml_qos_override = XML_STANDALONE */);
         writer.init({});
 
         fastdds::dds::DataWriterQos qos;
@@ -528,7 +527,7 @@ TEST(ParticipantsCreationgTest, writer_xml_override)
         EXPECT_EQ(fastdds::dds::BEST_EFFORT_RELIABILITY_QOS, qos.reliability().kind);
     }
 
-    // Case 2: xml_override = true
+    // Case 2: XML_OVERRIDABLE
     {
         core::types::DdsTopic topic;
         topic.m_topic_name = topic_name;
@@ -536,7 +535,7 @@ TEST(ParticipantsCreationgTest, writer_xml_override)
         topic.topic_qos.reliability_qos = core::types::ReliabilityKind::RELIABLE;
 
         test::TestableWriter writer(part_id, topic, payload_pool, dds_participant, dds_topic,
-                false /* repeater */, true /* xml_override */);
+                false /* repeater */, true /* yaml_qos_override = XML_OVERRIDABLE */);
         writer.init({});
 
         fastdds::dds::DataWriterQos qos;
@@ -549,11 +548,11 @@ TEST(ParticipantsCreationgTest, writer_xml_override)
 }
 
 /**
- * Test that xml_override flag makes YAML QoS take precedence over a matching XML profile for readers.
+ * Test that endpoint_qos_mode controls whether YAML QoS overrides a matching XML profile for readers.
  *
  * CASES:
- * - xml_override = false, profile exists -> QoS comes from XML profile (BEST_EFFORT reliability)
- * - xml_override = true,  profile exists -> QoS comes from YAML (RELIABLE reliability, set via topic_qos)
+ * - XML_STANDALONE, profile exists -> QoS comes from XML profile (BEST_EFFORT reliability)
+ * - XML_OVERRIDABLE, profile exists -> QoS comes from YAML (RELIABLE reliability, set via topic_qos)
  */
 TEST(ParticipantsCreationgTest, reader_xml_override)
 {
@@ -601,14 +600,13 @@ TEST(ParticipantsCreationgTest, reader_xml_override)
                     dds_participant->get_default_topic_qos());
             };
 
-    // Register one type and create the topic once — both cases reuse it
     const std::string topic_name = "reader_override_topic";
     const std::string type_name = "ReaderOverrideType";
 
     auto dds_topic = register_type_and_topic(topic_name, type_name);
     ASSERT_NE(nullptr, dds_topic);
 
-    // Case 1: xml_override = false
+    // Case 1: XML_STANDALONE
     {
         core::types::DdsTopic topic;
         topic.m_topic_name = topic_name;
@@ -616,7 +614,7 @@ TEST(ParticipantsCreationgTest, reader_xml_override)
         topic.topic_qos.reliability_qos = core::types::ReliabilityKind::RELIABLE;
 
         test::TestableReader reader(part_id, topic, payload_pool, dds_participant, dds_topic,
-                false /* xml_override */);
+                false /* yaml_qos_override = XML_STANDALONE */);
         reader.init({}, "");
 
         fastdds::dds::DataReaderQos qos;
@@ -626,7 +624,7 @@ TEST(ParticipantsCreationgTest, reader_xml_override)
         EXPECT_EQ(fastdds::dds::BEST_EFFORT_RELIABILITY_QOS, qos.reliability().kind);
     }
 
-    // Case 2: xml_override = true
+    // Case 2: XML_OVERRIDABLE
     {
         core::types::DdsTopic topic;
         topic.m_topic_name = topic_name;
@@ -634,7 +632,7 @@ TEST(ParticipantsCreationgTest, reader_xml_override)
         topic.topic_qos.reliability_qos = core::types::ReliabilityKind::RELIABLE;
 
         test::TestableReader reader(part_id, topic, payload_pool, dds_participant, dds_topic,
-                true /* xml_override */);
+                true /* yaml_qos_override = XML_OVERRIDABLE */);
         reader.init({}, "");
 
         fastdds::dds::DataReaderQos qos;

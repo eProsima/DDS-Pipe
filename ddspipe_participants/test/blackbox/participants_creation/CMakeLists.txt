@@ -24,6 +24,8 @@ set(TEST_LIST
         ddspipe_all_creation_builtin_topic
         writer_topic_profile_lookup
         reader_topic_profile_lookup
+        writer_xml_override
+        reader_xml_override
     )
 
 set(TEST_NEEDED_SOURCES
