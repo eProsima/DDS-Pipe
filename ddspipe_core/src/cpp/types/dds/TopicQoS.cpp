@@ -249,18 +249,17 @@ std::ostream& operator <<(
         std::ostream& os,
         const TopicQoS& qos)
 {
-    os <<
-        "TopicQoS{" <<
-        "durability(" << qos.durability_qos << ")" <<
-        ";reliability(" << qos.reliability_qos << ")" <<
-        ";ownership(" << qos.ownership_qos << ")" <<
-        (qos.has_partitions() ? ";partitions" : "") <<
-        (qos.keyed ? ";keyed" : "") <<
-        ";depth(" << qos.history_depth << ")" <<
-        ";max_tx_rate(" << qos.max_tx_rate << ")" <<
-        ";max_rx_rate(" << qos.max_rx_rate << ")" <<
-        ";downsampling(" << qos.downsampling << ")" <<
-        "}";
+    os << "TopicQoS{"
+       << "durability(" << qos.durability_qos << ")"
+       << ";reliability(" << qos.reliability_qos << ")"
+       << ";ownership(" << qos.ownership_qos << ")"
+       << (qos.has_partitions() ? ";partitions" : "")
+       << (qos.keyed ? ";keyed" : "")
+       << ";depth(" << qos.history_depth << ")"
+       << ";max_tx_rate(" << qos.max_tx_rate << ")"
+       << ";max_rx_rate(" << qos.max_rx_rate << ")"
+       << ";downsampling(" << qos.downsampling << ")"
+       << "}";
 
     return os;
 }
