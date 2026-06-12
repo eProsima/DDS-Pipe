@@ -25,6 +25,16 @@ namespace ddspipe {
 namespace core {
 namespace types {
 
+constexpr const DurabilityKind TopicQoS::DEFAULT_DURABILITY_QOS;
+constexpr const ReliabilityKind TopicQoS::DEFAULT_RELIABILITY_QOS;
+constexpr const OwnershipQosPolicyKind TopicQoS::DEFAULT_OWNERSHIP_QOS;
+constexpr const bool TopicQoS::DEFAULT_USE_PARTITIONS;
+constexpr const HistoryDepthType TopicQoS::DEFAULT_HISTORY_DEPTH;
+constexpr const bool TopicQoS::DEFAULT_KEYED;
+constexpr const float TopicQoS::DEFAULT_MAX_TX_RATE;
+constexpr const float TopicQoS::DEFAULT_MAX_RX_RATE;
+constexpr const unsigned int TopicQoS::DEFAULT_DOWNSAMPLING;
+
 utils::Fuzzy<TopicQoS> TopicQoS::default_topic_qos{};
 
 TopicQoS::TopicQoS()
@@ -239,18 +249,17 @@ std::ostream& operator <<(
         std::ostream& os,
         const TopicQoS& qos)
 {
-    os <<
-        "TopicQoS{" <<
-        "durability(" << qos.durability_qos << ")" <<
-        ";reliability(" << qos.reliability_qos << ")" <<
-        ";ownership(" << qos.ownership_qos << ")" <<
-        (qos.has_partitions() ? ";partitions" : "") <<
-        (qos.keyed ? ";keyed" : "") <<
-        ";depth(" << qos.history_depth << ")" <<
-        ";max_tx_rate(" << qos.max_tx_rate << ")" <<
-        ";max_rx_rate(" << qos.max_rx_rate << ")" <<
-        ";downsampling(" << qos.downsampling << ")" <<
-        "}";
+    os << "TopicQoS{"
+       << "durability(" << qos.durability_qos << ")"
+       << ";reliability(" << qos.reliability_qos << ")"
+       << ";ownership(" << qos.ownership_qos << ")"
+       << (qos.has_partitions() ? ";partitions" : "")
+       << (qos.keyed ? ";keyed" : "")
+       << ";depth(" << qos.history_depth << ")"
+       << ";max_tx_rate(" << qos.max_tx_rate << ")"
+       << ";max_rx_rate(" << qos.max_rx_rate << ")"
+       << ";downsampling(" << qos.downsampling << ")"
+       << "}";
 
     return os;
 }

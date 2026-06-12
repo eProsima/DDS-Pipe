@@ -85,19 +85,19 @@ public:
     /////////////////////////
 
     virtual void on_data_available(
-            fastdds::dds::DataReader* reader);
+            fastdds::dds::DataReader* reader) override;
 
     virtual void on_sample_lost(
             fastdds::dds::DataReader* reader,
-            const fastdds::dds::SampleLostStatus& status);
+            const fastdds::dds::SampleLostStatus& status) override;
 
     virtual void on_requested_incompatible_qos(
             fastdds::dds::DataReader* reader,
-            const fastdds::dds::RequestedIncompatibleQosStatus& status);
+            const fastdds::dds::RequestedIncompatibleQosStatus& status) override;
 
     virtual void on_inconsistent_topic(
             fastdds::dds::Topic* topic,
-            fastdds::dds::InconsistentTopicStatus status);
+            fastdds::dds::InconsistentTopicStatus status) override;
 
 protected:
 
