@@ -75,7 +75,7 @@ public:
      * @param yml Yaml object to validate.
      * @return \c true if \c yml conforms to the schema, \c false otherwise.
      */
-    bool validateYAML(const Yaml& yml);
+    bool validate_YAML(const Yaml& yml);
 
 };
 

@@ -62,28 +62,70 @@ nlohmann::json YamlValidator::yaml_to_json(const Yaml& yml)
         }
         return object;
     }
+    
+    std::string yml_as_string;
+    
+    try
+    {
+        yml_as_string = yml.as<std::string>(); 
+    }
+    catch(...)
+    {
+        throw eprosima::utils::ConfigurationException("Unsupported YAML file, cannot be converted to JSON.");
+    }
 
-    throw std::runtime_error("Unsupported YAML yml");
+    throw eprosima::utils::ConfigurationException(
+              utils::Formatter() << "Unsupported YAML file, cannot be converted to JSON.\n"
+                                 << "Error in node: " << yml_as_string);
 }
 
 YamlValidator::YamlValidator(const nlohmann::json& schema)
 {
-    validator.set_root_schema(schema);
+    try
+    {
+        validator.set_root_schema(schema);
+    }
+    catch (const std::exception& e)
+    {
+        throw eprosima::utils::ConfigurationException(
+                  utils::Formatter() << "Error occured while setting the JSON schema in the YamlValidator: "
+                                     << e.what());
+    }
 }
 
 YamlValidator::YamlValidator(const std::string& schema_path)
 {
-    std::ifstream schema_file(schema_path);
-    nlohmann::json schema = nlohmann::json::parse(schema_file);
-    validator.set_root_schema(schema);
+    try
+    {
+        std::ifstream schema_file;
+        schema_file.exceptions(std::ifstream::failbit | std::ifstream::badbit);
+        schema_file.open(schema_path);
+        nlohmann::json schema = nlohmann::json::parse(schema_file);
+        validator.set_root_schema(schema);
+    }
+    catch (const std::exception& e)
+    {
+        throw eprosima::utils::ConfigurationException(
+                  utils::Formatter() << "Error occured while loading JSON schema from file: "
+                                     << schema_path << " : " << e.what());
+    }
 }
 
 void YamlValidator::set_schema(const nlohmann::json& schema)
 {
-    validator.set_root_schema(schema);
+    try
+    {
+        validator.set_root_schema(schema);
+    }
+    catch (const std::exception& e)
+    {
+        throw eprosima::utils::ConfigurationException(
+                  utils::Formatter() << "Error occured while setting the JSON schema in the YamlValidator: "
+                                     << e.what());
+    }
 }
 
-bool YamlValidator::validateYAML(const Yaml& yml)
+bool YamlValidator::validate_YAML(const Yaml& yml)
 {
     // Define nested struct and class for processing validation errors
     struct ValidationError
@@ -119,7 +161,7 @@ bool YamlValidator::validateYAML(const Yaml& yml)
     // Display errors
     if (!err.errors.empty())
     {
-        std::cerr << "VALIDATION FAILED:\n\n";
+        std::cerr << "YAML VALIDATION FAILED:\n\n";
 
         for (const auto& e : err.errors)
         {
