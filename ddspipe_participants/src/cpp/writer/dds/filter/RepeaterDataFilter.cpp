@@ -50,7 +50,7 @@ bool RepeaterDataFilter::evaluate(
         logDebug(
             REPEATER_DATA_FILTER,
             "Sample without origin information (e.g. dispose/unregister); "
-                "considering it relevant for reader GUID " << reader_guid << ".");
+            "considering it relevant for reader GUID " << reader_guid << ".");
         return true;
     }
 
@@ -58,8 +58,10 @@ bool RepeaterDataFilter::evaluate(
 
     logDebug(
         REPEATER_DATA_FILTER,
-        "Evaluating whether sample with origin writer GUID prefix " << write_data->last_writer_guid_prefix  <<
-            " is relevant for reader GUID " << reader_guid << "? " << (is_relevant ? "TRUE" : "FALSE"));
+        "Evaluating whether sample with origin writer GUID prefix "
+            << write_data->last_writer_guid_prefix
+            << " is relevant for reader GUID " << reader_guid
+            << "? " << (is_relevant ? "TRUE" : "FALSE"));
 
     return is_relevant;
 }
