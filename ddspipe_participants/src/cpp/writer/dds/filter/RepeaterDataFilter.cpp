@@ -38,6 +38,22 @@ bool RepeaterDataFilter::evaluate(
 
     auto write_data = std::static_pointer_cast<RepeaterWriteData>(sample_info.user_write_data);
 
+    if (!write_data)
+    {
+        // The origin information is carried through WriteParams::user_write_data, which is only attached to
+        // ALIVE samples (see dds::CommonWriter::fill_to_send_data_)
+        // Dispose and unregister samples are sent through DataWriter::dispose / DataWriter::unregister_instance,
+        // whose public API does not allow attaching WriteParams, so user_write_data is null for them.
+        // In that case the origin participant is unknown and the sample cannot be filtered out by origin:
+        // let it through (it already passed the SelfDataFilter check above,
+        // so it is not sent back to the writer's own participant)
+        logDebug(
+            REPEATER_DATA_FILTER,
+            "Sample without origin information (e.g. dispose/unregister); "
+                "considering it relevant for reader GUID " << reader_guid << ".");
+        return true;
+    }
+
     bool is_relevant = write_data->last_writer_guid_prefix != reader_guid.guidPrefix;
 
     logDebug(
