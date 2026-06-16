@@ -167,13 +167,31 @@ public:
             const Yaml& yml,
             const TagType& tag);
 
-    //! TODO comment
+    /**
+     * @brief Takes the element \c yml and builds the object \c T
+     *
+     * This method takes a yaml node and then builds and return and object of type \c T.
+     *
+     * @tparam T type of the object to build
+     * @param yml base yaml
+     * @param version configuration version
+     */
     template <typename T>
     static T get(
             const Yaml& yml,
             const YamlReaderVersion version);
 
-    //! Get element inside \c tag
+    /**
+     * @brief Extracts the sub-yaml from the \c tag and then builds the object \c T
+     *
+     * This method calls \c get_value_in_tag to extract the sub-yaml from the \c tag and then it calls \c get to build
+     * the object \c T.
+     *
+     * @tparam T type of the object to build
+     * @param yml base yaml
+     * @param tag key to yaml containing the object
+     * @param version configuration version
+     */
     template <typename T>
     static T get(
             const Yaml& yml,

@@ -89,7 +89,7 @@ template <>
 DDSPIPE_YAML_DllAPI
 int YamlReader::get<int>(
         const Yaml& yml,
-        const YamlReaderVersion version /* version */)
+        const YamlReaderVersion version)
 {
     return get_scalar<int>(yml);
 }
@@ -98,7 +98,7 @@ template <>
 DDSPIPE_YAML_DllAPI
 unsigned int YamlReader::get<unsigned int>(
         const Yaml& yml,
-        const YamlReaderVersion version /* version */)
+        const YamlReaderVersion version)
 {
     return get_scalar<unsigned int>(yml);
 }
