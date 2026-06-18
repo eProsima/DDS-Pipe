@@ -38,12 +38,46 @@ bool RepeaterDataFilter::evaluate(
 
     auto write_data = std::static_pointer_cast<RepeaterWriteData>(sample_info.user_write_data);
 
+    if (!write_data)
+    {
+        // The origin information is carried through WriteParams::user_write_data, which is only attached to
+        // ALIVE samples (see dds::CommonWriter::fill_to_send_data_)
+        // Dispose and unregister samples are sent through DataWriter::dispose / DataWriter::unregister_instance,
+        // whose public API does not allow attaching WriteParams, so user_write_data is null for them.
+        // In that case the origin participant is unknown and the sample cannot be filtered out by origin:
+        // let it through (it already passed the SelfDataFilter check above,
+        // so it is not sent back to the writer's own participant)
+        //
+        // TODO: This null check is a workaround.
+        // The intended future fix is to stop relying on RepeaterDataFilter and avoid echoing
+        // samples back to their source, and instead expand the DDS-Pipe writer API so that, in repeater mode,
+        // the origin endpoint GUID is passed explicitly into the dispose/unregister (and write) calls:
+        //  - dds::CommonWriter::write_nts_ already knows the origin (the RtpsPayloadData::source_guid it
+        //    currently copies into RepeaterWriteData). Its dispatch helpers
+        //    (core::PayloadPoolMediator::dispose() / unregister_instance() / write()) would take that GUID as
+        //    an explicit argument instead of smuggling it through WriteParams::user_write_data.
+        //  - A new Fast DDS DataWriter dispose/unregister/write API would receive that origin GUID and exclude
+        //    the originating participant from the dispatch directly, rather than having the RTPS layer run a
+        //    per-reader content filter to drop the sample for that reader.
+        // With the source excluded at dispatch time, the repeater no longer needs RepeaterDataFilter at all to
+        // prevent resending the signal back to its source, so this filter (and this null branch) could be
+        // removed. This also covers dispose/unregister, whose origin is currently lost because their API
+        // carries no WriteParams.
+        logDebug(
+            REPEATER_DATA_FILTER,
+            "Sample without origin information (e.g. dispose/unregister); "
+            "considering it relevant for reader GUID " << reader_guid << ".");
+        return true;
+    }
+
     bool is_relevant = write_data->last_writer_guid_prefix != reader_guid.guidPrefix;
 
     logDebug(
         REPEATER_DATA_FILTER,
-        "Evaluating whether sample with origin writer GUID prefix " << write_data->last_writer_guid_prefix  <<
-            " is relevant for reader GUID " << reader_guid << "? " << (is_relevant ? "TRUE" : "FALSE"));
+        "Evaluating whether sample with origin writer GUID prefix "
+            << write_data->last_writer_guid_prefix
+            << " is relevant for reader GUID " << reader_guid
+            << "? " << (is_relevant ? "TRUE" : "FALSE"));
 
     return is_relevant;
 }
