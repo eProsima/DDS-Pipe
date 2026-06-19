@@ -18,10 +18,16 @@
 
 set(TEST_NAME YamlValidatorTest)
 
+file(
+    GLOB_RECURSE THIRDPARTY_SOURCES
+        "${PROJECT_SOURCE_DIR}/../thirdparty/nlohmann_json_schema_validator/*.cpp"
+)
+
 set(TEST_SOURCES
         ${PROJECT_SOURCE_DIR}/src/cpp/YamlValidator.cpp
         ${PROJECT_SOURCE_DIR}/src/cpp/YamlManager.cpp
         ${PROJECT_SOURCE_DIR}/src/cpp/YamlReader_generic.cpp
+        ${THIRDPARTY_SOURCES}
         YamlValidatorTest.cpp
     )
 
@@ -40,7 +46,6 @@ set(TEST_EXTRA_LIBRARIES
         cpp_utils
         ddspipe_core
         ddspipe_participants
-        nlohmann_json_schema_validator
     )
 
 file(GLOB_RECURSE TEST_NEEDED_SOURCES

@@ -60,10 +60,17 @@ project(
 # - Configure log depending on LOG_INFO flag and CMake type
 configure_project_cpp()
 
+file(
+    GLOB_RECURSE SOURCES_FILES
+        "${PROJECT_SOURCE_DIR}/src/cpp/*.c*"
+        "${PROJECT_SOURCE_DIR}/../thirdparty/nlohmann_json_schema_validator/*.cpp"
+)
+
 # Compile C++ library
 compile_library(
     "${PROJECT_SOURCE_DIR}/src/cpp" # Source directory
     "${PROJECT_SOURCE_DIR}/include" # Include directory
+    "${SOURCES_FILES}"
 )
 
 ###############################################################################
