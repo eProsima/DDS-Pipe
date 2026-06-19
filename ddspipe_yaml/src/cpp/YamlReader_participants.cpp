@@ -196,13 +196,6 @@ void YamlReader::fill(
     // Parent class fill
     fill<participants::SimpleParticipantConfiguration>(object, yml, version);
 
-    // Optional whitelist interfaces
-    if (YamlReader::is_tag_present(yml, WHITELIST_INTERFACES_TAG))
-    {
-        object.whitelist = YamlReader::get_set<participants::types::WhitelistType>(yml, WHITELIST_INTERFACES_TAG,
-                        version);
-    }
-
     // Optional listening addresses
     if (YamlReader::is_tag_present(yml, LISTENING_ADDRESSES_TAG))
     {
@@ -212,10 +205,7 @@ void YamlReader::fill(
     // Optional connection addresses
     if (YamlReader::is_tag_present(yml, CONNECTION_ADDRESSES_TAG))
     {
-        object.connection_addresses = YamlReader::get_set<Address>(
-            yml,
-            CONNECTION_ADDRESSES_TAG,
-            version);
+        object.connection_addresses = YamlReader::get_set<Address>(yml, CONNECTION_ADDRESSES_TAG, version);
     }
 
     // Optional TLS
@@ -277,13 +267,6 @@ void YamlReader::fill(
     // Parent class fill
     fill<participants::SimpleParticipantConfiguration>(object, yml, version);
 
-    // Optional whitelist interfaces
-    if (YamlReader::is_tag_present(yml, WHITELIST_INTERFACES_TAG))
-    {
-        object.whitelist = YamlReader::get_set<participants::types::WhitelistType>(yml, WHITELIST_INTERFACES_TAG,
-                        version);
-    }
-
     // Optional listening addresses
     if (YamlReader::is_tag_present(yml, LISTENING_ADDRESSES_TAG))
     {
@@ -293,10 +276,7 @@ void YamlReader::fill(
     // Optional connection addresses
     if (YamlReader::is_tag_present(yml, CONNECTION_ADDRESSES_TAG))
     {
-        object.connection_addresses = YamlReader::get_set<Address>(
-            yml,
-            CONNECTION_ADDRESSES_TAG,
-            version);
+        object.connection_addresses = YamlReader::get_set<Address>(yml, CONNECTION_ADDRESSES_TAG, version);
     }
 
     // Optional TLS
