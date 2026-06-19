@@ -19,3 +19,4 @@
 add_subdirectory(entities)
 add_subdirectory(yaml_reader)
 add_subdirectory(yaml_writer)
+add_subdirectory(yaml_validator)
