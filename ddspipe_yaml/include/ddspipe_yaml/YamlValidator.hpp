@@ -16,7 +16,6 @@
 
 //#include <ddspipe_yaml/library/library_dll.h>
 #include <ddspipe_yaml/Yaml.hpp>
-#include <ddspipe_yaml/YamlReader.hpp>
 
 #include <nlohmann/json.hpp>
 #include <nlohmann/json-schema.hpp>
@@ -42,11 +41,20 @@ private:
      */
     nlohmann::json yaml_to_json(const Yaml& yml);
 
+protected:
+    /**
+     * @brief Used to allow checking formats, for example, a string with an IP address 
+     *
+     * @param format Name of the format option (i.e. IPv4 or IPv6).
+     * @param value Value being checked against the \c format type.
+     */
+    static void format_checker(const std::string& format, const std::string& value);
+
 public:
     /**
      * @brief Default constructor. Creates a \c YamlValidator with an empty schema validator.
      */
-    YamlValidator() = default;
+    YamlValidator();
     
     /**
      * @brief Construct a \c YamlValidator and load the given JSON schema.
@@ -73,10 +81,10 @@ public:
      * @brief Validate a YAML object against the loaded schema.
      *
      * @param yml Yaml object to validate.
+     * @param print_errors Flag to print the errors in the error output when \c yml doesn't fit the schema.
      * @return \c true if \c yml conforms to the schema, \c false otherwise.
      */
-    bool validate_YAML(const Yaml& yml);
-
+    bool validate_YAML(const Yaml& yml, bool print_errors = true);
 };
 
 } /* namespace yaml */

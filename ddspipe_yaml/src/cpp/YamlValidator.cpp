@@ -19,7 +19,16 @@
 #include <fstream>
 #include <iostream>
 
+#include <fastdds/utils/IPLocator.hpp>
+
+#include <cpp_utils/exception/ConfigurationException.hpp>
+
+#include <ddspipe_yaml/yaml_configuration_tags.hpp>
+#include <ddspipe_yaml/Yaml.hpp>
+#include <ddspipe_yaml/YamlReader.hpp>
+
 #include <ddspipe_yaml/YamlValidator.hpp>
+
 
 namespace eprosima {
 namespace ddspipe {
@@ -64,7 +73,6 @@ nlohmann::json YamlValidator::yaml_to_json(const Yaml& yml)
     }
     
     std::string yml_as_string;
-    
     try
     {
         yml_as_string = yml.as<std::string>(); 
@@ -79,7 +87,30 @@ nlohmann::json YamlValidator::yaml_to_json(const Yaml& yml)
                                  << "Error in node: " << yml_as_string);
 }
 
+void YamlValidator::format_checker(const std::string& format, const std::string& value)
+{
+    if (format == "v4") {
+        // std::cout << "Checking IP v4: " << value << "\n";
+        if (!eprosima::fastdds::rtps::IPLocator::isIPv4(value))
+        {
+            throw std::invalid_argument(value + " is not a valid IPv4 address");
+        }
+    } else if (format == "v6") {
+        // std::cout << "Checking IP v6: " << value << "\n";
+        if (!eprosima::fastdds::rtps::IPLocator::isIPv6(value))
+        {
+            throw std::invalid_argument(value + " is not a valid IPv6 address");
+        }
+    }
+}
+
+YamlValidator::YamlValidator()
+    : validator(nullptr, format_checker)
+{
+}
+
 YamlValidator::YamlValidator(const nlohmann::json& schema)
+    : validator(nullptr, format_checker)
 {
     try
     {
@@ -94,6 +125,7 @@ YamlValidator::YamlValidator(const nlohmann::json& schema)
 }
 
 YamlValidator::YamlValidator(const std::string& schema_path)
+    : validator(nullptr, format_checker)
 {
     try
     {
@@ -125,7 +157,7 @@ void YamlValidator::set_schema(const nlohmann::json& schema)
     }
 }
 
-bool YamlValidator::validate_YAML(const Yaml& yml)
+bool YamlValidator::validate_YAML(const Yaml& yml, bool display_errors)
 {
     // Define nested struct and class for processing validation errors
     struct ValidationError
@@ -158,18 +190,56 @@ bool YamlValidator::validate_YAML(const Yaml& yml)
     // Validate the YAML file
     validator.validate(instance, err);
 
-    // Display errors
-    if (!err.errors.empty())
+    // Check duplicated participant names
+    std::set<std::string> participant_names;
+    std::set<std::string> repeated_participant_names;
+    if (YamlReader::is_tag_present(yml, COLLECTION_PARTICIPANTS_TAG))
     {
-        std::cerr << "YAML VALIDATION FAILED:\n\n";
-
-        for (const auto& e : err.errors)
+        if (yml[COLLECTION_PARTICIPANTS_TAG].IsSequence())
         {
-            std::cerr << "Location: "
-                    << (e.path.empty() ? "/  (root of the YAML file)" : e.path)
-                    << "\nError: " << e.message
-                    << "\nValue: " << e.value.dump(4)
-                    << "\n\n";
+            for (auto part : yml[COLLECTION_PARTICIPANTS_TAG])
+            {
+                if (YamlReader::is_tag_present(part, PARTICIPANT_NAME_TAG))
+                {
+                    std::string name = YamlReader::get<std::string>(part[PARTICIPANT_NAME_TAG], YamlReaderVersion::LATEST);
+                    if (participant_names.count(name))
+                    {
+                        repeated_participant_names.insert(name);
+                    }
+                    else
+                    {
+                        participant_names.insert(name);
+                    }
+                }
+            }
+        }
+    }
+
+    // If there are errors, show them and return false
+    if (!err.errors.empty() || !repeated_participant_names.empty())
+    {
+        if (display_errors) {
+            std::cerr << "YAML VALIDATION FAILED:" << std::endl << std::endl;
+
+            for (const auto& e : err.errors)
+            {
+                std::cerr << "Location: "
+                        << (e.path.empty() ? "/  (root of the YAML file)" : e.path)
+                        << std::endl << "Error: " << e.message
+                        << std::endl << "Value: " << e.value.dump(4)
+                        << std::endl << std::endl;
+            }
+
+            if (!repeated_participant_names.empty())
+            {
+                std::cerr << "Location: /" << COLLECTION_PARTICIPANTS_TAG << std::endl 
+                        << "Error: Participant names cannot be repeated. The following names are repeated:" << std::endl;
+                for (const auto& st : repeated_participant_names)
+                {
+                    std::cerr << "  - " << st << std::endl;
+                }
+                std::cerr << std::endl;
+            }
         }
         // Return false when the file is not valid
         return false;
