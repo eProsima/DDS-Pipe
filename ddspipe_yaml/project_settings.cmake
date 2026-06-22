@@ -39,6 +39,7 @@ set(MODULE_DEPENDENCIES
 )
 
 set(MODULE_THIRDPARTY_HEADERONLY
+    nlohmann_json
     nlohmann_json_schema_validator
 )
 

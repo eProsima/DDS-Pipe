@@ -61,16 +61,16 @@ project(
 configure_project_cpp()
 
 file(
-    GLOB_RECURSE SOURCES_FILES
+    GLOB_RECURSE SOURCE_FILES
         "${PROJECT_SOURCE_DIR}/src/cpp/*.c*"
         "${PROJECT_SOURCE_DIR}/../thirdparty/nlohmann_json_schema_validator/*.cpp"
 )
 
 # Compile C++ library
 compile_library(
-    "${PROJECT_SOURCE_DIR}/src/cpp" # Source directory
+    "${PROJECT_SOURCE_DIR}/src/cpp" # Source directory (not used because the list in ${SOURCE_FILES} is used instead)
     "${PROJECT_SOURCE_DIR}/include" # Include directory
-    "${SOURCES_FILES}"
+    "${SOURCE_FILES}"               # List of source files to compile
 )
 
 ###############################################################################

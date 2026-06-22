@@ -19,7 +19,7 @@
 set(TEST_NAME YamlValidatorTest)
 
 file(
-    GLOB_RECURSE THIRDPARTY_SOURCES
+    GLOB_RECURSE THIRDPARTY_FILES
         "${PROJECT_SOURCE_DIR}/../thirdparty/nlohmann_json_schema_validator/*.cpp"
 )
 
@@ -27,7 +27,7 @@ set(TEST_SOURCES
         ${PROJECT_SOURCE_DIR}/src/cpp/YamlValidator.cpp
         ${PROJECT_SOURCE_DIR}/src/cpp/YamlManager.cpp
         ${PROJECT_SOURCE_DIR}/src/cpp/YamlReader_generic.cpp
-        ${THIRDPARTY_SOURCES}
+        ${THIRDPARTY_FILES}
         YamlValidatorTest.cpp
     )
 
@@ -60,5 +60,6 @@ add_unittest_executable(
     "${TEST_SOURCES}"
     "${TEST_LIST}"
     "${TEST_EXTRA_LIBRARIES}"
-    "${TEST_NEEDED_SOURCES}")
+    "${TEST_NEEDED_SOURCES}"
+)
 
