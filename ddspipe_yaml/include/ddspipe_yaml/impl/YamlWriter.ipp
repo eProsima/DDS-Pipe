@@ -28,33 +28,33 @@ namespace eprosima {
 namespace ddspipe {
 namespace yaml {
 
-template <typename T>
+template<typename T>
 void set(
         Yaml& yml,
         const std::vector<T>& collection);
 
-template <typename T>
+template<typename T>
 void set(
         Yaml& yml,
         const std::set<T>& collection);
 
-template <typename K, typename T>
+template<typename K, typename T>
 void set(
         Yaml& yml,
         const std::map<K, T>& collection);
 
-template <typename T>
+template<typename T>
 void set_collection(
         Yaml& yml,
         const std::vector<T>& collection);
 
-template <typename T>
+template<typename T>
 void set_collection(
         Yaml& yml,
         const std::vector<T>& collection,
         bool is_compact);
 
-template <typename K, typename T>
+template<typename K, typename T>
 void set_map(
         Yaml& yml,
         const std::map<K, T>& collection);
@@ -63,19 +63,19 @@ void set_map(
 // SPECIALIZATIONS FOR TRIVIAL TYPES
 ////////////////////////////////////////////////
 
-template <>
+template<>
 DDSPIPE_YAML_DllAPI
 void set(
         Yaml& yml,
         const std::string& value);
 
-template <>
+template<>
 DDSPIPE_YAML_DllAPI
 void set(
         Yaml& yml,
         const bool& value);
 
-template <>
+template<>
 DDSPIPE_YAML_DllAPI
 void set(
         Yaml& yml,
@@ -85,7 +85,7 @@ void set(
 // SPECIALIZATIONS FOR OTHER TYPES
 ////////////////////////////////////////////////
 
-template <typename T>
+template<typename T>
 void set(
         Yaml& yml,
         const std::vector<T>& collection)
@@ -93,7 +93,7 @@ void set(
     set_collection(yml, collection);
 }
 
-template <typename T>
+template<typename T>
 void set(
         Yaml& yml,
         const std::vector<T>& collection,
@@ -102,7 +102,7 @@ void set(
     set_collection(yml, collection, is_compact);
 }
 
-template <typename T>
+template<typename T>
 void set(
         Yaml& yml,
         const std::set<T>& collection)
@@ -110,7 +110,7 @@ void set(
     set_collection(yml, std::vector<T>(collection.begin(), collection.end()));
 }
 
-template <typename K, typename T>
+template<typename K, typename T>
 void set(
         Yaml& yml,
         const std::map<K, T>& collection)
@@ -122,7 +122,7 @@ void set(
 // SPECIALIZATIONS NEEDED
 ////////////////////////////////////
 
-template <typename T>
+template<typename T>
 void set_in_tag(
         Yaml& yml,
         const TagType& tag,
@@ -132,7 +132,7 @@ void set_in_tag(
     set(yml_under_tag, value);
 }
 
-template <typename T>
+template<typename T>
 void set_collection(
         Yaml& yml,
         const std::vector<T>& collection)
@@ -145,7 +145,7 @@ void set_collection(
     }
 }
 
-template <typename T>
+template<typename T>
 void set_collection(
         Yaml& yml,
         const std::vector<T>& collection,
@@ -159,7 +159,7 @@ void set_collection(
     }
 }
 
-template <typename K, typename T>
+template<typename K, typename T>
 void set_map(
         Yaml& yml,
         const std::map<K, T>& collection)

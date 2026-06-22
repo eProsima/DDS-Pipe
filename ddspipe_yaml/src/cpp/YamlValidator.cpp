@@ -34,21 +34,40 @@ namespace eprosima {
 namespace ddspipe {
 namespace yaml {
 
-nlohmann::json YamlValidator::yaml_to_json(const Yaml& yml)
+nlohmann::json YamlValidator::yaml_to_json(
+        const Yaml& yml)
 {
     if (yml.IsNull())
+    {
         return nullptr;
+    }
 
     if (yml.IsScalar())
     {
         // The only allowed scalar types are: boolean, integer, number (double) and string
         const std::string value = yml.as<std::string>();
 
-        if (value == "true") return true;
-        if (value == "false") return false;
+        if (value == "true")
+        {
+            return true;
+        }
+        if (value == "false")
+        {
+            return false;
+        }
 
-        try { return yml.as<int>(); } catch (...) {}
-        try { return yml.as<double>(); } catch (...) {}
+        try
+        {
+            return yml.as<int>();
+        } catch (...)
+        {
+        }
+        try
+        {
+            return yml.as<double>();
+        } catch (...)
+        {
+        }
 
         return value;
     }
@@ -57,7 +76,9 @@ nlohmann::json YamlValidator::yaml_to_json(const Yaml& yml)
     {
         nlohmann::json array = nlohmann::json::array();
         for (const auto& item : yml)
+        {
             array.push_back(yaml_to_json(item));
+        }
         return array;
     }
 
@@ -71,13 +92,13 @@ nlohmann::json YamlValidator::yaml_to_json(const Yaml& yml)
         }
         return object;
     }
-    
+
     std::string yml_as_string;
     try
     {
-        yml_as_string = yml.as<std::string>(); 
+        yml_as_string = yml.as<std::string>();
     }
-    catch(...)
+    catch (...)
     {
         throw eprosima::utils::ConfigurationException("Unsupported YAML file, cannot be converted to JSON.");
     }
@@ -87,16 +108,19 @@ nlohmann::json YamlValidator::yaml_to_json(const Yaml& yml)
                                  << "Error in node: " << yml_as_string);
 }
 
-void YamlValidator::format_checker(const std::string& format, const std::string& value)
+void YamlValidator::format_checker(
+        const std::string& format,
+        const std::string& value)
 {
-    if (format == "v4") {
-        // std::cout << "Checking IP v4: " << value << "\n";
+    if (format == "v4")
+    {
         if (!eprosima::fastdds::rtps::IPLocator::isIPv4(value))
         {
             throw std::invalid_argument(value + " is not a valid IPv4 address");
         }
-    } else if (format == "v6") {
-        // std::cout << "Checking IP v6: " << value << "\n";
+    }
+    else if (format == "v6")
+    {
         if (!eprosima::fastdds::rtps::IPLocator::isIPv6(value))
         {
             throw std::invalid_argument(value + " is not a valid IPv6 address");
@@ -109,7 +133,8 @@ YamlValidator::YamlValidator()
 {
 }
 
-YamlValidator::YamlValidator(const nlohmann::json& schema)
+YamlValidator::YamlValidator(
+        const nlohmann::json& schema)
     : validator(nullptr, format_checker)
 {
     try
@@ -124,7 +149,8 @@ YamlValidator::YamlValidator(const nlohmann::json& schema)
     }
 }
 
-YamlValidator::YamlValidator(const std::string& schema_path)
+YamlValidator::YamlValidator(
+        const std::string& schema_path)
     : validator(nullptr, format_checker)
 {
     try
@@ -143,7 +169,8 @@ YamlValidator::YamlValidator(const std::string& schema_path)
     }
 }
 
-void YamlValidator::set_schema(const nlohmann::json& schema)
+void YamlValidator::set_schema(
+        const nlohmann::json& schema)
 {
     try
     {
@@ -157,7 +184,9 @@ void YamlValidator::set_schema(const nlohmann::json& schema)
     }
 }
 
-bool YamlValidator::validate_YAML(const Yaml& yml, bool display_errors)
+bool YamlValidator::validate_YAML(
+        const Yaml& yml,
+        bool display_errors)
 {
     // Define nested struct and class for processing validation errors
     struct ValidationError
@@ -170,17 +199,19 @@ bool YamlValidator::validate_YAML(const Yaml& yml, bool display_errors)
     class CollectingErrorHandler : public nlohmann::json_schema::error_handler
     {
     public:
+
         std::vector<ValidationError> errors;
 
         void error(
-            const nlohmann::json::json_pointer& ptr,
-            const nlohmann::json& instance,
-            const std::string& message) override
+                const nlohmann::json::json_pointer& ptr,
+                const nlohmann::json& instance,
+                const std::string& message) override
         {
             errors.push_back( {ptr.to_string(), message, instance} );
         }
+
     };
-    
+
     // Covert YAML to JSON
     nlohmann::json instance = yaml_to_json(yml);
 
@@ -201,7 +232,8 @@ bool YamlValidator::validate_YAML(const Yaml& yml, bool display_errors)
             {
                 if (YamlReader::is_tag_present(part, PARTICIPANT_NAME_TAG))
                 {
-                    std::string name = YamlReader::get<std::string>(part[PARTICIPANT_NAME_TAG], YamlReaderVersion::LATEST);
+                    std::string name = YamlReader::get<std::string>(part[PARTICIPANT_NAME_TAG],
+                                    YamlReaderVersion::LATEST);
                     if (participant_names.count(name))
                     {
                         repeated_participant_names.insert(name);
@@ -218,22 +250,24 @@ bool YamlValidator::validate_YAML(const Yaml& yml, bool display_errors)
     // If there are errors, show them and return false
     if (!err.errors.empty() || !repeated_participant_names.empty())
     {
-        if (display_errors) {
+        if (display_errors)
+        {
             std::cerr << "YAML VALIDATION FAILED:" << std::endl << std::endl;
 
             for (const auto& e : err.errors)
             {
                 std::cerr << "Location: "
-                        << (e.path.empty() ? "/  (root of the YAML file)" : e.path)
-                        << std::endl << "Error: " << e.message
-                        << std::endl << "Value: " << e.value.dump(4)
-                        << std::endl << std::endl;
+                          << (e.path.empty() ? "/  (root of the YAML file)" : e.path)
+                          << std::endl << "Error: " << e.message
+                          << std::endl << "Value: " << e.value.dump(4)
+                          << std::endl << std::endl;
             }
 
             if (!repeated_participant_names.empty())
             {
-                std::cerr << "Location: /" << COLLECTION_PARTICIPANTS_TAG << std::endl 
-                        << "Error: Participant names cannot be repeated. The following names are repeated:" << std::endl;
+                std::cerr << "Location: /" << COLLECTION_PARTICIPANTS_TAG << std::endl
+                          << "Error: Participant names cannot be repeated. The following names are repeated:"
+                          << std::endl;
                 for (const auto& st : repeated_participant_names)
                 {
                     std::cerr << "  - " << st << std::endl;

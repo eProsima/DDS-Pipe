@@ -51,7 +51,7 @@ using namespace eprosima::ddspipe::participants::types;
 
 //////////////////////////////////
 // ParticipantConfiguration
-template <>
+template<>
 DDSPIPE_YAML_DllAPI
 void YamlReader::fill(
         participants::ParticipantConfiguration& object,
@@ -62,7 +62,7 @@ void YamlReader::fill(
     object.id = get<ParticipantId>(yml, PARTICIPANT_NAME_TAG, version);
 }
 
-template <>
+template<>
 DDSPIPE_YAML_DllAPI
 participants::ParticipantConfiguration YamlReader::get(
         const Yaml& yml,
@@ -75,7 +75,7 @@ participants::ParticipantConfiguration YamlReader::get(
 
 //////////////////////////////////
 // EchoParticipantConfiguration
-template <>
+template<>
 DDSPIPE_YAML_DllAPI
 void YamlReader::fill(
         participants::EchoParticipantConfiguration& object,
@@ -104,7 +104,7 @@ void YamlReader::fill(
     }
 }
 
-template <>
+template<>
 DDSPIPE_YAML_DllAPI
 participants::EchoParticipantConfiguration YamlReader::get(
         const Yaml& yml,
@@ -117,7 +117,7 @@ participants::EchoParticipantConfiguration YamlReader::get(
 
 //////////////////////////////////
 // SimpleParticipantConfiguration
-template <>
+template<>
 DDSPIPE_YAML_DllAPI
 void YamlReader::fill(
         participants::SimpleParticipantConfiguration& object,
@@ -173,7 +173,7 @@ void YamlReader::fill(
     }
 }
 
-template <>
+template<>
 DDSPIPE_YAML_DllAPI
 participants::SimpleParticipantConfiguration YamlReader::get(
         const Yaml& yml,
@@ -186,7 +186,7 @@ participants::SimpleParticipantConfiguration YamlReader::get(
 
 //////////////////////////////////
 // DiscoveryServerParticipantConfiguration
-template <>
+template<>
 DDSPIPE_YAML_DllAPI
 void YamlReader::fill(
         participants::DiscoveryServerParticipantConfiguration& object,
@@ -244,7 +244,7 @@ void YamlReader::fill(
     }
 }
 
-template <>
+template<>
 DDSPIPE_YAML_DllAPI
 participants::DiscoveryServerParticipantConfiguration YamlReader::get(
         const Yaml& yml,
@@ -257,7 +257,7 @@ participants::DiscoveryServerParticipantConfiguration YamlReader::get(
 
 //////////////////////////////////
 // InitialPeersParticipantConfiguration
-template <>
+template<>
 DDSPIPE_YAML_DllAPI
 void YamlReader::fill(
         participants::InitialPeersParticipantConfiguration& object,
@@ -295,7 +295,7 @@ void YamlReader::fill(
     }
 }
 
-template <>
+template<>
 DDSPIPE_YAML_DllAPI
 participants::InitialPeersParticipantConfiguration YamlReader::get(
         const Yaml& yml,
@@ -308,7 +308,7 @@ participants::InitialPeersParticipantConfiguration YamlReader::get(
 
 //////////////////////////////////
 // XmlParticipantConfiguration
-template <>
+template<>
 DDSPIPE_YAML_DllAPI
 void YamlReader::fill(
         participants::XmlParticipantConfiguration& object,
@@ -328,7 +328,7 @@ void YamlReader::fill(
     }
 }
 
-template <>
+template<>
 DDSPIPE_YAML_DllAPI
 participants::XmlParticipantConfiguration YamlReader::get(
         const Yaml& yml,

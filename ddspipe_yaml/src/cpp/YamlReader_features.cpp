@@ -40,7 +40,7 @@ namespace yaml {
 * XML                   *
 ************************/
 
-template <>
+template<>
 DDSPIPE_YAML_DllAPI
 void YamlReader::fill(
         participants::XmlHandlerConfiguration& object,
@@ -60,7 +60,7 @@ void YamlReader::fill(
     }
 }
 
-template <>
+template<>
 DDSPIPE_YAML_DllAPI
 participants::XmlHandlerConfiguration YamlReader::get(
         const Yaml& yml,
@@ -75,7 +75,7 @@ participants::XmlHandlerConfiguration YamlReader::get(
 * Routes Configuration  *
 ************************/
 
-template <>
+template<>
 DDSPIPE_YAML_DllAPI
 void YamlReader::fill(
         core::RoutesConfiguration& object,
@@ -86,9 +86,9 @@ void YamlReader::fill(
     if (!yml.IsSequence())
     {
         throw eprosima::utils::ConfigurationException(
-                  utils::Formatter() <<
-                      "Custom forwarding routes must be specified in an array under tag: " <<
-                      ROUTES_TAG);
+                  utils::Formatter()
+                      << "Custom forwarding routes must be specified in an array under tag: "
+                      << ROUTES_TAG);
     }
 
     for (const auto& route_yml : yml)
@@ -103,15 +103,15 @@ void YamlReader::fill(
             if (object.routes.count(src) != 0)
             {
                 throw eprosima::utils::ConfigurationException(
-                          utils::Formatter() <<
-                              "Multiple routes defined for participant " << src  << " : only one allowed.");
+                          utils::Formatter()
+                              << "Multiple routes defined for participant " << src  << " : only one allowed.");
             }
         }
         else
         {
             throw eprosima::utils::ConfigurationException(
-                      utils::Formatter() <<
-                          "Source participant required under tag " << ROUTES_SRC_TAG << " in route definition.");
+                      utils::Formatter()
+                          << "Source participant required under tag " << ROUTES_SRC_TAG << " in route definition.");
         }
 
         // Optional route destination(s)
@@ -130,7 +130,7 @@ void YamlReader::fill(
     }
 }
 
-template <>
+template<>
 DDSPIPE_YAML_DllAPI
 core::RoutesConfiguration YamlReader::get(
         const Yaml& yml,
@@ -145,7 +145,7 @@ core::RoutesConfiguration YamlReader::get(
 * Topic Routes Configuration  *
 ******************************/
 
-template <>
+template<>
 DDSPIPE_YAML_DllAPI
 void YamlReader::fill(
         core::TopicRoutesConfiguration& object,
@@ -156,9 +156,9 @@ void YamlReader::fill(
     if (!yml.IsSequence())
     {
         throw eprosima::utils::ConfigurationException(
-                  utils::Formatter() <<
-                      "Custom topic forwarding routes must be specified in an array under tag: " <<
-                      TOPIC_ROUTES_TAG);
+                  utils::Formatter()
+                      << "Custom topic forwarding routes must be specified in an array under tag: "
+                      << TOPIC_ROUTES_TAG);
     }
 
     for (const auto& topic_routes_yml : yml)
@@ -172,9 +172,11 @@ void YamlReader::fill(
                 TOPIC_NAME_TAG) && is_tag_present(topic_routes_yml, TOPIC_TYPE_NAME_TAG)))
         {
             throw eprosima::utils::ConfigurationException(
-                      utils::Formatter() <<
-                          "Topic routes require topic and type names to be defined under tags " << TOPIC_NAME_TAG << " and " << TOPIC_TYPE_NAME_TAG <<
-                          ", respectively.");
+                      utils::Formatter()
+                          << "Topic routes require topic and type names to be defined under tags "
+                          << TOPIC_NAME_TAG
+                          << " and " << TOPIC_TYPE_NAME_TAG
+                          << ", respectively.");
         }
         else
         {
@@ -182,8 +184,8 @@ void YamlReader::fill(
             if (object.topic_routes.count(topic) != 0)
             {
                 throw eprosima::utils::ConfigurationException(
-                          utils::Formatter() <<
-                              "Multiple routes defined for topic " << topic  << " : only one allowed.");
+                          utils::Formatter()
+                              << "Multiple routes defined for topic " << topic  << " : only one allowed.");
             }
         }
 
@@ -195,8 +197,8 @@ void YamlReader::fill(
         else
         {
             throw eprosima::utils::ConfigurationException(
-                      utils::Formatter() <<
-                          "No routes found under tag " << ROUTES_TAG << " for topic " << topic << " .");
+                      utils::Formatter()
+                          << "No routes found under tag " << ROUTES_TAG << " for topic " << topic << " .");
         }
 
         // Insert routes
@@ -204,7 +206,7 @@ void YamlReader::fill(
     }
 }
 
-template <>
+template<>
 DDSPIPE_YAML_DllAPI
 core::TopicRoutesConfiguration YamlReader::get(
         const Yaml& yml,
@@ -219,7 +221,7 @@ core::TopicRoutesConfiguration YamlReader::get(
  * Monitor Configuration  *
  **************************/
 
-template <>
+template<>
 DDSPIPE_YAML_DllAPI
 void YamlReader::fill(
         core::MonitorConfiguration& object,
@@ -259,7 +261,7 @@ void YamlReader::fill(
     }
 }
 
-template <>
+template<>
 DDSPIPE_YAML_DllAPI
 core::MonitorConfiguration YamlReader::get(
         const Yaml& yml,
@@ -270,7 +272,7 @@ core::MonitorConfiguration YamlReader::get(
     return object;
 }
 
-template <>
+template<>
 DDSPIPE_YAML_DllAPI
 void YamlReader::fill(
         core::MonitorProducerConfiguration& object,
@@ -290,7 +292,7 @@ void YamlReader::fill(
     }
 }
 
-template <>
+template<>
 DDSPIPE_YAML_DllAPI
 core::MonitorProducerConfiguration YamlReader::get(
         const Yaml& yml,

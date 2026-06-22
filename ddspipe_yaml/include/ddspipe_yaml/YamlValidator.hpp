@@ -32,6 +32,7 @@ namespace yaml {
 class YamlValidator
 {
 private:
+
     nlohmann::json_schema::json_validator validator;
 
     /**
@@ -39,43 +40,51 @@ private:
      *
      * @param yml Yaml object to convert.
      */
-    nlohmann::json yaml_to_json(const Yaml& yml);
+    nlohmann::json yaml_to_json(
+            const Yaml& yml);
 
 protected:
+
     /**
-     * @brief Used to allow checking formats, for example, a string with an IP address 
+     * @brief Used to allow checking formats, for example, a string with an IP address
      *
      * @param format Name of the format option (i.e. IPv4 or IPv6).
      * @param value Value being checked against the \c format type.
      */
-    static void format_checker(const std::string& format, const std::string& value);
+    static void format_checker(
+            const std::string& format,
+            const std::string& value);
 
 public:
+
     /**
      * @brief Default constructor. Creates a \c YamlValidator with an empty schema validator.
      */
     YamlValidator();
-    
+
     /**
      * @brief Construct a \c YamlValidator and load the given JSON schema.
      *
      * @param schema JSON schema to set as the root schema of the validator.
      */
-    explicit YamlValidator(const nlohmann::json& schema);
-    
+    explicit YamlValidator(
+            const nlohmann::json& schema);
+
     /**
      * @brief Construct a \c YamlValidator by loading a JSON schema from a file.
      *
      * @param schema_path Path to the JSON schema file.
      */
-    explicit YamlValidator(const std::string& schema_path);
+    explicit YamlValidator(
+            const std::string& schema_path);
 
     /**
      * @brief Set or replace the root schema of the validator.
      *
      * @param schema JSON schema to set as the root schema of the validator.
      */
-    void set_schema(const nlohmann::json& schema);
+    void set_schema(
+            const nlohmann::json& schema);
 
     /**
      * @brief Validate a YAML object against the loaded schema.
@@ -84,7 +93,9 @@ public:
      * @param print_errors Flag to print the errors in the error output when \c yml doesn't fit the schema.
      * @return \c true if \c yml conforms to the schema, \c false otherwise.
      */
-    bool validate_YAML(const Yaml& yml, bool print_errors = true);
+    bool validate_YAML(
+            const Yaml& yml,
+            bool print_errors = true);
 };
 
 } /* namespace yaml */

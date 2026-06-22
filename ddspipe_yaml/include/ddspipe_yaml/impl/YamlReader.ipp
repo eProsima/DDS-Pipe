@@ -23,7 +23,7 @@ namespace eprosima {
 namespace ddspipe {
 namespace yaml {
 
-template <typename T>
+template<typename T>
 T YamlReader::get(
         const Yaml& yml,
         const TagType& tag,
@@ -37,13 +37,13 @@ T YamlReader::get(
     catch (const std::exception& e)
     {
         throw eprosima::utils::ConfigurationException(
-                  utils::Formatter() <<
-                      "Error getting required value of type <" << TYPE_NAME(T) <<
-                      "> in tag <" << tag << "> :\n " << e.what());
+                  utils::Formatter()
+                      << "Error getting required value of type <" << TYPE_NAME(T)
+                      << "> in tag <" << tag << "> :\n " << e.what());
     }
 }
 
-template <typename T>
+template<typename T>
 void YamlReader::fill(
         T& object,
         const Yaml& yml,
@@ -58,13 +58,13 @@ void YamlReader::fill(
     catch (const std::exception& e)
     {
         throw eprosima::utils::ConfigurationException(
-                  utils::Formatter() <<
-                      "Error filling object of type <" << TYPE_NAME(T) <<
-                      "> in tag <" << tag << "> :\n " << e.what());
+                  utils::Formatter()
+                      << "Error filling object of type <" << TYPE_NAME(T)
+                      << "> in tag <" << tag << "> :\n " << e.what());
     }
 }
 
-template <typename T>
+template<typename T>
 T YamlReader::get_scalar(
         const Yaml& yml,
         const TagType& tag)
@@ -80,15 +80,15 @@ T YamlReader::get_scalar(
     }
 }
 
-template <typename T>
+template<typename T>
 T YamlReader::get_scalar(
         const Yaml& yml)
 {
     if (!yml.IsScalar())
     {
         throw eprosima::utils::ConfigurationException(
-                  utils::Formatter() <<
-                      "Trying to read a primitive value of type <" << TYPE_NAME(T) << "> from a non scalar yaml.");
+                  utils::Formatter()
+                      << "Trying to read a primitive value of type <" << TYPE_NAME(T) << "> from a non scalar yaml.");
     }
 
     try
@@ -98,12 +98,12 @@ T YamlReader::get_scalar(
     catch (const std::exception& e)
     {
         throw eprosima::utils::ConfigurationException(
-                  utils::Formatter() <<
-                      "Incorrect format for primitive value, expected <" << TYPE_NAME(T) << ">:\n " << e.what());
+                  utils::Formatter()
+                      << "Incorrect format for primitive value, expected <" << TYPE_NAME(T) << ">:\n " << e.what());
     }
 }
 
-template <typename T>
+template<typename T>
 std::list<T> YamlReader::get_list(
         const Yaml& yml,
         const TagType& tag,
@@ -120,7 +120,7 @@ std::list<T> YamlReader::get_list(
     }
 }
 
-template <typename T>
+template<typename T>
 std::list<T> YamlReader::get_list(
         const Yaml& yml,
         const YamlReaderVersion version)
@@ -143,14 +143,14 @@ std::list<T> YamlReader::get_list(
     catch (const std::exception& e)
     {
         throw eprosima::utils::ConfigurationException(
-                  utils::Formatter() << "Error reading yaml sequence of type <" << TYPE_NAME(T) << "> :\n " <<
-                      e.what());
+                  utils::Formatter() << "Error reading yaml sequence of type <" << TYPE_NAME(T) << "> :\n "
+                                     << e.what());
     }
 
     return result;
 }
 
-template <typename T>
+template<typename T>
 std::set<T> YamlReader::get_set(
         const Yaml& yml,
         const TagType& tag,
@@ -160,7 +160,7 @@ std::set<T> YamlReader::get_set(
     return std::set<T>(elements_list.begin(), elements_list.end());
 }
 
-template <typename T>
+template<typename T>
 T YamlReader::get_enumeration(
         const Yaml& yml,
         const TagType& tag,
@@ -177,7 +177,7 @@ T YamlReader::get_enumeration(
     }
 }
 
-template <typename T>
+template<typename T>
 T YamlReader::get_enumeration(
         const Yaml& yml,
         const std::map<TagType, T>& enum_values)
@@ -198,7 +198,7 @@ T YamlReader::get_enumeration(
     }
 }
 
-template <typename T>
+template<typename T>
 T YamlReader::get_enumeration_from_builder(
         const Yaml& yml,
         const utils::EnumBuilder<T>& enum_builder)
@@ -218,7 +218,7 @@ T YamlReader::get_enumeration_from_builder(
     }
 }
 
-template <typename T>
+template<typename T>
 T YamlReader::get_enumeration_from_builder(
         const Yaml& yml,
         const TagType& tag,

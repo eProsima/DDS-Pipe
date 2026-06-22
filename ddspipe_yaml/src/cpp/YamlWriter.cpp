@@ -50,7 +50,7 @@ Yaml add_tag(
     return yml[tag];
 }
 
-template <>
+template<>
 void set(
         Yaml& yml,
         const std::string& value)
@@ -58,7 +58,7 @@ void set(
     yml = value;
 }
 
-template <>
+template<>
 void set(
         Yaml& yml,
         const bool& value)
@@ -66,7 +66,7 @@ void set(
     yml = value;
 }
 
-template <>
+template<>
 void set(
         Yaml& yml,
         const int& value)

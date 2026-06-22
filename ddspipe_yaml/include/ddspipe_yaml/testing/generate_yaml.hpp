@@ -34,7 +34,7 @@ namespace ddspipe {
 namespace yaml {
 namespace testing {
 
-template <typename T>
+template<typename T>
 struct YamlField
 {
     YamlField()
@@ -54,7 +54,7 @@ struct YamlField
     bool present;
 };
 
-template <typename T>
+template<typename T>
 void add_field_to_yaml(
         Yaml& yml,
         const YamlField<T>& field,
