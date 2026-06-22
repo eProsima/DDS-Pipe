@@ -35,8 +35,7 @@ set(TEST_LIST
         constructors
         validation_without_schema
         validation_with_invalid_yaml_file
-        validation_success
-        validation_fail
+        validation_is_correct
     )
 
 set(TEST_EXTRA_LIBRARIES
@@ -51,8 +50,7 @@ set(TEST_EXTRA_LIBRARIES
 file(GLOB_RECURSE TEST_NEEDED_SOURCES
     RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
     "*.json"
-    "valid_config_files/*.yaml"
-    "invalid_config_files/*.yaml"
+    "test_yaml_files/*.yaml"
 )
 
 add_unittest_executable(

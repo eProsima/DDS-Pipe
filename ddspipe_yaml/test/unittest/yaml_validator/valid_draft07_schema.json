@@ -23,7 +23,7 @@
                         "type":"number"
                     }
                 },
-                "objects":{
+                "my-object":{
                     "type":"object",
                     "additionalProperties":false,
                     "properties":{
@@ -53,4 +53,5 @@
             },
             "title":"TestObject"
         }
+    }
 }

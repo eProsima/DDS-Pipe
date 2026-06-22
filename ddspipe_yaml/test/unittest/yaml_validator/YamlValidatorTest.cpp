@@ -33,15 +33,15 @@ using namespace eprosima::ddspipe::yaml;
 
 namespace test {
 // Paths and files to test the constructors
-std::ifstream valid_schema_file("./ddsrouter_config_schema.json");
+std::ifstream valid_schema_file("./valid_draft07_schema.json");
 nlohmann::json valid_schema = nlohmann::json::parse(valid_schema_file);
 
 std::ifstream invalid_schema_file("./invalid_draft07_schema.json");
 nlohmann::json invalid_schema = nlohmann::json::parse(invalid_schema_file);
 
-std::string valid_schema_path = "./ddsrouter_config_schema.json";
+std::string valid_schema_path = "./valid_draft07_schema.json";
 
-std::string invalid_schema_path_1 = "./invalid_config_files/ddsrouter_config_schema.json";
+std::string invalid_schema_path_1 = "./test_yaml_files/valid_draft07_schema.json";
 std::string invalid_schema_path_2 = "./invalid_json_schema.json";
 std::string invalid_schema_path_3 = "./invalid_draft07_schema.json";
 
@@ -51,38 +51,15 @@ Yaml invalid_yml = valid_yml["missing_key"];
 
 // Vectors with the valid and invalid YAML files
 std::vector<std::string> valid_files = {
-    "./valid_config_files/client-ddsrouter.yaml",
-    "./valid_config_files/server-ddsrouter.yaml",
-    "./valid_config_files/change_domain_allowlist.yaml",
-    "./valid_config_files/change_domain.yaml",
-    "./valid_config_files/echo.yaml",
-    "./valid_config_files/forwarding_routes.yaml",
-    "./valid_config_files/repeater_client.yaml",
-    "./valid_config_files/repeater_server.yaml",
-    "./valid_config_files/ros_discovery_client.yaml",
-    "./valid_config_files/ros_discovery_server.yaml",
-    "./valid_config_files/wan_client.yaml",
-    "./valid_config_files/wan_ds_client.yaml",
-    "./valid_config_files/wan_ds_server.yaml",
-    "./valid_config_files/wan_server.yaml",
-    "./valid_config_files/xml.yaml"
+    "./test_yaml_files/valid_test.yaml"
 };
 
 std::vector<std::string> invalid_files = {
-    "./invalid_config_files/address_no_port.yaml",
-    "./invalid_config_files/builtin_topic_no_name.yaml",
-    "./invalid_config_files/builtin_topic_no_type.yaml",
-    "./invalid_config_files/address_no_ip_nor_domain.yaml",
-    "./invalid_config_files/ds_participant_no_discovery_server_guid.yaml",
-    "./invalid_config_files/ds_participant_no_listening_nor_connection_addresses.yaml",
-    "./invalid_config_files/filter_topic_no_name.yaml",
-    "./invalid_config_files/initial_peers_no_addresses.yaml",
-    "./invalid_config_files/no_participant_kind.yaml",
-    "./invalid_config_files/no_participant_name.yaml",
-    "./invalid_config_files/participants_same_name.yaml",
-    "./invalid_config_files/invalid_version.yaml",
-    "./invalid_config_files/tls_ca_no_private_key_provided_cert.yaml",
-    "./invalid_config_files/tls_no_ca.yaml"
+    "./test_yaml_files/invalid_version.yaml",
+    "./test_yaml_files/invalid_uint.yaml",
+    "./test_yaml_files/invalid_array.yaml",
+    "./test_yaml_files/invalid_object.yaml",
+    "./test_yaml_files/invalid_new_property.yaml"
 };
 } // namespace test
 
@@ -164,9 +141,10 @@ TEST(YamlValidatorTest, validation_with_invalid_yaml_file)
 }
 
 /**
- * Test that a set of valid YAML configurations pass the validation
+ * Test that a set of valid YAML configurations pass the validation and that a
+ * set of invalid YAML configuration don't pass it
  */
-TEST(YamlValidatorTest, validation_success)
+TEST(YamlValidatorTest, validation_is_correct)
 {
     YamlValidator validator = YamlValidator(test::valid_schema);
 
@@ -178,16 +156,8 @@ TEST(YamlValidatorTest, validation_success)
             ASSERT_TRUE(validator.validate_YAML(yml)) << "Failed for file: " << st;
         }
     }
-}
 
-/**
- * Test that a set of invalid YAML configuration don't pass the validation
- */
-TEST(YamlValidatorTest, validation_fail)
-{
-    YamlValidator validator = YamlValidator(test::valid_schema);
-
-    // valid files
+    // invalid files
     {
         for (std::string st : test::invalid_files)
         {

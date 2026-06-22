@@ -1,0 +1,12 @@
+
+version: v2.0
+
+uint: 27
+
+number-array:
+  - 14
+  - -817
+  - 3.1415926
+
+my-object:  # this object requires a value for property1 or property2
+  property3: 1000.1

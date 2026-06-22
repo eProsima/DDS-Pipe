@@ -23,10 +23,6 @@
 
 #include <cpp_utils/exception/ConfigurationException.hpp>
 
-#include <ddspipe_yaml/yaml_configuration_tags.hpp>
-#include <ddspipe_yaml/Yaml.hpp>
-#include <ddspipe_yaml/YamlReader.hpp>
-
 #include <ddspipe_yaml/YamlValidator.hpp>
 
 
@@ -221,34 +217,8 @@ bool YamlValidator::validate_YAML(
     // Validate the YAML file
     validator.validate(instance, err);
 
-    // Check duplicated participant names
-    std::set<std::string> participant_names;
-    std::set<std::string> repeated_participant_names;
-    if (YamlReader::is_tag_present(yml, COLLECTION_PARTICIPANTS_TAG))
-    {
-        if (yml[COLLECTION_PARTICIPANTS_TAG].IsSequence())
-        {
-            for (auto part : yml[COLLECTION_PARTICIPANTS_TAG])
-            {
-                if (YamlReader::is_tag_present(part, PARTICIPANT_NAME_TAG))
-                {
-                    std::string name = YamlReader::get<std::string>(part[PARTICIPANT_NAME_TAG],
-                                    YamlReaderVersion::LATEST);
-                    if (participant_names.count(name))
-                    {
-                        repeated_participant_names.insert(name);
-                    }
-                    else
-                    {
-                        participant_names.insert(name);
-                    }
-                }
-            }
-        }
-    }
-
     // If there are errors, show them and return false
-    if (!err.errors.empty() || !repeated_participant_names.empty())
+    if (!err.errors.empty())
     {
         if (display_errors)
         {
@@ -261,18 +231,6 @@ bool YamlValidator::validate_YAML(
                           << std::endl << "Error: " << e.message
                           << std::endl << "Value: " << e.value.dump(4)
                           << std::endl << std::endl;
-            }
-
-            if (!repeated_participant_names.empty())
-            {
-                std::cerr << "Location: /" << COLLECTION_PARTICIPANTS_TAG << std::endl
-                          << "Error: Participant names cannot be repeated. The following names are repeated:"
-                          << std::endl;
-                for (const auto& st : repeated_participant_names)
-                {
-                    std::cerr << "  - " << st << std::endl;
-                }
-                std::cerr << std::endl;
             }
         }
         // Return false when the file is not valid
