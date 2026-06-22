@@ -46,7 +46,7 @@ std::string invalid_schema_path_2 = "./invalid_json_schema.json";
 std::string invalid_schema_path_3 = "./invalid_draft07_schema.json";
 
 // Invalid yaml file/node
-Yaml valid_yml = YamlManager::load_file("./valid_config_files/client-ddsrouter.yaml");
+Yaml valid_yml = YamlManager::load_file("./test_yaml_files/valid_test.yaml");
 Yaml invalid_yml = valid_yml["missing_key"];
 
 // Vectors with the valid and invalid YAML files
