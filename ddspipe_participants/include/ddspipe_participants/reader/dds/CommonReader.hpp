@@ -161,8 +161,7 @@ protected:
 
     virtual
     fastdds::dds::DataReaderQos
-    reckon_reader_qos_(
-            const std::string& profile_name) const;
+    reckon_reader_qos_() const;
 
     //! Whether a sample received should be processed
     virtual bool should_accept_sample_(

@@ -153,8 +153,7 @@ protected:
      * @return The DataWriter QoS to be used for this writer.
      */
     DDSPIPE_PARTICIPANTS_DllAPI
-    virtual fastdds::dds::DataWriterQos reckon_writer_qos_(
-            const std::string& topic_name) const noexcept;
+    virtual fastdds::dds::DataWriterQos reckon_writer_qos_() const noexcept;
 
     /**
      * @brief Auxiliary method used in \c write to fill the sample to send and write params.

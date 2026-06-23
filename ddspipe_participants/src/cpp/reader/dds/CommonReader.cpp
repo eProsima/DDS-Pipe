@@ -121,7 +121,7 @@ void CommonReader::init(
     // It is safe to do so here as object is already created and callbacks do not require anything set in this method
     reader_ = dds_subscriber_->create_datareader(
         filtered_topic_, // Using new filtered topic
-        reckon_reader_qos_(topic_.topic_name()),
+        reckon_reader_qos_(),
         this,
         eprosima::fastdds::dds::StatusMask::all(),
         payload_pool_);
@@ -276,20 +276,20 @@ fastdds::dds::SubscriberQos CommonReader::reckon_subscriber_qos_() const
     return qos;
 }
 
-fastdds::dds::DataReaderQos CommonReader::reckon_reader_qos_(
-        const std::string& topic_name) const
+fastdds::dds::DataReaderQos CommonReader::reckon_reader_qos_() const
 {
     fastdds::dds::DataReaderQos qos;
 
-    bool xml_profile_found =
-            (fastdds::dds::RETCODE_OK == dds_subscriber_->get_datareader_qos_from_profile(topic_name, qos));
+    const std::string& profile_key = topic_.topic_qos.endpoint_profile_name.is_set()
+            ? topic_.topic_qos.endpoint_profile_name.get_value()
+            : topic_.topic_name();
 
-    if (!xml_profile_found || yaml_qos_override_)
+    bool xml_profile_found =
+            (fastdds::dds::RETCODE_OK == dds_subscriber_->get_datareader_qos_from_profile(profile_key, qos));
+
+    if (!xml_profile_found)
     {
-        if (!xml_profile_found)
-        {
-            qos = dds_subscriber_->get_default_datareader_qos();
-        }
+        qos = dds_subscriber_->get_default_datareader_qos();
 
         qos.durability().kind =
                 (topic_.topic_qos.is_transient_local())
@@ -314,6 +314,45 @@ fastdds::dds::DataReaderQos CommonReader::reckon_reader_qos_(
         {
             qos.history().kind = eprosima::fastdds::dds::HistoryQosPolicyKind::KEEP_LAST_HISTORY_QOS;
             qos.history().depth = topic_.topic_qos.history_depth;
+        }
+    }
+    else if (yaml_qos_override_)
+    {
+        if (topic_.topic_qos.durability_qos.is_set())
+        {
+            qos.durability().kind =
+                    (topic_.topic_qos.is_transient_local())
+                    ? fastdds::dds::DurabilityQosPolicyKind::TRANSIENT_LOCAL_DURABILITY_QOS
+                    : fastdds::dds::DurabilityQosPolicyKind::VOLATILE_DURABILITY_QOS;
+        }
+
+        if (topic_.topic_qos.reliability_qos.is_set())
+        {
+            qos.reliability().kind =
+                    (topic_.topic_qos.is_reliable())
+                    ? fastdds::dds::ReliabilityQosPolicyKind::RELIABLE_RELIABILITY_QOS
+                    : fastdds::dds::ReliabilityQosPolicyKind::BEST_EFFORT_RELIABILITY_QOS;
+        }
+
+        if (topic_.topic_qos.ownership_qos.is_set())
+        {
+            qos.ownership().kind =
+                    (topic_.topic_qos.has_ownership())
+                    ? fastdds::dds::OwnershipQosPolicyKind::EXCLUSIVE_OWNERSHIP_QOS
+                    : fastdds::dds::OwnershipQosPolicyKind::SHARED_OWNERSHIP_QOS;
+        }
+
+        if (topic_.topic_qos.history_depth.is_set())
+        {
+            if (topic_.topic_qos.history_depth == 0U)
+            {
+                qos.history().kind = eprosima::fastdds::dds::HistoryQosPolicyKind::KEEP_ALL_HISTORY_QOS;
+            }
+            else
+            {
+                qos.history().kind = eprosima::fastdds::dds::HistoryQosPolicyKind::KEEP_LAST_HISTORY_QOS;
+                qos.history().depth = topic_.topic_qos.history_depth;
+            }
         }
     }
 

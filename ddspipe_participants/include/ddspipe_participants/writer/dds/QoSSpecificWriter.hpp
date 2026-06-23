@@ -66,8 +66,7 @@ protected:
     //! Specific writer QoS to override (more or less) the CommonWriter qos
     virtual
     fastdds::dds::DataWriterQos
-    reckon_writer_qos_(
-            const std::string& topic_name) const noexcept override;
+    reckon_writer_qos_() const noexcept override;
 
     //! Specific QoS of the Endpoint
     core::types::SpecificEndpointQoS specific_qos_;

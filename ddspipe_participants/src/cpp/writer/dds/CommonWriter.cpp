@@ -96,7 +96,7 @@ void CommonWriter::init(
 
     writer_ = dds_publisher_->create_datawriter(
         dds_topic_,
-        reckon_writer_qos_(topic_.topic_name()),
+        reckon_writer_qos_(),
         nullptr,
         eprosima::fastdds::dds::StatusMask::all(),
         payload_pool_);
@@ -228,20 +228,20 @@ fastdds::dds::PublisherQos CommonWriter::reckon_publisher_qos_() const noexcept
     return qos;
 }
 
-fastdds::dds::DataWriterQos CommonWriter::reckon_writer_qos_(
-        const std::string& topic_name) const noexcept
+fastdds::dds::DataWriterQos CommonWriter::reckon_writer_qos_() const noexcept
 {
     fastdds::dds::DataWriterQos qos;
 
-    bool xml_profile_found =
-            (fastdds::dds::RETCODE_OK == dds_publisher_->get_datawriter_qos_from_profile(topic_name, qos));
+    const std::string& profile_key = topic_.topic_qos.endpoint_profile_name.is_set()
+            ? topic_.topic_qos.endpoint_profile_name.get_value()
+            : topic_.topic_name();
 
-    if (!xml_profile_found || yaml_qos_override_)
+    bool xml_profile_found =
+            (fastdds::dds::RETCODE_OK == dds_publisher_->get_datawriter_qos_from_profile(profile_key, qos));
+
+    if (!xml_profile_found)
     {
-        if (!xml_profile_found)
-        {
-            qos = dds_publisher_->get_default_datawriter_qos();
-        }
+        qos = dds_publisher_->get_default_datawriter_qos();
 
         qos.durability().kind =
                 (topic_.topic_qos.is_transient_local())
@@ -266,6 +266,45 @@ fastdds::dds::DataWriterQos CommonWriter::reckon_writer_qos_(
         {
             qos.history().kind = eprosima::fastdds::dds::HistoryQosPolicyKind::KEEP_LAST_HISTORY_QOS;
             qos.history().depth = topic_.topic_qos.history_depth;
+        }
+    }
+    else if (yaml_qos_override_)
+    {
+        if (topic_.topic_qos.durability_qos.is_set())
+        {
+            qos.durability().kind =
+                    (topic_.topic_qos.is_transient_local())
+                    ? fastdds::dds::DurabilityQosPolicyKind::TRANSIENT_LOCAL_DURABILITY_QOS
+                    : fastdds::dds::DurabilityQosPolicyKind::VOLATILE_DURABILITY_QOS;
+        }
+
+        if (topic_.topic_qos.reliability_qos.is_set())
+        {
+            qos.reliability().kind =
+                    (topic_.topic_qos.is_reliable())
+                    ? fastdds::dds::ReliabilityQosPolicyKind::RELIABLE_RELIABILITY_QOS
+                    : fastdds::dds::ReliabilityQosPolicyKind::BEST_EFFORT_RELIABILITY_QOS;
+        }
+
+        if (topic_.topic_qos.ownership_qos.is_set())
+        {
+            qos.ownership().kind =
+                    (topic_.topic_qos.has_ownership())
+                    ? fastdds::dds::OwnershipQosPolicyKind::EXCLUSIVE_OWNERSHIP_QOS
+                    : fastdds::dds::OwnershipQosPolicyKind::SHARED_OWNERSHIP_QOS;
+        }
+
+        if (topic_.topic_qos.history_depth.is_set())
+        {
+            if (topic_.topic_qos.history_depth == 0U)
+            {
+                qos.history().kind = eprosima::fastdds::dds::HistoryQosPolicyKind::KEEP_ALL_HISTORY_QOS;
+            }
+            else
+            {
+                qos.history().kind = eprosima::fastdds::dds::HistoryQosPolicyKind::KEEP_LAST_HISTORY_QOS;
+                qos.history().depth = topic_.topic_qos.history_depth;
+            }
         }
     }
 

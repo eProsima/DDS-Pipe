@@ -26,6 +26,8 @@ set(TEST_LIST
         reader_topic_profile_lookup
         writer_xml_override
         reader_xml_override
+        writer_xml_qos_not_overridden_when_yaml_unset
+        writer_endpoint_profile_name_override
     )
 
 set(TEST_NEEDED_SOURCES
