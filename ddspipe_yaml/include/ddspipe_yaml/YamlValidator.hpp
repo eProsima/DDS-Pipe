@@ -71,20 +71,30 @@ public:
             const nlohmann::json& schema);
 
     /**
-     * @brief Construct a \c YamlValidator by loading a JSON schema from a file.
-     *
-     * @param schema_path Path to the JSON schema file.
-     */
-    explicit YamlValidator(
-            const std::string& schema_path);
-
-    /**
      * @brief Set or replace the root schema of the validator.
      *
      * @param schema JSON schema to set as the root schema of the validator.
      */
     void set_schema(
             const nlohmann::json& schema);
+
+    /**
+     * @brief Load a JSON schema from a file path.
+     *
+     * @param schema_path Path to the JSON schema file.
+     * @return Parsed \c nlohmann::json object representing the schema.
+     */
+    static nlohmann::json from_file(
+            const std::string& schema_path);
+
+    /**
+     * @brief Load a JSON schema from a string containing the schema content directly.
+     *
+     * @param schema_file_content String with the JSON schema content.
+     * @return Parsed \c nlohmann::json object representing the schema.
+     */
+    static nlohmann::json from_string(
+            const std::string& schema_file_content);
 
     /**
      * @brief Validate a YAML object against the loaded schema.

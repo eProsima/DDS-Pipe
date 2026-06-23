@@ -145,9 +145,8 @@ YamlValidator::YamlValidator(
     }
 }
 
-YamlValidator::YamlValidator(
+nlohmann::json YamlValidator::from_file(
         const std::string& schema_path)
-    : validator(nullptr, format_checker)
 {
     try
     {
@@ -155,13 +154,29 @@ YamlValidator::YamlValidator(
         schema_file.exceptions(std::ifstream::failbit | std::ifstream::badbit);
         schema_file.open(schema_path);
         nlohmann::json schema = nlohmann::json::parse(schema_file);
-        validator.set_root_schema(schema);
+        return schema;
     }
     catch (const std::exception& e)
     {
         throw eprosima::utils::ConfigurationException(
                   utils::Formatter() << "Error occured while loading JSON schema from file: "
                                      << schema_path << " : " << e.what());
+    }
+}
+
+nlohmann::json YamlValidator::from_string(
+        const std::string& schema_file_content)
+{
+    try
+    {
+        nlohmann::json schema = nlohmann::json::parse(schema_file_content);
+        return schema;
+    }
+    catch (const std::exception& e)
+    {
+        throw eprosima::utils::ConfigurationException(
+                  utils::Formatter() << "Error occured while loading JSON schema from input string: "
+                                     << e.what());
     }
 }
 
