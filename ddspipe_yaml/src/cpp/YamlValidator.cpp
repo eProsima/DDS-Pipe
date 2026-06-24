@@ -140,7 +140,7 @@ YamlValidator::YamlValidator(
     catch (const std::exception& e)
     {
         throw eprosima::utils::ConfigurationException(
-                  utils::Formatter() << "Error occured while setting the JSON schema in the YamlValidator: "
+                  utils::Formatter() << "Error occured while setting the JSON schema in the YamlValidator:\n"
                                      << e.what());
     }
 }
@@ -160,7 +160,7 @@ nlohmann::json YamlValidator::from_file(
     {
         throw eprosima::utils::ConfigurationException(
                   utils::Formatter() << "Error occured while loading JSON schema from file: "
-                                     << schema_path << " : " << e.what());
+                                     << schema_path << " :\n" << e.what());
     }
 }
 
@@ -175,7 +175,7 @@ nlohmann::json YamlValidator::from_string(
     catch (const std::exception& e)
     {
         throw eprosima::utils::ConfigurationException(
-                  utils::Formatter() << "Error occured while loading JSON schema from input string: "
+                  utils::Formatter() << "Error occured while loading JSON schema from input string:\n"
                                      << e.what());
     }
 }
@@ -190,7 +190,7 @@ void YamlValidator::set_schema(
     catch (const std::exception& e)
     {
         throw eprosima::utils::ConfigurationException(
-                  utils::Formatter() << "Error occured while setting the JSON schema in the YamlValidator: "
+                  utils::Formatter() << "Error occured while setting the JSON schema in the YamlValidator:\n"
                                      << e.what());
     }
 }
