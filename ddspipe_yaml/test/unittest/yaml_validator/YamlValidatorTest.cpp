@@ -34,7 +34,8 @@ std::string invalid_schema_path_1 = "./test_yaml_files/valid_draft07_schema.json
 std::string invalid_schema_path_2 = "./invalid_json_schema.json";
 std::string invalid_schema_path_3 = "./invalid_draft07_schema.json";
 
-std::string valid_schema_string= R"(
+std::string valid_schema_string =
+        R"(
 {
     "$schema":"http://json-schema.org/draft-07/schema#",
     "type":"object",
@@ -54,7 +55,8 @@ std::string valid_schema_string= R"(
 }
 )";
 
-std::string invalid_schema_string= R"(
+std::string invalid_schema_string =
+        R"(
 {
     "$schema":"http://json-schema.org/draft-07/schema#",
     "properties":["not", "an", "object"]
@@ -88,7 +90,7 @@ std::vector<std::string> invalid_files = {
  *  constructor with path to file: invalid path                                    -> ConfigurationException
  *  constructor with path to file: valid path and invalid file                     -> ConfigurationException
  *  constructor with path to file: valid path and valid file, but not json draft07 -> ConfigurationException
- * 
+ *
  *  constructor with string with file content: valid file                          -> no exception
  *  constructor with string with file content: valid file, but not json draft07    -> ConfigurationException
  */
@@ -99,22 +101,25 @@ TEST(YamlValidatorTest, constructors)
 
     // constructor with path to file: valid path and file
     {
-        ASSERT_NO_THROW(validator = YamlValidator(YamlValidator::InputType::FROM_FILE, test::valid_schema_path););
+        ASSERT_NO_THROW(validator = YamlValidator(YamlValidator::InputType::FROM_FILE, test::valid_schema_path));
     }
 
     // constructor with path to file: invalid path
     {
-        ASSERT_THROW(validator = YamlValidator(YamlValidator::InputType::FROM_FILE, test::invalid_schema_path_1), utils::ConfigurationException);
+        ASSERT_THROW(validator = YamlValidator(YamlValidator::InputType::FROM_FILE, test::invalid_schema_path_1),
+                utils::ConfigurationException);
     }
 
     // constructor with path to file: valid path and invalid file
     {
-        ASSERT_THROW(validator = YamlValidator(YamlValidator::InputType::FROM_FILE, test::invalid_schema_path_2), utils::ConfigurationException);
+        ASSERT_THROW(validator = YamlValidator(YamlValidator::InputType::FROM_FILE, test::invalid_schema_path_2),
+                utils::ConfigurationException);
     }
 
     // constructor with path to file: valid path and valid file, but not json draft07
     {
-        ASSERT_THROW(validator = YamlValidator(YamlValidator::InputType::FROM_FILE, test::invalid_schema_path_3), utils::ConfigurationException);
+        ASSERT_THROW(validator = YamlValidator(YamlValidator::InputType::FROM_FILE, test::invalid_schema_path_3),
+                utils::ConfigurationException);
     }
 
     // constructor with string with file content: valid file
@@ -124,7 +129,8 @@ TEST(YamlValidatorTest, constructors)
 
     // constructor with string with file content: valid file, but not json draft07
     {
-        ASSERT_THROW(validator = YamlValidator(YamlValidator::InputType::FROM_STRING, test::invalid_schema_string), utils::ConfigurationException);
+        ASSERT_THROW(validator = YamlValidator(YamlValidator::InputType::FROM_STRING, test::invalid_schema_string),
+                utils::ConfigurationException);
     }
 }
 

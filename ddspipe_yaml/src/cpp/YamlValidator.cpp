@@ -58,8 +58,8 @@ YamlValidator::YamlValidator()
 }
 
 YamlValidator::YamlValidator(
-            InputType input_type,
-            const std::string& schema_string)
+        InputType input_type,
+        const std::string& schema_string)
     : validator(std::make_unique<nlohmann::json_schema::json_validator>(nullptr, format_checker))
 {
     this->set_schema(input_type, schema_string);
@@ -67,7 +67,8 @@ YamlValidator::YamlValidator(
 
 YamlValidator::~YamlValidator() = default;
 
-YamlValidator& YamlValidator::operator=(YamlValidator&&) = default;
+YamlValidator& YamlValidator::operator =(
+        YamlValidator&&) = default;
 
 void YamlValidator::set_schema(
         InputType input_type,
@@ -77,34 +78,34 @@ void YamlValidator::set_schema(
 
     switch (input_type)
     {
-    case InputType::FROM_FILE: // Treat input string as the path to the file with the schema
-        try
-        {
-            std::ifstream schema_file;
-            schema_file.exceptions(std::ifstream::failbit | std::ifstream::badbit);
-            schema_file.open(schema_string);
-            schema = nlohmann::json::parse(schema_file);
-        }
-        catch (const std::exception& e)
-        {
-            throw eprosima::utils::ConfigurationException(
-                    utils::Formatter() << "Error occured while loading JSON schema from file: "
-                                       << schema_string << " :\n" << e.what());
-        }
-        break;
-    
-    case InputType::FROM_STRING: // Treat input string as the raw schema
-        try
-        {
-            schema = nlohmann::json::parse(schema_string);
-        }
-        catch (const std::exception& e)
-        {
-            throw eprosima::utils::ConfigurationException(
-                    utils::Formatter() << "Error occured while loading JSON schema from input string:\n"
-                                       << e.what());
-        }
-        break;
+        case InputType::FROM_FILE: // Treat input string as the path to the file with the schema
+            try
+            {
+                std::ifstream schema_file;
+                schema_file.exceptions(std::ifstream::failbit | std::ifstream::badbit);
+                schema_file.open(schema_string);
+                schema = nlohmann::json::parse(schema_file);
+            }
+            catch (const std::exception& e)
+            {
+                throw eprosima::utils::ConfigurationException(
+                          utils::Formatter() << "Error occured while loading JSON schema from file: "
+                                             << schema_string << " :\n" << e.what());
+            }
+            break;
+
+        case InputType::FROM_STRING: // Treat input string as the raw schema
+            try
+            {
+                schema = nlohmann::json::parse(schema_string);
+            }
+            catch (const std::exception& e)
+            {
+                throw eprosima::utils::ConfigurationException(
+                          utils::Formatter() << "Error occured while loading JSON schema from input string:\n"
+                                             << e.what());
+            }
+            break;
     }
 
     // Set the validator schema
@@ -149,77 +150,78 @@ bool YamlValidator::validate_YAML(
 
     // Create lambda function to convert from YAML to JSON
     auto yaml_to_json = [](auto&& self, const Yaml& yml) -> nlohmann::json
-    {
-        if (yml.IsNull())
-        {
-            return nullptr;
-        }
-
-        if (yml.IsScalar())
-        {
-            // The only allowed scalar types are: boolean, integer, number (double) and string
-            const std::string value = yml.as<std::string>();
-
-            if (value == "true")
             {
-                return true;
-            }
-            if (value == "false")
-            {
-                return false;
-            }
+                if (yml.IsNull())
+                {
+                    return nullptr;
+                }
 
-            try
-            {
-                return yml.as<int>();
-            } catch (...)
-            {
-            }
-            try
-            {
-                return yml.as<double>();
-            } catch (...)
-            {
-            }
+                if (yml.IsScalar())
+                {
+                    // The only allowed scalar types are: boolean, integer, number (double) and string
+                    const std::string value = yml.as<std::string>();
 
-            return value;
-        }
+                    if (value == "true")
+                    {
+                        return true;
+                    }
+                    if (value == "false")
+                    {
+                        return false;
+                    }
 
-        if (yml.IsSequence())
-        {
-            nlohmann::json array = nlohmann::json::array();
-            for (const auto& item : yml)
-            {
-                array.push_back(self(self, item));
-            }
-            return array;
-        }
+                    try
+                    {
+                        return yml.as<int>();
+                    } catch (...)
+                    {
+                    }
+                    try
+                    {
+                        return yml.as<double>();
+                    } catch (...)
+                    {
+                    }
 
-        if (yml.IsMap())
-        {
-            nlohmann::json object = nlohmann::json::object();
-            for (const auto& item : yml)
-            {
-                std::string key = item.first.as<std::string>();
-                object[key] = self(self, item.second);
-            }
-            return object;
-        }
+                    return value;
+                }
 
-        std::string yml_as_string;
-        try
-        {
-            yml_as_string = yml.as<std::string>();
-        }
-        catch (...)
-        {
-            throw eprosima::utils::ConfigurationException("Unsupported YAML file, cannot be converted to JSON.");
-        }
+                if (yml.IsSequence())
+                {
+                    nlohmann::json array = nlohmann::json::array();
+                    for (const auto& item : yml)
+                    {
+                        array.push_back(self(self, item));
+                    }
+                    return array;
+                }
 
-        throw eprosima::utils::ConfigurationException(
-                utils::Formatter() << "Unsupported YAML file, cannot be converted to JSON.\n"
-                                    << "Error in node: " << yml_as_string);
-    };
+                if (yml.IsMap())
+                {
+                    nlohmann::json object = nlohmann::json::object();
+                    for (const auto& item : yml)
+                    {
+                        std::string key = item.first.as<std::string>();
+                        object[key] = self(self, item.second);
+                    }
+                    return object;
+                }
+
+                std::string yml_as_string;
+                try
+                {
+                    yml_as_string = yml.as<std::string>();
+                }
+                catch (...)
+                {
+                    throw eprosima::utils::ConfigurationException(
+                              "Unsupported YAML file, cannot be converted to JSON.");
+                }
+
+                throw eprosima::utils::ConfigurationException(
+                          utils::Formatter() << "Unsupported YAML file, cannot be converted to JSON.\n"
+                                             << "Error in node: " << yml_as_string);
+            };
 
     // Covert YAML to JSON
     nlohmann::json instance = yaml_to_json(yaml_to_json, yml);

@@ -60,7 +60,7 @@ protected:
             const std::string& value);
 
 public:
-    
+
     enum class InputType
     {
         FROM_STRING,
@@ -98,7 +98,8 @@ public:
      * @brief Move assignment operator. Needed because \c std::unique_ptr needs the full definition
      * of \c nlohmann::json_schema::json_validator when move-assigning (the old value is destroyed).
      */
-    YamlValidator& operator=(YamlValidator&&);
+    YamlValidator& operator =(
+            YamlValidator&&);
 
     /**
      * @brief Set or replace the root schema of the validator.
