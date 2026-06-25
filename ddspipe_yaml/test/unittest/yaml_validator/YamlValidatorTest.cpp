@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include <fstream>
 #include <iostream>
 
 #include <cpp_utils/testing/gtest_aux.hpp>
@@ -33,12 +32,6 @@ using namespace eprosima::ddspipe::yaml;
 
 namespace test {
 // Paths and files to test the constructors
-std::ifstream valid_schema_file("./valid_draft07_schema.json");
-nlohmann::json valid_schema = nlohmann::json::parse(valid_schema_file);
-
-std::ifstream invalid_schema_file("./invalid_draft07_schema.json");
-nlohmann::json invalid_schema = nlohmann::json::parse(invalid_schema_file);
-
 std::string valid_schema_path = "./valid_draft07_schema.json";
 
 std::string invalid_schema_path_1 = "./test_yaml_files/valid_draft07_schema.json";
@@ -95,28 +88,18 @@ std::vector<std::string> invalid_files = {
  * Test the validator constructors
  *
  * CASES:
- *  constructor with json: valid json draft07   -> no exception
- *  constructor with json: invalid json draft07 -> ConfigurationException
- *
  *  constructor with path to file: valid path and file                             -> no exception
  *  constructor with path to file: invalid path                                    -> ConfigurationException
  *  constructor with path to file: valid path and invalid file                     -> ConfigurationException
  *  constructor with path to file: valid path and valid file, but not json draft07 -> ConfigurationException
+ * 
+ *  constructor with string with file content: valid file                          -> no exception
+ *  constructor with string with file content: valid file, but not json draft07    -> ConfigurationException
  */
 TEST(YamlValidatorTest, constructors)
 {
     // Define a YamlValidator variable to use in the ASSERTS to prevent ambiguous syntax
     YamlValidator validator;
-
-    // constructor with json: valid json draft07
-    {
-        ASSERT_NO_THROW(validator = YamlValidator(test::valid_schema));
-    }
-
-    // constructor with json: invalid json draft07
-    {
-        ASSERT_THROW(validator = YamlValidator(test::invalid_schema), utils::ConfigurationException);
-    }
 
     // constructor with path to file: valid path and file
     {
@@ -172,7 +155,7 @@ TEST(YamlValidatorTest, validation_with_invalid_yaml_file)
 {
     // validation throws an exception with invalid YAML file
     {
-        YamlValidator validator = YamlValidator(test::valid_schema);
+        YamlValidator validator = YamlValidator(YamlValidator::from_file(test::valid_schema_path));
         ASSERT_THROW(validator.validate_YAML(test::invalid_yml), utils::ConfigurationException);
     }
 }
@@ -183,7 +166,7 @@ TEST(YamlValidatorTest, validation_with_invalid_yaml_file)
  */
 TEST(YamlValidatorTest, validation_is_correct)
 {
-    YamlValidator validator = YamlValidator(test::valid_schema);
+    YamlValidator validator = YamlValidator(YamlValidator::from_file(test::valid_schema_path));
 
     // valid files
     {

@@ -14,7 +14,7 @@
 
 #pragma once
 
-//#include <ddspipe_yaml/library/library_dll.h>
+#include <ddspipe_yaml/library/library_dll.h>
 #include <ddspipe_yaml/Yaml.hpp>
 
 #include <nlohmann/json.hpp>
@@ -29,7 +29,7 @@ namespace yaml {
  *
  * This class is used to validate Yaml objects.
  */
-class YamlValidator
+class DDSPIPE_YAML_DllAPI YamlValidator
 {
 private:
 
