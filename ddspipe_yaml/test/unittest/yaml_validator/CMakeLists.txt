@@ -36,6 +36,7 @@ set(TEST_LIST
         validation_without_schema
         validation_with_invalid_yaml_file
         validation_is_correct
+        validation_edge_cases
     )
 
 set(TEST_EXTRA_LIBRARIES

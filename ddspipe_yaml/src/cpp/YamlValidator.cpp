@@ -50,6 +50,12 @@ void YamlValidator::format_checker(
             throw std::invalid_argument(value + " is not a valid IPv6 address");
         }
     }
+    else
+    {
+        EPROSIMA_LOG_WARNING(
+            DDSPIPE_YAML,
+            "Unsupported format '" << format << "' in JSON schema. Value '" << value << "' was not validated.");
+    }
 }
 
 YamlValidator::YamlValidator()
@@ -106,12 +112,18 @@ void YamlValidator::set_schema(
                                              << e.what());
             }
             break;
+
+        default:
+            throw eprosima::utils::ConfigurationException(
+                      utils::Formatter()
+                          << "Error occured while loading JSON schema, unsupported YamlValidator::InpuType.\n");
     }
 
-    // Set the validator schema
+    // Set the validator schema preventing deletion of the current one
+    auto new_validator = std::make_unique<nlohmann::json_schema::json_validator>(nullptr, format_checker);
     try
     {
-        validator->set_root_schema(schema);
+        new_validator->set_root_schema(schema);
     }
     catch (const std::exception& e)
     {
@@ -119,6 +131,7 @@ void YamlValidator::set_schema(
                   utils::Formatter() << "Error occured while setting the JSON schema in the YamlValidator:\n"
                                      << e.what());
     }
+    validator = std::move(new_validator);
 }
 
 bool YamlValidator::validate_YAML(
@@ -161,6 +174,12 @@ bool YamlValidator::validate_YAML(
                     // The only allowed scalar types are: boolean, integer, number (double) and string
                     const std::string value = yml.as<std::string>();
 
+                    // Ensure quoted numbers as well as quoted "true" and "false" are parsed to strings
+                    if (yml.Tag() == "!")
+                    {
+                        return value;
+                    }
+
                     if (value == "true")
                     {
                         return true;
@@ -176,6 +195,19 @@ bool YamlValidator::validate_YAML(
                     } catch (...)
                     {
                     }
+                    try
+                    {
+                        return yml.as<long>();
+                    } catch (...)
+                    {
+                    }
+                    try
+                    {
+                        return yml.as<u_int64_t>();
+                    } catch (...)
+                    {
+                    }
+
                     try
                     {
                         return yml.as<double>();

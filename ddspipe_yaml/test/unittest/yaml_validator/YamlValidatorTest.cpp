@@ -19,6 +19,8 @@
 
 #include <cpp_utils/exception/ConfigurationException.hpp>
 
+#include <fastdds/dds/log/Log.hpp>
+
 #include <ddspipe_yaml/library/library_dll.h>
 #include <ddspipe_yaml/YamlManager.hpp>
 #include <ddspipe_yaml/YamlValidator.hpp>
@@ -79,6 +81,83 @@ std::vector<std::string> invalid_files = {
     "./test_yaml_files/invalid_object.yaml",
     "./test_yaml_files/invalid_new_property.yaml"
 };
+
+// Test additional edge cases
+std::string edge_cases_schema_string =
+        R"(
+{
+    "$schema":"http://json-schema.org/draft-07/schema#",
+    "type":"object",
+    "additionalProperties":false,
+    "properties":{
+        "quoted-int":{
+            "type":"string"
+        },
+        "quoted-float":{
+            "type":"string"
+        },
+        "quoted-bool":{
+            "type":"string"
+        },
+        "plain-int":{
+            "type":"integer"
+        },
+        "plain-bool":{
+            "type":"boolean"
+        },
+        "large-int-1":{
+            "type":"integer"
+        },
+        "large-int-2":{
+            "type":"integer"
+        },
+        "large-int-3":{
+            "type":"integer"
+        },
+        "large-int-4":{
+            "type":"integer"
+        },
+        "large-float-1":{
+            "type":"number"
+        },
+        "large-float-2":{
+            "type":"number"
+        },
+        "string-ipv4":{
+            "type":"string",
+            "format":"v4"
+        },
+        "string-ipv6":{
+            "type":"string",
+            "format":"v6"
+        },
+        "string-undefined-format":{
+            "type":"string",
+            "format":"undefined-format"
+        }
+    }
+}
+)";
+
+Yaml edge_cases_types_yml = YAML::Load(
+    "quoted-int: \"123\"\n"
+    "quoted-float: \"123.456\"\n"
+    "quoted-bool: \"false\"\n"
+    "plain-int: 123\n"
+    "plain-bool: true\n"
+    "large-int-1: 2147483648\n"                 // 2^31
+    "large-int-2: 4294967296\n"                 // 2^32
+    "large-int-3: 9223372036854775808\n"        // 2^63
+    "large-int-4: 18446744073709551615\n"       // 2^64 - 1
+    "large-float-1: 18446744073709551616.0\n"   // 2^64 float
+    "large-float-2: 1.7976931348623157e308\n"   // std::numeric_limits<double>::max()
+    );
+
+Yaml edge_cases_format_yml = YAML::Load(
+    "string-ipv4: 192.168.1.1\n"
+    "string-ipv6: 2001:db8:85a3::8a2e:370:7334\n" //001:0db8:85a3:0000:0000:8a2e:0370:7334\n"
+    "string-undefined-format: abc.123.def.456\n"
+    );
 } // namespace test
 
 
@@ -187,6 +266,34 @@ TEST(YamlValidatorTest, validation_is_correct)
             ASSERT_FALSE(validator.validate_YAML(yml, false)) << "Failed for file: " << st;
         }
     }
+}
+
+/**
+ * Test a set of edge cases to ensure some edge cases are processed correctly
+ */
+TEST(YamlValidatorTest, validation_edge_cases)
+{
+    YamlValidator validator = YamlValidator(YamlValidator::InputType::FROM_STRING, test::edge_cases_schema_string);
+
+    // all the types are processed correctly
+    {
+        ASSERT_TRUE(validator.validate_YAML(test::edge_cases_types_yml));
+    }
+
+    // all the formats are processed correctly
+    {
+        eprosima::fastdds::dds::Log::SetVerbosity(eprosima::fastdds::dds::Log::Kind::Warning);
+        testing::internal::CaptureStderr();
+
+        ASSERT_TRUE(validator.validate_YAML(test::edge_cases_format_yml));
+
+        eprosima::fastdds::dds::Log::Flush();
+        std::string output = testing::internal::GetCapturedStderr();
+        ASSERT_NE(output.find("undefined-format"), std::string::npos); // the string is different from not found
+
+        eprosima::fastdds::dds::Log::SetVerbosity(eprosima::fastdds::dds::Log::Kind::Error); // restore verbosity
+    }
+
 }
 
 int main(
