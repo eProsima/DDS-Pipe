@@ -203,7 +203,7 @@ bool YamlValidator::validate_YAML(
                     }
                     try
                     {
-                        return yml.as<u_int64_t>();
+                        return yml.as<uint64_t>();
                     } catch (...)
                     {
                     }
