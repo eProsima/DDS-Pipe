@@ -32,6 +32,9 @@ set(TEST_LIST
         get_scalar_string
         get_scalar_from_tag
         get_scalar_negative_cases
+        get_positive_and_nonnegative_numbers_from_tag
+        get_list_and_set_helpers
+        get_timestamp
     )
 
 set(TEST_EXTRA_LIBRARIES

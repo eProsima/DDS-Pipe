@@ -16,8 +16,10 @@
 #include <gtest/gtest.h>
 
 #include <cpp_utils/exception/ConfigurationException.hpp>
+#include <cpp_utils/time/time_utils.hpp>
 
 #include <ddspipe_yaml/YamlReader.hpp>
+#include <ddspipe_yaml/yaml_configuration_tags.hpp>
 
 using namespace eprosima;
 using namespace eprosima::ddspipe::yaml;
@@ -331,6 +333,113 @@ TEST(YamlReaderScalarTest, get_scalar_negative_cases)
         yml["2"] = 4;
         ASSERT_TRUE(yml.IsMap());
         ASSERT_THROW(YamlReader::get_scalar<int>(yml), eprosima::utils::ConfigurationException);
+    }
+}
+// TODO. danip
+/**
+ * Check reading nonnegative and positive numeric values from tagged yaml nodes
+ */
+TEST(YamlReaderScalarTest, get_positive_and_nonnegative_numbers_from_tag)
+{
+    // int values
+    {
+        Yaml yml;
+        yml["nonnegative"] = 0;
+        yml["positive"] = 7;
+        yml["negative"] = -1;
+
+        ASSERT_EQ(YamlReader::get_nonnegative_int(yml, "nonnegative"), 0u);
+        ASSERT_EQ(YamlReader::get_positive_int(yml, "positive"), 7u);
+        ASSERT_THROW(YamlReader::get_nonnegative_int(yml, "negative"), eprosima::utils::ConfigurationException);
+        ASSERT_THROW(YamlReader::get_positive_int(yml, "nonnegative"), eprosima::utils::ConfigurationException);
+
+        ASSERT_THROW(YamlReader::get_positive_int(yml, "missing"), eprosima::utils::ConfigurationException);
+    }
+
+    // float values
+    {
+        Yaml yml;
+        yml["nonnegative"] = 0.0f;
+        yml["positive"] = 2.5f;
+        yml["negative"] = -0.25f;
+
+        ASSERT_FLOAT_EQ(YamlReader::get_nonnegative_float(yml, "nonnegative"), 0.0f);
+        ASSERT_FLOAT_EQ(YamlReader::get_positive_float(yml, "positive"), 2.5f);
+        ASSERT_THROW(YamlReader::get_nonnegative_float(yml, "negative"), eprosima::utils::ConfigurationException);
+        ASSERT_THROW(YamlReader::get_positive_float(yml, "nonnegative"), eprosima::utils::ConfigurationException);
+
+        ASSERT_THROW(YamlReader::get_positive_float(yml, "missing"), eprosima::utils::ConfigurationException);
+    }
+}
+
+/**
+ * Check yaml list helpers for success and wrapped error paths
+ */
+TEST(YamlReaderScalarTest, get_list_and_set_helpers)
+{
+    // sequence success
+    {
+        Yaml yml;
+        yml.push_back(1);
+        yml.push_back(2);
+        yml.push_back(3);
+
+        std::list<int> result = YamlReader::get_list<int>(yml, LATEST);
+        ASSERT_EQ(result, std::list<int>({1, 2, 3}));
+    }
+
+    // list under tag failure wraps nested exception
+    {
+        Yaml yml;
+        yml["values"] = 5;
+        ASSERT_THROW(YamlReader::get_list<int>(yml, "values", LATEST), eprosima::utils::ConfigurationException);
+    }
+
+    // set conversion removes duplicates
+    {
+        Yaml yml;
+        yml["values"].push_back("alpha");
+        yml["values"].push_back("beta");
+        yml["values"].push_back("alpha");
+
+        std::set<std::string> result = YamlReader::get_set<std::string>(yml, "values", LATEST);
+        ASSERT_EQ(result.size(), 2u);
+        ASSERT_TRUE(result.find("alpha") != result.end());
+        ASSERT_TRUE(result.find("beta") != result.end());
+    }
+}
+
+/**
+ * Check timestamp parsing with optional units and failing cases
+ */
+TEST(YamlReaderScalarTest, get_timestamp)
+{
+    // valid timestamp with optional subsecond units
+    {
+        Yaml yml;
+        yml[TIMESTAMP_DATETIME_TAG] = "2026-01-02_03-04-05";
+        yml[TIMESTAMP_MILLISECONDS_TAG] = 6;
+        yml[TIMESTAMP_MICROSECONDS_TAG] = 7;
+        yml[TIMESTAMP_NANOSECONDS_TAG] = 8;
+
+        const auto expected_base = utils::string_to_timestamp("2026-01-02_03-04-05", "%Y-%m-%d_%H-%M-%S", true);
+        const auto expected = std::chrono::time_point_cast<utils::Timestamp::duration>(
+            expected_base + std::chrono::milliseconds(6) + std::chrono::microseconds(7) + std::chrono::nanoseconds(8));
+
+        ASSERT_EQ(YamlReader::get<utils::Timestamp>(yml, LATEST), expected);
+    }
+
+    // missing required datetime
+    {
+        Yaml yml;
+        ASSERT_THROW(YamlReader::get<utils::Timestamp>(yml, LATEST), eprosima::utils::ConfigurationException);
+    }
+
+    // malformed datetime
+    {
+        Yaml yml;
+        yml[TIMESTAMP_DATETIME_TAG] = "bad-datetime";
+        ASSERT_THROW(YamlReader::get<utils::Timestamp>(yml, LATEST), eprosima::utils::ConfigurationException);
     }
 }
 
