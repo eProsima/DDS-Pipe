@@ -122,8 +122,8 @@ bool DiscoveryDatabase::add_endpoint_(
             if (it->second.active)
             {
                 throw utils::InconsistencyException(
-                          utils::Formatter() <<
-                              "Error adding Endpoint to database. Endpoint already exists." << new_endpoint);
+                          utils::Formatter()
+                              << "Error adding Endpoint to database. Endpoint already exists." << new_endpoint);
             }
             else
             {
@@ -172,8 +172,8 @@ bool DiscoveryDatabase::update_endpoint_(
         {
             // Entry not found
             throw utils::InconsistencyException(
-                      utils::Formatter() <<
-                          "Error updating Endpoint in database. Endpoint entry not found." << endpoint_to_update);
+                      utils::Formatter()
+                          << "Error updating Endpoint in database. Endpoint entry not found." << endpoint_to_update);
         }
         else
         {
@@ -212,9 +212,9 @@ utils::ReturnCode DiscoveryDatabase::erase_endpoint_(
         if (erased == 0 && filtered_erased == 0)
         {
             throw utils::InconsistencyException(
-                      utils::Formatter() <<
-                          "Error erasing Endpoint " << endpoint_to_erase <<
-                          " from database. Endpoint entry not found.");
+                      utils::Formatter()
+                          << "Error erasing Endpoint " << endpoint_to_erase
+                          << " from database. Endpoint entry not found.");
         }
     }
 
@@ -277,9 +277,9 @@ Endpoint DiscoveryDatabase::get_endpoint(
         }
 
         throw utils::InconsistencyException(
-                  utils::Formatter() <<
-                      "Error retrieving Endpoint with GUID " << endpoint_guid <<
-                      " from database. Endpoint entry not found.");
+                  utils::Formatter()
+                      << "Error retrieving Endpoint with GUID " << endpoint_guid
+                      << " from database. Endpoint entry not found.");
     }
 
     return it->second;
