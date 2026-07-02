@@ -19,6 +19,7 @@
 #include <functional>
 #include <map>
 #include <mutex>
+#include <set>
 #include <shared_mutex>
 #include <string>
 #include <thread>
@@ -263,7 +264,7 @@ protected:
     //! Database of endpoints indexed by guid
     std::map<types::Guid, types::Endpoint> entities_;
 
-    //! Database of endpoints indexed by guid
+    //! Database of filtered endpoint GUIDs
     std::set<types::Guid> entities_filter_;
 
     //! Mutex to guard queries to the database

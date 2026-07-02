@@ -76,6 +76,12 @@ void DiscoveryDatabase::stop() noexcept
     {
         logDebug(DDSPIPE_DISCOVERY_DATABASE, "Processing thread routine already stopped.");
     }
+
+    {
+        std::unique_lock<std::shared_timed_mutex> lock(mutex_);
+        entities_.clear();
+        entities_filter_.clear();
+    }
 }
 
 bool DiscoveryDatabase::topic_exists(
@@ -107,6 +113,7 @@ bool DiscoveryDatabase::add_endpoint_(
 {
     {
         std::unique_lock<std::shared_timed_mutex> lock(mutex_);
+        entities_filter_.erase(new_endpoint.guid);
 
         auto it = entities_.find(new_endpoint.guid);
         if (it != entities_.end())
@@ -151,8 +158,14 @@ bool DiscoveryDatabase::add_endpoint_(
 bool DiscoveryDatabase::update_endpoint_(
         const Endpoint& endpoint_to_update)
 {
+    if (!endpoint_to_update.active)
+    {
+        return erase_endpoint_(endpoint_to_update) == utils::ReturnCode::RETCODE_OK;
+    }
+
     {
         std::unique_lock<std::shared_timed_mutex> lock(mutex_);
+        entities_filter_.erase(endpoint_to_update.guid);
 
         auto it = entities_.find(endpoint_to_update.guid);
         if (it == entities_.end())
@@ -185,14 +198,18 @@ bool DiscoveryDatabase::update_endpoint_(
 utils::ReturnCode DiscoveryDatabase::erase_endpoint_(
         const Endpoint& endpoint_to_erase)
 {
+    bool endpoint_erased = false;
+
     {
         std::unique_lock<std::shared_timed_mutex> lock(mutex_);
 
         EPROSIMA_LOG_INFO(DDSPIPE_DISCOVERY_DATABASE, "Erasing Endpoint " << endpoint_to_erase << ".");
 
         auto erased = entities_.erase(endpoint_to_erase.guid);
+        auto filtered_erased = entities_filter_.erase(endpoint_to_erase.guid);
+        endpoint_erased = erased > 0;
 
-        if (erased == 0)
+        if (erased == 0 && filtered_erased == 0)
         {
             throw utils::InconsistencyException(
                       utils::Formatter() <<
@@ -201,10 +218,13 @@ utils::ReturnCode DiscoveryDatabase::erase_endpoint_(
         }
     }
 
-    std::lock_guard<std::mutex> lock(callbacks_mutex_);
-    for (auto erased_endpoint_callback : erased_endpoint_callbacks_)
+    if (endpoint_erased)
     {
-        erased_endpoint_callback(endpoint_to_erase);
+        std::lock_guard<std::mutex> lock(callbacks_mutex_);
+        for (auto erased_endpoint_callback : erased_endpoint_callbacks_)
+        {
+            erased_endpoint_callback(endpoint_to_erase);
+        }
     }
 
     return utils::ReturnCode::RETCODE_OK;
@@ -213,6 +233,7 @@ utils::ReturnCode DiscoveryDatabase::erase_endpoint_(
 void DiscoveryDatabase::add_filtered_endpoint(
         const types::Guid guid)
 {
+    std::unique_lock<std::shared_timed_mutex> lock(mutex_);
     entities_filter_.insert(guid);
 }
 
@@ -237,6 +258,7 @@ void DiscoveryDatabase::erase_endpoint(
 bool DiscoveryDatabase::exists_filtered_endpoint(
         const Guid endpoint_guid)
 {
+    std::shared_lock<std::shared_timed_mutex> lock(mutex_);
     return entities_filter_.find(endpoint_guid) != entities_filter_.end();
 }
 
