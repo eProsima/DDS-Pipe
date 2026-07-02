@@ -30,7 +30,7 @@ bool XmlHandlerConfiguration::is_valid(
     {
         if (!utils::is_file_accessible(file.c_str(), utils::FileAccessMode::read))
         {
-            error_msg << "File " << file << " has not exist or does not have read access. ";
+            error_msg << "File " << file << " does not exist or does not have read access. ";
             return false;
         }
     }

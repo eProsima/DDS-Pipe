@@ -127,8 +127,8 @@ enum YamlReaderVersion
  * Every method is implemented
  */
 class
-    DDSPIPE_YAML_DllAPI
-            YamlReader
+DDSPIPE_YAML_DllAPI
+YamlReader
 {
 public:
 
@@ -167,14 +167,32 @@ public:
             const Yaml& yml,
             const TagType& tag);
 
-    //! TODO comment
-    template <typename T>
+    /**
+     * @brief Takes the element \c yml and builds the object \c T
+     *
+     * This method takes a yaml node and then builds and return and object of type \c T.
+     *
+     * @tparam T type of the object to build
+     * @param yml base yaml
+     * @param version configuration version
+     */
+    template<typename T>
     static T get(
             const Yaml& yml,
             const YamlReaderVersion version);
 
-    //! Get element inside \c tag
-    template <typename T>
+    /**
+     * @brief Extracts the sub-yaml from the \c tag and then builds the object \c T
+     *
+     * This method calls \c get_value_in_tag to extract the sub-yaml from the \c tag and then it calls \c get to build
+     * the object \c T.
+     *
+     * @tparam T type of the object to build
+     * @param yml base yaml
+     * @param tag key to yaml containing the object
+     * @param version configuration version
+     */
+    template<typename T>
     static T get(
             const Yaml& yml,
             const TagType& tag,
@@ -190,14 +208,14 @@ public:
      * the default values are initialized with the default constructor, and then are overwritten by the yaml.
      * [this problem arises because C++ does not allow different order of parameters in method call]
      */
-    template <typename T>
+    template<typename T>
     static void fill(
             T& object,
             const Yaml& yml,
             const YamlReaderVersion version);
 
     //! Fill an element given by parameter with the values inside \c tag in \c yml
-    template <typename T>
+    template<typename T>
     static void fill(
             T& object,
             const Yaml& yml,
@@ -205,13 +223,13 @@ public:
             const YamlReaderVersion version);
 
     //! TODO comment
-    template <typename T>
+    template<typename T>
     static std::list<T> get_list(
             const Yaml& yml,
             const YamlReaderVersion version);
 
     //! Get list inside \c tag
-    template <typename T>
+    template<typename T>
     static std::list<T> get_list(
             const Yaml& yml,
             const TagType& tag,
@@ -228,19 +246,19 @@ public:
      * @param version configuration version
      * @return set of elements
      */
-    template <typename T>
+    template<typename T>
     static std::set<T> get_set(
             const Yaml& yml,
             const TagType& tag,
             const YamlReaderVersion version);
 
     //! TODO comment
-    template <typename T>
+    template<typename T>
     static T get_scalar(
             const Yaml& yml);
 
     //! Get scalar value inside \c tag
-    template <typename T>
+    template<typename T>
     static T get_scalar(
             const Yaml& yml,
             const TagType& tag);
@@ -276,26 +294,26 @@ public:
             const TagType& tag);
 
     //! TODO comment
-    template <typename T>
+    template<typename T>
     static T get_enumeration(
             const Yaml& yml,
             const std::map<TagType, T>& enum_values);
 
     //! Get enumeration value inside \c tag
-    template <typename T>
+    template<typename T>
     static T get_enumeration(
             const Yaml& yml,
             const TagType& tag,
             const std::map<TagType, T>& enum_values);
 
     //! TODO comment
-    template <typename T>
+    template<typename T>
     static T get_enumeration_from_builder(
             const Yaml& yml,
             const utils::EnumBuilder<T>& enum_builder);
 
     //! Get enumeration value inside \c tag
-    template <typename T>
+    template<typename T>
     static T get_enumeration_from_builder(
             const Yaml& yml,
             const TagType& tag,

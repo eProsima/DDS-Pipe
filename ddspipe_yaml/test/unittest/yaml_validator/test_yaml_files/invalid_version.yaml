@@ -1,0 +1,12 @@
+
+version: v2.1  # only v1.0 and v2.0 allowed
+
+uint: 27
+
+number-array:
+  - 14
+  - -817
+  - 3.1415926
+
+my-object:
+  property1: string1

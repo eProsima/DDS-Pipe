@@ -37,3 +37,14 @@ set(MODULE_DEPENDENCIES
     $<$<BOOL:${WIN32}>:iphlpapi$<SEMICOLON>Shlwapi>
     ${MODULE_FIND_PACKAGES}
 )
+
+set(MODULE_THIRDPARTY_HEADERONLY
+    nlohmann_json
+    nlohmann_json_schema_validator
+)
+
+set(MODULE_THIRDPARTY_PATH
+    "../thirdparty")
+
+set(MODULE_CPP_VERSION
+    C++17)

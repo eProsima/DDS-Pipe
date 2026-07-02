@@ -85,20 +85,20 @@ Yaml YamlReader::get_value_in_tag(
 * STANDARD             *
 ************************/
 
-template <>
+template<>
 DDSPIPE_YAML_DllAPI
 int YamlReader::get<int>(
         const Yaml& yml,
-        const YamlReaderVersion version /* version */)
+        const YamlReaderVersion version)
 {
     return get_scalar<int>(yml);
 }
 
-template <>
+template<>
 DDSPIPE_YAML_DllAPI
 unsigned int YamlReader::get<unsigned int>(
         const Yaml& yml,
-        const YamlReaderVersion version /* version */)
+        const YamlReaderVersion version)
 {
     return get_scalar<unsigned int>(yml);
 }
@@ -122,8 +122,8 @@ unsigned int YamlReader::get_nonnegative_int(
     if (!(ret >= 0))
     {
         throw eprosima::utils::ConfigurationException(
-                  utils::Formatter() << "Error reading nonnegative integer under tag <" << tag <<
-                      "> : value is negative.");
+                  utils::Formatter() << "Error reading nonnegative integer under tag <" << tag
+                                     << "> : value is negative.");
     }
 
     return ret;
@@ -147,14 +147,14 @@ unsigned int YamlReader::get_positive_int(
     if (!(ret > 0))
     {
         throw eprosima::utils::ConfigurationException(
-                  utils::Formatter() << "Error reading positive integer under tag <" << tag <<
-                      "> : value is not greater than 0.");
+                  utils::Formatter() << "Error reading positive integer under tag <" << tag
+                                     << "> : value is not greater than 0.");
     }
 
     return ret;
 }
 
-template <>
+template<>
 DDSPIPE_YAML_DllAPI
 float YamlReader::get<float>(
         const Yaml& yml,
@@ -181,8 +181,8 @@ float YamlReader::get_nonnegative_float(
     if (!(ret >= 0))
     {
         throw eprosima::utils::ConfigurationException(
-                  utils::Formatter() << "Error reading nonnegative float under tag <" << tag <<
-                      "> : value is negative.");
+                  utils::Formatter() << "Error reading nonnegative float under tag <" << tag
+                                     << "> : value is negative.");
     }
 
     return ret;
@@ -206,14 +206,14 @@ float YamlReader::get_positive_float(
     if (!(ret > 0))
     {
         throw eprosima::utils::ConfigurationException(
-                  utils::Formatter() << "Error reading positive float under tag <" << tag <<
-                      "> : value is not greater than 0.");
+                  utils::Formatter() << "Error reading positive float under tag <" << tag
+                                     << "> : value is not greater than 0.");
     }
 
     return ret;
 }
 
-template <>
+template<>
 DDSPIPE_YAML_DllAPI
 double YamlReader::get<double>(
         const Yaml& yml,
@@ -240,8 +240,8 @@ double YamlReader::get_nonnegative_double(
     if (!(ret >= 0))
     {
         throw eprosima::utils::ConfigurationException(
-                  utils::Formatter() << "Error reading nonnegative double under tag <" << tag <<
-                      "> : value is negative.");
+                  utils::Formatter() << "Error reading nonnegative double under tag <" << tag
+                                     << "> : value is negative.");
     }
 
     return ret;
@@ -265,14 +265,14 @@ double YamlReader::get_positive_double(
     if (!(ret > 0))
     {
         throw eprosima::utils::ConfigurationException(
-                  utils::Formatter() << "Error reading positive double under tag <" << tag <<
-                      "> : value is not greater than 0.");
+                  utils::Formatter() << "Error reading positive double under tag <" << tag
+                                     << "> : value is not greater than 0.");
     }
 
     return ret;
 }
 
-template <>
+template<>
 DDSPIPE_YAML_DllAPI
 bool YamlReader::get<bool>(
         const Yaml& yml,
@@ -281,7 +281,7 @@ bool YamlReader::get<bool>(
     return get_scalar<bool>(yml);
 }
 
-template <>
+template<>
 DDSPIPE_YAML_DllAPI
 std::string YamlReader::get<std::string>(
         const Yaml& yml,
@@ -290,7 +290,7 @@ std::string YamlReader::get<std::string>(
     return get_scalar<std::string>(yml);
 }
 
-template <>
+template<>
 DDSPIPE_YAML_DllAPI
 utils::Timestamp YamlReader::get<utils::Timestamp>(
         const Yaml& yml,
@@ -326,15 +326,15 @@ utils::Timestamp YamlReader::get<utils::Timestamp>(
         }
         catch (const std::exception& e)
         {
-            throw eprosima::utils::ConfigurationException(utils::Formatter() <<
-                          "Error parsing datetime " << datetime_str << " with error:\n " <<
-                          e.what());
+            throw eprosima::utils::ConfigurationException(utils::Formatter()
+                          << "Error parsing datetime " << datetime_str << " with error:\n "
+                          << e.what());
         }
     }
     else
     {
-        throw eprosima::utils::ConfigurationException(utils::Formatter() <<
-                      "Timestamp requires to specify <" << TIMESTAMP_DATETIME_TAG << ">.");
+        throw eprosima::utils::ConfigurationException(utils::Formatter()
+                      << "Timestamp requires to specify <" << TIMESTAMP_DATETIME_TAG << ">.");
     }
 
     // Get optional milliseconds

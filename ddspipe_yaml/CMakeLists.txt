@@ -60,10 +60,47 @@ project(
 # - Configure log depending on LOG_INFO flag and CMake type
 configure_project_cpp()
 
+file(
+    GLOB_RECURSE SOURCE_FILES
+        "${PROJECT_SOURCE_DIR}/src/cpp/*.c*"
+        "${PROJECT_SOURCE_DIR}/../thirdparty/nlohmann_json_schema_validator/*.cpp"
+)
+
+file(
+    GLOB_RECURSE INCLUDE_FILES
+        "${PROJECT_SOURCE_DIR}/include/*.hpp"
+        "${PROJECT_SOURCE_DIR}/include/testing/*.hpp"
+        "${PROJECT_SOURCE_DIR}/include/impl/*.ipp"
+        "${PROJECT_SOURCE_DIR}/../thirdparty/nlohmann_json/nlohmann/*.hpp"
+        "${PROJECT_SOURCE_DIR}/../thirdparty/nlohmann_json_schema_validator/*.hpp"
+        "${PROJECT_SOURCE_DIR}/../thirdparty/nlohmann_json_schema_validator/nlohmann/*.hpp"
+)
+
+#set(NLOHMANN_JSON_INCLUDE_DIR
+#    "${PROJECT_SOURCE_DIR}/../thirdparty/nlohmann_json/nlohmann")
+#
+#set(NLOHMANN_JSON_SCHEMA_INCLUDE_DIR
+#    "${PROJECT_SOURCE_DIR}/../thirdparty/nlohmann_json_schema_validator/nlohmann")
+#
+#install(
+#    DIRECTORY
+#        "${NLOHMANN_JSON_INCLUDE_DIR}"
+#        "${NLOHMANN_JSON_SCHEMA_INCLUDE_DIR}"
+#    DESTINATION
+#        ${INCLUDE_INSTALL_DIR}
+#    COMPONENT
+#        headers
+#    FILES_MATCHING
+#        PATTERN "*.h"
+#        PATTERN "*.hpp"
+#)
+
 # Compile C++ library
 compile_library(
-    "${PROJECT_SOURCE_DIR}/src/cpp" # Source directory
-    "${PROJECT_SOURCE_DIR}/include" # Include directory
+    "${PROJECT_SOURCE_DIR}/src/cpp" # Source directory (not used because the list in ${SOURCE_FILES} is used instead)
+    "${PROJECT_SOURCE_DIR}/include" # Include directory (not used because the list in ${INCLUDE_FILES} is used instead)
+    "${SOURCE_FILES}"               # List of source files to compile
+    "${INCLUDE_FILES}"              # List of include files
 )
 
 ###############################################################################

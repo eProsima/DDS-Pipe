@@ -60,7 +60,7 @@ Yaml add_tag(
  * - native types (int, string, boolean)
  * - collections (vector, set, map)
  */
-template <typename T>
+template<typename T>
 void set(
         Yaml& yml,
         const T& value);
@@ -78,14 +78,14 @@ void set(
  *
  * @tparam T type of the value to set in the yaml.
  */
-template <typename T>
+template<typename T>
 void set(
         Yaml& yml,
         const T& value,
         bool is_compact);
 
 //! Set the \c value in a new yaml in \c yml under \c tag .
-template <typename T>
+template<typename T>
 void set_in_tag(
         Yaml& yml,
         const TagType& tag,
