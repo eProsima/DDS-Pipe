@@ -29,13 +29,16 @@ using namespace eprosima;
 using namespace eprosima::ddspipe::yaml;
 
 namespace test {
-// Paths and files to test the constructors
+// Valid schema file used by the happy-path constructor and validation tests
 std::string valid_schema_path = "./valid_draft07_schema.json";
 
+// Invalid constructor inputs:
+// 1) wrong relative path, 2) malformed JSON file, 3) valid JSON but invalid draft-07 schema
 std::string invalid_schema_path_1 = "./test_yaml_files/valid_draft07_schema.json";
 std::string invalid_schema_path_2 = "./invalid_json_schema.json";
 std::string invalid_schema_path_3 = "./invalid_draft07_schema.json";
 
+// Minimal valid draft-07 schema used when the validator is constructed from a raw string
 std::string valid_schema_string =
         R"(
 {
@@ -57,6 +60,7 @@ std::string valid_schema_string =
 }
 )";
 
+// Structurally invalid draft-07 schema: "properties" must be an object, not an array
 std::string invalid_schema_string =
         R"(
 {
@@ -65,15 +69,27 @@ std::string invalid_schema_string =
 }
 )";
 
-// Invalid yaml file/node
+// Malformed JSON string used to trigger the parsing-error path in set_schema(FROM_STRING, ...)
+std::string malformed_schema_string =
+        R"(
+{
+    "$schema":"http://json-schema.org/draft-07/schema#",
+    "type":"object",
+)";
+
+// Valid YAML instance used as the main schema-validation input.
 Yaml valid_yml = YamlManager::load_file("./test_yaml_files/valid_test.yaml");
+
+// Missing child node extracted from a valid file to exercise the YAML-to-JSON conversion failure path
 Yaml invalid_yml = valid_yml["missing_key"];
 
-// Vectors with the valid and invalid YAML files
+// Files expected to pass validation with valid_draft07_schema.json
 std::vector<std::string> valid_files = {
     "./test_yaml_files/valid_test.yaml"
 };
 
+// Files expected to fail validation for different reasons: wrong version, negative integer,
+// wrong array type, invalid object contents, and unexpected additional property
 std::vector<std::string> invalid_files = {
     "./test_yaml_files/invalid_version.yaml",
     "./test_yaml_files/invalid_uint.yaml",
@@ -82,7 +98,8 @@ std::vector<std::string> invalid_files = {
     "./test_yaml_files/invalid_new_property.yaml"
 };
 
-// Test additional edge cases
+// Schema used to exercise scalar conversion edge cases:
+// quoted values that must remain strings, large numeric values, and custom format checks
 std::string edge_cases_schema_string =
         R"(
 {
@@ -139,6 +156,52 @@ std::string edge_cases_schema_string =
 }
 )";
 
+// Schema restricted to the custom IPv4 and IPv6 format validators
+std::string ip_format_schema_string =
+        R"(
+{
+    "$schema":"http://json-schema.org/draft-07/schema#",
+    "type":"object",
+    "additionalProperties":false,
+    "properties":{
+        "string-ipv4":{
+            "type":"string",
+            "format":"v4"
+        },
+        "string-ipv6":{
+            "type":"string",
+            "format":"v6"
+        }
+    }
+}
+)";
+
+// Schema used to verify YAML null nodes are converted to JSON null values
+std::string nullable_schema_string =
+        R"(
+{
+    "$schema":"http://json-schema.org/draft-07/schema#",
+    "type":"object",
+    "additionalProperties":false,
+    "properties":{
+        "nullable":{
+            "type":"null"
+        }
+    }
+}
+)";
+
+// Root-level integer schema used to trigger validation errors on the YAML root itself
+std::string root_integer_schema_string =
+        R"(
+{
+    "$schema":"http://json-schema.org/draft-07/schema#",
+    "type":"integer"
+}
+)";
+
+// YAML fixture covering scalar conversion edge cases:
+// quoted scalars, large integers, and large floating-point values
 Yaml edge_cases_types_yml = YAML::Load(
     "quoted-int: \"123\"\n"
     "quoted-float: \"123.456\"\n"
@@ -153,11 +216,27 @@ Yaml edge_cases_types_yml = YAML::Load(
     "large-float-2: 1.7976931348623157e308\n"   // std::numeric_limits<double>::max()
     );
 
+// YAML fixture with valid IPv4/IPv6 values plus an unsupported custom format,
+// which should validate successfully while emitting a warning
 Yaml edge_cases_format_yml = YAML::Load(
     "string-ipv4: 192.168.1.1\n"
     "string-ipv6: 2001:db8:85a3::8a2e:370:7334\n" //001:0db8:85a3:0000:0000:8a2e:0370:7334\n"
     "string-undefined-format: abc.123.def.456\n"
     );
+
+// YAML fixture with invalid IPv4/IPv6 values to exercise format-validation failures
+Yaml invalid_ip_format_yml = YAML::Load(
+    "string-ipv4: 999.999.999.999\n"
+    "string-ipv6: not-an-ipv6\n"
+    );
+
+// YAML fixture containing an explicit null value.
+Yaml nullable_yml = YAML::Load(
+    "nullable: ~\n"
+    );
+
+// Root scalar that violates root_integer_schema_string and produces a root-level validation error
+Yaml root_scalar_string_yml = YAML::Load("not-an-integer");
 } // namespace test
 
 
@@ -294,6 +373,67 @@ TEST(YamlValidatorTest, validation_edge_cases)
         eprosima::fastdds::dds::Log::SetVerbosity(eprosima::fastdds::dds::Log::Kind::Error); // restore verbosity
     }
 
+}
+
+/**
+ * Test invalid IPv4 and IPv6 values are reported as validation errors
+ */
+TEST(YamlValidatorTest, validation_reports_invalid_ip_formats)
+{
+    YamlValidator validator = YamlValidator(YamlValidator::InputType::FROM_STRING, test::ip_format_schema_string);
+
+    testing::internal::CaptureStderr();
+    ASSERT_FALSE(validator.validate_YAML(test::invalid_ip_format_yml));
+    std::string output = testing::internal::GetCapturedStderr();
+
+    ASSERT_NE(output.find("/string-ipv4"), std::string::npos);
+    ASSERT_NE(output.find("/string-ipv6"), std::string::npos);
+    ASSERT_NE(output.find("valid IPv4 address"), std::string::npos);
+    ASSERT_NE(output.find("valid IPv6 address"), std::string::npos);
+}
+
+/**
+ * Test additional schema-loading error paths and ensure a failed schema update
+ * does not replace the current valid schema
+ */
+TEST(YamlValidatorTest, schema_loading_error_paths_preserve_previous_schema)
+{
+    YamlValidator validator = YamlValidator(YamlValidator::InputType::FROM_FILE, test::valid_schema_path);
+
+    ASSERT_TRUE(validator.validate_YAML(test::valid_yml, false));
+
+    ASSERT_THROW(
+        validator.set_schema(YamlValidator::InputType::FROM_STRING, test::malformed_schema_string),
+        utils::ConfigurationException);
+
+    ASSERT_THROW(
+        validator.set_schema(static_cast<YamlValidator::InputType>(99), test::valid_schema_string),
+        utils::ConfigurationException);
+
+    ASSERT_TRUE(validator.validate_YAML(test::valid_yml, false));
+}
+
+/**
+ * Test null YAML values are converted correctly and root-level validation
+ * errors are displayed with the root marker
+ */
+TEST(YamlValidatorTest, validation_supports_nulls_and_root_level_error_output)
+{
+    {
+        YamlValidator validator = YamlValidator(YamlValidator::InputType::FROM_STRING, test::nullable_schema_string);
+        ASSERT_TRUE(validator.validate_YAML(test::nullable_yml, false));
+    }
+
+    {
+        YamlValidator validator = YamlValidator(YamlValidator::InputType::FROM_STRING, test::root_integer_schema_string);
+
+        testing::internal::CaptureStderr();
+        ASSERT_FALSE(validator.validate_YAML(test::root_scalar_string_yml));
+        std::string output = testing::internal::GetCapturedStderr();
+
+        ASSERT_NE(output.find("YAML VALIDATION FAILED"), std::string::npos);
+        ASSERT_NE(output.find("/  (root of the YAML file)"), std::string::npos);
+    }
 }
 
 int main(
