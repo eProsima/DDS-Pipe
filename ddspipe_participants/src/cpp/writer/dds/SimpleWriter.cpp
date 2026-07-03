@@ -36,9 +36,11 @@ SimpleWriter::SimpleWriter(
         fastdds::dds::DomainParticipant* participant,
         fastdds::dds::Topic* topic_entity,
         const bool repeater /* = false */,
-        const bool yaml_qos_override /* = true */)
+        const bool yaml_qos_override /* = true */,
+        const bool xml_lookup_enabled /* = false */)
     : CommonWriter(
-        participant_id, topic, payload_pool, participant, topic_entity, repeater, yaml_qos_override)
+        participant_id, topic, payload_pool, participant, topic_entity, repeater, yaml_qos_override,
+        xml_lookup_enabled)
 {
     // Do nothing
 }

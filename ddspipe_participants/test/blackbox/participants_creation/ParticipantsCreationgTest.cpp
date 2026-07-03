@@ -335,7 +335,8 @@ TEST(ParticipantsCreationgTest, writer_topic_profile_lookup)
         auto dds_topic = register_type_and_topic(topic.m_topic_name, topic.type_name);
         ASSERT_NE(nullptr, dds_topic);
 
-        test::TestableWriter writer(part_id, topic, payload_pool, dds_participant, dds_topic);
+        test::TestableWriter writer(part_id, topic, payload_pool, dds_participant, dds_topic,
+                false /* repeater */, true /* yaml_qos_override */, true /* xml_lookup_enabled */);
         writer.init({});
 
         fastdds::dds::DataWriterQos qos;
@@ -352,7 +353,8 @@ TEST(ParticipantsCreationgTest, writer_topic_profile_lookup)
         auto dds_topic = register_type_and_topic(topic.m_topic_name, topic.type_name);
         ASSERT_NE(nullptr, dds_topic);
 
-        test::TestableWriter writer(part_id, topic, payload_pool, dds_participant, dds_topic);
+        test::TestableWriter writer(part_id, topic, payload_pool, dds_participant, dds_topic,
+                false /* repeater */, true /* yaml_qos_override */, true /* xml_lookup_enabled */);
         writer.init({});
 
         fastdds::dds::DataWriterQos qos;
@@ -421,7 +423,8 @@ TEST(ParticipantsCreationgTest, reader_topic_profile_lookup)
         auto dds_topic = register_type_and_topic(topic.m_topic_name, topic.type_name);
         ASSERT_NE(nullptr, dds_topic);
 
-        test::TestableReader reader(part_id, topic, payload_pool, dds_participant, dds_topic);
+        test::TestableReader reader(part_id, topic, payload_pool, dds_participant, dds_topic,
+                true /* yaml_qos_override */, true /* xml_lookup_enabled */);
         reader.init({}, "");
 
         fastdds::dds::DataReaderQos qos;
@@ -438,7 +441,8 @@ TEST(ParticipantsCreationgTest, reader_topic_profile_lookup)
         auto dds_topic = register_type_and_topic(topic.m_topic_name, topic.type_name);
         ASSERT_NE(nullptr, dds_topic);
 
-        test::TestableReader reader(part_id, topic, payload_pool, dds_participant, dds_topic);
+        test::TestableReader reader(part_id, topic, payload_pool, dds_participant, dds_topic,
+                true /* yaml_qos_override */, true /* xml_lookup_enabled */);
         reader.init({}, "");
 
         fastdds::dds::DataReaderQos qos;
@@ -517,7 +521,8 @@ TEST(ParticipantsCreationgTest, writer_xml_override)
         topic.topic_qos.reliability_qos = core::types::ReliabilityKind::RELIABLE;
 
         test::TestableWriter writer(part_id, topic, payload_pool, dds_participant, dds_topic,
-                false /* repeater */, false /* yaml_qos_override = XML_STANDALONE */);
+                false /* repeater */, false /* yaml_qos_override = XML_STANDALONE */,
+                true /* xml_lookup_enabled */);
         writer.init({});
 
         fastdds::dds::DataWriterQos qos;
@@ -535,7 +540,8 @@ TEST(ParticipantsCreationgTest, writer_xml_override)
         topic.topic_qos.reliability_qos = core::types::ReliabilityKind::RELIABLE;
 
         test::TestableWriter writer(part_id, topic, payload_pool, dds_participant, dds_topic,
-                false /* repeater */, true /* yaml_qos_override = XML_OVERRIDABLE */);
+                false /* repeater */, true /* yaml_qos_override = XML_OVERRIDABLE */,
+                true /* xml_lookup_enabled */);
         writer.init({});
 
         fastdds::dds::DataWriterQos qos;
@@ -614,7 +620,8 @@ TEST(ParticipantsCreationgTest, reader_xml_override)
         topic.topic_qos.reliability_qos = core::types::ReliabilityKind::RELIABLE;
 
         test::TestableReader reader(part_id, topic, payload_pool, dds_participant, dds_topic,
-                false /* yaml_qos_override = XML_STANDALONE */);
+                false /* yaml_qos_override = XML_STANDALONE */,
+                true /* xml_lookup_enabled */);
         reader.init({}, "");
 
         fastdds::dds::DataReaderQos qos;
@@ -632,7 +639,8 @@ TEST(ParticipantsCreationgTest, reader_xml_override)
         topic.topic_qos.reliability_qos = core::types::ReliabilityKind::RELIABLE;
 
         test::TestableReader reader(part_id, topic, payload_pool, dds_participant, dds_topic,
-                true /* yaml_qos_override = XML_OVERRIDABLE */);
+                true /* yaml_qos_override = XML_OVERRIDABLE */,
+                true /* xml_lookup_enabled */);
         reader.init({}, "");
 
         fastdds::dds::DataReaderQos qos;
@@ -703,7 +711,8 @@ TEST(ParticipantsCreationgTest, writer_xml_qos_not_overridden_when_yaml_unset)
     // Intentionally leave all topic_qos fields unset
 
     test::TestableWriter writer(part_id, topic, payload_pool, dds_participant, dds_topic,
-            false /* repeater */, true /* yaml_qos_override = XML_OVERRIDABLE */);
+            false /* repeater */, true /* yaml_qos_override = XML_OVERRIDABLE */,
+            true /* xml_lookup_enabled */);
     writer.init({});
 
     fastdds::dds::DataWriterQos qos;
@@ -776,7 +785,8 @@ TEST(ParticipantsCreationgTest, writer_endpoint_profile_name_override)
         topic.topic_qos.endpoint_profile_name.set_value("profile_chatter_reliable");
 
         test::TestableWriter writer(part_id, topic, payload_pool, dds_participant, dds_topic,
-                false /* repeater */, false /* yaml_qos_override = XML_STANDALONE */);
+                false /* repeater */, false /* yaml_qos_override = XML_STANDALONE */,
+                true /* xml_lookup_enabled */);
         writer.init({});
 
         fastdds::dds::DataWriterQos qos;
@@ -792,13 +802,143 @@ TEST(ParticipantsCreationgTest, writer_endpoint_profile_name_override)
         topic.topic_qos.endpoint_profile_name.set_value("profile_chatter_besteffort");
 
         test::TestableWriter writer(part_id, topic, payload_pool, dds_participant, dds_topic,
-                false /* repeater */, false /* yaml_qos_override = XML_STANDALONE */);
+                false /* repeater */, false /* yaml_qos_override = XML_STANDALONE */,
+                true /* xml_lookup_enabled */);
         writer.init({});
 
         fastdds::dds::DataWriterQos qos;
         writer.get_dds_writer()->get_qos(qos);
         EXPECT_EQ(fastdds::dds::BEST_EFFORT_RELIABILITY_QOS, qos.reliability().kind);
     }
+
+    fastdds::dds::DomainParticipantFactory::get_instance()->delete_participant(dds_participant);
+}
+
+/**
+ * Test that plain DDS writer creation does not use XML endpoint profiles unless endpoint lookup is enabled.
+ */
+TEST(ParticipantsCreationgTest, writer_topic_profile_lookup_not_enabled_by_default)
+{
+    participants::XmlHandlerConfiguration xml_conf;
+    xml_conf.raw.set_value(
+        R"(<?xml version="1.0" encoding="utf-8"?>
+        <dds xmlns="http://www.eprosima.com">
+            <profiles>
+                <data_writer profile_name="writer_topic_with_profile_default_mode">
+                    <historyMemoryPolicy>DYNAMIC</historyMemoryPolicy>
+                </data_writer>
+            </profiles>
+        </dds>)");
+    ASSERT_EQ(participants::XmlHandler::load_xml(xml_conf), utils::ReturnCode::RETCODE_OK);
+
+    std::shared_ptr<core::PayloadPool> payload_pool(new core::FastPayloadPool());
+
+    auto dds_participant =
+            fastdds::dds::DomainParticipantFactory::get_instance()->create_participant(
+        0,
+        fastdds::dds::PARTICIPANT_QOS_DEFAULT);
+    ASSERT_NE(nullptr, dds_participant);
+
+    core::types::ParticipantId part_id("WriterProfileDefaultModeTestPart");
+
+    fastdds::dds::TypeSupport type_support(
+        new participants::dds::TopicDataType(
+            payload_pool,
+            "WriterProfileDefaultModeType",
+            fastdds::dds::xtypes::TypeIdentifierPair(),
+            false));
+    dds_participant->register_type(type_support);
+
+    auto dds_topic = dds_participant->create_topic(
+        "writer_topic_with_profile_default_mode",
+        "WriterProfileDefaultModeType",
+        dds_participant->get_default_topic_qos());
+    ASSERT_NE(nullptr, dds_topic);
+
+    core::types::DdsTopic topic;
+    topic.m_topic_name = "writer_topic_with_profile_default_mode";
+    topic.type_name = "WriterProfileDefaultModeType";
+
+    test::TestableWriter writer(
+        part_id,
+        topic,
+        payload_pool,
+        dds_participant,
+        dds_topic,
+        false /* repeater */,
+        false /* yaml_qos_override */);
+    writer.init({});
+
+    fastdds::dds::DataWriterQos qos;
+    writer.get_dds_writer()->get_qos(qos);
+
+    EXPECT_EQ(
+        fastdds::rtps::PREALLOCATED_WITH_REALLOC_MEMORY_MODE,
+        qos.endpoint().history_memory_policy);
+
+    fastdds::dds::DomainParticipantFactory::get_instance()->delete_participant(dds_participant);
+}
+
+/**
+ * Test that plain DDS reader creation does not use XML endpoint profiles unless endpoint lookup is enabled.
+ */
+TEST(ParticipantsCreationgTest, reader_topic_profile_lookup_not_enabled_by_default)
+{
+    participants::XmlHandlerConfiguration xml_conf;
+    xml_conf.raw.set_value(
+        R"(<?xml version="1.0" encoding="utf-8"?>
+        <dds xmlns="http://www.eprosima.com">
+            <profiles>
+                <data_reader profile_name="reader_topic_with_profile_default_mode">
+                    <historyMemoryPolicy>DYNAMIC</historyMemoryPolicy>
+                </data_reader>
+            </profiles>
+        </dds>)");
+    ASSERT_EQ(participants::XmlHandler::load_xml(xml_conf), utils::ReturnCode::RETCODE_OK);
+
+    std::shared_ptr<core::PayloadPool> payload_pool(new core::FastPayloadPool());
+
+    auto dds_participant =
+            fastdds::dds::DomainParticipantFactory::get_instance()->create_participant(
+        0,
+        fastdds::dds::PARTICIPANT_QOS_DEFAULT);
+    ASSERT_NE(nullptr, dds_participant);
+
+    core::types::ParticipantId part_id("ReaderProfileDefaultModeTestPart");
+
+    fastdds::dds::TypeSupport type_support(
+        new participants::dds::TopicDataType(
+            payload_pool,
+            "ReaderProfileDefaultModeType",
+            fastdds::dds::xtypes::TypeIdentifierPair(),
+            false));
+    dds_participant->register_type(type_support);
+
+    auto dds_topic = dds_participant->create_topic(
+        "reader_topic_with_profile_default_mode",
+        "ReaderProfileDefaultModeType",
+        dds_participant->get_default_topic_qos());
+    ASSERT_NE(nullptr, dds_topic);
+
+    core::types::DdsTopic topic;
+    topic.m_topic_name = "reader_topic_with_profile_default_mode";
+    topic.type_name = "ReaderProfileDefaultModeType";
+
+    test::TestableReader reader(
+        part_id,
+        topic,
+        payload_pool,
+        dds_participant,
+        dds_topic,
+        false /* yaml_qos_override */);
+    reader.init({}, "");
+
+    fastdds::dds::DataReaderQos qos;
+    reader.get_dds_reader()->get_qos(qos);
+
+    EXPECT_EQ(
+        fastdds::rtps::PREALLOCATED_WITH_REALLOC_MEMORY_MODE,
+        qos.endpoint().history_memory_policy);
 
     fastdds::dds::DomainParticipantFactory::get_instance()->delete_participant(dds_participant);
 }

@@ -64,6 +64,9 @@ protected:
     virtual bool endpoint_qos_mode_() const noexcept override;
 
     DDSPIPE_PARTICIPANTS_DllAPI
+    virtual bool xml_lookup_enabled_() const noexcept override;
+
+    DDSPIPE_PARTICIPANTS_DllAPI
     virtual
     fastdds::dds::DomainParticipantQos
     reckon_participant_qos_() const override;

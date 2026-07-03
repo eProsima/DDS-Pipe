@@ -204,11 +204,13 @@ CommonReader::CommonReader(
         const std::shared_ptr<core::PayloadPool>& payload_pool,
         fastdds::dds::DomainParticipant* participant,
         fastdds::dds::Topic* topic_entity,
-        const bool yaml_qos_override /* = true */)
+        const bool yaml_qos_override /* = true */,
+        const bool xml_lookup_enabled /* = false */)
     : BaseReader(participant_id, topic.topic_qos.max_rx_rate, topic.topic_qos.downsampling)
     , dds_participant_(participant)
     , dds_topic_(topic_entity)
     , yaml_qos_override_(yaml_qos_override)
+    , xml_lookup_enabled_(xml_lookup_enabled)
     , payload_pool_(payload_pool)
     , topic_(topic)
     , dds_subscriber_(nullptr)
@@ -284,7 +286,7 @@ fastdds::dds::DataReaderQos CommonReader::reckon_reader_qos_() const
             ? topic_.topic_qos.endpoint_profile_name.get_value()
             : topic_.topic_name();
 
-    bool xml_profile_found =
+    bool xml_profile_found = xml_lookup_enabled_ &&
             (fastdds::dds::RETCODE_OK == dds_subscriber_->get_datareader_qos_from_profile(profile_key, qos));
 
     if (!xml_profile_found)

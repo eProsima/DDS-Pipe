@@ -49,7 +49,8 @@ public:
             const std::shared_ptr<core::PayloadPool>& payload_pool,
             fastdds::dds::DomainParticipant* participant,
             fastdds::dds::Topic* topic_entity,
-            const bool yaml_qos_override = true);
+            const bool yaml_qos_override = true,
+            const bool xml_lookup_enabled = false);
 };
 
 } /* namespace dds */

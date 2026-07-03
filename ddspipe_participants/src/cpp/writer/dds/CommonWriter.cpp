@@ -134,7 +134,8 @@ CommonWriter::CommonWriter(
         fastdds::dds::DomainParticipant* participant,
         fastdds::dds::Topic* topic_entity,
         const bool repeater,
-        const bool yaml_qos_override /* = true */)
+        const bool yaml_qos_override /* = true */,
+        const bool xml_lookup_enabled /* = false */)
     : BaseWriter(participant_id, topic.topic_qos.max_tx_rate)
     , dds_participant_(participant)
     , dds_topic_(topic_entity)
@@ -142,6 +143,7 @@ CommonWriter::CommonWriter(
     , topic_(topic)
     , repeater_(repeater)
     , yaml_qos_override_(yaml_qos_override)
+    , xml_lookup_enabled_(xml_lookup_enabled)
     , dds_publisher_(nullptr)
     , writer_(nullptr)
 {
@@ -236,7 +238,7 @@ fastdds::dds::DataWriterQos CommonWriter::reckon_writer_qos_() const noexcept
             ? topic_.topic_qos.endpoint_profile_name.get_value()
             : topic_.topic_name();
 
-    bool xml_profile_found =
+    bool xml_profile_found = xml_lookup_enabled_ &&
             (fastdds::dds::RETCODE_OK == dds_publisher_->get_datawriter_qos_from_profile(profile_key, qos));
 
     if (!xml_profile_found)

@@ -40,7 +40,8 @@ MultiWriter::MultiWriter(
         fastdds::dds::DomainParticipant* participant,
         fastdds::dds::Topic* topic_entity,
         const bool repeater /* = false */,
-        const bool yaml_qos_override /* = true */)
+        const bool yaml_qos_override /* = true */,
+        const bool xml_lookup_enabled /* = false */)
     : BaseWriter(participant_id)
     , dds_participant_(participant)
     , dds_topic_(topic_entity)
@@ -48,6 +49,7 @@ MultiWriter::MultiWriter(
     , topic_(topic)
     , repeater_(repeater)
     , yaml_qos_override_(yaml_qos_override)
+    , xml_lookup_enabled_(xml_lookup_enabled)
 {
     // Do nothing
 }
@@ -149,7 +151,8 @@ QoSSpecificWriter* MultiWriter::create_writer_nts_(
         this->dds_participant_,
         this->dds_topic_,
         repeater_,
-        yaml_qos_override_);
+        yaml_qos_override_,
+        xml_lookup_enabled_);
     // No filters
     writer->init(std::set<std::string>());
 
