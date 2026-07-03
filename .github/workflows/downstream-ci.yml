@@ -1,0 +1,120 @@
+name: downstream-ci
+
+on:
+  workflow_dispatch:
+    inputs:
+      custom_version_build:
+        description: 'Fast DDS build version from eProsima-CI.'
+        required: true
+        type: choice
+        default: 'v3'
+        options:
+          - custom
+          - v2
+          - v3
+      dependencies_artifact_postfix:
+        description: 'Postfix to download a specific dependencies artifact from eProsima-CI.'
+        required: true
+        default: '_nightly'
+      downstream_ref:
+        description: 'Branch or tag to checkout on every downstream tool.'
+        required: true
+        default: 'main'
+  pull_request:
+  push:
+    branches:
+      - main
+
+concurrency:
+  group: downstream-ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+
+  downstream-tests:
+    name: ${{ matrix.tool.name }}-${{ matrix.os }}-${{ matrix.cmake_build_type }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - ubuntu-22.04
+          - ubuntu-24.04
+        cmake_build_type:
+          - Release
+          - Debug
+        tool:
+          - name: ddsrouter
+            repository: eProsima/DDS-Router
+            packages: 'ddsrouter_core ddsrouter_yaml ddsrouter_tool'
+          - name: ddsrecordreplay
+            repository: eProsima/DDS-Record-Replay
+            packages: 'ddsrecorder_participants ddsrecorder_yaml ddsrecorder_tool ddsreplayer_tool'
+          - name: fastddsspy
+            repository: eProsima/Fast-DDS-Spy
+            packages: 'fastddsspy_participants fastddsspy_yaml fastddsspy_tool'
+          - name: ddsenabler
+            repository: eProsima/DDS-Enabler
+            packages: 'ddsenabler ddsenabler_yaml ddsenabler_participants'
+
+    steps:
+
+      # Checkout DDS Pipe at the ref that triggered this workflow (the PR / branch under test)
+      - name: Checkout DDS Pipe (under test)
+        uses: eProsima/eProsima-CI/external/checkout@v0
+        with:
+          path: src/ddspipe
+          ref: ${{ github.head_ref || github.ref_name }}
+
+      # Checkout the downstream tool that consumes DDS Pipe
+      - name: Checkout downstream tool
+        uses: eProsima/eProsima-CI/external/checkout@v0
+        with:
+          repository: ${{ matrix.tool.repository }}
+          path: src/${{ matrix.tool.name }}
+          ref: ${{ inputs.downstream_ref || 'main' }}
+
+      - name: Install Fast DDS dependencies
+        uses: eProsima/eProsima-CI/multiplatform/install_fastdds_dependencies@v0
+        with:
+          cmake_build_type: ${{ matrix.cmake_build_type }}
+
+      - name: Install yaml cpp dependency
+        uses: eProsima/eProsima-CI/multiplatform/install_yamlcpp@v0
+        with:
+          cmake_build_type: ${{ matrix.cmake_build_type }}
+
+      # Prebuilt Fast DDS + dev-utils. DDS Pipe itself is built from source (checked out above),
+      # so this run reflects the DDS Pipe changes, not the nightly artifact
+      - name: Download Fast DDS + dev-utils artifact
+        uses: eProsima/eProsima-CI/multiplatform/download_dependency@v0
+        with:
+          artifact_name: build_dev_utils_${{ inputs.custom_version_build || 'v3' }}_${{ matrix.os }}_${{ matrix.cmake_build_type }}${{ inputs.dependencies_artifact_postfix || '_nightly' }}
+          workflow_source: build_dev_utils.yml
+          workflow_source_repository: eProsima/eProsima-CI
+          target_workspace: ${{ github.workspace }}/install
+          secret_token: ${{ secrets.GITHUB_TOKEN }}
+          workflow_conclusion: completed
+
+      # Build DDS Pipe (from source) and the tool, then run the tool's tests
+      # ddspipe_* packages are listed so colcon builds the checked-out DDS Pipe as a
+      # dependency (packages_names maps to --packages-select; without them ddspipe is skipped)
+      - name: Compile and run downstream tests
+        id: compile_and_test
+        uses: eProsima/eProsima-CI/multiplatform/colcon_build_test@v0
+        with:
+          packages_names: ddspipe_core ddspipe_yaml ddspipe_participants ${{ matrix.tool.packages }}
+          workspace_dependencies: install
+          cmake_args: -DBUILD_TESTS=ON -DCMAKE_BUILD_TYPE=${{ matrix.cmake_build_type }}
+          ctest_args: --label-exclude "xfail"
+          test_report_artifact: test_report_downstream_${{ matrix.tool.name }}_${{ matrix.os }}_${{ matrix.cmake_build_type }}
+
+      - name: Test Report
+        uses: eProsima/eProsima-CI/external/test-reporter@v0
+        if: success() || failure()
+        with:
+          name: "Downstream: ${{ matrix.tool.name }} | ${{ matrix.os }} | ${{ matrix.cmake_build_type }}"
+          path: "${{ steps.compile_and_test.outputs.ctest_results_path }}*.xml"
+          working-directory: 'src'
+          list-tests: 'failed'
+          list-suites: 'failed'
