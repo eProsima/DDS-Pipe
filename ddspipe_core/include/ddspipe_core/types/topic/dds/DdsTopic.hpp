@@ -90,6 +90,9 @@ struct DdsTopic : public DistributedTopic
 
     //! Type Identifiers: first one is complete and second one minimal
     fastdds::dds::xtypes::TypeIdentifierPair type_identifiers;
+
+    //! The Topic QoS explicitly configured by the user
+    types::TopicQoS user_configured_qos{};
 };
 
 } /* namespace types */

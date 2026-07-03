@@ -320,40 +320,43 @@ fastdds::dds::DataReaderQos CommonReader::reckon_reader_qos_() const
     }
     else if (yaml_qos_override_)
     {
-        if (topic_.topic_qos.durability_qos.is_set())
+        // Only override the XML profile with fields explicitly set by the user (YAML)
+        const auto& user_qos = topic_.user_configured_qos;
+
+        if (user_qos.durability_qos.is_set())
         {
             qos.durability().kind =
-                    (topic_.topic_qos.is_transient_local())
+                    (user_qos.is_transient_local())
                     ? fastdds::dds::DurabilityQosPolicyKind::TRANSIENT_LOCAL_DURABILITY_QOS
                     : fastdds::dds::DurabilityQosPolicyKind::VOLATILE_DURABILITY_QOS;
         }
 
-        if (topic_.topic_qos.reliability_qos.is_set())
+        if (user_qos.reliability_qos.is_set())
         {
             qos.reliability().kind =
-                    (topic_.topic_qos.is_reliable())
+                    (user_qos.is_reliable())
                     ? fastdds::dds::ReliabilityQosPolicyKind::RELIABLE_RELIABILITY_QOS
                     : fastdds::dds::ReliabilityQosPolicyKind::BEST_EFFORT_RELIABILITY_QOS;
         }
 
-        if (topic_.topic_qos.ownership_qos.is_set())
+        if (user_qos.ownership_qos.is_set())
         {
             qos.ownership().kind =
-                    (topic_.topic_qos.has_ownership())
+                    (user_qos.has_ownership())
                     ? fastdds::dds::OwnershipQosPolicyKind::EXCLUSIVE_OWNERSHIP_QOS
                     : fastdds::dds::OwnershipQosPolicyKind::SHARED_OWNERSHIP_QOS;
         }
 
-        if (topic_.topic_qos.history_depth.is_set())
+        if (user_qos.history_depth.is_set())
         {
-            if (topic_.topic_qos.history_depth == 0U)
+            if (user_qos.history_depth == 0U)
             {
                 qos.history().kind = eprosima::fastdds::dds::HistoryQosPolicyKind::KEEP_ALL_HISTORY_QOS;
             }
             else
             {
                 qos.history().kind = eprosima::fastdds::dds::HistoryQosPolicyKind::KEEP_LAST_HISTORY_QOS;
-                qos.history().depth = topic_.topic_qos.history_depth;
+                qos.history().depth = user_qos.history_depth;
             }
         }
     }
