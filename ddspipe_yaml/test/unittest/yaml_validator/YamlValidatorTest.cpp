@@ -425,7 +425,8 @@ TEST(YamlValidatorTest, validation_supports_nulls_and_root_level_error_output)
     }
 
     {
-        YamlValidator validator = YamlValidator(YamlValidator::InputType::FROM_STRING, test::root_integer_schema_string);
+        YamlValidator validator = YamlValidator(YamlValidator::InputType::FROM_STRING,
+                        test::root_integer_schema_string);
 
         testing::internal::CaptureStderr();
         ASSERT_FALSE(validator.validate_YAML(test::root_scalar_string_yml));
