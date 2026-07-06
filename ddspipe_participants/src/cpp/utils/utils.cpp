@@ -15,6 +15,7 @@
 #include <fastdds/rtps/builtin/data/PublicationBuiltinTopicData.hpp>
 #include <fastdds/rtps/builtin/data/SubscriptionBuiltinTopicData.hpp>
 
+#include <cpp_utils/exception/InconsistencyException.hpp>
 #include <cpp_utils/utils.hpp>
 
 #include <ddspipe_core/types/data/RtpsPayloadData.hpp>
@@ -154,6 +155,30 @@ core::types::SpecificEndpointQoS specific_qos_of_writer_(
         const core::types::Guid& guid)
 {
     return database.get_endpoint(guid).specific_qos;
+}
+
+bool try_specific_qos_of_writer_(
+        const core::DiscoveryDatabase& database,
+        const core::types::Guid& guid,
+        core::types::SpecificEndpointQoS& specific_qos) noexcept
+{
+    specific_qos = {};
+
+    try
+    {
+        const auto endpoint = database.get_endpoint(guid);
+        if (!endpoint.guid.is_valid())
+        {
+            return false;
+        }
+
+        specific_qos = endpoint.specific_qos;
+        return true;
+    }
+    catch (const utils::InconsistencyException&)
+    {
+        return false;
+    }
 }
 
 bool come_from_same_participant_(
