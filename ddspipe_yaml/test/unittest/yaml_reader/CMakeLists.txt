@@ -17,6 +17,7 @@
 ###################
 
 add_subdirectory(scalar)
+add_subdirectory(participants)
 add_subdirectory(forwarding_routes)
 add_subdirectory(log_configuration)
 add_subdirectory(monitoring)

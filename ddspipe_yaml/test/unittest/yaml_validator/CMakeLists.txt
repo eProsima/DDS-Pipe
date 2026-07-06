@@ -37,6 +37,9 @@ set(TEST_LIST
         validation_with_invalid_yaml_file
         validation_is_correct
         validation_edge_cases
+        schema_loading_error_paths_preserve_previous_schema
+        validation_reports_invalid_ip_formats
+        validation_supports_nulls_and_root_level_error_output
     )
 
 set(TEST_EXTRA_LIBRARIES

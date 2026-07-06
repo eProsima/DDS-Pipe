@@ -1,4 +1,4 @@
-# Copyright 2022 Proyectos y Sistemas de Mantenimiento SL (eProsima).
+# Copyright 2026 Proyectos y Sistemas de Mantenimiento SL (eProsima).
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,29 +12,25 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-###########################
-# Yaml Reader Scalar Test #
-###########################
+#################################
+# Yaml Reader Participants Test #
+#################################
 
-set(TEST_NAME YamlReaderScalarTest)
+set(TEST_NAME YamlReaderParticipantsTest)
 
 set(TEST_SOURCES
         ${PROJECT_SOURCE_DIR}/src/cpp/YamlReader_generic.cpp
         ${PROJECT_SOURCE_DIR}/src/cpp/YamlReader_participants.cpp
         ${PROJECT_SOURCE_DIR}/src/cpp/YamlReader_types.cpp
-        YamlReaderScalarTest.cpp
+        YamlReaderParticipantsTest.cpp
     )
 
 set(TEST_LIST
-        get_scalar_bool
-        get_scalar_int
-        get_scalar_decimal
-        get_scalar_string
-        get_scalar_from_tag
-        get_scalar_negative_cases
-        get_positive_and_nonnegative_numbers_from_tag
-        get_list_and_set_helpers
-        get_timestamp
+        read_participant_and_echo_configuration
+        read_simple_participant_optional_fields
+        read_discovery_server_participant_across_versions
+        read_initial_peers_and_xml_participant_configuration
+        xml_handler_configuration_invalid_file_message
     )
 
 set(TEST_EXTRA_LIBRARIES
