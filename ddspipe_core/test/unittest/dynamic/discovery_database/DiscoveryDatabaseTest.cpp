@@ -101,6 +101,91 @@ TEST(DiscoveryDatabaseTest, inactive_update_erases_endpoint)
 }
 
 /**
+ * Test that updating a filtered-only endpoint as inactive clears the filter entry
+ *
+ * STEPS:
+ * - add one filtered endpoint GUID
+ * - update the same GUID as inactive
+ * - verify the filter entry is removed and no erase callback is triggered
+ */
+TEST(DiscoveryDatabaseTest, inactive_update_clears_filtered_endpoint)
+{
+    DiscoveryDatabase discovery_database;
+    discovery_database.start();
+
+    auto endpoint = random_endpoint(6);
+    endpoint.active = false;
+
+    std::atomic<uint32_t> erased_callbacks{0};
+
+    discovery_database.add_endpoint_erased_callback(
+        [&](
+            types::Endpoint)
+        {
+            ++erased_callbacks;
+        });
+
+    discovery_database.add_filtered_endpoint(endpoint.guid);
+    eprosima::utils::sleep_for(test::WAIT_TIME_MS);
+
+    ASSERT_TRUE(discovery_database.exists_filtered_endpoint(endpoint.guid));
+    ASSERT_FALSE(discovery_database.endpoint_exists(endpoint.guid));
+
+    discovery_database.update_endpoint(endpoint);
+    eprosima::utils::sleep_for(test::WAIT_TIME_MS);
+
+    EXPECT_FALSE(discovery_database.exists_filtered_endpoint(endpoint.guid));
+    EXPECT_FALSE(discovery_database.endpoint_exists(endpoint.guid));
+    EXPECT_TRUE(test::get_all_endpoints(discovery_database).empty());
+    EXPECT_EQ(erased_callbacks.load(), 0u);
+    EXPECT_THROW(discovery_database.get_endpoint(endpoint.guid), eprosima::utils::InconsistencyException);
+
+    discovery_database.stop();
+}
+
+/**
+ * Test that erasing a filtered-only endpoint keeps the filter entry untouched
+ *
+ * STEPS:
+ * - add one filtered endpoint GUID
+ * - request an erase for the same GUID
+ * - verify the filter entry remains because there is no stored endpoint to erase
+ */
+TEST(DiscoveryDatabaseTest, erase_does_not_remove_filtered_only_endpoint)
+{
+    DiscoveryDatabase discovery_database;
+    discovery_database.start();
+
+    auto endpoint = random_endpoint(8);
+
+    std::atomic<uint32_t> erased_callbacks{0};
+
+    discovery_database.add_endpoint_erased_callback(
+        [&](
+            types::Endpoint)
+        {
+            ++erased_callbacks;
+        });
+
+    discovery_database.add_filtered_endpoint(endpoint.guid);
+    eprosima::utils::sleep_for(test::WAIT_TIME_MS);
+
+    ASSERT_TRUE(discovery_database.exists_filtered_endpoint(endpoint.guid));
+    ASSERT_FALSE(discovery_database.endpoint_exists(endpoint.guid));
+
+    discovery_database.erase_endpoint(endpoint);
+    eprosima::utils::sleep_for(test::WAIT_TIME_MS);
+
+    EXPECT_TRUE(discovery_database.exists_filtered_endpoint(endpoint.guid));
+    EXPECT_FALSE(discovery_database.endpoint_exists(endpoint.guid));
+    EXPECT_TRUE(test::get_all_endpoints(discovery_database).empty());
+    EXPECT_EQ(erased_callbacks.load(), 0u);
+    EXPECT_EQ(discovery_database.get_endpoint(endpoint.guid), types::Endpoint{});
+
+    discovery_database.stop();
+}
+
+/**
  * Test that stopping the discovery database clears stored endpoints and filtered endpoints
  *
  * STEPS:

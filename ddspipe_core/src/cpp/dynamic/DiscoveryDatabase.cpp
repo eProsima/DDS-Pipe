@@ -160,6 +160,27 @@ bool DiscoveryDatabase::update_endpoint_(
 {
     if (!endpoint_to_update.active)
     {
+        bool filtered_erased = false;
+        bool endpoint_exists = false;
+
+        {
+            std::unique_lock<std::shared_timed_mutex> lock(mutex_);
+            filtered_erased = entities_filter_.erase(endpoint_to_update.guid) > 0;
+            endpoint_exists = entities_.find(endpoint_to_update.guid) != entities_.end();
+        }
+
+        if (!endpoint_exists)
+        {
+            if (filtered_erased)
+            {
+                return true;
+            }
+
+            throw utils::InconsistencyException(
+                      utils::Formatter()
+                          << "Error updating Endpoint in database. Endpoint entry not found." << endpoint_to_update);
+        }
+
         return erase_endpoint_(endpoint_to_update) == utils::ReturnCode::RETCODE_OK;
     }
 
@@ -206,16 +227,17 @@ utils::ReturnCode DiscoveryDatabase::erase_endpoint_(
         EPROSIMA_LOG_INFO(DDSPIPE_DISCOVERY_DATABASE, "Erasing Endpoint " << endpoint_to_erase << ".");
 
         auto erased = entities_.erase(endpoint_to_erase.guid);
-        auto filtered_erased = entities_filter_.erase(endpoint_to_erase.guid);
         endpoint_erased = erased > 0;
 
-        if (erased == 0 && filtered_erased == 0)
+        if (erased == 0)
         {
             throw utils::InconsistencyException(
                       utils::Formatter()
                           << "Error erasing Endpoint " << endpoint_to_erase
                           << " from database. Endpoint entry not found.");
         }
+
+        entities_filter_.erase(endpoint_to_erase.guid);
     }
 
     if (endpoint_erased)

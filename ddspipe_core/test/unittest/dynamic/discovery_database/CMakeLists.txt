@@ -32,6 +32,8 @@ all_library_sources(
 
 set(TEST_LIST
         inactive_update_erases_endpoint
+        inactive_update_clears_filtered_endpoint
+        erase_does_not_remove_filtered_only_endpoint
         stop_clears_stored_endpoints
     )
 
