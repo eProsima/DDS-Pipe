@@ -16,6 +16,7 @@
 #include <cpp_utils/Log.hpp>
 
 #include <ddspipe_core/communication/dds/DdsBridge.hpp>
+#include <ddspipe_core/types/topic/dds/DdsTopic.hpp>
 
 #include <cpp_utils/utils.hpp>
 
@@ -316,6 +317,10 @@ utils::Heritable<DistributedTopic> DdsBridge::create_topic_for_participant_nts_(
     // A Topic QoS set with fuzzy_level_hard (the highest FuzzyLevel) cannot be overwritten.
     // Thus, the order matters. In this case, manual_topics[0] > manual_topics[1] > participant.
 
+    // If this is a DDS Topic, also track the QoS that comes exclusively from user configuration,
+    // as opposed to topic_qos which also absorbs QoS observed via RTPS discovery of remote endpoints.
+    bool is_dds_topic = topic.can_cast<types::DdsTopic>();
+
     // 1. Manually Configured Topic QoS.
     for (const auto& manual_topic : manual_topics_)
     {
@@ -324,11 +329,23 @@ utils::Heritable<DistributedTopic> DdsBridge::create_topic_for_participant_nts_(
         if (participant_ids.empty() || participant_ids.count(participant->id()))
         {
             topic->topic_qos.set_qos(manual_topic.first->topic_qos, utils::FuzzyLevelValues::fuzzy_level_hard);
+
+            if (is_dds_topic)
+            {
+                topic.dyn_cast<types::DdsTopic>().user_configured_qos.set_qos(
+                    manual_topic.first->topic_qos, utils::FuzzyLevelValues::fuzzy_level_hard);
+            }
         }
     }
 
     // 2. Participant Topic QoS.
     topic->topic_qos.set_qos(participant->topic_qos(), utils::FuzzyLevelValues::fuzzy_level_hard);
+
+    if (is_dds_topic)
+    {
+        topic.dyn_cast<types::DdsTopic>().user_configured_qos.set_qos(
+            participant->topic_qos(), utils::FuzzyLevelValues::fuzzy_level_hard);
+    }
 
     // 3. Partitions Topic
     if (topic->partition_name.size() == 0)

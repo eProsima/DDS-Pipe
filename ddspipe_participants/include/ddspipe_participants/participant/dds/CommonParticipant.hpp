@@ -250,6 +250,20 @@ protected:
     // INTERNAL VIRTUAL METHODS
     /////////////////////////
 
+    //! Whether the user's (YAML) QoS overrides the QoS from a matching XML endpoint profile
+    DDSPIPE_PARTICIPANTS_DllAPI
+    virtual bool endpoint_qos_mode_() const noexcept
+    {
+        return false;
+    }
+
+    //! Whether XML endpoint profile lookup is enabled. Disabled by default for plain (non-XML) participants.
+    DDSPIPE_PARTICIPANTS_DllAPI
+    virtual bool xml_lookup_enabled_() const noexcept
+    {
+        return false;
+    }
+
     DDSPIPE_PARTICIPANTS_DllAPI
     virtual
     fastdds::dds::DomainParticipantQos

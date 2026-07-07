@@ -120,7 +120,9 @@ protected:
             const core::types::DdsTopic& topic,
             const std::shared_ptr<core::PayloadPool>& payload_pool,
             fastdds::dds::DomainParticipant* participant,
-            fastdds::dds::Topic* topic_entity);
+            fastdds::dds::Topic* topic_entity,
+            const bool yaml_qos_override = true,
+            const bool xml_lookup_enabled = false);
 
     // Specific enable/disable do not need to be implemented
 
@@ -177,6 +179,8 @@ protected:
 
     fastdds::dds::DomainParticipant* dds_participant_;
     fastdds::dds::Topic* dds_topic_;
+    bool yaml_qos_override_;
+    bool xml_lookup_enabled_;
 
     /////////////////////////
     // INTERNAL VARIABLES

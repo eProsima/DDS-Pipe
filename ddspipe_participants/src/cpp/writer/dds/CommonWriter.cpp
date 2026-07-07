@@ -133,13 +133,17 @@ CommonWriter::CommonWriter(
         const std::shared_ptr<core::PayloadPool>& payload_pool,
         fastdds::dds::DomainParticipant* participant,
         fastdds::dds::Topic* topic_entity,
-        const bool repeater)
+        const bool repeater,
+        const bool yaml_qos_override /* = true */,
+        const bool xml_lookup_enabled /* = false */)
     : BaseWriter(participant_id, topic.topic_qos.max_tx_rate)
     , dds_participant_(participant)
     , dds_topic_(topic_entity)
     , payload_pool_(new core::PayloadPoolMediator(payload_pool))
     , topic_(topic)
     , repeater_(repeater)
+    , yaml_qos_override_(yaml_qos_override)
+    , xml_lookup_enabled_(xml_lookup_enabled)
     , dds_publisher_(nullptr)
     , writer_(nullptr)
 {
@@ -228,31 +232,85 @@ fastdds::dds::PublisherQos CommonWriter::reckon_publisher_qos_() const noexcept
 
 fastdds::dds::DataWriterQos CommonWriter::reckon_writer_qos_() const noexcept
 {
-    fastdds::dds::DataWriterQos qos = dds_publisher_->get_default_datawriter_qos();
+    fastdds::dds::DataWriterQos qos;
 
-    qos.durability().kind =
-            (topic_.topic_qos.is_transient_local())
-            ? fastdds::dds::DurabilityQosPolicyKind::TRANSIENT_LOCAL_DURABILITY_QOS
-            : fastdds::dds::DurabilityQosPolicyKind::VOLATILE_DURABILITY_QOS;
+    const std::string& profile_key = topic_.topic_qos.endpoint_profile_name.is_set()
+            ? topic_.topic_qos.endpoint_profile_name.get_value()
+            : topic_.topic_name();
 
-    qos.reliability().kind =
-            (topic_.topic_qos.is_reliable())
-            ? fastdds::dds::ReliabilityQosPolicyKind::RELIABLE_RELIABILITY_QOS
-            : fastdds::dds::ReliabilityQosPolicyKind::BEST_EFFORT_RELIABILITY_QOS;
+    bool xml_profile_found = xml_lookup_enabled_ &&
+            (fastdds::dds::RETCODE_OK == dds_publisher_->get_datawriter_qos_from_profile(profile_key, qos));
 
-    qos.ownership().kind =
-            (topic_.topic_qos.has_ownership())
-            ? fastdds::dds::OwnershipQosPolicyKind::EXCLUSIVE_OWNERSHIP_QOS
-            : fastdds::dds::OwnershipQosPolicyKind::SHARED_OWNERSHIP_QOS;
-
-    if (topic_.topic_qos.history_depth == 0U)
+    if (!xml_profile_found)
     {
-        qos.history().kind = eprosima::fastdds::dds::HistoryQosPolicyKind::KEEP_ALL_HISTORY_QOS;
+        qos = dds_publisher_->get_default_datawriter_qos();
+
+        qos.durability().kind =
+                (topic_.topic_qos.is_transient_local())
+                ? fastdds::dds::DurabilityQosPolicyKind::TRANSIENT_LOCAL_DURABILITY_QOS
+                : fastdds::dds::DurabilityQosPolicyKind::VOLATILE_DURABILITY_QOS;
+
+        qos.reliability().kind =
+                (topic_.topic_qos.is_reliable())
+                ? fastdds::dds::ReliabilityQosPolicyKind::RELIABLE_RELIABILITY_QOS
+                : fastdds::dds::ReliabilityQosPolicyKind::BEST_EFFORT_RELIABILITY_QOS;
+
+        qos.ownership().kind =
+                (topic_.topic_qos.has_ownership())
+                ? fastdds::dds::OwnershipQosPolicyKind::EXCLUSIVE_OWNERSHIP_QOS
+                : fastdds::dds::OwnershipQosPolicyKind::SHARED_OWNERSHIP_QOS;
+
+        if (topic_.topic_qos.history_depth == 0U)
+        {
+            qos.history().kind = eprosima::fastdds::dds::HistoryQosPolicyKind::KEEP_ALL_HISTORY_QOS;
+        }
+        else
+        {
+            qos.history().kind = eprosima::fastdds::dds::HistoryQosPolicyKind::KEEP_LAST_HISTORY_QOS;
+            qos.history().depth = topic_.topic_qos.history_depth;
+        }
     }
-    else
+    else if (yaml_qos_override_)
     {
-        qos.history().kind = eprosima::fastdds::dds::HistoryQosPolicyKind::KEEP_LAST_HISTORY_QOS;
-        qos.history().depth = topic_.topic_qos.history_depth;
+        // Only override the XML profile with fields explicitly set by the user (YAML)
+        const auto& user_qos = topic_.user_configured_qos;
+
+        if (user_qos.durability_qos.is_set())
+        {
+            qos.durability().kind =
+                    (user_qos.is_transient_local())
+                    ? fastdds::dds::DurabilityQosPolicyKind::TRANSIENT_LOCAL_DURABILITY_QOS
+                    : fastdds::dds::DurabilityQosPolicyKind::VOLATILE_DURABILITY_QOS;
+        }
+
+        if (user_qos.reliability_qos.is_set())
+        {
+            qos.reliability().kind =
+                    (user_qos.is_reliable())
+                    ? fastdds::dds::ReliabilityQosPolicyKind::RELIABLE_RELIABILITY_QOS
+                    : fastdds::dds::ReliabilityQosPolicyKind::BEST_EFFORT_RELIABILITY_QOS;
+        }
+
+        if (user_qos.ownership_qos.is_set())
+        {
+            qos.ownership().kind =
+                    (user_qos.has_ownership())
+                    ? fastdds::dds::OwnershipQosPolicyKind::EXCLUSIVE_OWNERSHIP_QOS
+                    : fastdds::dds::OwnershipQosPolicyKind::SHARED_OWNERSHIP_QOS;
+        }
+
+        if (user_qos.history_depth.is_set())
+        {
+            if (user_qos.history_depth == 0U)
+            {
+                qos.history().kind = eprosima::fastdds::dds::HistoryQosPolicyKind::KEEP_ALL_HISTORY_QOS;
+            }
+            else
+            {
+                qos.history().kind = eprosima::fastdds::dds::HistoryQosPolicyKind::KEEP_LAST_HISTORY_QOS;
+                qos.history().depth = user_qos.history_depth;
+            }
+        }
     }
 
     // Set minimum deadline so it matches with everything

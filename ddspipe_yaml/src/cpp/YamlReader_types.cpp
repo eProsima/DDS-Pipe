@@ -450,6 +450,12 @@ void YamlReader::fill(
     {
         object.downsampling.set_value(get_positive_int(yml, QOS_DOWNSAMPLING_TAG));
     }
+
+    // Endpoint profile name optional
+    if (is_tag_present(yml, ENDPOINT_PROFILE_NAME_TAG))
+    {
+        object.endpoint_profile_name.set_value(get<std::string>(yml, ENDPOINT_PROFILE_NAME_TAG, version));
+    }
 }
 
 /************************

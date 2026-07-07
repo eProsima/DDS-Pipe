@@ -87,6 +87,16 @@ std::shared_ptr<core::IReader> XmlParticipant::create_reader(
     }
 }
 
+bool XmlParticipant::endpoint_qos_mode_() const noexcept
+{
+    return xml_specific_configuration_.endpoint_qos_mode == EndpointQoSMode::XML_OVERRIDABLE;
+}
+
+bool XmlParticipant::xml_lookup_enabled_() const noexcept
+{
+    return true;
+}
+
 fastdds::dds::DomainParticipantQos XmlParticipant::reckon_participant_qos_() const
 {
     fastdds::dds::DomainParticipantQos qos = CommonParticipant::reckon_participant_qos_();

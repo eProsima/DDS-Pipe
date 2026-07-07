@@ -171,6 +171,7 @@ void YamlReader::fill(
     {
         fill<TopicQoS>(object.topic_qos, get_value_in_tag(yml, PARTICIPANT_QOS_TAG), version);
     }
+
 }
 
 template<>
@@ -325,6 +326,26 @@ void YamlReader::fill(
     if (YamlReader::is_tag_present(yml, IS_REPEATER_TAG))
     {
         object.is_repeater = YamlReader::get<bool>(yml, IS_REPEATER_TAG, version);
+    }
+
+    // Optional endpoint QoS mode
+    if (YamlReader::is_tag_present(yml, ENDPOINT_QOS_MODE_TAG))
+    {
+        std::string mode_str = get<std::string>(yml, ENDPOINT_QOS_MODE_TAG, version);
+        if (mode_str == "xml-overridable")
+        {
+            object.endpoint_qos_mode = participants::EndpointQoSMode::XML_OVERRIDABLE;
+        }
+        else if (mode_str == "xml-standalone")
+        {
+            object.endpoint_qos_mode = participants::EndpointQoSMode::XML_STANDALONE;
+        }
+        else
+        {
+            throw eprosima::utils::ConfigurationException(
+                      utils::Formatter() << "Unknown endpoint-qos-mode value: " << mode_str
+                                         << ". Valid values are: xml-standalone, xml-overridable.");
+        }
     }
 }
 

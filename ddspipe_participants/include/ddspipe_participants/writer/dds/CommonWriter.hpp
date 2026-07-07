@@ -103,7 +103,9 @@ protected:
             const std::shared_ptr<core::PayloadPool>& payload_pool,
             fastdds::dds::DomainParticipant* participant,
             fastdds::dds::Topic* topic_entity,
-            const bool repeater);
+            const bool repeater,
+            const bool yaml_qos_override = true,
+            const bool xml_lookup_enabled = false);
 
     /////////////////////////
     // IWRITER METHODS
@@ -182,6 +184,8 @@ protected:
     fastdds::dds::DomainParticipant* dds_participant_;
     fastdds::dds::Topic* dds_topic_;
     bool repeater_;
+    bool yaml_qos_override_;
+    bool xml_lookup_enabled_;
 
     /////////////////////////
     // INTERNAL VARIABLES

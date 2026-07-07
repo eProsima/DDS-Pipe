@@ -61,7 +61,8 @@ bool TopicQoS::operator ==(
         this->keyed == other.keyed &&
         this->max_tx_rate == other.max_tx_rate &&
         this->max_rx_rate == other.max_rx_rate &&
-        this->downsampling == other.downsampling;
+        this->downsampling == other.downsampling &&
+        this->endpoint_profile_name == other.endpoint_profile_name;
 }
 
 bool TopicQoS::is_reliable() const noexcept
@@ -131,6 +132,11 @@ void TopicQoS::set_qos(
     if (downsampling.get_level() < fuzzy_level && qos.downsampling.is_set())
     {
         downsampling.set_value(qos.downsampling.get_value(), fuzzy_level);
+    }
+
+    if (endpoint_profile_name.get_level() < fuzzy_level && qos.endpoint_profile_name.is_set())
+    {
+        endpoint_profile_name.set_value(qos.endpoint_profile_name.get_value(), fuzzy_level);
     }
 }
 
@@ -259,6 +265,8 @@ std::ostream& operator <<(
        << ";max_tx_rate(" << qos.max_tx_rate << ")"
        << ";max_rx_rate(" << qos.max_rx_rate << ")"
        << ";downsampling(" << qos.downsampling << ")"
+       << (qos.endpoint_profile_name.is_set() ? ";endpoint_profile_name(" + qos.endpoint_profile_name.get_value() +
+    ")" : "")
        << "}";
 
     return os;

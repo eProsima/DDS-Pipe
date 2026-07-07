@@ -144,6 +144,9 @@ TopicQoS
     //! Downsampling factor: keep 1 out of every *downsampling* samples received (downsampling=1 <=> no downsampling)
     utils::Fuzzy<unsigned int> downsampling;
 
+    //! XML profile name to use for endpoint QoS lookup
+    utils::Fuzzy<std::string> endpoint_profile_name;
+
     /////////////////////////
     // GLOBAL VARIABLES
     /////////////////////////

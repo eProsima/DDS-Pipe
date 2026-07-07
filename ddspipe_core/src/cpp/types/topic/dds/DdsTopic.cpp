@@ -56,8 +56,8 @@ std::string DdsTopic::topic_unique_name() const noexcept
 std::string DdsTopic::serialize() const noexcept
 {
     std::stringstream ss;
-    ss << "Topic{" << m_topic_name << ";" << type_name << ";" << topic_qos << "(" << m_internal_type_discriminator <<
-        ")}";
+    ss << "Topic{" << m_topic_name << ";" << type_name << ";" << topic_qos << "(" << m_internal_type_discriminator
+       << ")}";
     return ss.str();
 }
 
@@ -122,6 +122,7 @@ DdsTopic& DdsTopic::operator = (
 
     this->type_name = other.type_name;
     this->type_identifiers = other.type_identifiers;
+    this->user_configured_qos = other.user_configured_qos;
 
     return *this;
 }

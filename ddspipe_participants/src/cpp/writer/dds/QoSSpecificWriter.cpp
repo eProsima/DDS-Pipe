@@ -29,9 +29,12 @@ QoSSpecificWriter::QoSSpecificWriter(
         const core::types::SpecificEndpointQoS& specific_qos,
         fastdds::dds::DomainParticipant* participant,
         fastdds::dds::Topic* topic_entity,
-        const bool repeater /* = false */)
+        const bool repeater /* = false */,
+        const bool yaml_qos_override /* = true */,
+        const bool xml_lookup_enabled /* = false */)
     : CommonWriter(
-        participant_id, topic, payload_pool, participant, topic_entity, repeater)
+        participant_id, topic, payload_pool, participant, topic_entity, repeater, yaml_qos_override,
+        xml_lookup_enabled)
     , specific_qos_(specific_qos)
 {
 }
