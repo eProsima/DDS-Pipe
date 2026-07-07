@@ -317,7 +317,7 @@ utils::Heritable<DistributedTopic> DdsBridge::create_topic_for_participant_nts_(
     // A Topic QoS set with fuzzy_level_hard (the highest FuzzyLevel) cannot be overwritten.
     // Thus, the order matters. In this case, manual_topics[0] > manual_topics[1] > participant.
 
-    // If this is a DDS Topic, also track the QoS that come exclusively from user configuration,
+    // If this is a DDS Topic, also track the QoS that comes exclusively from user configuration,
     // as opposed to topic_qos which also absorbs QoS observed via RTPS discovery of remote endpoints.
     bool is_dds_topic = topic.can_cast<types::DdsTopic>();
 

@@ -308,7 +308,7 @@ fastdds::dds::DataWriterQos CommonWriter::reckon_writer_qos_() const noexcept
             else
             {
                 qos.history().kind = eprosima::fastdds::dds::HistoryQosPolicyKind::KEEP_LAST_HISTORY_QOS;
-                qos.history().depth = topic_.topic_qos.history_depth;
+                qos.history().depth = user_qos.history_depth;
             }
         }
     }

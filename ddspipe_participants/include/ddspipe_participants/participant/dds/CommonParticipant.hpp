@@ -250,6 +250,7 @@ protected:
     // INTERNAL VIRTUAL METHODS
     /////////////////////////
 
+    //! Whether the user's (YAML) QoS overrides the QoS from a matching XML endpoint profile
     DDSPIPE_PARTICIPANTS_DllAPI
     virtual bool endpoint_qos_mode_() const noexcept
     {

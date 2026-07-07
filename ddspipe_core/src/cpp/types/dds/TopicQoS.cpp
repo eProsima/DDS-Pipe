@@ -265,6 +265,8 @@ std::ostream& operator <<(
        << ";max_tx_rate(" << qos.max_tx_rate << ")"
        << ";max_rx_rate(" << qos.max_rx_rate << ")"
        << ";downsampling(" << qos.downsampling << ")"
+       << (qos.endpoint_profile_name.is_set() ? ";endpoint_profile_name(" + qos.endpoint_profile_name.get_value() +
+    ")" : "")
        << "}";
 
     return os;
