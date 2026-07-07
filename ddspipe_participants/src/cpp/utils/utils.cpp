@@ -58,8 +58,8 @@ core::types::Endpoint create_common_endpoint_from_info_(
     else
     {
         utils::tsnh(
-            utils::Formatter() <<
-                "Invalid ReliabilityQoS value found while parsing DiscoveryInfo for Endpoint creation.");
+            utils::Formatter()
+                << "Invalid ReliabilityQoS value found while parsing DiscoveryInfo for Endpoint creation.");
     }
     // Set Topic with Partitions
     endpoint.topic.topic_qos.use_partitions.set_value(!info.partition.empty());
