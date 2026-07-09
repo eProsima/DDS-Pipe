@@ -67,13 +67,64 @@ jobs:
           path: src/ddspipe
           ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.ref_name }}
 
+      # For DDS Pipe PRs, try the same branch name in each downstream repository and
+      # fall back to main when that branch does not exist
+      - name: Resolve downstream ref
+        id: resolve_downstream_ref
+        uses: actions/github-script@v7
+        env:
+          TOOL_REPOSITORY: ${{ matrix.tool.repository }}
+          WORKFLOW_DISPATCH_REF: ${{ github.event_name == 'workflow_dispatch' && inputs.downstream_ref || '' }}
+          FALLBACK_REF: main
+        with:
+          script: |
+            const [owner, repo] = process.env.TOOL_REPOSITORY.split('/');
+            const eventName = context.eventName;
+            const fallbackRef = process.env.FALLBACK_REF;
+
+            if (eventName === 'workflow_dispatch') {
+              const ref = process.env.WORKFLOW_DISPATCH_REF || fallbackRef;
+              core.info(`Using manually requested downstream ref '${ref}' for ${owner}/${repo}`);
+              core.setOutput('ref', ref);
+              return;
+            }
+
+            if (eventName !== 'pull_request') {
+              const ref = context.ref.replace('refs/heads/', '');
+              core.info(`Using workflow branch '${ref}' for ${owner}/${repo}`);
+              core.setOutput('ref', ref);
+              return;
+            }
+
+            const relatedRef = context.payload.pull_request.head.ref;
+
+            try {
+              await github.rest.repos.getBranch({
+                owner,
+                repo,
+                branch: relatedRef,
+              });
+
+              core.info(`Using related downstream ref '${relatedRef}' for ${owner}/${repo}`);
+              core.setOutput('ref', relatedRef);
+            } catch (error) {
+              if (error.status !== 404) {
+                throw error;
+              }
+
+              core.info(
+                `Branch '${relatedRef}' not found in ${owner}/${repo}; falling back to '${fallbackRef}'`
+              );
+              core.setOutput('ref', fallbackRef);
+            }
+
       # Checkout the downstream tool that consumes DDS Pipe
       - name: Checkout downstream tool
         uses: eProsima/eProsima-CI/external/checkout@v0
         with:
           repository: ${{ matrix.tool.repository }}
           path: src/${{ matrix.tool.name }}
-          ref: ${{ inputs.downstream_ref || 'main' }}
+          ref: ${{ steps.resolve_downstream_ref.outputs.ref }}
 
       - name: Install Fast DDS dependencies
         uses: eProsima/eProsima-CI/multiplatform/install_fastdds_dependencies@v0
