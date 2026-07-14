@@ -16,7 +16,6 @@
 #include <fastdds/rtps/RTPSDomain.hpp>
 #include <fastdds/rtps/participant/RTPSParticipant.hpp>
 
-#include <cpp_utils/exception/InconsistencyException.hpp>
 #include <cpp_utils/Log.hpp>
 
 #include <ddspipe_participants/reader/rtps/SpecificQoSReader.hpp>
@@ -58,21 +57,18 @@ void SpecificQoSReader::fill_received_data_(
         return;
     }
 
-    // Find qos of writer
-    try
+    // During teardown it is expected that late samples can outlive writer discovery data
+    if (detail::try_specific_qos_of_writer_(*discovery_database_, data_to_fill.source_guid, data_to_fill.writer_qos))
     {
-        data_to_fill.writer_qos = detail::specific_qos_of_writer_(*discovery_database_, data_to_fill.source_guid);
         logDebug(
             DDSPIPE_SpecificQoSReader,
             "Set QoS " << data_to_fill.writer_qos << " for data from " << data_to_fill.source_guid << ".");
     }
-    catch (const utils::InconsistencyException&)
+    else
     {
-        // Get a message from a writer not in database, this is an error.
-        // Remove data and make as it has not been received.
-        EPROSIMA_LOG_ERROR(
+        logDebug(
             DDSPIPE_SpecificQoSReader,
-            "Received a message from Writer " << data_to_fill.source_guid << " that is not stored in DB.");
+            "Skipping writer QoS lookup for removed writer " << data_to_fill.source_guid << ".");
     }
 }
 

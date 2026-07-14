@@ -76,6 +76,12 @@ void DiscoveryDatabase::stop() noexcept
     {
         logDebug(DDSPIPE_DISCOVERY_DATABASE, "Processing thread routine already stopped.");
     }
+
+    {
+        std::unique_lock<std::shared_timed_mutex> lock(mutex_);
+        entities_.clear();
+        entities_filter_.clear();
+    }
 }
 
 bool DiscoveryDatabase::topic_exists(
@@ -107,6 +113,7 @@ bool DiscoveryDatabase::add_endpoint_(
 {
     {
         std::unique_lock<std::shared_timed_mutex> lock(mutex_);
+        entities_filter_.erase(new_endpoint.guid);
 
         auto it = entities_.find(new_endpoint.guid);
         if (it != entities_.end())
@@ -115,8 +122,8 @@ bool DiscoveryDatabase::add_endpoint_(
             if (it->second.active)
             {
                 throw utils::InconsistencyException(
-                          utils::Formatter() <<
-                              "Error adding Endpoint to database. Endpoint already exists." << new_endpoint);
+                          utils::Formatter()
+                              << "Error adding Endpoint to database. Endpoint already exists." << new_endpoint);
             }
             else
             {
@@ -151,16 +158,43 @@ bool DiscoveryDatabase::add_endpoint_(
 bool DiscoveryDatabase::update_endpoint_(
         const Endpoint& endpoint_to_update)
 {
+    if (!endpoint_to_update.active)
+    {
+        bool filtered_erased = false;
+        bool endpoint_exists = false;
+
+        {
+            std::unique_lock<std::shared_timed_mutex> lock(mutex_);
+            filtered_erased = entities_filter_.erase(endpoint_to_update.guid) > 0;
+            endpoint_exists = entities_.find(endpoint_to_update.guid) != entities_.end();
+        }
+
+        if (!endpoint_exists)
+        {
+            if (filtered_erased)
+            {
+                return true;
+            }
+
+            throw utils::InconsistencyException(
+                      utils::Formatter()
+                          << "Error updating Endpoint in database. Endpoint entry not found." << endpoint_to_update);
+        }
+
+        return erase_endpoint_(endpoint_to_update) == utils::ReturnCode::RETCODE_OK;
+    }
+
     {
         std::unique_lock<std::shared_timed_mutex> lock(mutex_);
+        entities_filter_.erase(endpoint_to_update.guid);
 
         auto it = entities_.find(endpoint_to_update.guid);
         if (it == entities_.end())
         {
             // Entry not found
             throw utils::InconsistencyException(
-                      utils::Formatter() <<
-                          "Error updating Endpoint in database. Endpoint entry not found." << endpoint_to_update);
+                      utils::Formatter()
+                          << "Error updating Endpoint in database. Endpoint entry not found." << endpoint_to_update);
         }
         else
         {
@@ -185,26 +219,34 @@ bool DiscoveryDatabase::update_endpoint_(
 utils::ReturnCode DiscoveryDatabase::erase_endpoint_(
         const Endpoint& endpoint_to_erase)
 {
+    bool endpoint_erased = false;
+
     {
         std::unique_lock<std::shared_timed_mutex> lock(mutex_);
 
         EPROSIMA_LOG_INFO(DDSPIPE_DISCOVERY_DATABASE, "Erasing Endpoint " << endpoint_to_erase << ".");
 
         auto erased = entities_.erase(endpoint_to_erase.guid);
+        endpoint_erased = erased > 0;
 
         if (erased == 0)
         {
             throw utils::InconsistencyException(
-                      utils::Formatter() <<
-                          "Error erasing Endpoint " << endpoint_to_erase <<
-                          " from database. Endpoint entry not found.");
+                      utils::Formatter()
+                          << "Error erasing Endpoint " << endpoint_to_erase
+                          << " from database. Endpoint entry not found.");
         }
+
+        entities_filter_.erase(endpoint_to_erase.guid);
     }
 
-    std::lock_guard<std::mutex> lock(callbacks_mutex_);
-    for (auto erased_endpoint_callback : erased_endpoint_callbacks_)
+    if (endpoint_erased)
     {
-        erased_endpoint_callback(endpoint_to_erase);
+        std::lock_guard<std::mutex> lock(callbacks_mutex_);
+        for (auto erased_endpoint_callback : erased_endpoint_callbacks_)
+        {
+            erased_endpoint_callback(endpoint_to_erase);
+        }
     }
 
     return utils::ReturnCode::RETCODE_OK;
@@ -213,6 +255,7 @@ utils::ReturnCode DiscoveryDatabase::erase_endpoint_(
 void DiscoveryDatabase::add_filtered_endpoint(
         const types::Guid guid)
 {
+    std::unique_lock<std::shared_timed_mutex> lock(mutex_);
     entities_filter_.insert(guid);
 }
 
@@ -237,6 +280,7 @@ void DiscoveryDatabase::erase_endpoint(
 bool DiscoveryDatabase::exists_filtered_endpoint(
         const Guid endpoint_guid)
 {
+    std::shared_lock<std::shared_timed_mutex> lock(mutex_);
     return entities_filter_.find(endpoint_guid) != entities_filter_.end();
 }
 
@@ -255,9 +299,9 @@ Endpoint DiscoveryDatabase::get_endpoint(
         }
 
         throw utils::InconsistencyException(
-                  utils::Formatter() <<
-                      "Error retrieving Endpoint with GUID " << endpoint_guid <<
-                      " from database. Endpoint entry not found.");
+                  utils::Formatter()
+                      << "Error retrieving Endpoint with GUID " << endpoint_guid
+                      << " from database. Endpoint entry not found.");
     }
 
     return it->second;

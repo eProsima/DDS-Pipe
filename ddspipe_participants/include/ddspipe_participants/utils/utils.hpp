@@ -46,6 +46,18 @@ core::types::SpecificEndpointQoS specific_qos_of_writer_(
         const core::DiscoveryDatabase& database,
         const core::types::Guid& guid);
 
+/**
+ * @brief Try to get the QoS from a Writer from the \c DiscoveryDatabase .
+ *
+ * @retval true if the writer is stored in the discovery database.
+ * @retval false if the writer is no longer available in the discovery database.
+ */
+DDSPIPE_PARTICIPANTS_DllAPI
+bool try_specific_qos_of_writer_(
+        const core::DiscoveryDatabase& database,
+        const core::types::Guid& guid,
+        core::types::SpecificEndpointQoS& specific_qos) noexcept;
+
 DDSPIPE_PARTICIPANTS_DllAPI
 bool come_from_same_participant_(
         const fastdds::rtps::GUID_t src_guid,
