@@ -1,0 +1,189 @@
+name: downstream-ci
+
+on:
+  workflow_dispatch:
+    inputs:
+      custom_version_build:
+        description: 'Fast DDS build version from eProsima-CI.'
+        required: true
+        type: choice
+        default: 'v3'
+        options:
+          - custom
+          - v2
+          - v3
+      dependencies_artifact_postfix:
+        description: 'Postfix to download a specific dependencies artifact from eProsima-CI.'
+        required: true
+        default: '_nightly'
+      downstream_ref:
+        description: 'Branch or tag to checkout on every downstream tool.'
+        required: true
+        default: 'main'
+  pull_request:
+  push:
+    branches:
+      - main
+
+concurrency:
+  group: downstream-ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+
+  downstream-tests:
+    name: ${{ matrix.tool.name }}-${{ matrix.os }}-${{ matrix.cmake_build_type }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - ubuntu-22.04
+          - ubuntu-24.04
+          - windows-2022
+        cmake_build_type:
+          - Release
+          - Debug
+        tool:
+          - name: ddsrouter
+            repository: eProsima/DDS-Router
+            packages: 'ddsrouter_core ddsrouter_yaml ddsrouter_tool'
+          - name: ddsrecordreplay
+            repository: eProsima/DDS-Record-Replay
+            packages: 'ddsrecorder_participants ddsrecorder_yaml ddsrecorder_tool ddsreplayer_tool'
+          - name: fastddsspy
+            repository: eProsima/Fast-DDS-Spy
+            packages: 'fastddsspy_participants fastddsspy_yaml fastddsspy_tool'
+          - name: ddsenabler
+            repository: eProsima/DDS-Enabler
+            packages: 'ddsenabler ddsenabler_yaml ddsenabler_participants'
+
+    steps:
+
+      # Checkout DDS Pipe at the ref that triggered this workflow (the PR / branch under test)
+      - name: Checkout DDS Pipe (under test)
+        uses: eProsima/eProsima-CI/external/checkout@v0
+        with:
+          path: src/ddspipe
+          ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.ref_name }}
+
+      # For DDS Pipe PRs, try the same branch name in each downstream repository and
+      # fall back to main when that branch does not exist
+      - name: Resolve downstream ref
+        id: resolve_downstream_ref
+        uses: actions/github-script@v7
+        env:
+          TOOL_REPOSITORY: ${{ matrix.tool.repository }}
+          WORKFLOW_DISPATCH_REF: ${{ github.event_name == 'workflow_dispatch' && inputs.downstream_ref || '' }}
+          FALLBACK_REF: main
+        with:
+          script: |
+            const [owner, repo] = process.env.TOOL_REPOSITORY.split('/');
+            const eventName = context.eventName;
+            const fallbackRef = process.env.FALLBACK_REF;
+
+            if (eventName === 'workflow_dispatch') {
+              const ref = process.env.WORKFLOW_DISPATCH_REF || fallbackRef;
+              core.info(`Using manually requested downstream ref '${ref}' for ${owner}/${repo}`);
+              core.setOutput('ref', ref);
+              return;
+            }
+
+            if (eventName !== 'pull_request') {
+              const ref = context.ref.replace('refs/heads/', '');
+              core.info(`Using workflow branch '${ref}' for ${owner}/${repo}`);
+              core.setOutput('ref', ref);
+              return;
+            }
+
+            const relatedRef = context.payload.pull_request.head.ref;
+
+            try {
+              await github.rest.repos.getBranch({
+                owner,
+                repo,
+                branch: relatedRef,
+              });
+
+              core.info(`Using related downstream ref '${relatedRef}' for ${owner}/${repo}`);
+              core.setOutput('ref', relatedRef);
+            } catch (error) {
+              if (error.status !== 404) {
+                throw error;
+              }
+
+              core.info(
+                `Branch '${relatedRef}' not found in ${owner}/${repo}; falling back to '${fallbackRef}'`
+              );
+              core.setOutput('ref', fallbackRef);
+            }
+
+      # Checkout the downstream tool that consumes DDS Pipe
+      - name: Checkout downstream tool
+        uses: eProsima/eProsima-CI/external/checkout@v0
+        with:
+          repository: ${{ matrix.tool.repository }}
+          path: src/${{ matrix.tool.name }}
+          ref: ${{ steps.resolve_downstream_ref.outputs.ref }}
+
+      - name: Install Fast DDS dependencies
+        uses: eProsima/eProsima-CI/multiplatform/install_fastdds_dependencies@v0
+        with:
+          cmake_build_type: ${{ matrix.cmake_build_type }}
+
+      - name: Install yaml cpp dependency
+        uses: eProsima/eProsima-CI/multiplatform/install_yamlcpp@v0
+        with:
+          cmake_build_type: ${{ matrix.cmake_build_type }}
+
+      # DDS Record Replay needs lz4 and zstd for MCAP compression (installed via
+      # apt on Linux and vcpkg on Windows). No other downstream tool requires them.
+      - name: Install MCAP dependencies (lz4, zstd)
+        if: matrix.tool.name == 'ddsrecordreplay'
+        uses: ./src/ddsrecordreplay/.github/actions/install_mcap_dependencies
+        with:
+          cmake_build_type: ${{ matrix.cmake_build_type }}
+
+      # On Windows the mcap action installs lz4/zstd through vcpkg; expose that
+      # prefix so CMake's find_package(lz4)/find_package(zstd) can locate them.
+      - name: Expose vcpkg packages to CMake (Windows)
+        if: matrix.tool.name == 'ddsrecordreplay' && runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          "CMAKE_PREFIX_PATH=$env:vcpkg_install_path;$env:CMAKE_PREFIX_PATH" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+
+      # Prebuilt Fast DDS + dev-utils. DDS Pipe itself is built from source (checked out above),
+      # so this run reflects the DDS Pipe changes, not the nightly artifact
+      - name: Download Fast DDS + dev-utils artifact
+        uses: eProsima/eProsima-CI/multiplatform/download_dependency@v0
+        with:
+          artifact_name: build_dev_utils_${{ inputs.custom_version_build || 'v3' }}_${{ matrix.os }}_${{ matrix.cmake_build_type }}${{ inputs.dependencies_artifact_postfix || '_nightly' }}
+          workflow_source: build_dev_utils.yml
+          workflow_source_repository: eProsima/eProsima-CI
+          target_workspace: ${{ github.workspace }}/install
+          secret_token: ${{ secrets.GITHUB_TOKEN }}
+          workflow_conclusion: completed
+
+      # Build DDS Pipe (from source) as a dependency of the downstream tool, but only
+      # execute the downstream tool test suites in this workflow
+      - name: Compile and run downstream tests
+        id: compile_and_test
+        uses: eProsima/eProsima-CI/multiplatform/colcon_build_test@v0
+        with:
+          packages_names: ${{ matrix.tool.packages }}
+          workspace_dependencies: install
+          cmake_args: -DBUILD_TESTS=ON -DCMAKE_BUILD_TYPE=${{ matrix.cmake_build_type }}
+          ctest_args: --label-exclude "xfail"
+          colcon_meta_file: src/ddspipe/.github/workflows/configurations/${{ runner.os }}/colcon.meta
+          test_report_artifact: test_report_downstream_${{ matrix.tool.name }}_${{ matrix.os }}_${{ matrix.cmake_build_type }}
+
+      - name: Test Report
+        uses: eProsima/eProsima-CI/external/test-reporter@v0
+        if: success() || failure()
+        with:
+          name: "Downstream: ${{ matrix.tool.name }} | ${{ matrix.os }} | ${{ matrix.cmake_build_type }}"
+          path: "${{ steps.compile_and_test.outputs.ctest_results_path }}*.xml"
+          working-directory: 'src/ddspipe'
+          path-replace-backslashes: ${{ runner.os == 'Windows' && 'true' || 'false' }}
+          list-tests: 'failed'
+          list-suites: 'failed'
