@@ -32,6 +32,7 @@ using namespace eprosima::ddspipe::yaml::testing;
  *
  * POSITIVE CASES:
  * - empty
+ * - with no port
  * - with ip version ipv6
  */
 TEST(YamlGetEntityAddressTest, get_address_defaults)
@@ -39,6 +40,24 @@ TEST(YamlGetEntityAddressTest, get_address_defaults)
     // empty
     {
         Yaml yml_address;
+
+        Yaml yml;
+        yml["address"] = yml_address;
+
+        // Get participants::types::Address from Yaml
+        ASSERT_THROW(YamlReader::get<participants::types::Address>(yml, "address",
+                LATEST), eprosima::utils::ConfigurationException);
+    }
+
+    // with no port
+    {
+        Yaml yml_address;
+
+        // Add IP with ip-version ipv6
+        add_field_to_yaml(
+            yml_address,
+            YamlField<participants::types::IpType>("::1"),
+            ADDRESS_IP_TAG);
 
         Yaml yml;
         yml["address"] = yml_address;
