@@ -352,6 +352,7 @@ core::types::TopicQoS CommonParticipant::topic_qos() const noexcept
 
 std::map<std::string, std::map<std::string, std::string>> CommonParticipant::topic_partitions() const noexcept
 {
+    std::lock_guard<std::mutex> lock(partition_names_mutex_);
     return partition_names;
 }
 
@@ -574,6 +575,7 @@ bool CommonParticipant::add_topic_partition(
         const std::string& writer_guid,
         const std::string& partition)
 {
+    std::lock_guard<std::mutex> lock(partition_names_mutex_);
     if (partition_names.find(topic_name) != partition_names.end())
     {
         // the topic exists
@@ -600,6 +602,7 @@ bool CommonParticipant::update_topic_partition(
         const std::string& writer_guid,
         const std::string& partition)
 {
+    std::lock_guard<std::mutex> lock(partition_names_mutex_);
     if (partition_names.find(topic_name) == partition_names.end())
     {
         // the topic dont exists
@@ -623,6 +626,7 @@ bool CommonParticipant::delete_topic_partition(
         const std::string& writer_guid,
         const std::string& partition)
 {
+    std::lock_guard<std::mutex> lock(partition_names_mutex_);
     if (partition_names.find(topic_name) == partition_names.end())
     {
         // the topic dont exists
@@ -642,6 +646,7 @@ bool CommonParticipant::delete_topic_partition(
 
 void CommonParticipant::clear_topic_partitions()
 {
+    std::lock_guard<std::mutex> lock(partition_names_mutex_);
     partition_names.clear();
 }
 
