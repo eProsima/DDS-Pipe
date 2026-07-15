@@ -54,6 +54,12 @@ TEST(YamlGetEntityAddressTest, get_address_domain)
             YamlField<std::string>(ADDRESS_IP_VERSION_V4_TAG),
             ADDRESS_IP_VERSION_TAG);
 
+        // Add port
+        add_field_to_yaml(
+            yml_address,
+            YamlField<participants::types::PortType>(participants::types::Address::default_port()),
+            ADDRESS_PORT_TAG);
+
         Yaml yml;
         yml["address"] = yml_address;
 
@@ -74,6 +80,12 @@ TEST(YamlGetEntityAddressTest, get_address_domain)
             yml_address,
             YamlField<participants::types::IpType>("localhost"),
             ADDRESS_DNS_TAG);
+
+        // Add port
+        add_field_to_yaml(
+            yml_address,
+            YamlField<participants::types::PortType>(participants::types::Address::default_port()),
+            ADDRESS_PORT_TAG);
 
         Yaml yml;
         yml["address"] = yml_address;

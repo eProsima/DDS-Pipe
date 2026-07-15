@@ -58,6 +58,12 @@ TEST(YamlGetEntityAddressTest, get_address_defaults)
             YamlField<participants::types::IpType>("::1"),
             ADDRESS_IP_TAG);
 
+        // Add port
+        add_field_to_yaml(
+            yml_address,
+            YamlField<participants::types::PortType>(participants::types::Address::default_port()),
+            ADDRESS_PORT_TAG);
+
         Yaml yml;
         yml["address"] = yml_address;
 
