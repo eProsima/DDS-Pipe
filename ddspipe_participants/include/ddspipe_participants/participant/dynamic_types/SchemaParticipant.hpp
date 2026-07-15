@@ -14,6 +14,10 @@
 
 #pragma once
 
+#include <map>
+#include <mutex>
+#include <string>
+
 #include <ddspipe_core/dynamic/DiscoveryDatabase.hpp>
 #include <ddspipe_core/efficiency/payload/PayloadPool.hpp>
 #include <ddspipe_core/interface/IParticipant.hpp>
@@ -124,6 +128,10 @@ protected:
 
     //! <Topics <Writer_guid, Partitions set>>
     std::map<std::string, std::map<std::string, std::string>> partition_names;
+
+    //! Protects concurrent access to \c partition_names, which is written from the discovery
+    //! thread (add/update/delete/clear_topic_partition) and read from other threads (topic_partitions).
+    mutable std::mutex partition_names_mutex_;
 };
 
 } /* namespace participants */
