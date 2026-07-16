@@ -116,6 +116,19 @@ void CommonWriter::on_writer_matched(
 {
     if (!come_from_this_participant_(info.remoteEndpointGuid))
     {
+        {
+            std::lock_guard<std::mutex> lock(matched_readers_mutex_);
+            if (info.status == fastdds::rtps::MatchingStatus::MATCHED_MATCHING)
+            {
+                matched_readers_.insert(info.remoteEndpointGuid);
+            }
+            else
+            {
+                matched_readers_.erase(info.remoteEndpointGuid);
+            }
+        }
+        matched_readers_cv_.notify_all();
+
         if (info.status == fastdds::rtps::MatchingStatus::MATCHED_MATCHING)
         {
             EPROSIMA_LOG_INFO(DDSPIPE_RTPS_COMMONWRITER_LISTENER,
@@ -129,6 +142,28 @@ void CommonWriter::on_writer_matched(
                               << info.remoteEndpointGuid);
         }
     }
+}
+
+bool CommonWriter::wait_reader_matched(
+        const core::types::GuidPrefix& reader_participant_guid_prefix,
+        const unsigned int timeout_ms) const noexcept
+{
+    std::unique_lock<std::mutex> lock(matched_readers_mutex_);
+
+    auto reader_from_participant_matched = [this, &reader_participant_guid_prefix]() -> bool
+            {
+                for (const auto& reader_guid : matched_readers_)
+                {
+                    if (reader_guid.guidPrefix == reader_participant_guid_prefix)
+                    {
+                        return true;
+                    }
+                }
+                return false;
+            };
+
+    return matched_readers_cv_.wait_for(
+        lock, std::chrono::milliseconds(timeout_ms), reader_from_participant_matched);
 }
 
 void CommonWriter::on_writer_change_received_by_all(

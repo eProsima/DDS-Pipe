@@ -15,6 +15,9 @@
 #pragma once
 
 #include <atomic>
+#include <condition_variable>
+#include <mutex>
+#include <set>
 
 #include <cpp_utils/pool/IPool.hpp>
 #include <cpp_utils/ReturnCode.hpp>
@@ -139,6 +142,16 @@ public:
     void on_offered_incompatible_qos(
             fastdds::rtps::RTPSWriter*,
             eprosima::fastdds::dds::PolicyMask qos) noexcept override;
+
+    /**
+     * @brief Wait (bounded) until a Reader belonging to \c reader_participant_guid_prefix is matched.
+     *
+     * @note Used by RPC bridges to avoid dropping VOLATILE replies on the writer-side discovery race.
+     */
+    DDSPIPE_PARTICIPANTS_DllAPI
+    bool wait_reader_matched(
+            const core::types::GuidPrefix& reader_participant_guid_prefix,
+            const unsigned int timeout_ms) const noexcept override;
 
     /////////////////////
     // STATIC ATTRIBUTES
@@ -313,6 +326,15 @@ protected:
 
     //! Pool Configuration to create the internal History.
     utils::PoolConfiguration pool_configuration_;
+
+    //! GUIDs of the Readers (external to this Participant) currently matched with this Writer
+    std::set<fastdds::rtps::GUID_t> matched_readers_;
+
+    //! Protects \c matched_readers_ and coordinates \c wait_reader_matched
+    mutable std::mutex matched_readers_mutex_;
+
+    //! Notified whenever \c matched_readers_ changes so \c wait_reader_matched can wake up
+    mutable std::condition_variable matched_readers_cv_;
 };
 
 } /* namespace rtps */

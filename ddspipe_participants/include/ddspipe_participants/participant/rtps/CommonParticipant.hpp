@@ -14,6 +14,10 @@
 
 #pragma once
 
+#include <map>
+#include <mutex>
+#include <string>
+
 #include <cpp_utils/memory/Heritable.hpp>
 
 #include <fastdds/rtps/attributes/RTPSParticipantAttributes.hpp>
@@ -321,6 +325,10 @@ protected:
 
     //! <Topics <Writer_guid, Partitions set>>
     std::map<std::string, std::map<std::string, std::string>> partition_names;
+
+    //! Protects concurrent access to \c partition_names, which is written from the RTPS discovery
+    //! thread (add/update/delete/clear_topic_partition) and read from other threads (topic_partitions).
+    mutable std::mutex partition_names_mutex_;
 
     // Filter partitions set
     std::set<std::string> partition_filter_set_;

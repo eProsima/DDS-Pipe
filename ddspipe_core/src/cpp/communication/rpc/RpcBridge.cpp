@@ -33,6 +33,10 @@ namespace core {
 
 using namespace eprosima::ddspipe::core::types;
 
+//! Maximum time (ms) to wait for the destination reply reader to be matched before writing a reply.
+//! Only reached during the discovery race window; the wait returns immediately once matched.
+static constexpr unsigned int REPLY_MATCH_MAX_WAIT_MS = 1000;
+
 RpcBridge::RpcBridge(
         const RpcTopic& topic,
         const std::shared_ptr<ParticipantsDatabase>& participants_database,
@@ -124,8 +128,9 @@ void RpcBridge::enable() noexcept
             catch (const utils::InitializationException& e)
             {
                 EPROSIMA_LOG_ERROR(DDSPIPE_RPCBRIDGE,
-                        "Error while creating endpoints in RpcBridge for service " << rpc_topic_ <<
-                        ". Error code:" << e.what() << ".");
+                        "Error while creating endpoints in RpcBridge for service " << rpc_topic_
+                                                                                   << ". Error code:" << e.what()
+                                                                                   << ".");
                 return;
             }
         }
@@ -238,8 +243,8 @@ void RpcBridge::data_available_(
     if (enabled_)
     {
         logDebug(
-            DDSPIPE_RPCBRIDGE, "RpcBridge " << *this <<
-                " has data ready to be sent in reader " << reader_guid << " .");
+            DDSPIPE_RPCBRIDGE, "RpcBridge " << *this
+                                            << " has data ready to be sent in reader " << reader_guid << " .");
 
         // Protected by internal RTPS Reader mutex, as called within \c onNewCacheChangeAdded callback
         // This method is also called from Reader's \c enable_ , so Reader's mutex must also be taken there beforehand
@@ -248,13 +253,14 @@ void RpcBridge::data_available_(
         {
             task.first = true;
             thread_pool_->emit(task.second);
-            logDebug(DDSPIPE_RPCBRIDGE, "RpcBridge " << *this <<
-                    " - " << reader_guid << " send callback to queue.");
+            logDebug(DDSPIPE_RPCBRIDGE, "RpcBridge " << *this
+                                                     << " - " << reader_guid << " send callback to queue.");
         }
         else
         {
-            logDebug(DDSPIPE_RPCBRIDGE, "RpcBridge " << *this <<
-                    " - " << reader_guid << " callback NOT sent (task already queued).");
+            logDebug(DDSPIPE_RPCBRIDGE, "RpcBridge " << *this
+                                                     << " - " << reader_guid
+                                                     << " callback NOT sent (task already queued).");
         }
     }
 }
@@ -265,8 +271,8 @@ void RpcBridge::transmit_(
     // Avoid being disabled while transmitting
     std::shared_lock<std::shared_timed_mutex> lock(on_transmission_mutex_);
 
-    logDebug(DDSPIPE_RPCBRIDGE, "RpcBridge " << *this <<
-            " transmitting for reader " << reader->guid() << " .");
+    logDebug(DDSPIPE_RPCBRIDGE, "RpcBridge " << *this
+                                             << " transmitting for reader " << reader->guid() << " .");
 
     while (true)
     {
@@ -313,8 +319,9 @@ void RpcBridge::transmit_(
         if (RpcTopic::is_request_topic(reader->topic()))
         {
             logDebug(DDSPIPE_RPCBRIDGE,
-                    "RpcBridge for service " << rpc_topic_ <<
-                    " transmitting request from remote endpoint " << rpc_data.source_guid << ".");
+                    "RpcBridge for service " << rpc_topic_
+                                             << " transmitting request from remote endpoint " << rpc_data.source_guid
+                                             << ".");
 
             SampleIdentity reply_related_sample_identity =
                     rpc_data.write_params.get_reference().sample_identity();
@@ -323,9 +330,10 @@ void RpcBridge::transmit_(
             if (reply_related_sample_identity == SampleIdentity::unknown())
             {
                 EPROSIMA_LOG_WARNING(DDSPIPE_RPCBRIDGE,
-                        "RpcBridge for service " << rpc_topic_ <<
-                        " received ill-formed request from remote endpoint " << rpc_data.source_guid <<
-                        ". Ignoring...");
+                        "RpcBridge for service " << rpc_topic_
+                                                 << " received ill-formed request from remote endpoint "
+                                                 << rpc_data.source_guid
+                                                 << ". Ignoring...");
             }
             else
             {
@@ -353,8 +361,8 @@ void RpcBridge::transmit_(
                     if (ret != utils::ReturnCode::RETCODE_OK)
                     {
                         EPROSIMA_LOG_WARNING(DDSPIPE_RPCBRIDGE, "Error writting request in RpcBridge for service "
-                                << rpc_topic_ << ". Error code " << ret <<
-                                ". Skipping data for this writer and continue.");
+                                << rpc_topic_ << ". Error code " << ret
+                                << ". Skipping data for this writer and continue.");
                         continue;
                     }
 
@@ -371,17 +379,18 @@ void RpcBridge::transmit_(
         else if (RpcTopic::is_reply_topic(reader->topic()))
         {
             logDebug(DDSPIPE_RPCBRIDGE,
-                    "RpcBridge for service " << rpc_topic_ <<
-                    " transmitting reply from remote endpoint " << rpc_data.source_guid << ".");
+                    "RpcBridge for service " << rpc_topic_
+                                             << " transmitting reply from remote endpoint " << rpc_data.source_guid
+                                             << ".");
 
             // A Server could be answering a different client in this same DDS Pipe or a remote client
             // Thus, it must be filtered so only replies to this client are processed.
             if (rpc_data.write_params.get_reference().sample_identity().writer_guid() != reader->guid())
             {
                 logDebug(DDSPIPE_RPCBRIDGE,
-                        "RpcBridge for service " << *this << " from reader " << reader->guid() <<
-                        " received response meant for other client: " <<
-                        rpc_data.write_params.get_reference().sample_identity().writer_guid());
+                        "RpcBridge for service " << *this << " from reader " << reader->guid()
+                                                 << " received response meant for other client: "
+                                                 << rpc_data.write_params.get_reference().sample_identity().writer_guid());
             }
             else
             {
@@ -404,6 +413,21 @@ void RpcBridge::transmit_(
                 {
                     rpc_data.write_params.set_level();
                     rpc_data.write_params.get_reference().related_sample_identity(registry_entry.second);
+
+                    // Reply topics use VOLATILE durability: a reply written before the destination
+                    // client's reply reader has been matched on this writer's side is silently
+                    // dropped. As ROS 2 service clients never retry a request, that would hang the
+                    // client forever. The client's own \c wait_for_service only guarantees the match
+                    // from the reader side, so wait (bounded) for the writer side to match as well
+                    // before writing, closing the discovery race.
+                    if (!reply_writers_[registry_entry.first]->wait_reader_matched(
+                                registry_entry.second.writer_guid().guidPrefix, REPLY_MATCH_MAX_WAIT_MS))
+                    {
+                        EPROSIMA_LOG_WARNING(DDSPIPE_RPCBRIDGE,
+                                "RpcBridge for service " << rpc_topic_ << " writing reply towards participant "
+                                                         << registry_entry.second.writer_guid().guidPrefix
+                                                         << " whose reply reader is not matched yet; reply may be lost.");
+                    }
 
                     ret = reply_writers_[registry_entry.first]->write(*data);
 

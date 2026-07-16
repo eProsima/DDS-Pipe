@@ -19,6 +19,7 @@
 #include <cpp_utils/ReturnCode.hpp>
 
 #include <ddspipe_core/interface/IRoutingData.hpp>
+#include <ddspipe_core/types/dds/GuidPrefix.hpp>
 
 namespace eprosima {
 namespace ddspipe {
@@ -94,6 +95,34 @@ public:
     DDSPIPE_CORE_DllAPI
     virtual void update_topic_partitions(
             const std::map<std::string, std::string>& partition_name) = 0;
+
+    /**
+     * @brief Wait until this Writer has matched a Reader belonging to the participant identified by
+     * \c reader_participant_guid_prefix, or until \c timeout_ms milliseconds have elapsed.
+     *
+     * Needed for RPC reply routing: reply topics use VOLATILE durability, so a reply written before
+     * the destination client's reply reader is matched on the writer side is silently dropped. As
+     * ROS 2 service clients never retry, that hangs the client forever. Gating the reply write on
+     * this method closes the discovery race (a client's \c wait_for_service only proves the match
+     * from the reader side).
+     *
+     * @param reader_participant_guid_prefix  GuidPrefix of the participant whose reader must match.
+     * @param timeout_ms                      Maximum time to wait, in milliseconds.
+     *
+     * @return \c true if a matching reader is present within the timeout, \c false otherwise.
+     *
+     * @note Default implementation returns \c true: writers that do not track matching are assumed
+     *       ready and never block the caller.
+     */
+    virtual bool wait_reader_matched(
+            const types::GuidPrefix& reader_participant_guid_prefix,
+            const unsigned int timeout_ms) const noexcept
+    {
+        static_cast<void>(reader_participant_guid_prefix);
+        static_cast<void>(timeout_ms);
+        return true;
+    }
+
 };
 
 } /* namespace core */
