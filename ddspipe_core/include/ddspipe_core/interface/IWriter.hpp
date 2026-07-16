@@ -122,6 +122,7 @@ public:
         static_cast<void>(timeout_ms);
         return true;
     }
+
 };
 
 } /* namespace core */
