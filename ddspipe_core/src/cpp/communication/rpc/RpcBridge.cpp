@@ -33,6 +33,10 @@ namespace core {
 
 using namespace eprosima::ddspipe::core::types;
 
+//! Maximum time (ms) to wait for the destination reply reader to be matched before writing a reply.
+//! Only reached during the discovery race window; the wait returns immediately once matched.
+static constexpr unsigned int REPLY_MATCH_MAX_WAIT_MS = 1000;
+
 RpcBridge::RpcBridge(
         const RpcTopic& topic,
         const std::shared_ptr<ParticipantsDatabase>& participants_database,
@@ -404,6 +408,21 @@ void RpcBridge::transmit_(
                 {
                     rpc_data.write_params.set_level();
                     rpc_data.write_params.get_reference().related_sample_identity(registry_entry.second);
+
+                    // Reply topics use VOLATILE durability: a reply written before the destination
+                    // client's reply reader has been matched on this writer's side is silently
+                    // dropped. As ROS 2 service clients never retry a request, that would hang the
+                    // client forever. The client's own \c wait_for_service only guarantees the match
+                    // from the reader side, so wait (bounded) for the writer side to match as well
+                    // before writing, closing the discovery race.
+                    if (!reply_writers_[registry_entry.first]->wait_reader_matched(
+                                registry_entry.second.writer_guid().guidPrefix, REPLY_MATCH_MAX_WAIT_MS))
+                    {
+                        EPROSIMA_LOG_WARNING(DDSPIPE_RPCBRIDGE,
+                                "RpcBridge for service " << rpc_topic_ << " writing reply towards participant "
+                                << registry_entry.second.writer_guid().guidPrefix <<
+                                " whose reply reader is not matched yet; reply may be lost.");
+                    }
 
                     ret = reply_writers_[registry_entry.first]->write(*data);
 
