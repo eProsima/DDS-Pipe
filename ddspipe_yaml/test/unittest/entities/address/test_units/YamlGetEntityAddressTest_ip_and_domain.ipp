@@ -56,6 +56,12 @@ TEST(YamlGetEntityAddressTest, ip_and_domain)
         ddspipe::yaml::testing::YamlField<participants::types::IpType>(ip_value),
         ADDRESS_IP_TAG);
 
+    // Add port
+    ddspipe::yaml::testing::add_field_to_yaml(
+        yml_address,
+        ddspipe::yaml::testing::YamlField<participants::types::PortType>(participants::types::Address::default_port()),
+        ADDRESS_PORT_TAG);
+
     Yaml yml;
     yml[ADDRESS_TRANSPORT_TAG] = yml_address;
 
