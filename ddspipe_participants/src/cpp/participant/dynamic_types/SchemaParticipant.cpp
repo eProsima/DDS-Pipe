@@ -169,7 +169,13 @@ bool SchemaParticipant::delete_topic_partition(
     }
 
     // delete [writer, partition] in the topic
-    partition_names.erase(writer_guid);
+    partition_names[topic_name].erase(writer_guid);
+
+    // remove the topic entry entirely once it has no writers left
+    if (partition_names[topic_name].empty())
+    {
+        partition_names.erase(topic_name);
+    }
 
     return true;
 }
