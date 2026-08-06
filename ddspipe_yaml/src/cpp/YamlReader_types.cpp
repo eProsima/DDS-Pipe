@@ -272,7 +272,8 @@ Address YamlReader::get<Address>(
     }
     else
     {
-        port = Address::default_port();
+        throw utils::ConfigurationException(utils::Formatter()
+                      << "Address requires to specify <" << ADDRESS_PORT_TAG << ">.");
     }
 
     // WARNING: This adds logic to the parse of the entity,
