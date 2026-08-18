@@ -184,7 +184,6 @@ constexpr const char* XML_TAG("xml"); //! Tag to read xml configuration
 constexpr const char* XML_RAW_TAG("raw"); //! Xml RAW as string
 constexpr const char* XML_FILES_TAG("files"); //! XML files
 constexpr const char* XML_PARTICIPANT_PROFILE_TAG("profile"); //! Xml profile to participant
-constexpr const char* ENDPOINT_QOS_MODE_TAG("endpoint-qos-mode"); //! YAML QoS override of XML profile QoS
 constexpr const char* ENDPOINT_PROFILE_NAME_TAG("endpoint-profile-name"); //! XML profile name to use for endpoint QoS lookup
 
 // Old versions tags
