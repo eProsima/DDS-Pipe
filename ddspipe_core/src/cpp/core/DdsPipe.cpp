@@ -281,6 +281,32 @@ void DdsPipe::discovered_endpoint_nts_(
 {
     logDebug(DDSPIPE, "Endpoint discovered in DDS Pipe core: " << endpoint << ".");
 
+    // Merge this endpoint's partition into an already existing bridge for its topic, and refresh the
+    // bridge so its writers see the updated guid->partition map and its reader the partition QoS
+    const auto refresh_bridge_partitions = [this, &endpoint]()
+            {
+                const auto bridge_it = bridges_.find(utils::Heritable<DdsTopic>::make_heritable(endpoint.topic));
+
+                if (bridge_it == bridges_.end())
+                {
+                    return;
+                }
+
+                std::ostringstream guid_ss;
+                guid_ss << endpoint.guid;
+
+                const auto part_it = endpoint.specific_partitions.find(guid_ss.str());
+
+                if (part_it != endpoint.specific_partitions.end())
+                {
+                    bridge_it->second->add_partition_to_topic(guid_ss.str(), part_it->second);
+                }
+
+                const auto& partitions_to_apply =
+                        filter_partition_.empty() ? reader_partitions_ : filter_partition_;
+                bridge_it->second->update_partitions(partitions_to_apply);
+            };
+
     if (RpcTopic::is_service_topic(endpoint.topic))
     {
         if (is_endpoint_kind_relevant_(endpoint) && endpoint.is_server_endpoint())
@@ -296,6 +322,12 @@ void DdsPipe::discovered_endpoint_nts_(
         topic_with_partitions.partition_name = endpoint.specific_partitions;
 
         discovered_topic_nts_(utils::Heritable<DdsTopic>::make_heritable(topic_with_partitions));
+
+        // NOTE: discovered_topic_nts_ only creates a bridge when the topic has none. A relevant
+        // endpoint on a topic that already has one -- which is what a replacement writer looks like,
+        // since deleting the previous one leaves it the only active endpoint -- would otherwise never
+        // have its partition merged, and every sample it sends is then discarded downstream.
+        refresh_bridge_partitions();
     }
     else
     {
