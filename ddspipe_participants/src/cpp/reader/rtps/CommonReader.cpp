@@ -186,9 +186,19 @@ core::types::DdsTopic CommonReader::topic() const noexcept
 void CommonReader::update_partitions(
         const std::set<std::string>& partitions_set)
 {
+    const fastdds::dds::PartitionQosPolicy previous_partitions = reader_qos_.m_partition;
+
     apply_reader_partitions_(reader_qos_.m_partition, partitions_set);
-    // Update the reader with the new partitions
-    rtps_participant_->update_reader(rtps_reader_, reader_qos_);
+
+    // Only announce the reader when its partitions actually changed.
+    //
+    // update_reader() re-publishes DATA(r) unconditionally, and every remote participant reports
+    // an already known reader as CHANGED_QOS_READER without checking whether anything differs
+    if (!(previous_partitions == reader_qos_.m_partition))
+    {
+        // Update the reader with the new partitions
+        rtps_participant_->update_reader(rtps_reader_, reader_qos_);
+    }
 }
 
 void CommonReader::update_content_topic_filter(
