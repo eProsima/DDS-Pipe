@@ -125,6 +125,16 @@ public:
             std::string partition);
 
     /**
+     * Push the topic's guid -> partition map to this bridge's writers.
+     *
+     * Unlike \c update_partitions, this does not touch the reader. It exists for the discovery
+     * path, where the map has to reach the writers but disabling and re-enabling the reader would
+     * generate further discovery events and re-enter that same path.
+     */
+    DDSPIPE_CORE_DllAPI
+    void refresh_writers_partitions();
+
+    /**
      * Function that updates the partition set of all bridges.
      *
      * @param partitions_set: Set of partitions

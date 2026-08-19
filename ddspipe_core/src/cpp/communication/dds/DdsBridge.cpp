@@ -283,6 +283,16 @@ void DdsBridge::add_writers_to_tracks_nts_(
     }
 }
 
+void DdsBridge::refresh_writers_partitions()
+{
+    std::lock_guard<std::mutex> lock(mutex_);
+
+    for (const auto& track: tracks_)
+    {
+        track.second->update_writers_topic_partitions(topic_->partition_name);
+    }
+}
+
 void DdsBridge::update_partitions(
         const std::set<std::string>& partitions_set)
 {

@@ -281,9 +281,9 @@ void DdsPipe::discovered_endpoint_nts_(
 {
     logDebug(DDSPIPE, "Endpoint discovered in DDS Pipe core: " << endpoint << ".");
 
-    // Merge this endpoint's partition into an already existing bridge for its topic, and refresh the
-    // bridge so its writers see the updated guid->partition map and its reader the partition QoS
-    const auto refresh_bridge_partitions = [this, &endpoint]()
+    // Merge this endpoint's partition into an already existing bridge for its topic, and push the
+    // updated guid -> partition map to that bridge's writers.
+    const auto merge_endpoint_partition = [this, &endpoint]()
             {
                 const auto bridge_it = bridges_.find(utils::Heritable<DdsTopic>::make_heritable(endpoint.topic));
 
@@ -302,9 +302,7 @@ void DdsPipe::discovered_endpoint_nts_(
                     bridge_it->second->add_partition_to_topic(guid_ss.str(), part_it->second);
                 }
 
-                const auto& partitions_to_apply =
-                        filter_partition_.empty() ? reader_partitions_ : filter_partition_;
-                bridge_it->second->update_partitions(partitions_to_apply);
+                bridge_it->second->refresh_writers_partitions();
             };
 
     if (RpcTopic::is_service_topic(endpoint.topic))
@@ -327,15 +325,13 @@ void DdsPipe::discovered_endpoint_nts_(
         // endpoint on a topic that already has one -- which is what a replacement writer looks like,
         // since deleting the previous one leaves it the only active endpoint -- would otherwise never
         // have its partition merged, and every sample it sends is then discarded downstream.
-        refresh_bridge_partitions();
+        merge_endpoint_partition();
     }
     else
     {
-        // Another endpoint from an already tracked topic/participant was discovered
+        // Another endpoint from an already tracked topic/participant was discovered.
         // Refresh bridge partition metadata and reader partition QoS
-
         const auto bridge_it = bridges_.find(utils::Heritable<DdsTopic>::make_heritable(endpoint.topic));
-        // Add the specific partition of the endpoint in the bridge topic
         if (bridge_it != bridges_.end())
         {
             std::ostringstream guid_ss;
