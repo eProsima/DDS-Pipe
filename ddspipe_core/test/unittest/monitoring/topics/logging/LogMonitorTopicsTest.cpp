@@ -77,12 +77,29 @@ public:
 
     void TearDown() override
     {
-        utils::Log::ClearConsumers();
-
-        monitor_.reset(nullptr);
+        stop_monitoring_();
     }
 
 protected:
+
+    /**
+     * @brief Stop everything that writes to stdout, and drain what it already produced.
+     *
+     * Two threads write to stdout while these tests run: the monitor's periodic producer, and the
+     * Fast DDS logging thread that hands entries to the registered StdLogConsumer. gtest's stdout
+     * capture is not thread safe it redirects the descriptor and, in GetCapturedStdout(), restores
+     * it and deletes the temporary file.
+     *
+     * Destroying the monitor stops the periodic producer, Flush() drains the entries already queued
+     * into the capture, and clearing the consumers stops the logging thread from writing anything
+     * further. Calling this before GetCapturedStdout() leaves no other writer active.
+     */
+    void stop_monitoring_()
+    {
+        monitor_.reset(nullptr);
+        utils::Log::Flush();
+        utils::Log::ClearConsumers();
+    }
 
     bool contains_(
             const std::string& str,
@@ -112,7 +129,9 @@ TEST_F(LogMonitorTopicsTest, msgs_received)
 
     // Wait for the monitor to print the message
     std::this_thread::sleep_for(std::chrono::milliseconds(test::monitor::PERIOD_MS*3));
-    utils::Log::Flush();
+
+    // Stop the monitor and the logging before the captured stdout is read back
+    stop_monitoring_();
 
     ASSERT_TRUE(contains_(testing::internal::GetCapturedStdout(),
             "Monitoring Topics: [Topic Name: MonitoredTopic, Type Name: MonitoredTopicType, Type Discovered: "
@@ -135,7 +154,9 @@ TEST_F(LogMonitorTopicsTest, msgs_lost)
 
     // Wait for the monitor to print the message
     std::this_thread::sleep_for(std::chrono::milliseconds(test::monitor::PERIOD_MS*3));
-    utils::Log::Flush();
+
+    // Stop the monitor and the logging before the captured stdout is read back
+    stop_monitoring_();
 
     ASSERT_TRUE(contains_(testing::internal::GetCapturedStdout(),
             "Monitoring Topics: [Topic Name: MonitoredTopic, Type Name: MonitoredTopicType, Type Discovered: "
@@ -161,7 +182,9 @@ TEST_F(LogMonitorTopicsTest, type_discovered)
 
     // Wait for the monitor to print the message
     std::this_thread::sleep_for(std::chrono::milliseconds(test::monitor::PERIOD_MS*3));
-    utils::Log::Flush();
+
+    // Stop the monitor and the logging before the captured stdout is read back
+    stop_monitoring_();
 
     ASSERT_TRUE(contains_(testing::internal::GetCapturedStdout(),
             "Monitoring Topics: [Topic Name: MonitoredTopic, Type Name: MonitoredTopicType, Type Discovered: "
@@ -184,7 +207,9 @@ TEST_F(LogMonitorTopicsTest, type_mismatch)
 
     // Wait for the monitor to print the message
     std::this_thread::sleep_for(std::chrono::milliseconds(test::monitor::PERIOD_MS*3));
-    utils::Log::Flush();
+
+    // Stop the monitor and the logging before the captured stdout is read back
+    stop_monitoring_();
 
     ASSERT_TRUE(contains_(testing::internal::GetCapturedStdout(),
             "Monitoring Topics: [Topic Name: MonitoredTopic, Type Name: MonitoredTopicType, Type Discovered: "
@@ -206,7 +231,9 @@ TEST_F(LogMonitorTopicsTest, qos_mismatch)
 
     // Wait for the monitor to print the message
     std::this_thread::sleep_for(std::chrono::milliseconds(test::monitor::PERIOD_MS*3));
-    utils::Log::Flush();
+
+    // Stop the monitor and the logging before the captured stdout is read back
+    stop_monitoring_();
 
     ASSERT_TRUE(contains_(testing::internal::GetCapturedStdout(),
             "Monitoring Topics: [Topic Name: MonitoredTopic, Type Name: MonitoredTopicType, Type Discovered: "
