@@ -364,13 +364,21 @@ std::ostream& operator <<(
     return os;
 }
 
-void DdsBridge::add_partition_to_topic(
+bool DdsBridge::add_partition_to_topic(
         std::string guid,
         std::string partition)
 {
     std::lock_guard<std::mutex> lock(mutex_);
 
+    const auto it = topic_->partition_name.find(guid);
+    if (it != topic_->partition_name.end() && it->second == partition)
+    {
+        // Already mapped to this partition, nothing to propagate
+        return false;
+    }
+
     topic_->partition_name[guid] = partition;
+    return true;
 }
 
 } /* namespace core */

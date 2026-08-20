@@ -15,6 +15,8 @@
 #include <cpp_utils/testing/gtest_aux.hpp>
 #include <gtest/gtest.h>
 
+#include <sstream>
+
 #include <cpp_utils/time/time_utils.hpp>
 
 #include <ddspipe_core/configuration/DdsPipeConfiguration.hpp>
@@ -285,6 +287,82 @@ TEST(DdsPipeCommunicationMockTest, mock_communication_topic_discovery)
         auto received_data = writer_2->wait_data();
         ASSERT_EQ(received_data, test::new_data(part_1_id, i));
     }
+}
+
+/**
+ * Test that rediscovering an endpoint with the same partition mapping does not
+ * update the bridge reader partitions again.
+ *
+ * The first endpoint creates the bridge. A second endpoint adds a new mapping
+ * and must update the bridge once. Re-announcing that second endpoint with the
+ * same mapping must not trigger another update.
+ */
+TEST(DdsPipeCommunicationMockTest, mock_communication_repeated_endpoint_discovery)
+{
+    core::types::DdsTopic topic_1;
+    topic_1.m_topic_name = "topic1";
+    topic_1.type_name = "type1";
+    topic_1.m_internal_type_discriminator = participants::testing::INTERNAL_TOPIC_TYPE_MOCK_TEST;
+
+    core::types::ParticipantId part_1_id("Participant_1");
+    auto part_1 = std::make_shared<participants::testing::MockParticipant>(part_1_id);
+
+    core::types::ParticipantId part_2_id("Participant_2");
+    auto part_2 = std::make_shared<participants::testing::MockParticipant>(part_2_id);
+
+    auto part_db = std::make_shared<core::ParticipantsDatabase>();
+    part_db->add_participant(part_1_id, part_1);
+    part_db->add_participant(part_2_id, part_2);
+
+    auto discovery_database = std::make_shared<core::DiscoveryDatabase>();
+
+    core::DdsPipeConfiguration ddspipe_configuration;
+    ddspipe_configuration.init_enabled = true;
+
+    core::DdsPipe ddspipe(
+        ddspipe_configuration,
+        discovery_database,
+        std::make_shared<core::FastPayloadPool>(),
+        part_db,
+        std::make_shared<eprosima::utils::SlotThreadPool>(test::N_THREADS)
+        );
+
+    core::types::Endpoint first_endpoint;
+    first_endpoint.kind = core::types::EndpointKind::reader;
+    first_endpoint.guid = core::testing::random_guid(1);
+    first_endpoint.topic = topic_1;
+    first_endpoint.discoverer_participant_id = core::types::ParticipantId("RemoteParticipant");
+
+    std::ostringstream first_guid;
+    first_guid << first_endpoint.guid;
+    first_endpoint.specific_partitions[first_guid.str()] = "partition";
+
+    discovery_database->add_endpoint(first_endpoint);
+    utils::sleep_for(100);
+
+    auto reader_1 = part_1->get_reader(topic_1);
+    ASSERT_NE(reader_1, nullptr);
+    ASSERT_EQ(reader_1->n_partition_updates(), 0u);
+
+    core::types::Endpoint second_endpoint = first_endpoint;
+    second_endpoint.guid = core::testing::random_guid(2);
+
+    std::ostringstream second_guid;
+    second_guid << second_endpoint.guid;
+    second_endpoint.specific_partitions.clear();
+    second_endpoint.specific_partitions[second_guid.str()] = "partition";
+
+    discovery_database->add_endpoint(second_endpoint);
+    utils::sleep_for(100);
+
+    // The new endpoint mapping must be propagated once
+    ASSERT_EQ(reader_1->n_partition_updates(), 1u);
+
+    // Re-announcing the same endpoint mapping must not re-apply the reader QoS
+    discovery_database->update_endpoint(second_endpoint);
+    utils::sleep_for(100);
+
+    EXPECT_EQ(reader_1->n_partition_updates(), 1u);
 }
 
 /**

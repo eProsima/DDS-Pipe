@@ -14,6 +14,7 @@
 
 #pragma once
 
+#include <atomic>
 #include <mutex>
 #include <queue>
 
@@ -113,6 +114,13 @@ public:
             MockRoutingData&& data);
 
     DDSPIPE_PARTICIPANTS_DllAPI
+    std::size_t n_partition_updates() const noexcept;
+
+    DDSPIPE_PARTICIPANTS_DllAPI
+    void update_partitions(
+            const std::set<std::string>& partitions_set) override;
+
+    DDSPIPE_PARTICIPANTS_DllAPI
     utils::ReturnCode take_nts_(
             std::unique_ptr<core::IRoutingData>& data) noexcept override;
 
@@ -121,6 +129,7 @@ protected:
     virtual void enable_nts_() noexcept override;
 
     utils::Atomicable<std::queue<MockRoutingData>> data_queue_;
+    std::atomic<std::size_t> partition_updates_{0};
 
 };
 

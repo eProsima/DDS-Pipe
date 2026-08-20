@@ -22,6 +22,7 @@ set(TEST_LIST
         mock_communication_trivial
         mock_communication_before_enabling
         mock_communication_topic_discovery
+        mock_communication_repeated_endpoint_discovery
         mock_communication_topic_allow
         mock_communication_multiple_participant_topics
     )
