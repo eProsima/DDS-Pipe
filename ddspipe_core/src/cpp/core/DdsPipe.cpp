@@ -309,19 +309,30 @@ void DdsPipe::discovered_endpoint_nts_(
             std::ostringstream guid_ss;
             guid_ss << endpoint.guid;
 
+            // Only refresh when this endpoint change the partition mapping
+            //
+            // update_partitions() re-applies the reader QoS, which makes Fast DDS re-publish
+            // DATA(r). Every remote reports that as a reader QoS change, and receiving such a
+            // report is exactly what brings us back into this branch
+            bool partitions_changed = false;
+
             const auto part_it = endpoint.specific_partitions.find(guid_ss.str());
             if (part_it != endpoint.specific_partitions.end())
             {
-                bridge_it->second->add_partition_to_topic(guid_ss.str(), part_it->second);
+                partitions_changed =
+                        bridge_it->second->add_partition_to_topic(guid_ss.str(), part_it->second);
             }
 
-            // Refresh this bridge so writers receive the updated guid->partition map
-            // Also refresh reader partitions using
-            // filter (if set), otherwise
-            // the current reader partition configuration
-            const auto& partitions_to_apply =
-                    filter_partition_.empty() ? reader_partitions_ : filter_partition_;
-            bridge_it->second->update_partitions(partitions_to_apply);
+            if (partitions_changed)
+            {
+                // Refresh this bridge so writers receive the updated guid->partition map
+                // Also refresh reader partitions using
+                // filter (if set), otherwise
+                // the current reader partition configuration
+                const auto& partitions_to_apply =
+                        filter_partition_.empty() ? reader_partitions_ : filter_partition_;
+                bridge_it->second->update_partitions(partitions_to_apply);
+            }
         }
     }
 }

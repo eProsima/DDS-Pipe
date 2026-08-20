@@ -120,7 +120,7 @@ public:
      * @param partition: Partition that is going to be added.
      */
     DDSPIPE_CORE_DllAPI
-    void add_partition_to_topic(
+    bool add_partition_to_topic(
             std::string guid,
             std::string partition);
 
