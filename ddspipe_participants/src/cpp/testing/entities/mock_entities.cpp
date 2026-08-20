@@ -135,6 +135,17 @@ void MockReader::simulate_data_reception(
     on_data_available_();
 }
 
+std::size_t MockReader::n_partition_updates() const noexcept
+{
+    return partition_updates_.load();
+}
+
+void MockReader::update_partitions(
+        const std::set<std::string>& /* partitions_set */)
+{
+    ++partition_updates_;
+}
+
 utils::ReturnCode MockReader::take_nts_(
         std::unique_ptr<core::IRoutingData>& data) noexcept
 {
