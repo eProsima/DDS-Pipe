@@ -161,10 +161,15 @@ public:
     DDSPIPE_PARTICIPANTS_DllAPI
     std::size_t n_to_send_data();
 
+    DDSPIPE_PARTICIPANTS_DllAPI
+    std::map<std::string, std::string> topic_partitions() const;
+
 protected:
 
     utils::event::CounterWaitHandler waiter_{0, 0, true};
     utils::Atomicable<std::queue<MockRoutingData>> data_queue_;
+    mutable std::mutex topic_partitions_mutex_;
+    std::map<std::string, std::string> topic_partitions_;
 };
 
 class MockTopic : public core::types::DistributedTopic

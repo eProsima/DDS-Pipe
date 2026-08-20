@@ -21,6 +21,7 @@ file(GLOB_RECURSE TEST_SOURCES
 
 set(TEST_LIST
         simple_participant_easy_mode_configuration
+        common_writer_reader_matching
     )
 
 set(TEST_EXTRA_LIBRARIES

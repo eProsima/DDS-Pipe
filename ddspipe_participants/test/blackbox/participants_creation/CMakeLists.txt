@@ -21,6 +21,7 @@ set(TEST_SOURCES
 set(TEST_LIST
         default_configuration
         creation_trivial
+        blank_participant_partition_lifecycle
         ddspipe_all_creation_builtin_topic
         writer_topic_profile_lookup
         reader_topic_profile_lookup

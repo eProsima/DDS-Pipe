@@ -204,7 +204,14 @@ void MockWriter::update_partitions(
 void MockWriter::update_topic_partitions(
         const std::map<std::string, std::string>& partition_name)
 {
-    // Do nothing
+    std::lock_guard<std::mutex> lock(topic_partitions_mutex_);
+    topic_partitions_ = partition_name;
+}
+
+std::map<std::string, std::string> MockWriter::topic_partitions() const
+{
+    std::lock_guard<std::mutex> lock(topic_partitions_mutex_);
+    return topic_partitions_;
 }
 
 MockRoutingData MockWriter::wait_data()

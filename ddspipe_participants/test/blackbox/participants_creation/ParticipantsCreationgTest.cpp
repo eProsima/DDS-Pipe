@@ -165,6 +165,30 @@ TEST(ParticipantsCreationgTest, creation_trivial)
 }
 
 /**
+ * Test the lifecycle of the per-topic writer partition map.
+ */
+TEST(ParticipantsCreationgTest, blank_participant_partition_lifecycle)
+{
+    participants::BlankParticipant participant(core::types::ParticipantId("partition_participant"));
+
+    ASSERT_TRUE(participant.add_topic_partition("topic", "writer_1", "partition_1"));
+    ASSERT_FALSE(participant.add_topic_partition("topic", "writer_1", "partition_1"));
+    ASSERT_TRUE(participant.add_topic_partition("topic", "writer_2", "partition_2"));
+
+    ASSERT_TRUE(participant.update_topic_partition("topic", "writer_1", "updated_partition"));
+    ASSERT_FALSE(participant.update_topic_partition("topic", "missing_writer", "partition"));
+
+    ASSERT_TRUE(participant.delete_topic_partition("topic", "writer_1", "updated_partition"));
+    auto partitions = participant.topic_partitions();
+    ASSERT_EQ(partitions.size(), 1u);
+    ASSERT_EQ(partitions.at("topic").at("writer_2"), "partition_2");
+
+    ASSERT_TRUE(participant.delete_topic_partition("topic", "writer_2", "partition_2"));
+    ASSERT_TRUE(participant.topic_partitions().empty());
+    ASSERT_FALSE(participant.delete_topic_partition("topic", "writer_2", "partition_2"));
+}
+
+/**
  * Test to create a participant of each kind and add them to a DDS Pipe that uses a builtin topic.
  * This will force every participant to create an endpoint.
  * This checks the endpoint creation does not fail.
