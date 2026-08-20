@@ -476,8 +476,19 @@ void CommonReader::update_partitions(
         const std::set<std::string>& partitions_set)
 {
     fastdds::dds::SubscriberQos sub_qos = dds_subscriber_->get_qos();
+    const fastdds::dds::PartitionQosPolicy previous_partitions = sub_qos.partition();
+
     apply_reader_partitions_(sub_qos.partition(), partitions_set);
-    dds_subscriber_->set_qos(sub_qos);
+
+    // Only update the subscriber when its partitions actually changed.
+    //
+    // update_reader() re-publishes DATA(r) unconditionally, and every remote participant reports
+    // an already known reader as CHANGED_QOS_READER without checking whether anything differs
+    if (!(previous_partitions == sub_qos.partition()))
+    {
+        // Update the reader with the new partitions
+        dds_subscriber_->set_qos(sub_qos);
+    }
 }
 
 void CommonReader::update_content_topic_filter(
