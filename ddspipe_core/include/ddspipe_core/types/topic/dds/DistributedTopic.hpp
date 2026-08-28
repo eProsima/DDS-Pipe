@@ -36,7 +36,18 @@ namespace types {
 struct
 DistributedTopic : public Topic
 {
-    // Extend nothing
+    /////////////////////////
+    // METHODS
+    /////////////////////////
+
+    //! Record QoS coming exclusively from user configuration. No-op unless overridden by a subclass.
+    DDSPIPE_CORE_DllAPI
+    virtual void set_user_configured_qos(
+            const TopicQoS& qos,
+            const utils::FuzzyLevelValues& fuzzy_level) noexcept
+    {
+    }
+
 };
 
 } /* namespace types */

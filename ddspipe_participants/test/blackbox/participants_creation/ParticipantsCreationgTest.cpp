@@ -336,7 +336,7 @@ TEST(ParticipantsCreationgTest, writer_topic_profile_lookup)
         ASSERT_NE(nullptr, dds_topic);
 
         test::TestableWriter writer(part_id, topic, payload_pool, dds_participant, dds_topic,
-                false /* repeater */, true /* yaml_qos_override */, true /* xml_lookup_enabled */);
+                false /* repeater */, true /* xml_lookup_enabled */);
         writer.init({});
 
         fastdds::dds::DataWriterQos qos;
@@ -354,7 +354,7 @@ TEST(ParticipantsCreationgTest, writer_topic_profile_lookup)
         ASSERT_NE(nullptr, dds_topic);
 
         test::TestableWriter writer(part_id, topic, payload_pool, dds_participant, dds_topic,
-                false /* repeater */, true /* yaml_qos_override */, true /* xml_lookup_enabled */);
+                false /* repeater */, true /* xml_lookup_enabled */);
         writer.init({});
 
         fastdds::dds::DataWriterQos qos;
@@ -424,7 +424,7 @@ TEST(ParticipantsCreationgTest, reader_topic_profile_lookup)
         ASSERT_NE(nullptr, dds_topic);
 
         test::TestableReader reader(part_id, topic, payload_pool, dds_participant, dds_topic,
-                true /* yaml_qos_override */, true /* xml_lookup_enabled */);
+                true /* xml_lookup_enabled */);
         reader.init({}, "");
 
         fastdds::dds::DataReaderQos qos;
@@ -442,7 +442,7 @@ TEST(ParticipantsCreationgTest, reader_topic_profile_lookup)
         ASSERT_NE(nullptr, dds_topic);
 
         test::TestableReader reader(part_id, topic, payload_pool, dds_participant, dds_topic,
-                true /* yaml_qos_override */, true /* xml_lookup_enabled */);
+                true /* xml_lookup_enabled */);
         reader.init({}, "");
 
         fastdds::dds::DataReaderQos qos;
@@ -455,11 +455,7 @@ TEST(ParticipantsCreationgTest, reader_topic_profile_lookup)
 }
 
 /**
- * Test that endpoint_qos_mode controls whether YAML QoS overrides a matching XML profile for writers.
- *
- * CASES:
- * - XML_STANDALONE, profile exists -> QoS comes from XML profile
- * - XML_OVERRIDABLE, profile exists -> QoS comes from YAML
+ * Test that an explicitly user-configured (YAML) field overrides a matching XML profile for writers.
  */
 TEST(ParticipantsCreationgTest, writer_xml_override)
 {
@@ -513,53 +509,26 @@ TEST(ParticipantsCreationgTest, writer_xml_override)
     auto dds_topic = register_type_and_topic(topic_name, type_name);
     ASSERT_NE(nullptr, dds_topic);
 
-    // Case 1: XML_STANDALONE
-    {
-        core::types::DdsTopic topic;
-        topic.m_topic_name = topic_name;
-        topic.type_name = type_name;
-        topic.topic_qos.reliability_qos = core::types::ReliabilityKind::RELIABLE;
+    core::types::DdsTopic topic;
+    topic.m_topic_name = topic_name;
+    topic.type_name = type_name;
+    topic.topic_qos.reliability_qos = core::types::ReliabilityKind::RELIABLE;
+    topic.user_configured_qos.reliability_qos = core::types::ReliabilityKind::RELIABLE;
 
-        test::TestableWriter writer(part_id, topic, payload_pool, dds_participant, dds_topic,
-                false /* repeater */, false /* yaml_qos_override = XML_STANDALONE */,
-                true /* xml_lookup_enabled */);
-        writer.init({});
+    test::TestableWriter writer(part_id, topic, payload_pool, dds_participant, dds_topic,
+            false /* repeater */, true /* xml_lookup_enabled */);
+    writer.init({});
 
-        fastdds::dds::DataWriterQos qos;
-        writer.get_dds_writer()->get_qos(qos);
+    fastdds::dds::DataWriterQos qos;
+    writer.get_dds_writer()->get_qos(qos);
 
-        EXPECT_EQ(fastdds::rtps::DYNAMIC_RESERVE_MEMORY_MODE, qos.endpoint().history_memory_policy);
-        EXPECT_EQ(fastdds::dds::BEST_EFFORT_RELIABILITY_QOS, qos.reliability().kind);
-    }
-
-    // Case 2: XML_OVERRIDABLE
-    {
-        core::types::DdsTopic topic;
-        topic.m_topic_name = topic_name;
-        topic.type_name = type_name;
-        topic.topic_qos.reliability_qos = core::types::ReliabilityKind::RELIABLE;
-        topic.user_configured_qos.reliability_qos = core::types::ReliabilityKind::RELIABLE;
-
-        test::TestableWriter writer(part_id, topic, payload_pool, dds_participant, dds_topic,
-                false /* repeater */, true /* yaml_qos_override = XML_OVERRIDABLE */,
-                true /* xml_lookup_enabled */);
-        writer.init({});
-
-        fastdds::dds::DataWriterQos qos;
-        writer.get_dds_writer()->get_qos(qos);
-
-        EXPECT_EQ(fastdds::dds::RELIABLE_RELIABILITY_QOS, qos.reliability().kind);
-    }
+    EXPECT_EQ(fastdds::dds::RELIABLE_RELIABILITY_QOS, qos.reliability().kind);
 
     fastdds::dds::DomainParticipantFactory::get_instance()->delete_participant(dds_participant);
 }
 
 /**
- * Test that endpoint_qos_mode controls whether YAML QoS overrides a matching XML profile for readers.
- *
- * CASES:
- * - XML_STANDALONE, profile exists -> QoS comes from XML profile (BEST_EFFORT reliability)
- * - XML_OVERRIDABLE, profile exists -> QoS comes from YAML (RELIABLE reliability, set via topic_qos)
+ * Test that an explicitly user-configured (YAML) field overrides a matching XML profile for readers.
  */
 TEST(ParticipantsCreationgTest, reader_xml_override)
 {
@@ -613,50 +582,26 @@ TEST(ParticipantsCreationgTest, reader_xml_override)
     auto dds_topic = register_type_and_topic(topic_name, type_name);
     ASSERT_NE(nullptr, dds_topic);
 
-    // Case 1: XML_STANDALONE
-    {
-        core::types::DdsTopic topic;
-        topic.m_topic_name = topic_name;
-        topic.type_name = type_name;
-        topic.topic_qos.reliability_qos = core::types::ReliabilityKind::RELIABLE;
+    core::types::DdsTopic topic;
+    topic.m_topic_name = topic_name;
+    topic.type_name = type_name;
+    topic.topic_qos.reliability_qos = core::types::ReliabilityKind::RELIABLE;
+    topic.user_configured_qos.reliability_qos = core::types::ReliabilityKind::RELIABLE;
 
-        test::TestableReader reader(part_id, topic, payload_pool, dds_participant, dds_topic,
-                false /* yaml_qos_override = XML_STANDALONE */,
-                true /* xml_lookup_enabled */);
-        reader.init({}, "");
+    test::TestableReader reader(part_id, topic, payload_pool, dds_participant, dds_topic,
+            true /* xml_lookup_enabled */);
+    reader.init({}, "");
 
-        fastdds::dds::DataReaderQos qos;
-        reader.get_dds_reader()->get_qos(qos);
+    fastdds::dds::DataReaderQos qos;
+    reader.get_dds_reader()->get_qos(qos);
 
-        EXPECT_EQ(fastdds::rtps::DYNAMIC_RESERVE_MEMORY_MODE, qos.endpoint().history_memory_policy);
-        EXPECT_EQ(fastdds::dds::BEST_EFFORT_RELIABILITY_QOS, qos.reliability().kind);
-    }
-
-    // Case 2: XML_OVERRIDABLE
-    {
-        core::types::DdsTopic topic;
-        topic.m_topic_name = topic_name;
-        topic.type_name = type_name;
-        topic.topic_qos.reliability_qos = core::types::ReliabilityKind::RELIABLE;
-        topic.user_configured_qos.reliability_qos = core::types::ReliabilityKind::RELIABLE;
-
-        test::TestableReader reader(part_id, topic, payload_pool, dds_participant, dds_topic,
-                true /* yaml_qos_override = XML_OVERRIDABLE */,
-                true /* xml_lookup_enabled */);
-        reader.init({}, "");
-
-        fastdds::dds::DataReaderQos qos;
-        reader.get_dds_reader()->get_qos(qos);
-
-        EXPECT_EQ(fastdds::dds::RELIABLE_RELIABILITY_QOS, qos.reliability().kind);
-    }
+    EXPECT_EQ(fastdds::dds::RELIABLE_RELIABILITY_QOS, qos.reliability().kind);
 
     fastdds::dds::DomainParticipantFactory::get_instance()->delete_participant(dds_participant);
 }
 
 /**
- * Test that XML profile QoS is preserved when YAML topic_qos fields are not explicitly set,
- * even under the default xml-overridable mode.
+ * Test that XML profile QoS is preserved when YAML topic_qos fields are not explicitly set.
  */
 TEST(ParticipantsCreationgTest, writer_xml_qos_not_overridden_when_yaml_unset)
 {
@@ -713,8 +658,7 @@ TEST(ParticipantsCreationgTest, writer_xml_qos_not_overridden_when_yaml_unset)
     // Intentionally leave all topic_qos fields unset
 
     test::TestableWriter writer(part_id, topic, payload_pool, dds_participant, dds_topic,
-            false /* repeater */, true /* yaml_qos_override = XML_OVERRIDABLE */,
-            true /* xml_lookup_enabled */);
+            false /* repeater */, true /* xml_lookup_enabled */);
     writer.init({});
 
     fastdds::dds::DataWriterQos qos;
@@ -787,8 +731,7 @@ TEST(ParticipantsCreationgTest, writer_endpoint_profile_name_override)
         topic.topic_qos.endpoint_profile_name.set_value("profile_chatter_reliable");
 
         test::TestableWriter writer(part_id, topic, payload_pool, dds_participant, dds_topic,
-                false /* repeater */, false /* yaml_qos_override = XML_STANDALONE */,
-                true /* xml_lookup_enabled */);
+                false /* repeater */, true /* xml_lookup_enabled */);
         writer.init({});
 
         fastdds::dds::DataWriterQos qos;
@@ -804,8 +747,7 @@ TEST(ParticipantsCreationgTest, writer_endpoint_profile_name_override)
         topic.topic_qos.endpoint_profile_name.set_value("profile_chatter_besteffort");
 
         test::TestableWriter writer(part_id, topic, payload_pool, dds_participant, dds_topic,
-                false /* repeater */, false /* yaml_qos_override = XML_STANDALONE */,
-                true /* xml_lookup_enabled */);
+                false /* repeater */, true /* xml_lookup_enabled */);
         writer.init({});
 
         fastdds::dds::DataWriterQos qos;
@@ -819,7 +761,7 @@ TEST(ParticipantsCreationgTest, writer_endpoint_profile_name_override)
 /**
  * Regression test for a bug found via FastDDSSpy: discovery derived QoS (topic_qos) must never be
  * mistaken for an explicit YAML override of an XML profile. Only user_configured_qos should be able
- * to override the XML profile when yaml_qos_override_ (XML_OVERRIDABLE) is active.
+ * to override the XML profile.
  */
 TEST(ParticipantsCreationgTest, writer_xml_qos_not_overridden_by_discovered_topic_qos)
 {
@@ -873,8 +815,7 @@ TEST(ParticipantsCreationgTest, writer_xml_qos_not_overridden_by_discovered_topi
     topic.topic_qos.durability_qos = core::types::DurabilityKind::VOLATILE;
 
     test::TestableWriter writer(part_id, topic, payload_pool, dds_participant, dds_topic,
-            false /* repeater */, true /* yaml_qos_override = XML_OVERRIDABLE */,
-            true /* xml_lookup_enabled */);
+            false /* repeater */, true /* xml_lookup_enabled */);
     writer.init({});
 
     fastdds::dds::DataWriterQos qos;
@@ -937,8 +878,7 @@ TEST(ParticipantsCreationgTest, writer_topic_profile_lookup_not_enabled_by_defau
         payload_pool,
         dds_participant,
         dds_topic,
-        false /* repeater */,
-        false /* yaml_qos_override */);
+        false /* repeater */);
     writer.init({});
 
     fastdds::dds::DataWriterQos qos;
@@ -1001,8 +941,7 @@ TEST(ParticipantsCreationgTest, reader_topic_profile_lookup_not_enabled_by_defau
         topic,
         payload_pool,
         dds_participant,
-        dds_topic,
-        false /* yaml_qos_override */);
+        dds_topic);
     reader.init({}, "");
 
     fastdds::dds::DataReaderQos qos;
