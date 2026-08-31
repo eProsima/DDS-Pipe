@@ -87,7 +87,7 @@ protected:
      *
      * Two threads write to stdout while these tests run: the monitor's periodic producer, and the
      * Fast DDS logging thread that hands entries to the registered StdLogConsumer. gtest's stdout
-     * capture is not thread safe it redirects the descriptor and, in GetCapturedStdout(), restores
+     * capture is not thread safe: it redirects the descriptor and, in GetCapturedStdout(), restores
      * it and deletes the temporary file.
      *
      * Destroying the monitor stops the periodic producer, Flush() drains the entries already queued

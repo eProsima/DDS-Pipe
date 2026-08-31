@@ -114,6 +114,7 @@ public:
      * @note Default implementation returns \c true: writers that do not track matching are assumed
      *       ready and never block the caller.
      */
+    DDSPIPE_CORE_DllAPI
     virtual bool wait_reader_matched(
             const types::GuidPrefix& reader_participant_guid_prefix,
             const unsigned int timeout_ms) const noexcept

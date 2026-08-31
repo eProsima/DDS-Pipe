@@ -14,6 +14,8 @@
 
 #pragma once
 
+#include <mutex>
+
 #include <ddspipe_core/interface/IParticipant.hpp>
 #include <ddspipe_core/types/dds/TopicQoS.hpp>
 
@@ -112,6 +114,9 @@ protected:
 
     //! <Topics <Writer_guid, Partitions set>>
     std::map<std::string, std::map<std::string, std::string>> partition_names;
+
+    //! Protects partition_names.
+    mutable std::mutex partition_names_mutex_;
 };
 
 } /* namespace participants */

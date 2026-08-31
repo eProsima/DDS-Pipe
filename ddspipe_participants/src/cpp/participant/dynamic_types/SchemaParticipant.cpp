@@ -154,7 +154,7 @@ bool SchemaParticipant::update_topic_partition(
 bool SchemaParticipant::delete_topic_partition(
         const std::string& topic_name,
         const std::string& writer_guid,
-        const std::string& partition)
+        const std::string& /* partition */)
 {
     std::lock_guard<std::mutex> lock(partition_names_mutex_);
     if (partition_names.find(topic_name) == partition_names.end())
