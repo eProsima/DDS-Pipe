@@ -125,14 +125,14 @@ public:
             std::string partition);
 
     /**
-     * Push the topic's guid -> partition map to this bridge's writers.
+     * Removes the partition associated with an endpoint GUID from the bridge topic.
      *
-     * Unlike \c update_partitions, this does not touch the reader. It exists for the discovery
-     * path, where the map has to reach the writers but disabling and re-enabling the reader would
-     * generate further discovery events and re-enter that same path.
+     * @param guid: GUID of the endpoint to remove.
+     * @return true if an entry was removed, false if the GUID was not present.
      */
     DDSPIPE_CORE_DllAPI
-    void refresh_writers_partitions();
+    bool remove_partition_from_topic(
+            std::string guid);
 
     /**
      * Function that updates the partition set of all bridges.

@@ -369,7 +369,8 @@ TEST(DdsPipeCommunicationMockTest, mock_communication_repeated_endpoint_discover
  * Test that a newly discovered endpoint is merged into an already existing bridge.
  *
  * This is the replacement-writer path: the bridge exists because the topic is builtin, while the
- * endpoint is discovered afterwards. The endpoint's partition must still reach every bridge writer.
+ * endpoint is discovered afterwards. The replacement writer must be created with the endpoint's
+ * partition map.
  */
 TEST(DdsPipeCommunicationMockTest, mock_communication_existing_bridge_partition_discovery)
 {
@@ -391,13 +392,10 @@ TEST(DdsPipeCommunicationMockTest, mock_communication_existing_bridge_partition_
     participants_database->add_participant(part_1_id, part_1);
     participants_database->add_participant(part_2_id, part_2);
 
-    // Keep a handle to the writer that the bridge will reuse for this mock topic.
-    auto writer = std::dynamic_pointer_cast<participants::testing::MockWriter>(part_2->create_writer(topic));
-    ASSERT_NE(writer, nullptr);
-
     core::DdsPipeConfiguration configuration;
     configuration.builtin_topics.insert(htopic);
     configuration.init_enabled = true;
+    configuration.remove_unused_entities = true;
 
     core::DdsPipe ddspipe(
         configuration,
@@ -418,7 +416,7 @@ TEST(DdsPipeCommunicationMockTest, mock_communication_existing_bridge_partition_
     discovery_database->add_endpoint(endpoint);
     utils::sleep_for(100);
 
-    const auto partitions = writer->topic_partitions();
+    const auto partitions = part_1->get_writer_topic_partitions(topic);
     ASSERT_EQ(partitions.size(), 1u);
     ASSERT_EQ(partitions.at(guid.str()), "partition_from_discovery");
 }

@@ -281,8 +281,8 @@ void DdsPipe::discovered_endpoint_nts_(
 {
     logDebug(DDSPIPE, "Endpoint discovered in DDS Pipe core: " << endpoint << ".");
 
-    // Merge this endpoint's partition into an already existing bridge for its topic, and push the
-    // updated guid -> partition map to that bridge's writers.
+    // Merge this endpoint's partition into an already existing bridge for its topic. If the bridge
+    // exists, discovered_topic_nts_() will create any replacement writer from this updated map.
     const auto merge_endpoint_partition = [this, &endpoint]()
             {
                 const auto bridge_it = bridges_.find(utils::Heritable<DdsTopic>::make_heritable(endpoint.topic));
@@ -301,8 +301,6 @@ void DdsPipe::discovered_endpoint_nts_(
                 {
                     bridge_it->second->add_partition_to_topic(guid_ss.str(), part_it->second);
                 }
-
-                bridge_it->second->refresh_writers_partitions();
             };
 
     if (RpcTopic::is_service_topic(endpoint.topic))
@@ -316,16 +314,15 @@ void DdsPipe::discovered_endpoint_nts_(
     }
     else if (is_endpoint_relevant_(endpoint))
     {
+        // Merge the endpoint partition before discovered_topic_nts_(). If the bridge already
+        // exists and unused entities are being removed, discovered_topic_nts_() creates the
+        // replacement writer immediately. That writer must be built from the updated partition map.
+        merge_endpoint_partition();
+
         DdsTopic topic_with_partitions = endpoint.topic;
         topic_with_partitions.partition_name = endpoint.specific_partitions;
 
         discovered_topic_nts_(utils::Heritable<DdsTopic>::make_heritable(topic_with_partitions));
-
-        // NOTE: discovered_topic_nts_ only creates a bridge when the topic has none. A relevant
-        // endpoint on a topic that already has one -- which is what a replacement writer looks like,
-        // since deleting the previous one leaves it the only active endpoint -- would otherwise never
-        // have its partition merged, and every sample it sends is then discarded downstream.
-        merge_endpoint_partition();
     }
     else
     {
@@ -380,16 +377,24 @@ void DdsPipe::removed_endpoint_nts_(
         }
 
     }
-    else if (configuration_.remove_unused_entities && is_endpoint_relevant_(endpoint))
+    else
     {
         const auto& topic = utils::Heritable<DdsTopic>::make_heritable(endpoint.topic);
 
-        // Remove the subscriber from the topic.
         auto it_bridge = bridges_.find(topic);
 
-        if (it_bridge != bridges_.end() && endpoint.discoverer_participant_id != DEFAULT_PARTICIPANT_ID)
+        if (it_bridge != bridges_.end())
         {
-            it_bridge->second->remove_writer(endpoint.discoverer_participant_id);
+            std::ostringstream guid_ss;
+            guid_ss << endpoint.guid;
+            it_bridge->second->remove_partition_from_topic(guid_ss.str());
+
+            if (configuration_.remove_unused_entities && is_endpoint_relevant_(endpoint) &&
+                    endpoint.discoverer_participant_id != DEFAULT_PARTICIPANT_ID)
+            {
+                // Remove the subscriber from the topic.
+                it_bridge->second->remove_writer(endpoint.discoverer_participant_id);
+            }
         }
     }
 }
