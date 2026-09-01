@@ -297,7 +297,7 @@ TEST(DdsPipeCommunicationMockTest, mock_communication_topic_discovery)
  * and must update the bridge once. Re-announcing that second endpoint with the
  * same mapping must not trigger another update.
  */
-TEST(DdsPipeCommunicationMockTest, mock_communication_repeated_endpoint_discovery)
+TEST(DdsPipeCommunicationMockTest, mock_communication_partition_filter_propagation)
 {
     core::types::DdsTopic topic_1;
     topic_1.m_topic_name = "topic1";
@@ -332,10 +332,7 @@ TEST(DdsPipeCommunicationMockTest, mock_communication_repeated_endpoint_discover
     first_endpoint.guid = core::testing::random_guid(1);
     first_endpoint.topic = topic_1;
     first_endpoint.discoverer_participant_id = core::types::ParticipantId("RemoteParticipant");
-
-    std::ostringstream first_guid;
-    first_guid << first_endpoint.guid;
-    first_endpoint.specific_partitions[first_guid.str()] = "partition";
+    first_endpoint.specific_qos.partitions.push_back("partition");
 
     discovery_database->add_endpoint(first_endpoint);
     utils::sleep_for(100);
@@ -344,25 +341,35 @@ TEST(DdsPipeCommunicationMockTest, mock_communication_repeated_endpoint_discover
     ASSERT_NE(reader_1, nullptr);
     ASSERT_EQ(reader_1->n_partition_updates(), 0u);
 
+    // Discovering more endpoints, whatever partitions they announce, must never touch the Reader's
+    // partition QoS. The partitions a Reader subscribes to are a policy, and only the filter sets
+    // them; the partitions announced by remote endpoints are observed facts and live in the
+    // DiscoveryDatabase, where every consumer queries them.
     core::types::Endpoint second_endpoint = first_endpoint;
     second_endpoint.guid = core::testing::random_guid(2);
-
-    std::ostringstream second_guid;
-    second_guid << second_endpoint.guid;
-    second_endpoint.specific_partitions.clear();
-    second_endpoint.specific_partitions[second_guid.str()] = "partition";
+    second_endpoint.specific_qos.partitions.clear();
+    second_endpoint.specific_qos.partitions.push_back("other_partition");
 
     discovery_database->add_endpoint(second_endpoint);
     utils::sleep_for(100);
 
-    // The new endpoint mapping must be propagated once
-    ASSERT_EQ(reader_1->n_partition_updates(), 1u);
+    EXPECT_EQ(reader_1->n_partition_updates(), 0u);
 
-    // Re-announcing the same endpoint mapping must not re-apply the reader QoS
     discovery_database->update_endpoint(second_endpoint);
     utils::sleep_for(100);
 
+    EXPECT_EQ(reader_1->n_partition_updates(), 0u);
+
+    // Changing the filter, and only that, re-applies the Reader's partition QoS.
+    ddspipe.set_partition_filter({"partition"});
+    utils::sleep_for(100);
+
     EXPECT_EQ(reader_1->n_partition_updates(), 1u);
+
+    // Both endpoints announce partitions, so the topic is partition aware. This is the single
+    // answer to that question, and it is a live query rather than a cached map.
+    EXPECT_TRUE(discovery_database->topic_has_partitions(topic_1.m_topic_name));
+    EXPECT_FALSE(discovery_database->topic_has_partitions("a_topic_that_does_not_exist"));
 }
 
 /**

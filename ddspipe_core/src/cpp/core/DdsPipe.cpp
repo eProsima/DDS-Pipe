@@ -281,27 +281,10 @@ void DdsPipe::discovered_endpoint_nts_(
 {
     logDebug(DDSPIPE, "Endpoint discovered in DDS Pipe core: " << endpoint << ".");
 
-    // Merge this endpoint's partition into an already existing bridge for its topic. If the bridge
-    // exists, discovered_topic_nts_() will create any replacement writer from this updated map.
-    const auto merge_endpoint_partition = [this, &endpoint]()
-            {
-                const auto bridge_it = bridges_.find(utils::Heritable<DdsTopic>::make_heritable(endpoint.topic));
-
-                if (bridge_it == bridges_.end())
-                {
-                    return;
-                }
-
-                std::ostringstream guid_ss;
-                guid_ss << endpoint.guid;
-
-                const auto part_it = endpoint.specific_partitions.find(guid_ss.str());
-
-                if (part_it != endpoint.specific_partitions.end())
-                {
-                    bridge_it->second->add_partition_to_topic(guid_ss.str(), part_it->second);
-                }
-            };
+    // NOTE: nothing partition related happens here any more. The partitions announced by this
+    // endpoint are already stored in the DiscoveryDatabase, which is the only owner of that fact,
+    // and every consumer queries it: entity creation through \c topic_has_partitions, and data
+    // forwarding through the per-sample \c RtpsPayloadData::writer_qos.
 
     if (RpcTopic::is_service_topic(endpoint.topic))
     {
@@ -314,51 +297,7 @@ void DdsPipe::discovered_endpoint_nts_(
     }
     else if (is_endpoint_relevant_(endpoint))
     {
-        // Merge the endpoint partition before discovered_topic_nts_(). If the bridge already
-        // exists and unused entities are being removed, discovered_topic_nts_() creates the
-        // replacement writer immediately. That writer must be built from the updated partition map.
-        merge_endpoint_partition();
-
-        DdsTopic topic_with_partitions = endpoint.topic;
-        topic_with_partitions.partition_name = endpoint.specific_partitions;
-
-        discovered_topic_nts_(utils::Heritable<DdsTopic>::make_heritable(topic_with_partitions));
-    }
-    else
-    {
-        // Another endpoint from an already tracked topic/participant was discovered.
-        // Refresh bridge partition metadata and reader partition QoS
-        const auto bridge_it = bridges_.find(utils::Heritable<DdsTopic>::make_heritable(endpoint.topic));
-        if (bridge_it != bridges_.end())
-        {
-            std::ostringstream guid_ss;
-            guid_ss << endpoint.guid;
-
-            // Only refresh when this endpoint change the partition mapping
-            //
-            // update_partitions() re-applies the reader QoS, which makes Fast DDS re-publish
-            // DATA(r). Every remote reports that as a reader QoS change, and receiving such a
-            // report is exactly what brings us back into this branch
-            bool partitions_changed = false;
-
-            const auto part_it = endpoint.specific_partitions.find(guid_ss.str());
-            if (part_it != endpoint.specific_partitions.end())
-            {
-                partitions_changed =
-                        bridge_it->second->add_partition_to_topic(guid_ss.str(), part_it->second);
-            }
-
-            if (partitions_changed)
-            {
-                // Refresh this bridge so writers receive the updated guid->partition map
-                // Also refresh reader partitions using
-                // filter (if set), otherwise
-                // the current reader partition configuration
-                const auto& partitions_to_apply =
-                        filter_partition_.empty() ? reader_partitions_ : filter_partition_;
-                bridge_it->second->update_partitions(partitions_to_apply);
-            }
-        }
+        discovered_topic_nts_(utils::Heritable<DdsTopic>::make_heritable(endpoint.topic));
     }
 }
 
@@ -664,25 +603,25 @@ void DdsPipe::deactivate_all_topics_nts_() noexcept
     }
 }
 
-void DdsPipe::update_partitions(
+void DdsPipe::set_partition_filter(
         const std::set<std::string>& partitions_set)
 {
     std::lock_guard<std::mutex> lock(mutex_);
 
-    reader_partitions_ = partitions_set;
-    update_partitions_nts_(partitions_set);
+    partition_filter_ = partitions_set;
+    set_partition_filter_nts_(partitions_set);
 }
 
-void DdsPipe::update_partitions_nts_(
+void DdsPipe::set_partition_filter_nts_(
         const std::set<std::string>& partitions_set)
 {
     // TODO.
-    // In the future it could be interesting to update the partitions
+    // In the future it could be interesting to filter the partitions
     // by participant_id. For DDS-Router
 
     for (const auto& pair : bridges_)
     {
-        pair.second->update_partitions(partitions_set);
+        pair.second->set_partition_filter(partitions_set);
     }
 }
 
@@ -699,14 +638,6 @@ void DdsPipe::update_content_filter(
             pair.second->update_topic_filter(expression);
         }
     }
-}
-
-void DdsPipe::update_filter(
-        const std::set<std::string> filter_partition_set)
-{
-    std::lock_guard<std::mutex> lock(mutex_);
-
-    filter_partition_ = std::move(filter_partition_set);
 }
 
 } /* namespace core */

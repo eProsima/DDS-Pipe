@@ -82,7 +82,7 @@ utils::ReturnCode InternalReader::take_nts_(
     return utils::ReturnCode::RETCODE_OK;
 }
 
-void InternalReader::update_partitions(
+void InternalReader::set_partition_filter(
         const std::set<std::string>& partitions_set)
 {
     // Nothing

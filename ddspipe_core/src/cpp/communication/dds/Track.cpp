@@ -167,6 +167,7 @@ void Track::update_reader()
     reader_->disable();
 }
 
+<<<<<<< HEAD
 void Track::update_writers_topic_partitions(
         const std::map<std::string, std::string>& partition_name)
 {
@@ -183,10 +184,13 @@ void Track::update_writers_topic_partitions(
 }
 
 void Track::update_reader_partitions(
+=======
+void Track::set_reader_partition_filter(
+>>>>>>> aa658e6 (Refactor Partitions logic)
         const std::set<std::string>& partitions_set)
 {
     reader_->disable();
-    reader_->update_partitions(partitions_set);
+    reader_->set_partition_filter(partitions_set);
     reader_->enable();
 }
 

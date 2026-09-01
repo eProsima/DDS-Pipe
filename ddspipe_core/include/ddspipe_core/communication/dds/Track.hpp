@@ -138,18 +138,7 @@ public:
     void update_reader();
 
     /**
-     * Update the writer's topic partitions
-     *
-     * @param partition_name Dictionary of <participant_id, partition name>.
-     *
-     * Tread safe
-     */
-    DDSPIPE_CORE_DllAPI
-    void update_writers_topic_partitions(
-            const std::map<std::string, std::string>& partition_name);
-
-    /**
-     * Update the partitions configured in the track reader.
+     * Apply a new partition filter to this Track's Reader.
      *
      * The reader is disabled before applying the new partitions
      * and enabled again afterwards to ensure the reader receive data
@@ -158,7 +147,7 @@ public:
      * @param partitions_set Set of partitions to configure in the reader.
      */
     DDSPIPE_CORE_DllAPI
-    void update_reader_partitions(
+    void set_reader_partition_filter(
             const std::set<std::string>& partitions_set);
 
     /**
