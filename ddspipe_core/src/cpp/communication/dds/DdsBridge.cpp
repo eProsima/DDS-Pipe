@@ -283,15 +283,14 @@ void DdsBridge::add_writers_to_tracks_nts_(
     }
 }
 
-void DdsBridge::update_partitions(
+void DdsBridge::set_partition_filter(
         const std::set<std::string>& partitions_set)
 {
     std::lock_guard<std::mutex> lock(mutex_);
 
     for (const auto& track: tracks_)
     {
-        track.second->update_writers_topic_partitions(topic_->partition_name);
-        track.second->update_reader_partitions(partitions_set);
+        track.second->set_reader_partition_filter(partitions_set);
     }
 }
 
@@ -347,12 +346,6 @@ utils::Heritable<DistributedTopic> DdsBridge::create_topic_for_participant_nts_(
             participant->topic_qos(), utils::FuzzyLevelValues::fuzzy_level_hard);
     }
 
-    // 3. Partitions Topic
-    if (topic->partition_name.size() == 0)
-    {
-        topic->partition_name = participant->topic_partitions()[topic->m_topic_name];
-    }
-
     return topic;
 }
 
@@ -362,30 +355,6 @@ std::ostream& operator <<(
 {
     os << "DdsBridge{" << bridge.topic_ << "}";
     return os;
-}
-
-bool DdsBridge::add_partition_to_topic(
-        std::string guid,
-        std::string partition)
-{
-    std::lock_guard<std::mutex> lock(mutex_);
-
-    const auto it = topic_->partition_name.find(guid);
-    if (it != topic_->partition_name.end() && it->second == partition)
-    {
-        // Already mapped to this partition, nothing to propagate
-        return false;
-    }
-
-    topic_->partition_name[guid] = partition;
-    return true;
-}
-
-bool DdsBridge::remove_partition_from_topic(
-        std::string guid)
-{
-    std::lock_guard<std::mutex> lock(mutex_);
-    return topic_->partition_name.erase(guid) != 0;
 }
 
 } /* namespace core */

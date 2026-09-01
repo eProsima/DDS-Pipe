@@ -251,27 +251,7 @@ utils::ReturnCode CommonWriter::write_nts_(
     return utils::ReturnCode::RETCODE_OK;
 }
 
-void CommonWriter::update_partitions(
-        const std::set<std::string>& partitions_set)
-{
-    // Get the partitions from the reader qos
-    auto& pub_part_qos = writer_qos_.m_partition;
-    // Clear the partitions
-    pub_part_qos.clear();
-    // Add the partitions from the filter
-    for (const auto& partition : partitions_set)
-    {
-        pub_part_qos.push_back(partition.c_str());
-    }
-    // Update the reader with the new partitions
-    rtps_participant_->update_writer(rtps_writer_, writer_qos_);
-}
 
-void CommonWriter::update_topic_partitions(
-        const std::map<std::string, std::string>& partition_name)
-{
-    topic_.partition_name = partition_name;
-}
 
 utils::ReturnCode CommonWriter::fill_to_send_data_(
         fastdds::rtps::CacheChange_t* to_send_change_to_fill,

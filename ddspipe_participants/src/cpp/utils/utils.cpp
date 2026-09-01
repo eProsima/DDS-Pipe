@@ -64,24 +64,8 @@ core::types::Endpoint create_common_endpoint_from_info_(
     // Set Topic with Partitions
     endpoint.topic.topic_qos.use_partitions.set_value(!info.partition.empty());
 
-    // Topic partitions
-    // get the partitions and add into a string with '|' as delimiter
-    std::vector<std::string> partition_names_vector = info.partition.getNames();
-
-    std::string partitions_set = "";
-    int partitions_n = partition_names_vector.size();
-    if (partitions_n > 0)
-    {
-        partitions_set = partition_names_vector[0];
-
-        for (int i = 1; i < partitions_n; i++)
-        {
-            partitions_set += "|" + partition_names_vector[i];
-        }
-    }
-
-    // adds the topic into the map of <topic, <writer_guid, partitions set>>
-    endpoint.specific_partitions[guid_ss.str()] = partitions_set;
+    // NOTE: the announced partitions are kept only in \c endpoint.specific_qos.partitions, as a
+    // real PartitionQosPolicy. There is no second, string-joined copy of them any more.
 
     // Set Topic with ownership
     endpoint.topic.topic_qos.ownership_qos.set_value(info.ownership.kind);

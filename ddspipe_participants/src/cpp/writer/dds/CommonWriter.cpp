@@ -197,24 +197,7 @@ utils::ReturnCode CommonWriter::write_nts_(
     }
 }
 
-void CommonWriter::update_partitions(
-        const std::set<std::string>& partitions_set)
-{
-    fastdds::dds::PublisherQos pub_qos = dds_publisher_->get_qos();
-    pub_qos.partition().clear();
-    for (const std::string& partition: partitions_set)
-    {
-        pub_qos.partition().push_back(partition.c_str());
-    }
 
-    dds_publisher_->set_qos(pub_qos);
-}
-
-void CommonWriter::update_topic_partitions(
-        const std::map<std::string, std::string>& partition_name)
-{
-    topic_.partition_name = partition_name;
-}
 
 fastdds::dds::PublisherQos CommonWriter::reckon_publisher_qos_() const noexcept
 {

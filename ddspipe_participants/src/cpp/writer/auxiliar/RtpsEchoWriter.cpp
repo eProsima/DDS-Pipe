@@ -66,17 +66,7 @@ utils::ReturnCode RtpsEchoWriter::write(
     return utils::ReturnCode::RETCODE_OK;
 }
 
-void RtpsEchoWriter::update_partitions(
-        const std::set<std::string>& /* partitions_set */)
-{
-    // Nothing
-}
 
-void RtpsEchoWriter::update_topic_partitions(
-        const std::map<std::string, std::string>& partition_name)
-{
-    topic_.partition_name = partition_name;
-}
 
 } /* namespace participants */
 } /* namespace ddspipe */
