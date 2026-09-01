@@ -116,7 +116,7 @@ TEST_F(LogMonitorStatusTest, type_mismatch)
     testing::internal::CaptureStdout();
 
     // Wait for the monitor to print the message
-    std::this_thread::sleep_for(std::chrono::milliseconds(test::monitor::PERIOD_MS*3));
+    std::this_thread::sleep_for(std::chrono::milliseconds(test::monitor::PERIOD_MS * 3));
 
     // Stop the monitor and the logging before the captured stdout is read back
     stop_monitoring_();
@@ -138,7 +138,7 @@ TEST_F(LogMonitorStatusTest, qos_mismatch)
     testing::internal::CaptureStdout();
 
     // Wait for the monitor to print the message
-    std::this_thread::sleep_for(std::chrono::milliseconds(test::monitor::PERIOD_MS*3));
+    std::this_thread::sleep_for(std::chrono::milliseconds(test::monitor::PERIOD_MS * 3));
 
     // Stop the monitor and the logging before the captured stdout is read back
     stop_monitoring_();
