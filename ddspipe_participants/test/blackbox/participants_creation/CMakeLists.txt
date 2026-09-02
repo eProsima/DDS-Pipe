@@ -22,6 +22,7 @@ set(TEST_LIST
         default_configuration
         creation_trivial
         participant_partition_qos_creates_multiwriter
+        participant_partition_qos_creates_multireader
         writer_partition_selection_sources
         partition_filter_interface_implementations
         ddspipe_all_creation_builtin_topic
