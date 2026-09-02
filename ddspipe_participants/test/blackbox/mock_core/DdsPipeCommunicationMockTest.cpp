@@ -27,6 +27,7 @@
 #include <ddspipe_core/testing/random_values.hpp>
 
 #include <ddspipe_participants/testing/entities/mock_entities.hpp>
+#include <ddspipe_participants/utils/utils.hpp>
 
 using namespace eprosima;
 using namespace eprosima::ddspipe;
@@ -603,6 +604,151 @@ TEST(DdsPipeCommunicationMockTest, mock_communication_multiple_participant_topic
         }
     }
 }
+
+
+/**
+ * Test that changing the partition of an already discovered endpoint is visible to the live
+ * writer QoS lookup used when a sample is received.
+ *
+ * This intentionally exercises the single relevant endpoint path. It is the path used when one
+ * publisher is discovered and its partition is changed while it is still alive.
+ */
+TEST(DdsPipeCommunicationMockTest, mock_communication_endpoint_partition_update)
+{
+    core::types::DdsTopic topic;
+    topic.m_topic_name = "topic_with_partition_update";
+    topic.type_name = "partition_update_type";
+    topic.m_internal_type_discriminator = participants::testing::INTERNAL_TOPIC_TYPE_MOCK_TEST;
+
+    core::types::ParticipantId part_1_id("Participant_1");
+    auto part_1 = std::make_shared<participants::testing::MockParticipant>(part_1_id);
+
+    core::types::ParticipantId part_2_id("Participant_2");
+    auto part_2 = std::make_shared<participants::testing::MockParticipant>(part_2_id);
+
+    auto discovery_database = std::make_shared<core::DiscoveryDatabase>();
+    auto participants_database = std::make_shared<core::ParticipantsDatabase>();
+    participants_database->add_participant(part_1_id, part_1);
+    participants_database->add_participant(part_2_id, part_2);
+
+    core::DdsPipeConfiguration configuration;
+    configuration.init_enabled = true;
+    configuration.remove_unused_entities = false;
+    configuration.discovery_trigger = core::DiscoveryTrigger::WRITER;
+
+    core::DdsPipe ddspipe(
+        configuration,
+        discovery_database,
+        std::make_shared<core::FastPayloadPool>(),
+        participants_database,
+        std::make_shared<utils::SlotThreadPool>(test::N_THREADS));
+
+    core::types::Endpoint endpoint = core::testing::random_endpoint(1);
+    endpoint.kind = core::types::EndpointKind::writer;
+    endpoint.active = true;
+    endpoint.topic = topic;
+    endpoint.discoverer_participant_id = part_1_id;
+
+    endpoint.specific_qos.partitions.push_back("partition_a");
+
+    discovery_database->add_endpoint(endpoint);
+    utils::sleep_for(100);
+
+    core::types::SpecificEndpointQoS writer_qos;
+    ASSERT_TRUE(participants::detail::try_specific_qos_of_writer_(
+                *discovery_database, endpoint.guid, writer_qos));
+    ASSERT_EQ(writer_qos.partitions.names(), std::vector<std::string>{"partition_a"});
+
+    endpoint.specific_qos.partitions.clear();
+    endpoint.specific_qos.partitions.push_back("partition_b");
+    discovery_database->update_endpoint(endpoint);
+    utils::sleep_for(100);
+
+    writer_qos = {};
+    ASSERT_TRUE(participants::detail::try_specific_qos_of_writer_(*discovery_database, endpoint.guid, writer_qos));
+    EXPECT_EQ(writer_qos.partitions.names(), std::vector<std::string>{"partition_b"});
+}
+
+/**
+ * Test that replacing an endpoint removes its old partition and makes the replacement endpoint's
+ * partition available to the live writer QoS lookup.
+ *
+ * This models a publisher stopping and another publisher on the same topic appearing with a
+ * different partition.
+ */
+TEST(DdsPipeCommunicationMockTest, mock_communication_replaced_endpoint_partition_update)
+{
+    core::types::DdsTopic topic;
+    topic.m_topic_name = "topic_with_replaced_partition";
+    topic.type_name = "replaced_partition_type";
+    topic.m_internal_type_discriminator = participants::testing::INTERNAL_TOPIC_TYPE_MOCK_TEST;
+
+    core::types::ParticipantId part_1_id("Participant_1");
+    auto part_1 = std::make_shared<participants::testing::MockParticipant>(part_1_id);
+
+    core::types::ParticipantId part_2_id("Participant_2");
+    auto part_2 = std::make_shared<participants::testing::MockParticipant>(part_2_id);
+
+    auto discovery_database = std::make_shared<core::DiscoveryDatabase>();
+    auto participants_database = std::make_shared<core::ParticipantsDatabase>();
+    participants_database->add_participant(part_1_id, part_1);
+    participants_database->add_participant(part_2_id, part_2);
+
+    core::DdsPipeConfiguration configuration;
+    configuration.init_enabled = true;
+    configuration.remove_unused_entities = false;
+    configuration.discovery_trigger = core::DiscoveryTrigger::WRITER;
+
+    core::DdsPipe ddspipe(
+        configuration,
+        discovery_database,
+        std::make_shared<core::FastPayloadPool>(),
+        participants_database,
+        std::make_shared<utils::SlotThreadPool>(test::N_THREADS));
+
+    core::types::Endpoint first_endpoint = core::testing::random_endpoint(1);
+    first_endpoint.kind = core::types::EndpointKind::writer;
+    first_endpoint.active = true;
+    first_endpoint.topic = topic;
+    first_endpoint.discoverer_participant_id = part_1_id;
+
+    first_endpoint.specific_qos.partitions.push_back("partition_a");
+
+    discovery_database->add_endpoint(first_endpoint);
+    utils::sleep_for(100);
+
+    core::types::SpecificEndpointQoS writer_qos;
+    ASSERT_TRUE(participants::detail::try_specific_qos_of_writer_(*discovery_database,
+            first_endpoint.guid, writer_qos));
+    ASSERT_EQ(writer_qos.partitions.names(), std::vector<std::string>{"partition_a"});
+
+    core::types::Endpoint removed_endpoint = first_endpoint;
+    removed_endpoint.active = false;
+    discovery_database->update_endpoint(removed_endpoint);
+    utils::sleep_for(100);
+
+    writer_qos = {};
+    ASSERT_FALSE(participants::detail::try_specific_qos_of_writer_(*discovery_database,
+            first_endpoint.guid, writer_qos));
+
+    core::types::Endpoint replacement_endpoint = core::testing::random_endpoint(2);
+    replacement_endpoint.kind = core::types::EndpointKind::writer;
+    replacement_endpoint.active = true;
+    replacement_endpoint.topic = topic;
+    replacement_endpoint.discoverer_participant_id = part_1_id;
+
+    replacement_endpoint.specific_qos.partitions.push_back("partition_b");
+
+    discovery_database->add_endpoint(replacement_endpoint);
+    utils::sleep_for(100);
+
+    writer_qos = {};
+    ASSERT_TRUE(participants::detail::try_specific_qos_of_writer_(*discovery_database,
+            replacement_endpoint.guid, writer_qos));
+    EXPECT_EQ(writer_qos.partitions.names(), std::vector<std::string>{"partition_b"});
+}
+
+
 
 int main(
         int argc,
