@@ -217,6 +217,57 @@ TEST(DiscoveryDatabaseTest, stop_clears_stored_endpoints)
     EXPECT_TRUE(test::get_all_endpoints(discovery_database).empty());
 }
 
+/**
+ * Test that topic_has_partitions only reports active endpoints on the requested topic with a
+ * non-empty partition.
+ *
+ * The empty partition is the DDS default partition and is intentionally not considered
+ * partition-aware by DDS-Pipe.
+ */
+TEST(DiscoveryDatabaseTest, topic_has_partitions)
+{
+    DiscoveryDatabase discovery_database;
+    discovery_database.start();
+
+    auto empty_partition_endpoint = random_endpoint(12);
+    empty_partition_endpoint.active = true;
+    empty_partition_endpoint.topic.m_topic_name = "partition_topic";
+    empty_partition_endpoint.specific_qos.partitions.push_back("");
+    discovery_database.add_endpoint(empty_partition_endpoint);
+
+    auto inactive_endpoint = random_endpoint(13);
+    inactive_endpoint.active = false;
+    inactive_endpoint.topic.m_topic_name = "partition_topic";
+    inactive_endpoint.specific_qos.partitions.push_back("inactive_partition");
+    discovery_database.add_endpoint(inactive_endpoint);
+
+    auto other_topic_endpoint = random_endpoint(14);
+    other_topic_endpoint.active = true;
+    other_topic_endpoint.topic.m_topic_name = "other_topic";
+    other_topic_endpoint.specific_qos.partitions.push_back("other_partition");
+    discovery_database.add_endpoint(other_topic_endpoint);
+
+    eprosima::utils::sleep_for(test::WAIT_TIME_MS);
+
+    EXPECT_FALSE(discovery_database.topic_has_partitions("partition_topic"));
+
+    empty_partition_endpoint.specific_qos.partitions.clear();
+    empty_partition_endpoint.specific_qos.partitions.push_back("active_partition");
+    discovery_database.update_endpoint(empty_partition_endpoint);
+    eprosima::utils::sleep_for(test::WAIT_TIME_MS);
+
+    EXPECT_TRUE(discovery_database.topic_has_partitions("partition_topic"));
+
+    empty_partition_endpoint.active = false;
+    discovery_database.update_endpoint(empty_partition_endpoint);
+    eprosima::utils::sleep_for(test::WAIT_TIME_MS);
+
+    EXPECT_FALSE(discovery_database.topic_has_partitions("partition_topic"));
+    EXPECT_TRUE(discovery_database.topic_has_partitions("other_topic"));
+
+    discovery_database.stop();
+}
+
 int main(
         int argc,
         char** argv)
