@@ -748,7 +748,87 @@ TEST(DdsPipeCommunicationMockTest, mock_communication_replaced_endpoint_partitio
     EXPECT_EQ(writer_qos.partitions.names(), std::vector<std::string>{"partition_b"});
 }
 
+/**
+ * Test that applying a partition filter to a disabled pipe does not enable its Readers, and that
+ * data arriving while disabled is still forwarded once the pipe is enabled again.
+ *
+ * Applying the filter by enabling the Reader directly used to leave it active behind a disabled
+ * Track. The following Track::enable() then found the Reader already enabled and skipped its
+ * enable_nts_(), so the data queued in between was never notified and never forwarded.
+ */
+TEST(DdsPipeCommunicationMockTest, mock_communication_partition_filter_while_disabled)
+{
+    core::types::DdsTopic topic;
+    topic.m_topic_name = "topic_filter_while_disabled";
+    topic.type_name = "type_filter_while_disabled";
+    topic.m_internal_type_discriminator = participants::testing::INTERNAL_TOPIC_TYPE_MOCK_TEST;
 
+    core::types::ParticipantId part_1_id("Participant_1");
+    auto part_1 = std::make_shared<participants::testing::MockParticipant>(part_1_id);
+
+    core::types::ParticipantId part_2_id("Participant_2");
+    auto part_2 = std::make_shared<participants::testing::MockParticipant>(part_2_id);
+
+    auto part_db = std::make_shared<core::ParticipantsDatabase>();
+    part_db->add_participant(part_1_id, part_1);
+    part_db->add_participant(part_2_id, part_2);
+
+    auto disc_db = std::make_shared<core::DiscoveryDatabase>();
+
+    core::DdsPipeConfiguration ddspipe_configuration;
+    ddspipe_configuration.init_enabled = true;
+
+    core::DdsPipe ddspipe(
+        ddspipe_configuration,
+        disc_db,
+        std::make_shared<core::FastPayloadPool>(),
+        part_db,
+        std::make_shared<eprosima::utils::SlotThreadPool>(test::N_THREADS)
+        );
+
+    core::types::Endpoint endpoint = core::testing::random_endpoint();
+    endpoint.kind = core::types::EndpointKind::reader;
+    endpoint.topic = topic;
+    disc_db->add_endpoint(endpoint);
+
+    // Wait for entities to be created
+    utils::sleep_for(100);
+
+    auto reader_1 = part_1->get_reader(topic);
+    auto writer_2 = part_2->get_writer(topic);
+    ASSERT_NE(reader_1, nullptr);
+    ASSERT_NE(writer_2, nullptr);
+
+    // Disable the pipe, and with it every Track and every Reader
+    ddspipe.disable();
+    utils::sleep_for(100);
+
+    // Applying the filter must reach the Reader, but must not enable it
+    ddspipe.set_partition_filter({"partition"});
+    utils::sleep_for(100);
+
+    ASSERT_EQ(reader_1->n_partition_updates(), 1u);
+
+    // Data arriving while the pipe is disabled must be queued, not forwarded
+    reader_1->simulate_data_reception(test::new_data(part_1_id, 0));
+    utils::sleep_for(100);
+
+    ASSERT_EQ(writer_2->n_to_send_data(), 0u);
+
+    // Enabling the pipe again must deliver the data queued while it was disabled.
+    //
+    // NOTE: polled with a bound instead of MockWriter::wait_data(), which waits forever. A
+    // regression here means the data is never forwarded, and that must fail rather than hang.
+    ddspipe.enable();
+
+    for (unsigned int i = 0; i < 50 && writer_2->n_to_send_data() == 0u; i++)
+    {
+        utils::sleep_for(20);
+    }
+
+    ASSERT_EQ(writer_2->n_to_send_data(), 1u);
+    EXPECT_EQ(writer_2->wait_data(), test::new_data(part_1_id, 0));
+}
 
 int main(
         int argc,

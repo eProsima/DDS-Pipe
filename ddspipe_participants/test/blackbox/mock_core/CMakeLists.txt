@@ -27,6 +27,7 @@ set(TEST_LIST
         mock_communication_endpoint_partition_update
         mock_communication_replaced_endpoint_partition_update
         mock_communication_partition_filter_propagation
+        mock_communication_partition_filter_while_disabled
         mock_communication_topic_allow
         mock_communication_multiple_participant_topics
     )
