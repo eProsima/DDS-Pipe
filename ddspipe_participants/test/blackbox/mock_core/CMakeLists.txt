@@ -24,6 +24,8 @@ set(TEST_LIST
         mock_communication_topic_discovery
         mock_communication_repeated_endpoint_discovery
         mock_communication_existing_bridge_partition_discovery
+        mock_communication_endpoint_partition_update
+        mock_communication_replaced_endpoint_partition_update
         mock_communication_partition_filter_propagation
         mock_communication_topic_allow
         mock_communication_multiple_participant_topics
