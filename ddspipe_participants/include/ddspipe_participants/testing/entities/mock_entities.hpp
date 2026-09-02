@@ -73,10 +73,6 @@ public:
             const core::ITopic& topic) const;
 
     DDSPIPE_PARTICIPANTS_DllAPI
-    std::map<std::string, std::string> get_writer_topic_partitions(
-            const core::ITopic& topic) const;
-
-    DDSPIPE_PARTICIPANTS_DllAPI
     std::shared_ptr<MockReader> get_reader(
             const core::ITopic& topic) const;
 
@@ -84,7 +80,6 @@ protected:
 
     std::map<std::string, std::shared_ptr<MockWriter>> writers_;
     std::map<std::string, std::shared_ptr<MockReader>> readers_;
-    std::map<std::string, std::map<std::string, std::string>> writer_topic_partitions_;
 
     mutable std::mutex mutex_;
 };

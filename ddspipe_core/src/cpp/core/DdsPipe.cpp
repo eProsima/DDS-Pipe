@@ -316,24 +316,16 @@ void DdsPipe::removed_endpoint_nts_(
         }
 
     }
-    else
+    else if (configuration_.remove_unused_entities && is_endpoint_relevant_(endpoint))
     {
         const auto& topic = utils::Heritable<DdsTopic>::make_heritable(endpoint.topic);
 
         auto it_bridge = bridges_.find(topic);
 
-        if (it_bridge != bridges_.end())
+        if (it_bridge != bridges_.end() && endpoint.discoverer_participant_id != DEFAULT_PARTICIPANT_ID)
         {
-            std::ostringstream guid_ss;
-            guid_ss << endpoint.guid;
-            it_bridge->second->remove_partition_from_topic(guid_ss.str());
-
-            if (configuration_.remove_unused_entities && is_endpoint_relevant_(endpoint) &&
-                    endpoint.discoverer_participant_id != DEFAULT_PARTICIPANT_ID)
-            {
-                // Remove the subscriber from the topic.
-                it_bridge->second->remove_writer(endpoint.discoverer_participant_id);
-            }
+            // Remove the subscriber from the topic.
+            it_bridge->second->remove_writer(endpoint.discoverer_participant_id);
         }
     }
 }

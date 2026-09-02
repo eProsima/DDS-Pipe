@@ -413,20 +413,17 @@ TEST(DdsPipeCommunicationMockTest, mock_communication_existing_bridge_partition_
         std::make_shared<utils::SlotThreadPool>(test::N_THREADS));
 
     core::types::Endpoint endpoint = core::testing::random_endpoint();
+    endpoint.active = true;
     endpoint.kind = core::types::EndpointKind::reader;
     endpoint.topic = topic;
     endpoint.discoverer_participant_id = part_1_id;
 
-    std::ostringstream guid;
-    guid << endpoint.guid;
-    endpoint.specific_partitions[guid.str()] = "partition_from_discovery";
+    endpoint.specific_qos.partitions.push_back("partition_from_discovery");
 
     discovery_database->add_endpoint(endpoint);
     utils::sleep_for(100);
 
-    const auto partitions = part_1->get_writer_topic_partitions(topic);
-    ASSERT_EQ(partitions.size(), 1u);
-    ASSERT_EQ(partitions.at(guid.str()), "partition_from_discovery");
+    ASSERT_TRUE(discovery_database->topic_has_partitions(topic.m_topic_name));
 }
 
 /**
