@@ -478,9 +478,13 @@ std::shared_ptr<core::IReader> CommonParticipant::create_reader(
     }
     else if (topic.internal_type_discriminator() == core::types::INTERNAL_TOPIC_TYPE_RTPS)
     {
-        // Same live answer as in create_writer: a partition-aware Reader is the one that stamps
-        // every received sample with its origin's QoS, which is how partitions travel onwards.
+        // Same question, and the same three sources, as in create_writer. It must stay the same
+        // question: a partition-aware Reader is the one that stamps every received sample with its
+        // origin's QoS, and that stamp is the only thing a partition-aware Writer can route on. A
+        // Reader answering this differently than the Writer would strip the partitions of every
+        // sample it forwards.
         const bool topic_uses_partitions = dds_topic.topic_qos.has_partitions() ||
+                configuration_->topic_qos.has_partitions() ||
                 discovery_database_->topic_has_partitions(dds_topic.m_topic_name);
 
         if (topic_uses_partitions || dds_topic.topic_qos.has_ownership())
