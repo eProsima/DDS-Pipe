@@ -143,11 +143,11 @@ std::shared_ptr<core::IWriter> CommonParticipant::create_writer(
     // Get the DDS Topic associated (create it if it does not exist)
     fastdds::dds::Topic* fastdds_topic = topic_related_(dds_topic);
 
-    // Does this topic need a partition-aware Writer? One question, one answer:
-    // topic_qos.has_partitions() covers partitions that come from configuration or from a
-    // recording, and the DiscoveryDatabase covers partitions announced by live remote endpoints.
-    // The query is live, so it cannot be stale.
+    // Does this topic need a partition-aware Writer? A topic may request partitions itself, or
+    // the participant configuration may request them for all its topics. The DiscoveryDatabase
+    // covers partitions announced by live remote endpoints. The query is live, so it cannot be stale.
     const bool topic_uses_partitions = dds_topic.topic_qos.has_partitions() ||
+            configuration_->topic_qos.has_partitions() ||
             discovery_database_->topic_has_partitions(dds_topic.m_topic_name);
 
     if (topic_uses_partitions || dds_topic.topic_qos.has_ownership())

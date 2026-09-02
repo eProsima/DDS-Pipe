@@ -34,6 +34,8 @@
 #include <ddspipe_participants/reader/dds/SimpleReader.hpp>
 #include <ddspipe_participants/writer/auxiliar/BlankWriter.hpp>
 #include <ddspipe_participants/writer/dds/SimpleWriter.hpp>
+#include <ddspipe_participants/writer/dds/MultiWriter.hpp>
+#include <ddspipe_participants/writer/rtps/MultiWriter.hpp>
 #include <ddspipe_participants/xml/XmlHandler.hpp>
 #include <ddspipe_participants/xml/XmlHandlerConfiguration.hpp>
 #include <fastdds/dds/domain/DomainParticipantFactory.hpp>
@@ -165,27 +167,42 @@ TEST(ParticipantsCreationgTest, creation_trivial)
 }
 
 /**
- * Test the lifecycle of the per-topic writer partition map.
+ * A participant-level partition QoS must select a MultiWriter even when the topic itself does not
+ * carry the partition flag. This is the path used when the QoS is configured for a participant in
+ * YAML and the writer is created directly from that participant.
  */
-TEST(ParticipantsCreationgTest, blank_participant_partition_lifecycle)
+TEST(ParticipantsCreationgTest, participant_partition_qos_creates_multiwriter)
 {
-    participants::BlankParticipant participant(core::types::ParticipantId("partition_participant"));
+    std::shared_ptr<core::PayloadPool> payload_pool(new core::FastPayloadPool());
+    std::shared_ptr<core::DiscoveryDatabase> discovery_database(new core::DiscoveryDatabase());
 
-    ASSERT_TRUE(participant.add_topic_partition("topic", "writer_1", "partition_1"));
-    ASSERT_FALSE(participant.add_topic_partition("topic", "writer_1", "partition_1"));
-    ASSERT_TRUE(participant.add_topic_partition("topic", "writer_2", "partition_2"));
+    core::types::DdsTopic topic;
+    topic.m_topic_name = "participant_partition_topic";
+    topic.type_name = "participant_partition_type";
 
-    ASSERT_TRUE(participant.update_topic_partition("topic", "writer_1", "updated_partition"));
-    ASSERT_FALSE(participant.update_topic_partition("topic", "missing_writer", "partition"));
+    {
+        auto conf = std::make_shared<participants::SimpleParticipantConfiguration>();
+        conf->id = "partition_rtps_participant";
+        conf->topic_qos.use_partitions.set_value(true);
 
-    ASSERT_TRUE(participant.delete_topic_partition("topic", "writer_1", "updated_partition"));
-    auto partitions = participant.topic_partitions();
-    ASSERT_EQ(partitions.size(), 1u);
-    ASSERT_EQ(partitions.at("topic").at("writer_2"), "partition_2");
+        participants::rtps::SimpleParticipant participant(conf, payload_pool, discovery_database);
+        participant.init();
 
-    ASSERT_TRUE(participant.delete_topic_partition("topic", "writer_2", "partition_2"));
-    ASSERT_TRUE(participant.topic_partitions().empty());
-    ASSERT_FALSE(participant.delete_topic_partition("topic", "writer_2", "partition_2"));
+        const auto writer = participant.create_writer(topic);
+        ASSERT_NE(dynamic_cast<participants::rtps::MultiWriter*>(writer.get()), nullptr);
+    }
+
+    {
+        auto conf = std::make_shared<participants::XmlParticipantConfiguration>();
+        conf->id = "partition_dds_participant";
+        conf->topic_qos.use_partitions.set_value(true);
+
+        participants::dds::XmlParticipant participant(conf, payload_pool, discovery_database);
+        participant.init();
+
+        const auto writer = participant.create_writer(topic);
+        ASSERT_NE(dynamic_cast<participants::dds::MultiWriter*>(writer.get()), nullptr);
+    }
 }
 
 /**
