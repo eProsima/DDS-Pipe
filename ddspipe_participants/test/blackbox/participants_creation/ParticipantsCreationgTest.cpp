@@ -1150,7 +1150,7 @@ TEST(ParticipantsCreationgTest, writer_partition_selection_sources)
 
         participants::rtps::SimpleParticipant participant(conf, payload_pool, discovery_database);
         participant.init();
-        participant.set_partition_filter({"reader_partition"});
+        EXPECT_NO_THROW(participant.set_partition_filter({"reader_partition"}));
 
         core::types::DdsTopic topic;
         topic.m_topic_name = "topic_qos_partition_rtps";
@@ -1161,7 +1161,7 @@ TEST(ParticipantsCreationgTest, writer_partition_selection_sources)
         ASSERT_NE(dynamic_cast<participants::rtps::MultiWriter*>(writer.get()), nullptr);
 
         const auto reader = participant.create_reader(topic);
-        reader->set_partition_filter({"reader_partition"});
+        EXPECT_NO_THROW(reader->set_partition_filter({"reader_partition"}));
     }
 
     {
@@ -1170,7 +1170,7 @@ TEST(ParticipantsCreationgTest, writer_partition_selection_sources)
 
         participants::dds::XmlParticipant participant(conf, payload_pool, discovery_database);
         participant.init();
-        participant.set_partition_filter({"reader_partition"});
+        EXPECT_NO_THROW(participant.set_partition_filter({"reader_partition"}));
 
         core::types::DdsTopic topic;
         topic.m_topic_name = "topic_qos_partition_dds";
@@ -1181,7 +1181,7 @@ TEST(ParticipantsCreationgTest, writer_partition_selection_sources)
         ASSERT_NE(dynamic_cast<participants::dds::MultiWriter*>(writer.get()), nullptr);
 
         const auto reader = participant.create_reader(topic);
-        reader->set_partition_filter({"reader_partition"});
+        EXPECT_NO_THROW(reader->set_partition_filter({"reader_partition"}));
     }
 
     core::types::Endpoint endpoint = core::testing::random_endpoint(20);
@@ -1249,23 +1249,23 @@ TEST(ParticipantsCreationgTest, writer_partition_selection_sources)
 TEST(ParticipantsCreationgTest, partition_filter_interface_implementations)
 {
     participants::BlankParticipant blank_participant(core::types::ParticipantId("blank"));
-    blank_participant.set_partition_filter({"partition"});
+    EXPECT_NO_THROW(blank_participant.set_partition_filter({"partition"}));
 
     participants::SchemaParticipant schema_participant(
         std::make_shared<participants::ParticipantConfiguration>(),
         nullptr,
         nullptr,
         nullptr);
-    schema_participant.set_partition_filter({"partition"});
+    EXPECT_NO_THROW(schema_participant.set_partition_filter({"partition"}));
 
     participants::BlankReader blank_reader;
-    blank_reader.set_partition_filter({"partition"});
+    EXPECT_NO_THROW(blank_reader.set_partition_filter({"partition"}));
 
     participants::InternalReader internal_reader(core::types::ParticipantId("internal"));
-    internal_reader.set_partition_filter({"partition"});
+    EXPECT_NO_THROW(internal_reader.set_partition_filter({"partition"}));
 
     test::TestableBaseReader base_reader(core::types::ParticipantId("base"));
-    base_reader.set_partition_filter({"partition"});
+    EXPECT_NO_THROW(base_reader.set_partition_filter({"partition"}));
 }
 
 int main(
