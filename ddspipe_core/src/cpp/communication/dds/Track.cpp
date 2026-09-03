@@ -193,12 +193,30 @@ void Track::set_reader_partition_filter(
     }
 }
 
-void Track::update_reader_content_filter(
+void Track::set_reader_content_filter(
         const std::string& expression)
 {
-    reader_->disable();
+    // The Reader must not be taking data while its content filter expression is replaced, and it
+    // must be left in the state it was found in.
+    //
+    // Going through the Track's own disable/enable, instead of reaching into the Reader, is what
+    // keeps that true. Enabling the Reader directly would leave it active behind a disabled Track:
+    // the next Track::enable() would then find the Reader already enabled, skip its enable_nts_(),
+    // and never notify the data queued in the meantime. Disabling it directly would leave the
+    // Track transmitting against a disabled Reader, which spins on RETCODE_NOT_ENABLED.
+    const bool was_enabled = enabled_;
+
+    if (was_enabled)
+    {
+        disable();
+    }
+
     reader_->update_content_topic_filter(expression);
-    reader_->enable();
+
+    if (was_enabled)
+    {
+        enable();
+    }
 }
 
 bool Track::has_writer(

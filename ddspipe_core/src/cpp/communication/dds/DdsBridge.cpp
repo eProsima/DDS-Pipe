@@ -301,7 +301,7 @@ void DdsBridge::update_topic_filter(
 
     for (const auto& track: tracks_)
     {
-        track.second->update_reader_content_filter(expression);
+        track.second->set_reader_content_filter(expression);
     }
 }
 
