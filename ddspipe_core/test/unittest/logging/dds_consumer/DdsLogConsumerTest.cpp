@@ -89,7 +89,7 @@ public:
 
 protected:
 
-    //! Discard every sample already available in the reader.
+    //! Discard every sample already available in the reader
     void drain_reader()
     {
         LogEntry entry;
