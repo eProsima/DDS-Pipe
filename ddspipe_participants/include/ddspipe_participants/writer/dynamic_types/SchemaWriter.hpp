@@ -45,8 +45,6 @@ public:
             std::shared_ptr<core::PayloadPool> payload_pool,
             std::shared_ptr<ISchemaHandler> schema_handler);
 
-
-
 protected:
 
     /**

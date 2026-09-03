@@ -48,7 +48,6 @@ core::types::TopicQoS BlankParticipant::topic_qos() const noexcept
     return m_topic_qos;
 }
 
-
 std::shared_ptr<core::IWriter> BlankParticipant::create_writer(
         const core::ITopic& topic)
 {
@@ -60,10 +59,6 @@ std::shared_ptr<core::IReader> BlankParticipant::create_reader(
 {
     return std::make_shared<BlankReader>();
 }
-
-
-
-
 
 void BlankParticipant::set_partition_filter(
         const std::set<std::string>& partitions)

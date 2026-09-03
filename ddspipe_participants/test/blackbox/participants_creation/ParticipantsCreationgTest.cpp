@@ -97,6 +97,7 @@ protected:
     {
         return utils::ReturnCode::RETCODE_NO_DATA;
     }
+
 };
 
 constexpr const unsigned int N_THREADS = 2;

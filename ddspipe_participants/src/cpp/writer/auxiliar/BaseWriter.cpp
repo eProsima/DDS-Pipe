@@ -119,8 +119,6 @@ bool BaseWriter::should_send_sample_() noexcept
     return true;
 }
 
-
-
 std::ostream& operator <<(
         std::ostream& os,
         const BaseWriter& writer)

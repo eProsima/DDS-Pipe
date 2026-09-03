@@ -197,8 +197,6 @@ utils::ReturnCode CommonWriter::write_nts_(
     }
 }
 
-
-
 fastdds::dds::PublisherQos CommonWriter::reckon_publisher_qos_() const noexcept
 {
     // NOTE: this does not handle different partitions
