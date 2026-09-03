@@ -161,8 +161,6 @@ utils::ReturnCode MultiWriter::write_nts_(
     return this_qos_writer->write(data);
 }
 
-
-
 } /* namespace rtps */
 } /* namespace participants */
 } /* namespace ddspipe */

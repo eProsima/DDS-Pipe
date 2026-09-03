@@ -113,7 +113,6 @@ core::types::TopicQoS CommonParticipant::topic_qos() const noexcept
     return configuration_->topic_qos;
 }
 
-
 std::shared_ptr<core::IWriter> CommonParticipant::create_writer(
         const core::ITopic& topic)
 {
@@ -564,10 +563,6 @@ void CommonParticipant::update_content_topicfilter(
 {
     topic_filter_dict_[topic_name] = expression;
 }
-
-
-
-
 
 } /* namespace dds */
 } /* namespace participants */

@@ -33,8 +33,6 @@ utils::ReturnCode BlankWriter::write(
     return utils::ReturnCode::RETCODE_OK;
 }
 
-
-
 } /* namespace participants */
 } /* namespace ddspipe */
 } /* namespace eprosima */

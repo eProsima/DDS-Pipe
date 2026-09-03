@@ -69,7 +69,6 @@ core::types::TopicQoS SchemaParticipant::topic_qos() const noexcept
     return configuration_->topic_qos;
 }
 
-
 std::shared_ptr<IWriter> SchemaParticipant::create_writer(
         const ITopic& topic)
 {
@@ -94,10 +93,6 @@ std::shared_ptr<IReader> SchemaParticipant::create_reader(
 {
     return std::make_shared<BlankReader>();
 }
-
-
-
-
 
 void SchemaParticipant::set_partition_filter(
         const std::set<std::string>& partitions)

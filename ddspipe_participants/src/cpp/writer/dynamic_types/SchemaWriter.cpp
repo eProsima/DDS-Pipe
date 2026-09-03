@@ -44,8 +44,6 @@ SchemaWriter::SchemaWriter(
     // Do nothing
 }
 
-
-
 utils::ReturnCode SchemaWriter::write_nts_(
         core::IRoutingData& data) noexcept
 {

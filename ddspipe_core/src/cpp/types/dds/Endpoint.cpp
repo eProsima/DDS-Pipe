@@ -52,14 +52,14 @@ std::ostream& operator <<(
 {
     std::string active_str = endpoint.active ? "Active" : "Inactive";
 
-    os <<
-        "Endpoint{" << endpoint.guid <<
-        ";" << endpoint.kind <<
-        ";" << endpoint.topic <<
-        ";" << endpoint.specific_qos <<
-        ";" << active_str <<
-        ";" << endpoint.discoverer_participant_id <<
-        "}";
+    os
+        << "Endpoint{" << endpoint.guid
+        << ";" << endpoint.kind
+        << ";" << endpoint.topic
+        << ";" << endpoint.specific_qos
+        << ";" << active_str
+        << ";" << endpoint.discoverer_participant_id
+        << "}";
 
     return os;
 }

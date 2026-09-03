@@ -33,8 +33,6 @@ utils::ReturnCode InternalWriter::write_nts_(
     return callback_(data);
 }
 
-
-
 } /* namespace participants */
 } /* namespace ddspipe */
 } /* namespace eprosima */

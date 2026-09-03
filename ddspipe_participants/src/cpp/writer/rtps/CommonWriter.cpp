@@ -251,8 +251,6 @@ utils::ReturnCode CommonWriter::write_nts_(
     return utils::ReturnCode::RETCODE_OK;
 }
 
-
-
 utils::ReturnCode CommonWriter::fill_to_send_data_(
         fastdds::rtps::CacheChange_t* to_send_change_to_fill,
         fastdds::rtps::WriteParams& to_send_params,

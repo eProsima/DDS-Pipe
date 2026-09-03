@@ -334,7 +334,6 @@ core::types::TopicQoS CommonParticipant::topic_qos() const noexcept
     return configuration_->topic_qos;
 }
 
-
 void CommonParticipant::create_participant_(
         const core::types::DomainId& domain,
         const fastdds::rtps::RTPSParticipantAttributes& participant_attributes)

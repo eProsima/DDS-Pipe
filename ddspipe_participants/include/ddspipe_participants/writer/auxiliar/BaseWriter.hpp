@@ -89,8 +89,6 @@ public:
     virtual utils::ReturnCode write(
             core::IRoutingData& data) noexcept override;
 
-
-
 protected:
 
     /////////////////////////

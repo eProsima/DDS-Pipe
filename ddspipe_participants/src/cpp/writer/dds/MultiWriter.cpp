@@ -106,7 +106,6 @@ utils::ReturnCode MultiWriter::write_nts_(
     return this_qos_writer->write(data);
 }
 
-
 QoSSpecificWriter* MultiWriter::get_writer_or_create_(
         const core::types::SpecificEndpointQoS& data_qos)
 {
@@ -153,7 +152,6 @@ QoSSpecificWriter* MultiWriter::create_writer_nts_(
 
     return writer;
 }
-
 
 } /* namespace dds */
 } /* namespace participants */
