@@ -70,9 +70,9 @@ public:
             const std::set<std::string>& partitions_set,
             const std::string& content_topicfilter_expression);
 
-    //! Update method to change the partitions in the content_topicfilter
+    //! Apply a new partition filter: the set of partitions this Reader subscribes to.
     DDSPIPE_PARTICIPANTS_DllAPI
-    void update_partitions(
+    void set_partition_filter(
             const std::set<std::string>& partitions_set) override;
 
     //! Update method to change the expression in the content_topicfilter

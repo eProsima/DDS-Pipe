@@ -40,12 +40,6 @@ std::shared_ptr<core::IWriter> MockParticipant::create_writer(
     // Block access to internal struct
     std::lock_guard<std::mutex> _(mutex_);
 
-    const auto* distributed_topic = dynamic_cast<const core::types::DistributedTopic*>(&topic);
-    if (distributed_topic)
-    {
-        writer_topic_partitions_[topic.topic_unique_name()] = distributed_topic->partition_name;
-    }
-
     // Look in case it already exists
     auto it = writers_.find(topic.topic_unique_name());
     if (it != writers_.end())
@@ -110,18 +104,6 @@ std::shared_ptr<MockWriter> MockParticipant::get_writer(
     return it->second;
 }
 
-std::map<std::string, std::string> MockParticipant::get_writer_topic_partitions(
-        const core::ITopic& topic) const
-{
-    std::lock_guard<std::mutex> _(mutex_);
-    auto it = writer_topic_partitions_.find(topic.topic_unique_name());
-    if (it == writer_topic_partitions_.end())
-    {
-        return {};
-    }
-    return it->second;
-}
-
 std::shared_ptr<MockReader> MockParticipant::get_reader(
         const core::ITopic& topic) const
 {
@@ -158,7 +140,7 @@ std::size_t MockReader::n_partition_updates() const noexcept
     return partition_updates_.load();
 }
 
-void MockReader::update_partitions(
+void MockReader::set_partition_filter(
         const std::set<std::string>& /* partitions_set */)
 {
     ++partition_updates_;
@@ -211,25 +193,6 @@ utils::ReturnCode MockWriter::write_nts_(
 
     ++waiter_;
     return utils::ReturnCode::RETCODE_OK;
-}
-
-void MockWriter::update_partitions(
-        const std::set<std::string>& /* partitions_set */)
-{
-    // Nothing
-}
-
-void MockWriter::update_topic_partitions(
-        const std::map<std::string, std::string>& partition_name)
-{
-    std::lock_guard<std::mutex> lock(topic_partitions_mutex_);
-    topic_partitions_ = partition_name;
-}
-
-std::map<std::string, std::string> MockWriter::topic_partitions() const
-{
-    std::lock_guard<std::mutex> lock(topic_partitions_mutex_);
-    return topic_partitions_;
 }
 
 MockRoutingData MockWriter::wait_data()
