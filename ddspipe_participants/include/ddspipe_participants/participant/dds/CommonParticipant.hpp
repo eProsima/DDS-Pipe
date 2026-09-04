@@ -319,6 +319,10 @@ protected:
     //! <Topics <Writer_guid, Partitions set>>
     std::map<std::string, std::map<std::string, std::string>> partition_names;
 
+    //! Protects concurrent access to \c partition_names, which is written from the DDS discovery
+    //! thread (add/update/delete/clear_topic_partition) and read from other threads (topic_partitions).
+    mutable std::mutex partition_names_mutex_;
+
     // Filter partitions set
     std::set<std::string> partition_filter_set_;
     // Filter content_topicfilter dict

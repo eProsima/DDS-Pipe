@@ -16,9 +16,16 @@
 #include <cpp_utils/exception/ConfigurationException.hpp>
 #include <gtest/gtest.h>
 
+#include <chrono>
+#include <thread>
+
 #include <ddspipe_core/efficiency/payload/FastPayloadPool.hpp>
+#include <ddspipe_core/testing/random_values.hpp>
 
 #include <ddspipe_participants/participant/rtps/SimpleParticipant.hpp>
+#include <ddspipe_participants/writer/rtps/CommonWriter.hpp>
+
+#include <fastdds/rtps/common/MatchingInfo.hpp>
 
 using namespace eprosima;
 using namespace eprosima::ddspipe;
@@ -135,6 +142,54 @@ TEST(SimpleParticipantTests, simple_participant_easy_mode_configuration)
             ss.str(),
             test::SimpleParticipantTest::easy_mode_invalid_ip_error_msg());
     }
+}
+
+/**
+ * Test that CommonWriter tracks external readers and removes them when they are unmatched.
+ */
+TEST(SimpleParticipantTests, common_writer_reader_matching)
+{
+    auto payload_pool = std::make_shared<core::FastPayloadPool>();
+    auto discovery_database = std::make_shared<core::DiscoveryDatabase>();
+    auto configuration = std::make_shared<participants::SimpleParticipantConfiguration>();
+    configuration->id = core::types::ParticipantId("writer_matching_participant");
+
+    participants::rtps::SimpleParticipant participant(configuration, payload_pool, discovery_database);
+    participant.init();
+
+    core::types::DdsTopic topic;
+    topic.m_topic_name = "CommonWriterMatchingTestTopic";
+    topic.type_name = "CommonWriterMatchingTestType";
+
+    auto writer = participant.create_writer(topic);
+    auto common_writer = std::dynamic_pointer_cast<participants::rtps::CommonWriter>(writer);
+    ASSERT_NE(common_writer, nullptr);
+
+    const core::types::GuidPrefix remote_prefix = core::testing::random_guid_prefix(42);
+    fastdds::rtps::GUID_t remote_guid;
+    remote_guid.guidPrefix = remote_prefix;
+
+    bool wait_result = false;
+    std::thread waiter([&common_writer, &remote_prefix, &wait_result]()
+            {
+                wait_result = common_writer->wait_reader_matched(remote_prefix, 500);
+            });
+
+    std::this_thread::sleep_for(std::chrono::milliseconds(10));
+    common_writer->on_writer_matched(
+        nullptr,
+        fastdds::rtps::MatchingInfo(fastdds::rtps::MATCHED_MATCHING, remote_guid));
+    waiter.join();
+
+    ASSERT_TRUE(wait_result);
+    ASSERT_TRUE(common_writer->wait_reader_matched(remote_prefix, 0));
+    ASSERT_FALSE(common_writer->wait_reader_matched(core::testing::random_guid_prefix(43), 0));
+
+    common_writer->on_writer_matched(
+        nullptr,
+        fastdds::rtps::MatchingInfo(fastdds::rtps::REMOVED_MATCHING, remote_guid));
+
+    ASSERT_FALSE(common_writer->wait_reader_matched(remote_prefix, 0));
 }
 
 int main(

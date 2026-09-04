@@ -115,6 +115,7 @@ core::types::TopicQoS CommonParticipant::topic_qos() const noexcept
 
 std::map<std::string, std::map<std::string, std::string>> CommonParticipant::topic_partitions() const noexcept
 {
+    std::lock_guard<std::mutex> lock(partition_names_mutex_);
     return partition_names;
 }
 
@@ -147,9 +148,17 @@ std::shared_ptr<core::IWriter> CommonParticipant::create_writer(
     // Get the DDS Topic associated (create it if it does not exist)
     fastdds::dds::Topic* fastdds_topic = topic_related_(dds_topic);
 
-    if ((dds_topic.partition_name.size() > 0 &&
-            (dds_topic.partition_name.size() != 1 ||
-            dds_topic.partition_name.begin()->second != "")) ||
+    bool has_specific_partitions = false;
+    for (const auto& partition : dds_topic.partition_name)
+    {
+        if (!partition.second.empty())
+        {
+            has_specific_partitions = true;
+            break;
+        }
+    }
+
+    if (has_specific_partitions ||
             dds_topic.topic_qos.has_partitions() ||
             dds_topic.topic_qos.has_ownership())
     {
@@ -578,6 +587,7 @@ bool CommonParticipant::add_topic_partition(
         const std::string& writer_guid,
         const std::string& partition)
 {
+    std::lock_guard<std::mutex> lock(partition_names_mutex_);
     if (partition_names.find(topic_name) != partition_names.end())
     {
         // the topic exists
@@ -604,6 +614,7 @@ bool CommonParticipant::update_topic_partition(
         const std::string& writer_guid,
         const std::string& partition)
 {
+    std::lock_guard<std::mutex> lock(partition_names_mutex_);
     if (partition_names.find(topic_name) == partition_names.end())
     {
         // the topic dont exists
@@ -625,8 +636,9 @@ bool CommonParticipant::update_topic_partition(
 bool CommonParticipant::delete_topic_partition(
         const std::string& topic_name,
         const std::string& writer_guid,
-        const std::string& partition)
+        const std::string& /* partition */)
 {
+    std::lock_guard<std::mutex> lock(partition_names_mutex_);
     if (partition_names.find(topic_name) == partition_names.end())
     {
         // the topic dont exists
@@ -639,13 +651,20 @@ bool CommonParticipant::delete_topic_partition(
     }
 
     // delete [writer, partition] in the topic
-    partition_names.erase(writer_guid);
+    partition_names[topic_name].erase(writer_guid);
+
+    // remove the topic entry entirely once it has no writers left
+    if (partition_names[topic_name].empty())
+    {
+        partition_names.erase(topic_name);
+    }
 
     return true;
 }
 
 void CommonParticipant::clear_topic_partitions()
 {
+    std::lock_guard<std::mutex> lock(partition_names_mutex_);
     partition_names.clear();
 }
 

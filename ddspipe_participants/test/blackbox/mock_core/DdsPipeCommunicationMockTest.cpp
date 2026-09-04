@@ -366,6 +366,62 @@ TEST(DdsPipeCommunicationMockTest, mock_communication_repeated_endpoint_discover
 }
 
 /**
+ * Test that a newly discovered endpoint is merged into an already existing bridge.
+ *
+ * This is the replacement-writer path: the bridge exists because the topic is builtin, while the
+ * endpoint is discovered afterwards. The replacement writer must be created with the endpoint's
+ * partition map.
+ */
+TEST(DdsPipeCommunicationMockTest, mock_communication_existing_bridge_partition_discovery)
+{
+    core::types::DdsTopic topic;
+    topic.m_topic_name = "topic_with_partition_discovery";
+    topic.type_name = "partition_discovery_type";
+    topic.m_internal_type_discriminator = participants::testing::INTERNAL_TOPIC_TYPE_MOCK_TEST;
+
+    auto htopic = utils::Heritable<core::types::DistributedTopic>::make_heritable(topic);
+
+    core::types::ParticipantId part_1_id("Participant_1");
+    auto part_1 = std::make_shared<participants::testing::MockParticipant>(part_1_id);
+
+    core::types::ParticipantId part_2_id("Participant_2");
+    auto part_2 = std::make_shared<participants::testing::MockParticipant>(part_2_id);
+
+    auto discovery_database = std::make_shared<core::DiscoveryDatabase>();
+    auto participants_database = std::make_shared<core::ParticipantsDatabase>();
+    participants_database->add_participant(part_1_id, part_1);
+    participants_database->add_participant(part_2_id, part_2);
+
+    core::DdsPipeConfiguration configuration;
+    configuration.builtin_topics.insert(htopic);
+    configuration.init_enabled = true;
+    configuration.remove_unused_entities = true;
+
+    core::DdsPipe ddspipe(
+        configuration,
+        discovery_database,
+        std::make_shared<core::FastPayloadPool>(),
+        participants_database,
+        std::make_shared<utils::SlotThreadPool>(test::N_THREADS));
+
+    core::types::Endpoint endpoint = core::testing::random_endpoint();
+    endpoint.kind = core::types::EndpointKind::reader;
+    endpoint.topic = topic;
+    endpoint.discoverer_participant_id = part_1_id;
+
+    std::ostringstream guid;
+    guid << endpoint.guid;
+    endpoint.specific_partitions[guid.str()] = "partition_from_discovery";
+
+    discovery_database->add_endpoint(endpoint);
+    utils::sleep_for(100);
+
+    const auto partitions = part_1->get_writer_topic_partitions(topic);
+    ASSERT_EQ(partitions.size(), 1u);
+    ASSERT_EQ(partitions.at(guid.str()), "partition_from_discovery");
+}
+
+/**
  * Test a DDS Pipe execution with mock participants using a builtin topic and allow or forbid it
  *
  * STEPS:

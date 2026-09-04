@@ -125,6 +125,16 @@ public:
             std::string partition);
 
     /**
+     * Removes the partition associated with an endpoint GUID from the bridge topic.
+     *
+     * @param guid: GUID of the endpoint to remove.
+     * @return true if an entry was removed, false if the GUID was not present.
+     */
+    DDSPIPE_CORE_DllAPI
+    bool remove_partition_from_topic(
+            std::string guid);
+
+    /**
      * Function that updates the partition set of all bridges.
      *
      * @param partitions_set: Set of partitions

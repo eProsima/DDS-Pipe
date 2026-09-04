@@ -381,6 +381,13 @@ bool DdsBridge::add_partition_to_topic(
     return true;
 }
 
+bool DdsBridge::remove_partition_from_topic(
+        std::string guid)
+{
+    std::lock_guard<std::mutex> lock(mutex_);
+    return topic_->partition_name.erase(guid) != 0;
+}
+
 } /* namespace core */
 } /* namespace ddspipe */
 } /* namespace eprosima */

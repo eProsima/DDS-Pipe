@@ -170,6 +170,12 @@ void Track::update_reader()
 void Track::update_writers_topic_partitions(
         const std::map<std::string, std::string>& partition_name)
 {
+    // Keep the writer collection stable and synchronize with transmit_().
+    // MultiWriter may create a QoSSpecificWriter while transmitting, copying its topic_;
+    // update_topic_partitions() mutates that same topic_
+    std::lock_guard<std::mutex> track_lock(track_mutex_);
+    std::lock_guard<std::mutex> transmission_lock(on_transmission_mutex_);
+
     for (const auto& writer: writers_)
     {
         writer.second->update_topic_partitions(partition_name);
