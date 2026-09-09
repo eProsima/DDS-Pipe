@@ -27,6 +27,7 @@
 #include <ddspipe_core/testing/random_values.hpp>
 
 #include <ddspipe_participants/testing/entities/mock_entities.hpp>
+#include <ddspipe_participants/utils/utils.hpp>
 
 using namespace eprosima;
 using namespace eprosima::ddspipe;
@@ -297,7 +298,7 @@ TEST(DdsPipeCommunicationMockTest, mock_communication_topic_discovery)
  * and must update the bridge once. Re-announcing that second endpoint with the
  * same mapping must not trigger another update.
  */
-TEST(DdsPipeCommunicationMockTest, mock_communication_repeated_endpoint_discovery)
+TEST(DdsPipeCommunicationMockTest, mock_communication_partition_filter_propagation)
 {
     core::types::DdsTopic topic_1;
     topic_1.m_topic_name = "topic1";
@@ -332,10 +333,7 @@ TEST(DdsPipeCommunicationMockTest, mock_communication_repeated_endpoint_discover
     first_endpoint.guid = core::testing::random_guid(1);
     first_endpoint.topic = topic_1;
     first_endpoint.discoverer_participant_id = core::types::ParticipantId("RemoteParticipant");
-
-    std::ostringstream first_guid;
-    first_guid << first_endpoint.guid;
-    first_endpoint.specific_partitions[first_guid.str()] = "partition";
+    first_endpoint.specific_qos.partitions.push_back("partition");
 
     discovery_database->add_endpoint(first_endpoint);
     utils::sleep_for(100);
@@ -344,25 +342,35 @@ TEST(DdsPipeCommunicationMockTest, mock_communication_repeated_endpoint_discover
     ASSERT_NE(reader_1, nullptr);
     ASSERT_EQ(reader_1->n_partition_updates(), 0u);
 
+    // Discovering more endpoints, whatever partitions they announce, must never touch the Reader's
+    // partition QoS. The partitions a Reader subscribes to are a policy, and only the filter sets
+    // them; the partitions announced by remote endpoints are observed facts and live in the
+    // DiscoveryDatabase, where every consumer queries them.
     core::types::Endpoint second_endpoint = first_endpoint;
     second_endpoint.guid = core::testing::random_guid(2);
-
-    std::ostringstream second_guid;
-    second_guid << second_endpoint.guid;
-    second_endpoint.specific_partitions.clear();
-    second_endpoint.specific_partitions[second_guid.str()] = "partition";
+    second_endpoint.specific_qos.partitions.clear();
+    second_endpoint.specific_qos.partitions.push_back("other_partition");
 
     discovery_database->add_endpoint(second_endpoint);
     utils::sleep_for(100);
 
-    // The new endpoint mapping must be propagated once
-    ASSERT_EQ(reader_1->n_partition_updates(), 1u);
+    EXPECT_EQ(reader_1->n_partition_updates(), 0u);
 
-    // Re-announcing the same endpoint mapping must not re-apply the reader QoS
     discovery_database->update_endpoint(second_endpoint);
     utils::sleep_for(100);
 
+    EXPECT_EQ(reader_1->n_partition_updates(), 0u);
+
+    // Changing the filter, and only that, re-applies the Reader's partition QoS.
+    ddspipe.set_partition_filter({"partition"});
+    utils::sleep_for(100);
+
     EXPECT_EQ(reader_1->n_partition_updates(), 1u);
+
+    // Both endpoints announce partitions, so the topic is partition aware. This is the single
+    // answer to that question, and it is a live query rather than a cached map.
+    EXPECT_TRUE(discovery_database->topic_has_partitions(topic_1.m_topic_name));
+    EXPECT_FALSE(discovery_database->topic_has_partitions("a_topic_that_does_not_exist"));
 }
 
 /**
@@ -405,20 +413,17 @@ TEST(DdsPipeCommunicationMockTest, mock_communication_existing_bridge_partition_
         std::make_shared<utils::SlotThreadPool>(test::N_THREADS));
 
     core::types::Endpoint endpoint = core::testing::random_endpoint();
+    endpoint.active = true;
     endpoint.kind = core::types::EndpointKind::reader;
     endpoint.topic = topic;
     endpoint.discoverer_participant_id = part_1_id;
 
-    std::ostringstream guid;
-    guid << endpoint.guid;
-    endpoint.specific_partitions[guid.str()] = "partition_from_discovery";
+    endpoint.specific_qos.partitions.push_back("partition_from_discovery");
 
     discovery_database->add_endpoint(endpoint);
     utils::sleep_for(100);
 
-    const auto partitions = part_1->get_writer_topic_partitions(topic);
-    ASSERT_EQ(partitions.size(), 1u);
-    ASSERT_EQ(partitions.at(guid.str()), "partition_from_discovery");
+    ASSERT_TRUE(discovery_database->topic_has_partitions(topic.m_topic_name));
 }
 
 /**
@@ -595,6 +600,231 @@ TEST(DdsPipeCommunicationMockTest, mock_communication_multiple_participant_topic
             }
         }
     }
+}
+
+
+/**
+ * Test that changing the partition of an already discovered endpoint is visible to the live
+ * writer QoS lookup used when a sample is received.
+ *
+ * This intentionally exercises the single relevant endpoint path. It is the path used when one
+ * publisher is discovered and its partition is changed while it is still alive.
+ */
+TEST(DdsPipeCommunicationMockTest, mock_communication_endpoint_partition_update)
+{
+    core::types::DdsTopic topic;
+    topic.m_topic_name = "topic_with_partition_update";
+    topic.type_name = "partition_update_type";
+    topic.m_internal_type_discriminator = participants::testing::INTERNAL_TOPIC_TYPE_MOCK_TEST;
+
+    core::types::ParticipantId part_1_id("Participant_1");
+    auto part_1 = std::make_shared<participants::testing::MockParticipant>(part_1_id);
+
+    core::types::ParticipantId part_2_id("Participant_2");
+    auto part_2 = std::make_shared<participants::testing::MockParticipant>(part_2_id);
+
+    auto discovery_database = std::make_shared<core::DiscoveryDatabase>();
+    auto participants_database = std::make_shared<core::ParticipantsDatabase>();
+    participants_database->add_participant(part_1_id, part_1);
+    participants_database->add_participant(part_2_id, part_2);
+
+    core::DdsPipeConfiguration configuration;
+    configuration.init_enabled = true;
+    configuration.remove_unused_entities = false;
+    configuration.discovery_trigger = core::DiscoveryTrigger::WRITER;
+
+    core::DdsPipe ddspipe(
+        configuration,
+        discovery_database,
+        std::make_shared<core::FastPayloadPool>(),
+        participants_database,
+        std::make_shared<utils::SlotThreadPool>(test::N_THREADS));
+
+    core::types::Endpoint endpoint = core::testing::random_endpoint(1);
+    endpoint.kind = core::types::EndpointKind::writer;
+    endpoint.active = true;
+    endpoint.topic = topic;
+    endpoint.discoverer_participant_id = part_1_id;
+
+    endpoint.specific_qos.partitions.push_back("partition_a");
+
+    discovery_database->add_endpoint(endpoint);
+    utils::sleep_for(100);
+
+    core::types::SpecificEndpointQoS writer_qos;
+    ASSERT_TRUE(participants::detail::try_specific_qos_of_writer_(
+                *discovery_database, endpoint.guid, writer_qos));
+    ASSERT_EQ(writer_qos.partitions.names(), std::vector<std::string>{"partition_a"});
+
+    endpoint.specific_qos.partitions.clear();
+    endpoint.specific_qos.partitions.push_back("partition_b");
+    discovery_database->update_endpoint(endpoint);
+    utils::sleep_for(100);
+
+    writer_qos = {};
+    ASSERT_TRUE(participants::detail::try_specific_qos_of_writer_(*discovery_database, endpoint.guid, writer_qos));
+    EXPECT_EQ(writer_qos.partitions.names(), std::vector<std::string>{"partition_b"});
+}
+
+/**
+ * Test that replacing an endpoint removes its old partition and makes the replacement endpoint's
+ * partition available to the live writer QoS lookup.
+ *
+ * This models a publisher stopping and another publisher on the same topic appearing with a
+ * different partition.
+ */
+TEST(DdsPipeCommunicationMockTest, mock_communication_replaced_endpoint_partition_update)
+{
+    core::types::DdsTopic topic;
+    topic.m_topic_name = "topic_with_replaced_partition";
+    topic.type_name = "replaced_partition_type";
+    topic.m_internal_type_discriminator = participants::testing::INTERNAL_TOPIC_TYPE_MOCK_TEST;
+
+    core::types::ParticipantId part_1_id("Participant_1");
+    auto part_1 = std::make_shared<participants::testing::MockParticipant>(part_1_id);
+
+    core::types::ParticipantId part_2_id("Participant_2");
+    auto part_2 = std::make_shared<participants::testing::MockParticipant>(part_2_id);
+
+    auto discovery_database = std::make_shared<core::DiscoveryDatabase>();
+    auto participants_database = std::make_shared<core::ParticipantsDatabase>();
+    participants_database->add_participant(part_1_id, part_1);
+    participants_database->add_participant(part_2_id, part_2);
+
+    core::DdsPipeConfiguration configuration;
+    configuration.init_enabled = true;
+    configuration.remove_unused_entities = false;
+    configuration.discovery_trigger = core::DiscoveryTrigger::WRITER;
+
+    core::DdsPipe ddspipe(
+        configuration,
+        discovery_database,
+        std::make_shared<core::FastPayloadPool>(),
+        participants_database,
+        std::make_shared<utils::SlotThreadPool>(test::N_THREADS));
+
+    core::types::Endpoint first_endpoint = core::testing::random_endpoint(1);
+    first_endpoint.kind = core::types::EndpointKind::writer;
+    first_endpoint.active = true;
+    first_endpoint.topic = topic;
+    first_endpoint.discoverer_participant_id = part_1_id;
+
+    first_endpoint.specific_qos.partitions.push_back("partition_a");
+
+    discovery_database->add_endpoint(first_endpoint);
+    utils::sleep_for(100);
+
+    core::types::SpecificEndpointQoS writer_qos;
+    ASSERT_TRUE(participants::detail::try_specific_qos_of_writer_(*discovery_database,
+            first_endpoint.guid, writer_qos));
+    ASSERT_EQ(writer_qos.partitions.names(), std::vector<std::string>{"partition_a"});
+
+    core::types::Endpoint removed_endpoint = first_endpoint;
+    removed_endpoint.active = false;
+    discovery_database->update_endpoint(removed_endpoint);
+    utils::sleep_for(100);
+
+    writer_qos = {};
+    ASSERT_FALSE(participants::detail::try_specific_qos_of_writer_(*discovery_database,
+            first_endpoint.guid, writer_qos));
+
+    core::types::Endpoint replacement_endpoint = core::testing::random_endpoint(2);
+    replacement_endpoint.kind = core::types::EndpointKind::writer;
+    replacement_endpoint.active = true;
+    replacement_endpoint.topic = topic;
+    replacement_endpoint.discoverer_participant_id = part_1_id;
+
+    replacement_endpoint.specific_qos.partitions.push_back("partition_b");
+
+    discovery_database->add_endpoint(replacement_endpoint);
+    utils::sleep_for(100);
+
+    writer_qos = {};
+    ASSERT_TRUE(participants::detail::try_specific_qos_of_writer_(*discovery_database,
+            replacement_endpoint.guid, writer_qos));
+    EXPECT_EQ(writer_qos.partitions.names(), std::vector<std::string>{"partition_b"});
+}
+
+/**
+ * Test that applying a partition filter to a disabled pipe does not enable its Readers, and that
+ * data arriving while disabled is still forwarded once the pipe is enabled again.
+ *
+ * Applying the filter by enabling the Reader directly used to leave it active behind a disabled
+ * Track. The following Track::enable() then found the Reader already enabled and skipped its
+ * enable_nts_(), so the data queued in between was never notified and never forwarded.
+ */
+TEST(DdsPipeCommunicationMockTest, mock_communication_partition_filter_while_disabled)
+{
+    core::types::DdsTopic topic;
+    topic.m_topic_name = "topic_filter_while_disabled";
+    topic.type_name = "type_filter_while_disabled";
+    topic.m_internal_type_discriminator = participants::testing::INTERNAL_TOPIC_TYPE_MOCK_TEST;
+
+    core::types::ParticipantId part_1_id("Participant_1");
+    auto part_1 = std::make_shared<participants::testing::MockParticipant>(part_1_id);
+
+    core::types::ParticipantId part_2_id("Participant_2");
+    auto part_2 = std::make_shared<participants::testing::MockParticipant>(part_2_id);
+
+    auto part_db = std::make_shared<core::ParticipantsDatabase>();
+    part_db->add_participant(part_1_id, part_1);
+    part_db->add_participant(part_2_id, part_2);
+
+    auto disc_db = std::make_shared<core::DiscoveryDatabase>();
+
+    core::DdsPipeConfiguration ddspipe_configuration;
+    ddspipe_configuration.init_enabled = true;
+
+    core::DdsPipe ddspipe(
+        ddspipe_configuration,
+        disc_db,
+        std::make_shared<core::FastPayloadPool>(),
+        part_db,
+        std::make_shared<eprosima::utils::SlotThreadPool>(test::N_THREADS)
+        );
+
+    core::types::Endpoint endpoint = core::testing::random_endpoint();
+    endpoint.kind = core::types::EndpointKind::reader;
+    endpoint.topic = topic;
+    disc_db->add_endpoint(endpoint);
+
+    // Wait for entities to be created
+    utils::sleep_for(100);
+
+    auto reader_1 = part_1->get_reader(topic);
+    auto writer_2 = part_2->get_writer(topic);
+    ASSERT_NE(reader_1, nullptr);
+    ASSERT_NE(writer_2, nullptr);
+
+    // Disable the pipe, and with it every Track and every Reader
+    ddspipe.disable();
+    utils::sleep_for(100);
+
+    // Applying the filter must reach the Reader, but must not enable it
+    ddspipe.set_partition_filter({"partition"});
+    utils::sleep_for(100);
+
+    ASSERT_EQ(reader_1->n_partition_updates(), 1u);
+
+    // Data arriving while the pipe is disabled must be queued, not forwarded
+    reader_1->simulate_data_reception(test::new_data(part_1_id, 0));
+    utils::sleep_for(100);
+
+    ASSERT_EQ(writer_2->n_to_send_data(), 0u);
+
+    // Enabling the pipe again must deliver the data queued while it was disabled.
+    //
+    // NOTE: polled with a bound instead of MockWriter::wait_data(), which waits forever. A
+    // regression here means the data is never forwarded, and that must fail rather than hang.
+    ddspipe.enable();
+
+    for (unsigned int i = 0; i < 50 && writer_2->n_to_send_data() == 0u; i++)
+    {
+        utils::sleep_for(20);
+    }
+
+    ASSERT_EQ(writer_2->n_to_send_data(), 1u);
+    EXPECT_EQ(writer_2->wait_data(), test::new_data(part_1_id, 0));
 }
 
 int main(

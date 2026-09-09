@@ -35,6 +35,7 @@ set(TEST_LIST
         inactive_update_clears_filtered_endpoint
         erase_does_not_remove_filtered_only_endpoint
         stop_clears_stored_endpoints
+        topic_has_partitions
     )
 
 set(TEST_EXTRA_LIBRARIES

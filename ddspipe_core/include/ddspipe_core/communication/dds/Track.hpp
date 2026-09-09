@@ -138,40 +138,30 @@ public:
     void update_reader();
 
     /**
-     * Update the writer's topic partitions
+     * Apply a new partition filter to this Track's Reader.
      *
-     * @param partition_name Dictionary of <participant_id, partition name>.
-     *
-     * Tread safe
-     */
-    DDSPIPE_CORE_DllAPI
-    void update_writers_topic_partitions(
-            const std::map<std::string, std::string>& partition_name);
-
-    /**
-     * Update the partitions configured in the track reader.
-     *
-     * The reader is disabled before applying the new partitions
-     * and enabled again afterwards to ensure the reader receive data
-     * with the correct partitions.
+     * If the Track is enabled, it is disabled before replacing the Reader's partition QoS and
+     * enabled again afterwards, so that no data is taken while the QoS changes and the Track is
+     * left in the state it was found in. A disabled Track is left disabled.
      *
      * @param partitions_set Set of partitions to configure in the reader.
      */
     DDSPIPE_CORE_DllAPI
-    void update_reader_partitions(
+    void set_reader_partition_filter(
             const std::set<std::string>& partitions_set);
 
     /**
-     * Update the content filter expression configured in the track reader.
+     * Update the content filter expression configured in this Track's Reader.
      *
-     * The reader is disabled before applying the new expression
-     * and enabled again afterwards to ensure the reader receive data
-     * with the correct topic filter.
+     * If the Track is enabled, it is disabled before replacing the Reader's content filter
+     * expression and enabled again afterwards, so that no data is taken while the expression
+     * changes and the Track is left in the state it was found in. A disabled Track is left
+     * disabled.
      *
      * @param expression SQL-like content filter expression to apply.
      */
     DDSPIPE_CORE_DllAPI
-    void update_reader_content_filter(
+    void set_reader_content_filter(
             const std::string& expression);
 
 protected:

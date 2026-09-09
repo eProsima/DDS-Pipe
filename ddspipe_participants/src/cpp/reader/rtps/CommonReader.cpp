@@ -183,7 +183,7 @@ core::types::DdsTopic CommonReader::topic() const noexcept
     return topic_;
 }
 
-void CommonReader::update_partitions(
+void CommonReader::set_partition_filter(
         const std::set<std::string>& partitions_set)
 {
     const fastdds::dds::PartitionQosPolicy previous_partitions = reader_qos_.m_partition;

@@ -86,16 +86,6 @@ public:
     virtual utils::ReturnCode write(
             IRoutingData& data) noexcept = 0;
 
-    //! Update method to change the partitions in the content_topicfilter
-    DDSPIPE_CORE_DllAPI
-    virtual void update_partitions(
-            const std::set<std::string>& partitions_set) = 0;
-
-    //! Update method to change the topic_partitions
-    DDSPIPE_CORE_DllAPI
-    virtual void update_topic_partitions(
-            const std::map<std::string, std::string>& partition_name) = 0;
-
     /**
      * @brief Wait until this Writer has matched a Reader belonging to the participant identified by
      * \c reader_participant_guid_prefix, or until \c timeout_ms milliseconds have elapsed.

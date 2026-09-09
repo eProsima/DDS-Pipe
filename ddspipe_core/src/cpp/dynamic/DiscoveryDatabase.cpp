@@ -328,6 +328,32 @@ std::map<Guid, Endpoint> DiscoveryDatabase::get_endpoints(
     return endpoints;
 }
 
+bool DiscoveryDatabase::topic_has_partitions(
+        const std::string& topic_name) const noexcept
+{
+    std::shared_lock<std::shared_timed_mutex> lock(mutex_);
+
+    for (const auto& guid_to_entity : entities_)
+    {
+        const auto& endpoint = guid_to_entity.second;
+
+        if (!endpoint.active || endpoint.topic.m_topic_name != topic_name)
+        {
+            continue;
+        }
+
+        for (const auto& partition : endpoint.specific_qos.partitions.names())
+        {
+            if (!partition.empty())
+            {
+                return true;
+            }
+        }
+    }
+
+    return false;
+}
+
 void DiscoveryDatabase::add_endpoint_discovered_callback(
         std::function<void(Endpoint)> endpoint_discovered_callback) noexcept
 {

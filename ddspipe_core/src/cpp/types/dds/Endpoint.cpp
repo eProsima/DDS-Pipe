@@ -25,11 +25,6 @@ TopicQoS Endpoint::topic_qos() const noexcept
     return topic.topic_qos;
 }
 
-std::map<std::string, std::string> Endpoint::topic_partitions() const noexcept
-{
-    return specific_partitions;
-}
-
 bool Endpoint::is_writer() const noexcept
 {
     return kind == EndpointKind::writer;
@@ -57,14 +52,14 @@ std::ostream& operator <<(
 {
     std::string active_str = endpoint.active ? "Active" : "Inactive";
 
-    os <<
-        "Endpoint{" << endpoint.guid <<
-        ";" << endpoint.kind <<
-        ";" << endpoint.topic <<
-        ";" << endpoint.specific_qos <<
-        ";" << active_str <<
-        ";" << endpoint.discoverer_participant_id <<
-        "}";
+    os
+        << "Endpoint{" << endpoint.guid
+        << ";" << endpoint.kind
+        << ";" << endpoint.topic
+        << ";" << endpoint.specific_qos
+        << ";" << active_str
+        << ";" << endpoint.discoverer_participant_id
+        << "}";
 
     return os;
 }

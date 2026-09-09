@@ -104,9 +104,6 @@ public:
     DDSPIPE_PARTICIPANTS_DllAPI
     core::types::TopicQoS topic_qos() const noexcept override;
 
-    //! Override topic_partitions() IParticipant method
-    DDSPIPE_PARTICIPANTS_DllAPI
-    std::map<std::string, std::map<std::string, std::string>> topic_partitions() const noexcept override;
 
     /**
      * @brief Create a writer object
@@ -126,34 +123,13 @@ public:
     std::shared_ptr<core::IReader> create_reader(
             const core::ITopic& topic) override;
 
-    //! Override add_topic_partition() IParticipant method
-    DDSPIPE_PARTICIPANTS_DllAPI
-    bool add_topic_partition(
-            const std::string& topic_name,
-            const std::string& writer_guid,
-            const std::string& partition) override;
 
-    //! Override update_topic_partition() IParticipant method
-    DDSPIPE_PARTICIPANTS_DllAPI
-    bool update_topic_partition(
-            const std::string& topic_name,
-            const std::string& writer_guid,
-            const std::string& partition) override;
 
-    //! Override delete_topic_partition() IParticipant method
-    DDSPIPE_PARTICIPANTS_DllAPI
-    bool delete_topic_partition(
-            const std::string& topic_name,
-            const std::string& writer_guid,
-            const std::string& partition) override;
 
-    //! Override clear_topic_partitions() IParticipant method
-    DDSPIPE_PARTICIPANTS_DllAPI
-    void clear_topic_partitions() override;
 
-    //! Override update_partitions() IParticipant method
+    //! Override set_partition_filter() IParticipant method
     DDSPIPE_PARTICIPANTS_DllAPI
-    virtual void update_partitions(
+    virtual void set_partition_filter(
             const std::set<std::string>& partitions) override;
 
     //! Override update_content_topicfilter() IParticipant method
@@ -323,15 +299,9 @@ protected:
     //! Participant attributes to create the internal RTPS Participant.
     fastdds::rtps::RTPSParticipantAttributes participant_attributes_;
 
-    //! <Topics <Writer_guid, Partitions set>>
-    std::map<std::string, std::map<std::string, std::string>> partition_names;
 
-    //! Protects concurrent access to \c partition_names, which is written from the RTPS discovery
-    //! thread (add/update/delete/clear_topic_partition) and read from other threads (topic_partitions).
-    mutable std::mutex partition_names_mutex_;
-
-    // Filter partitions set
-    std::set<std::string> partition_filter_set_;
+    //! Partition filter applied to the entities this Participant creates.
+    std::set<std::string> partition_filter_;
 };
 
 } /* namespace rtps */

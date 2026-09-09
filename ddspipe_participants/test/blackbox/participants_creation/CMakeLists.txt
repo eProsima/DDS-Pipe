@@ -21,7 +21,10 @@ set(TEST_SOURCES
 set(TEST_LIST
         default_configuration
         creation_trivial
-        blank_participant_partition_lifecycle
+        participant_partition_qos_creates_multiwriter
+        participant_partition_qos_creates_multireader
+        writer_partition_selection_sources
+        partition_filter_interface_implementations
         ddspipe_all_creation_builtin_topic
         writer_topic_profile_lookup
         reader_topic_profile_lookup

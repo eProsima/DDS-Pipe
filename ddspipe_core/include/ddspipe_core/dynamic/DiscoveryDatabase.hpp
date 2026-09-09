@@ -176,6 +176,19 @@ public:
             std::function<bool(const types::Endpoint&)> is_valid_endpoint) const noexcept;
 
     /**
+     * @brief Whether any active endpoint on \c topic_name announces a non-empty partition.
+     *
+     * This is the single authoritative answer to "does this topic need partition-aware entities?".
+     * It is a live query, so it can never be stale: partitions announced by remote endpoints are
+     * observed facts and this database is the only place they are stored.
+     *
+     * @param [in] topic_name : name of the topic to inspect.
+     */
+    DDSPIPE_CORE_DllAPI
+    bool topic_has_partitions(
+            const std::string& topic_name) const noexcept;
+
+    /**
      * @brief Add callback to be called when discovering an Endpoint
      *
      * @param [in] endpoint_discovered_callback: callback to add

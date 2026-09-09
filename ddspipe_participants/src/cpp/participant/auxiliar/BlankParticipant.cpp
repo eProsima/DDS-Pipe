@@ -48,12 +48,6 @@ core::types::TopicQoS BlankParticipant::topic_qos() const noexcept
     return m_topic_qos;
 }
 
-std::map<std::string, std::map<std::string, std::string>> BlankParticipant::topic_partitions() const noexcept
-{
-    std::lock_guard<std::mutex> lock(partition_names_mutex_);
-    return partition_names;
-}
-
 std::shared_ptr<core::IWriter> BlankParticipant::create_writer(
         const core::ITopic& topic)
 {
@@ -66,93 +60,7 @@ std::shared_ptr<core::IReader> BlankParticipant::create_reader(
     return std::make_shared<BlankReader>();
 }
 
-bool BlankParticipant::add_topic_partition(
-        const std::string& topic_name,
-        const std::string& writer_guid,
-        const std::string& partition)
-{
-    std::lock_guard<std::mutex> lock(partition_names_mutex_);
-    if (partition_names.find(topic_name) != partition_names.end())
-    {
-        // the topic exists
-        if (partition_names[topic_name].find(writer_guid) != partition_names[topic_name].end())
-        {
-            // the writer is already added in the topic
-            return false;
-        }
-    }
-    else
-    {
-        // there is no topic in the dictionary
-        partition_names[topic_name] = std::map<std::string, std::string>();
-    }
-
-    // adds [writer, partition] in the topic
-    partition_names[topic_name][writer_guid] = partition;
-
-    return true;
-}
-
-bool BlankParticipant::update_topic_partition(
-        const std::string& topic_name,
-        const std::string& writer_guid,
-        const std::string& partition)
-{
-    std::lock_guard<std::mutex> lock(partition_names_mutex_);
-    if (partition_names.find(topic_name) == partition_names.end())
-    {
-        // the topic dont exists
-        return false;
-    }
-    if (partition_names[topic_name].find(writer_guid) == partition_names[topic_name].end())
-    {
-        // the writer dont exist in the topic
-
-        return false;
-    }
-
-    // update [writer, partition] in the topic
-    partition_names[topic_name][writer_guid] = partition;
-
-    return true;
-}
-
-bool BlankParticipant::delete_topic_partition(
-        const std::string& topic_name,
-        const std::string& writer_guid,
-        const std::string& /* partition */)
-{
-    std::lock_guard<std::mutex> lock(partition_names_mutex_);
-    if (partition_names.find(topic_name) == partition_names.end())
-    {
-        // the topic dont exists
-        return false;
-    }
-    if (partition_names[topic_name].find(writer_guid) == partition_names[topic_name].end())
-    {
-        // the writer dont exist in the topic
-        return false;
-    }
-
-    // delete [writer, partition] in the topic
-    partition_names[topic_name].erase(writer_guid);
-
-    // remove the topic entry entirely once it has no writers left
-    if (partition_names[topic_name].empty())
-    {
-        partition_names.erase(topic_name);
-    }
-
-    return true;
-}
-
-void BlankParticipant::clear_topic_partitions()
-{
-    std::lock_guard<std::mutex> lock(partition_names_mutex_);
-    partition_names.clear();
-}
-
-void BlankParticipant::update_partitions(
+void BlankParticipant::set_partition_filter(
         const std::set<std::string>& partitions)
 {
     // Nothing

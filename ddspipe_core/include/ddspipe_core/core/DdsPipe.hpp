@@ -126,16 +126,6 @@ public:
     DDSPIPE_CORE_DllAPI
     utils::ReturnCode disable() noexcept;
 
-    /**
-     * @brief Update the stored partitions filter.
-     *
-     * This method replaces the current partitions filter used by the pipe.
-     *
-     * @param [in] filter_partition_set : new partitions filter.
-     */
-    DDSPIPE_CORE_DllAPI
-    void update_filter(
-            const std::set<std::string> filter_partition_set);
 
     /**
      * @brief Update the partitions in every DDS topic bridge.
@@ -143,7 +133,7 @@ public:
      * @param [in] partitions_set : set of partitions to apply.
      */
     DDSPIPE_CORE_DllAPI
-    void update_partitions(
+    void set_partition_filter(
             const std::set<std::string>& partitions_set);
 
     /**
@@ -384,7 +374,7 @@ protected:
      *
      * This method must be called with \c mutex_ locked.
      */
-    void update_partitions_nts_(
+    void set_partition_filter_nts_(
             const std::set<std::string>& partitions_set);
 
     //////////////////////////
@@ -460,11 +450,14 @@ protected:
     //! Whether the DdsPipe is currently communicating data or not
     bool enabled_;
 
-    //! Allowed partitions list added in the filter.
-    std::set<std::string> filter_partition_;
-
-    //! Current partitions configured in readers through \c update_partitions.
-    std::set<std::string> reader_partitions_;
+    /**
+     * @brief The partition filter currently applied to every Reader in the pipe.
+     *
+     * This is the pipe's only partition state. It is a policy, not an observation: the partitions
+     * announced by remote endpoints are facts owned by the DiscoveryDatabase and are queried live
+     * wherever they are needed.
+     */
+    std::set<std::string> partition_filter_;
 
     /**
      * @brief Internal mutex for concurrent calls

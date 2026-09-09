@@ -114,33 +114,12 @@ public:
             const types::ParticipantId& participant_id) noexcept;
 
     /**
-     * Adds a partition with its respective guid.
+     * Apply a new partition filter to every Reader of this Bridge.
      *
-     * @param guid: Guid of the endpoint.
-     * @param partition: Partition that is going to be added.
+     * @param partitions_set: Set of partitions the Readers must subscribe to.
      */
     DDSPIPE_CORE_DllAPI
-    bool add_partition_to_topic(
-            std::string guid,
-            std::string partition);
-
-    /**
-     * Removes the partition associated with an endpoint GUID from the bridge topic.
-     *
-     * @param guid: GUID of the endpoint to remove.
-     * @return true if an entry was removed, false if the GUID was not present.
-     */
-    DDSPIPE_CORE_DllAPI
-    bool remove_partition_from_topic(
-            std::string guid);
-
-    /**
-     * Function that updates the partition set of all bridges.
-     *
-     * @param partitions_set: Set of partitions
-     */
-    DDSPIPE_CORE_DllAPI
-    void update_partitions(
+    void set_partition_filter(
             const std::set<std::string>& partitions_set);
 
     /**
@@ -212,9 +191,6 @@ protected:
 
     //! Topics that explicitally set a QoS attribute for this participant.
     std::vector<types::ManualTopic> manual_topics_;
-
-    //! Allowed partitions list added in the filter.
-    std::set<std::string> filter_partition_;
 
     /**
      * Inside \c Tracks

@@ -161,18 +161,6 @@ utils::ReturnCode MultiWriter::write_nts_(
     return this_qos_writer->write(data);
 }
 
-void MultiWriter::update_partitions(
-        const std::set<std::string>& partitions_set)
-{
-    // Nothing
-}
-
-void MultiWriter::update_topic_partitions(
-        const std::map<std::string, std::string>& partition_name)
-{
-    topic_.partition_name = partition_name;
-}
-
 } /* namespace rtps */
 } /* namespace participants */
 } /* namespace ddspipe */

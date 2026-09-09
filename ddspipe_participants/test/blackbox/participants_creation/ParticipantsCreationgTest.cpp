@@ -20,6 +20,7 @@
 #include <ddspipe_core/configuration/DdsPipeConfiguration.hpp>
 #include <ddspipe_core/core/DdsPipe.hpp>
 #include <ddspipe_core/efficiency/payload/FastPayloadPool.hpp>
+#include <ddspipe_core/testing/random_values.hpp>
 
 #include <ddspipe_participants/participant/auxiliar/BlankParticipant.hpp>
 #include <ddspipe_participants/participant/auxiliar/EchoParticipant.hpp>
@@ -28,12 +29,20 @@
 #include <ddspipe_participants/participant/rtps/CommonParticipant.hpp>
 #include <ddspipe_participants/participant/rtps/InitialPeersParticipant.hpp>
 #include <ddspipe_participants/participant/dds/XmlParticipant.hpp>
+#include <ddspipe_participants/participant/dynamic_types/SchemaParticipant.hpp>
 #include <ddspipe_participants/testing/entities/mock_entities.hpp>
 #include <ddspipe_participants/testing/random_values.hpp>
 #include <ddspipe_participants/reader/auxiliar/BlankReader.hpp>
+#include <ddspipe_participants/reader/auxiliar/BaseReader.hpp>
+#include <ddspipe_participants/reader/auxiliar/InternalReader.hpp>
 #include <ddspipe_participants/reader/dds/SimpleReader.hpp>
+#include <ddspipe_participants/reader/dds/SpecificQoSReader.hpp>
+#include <ddspipe_participants/reader/rtps/SpecificQoSReader.hpp>
 #include <ddspipe_participants/writer/auxiliar/BlankWriter.hpp>
 #include <ddspipe_participants/writer/dds/SimpleWriter.hpp>
+#include <ddspipe_participants/writer/dds/MultiWriter.hpp>
+#include <ddspipe_participants/writer/rtps/SimpleWriter.hpp>
+#include <ddspipe_participants/writer/rtps/MultiWriter.hpp>
 #include <ddspipe_participants/xml/XmlHandler.hpp>
 #include <ddspipe_participants/xml/XmlHandlerConfiguration.hpp>
 #include <fastdds/dds/domain/DomainParticipantFactory.hpp>
@@ -67,6 +76,26 @@ public:
     fastdds::dds::DataReader* get_dds_reader()
     {
         return reader_;
+    }
+
+};
+
+class TestableBaseReader : public participants::BaseReader
+{
+public:
+
+    explicit TestableBaseReader(
+            const core::types::ParticipantId& participant_id)
+        : BaseReader(participant_id)
+    {
+    }
+
+protected:
+
+    utils::ReturnCode take_nts_(
+            std::unique_ptr<core::IRoutingData>&) noexcept override
+    {
+        return utils::ReturnCode::RETCODE_NO_DATA;
     }
 
 };
@@ -165,27 +194,90 @@ TEST(ParticipantsCreationgTest, creation_trivial)
 }
 
 /**
- * Test the lifecycle of the per-topic writer partition map.
+ * A participant-level partition QoS must select a MultiWriter even when the topic itself does not
+ * carry the partition flag. This is the path used when the QoS is configured for a participant in
+ * YAML and the writer is created directly from that participant.
  */
-TEST(ParticipantsCreationgTest, blank_participant_partition_lifecycle)
+TEST(ParticipantsCreationgTest, participant_partition_qos_creates_multiwriter)
 {
-    participants::BlankParticipant participant(core::types::ParticipantId("partition_participant"));
+    std::shared_ptr<core::PayloadPool> payload_pool(new core::FastPayloadPool());
+    std::shared_ptr<core::DiscoveryDatabase> discovery_database(new core::DiscoveryDatabase());
 
-    ASSERT_TRUE(participant.add_topic_partition("topic", "writer_1", "partition_1"));
-    ASSERT_FALSE(participant.add_topic_partition("topic", "writer_1", "partition_1"));
-    ASSERT_TRUE(participant.add_topic_partition("topic", "writer_2", "partition_2"));
+    core::types::DdsTopic topic;
+    topic.m_topic_name = "participant_partition_topic";
+    topic.type_name = "participant_partition_type";
 
-    ASSERT_TRUE(participant.update_topic_partition("topic", "writer_1", "updated_partition"));
-    ASSERT_FALSE(participant.update_topic_partition("topic", "missing_writer", "partition"));
+    {
+        auto conf = std::make_shared<participants::SimpleParticipantConfiguration>();
+        conf->id = "partition_rtps_participant";
+        conf->topic_qos.use_partitions.set_value(true);
 
-    ASSERT_TRUE(participant.delete_topic_partition("topic", "writer_1", "updated_partition"));
-    auto partitions = participant.topic_partitions();
-    ASSERT_EQ(partitions.size(), 1u);
-    ASSERT_EQ(partitions.at("topic").at("writer_2"), "partition_2");
+        participants::rtps::SimpleParticipant participant(conf, payload_pool, discovery_database);
+        participant.init();
 
-    ASSERT_TRUE(participant.delete_topic_partition("topic", "writer_2", "partition_2"));
-    ASSERT_TRUE(participant.topic_partitions().empty());
-    ASSERT_FALSE(participant.delete_topic_partition("topic", "writer_2", "partition_2"));
+        const auto writer = participant.create_writer(topic);
+        ASSERT_NE(dynamic_cast<participants::rtps::MultiWriter*>(writer.get()), nullptr);
+    }
+
+    {
+        auto conf = std::make_shared<participants::XmlParticipantConfiguration>();
+        conf->id = "partition_dds_participant";
+        conf->topic_qos.use_partitions.set_value(true);
+
+        participants::dds::XmlParticipant participant(conf, payload_pool, discovery_database);
+        participant.init();
+
+        const auto writer = participant.create_writer(topic);
+        ASSERT_NE(dynamic_cast<participants::dds::MultiWriter*>(writer.get()), nullptr);
+    }
+}
+
+/**
+ * A participant-level partition QoS must select a partition-aware Reader for the same reason, and
+ * on the same sources, as it selects a MultiWriter.
+ *
+ * The two decisions cannot disagree. Only a SpecificQoSReader stamps every received sample with
+ * the QoS of the Writer that produced it, and that stamp is the only thing a MultiWriter can route
+ * on. A plain Reader paired with a MultiWriter forwards every sample into the default partition.
+ */
+TEST(ParticipantsCreationgTest, participant_partition_qos_creates_multireader)
+{
+    std::shared_ptr<core::PayloadPool> payload_pool(new core::FastPayloadPool());
+    std::shared_ptr<core::DiscoveryDatabase> discovery_database(new core::DiscoveryDatabase());
+
+    core::types::DdsTopic topic;
+    topic.m_topic_name = "participant_partition_reader_topic";
+    topic.type_name = "participant_partition_reader_type";
+
+    {
+        auto conf = std::make_shared<participants::SimpleParticipantConfiguration>();
+        conf->id = "partition_reader_rtps_participant";
+        conf->topic_qos.use_partitions.set_value(true);
+
+        participants::rtps::SimpleParticipant participant(conf, payload_pool, discovery_database);
+        participant.init();
+
+        const auto writer = participant.create_writer(topic);
+        ASSERT_NE(dynamic_cast<participants::rtps::MultiWriter*>(writer.get()), nullptr);
+
+        const auto reader = participant.create_reader(topic);
+        ASSERT_NE(dynamic_cast<participants::rtps::SpecificQoSReader*>(reader.get()), nullptr);
+    }
+
+    {
+        auto conf = std::make_shared<participants::XmlParticipantConfiguration>();
+        conf->id = "partition_reader_dds_participant";
+        conf->topic_qos.use_partitions.set_value(true);
+
+        participants::dds::XmlParticipant participant(conf, payload_pool, discovery_database);
+        participant.init();
+
+        const auto writer = participant.create_writer(topic);
+        ASSERT_NE(dynamic_cast<participants::dds::MultiWriter*>(writer.get()), nullptr);
+
+        const auto reader = participant.create_reader(topic);
+        ASSERT_NE(dynamic_cast<participants::dds::SpecificQoSReader*>(reader.get()), nullptr);
+    }
 }
 
 /**
@@ -1037,6 +1129,143 @@ TEST(ParticipantsCreationgTest, reader_topic_profile_lookup_not_enabled_by_defau
         qos.endpoint().history_memory_policy);
 
     fastdds::dds::DomainParticipantFactory::get_instance()->delete_participant(dds_participant);
+}
+
+/**
+ * Test every source used to decide whether a writer must be partition-aware.
+ *
+ * A topic QoS flag, the participant QoS, and a discovered non-empty partition must all select a
+ * MultiWriter. An explicitly empty partition is treated as the default partition and keeps the
+ * writer simple.
+ */
+TEST(ParticipantsCreationgTest, writer_partition_selection_sources)
+{
+    std::shared_ptr<core::PayloadPool> payload_pool(new core::FastPayloadPool());
+    std::shared_ptr<core::DiscoveryDatabase> discovery_database(new core::DiscoveryDatabase());
+    discovery_database->start();
+
+    {
+        auto conf = std::make_shared<participants::SimpleParticipantConfiguration>();
+        conf->id = "partition_sources_rtps";
+
+        participants::rtps::SimpleParticipant participant(conf, payload_pool, discovery_database);
+        participant.init();
+        EXPECT_NO_THROW(participant.set_partition_filter({"reader_partition"}));
+
+        core::types::DdsTopic topic;
+        topic.m_topic_name = "topic_qos_partition_rtps";
+        topic.type_name = "topic_qos_partition_rtps_type";
+        topic.topic_qos.use_partitions.set_value(true);
+
+        const auto writer = participant.create_writer(topic);
+        ASSERT_NE(dynamic_cast<participants::rtps::MultiWriter*>(writer.get()), nullptr);
+
+        const auto reader = participant.create_reader(topic);
+        EXPECT_NO_THROW(reader->set_partition_filter({"reader_partition"}));
+    }
+
+    {
+        auto conf = std::make_shared<participants::XmlParticipantConfiguration>();
+        conf->id = "partition_sources_dds";
+
+        participants::dds::XmlParticipant participant(conf, payload_pool, discovery_database);
+        participant.init();
+        EXPECT_NO_THROW(participant.set_partition_filter({"reader_partition"}));
+
+        core::types::DdsTopic topic;
+        topic.m_topic_name = "topic_qos_partition_dds";
+        topic.type_name = "topic_qos_partition_dds_type";
+        topic.topic_qos.use_partitions.set_value(true);
+
+        const auto writer = participant.create_writer(topic);
+        ASSERT_NE(dynamic_cast<participants::dds::MultiWriter*>(writer.get()), nullptr);
+
+        const auto reader = participant.create_reader(topic);
+        EXPECT_NO_THROW(reader->set_partition_filter({"reader_partition"}));
+    }
+
+    core::types::Endpoint endpoint = core::testing::random_endpoint(20);
+    endpoint.active = true;
+    endpoint.topic.m_topic_name = "discovered_partition_topic";
+    endpoint.topic.type_name = "discovered_partition_type";
+    endpoint.specific_qos.partitions.push_back("discovered_partition");
+    discovery_database->add_endpoint(endpoint);
+
+    core::types::Endpoint empty_partition_endpoint = core::testing::random_endpoint(21);
+    empty_partition_endpoint.active = true;
+    empty_partition_endpoint.topic.m_topic_name = "empty_partition_topic";
+    empty_partition_endpoint.topic.type_name = "empty_partition_type";
+    empty_partition_endpoint.specific_qos.partitions.push_back("");
+    discovery_database->add_endpoint(empty_partition_endpoint);
+    utils::sleep_for(100);
+
+    {
+        auto conf = std::make_shared<participants::SimpleParticipantConfiguration>();
+        conf->id = "discovered_partition_rtps";
+
+        participants::rtps::SimpleParticipant participant(conf, payload_pool, discovery_database);
+        participant.init();
+
+        core::types::DdsTopic discovered_topic;
+        discovered_topic.m_topic_name = "discovered_partition_topic";
+        discovered_topic.type_name = "discovered_partition_type";
+        const auto discovered_writer = participant.create_writer(discovered_topic);
+        ASSERT_NE(dynamic_cast<participants::rtps::MultiWriter*>(discovered_writer.get()), nullptr);
+
+        core::types::DdsTopic empty_topic;
+        empty_topic.m_topic_name = "empty_partition_topic";
+        empty_topic.type_name = "empty_partition_type";
+        const auto empty_writer = participant.create_writer(empty_topic);
+        ASSERT_NE(dynamic_cast<participants::rtps::SimpleWriter*>(empty_writer.get()), nullptr);
+    }
+
+    {
+        auto conf = std::make_shared<participants::XmlParticipantConfiguration>();
+        conf->id = "discovered_partition_dds";
+
+        participants::dds::XmlParticipant participant(conf, payload_pool, discovery_database);
+        participant.init();
+
+        core::types::DdsTopic discovered_topic;
+        discovered_topic.m_topic_name = "discovered_partition_topic";
+        discovered_topic.type_name = "discovered_partition_type";
+        const auto discovered_writer = participant.create_writer(discovered_topic);
+        ASSERT_NE(dynamic_cast<participants::dds::MultiWriter*>(discovered_writer.get()), nullptr);
+
+        core::types::DdsTopic empty_topic;
+        empty_topic.m_topic_name = "empty_partition_topic";
+        empty_topic.type_name = "empty_partition_type";
+        const auto empty_writer = participant.create_writer(empty_topic);
+        ASSERT_NE(dynamic_cast<participants::dds::SimpleWriter*>(empty_writer.get()), nullptr);
+    }
+
+    discovery_database->stop();
+}
+
+/**
+ * Exercise the partition-filter interface on participants and reader implementations that do not
+ * maintain DDS partition state.
+ */
+TEST(ParticipantsCreationgTest, partition_filter_interface_implementations)
+{
+    participants::BlankParticipant blank_participant(core::types::ParticipantId("blank"));
+    EXPECT_NO_THROW(blank_participant.set_partition_filter({"partition"}));
+
+    participants::SchemaParticipant schema_participant(
+        std::make_shared<participants::ParticipantConfiguration>(),
+        nullptr,
+        nullptr,
+        nullptr);
+    EXPECT_NO_THROW(schema_participant.set_partition_filter({"partition"}));
+
+    participants::BlankReader blank_reader;
+    EXPECT_NO_THROW(blank_reader.set_partition_filter({"partition"}));
+
+    participants::InternalReader internal_reader(core::types::ParticipantId("internal"));
+    EXPECT_NO_THROW(internal_reader.set_partition_filter({"partition"}));
+
+    test::TestableBaseReader base_reader(core::types::ParticipantId("base"));
+    EXPECT_NO_THROW(base_reader.set_partition_filter({"partition"}));
 }
 
 int main(

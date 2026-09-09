@@ -130,9 +130,9 @@ public:
     DDSPIPE_CORE_DllAPI
     virtual types::DdsTopic topic() const = 0;
 
-    //! Update method to change the partitions in the content_topicfilter
+    //! Apply a new partition filter: the set of partitions this Reader subscribes to.
     DDSPIPE_CORE_DllAPI
-    virtual void update_partitions(
+    virtual void set_partition_filter(
             const std::set<std::string>& partitions_set) = 0;
 
     //! Update method to change the expression in the content_topicfilter

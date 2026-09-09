@@ -89,8 +89,64 @@ public:
 
 protected:
 
+    //! Discard every sample already available in the reader
+    void drain_reader()
+    {
+        LogEntry entry;
+        SampleInfo info;
+
+        while (reader_->take_next_sample(&entry, &info) == RETCODE_OK)
+        {
+        }
+    }
+
+    /**
+     * @brief Log traces until one of them is received by the reader, then discard them.
+     *
+     * Log samples are published with volatile durability, so every trace logged before the writer has
+     * matched the reader is dropped. A match seen from the reader side does not imply that the writer
+     * has matched yet, hence the only reliable way to know that traces are being delivered is to keep
+     * logging until one of them arrives.
+     *
+     * Since the writer is reliable and delivers in order, once a trace is received every previously
+     * accepted trace is already in the reader's cache, so draining it leaves the reader empty for the
+     * checks performed by the test.
+     *
+     * @return whether the traces reached the reader before the timeout.
+     */
+    bool wait_for_log_delivery()
+    {
+        const auto deadline = std::chrono::steady_clock::now() + std::chrono::seconds(5);
+
+        while (std::chrono::steady_clock::now() < deadline)
+        {
+            EPROSIMA_LOG_INFO(DDSPIPE_TEST, "LOG_CONSUMER_TEST | Waiting for the writer to match.");
+            utils::Log::Flush();
+
+            if (reader_->wait_for_unread_message(test::logging::MAX_WAITING_TIME))
+            {
+                drain_reader();
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     DomainParticipant* participant_ = nullptr;
     DataReader* reader_ = nullptr;
+};
+
+class LogConsumersGuard
+{
+public:
+
+    ~LogConsumersGuard()
+    {
+        // Keep the global logger from retaining a consumer that references a test-local configuration.
+        utils::Log::ClearConsumers();
+    }
+
 };
 
 /**
@@ -117,6 +173,7 @@ TEST_F(DdsLogConsumerTest, publish_logs)
 
     utils::Log::ClearConsumers();
     utils::Log::SetVerbosity(log_configuration.verbosity);
+    LogConsumersGuard log_consumers_guard;
 
     // Register the DdsLogConsumer
     if (log_configuration.publish.enable)
@@ -124,8 +181,8 @@ TEST_F(DdsLogConsumerTest, publish_logs)
         utils::Log::RegisterConsumer(std::make_unique<ddspipe::core::DdsLogConsumer>(&log_configuration));
     }
 
-    // Wait for the publisher and the subscriber to match
-    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    // Log samples use volatile durability, so do not check any trace until traces are being delivered
+    ASSERT_TRUE(wait_for_log_delivery());
 
     LogEntry entry;
     SampleInfo info;
@@ -184,7 +241,6 @@ TEST_F(DdsLogConsumerTest, publish_logs)
         ASSERT_EQ(entry.message(), "LOG_CONSUMER_TEST | You only live once.");
     }
 
-    utils::Log::ClearConsumers();
 }
 
 /**

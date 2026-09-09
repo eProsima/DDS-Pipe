@@ -64,7 +64,7 @@ core::types::DdsTopic BlankReader::topic() const
     throw utils::UnsupportedException("topic method not allowed for non RTPS readers.");
 }
 
-void BlankReader::update_partitions(
+void BlankReader::set_partition_filter(
         const std::set<std::string>& /* partitions_set */)
 {
     // Nothing

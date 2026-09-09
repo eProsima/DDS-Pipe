@@ -73,10 +73,6 @@ public:
             const core::ITopic& topic) const;
 
     DDSPIPE_PARTICIPANTS_DllAPI
-    std::map<std::string, std::string> get_writer_topic_partitions(
-            const core::ITopic& topic) const;
-
-    DDSPIPE_PARTICIPANTS_DllAPI
     std::shared_ptr<MockReader> get_reader(
             const core::ITopic& topic) const;
 
@@ -84,7 +80,6 @@ protected:
 
     std::map<std::string, std::shared_ptr<MockWriter>> writers_;
     std::map<std::string, std::shared_ptr<MockReader>> readers_;
-    std::map<std::string, std::map<std::string, std::string>> writer_topic_partitions_;
 
     mutable std::mutex mutex_;
 };
@@ -122,7 +117,7 @@ public:
     std::size_t n_partition_updates() const noexcept;
 
     DDSPIPE_PARTICIPANTS_DllAPI
-    void update_partitions(
+    void set_partition_filter(
             const std::set<std::string>& partitions_set) override;
 
     DDSPIPE_PARTICIPANTS_DllAPI
@@ -149,16 +144,6 @@ public:
     DDSPIPE_PARTICIPANTS_DllAPI
     utils::ReturnCode write_nts_(
             core::IRoutingData& data) noexcept override;
-
-    //! Update method to change the partitions in the content_topicfilter
-    DDSPIPE_PARTICIPANTS_DllAPI
-    virtual void update_partitions(
-            const std::set<std::string>& partitions_set) override;
-
-    //! Update method to change the topic_partitions
-    DDSPIPE_PARTICIPANTS_DllAPI
-    void update_topic_partitions(
-            const std::map<std::string, std::string>& partition_name) override;
 
     DDSPIPE_PARTICIPANTS_DllAPI
     MockRoutingData wait_data();

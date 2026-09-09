@@ -472,7 +472,7 @@ void CommonReader::fill_received_data_(
     }
 }
 
-void CommonReader::update_partitions(
+void CommonReader::set_partition_filter(
         const std::set<std::string>& partitions_set)
 {
     fastdds::dds::SubscriberQos sub_qos = dds_subscriber_->get_qos();
