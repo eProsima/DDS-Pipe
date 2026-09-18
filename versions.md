@@ -5,9 +5,41 @@ The *Forthcoming* section includes those features added in `main` branch that ar
 
 ## Forthcoming
 
-The upcoming release will include the following features:
+## eProsima DDS Pipe v0.5.0
+
+**This is the last release of the 0.x series.
+The `0.x` branch has reached its End-of-Life (EOL) and will receive no further releases, bugfixes or security updates.
+Users are encouraged to migrate to the latest stable version of **DDS Pipe**.**
+
+This release includes the following *new features*:
+* Accept IPv6 interfaces and interface names in the `whitelist-interfaces` configuration.
+* Print `PolicyMask` values as strings in the logs.
+* Export the `create_listener` method of the participants.
+* Split the RTPS and DDS listeners in the `DynTypesParticipant`.
+
+This release includes the following *bugfixes*:
+* Fix several data races in the DDS Pipe.
+* Fix a data race on the concurrent release of payloads in the `FastPayloadPool`.
+* Process received samples only if the reader is enabled.
+* Reset cache changes to avoid data fragmentation issues.
+* Remove the change before creating it in a full writer's history.
+* Fix the `PLATFORM_SUPPORT` documentation.
+
+This release includes the following *CI improvements*:
 * Support Ubuntu Noble (24.04).
 * Stop supporting Ubuntu Focal (20.04).
+* Support multiple versions of Fast DDS in the CI.
+* Add a mirror CI workflow.
+* Empty the XTSAN tests list.
+
+This release includes the following *dependencies update*:
+
+|  | Repository | Old Version | New Version |
+|---|---|---|---|
+| Foonathan Memory Vendor | [eProsima/foonathan_memory_vendor](https://github.com/eProsima/foonathan_memory_vendor) | [v1.3.1](https://github.com/eProsima/foonathan_memory_vendor/releases/tag/v1.3.1) | [v1.3.1](https://github.com/eProsima/foonathan_memory_vendor/releases/tag/v1.3.1) |
+| Fast CDR | [eProsima/Fast-CDR](https://github.com/eProsima/Fast-CDR) | [v2.2.0](https://github.com/eProsima/Fast-CDR/releases/tag/v2.2.0) | [v2.2.0](https://github.com/eProsima/Fast-CDR/releases/tag/v2.2.0) |
+| Fast DDS | [eProsima/Fast-DDS](https://github.com/eProsima/Fast-DDS) | [v2.14.0](https://github.com/eProsima/Fast-DDS/releases/tag/v2.14.0) | [v2.14.7](https://github.com/eProsima/Fast-DDS/releases/tag/v2.14.7) |
+| Dev Utils | [eProsima/dev-utils](https://github.com/eProsima/dev-utils) | [v0.6.0](https://github.com/eProsima/dev-utils/releases/tag/v0.6.0) | [v0.7.0](https://github.com/eProsima/dev-utils/releases/tag/v0.7.0) |
 
 ## eProsima DDS Pipe v0.4.0
 
