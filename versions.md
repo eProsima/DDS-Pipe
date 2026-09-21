@@ -37,7 +37,7 @@ This release includes the following *dependencies update*:
 |  | Repository | Old Version | New Version |
 |---|---|---|---|
 | Foonathan Memory Vendor | [eProsima/foonathan_memory_vendor](https://github.com/eProsima/foonathan_memory_vendor) | [v1.3.1](https://github.com/eProsima/foonathan_memory_vendor/releases/tag/v1.3.1) | [v1.3.1](https://github.com/eProsima/foonathan_memory_vendor/releases/tag/v1.3.1) |
-| Fast CDR | [eProsima/Fast-CDR](https://github.com/eProsima/Fast-CDR) | [v2.2.0](https://github.com/eProsima/Fast-CDR/releases/tag/v2.2.0) | [v2.2.0](https://github.com/eProsima/Fast-CDR/releases/tag/v2.2.0) |
+| Fast CDR | [eProsima/Fast-CDR](https://github.com/eProsima/Fast-CDR) | [v2.2.0](https://github.com/eProsima/Fast-CDR/releases/tag/v2.2.0) | [v2.2.8](https://github.com/eProsima/Fast-CDR/releases/tag/v2.2.8) |
 | Fast DDS | [eProsima/Fast-DDS](https://github.com/eProsima/Fast-DDS) | [v2.14.0](https://github.com/eProsima/Fast-DDS/releases/tag/v2.14.0) | [v2.14.7](https://github.com/eProsima/Fast-DDS/releases/tag/v2.14.7) |
 | Dev Utils | [eProsima/dev-utils](https://github.com/eProsima/dev-utils) | [v0.6.0](https://github.com/eProsima/dev-utils/releases/tag/v0.6.0) | [v0.7.0](https://github.com/eProsima/dev-utils/releases/tag/v0.7.0) |
 
