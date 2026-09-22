@@ -10,7 +10,6 @@ on:
         default: 'v3'
         options:
           - custom
-          - v2
           - v3
       dependencies_artifact_postfix:
         description: 'Postfix to download a specific dependencies artifact from eProsima-CI.'
