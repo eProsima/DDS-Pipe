@@ -48,6 +48,14 @@ DistributedTopic : public Topic
     {
     }
 
+    //! Make a copy of the Topic
+    DDSPIPE_CORE_DllAPI
+    virtual utils::Heritable<ITopic> copy() const noexcept override
+    {
+        DistributedTopic topic = *this;
+        return utils::Heritable<DistributedTopic>::make_heritable(topic);
+    }
+
 };
 
 } /* namespace types */
