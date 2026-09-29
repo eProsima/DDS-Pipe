@@ -36,7 +36,26 @@ namespace types {
 struct
 DistributedTopic : public Topic
 {
-    // Extend nothing
+    /////////////////////////
+    // METHODS
+    /////////////////////////
+
+    //! Record QoS coming exclusively from user configuration. No-op unless overridden by a subclass.
+    DDSPIPE_CORE_DllAPI
+    virtual void set_user_configured_qos(
+            const TopicQoS& qos,
+            const utils::FuzzyLevelValues& fuzzy_level) noexcept
+    {
+    }
+
+    //! Make a copy of the Topic
+    DDSPIPE_CORE_DllAPI
+    virtual utils::Heritable<ITopic> copy() const noexcept override
+    {
+        DistributedTopic topic = *this;
+        return utils::Heritable<DistributedTopic>::make_heritable(topic);
+    }
+
 };
 
 } /* namespace types */

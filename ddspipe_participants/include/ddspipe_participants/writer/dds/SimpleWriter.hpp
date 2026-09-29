@@ -55,7 +55,6 @@ public:
             fastdds::dds::DomainParticipant* participant,
             fastdds::dds::Topic* topic_entity,
             const bool repeater = false,
-            const bool yaml_qos_override = true,
             const bool xml_lookup_enabled = false);
 
 };

@@ -67,6 +67,13 @@ utils::Heritable<ITopic> DdsTopic::copy() const noexcept
     return utils::Heritable<DdsTopic>::make_heritable(topic);
 }
 
+void DdsTopic::set_user_configured_qos(
+        const TopicQoS& qos,
+        const utils::FuzzyLevelValues& fuzzy_level) noexcept
+{
+    user_configured_qos.set_qos(qos, fuzzy_level);
+}
+
 /////////////////////////
 // STATIC METHODS
 /////////////////////////

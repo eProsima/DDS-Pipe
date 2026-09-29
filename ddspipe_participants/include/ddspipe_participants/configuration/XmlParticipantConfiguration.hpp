@@ -23,12 +23,6 @@ namespace eprosima {
 namespace ddspipe {
 namespace participants {
 
-enum class EndpointQoSMode
-{
-    XML_STANDALONE,    //! XML profile is selected
-    XML_OVERRIDABLE,   //! YAML QoS overrides XML
-};
-
 /**
  * This data struct represents a configuration for a Participant loaded from an XML profile.
  */
@@ -55,8 +49,6 @@ public:
     /////////////////////////
 
     utils::Fuzzy<std::string> participant_profile {};
-
-    EndpointQoSMode endpoint_qos_mode {EndpointQoSMode::XML_OVERRIDABLE};
 };
 
 } /* namespace participants */
