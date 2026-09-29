@@ -21,6 +21,9 @@
 
 #include <cpp_utils/utils.hpp>
 
+#include <fastdds/dds/domain/DomainParticipantFactory.hpp>
+#include <fastdds/dds/xtypes/type_representation/ITypeObjectRegistry.hpp>
+
 #include <ddspipe_core/types/topic/rpc/RpcTopic.hpp>
 #include <ddspipe_core/types/data/RpcPayloadData.hpp>
 
@@ -57,6 +60,21 @@ RpcTopic::RpcTopic(
     , request_type_suffix_ ("")
     , reply_type_suffix_ ("")
 {
+}
+
+fastdds::dds::xtypes::TypeIdentifierPair RpcTopic::registered_type_identifiers_(
+        const std::string& type_name) noexcept
+{
+    fastdds::dds::xtypes::TypeIdentifierPair type_identifiers;
+
+    if (fastdds::dds::RETCODE_OK !=
+            fastdds::dds::DomainParticipantFactory::get_instance()->type_object_registry().get_type_identifiers(
+                type_name, type_identifiers))
+    {
+        return fastdds::dds::xtypes::TypeIdentifierPair();
+    }
+
+    return type_identifiers;
 }
 
 RpcTopic::RpcTopic(
@@ -119,12 +137,21 @@ RpcTopic::RpcTopic(
         request_topic_.topic_qos = topic.topic_qos;
         reply_topic_.topic_qos = topic.topic_qos;
 
-        // WORKAROUND: Remove type information from RPC topics. Currently the creation of an RPC topic is triggered when
-        // an entity corresponding to the request or reply topics is discovered. This way, the topic and type names of the
-        // other topic conforming the pair is deduced. However it is not possible to deduce the type information, so we
-        // leave this field empty until the creation mechanism is adapted to cover this scenario.
-        request_topic_.type_identifiers = fastdds::dds::xtypes::TypeIdentifierPair();
-        reply_topic_.type_identifiers = fastdds::dds::xtypes::TypeIdentifierPair();
+        // The creation of an RPC topic is triggered when an entity corresponding to the request or reply topic is
+        // discovered, and the other topic of the pair is deduced from it. Both were copied from the discovered topic
+        // above, so the deduced one carries type information that is not its own.
+        //
+        // The discovered topic keeps its type information: it is known. The deduced one looks its own up by type
+        // name in the TypeObjectRegistry, and is left without type information only when its type is not registered
+        // locally under that name.
+        if (is_request_topic(topic))
+        {
+            reply_topic_.type_identifiers = registered_type_identifiers_(reply_topic_.type_name);
+        }
+        else
+        {
+            request_topic_.type_identifiers = registered_type_identifiers_(request_topic_.type_name);
+        }
     }
     else
     {
