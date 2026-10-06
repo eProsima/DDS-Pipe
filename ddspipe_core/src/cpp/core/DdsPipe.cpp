@@ -335,7 +335,6 @@ void DdsPipe::updated_endpoint_nts_(
 {
     logDebug(DDSPIPE, "Endpoint updated in DDS Pipe core: " << endpoint << ".");
 
-
     if (endpoint.active)
     {
         discovered_endpoint_nts_(endpoint);
