@@ -290,6 +290,12 @@ void RpcBridge::removed_service(
 
     if (!current_servers_[server_participant_id].size())
     {
+        // Erase empty entry so enable() does not create a proxy client in a participant without servers
+        current_servers_.erase(server_participant_id);
+
+        // Wait for ongoing transmissions to finish before removing endpoints
+        std::unique_lock<std::shared_timed_mutex> lock(on_transmission_mutex_);
+
         // Remove proxy client
 
         auto request_writers_it = request_writers_.find(server_participant_id);
@@ -335,6 +341,9 @@ void RpcBridge::removed_service(
 
     if (!servers_available_())
     {
+        // Wait for ongoing transmissions to finish before removing endpoints
+        std::unique_lock<std::shared_timed_mutex> lock(on_transmission_mutex_);
+
         std::set<ParticipantId> all_ids = participants_->get_rtps_participants_ids(); // TODO: compute once and store, or change if DDS supported
         for (auto id : all_ids)
         {
