@@ -221,14 +221,12 @@ void RpcBridge::disable() noexcept
     for (auto& reader_it : request_readers_)
     {
         reader_it.second->disable();
-        Guid reader_guid = reader_it.second->guid();
-        thread_pool_->remove_slot(tasks_map_[reader_guid].second);
+        remove_slot_(reader_it.second->guid());
     }
 
     for (auto& reader_it : reply_readers_)
     {
-        Guid reader_guid = reader_it.second->guid();
-        thread_pool_->remove_slot(tasks_map_[reader_guid].second);
+        remove_slot_(reader_it.second->guid());
         reader_it.second->disable();
     }
 
@@ -319,9 +317,7 @@ void RpcBridge::removed_service(
         else
         {
             reply_readers_it->second->disable();
-
-            Guid reader_guid = reply_readers_it->second->guid();
-            thread_pool_->remove_slot(tasks_map_[reader_guid].second);
+            remove_slot_(reply_readers_it->second->guid());
 
             reply_readers_.erase(reply_readers_it);
         }
@@ -360,9 +356,7 @@ void RpcBridge::removed_service(
             if (request_readers_it != request_readers_.end())
             {
                 request_readers_it->second->disable();
-
-                Guid reader_guid = request_readers_it->second->guid();
-                thread_pool_->remove_slot(tasks_map_[reader_guid].second);
+                remove_slot_(request_readers_it->second->guid());
 
                 request_readers_.erase(request_readers_it);
             }
@@ -383,7 +377,8 @@ bool RpcBridge::servers_available_() const noexcept
 }
 
 void RpcBridge::data_available_(
-        const Guid& reader_guid) noexcept
+        const Guid& reader_guid,
+        ReaderTask& task) noexcept
 {
     // Only hear callback if it is enabled
     if (enabled_)
@@ -392,13 +387,14 @@ void RpcBridge::data_available_(
             DDSPIPE_RPCBRIDGE, "RpcBridge " << *this
                                             << " has data ready to be sent in reader " << reader_guid << " .");
 
-        // Protected by internal RTPS Reader mutex, as called within \c onNewCacheChangeAdded callback
-        // This method is also called from Reader's \c enable_ , so Reader's mutex must also be taken there beforehand
-        std::pair<bool, utils::TaskId>& task = tasks_map_[reader_guid];
-        if (!task.first)
+        // Get previous status and set current one to >=2 (if it was already >=2 it will keep being >2)
+        unsigned int previous_status = task.data_available_status.fetch_add(DataAvailableStatus::new_data_arrived);
+
+        if (previous_status == DataAvailableStatus::no_more_data)
         {
-            task.first = true;
-            thread_pool_->emit(task.second);
+            // no_more_data was set as current status, so no thread was running
+            // (and will not start as 2 is set as new current status)
+            thread_pool_->emit(task.task_id);
             logDebug(DDSPIPE_RPCBRIDGE, "RpcBridge " << *this
                                                      << " - " << reader_guid << " send callback to queue.");
         }
@@ -406,13 +402,14 @@ void RpcBridge::data_available_(
         {
             logDebug(DDSPIPE_RPCBRIDGE, "RpcBridge " << *this
                                                      << " - " << reader_guid
-                                                     << " callback NOT sent (task already queued).");
+                                                     << " callback NOT sent (task already queued or running).");
         }
     }
 }
 
 void RpcBridge::transmit_(
-        std::shared_ptr<IReader> reader) noexcept
+        std::shared_ptr<IReader> reader,
+        std::shared_ptr<ReaderTask> task) noexcept
 {
     // Avoid being disabled while transmitting
     std::shared_lock<std::shared_timed_mutex> lock(on_transmission_mutex_);
@@ -420,37 +417,39 @@ void RpcBridge::transmit_(
     logDebug(DDSPIPE_RPCBRIDGE, "RpcBridge " << *this
                                              << " transmitting for reader " << reader->guid() << " .");
 
-    while (true)
+    while (enabled_)
     {
-        {
-            std::lock_guard<eprosima::fastdds::RecursiveTimedMutex> lock(reader->get_rtps_mutex());
-
-            if (!enabled_ || !(reader->get_unread_count() > 0))
-            {
-                if (!enabled_)
-                {
-                    logDebug(DDSPIPE_RPCBRIDGE,
-                            "RpcBridge service " << *this << " finishing transmitting: bridge disabled.");
-                }
-                else
-                {
-                    logDebug(DDSPIPE_RPCBRIDGE,
-                            "RpcBridge service " << *this << " finishing transmitting: no more data available.");
-                }
-
-                // Finish transmission
-                tasks_map_[reader->guid()].first = false;
-
-                return;
-            }
-        }
+        // It starts transmitting, so it sets the data available status as transmitting
+        // This will erase every previous value added in data_available_ and set 1
+        task->data_available_status.store(DataAvailableStatus::transmitting_data);
 
         // Get data received
         std::unique_ptr<IRoutingData> data;
         utils::ReturnCode ret = reader->take(data);
 
-        // Will never return \c NO_DATA, otherwise would have finished before
-        if (ret != utils::ReturnCode::RETCODE_OK)
+        // A disabled reader does not notify new data, so it is handled as if there was no more data.
+        // Its enable notifies again the data received in the meantime.
+        if (ret == utils::ReturnCode::RETCODE_NO_DATA || ret == utils::ReturnCode::RETCODE_NOT_ENABLED)
+        {
+            // There is no more data; reduce the status by 1
+            unsigned int previous_status =
+                    task->data_available_status.fetch_sub(DataAvailableStatus::transmitting_data);
+            if (previous_status == DataAvailableStatus::transmitting_data)
+            {
+                // Previous Status = 1 (transmitting => no data available callback has been called)
+                // Current Status  = 0 (new callbacks will emit the task)
+                logDebug(DDSPIPE_RPCBRIDGE,
+                        "RpcBridge service " << *this << " finishing transmitting: no more data available.");
+                return;
+            }
+            else
+            {
+                // New data has arrived while setting no_more_data, so it should continue
+                // While setting status to 1 again, the value is still >=1 so no other thread will start
+                continue;
+            }
+        }
+        else if (ret != utils::ReturnCode::RETCODE_OK)
         {
             // Error reading data
             EPROSIMA_LOG_WARNING(DDSPIPE_RPCBRIDGE,
@@ -646,7 +645,13 @@ void RpcBridge::transmit_(
         }
 
         payload_pool_->release_payload(rpc_data.payload);
-    }/*  */
+    }
+
+    logDebug(DDSPIPE_RPCBRIDGE,
+            "RpcBridge service " << *this << " finishing transmitting: bridge disabled.");
+
+    // Finish transmission, so a new data available callback emits the task again
+    task->data_available_status.store(DataAvailableStatus::no_more_data);
 }
 
 void RpcBridge::create_slot_(
@@ -654,21 +659,35 @@ void RpcBridge::create_slot_(
 {
     Guid reader_guid = reader->guid();
 
-    reader->set_on_data_available_callback(
-        [=]()
-        {
-            data_available_(reader_guid);
-        });
+    // Shared with the callbacks, so they do not access the map (modified while creating/removing proxies)
+    std::shared_ptr<ReaderTask> task = std::make_shared<ReaderTask>();
+    task->task_id = utils::new_unique_task_id();
 
-    // Set slot in thread pool for this reader
-    utils::TaskId task_id = utils::new_unique_task_id();
+    // Set slot in thread pool for this reader before the callback that emits it
     thread_pool_->slot(
-        task_id,
-        [=]()
+        task->task_id,
+        [this, reader, task]()
         {
-            transmit_(reader);
+            transmit_(reader, task);
         });
-    tasks_map_[reader_guid] = {false, task_id};
+    tasks_map_[reader_guid] = task;
+
+    reader->set_on_data_available_callback(
+        [this, reader_guid, task]()
+        {
+            data_available_(reader_guid, *task);
+        });
+}
+
+void RpcBridge::remove_slot_(
+        const Guid& reader_guid) noexcept
+{
+    auto it = tasks_map_.find(reader_guid);
+    if (it != tasks_map_.end())
+    {
+        thread_pool_->remove_slot(it->second->task_id);
+        tasks_map_.erase(it);
+    }
 }
 
 std::ostream& operator <<(

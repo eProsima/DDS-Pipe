@@ -331,11 +331,6 @@ core::types::Guid CommonReader::guid() const noexcept
     return reader_->guid();
 }
 
-fastdds::RecursiveTimedMutex& CommonReader::get_rtps_mutex() const noexcept
-{
-    return reader_->get_rtps_mutex();
-}
-
 uint64_t CommonReader::get_unread_count() const noexcept
 {
     return reader_->get_unread_count();

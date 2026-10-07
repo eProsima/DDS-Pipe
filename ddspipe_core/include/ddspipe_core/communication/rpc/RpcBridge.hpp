@@ -129,9 +129,35 @@ protected:
     void create_slot_(
             std::shared_ptr<IReader> reader) noexcept;
 
-    //! Callback to execute when a new cache change is added to this reader
+    /*
+     * The on_data_available callback is called with the internal Fast DDS Reader mutex taken, so instead of sharing
+     * a mutex between the callback and the transmission, a status counter per reader is used (same as in \c Track).
+     * This enumeration works as numbers and not as enumeration (could be seen as a collection of constexpr).
+     */
+    //! Status of the data available in a reader of this bridge
+    enum DataAvailableStatus
+    {
+        no_more_data = 0,               //! Bridge has announced that Reader has no more data
+        transmitting_data = 1,          //! Bridge is taking data from the Reader, so it could or could not be data
+        new_data_arrived = 2 /* >2 */,  //! Listener has announced that new data has arrived
+    };
+
+    //! Thread pool task associated to a reader, and the status of the data available in it
+    struct ReaderTask
+    {
+        std::atomic<unsigned int> data_available_status{DataAvailableStatus::no_more_data};
+        utils::TaskId task_id;
+    };
+
+    /**
+     * Callback to execute when a new cache change is added to this reader
+     *
+     * Adds \c new_data_arrived to the reader's \c data_available_status and emits its transmission task in case
+     * no transmission was ongoing.
+     */
     void data_available_(
-            const types::Guid& reader_guid) noexcept;
+            const types::Guid& reader_guid,
+            ReaderTask& task) noexcept;
 
     /**
      * REQUEST: Take data from request \c reader and send this data through all proxy clients which are in contact
@@ -142,9 +168,17 @@ protected:
      *
      * Finish execution when no more data is available, or bridge has been disabled (due to servers unavailability or
      * topic being blocked).
+     *
+     * @note \c reader and \c task are taken by value, so they outlive the thread pool slot if it is removed while
+     * this transmission is waiting for \c on_transmission_mutex_ .
      */
     void transmit_(
-            std::shared_ptr<IReader> reader) noexcept;
+            std::shared_ptr<IReader> reader,
+            std::shared_ptr<ReaderTask> task) noexcept;
+
+    //! Remove the thread pool slot associated to this reader
+    void remove_slot_(
+            const types::Guid& reader_guid) noexcept;
 
     //! Whether there are any servers in the database
     bool servers_available_() const noexcept;
@@ -157,8 +191,8 @@ protected:
     std::map<types::ParticipantId, std::shared_ptr<IReader>> reply_readers_;
     std::map<types::ParticipantId, std::shared_ptr<IWriter>> request_writers_;
 
-    //! Map readers' GUIDs to their associated thread pool tasks, and also keep a task emission flag.
-    std::map<types::Guid, std::pair<bool, utils::TaskId>> tasks_map_;
+    //! Map readers' GUIDs to their associated thread pool tasks and data available status.
+    std::map<types::Guid, std::shared_ptr<ReaderTask>> tasks_map_;
 
     /**
      * Registry of requests received, with all the information needed to send the future reply back to the requester.

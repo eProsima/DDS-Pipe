@@ -116,10 +116,6 @@ public:
     DDSPIPE_PARTICIPANTS_DllAPI
     core::types::Guid guid() const noexcept override;
 
-    //! Get internal RTPS reader mutex
-    DDSPIPE_PARTICIPANTS_DllAPI
-    fastdds::RecursiveTimedMutex& get_rtps_mutex() const noexcept override;
-
     //! Get number of unread cache changes in internal RTPS reader
     DDSPIPE_PARTICIPANTS_DllAPI
     uint64_t get_unread_count() const noexcept override;
