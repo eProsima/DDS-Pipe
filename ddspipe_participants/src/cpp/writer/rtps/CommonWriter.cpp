@@ -76,8 +76,9 @@ CommonWriter::~CommonWriter()
     // Delete writer
     if (rtps_writer_)
     {
-        // Unset listener before destruction (not necessary in principle, but just in case)
-        rtps_writer_->set_listener(nullptr);
+        // NOTE: the listener must not be unset before destruction. Fast DDS does not protect the listener, and reads it
+        // twice (check and call) in callbacks that may be running concurrently (e.g. a remote reader being unpaired),
+        // so unsetting it may cause a null dereference. This object outlives the RTPS Writer, so it is safe to keep it.
 
         if (wait_all_acked_timeout > 0)
         {

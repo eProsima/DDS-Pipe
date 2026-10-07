@@ -87,8 +87,9 @@ CommonReader::~CommonReader()
     // Delete reader
     if (rtps_reader_)
     {
-        // Unset listener before destruction (not necessary in principle, but just in case)
-        rtps_reader_->set_listener(nullptr);
+        // NOTE: the listener must not be unset before destruction. Fast DDS does not protect the listener, and reads it
+        // twice (check and call) in callbacks that may be running concurrently (e.g. a remote writer being unpaired),
+        // so unsetting it may cause a null dereference. This object outlives the RTPS Reader, so it is safe to keep it.
         fastdds::rtps::RTPSDomain::removeRTPSReader(rtps_reader_);
     }
 
