@@ -21,6 +21,7 @@
 
 
 #include <cpp_utils/exception/InitializationException.hpp>
+#include <cpp_utils/exception/ValueNotAllowedException.hpp>
 #include <cpp_utils/Log.hpp>
 #include <cpp_utils/utils.hpp>
 
@@ -394,7 +395,18 @@ void RpcBridge::data_available_(
         {
             // no_more_data was set as current status, so no thread was running
             // (and will not start as 2 is set as new current status)
-            thread_pool_->emit(task.task_id);
+            try
+            {
+                thread_pool_->emit(task.task_id);
+            }
+            catch (const utils::ValueNotAllowedException&)
+            {
+                // The reader is being removed concurrently (callback raced with its disable and slot removal)
+                logDebug(DDSPIPE_RPCBRIDGE, "RpcBridge " << *this
+                                                         << " - " << reader_guid
+                                                         << " slot already removed, data discarded.");
+                return;
+            }
             logDebug(DDSPIPE_RPCBRIDGE, "RpcBridge " << *this
                                                      << " - " << reader_guid << " send callback to queue.");
         }
