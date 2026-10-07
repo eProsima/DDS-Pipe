@@ -281,6 +281,9 @@ void CommonReader::update_content_topic_filter(
 utils::ReturnCode CommonReader::take_nts_(
         std::unique_ptr<core::IRoutingData>& data) noexcept
 {
+    // Hold the RTPS Reader mutex until the change is removed, so it cannot be released concurrently
+    std::lock_guard<fastdds::RecursiveTimedMutex> lock(rtps_reader_->getMutex());
+
     // Check if there is data available
     if (!(rtps_reader_->get_unread_count() > 0))
     {
