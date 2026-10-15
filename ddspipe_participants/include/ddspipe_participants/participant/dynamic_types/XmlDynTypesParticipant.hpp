@@ -21,6 +21,7 @@
 
 #include <memory>
 #include <set>
+#include <string>
 
 #include <fastcdr/cdr/fixed_size_string.hpp>
 
@@ -32,6 +33,8 @@
 #include <fastdds/rtps/participant/RTPSParticipant.hpp>
 #include <fastdds/rtps/reader/ReaderDiscoveryStatus.hpp>
 #include <fastdds/rtps/writer/WriterDiscoveryStatus.hpp>
+
+#include <cpp_utils/ReturnCode.hpp>
 
 #include <ddspipe_participants/configuration/XmlParticipantConfiguration.hpp>
 #include <ddspipe_participants/library/library_dll.h>
@@ -82,6 +85,20 @@ public:
     DDSPIPE_PARTICIPANTS_DllAPI
     std::shared_ptr<core::IReader> create_reader(
             const core::ITopic& topic) override;
+
+    /**
+     * @brief Loads the structures and unions declared in IDL files and notifies them as discovered types.
+     *
+     * A loaded type may be notified again if it is discovered later.
+     * Requires Fast DDS 3.4.0 or later, and a Fast DDS version that supports directories to load one.
+     *
+     * @param idl_path IDL file, or directory searched recursively for IDL files.
+     * @return \c RETCODE_OK if every file was loaded, \c RETCODE_ERROR if some failed, \c RETCODE_NO_DATA if no
+     * types were found, and \c RETCODE_PRECONDITION_NOT_MET if the path does not exist or Fast DDS is too old.
+     */
+    DDSPIPE_PARTICIPANTS_DllAPI
+    utils::ReturnCode load_idl_types(
+            const std::string& idl_path);
 
     /**
      * @class XmlDynTypesDdsListener
