@@ -35,6 +35,8 @@
 
 #include <ddspipe_participants/participant/dynamic_types/XmlDynTypesParticipant.hpp>
 
+#include "idl_types.hpp"
+
 namespace eprosima {
 namespace ddspipe {
 namespace participants {
@@ -73,6 +75,12 @@ std::shared_ptr<IReader> XmlDynTypesParticipant::create_reader(
 
     // If not type object, use the parent method
     return dds::XmlParticipant::create_reader(topic);
+}
+
+utils::ReturnCode XmlDynTypesParticipant::load_idl_types(
+        const std::string& idl_path)
+{
+    return load_idl_types_into(idl_path, *type_object_reader_);
 }
 
 XmlDynTypesParticipant::XmlDynTypesDdsListener::XmlDynTypesDdsListener(
