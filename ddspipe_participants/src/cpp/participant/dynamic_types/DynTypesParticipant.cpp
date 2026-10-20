@@ -25,6 +25,8 @@
 #include <fastdds/rtps/attributes/RTPSParticipantAttributes.hpp>
 #include <fastdds/rtps/RTPSDomain.hpp>
 
+#include <cpp_utils/exception/InitializationException.hpp>
+#include <cpp_utils/Formatter.hpp>
 #include <cpp_utils/Log.hpp>
 
 #include <ddspipe_core/monitoring/producers/TopicsMonitorProducer.hpp>
@@ -54,6 +56,7 @@ DynTypesParticipant::DynTypesParticipant(
         discovery_database)
     , type_object_reader_(std::make_shared<InternalReader>(
                 this->id()))
+    , idl_types_(std::make_shared<std::map<std::string, fastdds::dds::xtypes::TypeIdentifier>>())
 {
     // Do nothing
 }
@@ -78,20 +81,44 @@ std::shared_ptr<IReader> DynTypesParticipant::create_reader(
     return rtps::SimpleParticipant::create_reader(topic);
 }
 
-utils::ReturnCode DynTypesParticipant::load_idl_types(
-        const std::string& idl_path)
+void DynTypesParticipant::init()
 {
-    return load_idl_types_into(idl_path, *type_object_reader_);
+    const auto configuration = std::dynamic_pointer_cast<SimpleParticipantConfiguration>(configuration_);
+    const auto& idl_types_paths = configuration->idl_types_paths;
+
+    // Other failures only affect some types, and are already logged
+    if (!idl_types_paths.empty() &&
+            register_idl_types({idl_types_paths.begin(), idl_types_paths.end()}, configuration->idl_include_paths,
+            *idl_types_) == utils::ReturnCode::RETCODE_PRECONDITION_NOT_MET)
+    {
+        throw utils::InitializationException(STR_ENTRY << "Error loading the IDL types of Participant " << id() << ".");
+    }
+
+    rtps::SimpleParticipant::init();
 }
 
 DynTypesParticipant::DynTypesRtpsListener::DynTypesRtpsListener(
         std::shared_ptr<ParticipantConfiguration> conf,
         std::shared_ptr<core::DiscoveryDatabase> ddb,
         std::shared_ptr<InternalReader> internal_reader)
+    : DynTypesRtpsListener(
+        conf,
+        ddb,
+        internal_reader,
+        std::make_shared<const std::map<std::string, fastdds::dds::xtypes::TypeIdentifier>>())
+{
+}
+
+DynTypesParticipant::DynTypesRtpsListener::DynTypesRtpsListener(
+        std::shared_ptr<ParticipantConfiguration> conf,
+        std::shared_ptr<core::DiscoveryDatabase> ddb,
+        std::shared_ptr<InternalReader> internal_reader,
+        std::shared_ptr<const std::map<std::string, fastdds::dds::xtypes::TypeIdentifier>> idl_types)
     : rtps::CommonParticipant::RtpsListener(
         conf,
         ddb)
     , type_object_reader_(internal_reader)
+    , idl_types_(idl_types)
 {
 }
 
@@ -143,7 +170,19 @@ void DynTypesParticipant::DynTypesRtpsListener::notify_type_discovered_(
         return;
     }
 
-    const auto type_identifier = type_info.complete().typeid_with_size().type_id();
+    auto type_identifier = type_info.complete().typeid_with_size().type_id();
+
+    // Endpoints that do not share their type are resolved by name with the types loaded from IDL
+    if (fastdds::dds::xtypes::TK_NONE == type_identifier._d())
+    {
+        const auto idl_type = idl_types_->find(type_name);
+
+        if (idl_type != idl_types_->end())
+        {
+            type_identifier = idl_type->second;
+        }
+    }
+
     fastdds::dds::xtypes::TypeObject dyn_type_object;
     if (fastdds::dds::RETCODE_OK !=
             fastdds::dds::DomainParticipantFactory::get_instance()->type_object_registry().get_type_object(
@@ -187,7 +226,8 @@ void DynTypesParticipant::DynTypesRtpsListener::notify_type_discovered_(
 
 std::unique_ptr<fastdds::rtps::RTPSParticipantListener> DynTypesParticipant::create_listener_()
 {
-    return std::make_unique<DynTypesRtpsListener>(configuration_, discovery_database_, type_object_reader_);
+    return std::make_unique<DynTypesRtpsListener>(configuration_, discovery_database_, type_object_reader_,
+                   idl_types_);
 }
 
 } /* namespace participants */

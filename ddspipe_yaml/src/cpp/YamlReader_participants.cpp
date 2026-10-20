@@ -140,6 +140,19 @@ void YamlReader::fill(
                         version);
     }
 
+    // Optional IDL types paths
+    if (YamlReader::is_tag_present(yml, IDL_TYPES_PATHS_TAG))
+    {
+        object.idl_types_paths = YamlReader::get_set<std::string>(yml, IDL_TYPES_PATHS_TAG, version);
+    }
+
+    // Optional IDL include paths, kept in order as it is the search order
+    if (YamlReader::is_tag_present(yml, IDL_INCLUDE_PATHS_TAG))
+    {
+        const auto idl_include_paths = YamlReader::get_list<std::string>(yml, IDL_INCLUDE_PATHS_TAG, version);
+        object.idl_include_paths = {idl_include_paths.begin(), idl_include_paths.end()};
+    }
+
     if (YamlReader::is_tag_present(yml, EASY_MODE_TAG))
     {
         object.easy_mode_ip = get<participants::types::IpType>(yml, EASY_MODE_TAG, version);
