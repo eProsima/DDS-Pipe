@@ -18,6 +18,7 @@
 
 #pragma once
 
+#include <map>
 #include <memory>
 #include <set>
 #include <string>
@@ -32,8 +33,6 @@
 #include <fastdds/rtps/participant/RTPSParticipant.hpp>
 #include <fastdds/rtps/reader/ReaderDiscoveryStatus.hpp>
 #include <fastdds/rtps/writer/WriterDiscoveryStatus.hpp>
-
-#include <cpp_utils/ReturnCode.hpp>
 
 #include <ddspipe_participants/configuration/SimpleParticipantConfiguration.hpp>
 #include <ddspipe_participants/library/library_dll.h>
@@ -78,18 +77,14 @@ public:
             const core::ITopic& topic) override;
 
     /**
-     * @brief Load the structures and unions declared in IDL files and notify them as discovered types.
+     * @brief Load the structures of the configured IDL types paths and initialize the participant
      *
-     * A loaded type may be notified again if it is discovered later.
-     * Requires Fast DDS 3.4.0 or later, and a Fast DDS version that supports directories to load one.
+     * The loaded types resolve the types of the discovered endpoints that do not share them.
      *
-     * @param idl_path IDL file, or directory searched recursively for IDL files.
-     * @return \c RETCODE_OK if every file was loaded, \c RETCODE_ERROR if some failed, \c RETCODE_NO_DATA if no
-     * types were found, and \c RETCODE_PRECONDITION_NOT_MET if the path does not exist or Fast DDS is too old.
+     * @throw InitializationException if an IDL types path does not exist or cannot be read.
      */
     DDSPIPE_PARTICIPANTS_DllAPI
-    utils::ReturnCode load_idl_types(
-            const std::string& idl_path);
+    void init() override;
 
     class DynTypesRtpsListener : public rtps::CommonParticipant::RtpsListener
     {
@@ -100,6 +95,13 @@ public:
                 std::shared_ptr<ParticipantConfiguration> conf,
                 std::shared_ptr<core::DiscoveryDatabase> ddb,
                 std::shared_ptr<InternalReader> internal_reader);
+
+        DDSPIPE_PARTICIPANTS_DllAPI
+        explicit DynTypesRtpsListener(
+                std::shared_ptr<ParticipantConfiguration> conf,
+                std::shared_ptr<core::DiscoveryDatabase> ddb,
+                std::shared_ptr<InternalReader> internal_reader,
+                std::shared_ptr<const std::map<std::string, fastdds::dds::xtypes::TypeIdentifier>> idl_types);
 
         DDSPIPE_PARTICIPANTS_DllAPI
         void on_reader_discovery(
@@ -121,6 +123,8 @@ public:
         std::shared_ptr<InternalReader> type_object_reader_;
         //! Received types set
         std::set<std::string> received_types_;
+        //! Copy of the types loaded from IDL
+        std::shared_ptr<const std::map<std::string, fastdds::dds::xtypes::TypeIdentifier>> idl_types_;
 
         void notify_type_discovered_(
                 const fastdds::dds::xtypes::TypeInformation& type_info,
@@ -136,6 +140,9 @@ protected:
 
     //! Type Object Internal Reader
     std::shared_ptr<InternalReader> type_object_reader_;
+
+    //! Complete type identifiers of the types loaded from IDL, by type name
+    std::shared_ptr<std::map<std::string, fastdds::dds::xtypes::TypeIdentifier>> idl_types_;
 
 };
 

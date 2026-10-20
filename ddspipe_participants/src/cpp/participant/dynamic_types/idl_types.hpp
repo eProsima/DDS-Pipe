@@ -18,20 +18,23 @@
 
 #pragma once
 
+#include <map>
 #include <string>
+#include <vector>
+
+#include <fastdds/dds/xtypes/type_representation/detail/dds_xtypes_typeobject.hpp>
 
 #include <cpp_utils/ReturnCode.hpp>
-
-#include <ddspipe_participants/reader/auxiliar/InternalReader.hpp>
 
 namespace eprosima {
 namespace ddspipe {
 namespace participants {
 
-//! Shared implementation of the participants' \c load_idl_types , inserting the types in \c type_object_reader
-utils::ReturnCode load_idl_types_into(
-        const std::string& idl_path,
-        InternalReader& type_object_reader);
+//! Load and register the types of IDL files, storing their complete type identifiers by type name
+utils::ReturnCode register_idl_types(
+        const std::vector<std::string>& idl_paths,
+        const std::vector<std::string>& include_paths,
+        std::map<std::string, fastdds::dds::xtypes::TypeIdentifier>& idl_types);
 
 } /* namespace participants */
 } /* namespace ddspipe */
