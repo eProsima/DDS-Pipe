@@ -11,7 +11,7 @@ This release will include the following **bugfixes**:
 * Fix data races, RPC reply loss and a repeater hang on partition refresh that caused flaky tests
 
 This release will include the following **improvements**:
-* Refactor partitions logic, ensuring `partition: true` topic QoS creates `MultiReader` and `MultiWriter` and fixing data loss when a partition filter is applied to a disabled pipe
+* Refactor partitions logic
 * Run the Uncrustify workflow only on pull requests
 * Run the Python Linters workflow only on pull requests
 * Remove the nightly CI jobs targeting the End-of-Life `0.x` branch
