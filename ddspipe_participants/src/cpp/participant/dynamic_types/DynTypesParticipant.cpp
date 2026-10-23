@@ -172,12 +172,16 @@ void DynTypesParticipant::DynTypesRtpsListener::notify_type_discovered_(
 
     auto type_identifier = type_info.complete().typeid_with_size().type_id();
 
-    // Endpoints that do not share their type are resolved by name with the types loaded from IDL
-    if (fastdds::dds::xtypes::TK_NONE == type_identifier._d())
-    {
-        const auto idl_type = idl_types_->find(type_name);
+    // The types loaded from IDL are matched by name, and are used either by priority or because the endpoint
+    // did not share its type
+    const auto idl_type = idl_types_->find(type_name);
 
-        if (idl_type != idl_types_->end())
+    if (idl_type != idl_types_->end())
+    {
+        const auto configuration = std::dynamic_pointer_cast<SimpleParticipantConfiguration>(configuration_);
+
+        if ((configuration && configuration->idl_types_priority) ||
+                fastdds::dds::xtypes::TK_NONE == type_identifier._d())
         {
             type_identifier = idl_type->second;
         }
