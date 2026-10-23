@@ -63,6 +63,8 @@ public:
     std::set<std::string> idl_types_paths {};
     // Directories where the includes of those IDL files are searched for, in order
     std::vector<std::string> idl_include_paths {};
+    // Whether the types loaded from IDL take priority over the ones shared by the endpoints
+    bool idl_types_priority {true};
 
     core::types::TransportDescriptors transport {core::types::TransportDescriptors::builtin};
 

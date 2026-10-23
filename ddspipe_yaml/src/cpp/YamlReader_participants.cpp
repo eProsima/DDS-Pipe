@@ -153,6 +153,12 @@ void YamlReader::fill(
         object.idl_include_paths = {idl_include_paths.begin(), idl_include_paths.end()};
     }
 
+    // Optional IDL types priority
+    if (YamlReader::is_tag_present(yml, IDL_TYPES_PRIORITY_TAG))
+    {
+        object.idl_types_priority = get<bool>(yml, IDL_TYPES_PRIORITY_TAG, version);
+    }
+
     if (YamlReader::is_tag_present(yml, EASY_MODE_TAG))
     {
         object.easy_mode_ip = get<participants::types::IpType>(yml, EASY_MODE_TAG, version);
