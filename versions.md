@@ -5,6 +5,27 @@ The *Forthcoming* section includes those features added in `main` branch that ar
 
 ## Forthcoming
 
+# eProsima DDS Pipe v1.5.4
+
+This release will include the following **bugfixes**:
+* Fix data races, RPC reply loss and a repeater hang on partition refresh that caused flaky tests
+
+This release will include the following **improvements**:
+* Refactor partitions logic
+* Run the Uncrustify workflow only on pull requests
+* Run the Python Linters workflow only on pull requests
+* Remove the nightly CI jobs targeting the End-of-Life `0.x` branch
+* Refactor the topic profile lookup so YAML-configured QoS always overrides XML profile QoS, removing the `endpoint-qos-mode` option
+
+This release includes the following **Dependencies Update**:
+
+|  | Repository | Old Version | New Version |
+|---|---|---|---|
+| Foonathan Memory Vendor | [eProsima/foonathan_memory_vendor](https://github.com/eProsima/foonathan_memory_vendor) | [v1.4.1](https://github.com/eProsima/foonathan_memory_vendor/releases/tag/v1.4.1) | [v1.4.1](https://github.com/eProsima/foonathan_memory_vendor/releases/tag/v1.4.1) |
+| Fast CDR | [eProsima/Fast-CDR](https://github.com/eProsima/Fast-CDR) | [v2.3.6](https://github.com/eProsima/Fast-CDR/releases/tag/v2.3.6) | [v2.3.6](https://github.com/eProsima/Fast-CDR/releases/tag/v2.3.6) |
+| Fast DDS | [eProsima/Fast-DDS](https://github.com/eProsima/Fast-DDS) | [v3.6.2](https://github.com/eProsima/Fast-DDS/releases/tag/v3.6.2) | [v3.6.2](https://github.com/eProsima/Fast-DDS/releases/tag/v3.6.2) |
+| Dev Utils | [eProsima/dev-utils](https://github.com/eProsima/dev-utils) | [v1.5.3](https://github.com/eProsima/dev-utils/releases/tag/v1.5.3) | [v1.5.4](https://github.com/eProsima/dev-utils/releases/tag/v1.5.4) |
+
 # eProsima DDS Pipe v1.5.3
 
 This release will include the following **bugfixes**:
