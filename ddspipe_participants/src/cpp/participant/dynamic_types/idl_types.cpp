@@ -44,7 +44,12 @@ utils::ReturnCode register_idl_types(
     for (const auto& type : types)
     {
         fastdds::dds::xtypes::TypeIdentifierPair type_identifiers;
-        type_object_registry.register_typeobject_w_dynamic_type(type, type_identifiers);
+
+        if (fastdds::dds::RETCODE_OK != type_object_registry.register_typeobject_w_dynamic_type(type, type_identifiers))
+        {
+            EPROSIMA_LOG_WARNING(DDSPIPE_IDL_TYPES, "Failed to register type " << type->get_name() << ".");
+            continue;
+        }
 
         // NOTE: retrieve_complete_type_identifier sets the flag to true on success
         bool found = false;
@@ -53,7 +58,8 @@ utils::ReturnCode register_idl_types(
 
         if (!found)
         {
-            EPROSIMA_LOG_WARNING(DDSPIPE_IDL_TYPES, "Failed to register type " << type->get_name() << ".");
+            EPROSIMA_LOG_WARNING(DDSPIPE_IDL_TYPES,
+                    "Failed to get the complete type identifier of type " << type->get_name() << ".");
             continue;
         }
 

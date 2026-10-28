@@ -90,7 +90,7 @@ public:
      *
      * The loaded types resolve the types of the discovered endpoints that do not share them.
      *
-     * @throw InitializationException if an IDL types path does not exist or cannot be read.
+     * IDL types that cannot be loaded are logged and do not stop the initialization.
      */
     DDSPIPE_PARTICIPANTS_DllAPI
     void init() override;

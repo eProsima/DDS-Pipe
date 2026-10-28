@@ -23,8 +23,6 @@
 #include <fastdds/dds/xtypes/dynamic_types/DynamicTypeBuilderFactory.hpp>
 #include <fastdds/dds/xtypes/type_representation/TypeObject.hpp>
 
-#include <cpp_utils/exception/InitializationException.hpp>
-#include <cpp_utils/Formatter.hpp>
 #include <cpp_utils/Log.hpp>
 
 #include <ddspipe_core/monitoring/producers/TopicsMonitorProducer.hpp>
@@ -43,13 +41,13 @@ void load_configured_idl_types(
 {
     const auto& idl_types_paths = configuration.idl_types_paths;
 
-    // Other failures only affect some types, and are already logged
+    // The causes are already logged, and the types that could be loaded are still used
     if (!idl_types_paths.empty() &&
             register_idl_types({idl_types_paths.begin(), idl_types_paths.end()}, configuration.idl_include_paths,
-            idl_types) == utils::ReturnCode::RETCODE_PRECONDITION_NOT_MET)
+            idl_types) != utils::ReturnCode::RETCODE_OK)
     {
-        throw utils::InitializationException(STR_ENTRY << "Error loading the IDL types of Participant "
-                                                       << configuration.id << ".");
+        EPROSIMA_LOG_WARNING(DDSPIPE_DYNTYPES_PARTICIPANT,
+                "Participant " << configuration.id << " could not load every IDL type, using the ones loaded.");
     }
 }
 

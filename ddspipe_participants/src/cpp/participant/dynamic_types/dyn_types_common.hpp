@@ -32,11 +32,7 @@ namespace eprosima {
 namespace ddspipe {
 namespace participants {
 
-/**
- * Load and register the types of the configured IDL types paths, storing their complete type identifiers by type name
- *
- * @throw InitializationException if an IDL types path does not exist or cannot be read.
- */
+//! Load and register the types of the configured IDL types paths, storing their complete type identifiers by type name
 void load_configured_idl_types(
         const SimpleParticipantConfiguration& configuration,
         std::map<std::string, fastdds::dds::xtypes::TypeIdentifier>& idl_types);

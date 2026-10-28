@@ -16,6 +16,8 @@
  * @file idl_types.cpp
  */
 
+#include <algorithm>
+
 #include <fastdds/dds/xtypes/dynamic_types/DynamicTypeBuilder.hpp>
 #include <fastdds/dds/xtypes/dynamic_types/DynamicTypeBuilderFactory.hpp>
 
@@ -33,8 +35,7 @@ utils::ReturnCode load_idl_types(
         std::vector<fastdds::dds::DynamicType::_ref_type>& types)
 {
     const auto previous_size = types.size();
-    bool path_not_found = false;
-    bool files_failed = false;
+    bool failed = false;
 
     for (const auto& idl_path : idl_paths)
     {
@@ -55,6 +56,26 @@ utils::ReturnCode load_idl_types(
                 {
                     EPROSIMA_LOG_WARNING(DDSPIPE_IDL_TYPES,
                     "Failed to build type " << builder->get_name() << " from IDL path " << idl_path << ".");
+                    failed = true;
+                    return true;
+                }
+
+                // A type name keeps its first definition, as Fast DDS does within a directory
+                const auto loaded = std::find_if(types.begin(), types.end(),
+                [&](const fastdds::dds::DynamicType::_ref_type& type)
+                {
+                    return type->get_name() == dynamic_type->get_name();
+                });
+
+                if (loaded != types.end())
+                {
+                    if (!(*loaded)->equals(dynamic_type))
+                    {
+                        EPROSIMA_LOG_WARNING(DDSPIPE_IDL_TYPES,
+                        "Ignoring type " << dynamic_type->get_name() << " from IDL path " << idl_path
+                                         << ", a different definition was already loaded.");
+                        failed = true;
+                    }
                     return true;
                 }
 
@@ -66,24 +87,16 @@ utils::ReturnCode load_idl_types(
                 return true;
             });
 
-        if (ret == fastdds::dds::RETCODE_BAD_PARAMETER)
-        {
-            path_not_found = true;
-        }
-        else if (ret != fastdds::dds::RETCODE_OK)
+        // Fast DDS already logs the cause
+        if (ret != fastdds::dds::RETCODE_OK)
         {
             EPROSIMA_LOG_WARNING(DDSPIPE_IDL_TYPES,
-                    "Some IDL files in IDL path " << idl_path << " could not be loaded.");
-            files_failed = true;
+                    "IDL path " << idl_path << " could not be fully loaded, see the previous traces.");
+            failed = true;
         }
     }
 
-    if (path_not_found)
-    {
-        return utils::ReturnCode::RETCODE_PRECONDITION_NOT_MET;
-    }
-
-    if (files_failed)
+    if (failed)
     {
         return utils::ReturnCode::RETCODE_ERROR;
     }

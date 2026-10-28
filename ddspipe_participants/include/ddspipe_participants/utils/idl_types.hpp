@@ -35,13 +35,16 @@ namespace participants {
  * @brief Load the structures declared in IDL files.
  *
  * The types are not registered anywhere, so it is up to the caller to decide what to do with them.
- * A path that fails does not stop the others from being loaded.
+ * Loading is best effort: a path, file or declaration that cannot be loaded is left out and logged, and the rest are
+ * still loaded. A type name already present in \c types keeps its first definition, and a different definition of it
+ * is left out.
  *
  * @param idl_paths IDL files, or directories searched recursively for IDL files.
  * @param include_paths Directories searched for the files included by the IDL files.
  * @param types Vector where the loaded types are appended.
- * @return \c RETCODE_OK if every file was loaded, \c RETCODE_ERROR if some failed, \c RETCODE_NO_DATA if no
- * types were found, and \c RETCODE_PRECONDITION_NOT_MET if a path does not exist or cannot be read.
+ * @return \c RETCODE_OK if everything was loaded, \c RETCODE_ERROR if something was left out, and
+ * \c RETCODE_NO_DATA if no types were found. A single IDL file does not always report the declarations left out,
+ * which are still logged.
  */
 DDSPIPE_PARTICIPANTS_DllAPI
 utils::ReturnCode load_idl_types(
