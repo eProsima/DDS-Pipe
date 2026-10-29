@@ -18,8 +18,10 @@
 
 #pragma once
 
+#include <map>
 #include <memory>
 #include <set>
+#include <string>
 
 #include <fastcdr/cdr/fixed_size_string.hpp>
 
@@ -74,6 +76,16 @@ public:
     std::shared_ptr<core::IReader> create_reader(
             const core::ITopic& topic) override;
 
+    /**
+     * @brief Load the structures of the configured IDL types paths and initialize the participant
+     *
+     * The loaded types resolve the types of the discovered endpoints that do not share them.
+     *
+     * @throw InitializationException if an IDL types path does not exist or cannot be read.
+     */
+    DDSPIPE_PARTICIPANTS_DllAPI
+    void init() override;
+
     class DynTypesRtpsListener : public rtps::CommonParticipant::RtpsListener
     {
     public:
@@ -83,6 +95,13 @@ public:
                 std::shared_ptr<ParticipantConfiguration> conf,
                 std::shared_ptr<core::DiscoveryDatabase> ddb,
                 std::shared_ptr<InternalReader> internal_reader);
+
+        DDSPIPE_PARTICIPANTS_DllAPI
+        explicit DynTypesRtpsListener(
+                std::shared_ptr<ParticipantConfiguration> conf,
+                std::shared_ptr<core::DiscoveryDatabase> ddb,
+                std::shared_ptr<InternalReader> internal_reader,
+                std::shared_ptr<const std::map<std::string, fastdds::dds::xtypes::TypeIdentifier>> idl_types);
 
         DDSPIPE_PARTICIPANTS_DllAPI
         void on_reader_discovery(
@@ -104,6 +123,8 @@ public:
         std::shared_ptr<InternalReader> type_object_reader_;
         //! Received types set
         std::set<std::string> received_types_;
+        //! Copy of the types loaded from IDL
+        std::shared_ptr<const std::map<std::string, fastdds::dds::xtypes::TypeIdentifier>> idl_types_;
 
         void notify_type_discovered_(
                 const fastdds::dds::xtypes::TypeInformation& type_info,
@@ -119,6 +140,9 @@ protected:
 
     //! Type Object Internal Reader
     std::shared_ptr<InternalReader> type_object_reader_;
+
+    //! Complete type identifiers of the types loaded from IDL, by type name
+    std::shared_ptr<std::map<std::string, fastdds::dds::xtypes::TypeIdentifier>> idl_types_;
 
 };
 

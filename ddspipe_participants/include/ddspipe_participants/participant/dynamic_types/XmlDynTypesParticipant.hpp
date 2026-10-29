@@ -19,8 +19,10 @@
 
 #pragma once
 
+#include <map>
 #include <memory>
 #include <set>
+#include <string>
 
 #include <fastcdr/cdr/fixed_size_string.hpp>
 
@@ -84,6 +86,16 @@ public:
             const core::ITopic& topic) override;
 
     /**
+     * @brief Loads the structures of the configured IDL types paths and initializes the participant.
+     *
+     * The loaded types resolve the types of the discovered endpoints that do not share them.
+     *
+     * @throw InitializationException if an IDL types path does not exist or cannot be read.
+     */
+    DDSPIPE_PARTICIPANTS_DllAPI
+    void init() override;
+
+    /**
      * @class XmlDynTypesDdsListener
      * @brief Listener for handling DDS discovery events for dynamic types.
      */
@@ -103,6 +115,21 @@ public:
                 std::shared_ptr<SimpleParticipantConfiguration> conf,
                 std::shared_ptr<core::DiscoveryDatabase> ddb,
                 std::shared_ptr<InternalReader> internal_reader);
+
+        /**
+         * @brief Constructs an XmlDynTypesDdsListener that resolves with the types loaded from IDL.
+         *
+         * @param conf Shared pointer to the participant configuration.
+         * @param ddb Shared pointer to the discovery database.
+         * @param internal_reader Shared pointer to the internal reader.
+         * @param idl_types Shared pointer to the types loaded from IDL.
+         */
+        DDSPIPE_PARTICIPANTS_DllAPI
+        explicit XmlDynTypesDdsListener(
+                std::shared_ptr<SimpleParticipantConfiguration> conf,
+                std::shared_ptr<core::DiscoveryDatabase> ddb,
+                std::shared_ptr<InternalReader> internal_reader,
+                std::shared_ptr<const std::map<std::string, fastdds::dds::xtypes::TypeIdentifier>> idl_types);
 
         /**
          * @brief Callback for data reader discovery events.
@@ -142,6 +169,9 @@ public:
         /// Set of received types.
         std::set<std::string> received_types_;
 
+        /// Types loaded from IDL.
+        std::shared_ptr<const std::map<std::string, fastdds::dds::xtypes::TypeIdentifier>> idl_types_;
+
         /**
          * @brief Notifies that a type has been discovered.
          *
@@ -165,6 +195,9 @@ protected:
 
     /// Internal reader for type objects.
     std::shared_ptr<InternalReader> type_object_reader_;
+
+    /// Complete type identifiers of the types loaded from IDL, by type name.
+    std::shared_ptr<std::map<std::string, fastdds::dds::xtypes::TypeIdentifier>> idl_types_;
 };
 
 } /* namespace participants */
