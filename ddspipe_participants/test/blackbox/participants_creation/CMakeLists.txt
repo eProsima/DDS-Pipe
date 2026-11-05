@@ -34,7 +34,7 @@ set(TEST_LIST
         writer_xml_qos_not_overridden_by_discovered_topic_qos
         writer_xml_undefined_qos_kept_from_discovered_topic_qos
         reader_xml_undefined_qos_kept_from_discovered_topic_qos
-        writer_xml_explicit_default_qos_not_overridden_by_discovered_topic_qos
+        writer_xml_default_value_qos_taken_from_discovered_topic_qos
         writer_endpoint_profile_name_override
         writer_topic_profile_lookup_not_enabled_by_default
         reader_topic_profile_lookup_not_enabled_by_default

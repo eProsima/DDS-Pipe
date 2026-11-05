@@ -29,7 +29,6 @@ set(TEST_EXTRA_LIBRARIES
         fastdds
         cpp_utils
         ddspipe_core
-        tinyxml2::tinyxml2
     )
 
 add_unittest_executable(

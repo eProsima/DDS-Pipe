@@ -736,10 +736,10 @@ TEST(ParticipantsCreationgTest, writer_xml_qos_not_overridden_when_yaml_unset)
                     </topic>
                     <qos>
                         <reliability>
-                            <kind>RELIABLE</kind>
+                            <kind>BEST_EFFORT</kind>
                         </reliability>
                         <durability>
-                            <kind>TRANSIENT_LOCAL</kind>
+                            <kind>VOLATILE</kind>
                         </durability>
                     </qos>
                 </data_writer>
@@ -782,8 +782,8 @@ TEST(ParticipantsCreationgTest, writer_xml_qos_not_overridden_when_yaml_unset)
     fastdds::dds::DataWriterQos qos;
     writer.get_dds_writer()->get_qos(qos);
 
-    EXPECT_EQ(fastdds::dds::RELIABLE_RELIABILITY_QOS, qos.reliability().kind);
-    EXPECT_EQ(fastdds::dds::TRANSIENT_LOCAL_DURABILITY_QOS, qos.durability().kind);
+    EXPECT_EQ(fastdds::dds::BEST_EFFORT_RELIABILITY_QOS, qos.reliability().kind);
+    EXPECT_EQ(fastdds::dds::VOLATILE_DURABILITY_QOS, qos.durability().kind);
     EXPECT_EQ(fastdds::dds::KEEP_ALL_HISTORY_QOS, qos.history().kind);
 
     fastdds::dds::DomainParticipantFactory::get_instance()->delete_participant(dds_participant);
@@ -800,12 +800,12 @@ TEST(ParticipantsCreationgTest, writer_endpoint_profile_name_override)
         R"(<?xml version="1.0" encoding="utf-8"?>
         <dds xmlns="http://www.eprosima.com">
             <profiles>
-                <data_writer profile_name="profile_chatter_reliable">
-                    <qos>
-                        <reliability>
-                            <kind>RELIABLE</kind>
-                        </reliability>
-                    </qos>
+                <data_writer profile_name="profile_chatter_keep_all">
+                    <topic>
+                        <historyQos>
+                            <kind>KEEP_ALL</kind>
+                        </historyQos>
+                    </topic>
                 </data_writer>
                 <data_writer profile_name="profile_chatter_besteffort">
                     <qos>
@@ -846,7 +846,7 @@ TEST(ParticipantsCreationgTest, writer_endpoint_profile_name_override)
         core::types::DdsTopic topic;
         topic.m_topic_name = "chatter";
         topic.type_name = "ChatterType";
-        topic.topic_qos.endpoint_profile_name.set_value("profile_chatter_reliable");
+        topic.topic_qos.endpoint_profile_name.set_value("profile_chatter_keep_all");
 
         test::TestableWriter writer(part_id, topic, payload_pool, dds_participant, dds_topic,
                 false /* repeater */, true /* xml_lookup_enabled */);
@@ -854,7 +854,7 @@ TEST(ParticipantsCreationgTest, writer_endpoint_profile_name_override)
 
         fastdds::dds::DataWriterQos qos;
         writer.get_dds_writer()->get_qos(qos);
-        EXPECT_EQ(fastdds::dds::RELIABLE_RELIABILITY_QOS, qos.reliability().kind);
+        EXPECT_EQ(fastdds::dds::KEEP_ALL_HISTORY_QOS, qos.history().kind);
     }
 
     // Second writer
@@ -871,6 +871,7 @@ TEST(ParticipantsCreationgTest, writer_endpoint_profile_name_override)
         fastdds::dds::DataWriterQos qos;
         writer.get_dds_writer()->get_qos(qos);
         EXPECT_EQ(fastdds::dds::BEST_EFFORT_RELIABILITY_QOS, qos.reliability().kind);
+        EXPECT_EQ(fastdds::dds::KEEP_LAST_HISTORY_QOS, qos.history().kind);
     }
 
     fastdds::dds::DomainParticipantFactory::get_instance()->delete_participant(dds_participant);
@@ -894,7 +895,7 @@ TEST(ParticipantsCreationgTest, writer_xml_qos_not_overridden_by_discovered_topi
                             <kind>BEST_EFFORT</kind>
                         </reliability>
                         <durability>
-                            <kind>TRANSIENT_LOCAL</kind>
+                            <kind>VOLATILE</kind>
                         </durability>
                     </qos>
                 </data_writer>
@@ -930,7 +931,7 @@ TEST(ParticipantsCreationgTest, writer_xml_qos_not_overridden_by_discovered_topi
     topic.type_name = "WriterDiscoveredQosType";
 
     topic.topic_qos.reliability_qos = core::types::ReliabilityKind::RELIABLE;
-    topic.topic_qos.durability_qos = core::types::DurabilityKind::VOLATILE;
+    topic.topic_qos.durability_qos = core::types::DurabilityKind::TRANSIENT_LOCAL;
 
     test::TestableWriter writer(part_id, topic, payload_pool, dds_participant, dds_topic,
             false /* repeater */, true /* xml_lookup_enabled */);
@@ -940,7 +941,7 @@ TEST(ParticipantsCreationgTest, writer_xml_qos_not_overridden_by_discovered_topi
     writer.get_dds_writer()->get_qos(qos);
 
     EXPECT_EQ(fastdds::dds::BEST_EFFORT_RELIABILITY_QOS, qos.reliability().kind);
-    EXPECT_EQ(fastdds::dds::TRANSIENT_LOCAL_DURABILITY_QOS, qos.durability().kind);
+    EXPECT_EQ(fastdds::dds::VOLATILE_DURABILITY_QOS, qos.durability().kind);
 
     fastdds::dds::DomainParticipantFactory::get_instance()->delete_participant(dds_participant);
 }
@@ -1344,10 +1345,10 @@ TEST(ParticipantsCreationgTest, reader_xml_undefined_qos_kept_from_discovered_to
 }
 
 /**
- * Test that a QoS policy explicitly defined in the XML profile is kept even if its value matches
- * the Fast DDS default, while the policies not defined in the XML keep the discovered value.
+ * Test that a QoS policy set in the XML profile to its Fast DDS default value cannot be told apart from a
+ * policy not defined in the profile, so the discovered value (topic_qos) is used.
  */
-TEST(ParticipantsCreationgTest, writer_xml_explicit_default_qos_not_overridden_by_discovered_topic_qos)
+TEST(ParticipantsCreationgTest, writer_xml_default_value_qos_taken_from_discovered_topic_qos)
 {
     participants::XmlHandlerConfiguration xml_conf;
     xml_conf.raw.set_value(
@@ -1403,7 +1404,7 @@ TEST(ParticipantsCreationgTest, writer_xml_explicit_default_qos_not_overridden_b
     fastdds::dds::DataWriterQos qos;
     writer.get_dds_writer()->get_qos(qos);
 
-    EXPECT_EQ(fastdds::dds::RELIABLE_RELIABILITY_QOS, qos.reliability().kind);
+    EXPECT_EQ(fastdds::dds::BEST_EFFORT_RELIABILITY_QOS, qos.reliability().kind);
     EXPECT_EQ(fastdds::dds::VOLATILE_DURABILITY_QOS, qos.durability().kind);
 
     fastdds::dds::DomainParticipantFactory::get_instance()->delete_participant(dds_participant);
