@@ -103,6 +103,10 @@ public:
 
 protected:
 
+    //! TypeIdentifiers registered locally under \c type_name, or empty ones if there are none.
+    static fastdds::dds::xtypes::TypeIdentifierPair registered_type_identifiers_(
+            const std::string& type_name) noexcept;
+
     static bool has_prefix(
             const std::string& str,
             const std::string& prefix)
