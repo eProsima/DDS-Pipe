@@ -1207,6 +1207,206 @@ TEST(ParticipantsCreationgTest, partition_filter_interface_implementations)
     EXPECT_NO_THROW(base_reader.set_partition_filter({"partition"}));
 }
 
+/**
+ * Test that QoS policies not defined in the XML profile keep the discovered value (topic_qos) 
+ * instead of being replaced by the Fast DDS default DataWriter QoS (RELIABLE, TRANSIENT_LOCAL).
+ */
+TEST(ParticipantsCreationgTest, writer_xml_undefined_qos_kept_from_discovered_topic_qos)
+{
+    participants::XmlHandlerConfiguration xml_conf;
+    xml_conf.raw.set_value(
+        R"(<?xml version="1.0" encoding="utf-8"?>
+        <dds xmlns="http://www.eprosima.com">
+            <profiles>
+                <data_writer profile_name="writer_undefined_qos_topic">
+                    <topic>
+                        <historyQos>
+                            <kind>KEEP_ALL</kind>
+                        </historyQos>
+                    </topic>
+                </data_writer>
+            </profiles>
+        </dds>)");
+    ASSERT_EQ(participants::XmlHandler::load_xml(xml_conf), utils::ReturnCode::RETCODE_OK);
+
+    std::shared_ptr<core::PayloadPool> payload_pool(new core::FastPayloadPool());
+
+    auto dds_participant =
+            fastdds::dds::DomainParticipantFactory::get_instance()->create_participant(
+        0,
+        fastdds::dds::PARTICIPANT_QOS_DEFAULT);
+    ASSERT_NE(nullptr, dds_participant);
+
+    core::types::ParticipantId part_id("WriterUndefinedQosTestPart");
+
+    fastdds::dds::TypeSupport type_support(
+        new participants::dds::TopicDataType(
+            payload_pool,
+            "WriterUndefinedQosType",
+            fastdds::dds::xtypes::TypeIdentifierPair(),
+            false));
+    dds_participant->register_type(type_support);
+    auto dds_topic = dds_participant->create_topic(
+        "writer_undefined_qos_topic",
+        "WriterUndefinedQosType",
+        dds_participant->get_default_topic_qos());
+    ASSERT_NE(nullptr, dds_topic);
+
+    core::types::DdsTopic topic;
+    topic.m_topic_name = "writer_undefined_qos_topic";
+    topic.type_name = "WriterUndefinedQosType";
+
+    // Discovered QoS (no YAML configuration)
+    topic.topic_qos.reliability_qos = core::types::ReliabilityKind::BEST_EFFORT;
+    topic.topic_qos.durability_qos = core::types::DurabilityKind::VOLATILE;
+
+    test::TestableWriter writer(part_id, topic, payload_pool, dds_participant, dds_topic,
+            false /* repeater */, true /* xml_lookup_enabled */);
+    writer.init({});
+
+    fastdds::dds::DataWriterQos qos;
+    writer.get_dds_writer()->get_qos(qos);
+
+    EXPECT_EQ(fastdds::dds::BEST_EFFORT_RELIABILITY_QOS, qos.reliability().kind);
+    EXPECT_EQ(fastdds::dds::VOLATILE_DURABILITY_QOS, qos.durability().kind);
+    EXPECT_EQ(fastdds::dds::KEEP_ALL_HISTORY_QOS, qos.history().kind);
+
+    fastdds::dds::DomainParticipantFactory::get_instance()->delete_participant(dds_participant);
+}
+
+/**
+ * Test that QoS policies not defined in the XML profile keep the discovered value (topic_qos) 
+ * instead of being replaced by the Fast DDS default DataReader QoS (BEST_EFFORT, VOLATILE).
+ */
+TEST(ParticipantsCreationgTest, reader_xml_undefined_qos_kept_from_discovered_topic_qos)
+{
+    participants::XmlHandlerConfiguration xml_conf;
+    xml_conf.raw.set_value(
+        R"(<?xml version="1.0" encoding="utf-8"?>
+        <dds xmlns="http://www.eprosima.com">
+            <profiles>
+                <data_reader profile_name="reader_undefined_qos_topic">
+                    <topic>
+                        <historyQos>
+                            <kind>KEEP_ALL</kind>
+                        </historyQos>
+                    </topic>
+                </data_reader>
+            </profiles>
+        </dds>)");
+    ASSERT_EQ(participants::XmlHandler::load_xml(xml_conf), utils::ReturnCode::RETCODE_OK);
+
+    std::shared_ptr<core::PayloadPool> payload_pool(new core::FastPayloadPool());
+
+    auto dds_participant =
+            fastdds::dds::DomainParticipantFactory::get_instance()->create_participant(
+        0,
+        fastdds::dds::PARTICIPANT_QOS_DEFAULT);
+    ASSERT_NE(nullptr, dds_participant);
+
+    core::types::ParticipantId part_id("ReaderUndefinedQosTestPart");
+
+    fastdds::dds::TypeSupport type_support(
+        new participants::dds::TopicDataType(
+            payload_pool,
+            "ReaderUndefinedQosType",
+            fastdds::dds::xtypes::TypeIdentifierPair(),
+            false));
+    dds_participant->register_type(type_support);
+    auto dds_topic = dds_participant->create_topic(
+        "reader_undefined_qos_topic",
+        "ReaderUndefinedQosType",
+        dds_participant->get_default_topic_qos());
+    ASSERT_NE(nullptr, dds_topic);
+
+    core::types::DdsTopic topic;
+    topic.m_topic_name = "reader_undefined_qos_topic";
+    topic.type_name = "ReaderUndefinedQosType";
+
+    // Discovered QoS (no YAML configuration)
+    topic.topic_qos.reliability_qos = core::types::ReliabilityKind::RELIABLE;
+    topic.topic_qos.durability_qos = core::types::DurabilityKind::TRANSIENT_LOCAL;
+
+    test::TestableReader reader(part_id, topic, payload_pool, dds_participant, dds_topic,
+            true /* xml_lookup_enabled */);
+    reader.init({}, "");
+
+    fastdds::dds::DataReaderQos qos;
+    reader.get_dds_reader()->get_qos(qos);
+
+    EXPECT_EQ(fastdds::dds::RELIABLE_RELIABILITY_QOS, qos.reliability().kind);
+    EXPECT_EQ(fastdds::dds::TRANSIENT_LOCAL_DURABILITY_QOS, qos.durability().kind);
+    EXPECT_EQ(fastdds::dds::KEEP_ALL_HISTORY_QOS, qos.history().kind);
+
+    fastdds::dds::DomainParticipantFactory::get_instance()->delete_participant(dds_participant);
+}
+
+/**
+ * Test that a QoS policy explicitly defined in the XML profile is kept even if its value matches 
+ * the Fast DDS default, while the policies not defined in the XML keep the discovered value.
+ */
+TEST(ParticipantsCreationgTest, writer_xml_explicit_default_qos_not_overridden_by_discovered_topic_qos)
+{
+    participants::XmlHandlerConfiguration xml_conf;
+    xml_conf.raw.set_value(
+        R"(<?xml version="1.0" encoding="utf-8"?>
+        <dds xmlns="http://www.eprosima.com">
+            <profiles>
+                <data_writer profile_name="writer_explicit_default_qos_topic">
+                    <qos>
+                        <reliability>
+                            <kind>RELIABLE</kind>
+                        </reliability>
+                    </qos>
+                </data_writer>
+            </profiles>
+        </dds>)");
+    ASSERT_EQ(participants::XmlHandler::load_xml(xml_conf), utils::ReturnCode::RETCODE_OK);
+
+    std::shared_ptr<core::PayloadPool> payload_pool(new core::FastPayloadPool());
+
+    auto dds_participant =
+            fastdds::dds::DomainParticipantFactory::get_instance()->create_participant(
+        0,
+        fastdds::dds::PARTICIPANT_QOS_DEFAULT);
+    ASSERT_NE(nullptr, dds_participant);
+
+    core::types::ParticipantId part_id("WriterExplicitDefaultQosTestPart");
+
+    fastdds::dds::TypeSupport type_support(
+        new participants::dds::TopicDataType(
+            payload_pool,
+            "WriterExplicitDefaultQosType",
+            fastdds::dds::xtypes::TypeIdentifierPair(),
+            false));
+    dds_participant->register_type(type_support);
+    auto dds_topic = dds_participant->create_topic(
+        "writer_explicit_default_qos_topic",
+        "WriterExplicitDefaultQosType",
+        dds_participant->get_default_topic_qos());
+    ASSERT_NE(nullptr, dds_topic);
+
+    core::types::DdsTopic topic;
+    topic.m_topic_name = "writer_explicit_default_qos_topic";
+    topic.type_name = "WriterExplicitDefaultQosType";
+
+    // Discovered QoS (no YAML configuration)
+    topic.topic_qos.reliability_qos = core::types::ReliabilityKind::BEST_EFFORT;
+    topic.topic_qos.durability_qos = core::types::DurabilityKind::VOLATILE;
+
+    test::TestableWriter writer(part_id, topic, payload_pool, dds_participant, dds_topic,
+            false /* repeater */, true /* xml_lookup_enabled */);
+    writer.init({});
+
+    fastdds::dds::DataWriterQos qos;
+    writer.get_dds_writer()->get_qos(qos);
+
+    EXPECT_EQ(fastdds::dds::RELIABLE_RELIABILITY_QOS, qos.reliability().kind);
+    EXPECT_EQ(fastdds::dds::VOLATILE_DURABILITY_QOS, qos.durability().kind);
+
+    fastdds::dds::DomainParticipantFactory::get_instance()->delete_participant(dds_participant);
+}
+
 int main(
         int argc,
         char** argv)
