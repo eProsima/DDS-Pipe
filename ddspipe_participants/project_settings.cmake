@@ -29,7 +29,6 @@ set(MODULE_FIND_PACKAGES
     fastdds
     cpp_utils
     ddspipe_core
-    tinyxml2
 )
 
 set(fastdds_MINIMUM_VERSION "3.0.0")
