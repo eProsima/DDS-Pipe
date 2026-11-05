@@ -20,6 +20,7 @@
 
 #include <ddspipe_core/dynamic/DiscoveryDatabase.hpp>
 #include <ddspipe_core/types/dds/Endpoint.hpp>
+#include <ddspipe_core/types/dds/TopicQoS.hpp>
 
 #include <ddspipe_participants/library/library_dll.h>
 
@@ -74,6 +75,27 @@ fastdds::rtps::GUID_t guid_from_instance_handle(
  */
 DDSPIPE_PARTICIPANTS_DllAPI
 void unset_configuration_env_vars();
+
+/**
+ * @brief Whether a Topic QoS policy has been configured by the user (YAML), and not just discovered.
+ *
+ * QoS configured for a topic or participant in the YAML is set with \c fuzzy_level_hard , while discovered QoS
+ * use a lower level. The global \c specs QoS (\c TopicQoS::default_topic_qos ) is applied with
+ * \c fuzzy_level_set (as discovered QoS), so it is checked separately.
+ */
+template<typename T>
+bool is_user_configured_(
+        const core::types::TopicQoS& topic_qos,
+        utils::Fuzzy<T> core::types::TopicQoS::* policy) noexcept
+{
+    if ((topic_qos.*policy).get_level() >= utils::FuzzyLevelValues::fuzzy_level_hard)
+    {
+        return true;
+    }
+
+    const auto& specs_qos = core::types::TopicQoS::default_topic_qos;
+    return specs_qos.is_set() && (specs_qos.get_value().*policy).is_set();
+}
 
 } /* namespace detail */
 } /* namespace participants */

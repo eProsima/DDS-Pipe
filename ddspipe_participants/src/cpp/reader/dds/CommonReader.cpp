@@ -23,6 +23,7 @@
 
 #include <ddspipe_participants/reader/dds/CommonReader.hpp>
 #include <ddspipe_participants/types/dds/TopicDataType.hpp>
+#include <ddspipe_participants/utils/utils.hpp>
 #include <ddspipe_participants/xml/XmlHandler.hpp>
 
 #include <fastdds/dds/xtypes/dynamic_types/DynamicType.hpp>
@@ -308,10 +309,9 @@ fastdds::dds::DataReaderQos CommonReader::reckon_reader_qos_() const
     const XmlProfileDefinedQoS xml_qos = xml_profile_found
             ? XmlHandler::get_datareader_profile_defined_qos(profile_key)
             : XmlProfileDefinedQoS();
-    const auto& user_qos = topic_.user_configured_qos;
     const auto& topic_qos = topic_.topic_qos;
 
-    if (!xml_qos.durability || user_qos.durability_qos.is_set())
+    if (!xml_qos.durability || detail::is_user_configured_(topic_qos, &core::types::TopicQoS::durability_qos))
     {
         qos.durability().kind =
                 (topic_qos.is_transient_local())
@@ -319,7 +319,7 @@ fastdds::dds::DataReaderQos CommonReader::reckon_reader_qos_() const
                 : fastdds::dds::DurabilityQosPolicyKind::VOLATILE_DURABILITY_QOS;
     }
 
-    if (!xml_qos.reliability || user_qos.reliability_qos.is_set())
+    if (!xml_qos.reliability || detail::is_user_configured_(topic_qos, &core::types::TopicQoS::reliability_qos))
     {
         qos.reliability().kind =
                 (topic_qos.is_reliable())
@@ -327,7 +327,7 @@ fastdds::dds::DataReaderQos CommonReader::reckon_reader_qos_() const
                 : fastdds::dds::ReliabilityQosPolicyKind::BEST_EFFORT_RELIABILITY_QOS;
     }
 
-    if (!xml_qos.ownership || user_qos.ownership_qos.is_set())
+    if (!xml_qos.ownership || detail::is_user_configured_(topic_qos, &core::types::TopicQoS::ownership_qos))
     {
         qos.ownership().kind =
                 (topic_qos.has_ownership())
@@ -335,7 +335,7 @@ fastdds::dds::DataReaderQos CommonReader::reckon_reader_qos_() const
                 : fastdds::dds::OwnershipQosPolicyKind::SHARED_OWNERSHIP_QOS;
     }
 
-    if (!xml_qos.history || user_qos.history_depth.is_set())
+    if (!xml_qos.history || detail::is_user_configured_(topic_qos, &core::types::TopicQoS::history_depth))
     {
         if (topic_qos.history_depth == 0U)
         {

@@ -628,8 +628,9 @@ TEST(ParticipantsCreationgTest, writer_xml_override)
     core::types::DdsTopic topic;
     topic.m_topic_name = topic_name;
     topic.type_name = type_name;
-    topic.topic_qos.reliability_qos = core::types::ReliabilityKind::RELIABLE;
-    topic.user_configured_qos.reliability_qos = core::types::ReliabilityKind::RELIABLE;
+    // Configured by the user (YAML): DdsBridge sets it with fuzzy_level_hard
+    topic.topic_qos.reliability_qos.set_value(
+        core::types::ReliabilityKind::RELIABLE, utils::FuzzyLevelValues::fuzzy_level_hard);
 
     test::TestableWriter writer(part_id, topic, payload_pool, dds_participant, dds_topic,
             false /* repeater */, true /* xml_lookup_enabled */);
@@ -701,8 +702,9 @@ TEST(ParticipantsCreationgTest, reader_xml_override)
     core::types::DdsTopic topic;
     topic.m_topic_name = topic_name;
     topic.type_name = type_name;
-    topic.topic_qos.reliability_qos = core::types::ReliabilityKind::RELIABLE;
-    topic.user_configured_qos.reliability_qos = core::types::ReliabilityKind::RELIABLE;
+    // Configured by the user (YAML): DdsBridge sets it with fuzzy_level_hard
+    topic.topic_qos.reliability_qos.set_value(
+        core::types::ReliabilityKind::RELIABLE, utils::FuzzyLevelValues::fuzzy_level_hard);
 
     test::TestableReader reader(part_id, topic, payload_pool, dds_participant, dds_topic,
             true /* xml_lookup_enabled */);
@@ -876,8 +878,8 @@ TEST(ParticipantsCreationgTest, writer_endpoint_profile_name_override)
 
 /**
  * Regression test for a bug found via FastDDSSpy: discovery derived QoS (topic_qos) must never be
- * mistaken for an explicit YAML override of an XML profile. Only user_configured_qos should be able
- * to override the XML profile.
+ * mistaken for an explicit YAML override of an XML profile. Only QoS configured by the user (set with
+ * fuzzy_level_hard) should be able to override the XML profile.
  */
 TEST(ParticipantsCreationgTest, writer_xml_qos_not_overridden_by_discovered_topic_qos)
 {
