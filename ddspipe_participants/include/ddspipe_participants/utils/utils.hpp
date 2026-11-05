@@ -14,12 +14,15 @@
 
 #pragma once
 
+#include <string>
+
 #include <fastdds/rtps/builtin/data/PublicationBuiltinTopicData.hpp>
 #include <fastdds/rtps/builtin/data/SubscriptionBuiltinTopicData.hpp>
 #include <fastdds/rtps/common/InstanceHandle.hpp>
 
 #include <ddspipe_core/dynamic/DiscoveryDatabase.hpp>
 #include <ddspipe_core/types/dds/Endpoint.hpp>
+#include <ddspipe_core/types/dds/TopicQoS.hpp>
 
 #include <ddspipe_participants/library/library_dll.h>
 
@@ -74,6 +77,44 @@ fastdds::rtps::GUID_t guid_from_instance_handle(
  */
 DDSPIPE_PARTICIPANTS_DllAPI
 void unset_configuration_env_vars();
+
+/**
+ * @brief Whether a Topic QoS policy has been configured by the user (YAML), and not just discovered.
+ *
+ * QoS configured for a topic or participant in the YAML are set with \c fuzzy_level_hard , while discovered QoS
+ * use a lower level. The global \c specs QoS (\c TopicQoS::default_topic_qos ) is applied with
+ * \c fuzzy_level_set (as discovered QoS), so it is checked separately.
+ */
+template<typename T>
+bool is_user_configured_(
+        const core::types::TopicQoS& topic_qos,
+        utils::Fuzzy<T> core::types::TopicQoS::* policy) noexcept
+{
+    if ((topic_qos.*policy).get_level() >= utils::FuzzyLevelValues::fuzzy_level_hard)
+    {
+        return true;
+    }
+
+    const auto& specs_qos = core::types::TopicQoS::default_topic_qos;
+    return specs_qos.is_set() && (specs_qos.get_value().*policy).is_set();
+}
+
+//! Name of the empty endpoint profile used to know which QoS policies an XML profile defines.
+constexpr const char* EMPTY_XML_PROFILE_NAME = "__ddspipe_empty_endpoint_profile__";
+
+/**
+ * @brief XML with an empty DataWriter / DataReader profile ( \c tag ) named \c EMPTY_XML_PROFILE_NAME .
+ *
+ * Fast DDS fills every policy not present in a profile with its default value. Comparing a profile with this
+ * empty one tells which policies the profile defines.
+ */
+inline std::string empty_xml_profile(
+        const std::string& tag)
+{
+    return std::string("<?xml version=\"1.0\" encoding=\"UTF-8\" ?>"
+                   "<dds xmlns=\"http://www.eprosima.com\"><profiles><")
+           + tag + " profile_name=\"" + EMPTY_XML_PROFILE_NAME + "\"/></profiles></dds>";
+}
 
 } /* namespace detail */
 } /* namespace participants */

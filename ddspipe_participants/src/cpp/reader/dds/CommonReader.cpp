@@ -23,6 +23,7 @@
 
 #include <ddspipe_participants/reader/dds/CommonReader.hpp>
 #include <ddspipe_participants/types/dds/TopicDataType.hpp>
+#include <ddspipe_participants/utils/utils.hpp>
 
 #include <fastdds/dds/xtypes/dynamic_types/DynamicType.hpp>
 
@@ -301,45 +302,65 @@ fastdds::dds::DataReaderQos CommonReader::reckon_reader_qos_() const
         qos = dds_subscriber_->get_default_datareader_qos();
     }
 
-    // If a profile was found, only override it with fields the user explicitly set (YAML).
-    // Otherwise, every field is derived from topic_qos.
-    const auto& source_qos = xml_profile_found ? topic_.user_configured_qos : topic_.topic_qos;
-    const bool override_all = !xml_profile_found;
+    // Priority of each QoS policy: YAML > XML profile > discovered (topic_qos).
+    // A policy is considered defined in the XML profile if it differs from the one of an empty profile.
+    // NOTE: a policy explicitly set in the XML to its default value is taken as not defined.
+    fastdds::dds::DataReaderQos xml_empty_qos = qos;
+    if (xml_profile_found)
+    {
+        dds_subscriber_->get_datareader_qos_from_xml(
+            detail::empty_xml_profile("data_reader"), xml_empty_qos, detail::EMPTY_XML_PROFILE_NAME);
+    }
 
-    if (override_all || source_qos.durability_qos.is_set())
+    const auto& topic_qos = topic_.topic_qos;
+    auto use_topic_qos = [&](bool defined_in_xml, bool configured_in_yaml)
+            {
+                return !xml_profile_found || !defined_in_xml || configured_in_yaml;
+            };
+
+    if (use_topic_qos(
+                qos.durability().kind != xml_empty_qos.durability().kind,
+                detail::is_user_configured_(topic_qos, &core::types::TopicQoS::durability_qos)))
     {
         qos.durability().kind =
-                (source_qos.is_transient_local())
+                (topic_qos.is_transient_local())
                 ? fastdds::dds::DurabilityQosPolicyKind::TRANSIENT_LOCAL_DURABILITY_QOS
                 : fastdds::dds::DurabilityQosPolicyKind::VOLATILE_DURABILITY_QOS;
     }
 
-    if (override_all || source_qos.reliability_qos.is_set())
+    if (use_topic_qos(
+                qos.reliability().kind != xml_empty_qos.reliability().kind,
+                detail::is_user_configured_(topic_qos, &core::types::TopicQoS::reliability_qos)))
     {
         qos.reliability().kind =
-                (source_qos.is_reliable())
+                (topic_qos.is_reliable())
                 ? fastdds::dds::ReliabilityQosPolicyKind::RELIABLE_RELIABILITY_QOS
                 : fastdds::dds::ReliabilityQosPolicyKind::BEST_EFFORT_RELIABILITY_QOS;
     }
 
-    if (override_all || source_qos.ownership_qos.is_set())
+    if (use_topic_qos(
+                qos.ownership().kind != xml_empty_qos.ownership().kind,
+                detail::is_user_configured_(topic_qos, &core::types::TopicQoS::ownership_qos)))
     {
         qos.ownership().kind =
-                (source_qos.has_ownership())
+                (topic_qos.has_ownership())
                 ? fastdds::dds::OwnershipQosPolicyKind::EXCLUSIVE_OWNERSHIP_QOS
                 : fastdds::dds::OwnershipQosPolicyKind::SHARED_OWNERSHIP_QOS;
     }
 
-    if (override_all || source_qos.history_depth.is_set())
+    if (use_topic_qos(
+                qos.history().kind != xml_empty_qos.history().kind ||
+                qos.history().depth != xml_empty_qos.history().depth,
+                detail::is_user_configured_(topic_qos, &core::types::TopicQoS::history_depth)))
     {
-        if (source_qos.history_depth == 0U)
+        if (topic_qos.history_depth == 0U)
         {
             qos.history().kind = eprosima::fastdds::dds::HistoryQosPolicyKind::KEEP_ALL_HISTORY_QOS;
         }
         else
         {
             qos.history().kind = eprosima::fastdds::dds::HistoryQosPolicyKind::KEEP_LAST_HISTORY_QOS;
-            qos.history().depth = source_qos.history_depth;
+            qos.history().depth = topic_qos.history_depth;
         }
     }
 

@@ -70,11 +70,6 @@ struct DdsTopic : public DistributedTopic
     DDSPIPE_CORE_DllAPI
     virtual utils::Heritable<ITopic> copy() const noexcept override;
 
-    DDSPIPE_CORE_DllAPI
-    virtual void set_user_configured_qos(
-            const TopicQoS& qos,
-            const utils::FuzzyLevelValues& fuzzy_level) noexcept override;
-
     /////////////////////////
     // STATIC METHODS
     /////////////////////////
@@ -95,9 +90,6 @@ struct DdsTopic : public DistributedTopic
 
     //! Type Identifiers: first one is complete and second one minimal
     fastdds::dds::xtypes::TypeIdentifierPair type_identifiers;
-
-    //! The Topic QoS explicitly configured by the user
-    types::TopicQoS user_configured_qos{};
 };
 
 } /* namespace types */
