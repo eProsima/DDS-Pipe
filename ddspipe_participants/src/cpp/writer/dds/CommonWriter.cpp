@@ -27,6 +27,7 @@
 #include <ddspipe_participants/writer/dds/CommonWriter.hpp>
 #include <ddspipe_participants/writer/dds/filter/RepeaterDataFilter.hpp>
 #include <ddspipe_participants/writer/dds/filter/SelfDataFilter.hpp>
+#include <ddspipe_participants/xml/XmlHandler.hpp>
 
 namespace eprosima {
 namespace ddspipe {
@@ -225,45 +226,49 @@ fastdds::dds::DataWriterQos CommonWriter::reckon_writer_qos_() const noexcept
         qos = dds_publisher_->get_default_datawriter_qos();
     }
 
-    // If a profile was found, only override it with fields the user explicitly set (YAML).
-    // Otherwise, every field is derived from topic_qos.
-    const auto& source_qos = xml_profile_found ? topic_.user_configured_qos : topic_.topic_qos;
-    const bool override_all = !xml_profile_found;
+    // Every QoS policy is taken from topic_qos (YAML configuration over discovered values),
+    // except those explicitly defined in the XML profile and not configured in YAML,
+    // which are kept as set in the profile.
+    const XmlProfileDefinedQoS xml_qos = xml_profile_found
+            ? XmlHandler::get_datawriter_profile_defined_qos(profile_key)
+            : XmlProfileDefinedQoS();
+    const auto& user_qos = topic_.user_configured_qos;
+    const auto& topic_qos = topic_.topic_qos;
 
-    if (override_all || source_qos.durability_qos.is_set())
+    if (!xml_qos.durability || user_qos.durability_qos.is_set())
     {
         qos.durability().kind =
-                (source_qos.is_transient_local())
+                (topic_qos.is_transient_local())
                 ? fastdds::dds::DurabilityQosPolicyKind::TRANSIENT_LOCAL_DURABILITY_QOS
                 : fastdds::dds::DurabilityQosPolicyKind::VOLATILE_DURABILITY_QOS;
     }
 
-    if (override_all || source_qos.reliability_qos.is_set())
+    if (!xml_qos.reliability || user_qos.reliability_qos.is_set())
     {
         qos.reliability().kind =
-                (source_qos.is_reliable())
+                (topic_qos.is_reliable())
                 ? fastdds::dds::ReliabilityQosPolicyKind::RELIABLE_RELIABILITY_QOS
                 : fastdds::dds::ReliabilityQosPolicyKind::BEST_EFFORT_RELIABILITY_QOS;
     }
 
-    if (override_all || source_qos.ownership_qos.is_set())
+    if (!xml_qos.ownership || user_qos.ownership_qos.is_set())
     {
         qos.ownership().kind =
-                (source_qos.has_ownership())
+                (topic_qos.has_ownership())
                 ? fastdds::dds::OwnershipQosPolicyKind::EXCLUSIVE_OWNERSHIP_QOS
                 : fastdds::dds::OwnershipQosPolicyKind::SHARED_OWNERSHIP_QOS;
     }
 
-    if (override_all || source_qos.history_depth.is_set())
+    if (!xml_qos.history || user_qos.history_depth.is_set())
     {
-        if (source_qos.history_depth == 0U)
+        if (topic_qos.history_depth == 0U)
         {
             qos.history().kind = eprosima::fastdds::dds::HistoryQosPolicyKind::KEEP_ALL_HISTORY_QOS;
         }
         else
         {
             qos.history().kind = eprosima::fastdds::dds::HistoryQosPolicyKind::KEEP_LAST_HISTORY_QOS;
-            qos.history().depth = source_qos.history_depth;
+            qos.history().depth = topic_qos.history_depth;
         }
     }
 

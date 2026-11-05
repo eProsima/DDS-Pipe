@@ -29,11 +29,17 @@ set(MODULE_FIND_PACKAGES
     fastdds
     cpp_utils
     ddspipe_core
+    tinyxml2
 )
 
 set(fastdds_MINIMUM_VERSION "3.0.0")
 
+# tinyxml2 is only used internally (to know which QoS an XML profile defines), so it is not exported
 set(MODULE_DEPENDENCIES
     $<$<BOOL:${WIN32}>:iphlpapi$<SEMICOLON>Shlwapi>
-    ${MODULE_FIND_PACKAGES}
+    fastcdr
+    fastdds
+    cpp_utils
+    ddspipe_core
+    $<BUILD_INTERFACE:tinyxml2::tinyxml2>
 )

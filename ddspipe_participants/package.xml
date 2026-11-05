@@ -20,6 +20,7 @@
   <depend>cpp_utils</depend>
   <depend>cmake_utils</depend>
   <depend>ddspipe_core</depend>
+  <depend>tinyxml2</depend>
 
   <doc_depend>doxygen</doc_depend>
 

@@ -14,6 +14,8 @@
 
 #pragma once
 
+#include <string>
+
 #include <cpp_utils/ReturnCode.hpp>
 
 #include <ddspipe_participants/xml/XmlHandlerConfiguration.hpp>
@@ -22,6 +24,17 @@
 namespace eprosima {
 namespace ddspipe {
 namespace participants {
+
+/**
+ * QoS policies explicitly defined (i.e. with their tag present) in a DataWriter / DataReader XML profile
+ */
+struct XmlProfileDefinedQoS
+{
+    bool durability {false};
+    bool reliability {false};
+    bool ownership {false};
+    bool history {false};
+};
 
 /**
  * This class is used for loading XML profiles and in order to configure XML Participants
@@ -33,6 +46,30 @@ public:
     DDSPIPE_PARTICIPANTS_DllAPI
     static utils::ReturnCode load_xml(
             const XmlHandlerConfiguration& configuration);
+
+    /**
+     * @brief QoS policies explicitly defined in the DataWriter XML profile \c profile_name .
+     *
+     * Fast DDS fills every policy not present in a profile with its default value, so this is the only way to
+     * know which policies were actually set in the XML.
+     *
+     * @note If the profile has not been loaded through \c load_xml , every policy is considered as defined.
+     */
+    DDSPIPE_PARTICIPANTS_DllAPI
+    static XmlProfileDefinedQoS get_datawriter_profile_defined_qos(
+            const std::string& profile_name);
+
+     /**
+     * @brief QoS policies explicitly defined in the DataReader XML profile \c profile_name .
+     *
+     * Fast DDS fills every policy not present in a profile with its default value, so this is the only way to
+     * know which policies were actually set in the XML.
+     *
+     * @note If the profile has not been loaded through \c load_xml , every policy is considered as defined.
+     */
+    DDSPIPE_PARTICIPANTS_DllAPI
+    static XmlProfileDefinedQoS get_datareader_profile_defined_qos(
+            const std::string& profile_name);
 
 };
 
