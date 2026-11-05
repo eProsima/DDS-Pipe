@@ -60,23 +60,6 @@ project(
 # - Configure log depending on LOG_INFO flag and CMake type
 configure_project_cpp()
 
-# Find tinyxml2 (used internally to know which QoS an XML profile defines).
-# Some distributions (e.g. Ubuntu 22.04) do not install the tinyxml2 CMake config files, so fall back to
-# looking for the header and library directly.
-find_package(tinyxml2 CONFIG QUIET)
-if(NOT TARGET tinyxml2::tinyxml2)
-    find_path(TINYXML2_INCLUDE_DIR NAMES tinyxml2.h)
-    find_library(TINYXML2_LIBRARY NAMES tinyxml2)
-    if(NOT TINYXML2_INCLUDE_DIR OR NOT TINYXML2_LIBRARY)
-        message(FATAL_ERROR "tinyxml2 not found")
-    endif()
-    add_library(tinyxml2::tinyxml2 UNKNOWN IMPORTED)
-    set_target_properties(tinyxml2::tinyxml2 PROPERTIES
-        IMPORTED_LOCATION "${TINYXML2_LIBRARY}"
-        INTERFACE_INCLUDE_DIRECTORIES "${TINYXML2_INCLUDE_DIR}")
-endif()
-message(STATUS "Package tinyxml2 found")
-
 # Compile C++ library
 compile_library(
     "${PROJECT_SOURCE_DIR}/src/cpp" # Source directory

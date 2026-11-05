@@ -28,7 +28,6 @@
 #include <ddspipe_participants/writer/dds/CommonWriter.hpp>
 #include <ddspipe_participants/writer/dds/filter/RepeaterDataFilter.hpp>
 #include <ddspipe_participants/writer/dds/filter/SelfDataFilter.hpp>
-#include <ddspipe_participants/xml/XmlHandler.hpp>
 
 namespace eprosima {
 namespace ddspipe {
@@ -227,15 +226,25 @@ fastdds::dds::DataWriterQos CommonWriter::reckon_writer_qos_() const noexcept
         qos = dds_publisher_->get_default_datawriter_qos();
     }
 
-    // Every QoS policy is taken from topic_qos (YAML configuration over discovered values),
-    // except those explicitly defined in the XML profile and not configured in YAML,
-    // which are kept as set in the profile.
-    const XmlProfileDefinedQoS xml_qos = xml_profile_found
-            ? XmlHandler::get_datawriter_profile_defined_qos(profile_key)
-            : XmlProfileDefinedQoS();
-    const auto& topic_qos = topic_.topic_qos;
+    // Priority of each QoS policy: YAML > XML profile > discovered (topic_qos).
+    // A policy is considered defined in the XML profile if it differs from the one of an empty profile.
+    // NOTE: a policy explicitly set in the XML to its default value is taken as not defined.
+    fastdds::dds::DataWriterQos xml_empty_qos = qos;
+    if (xml_profile_found)
+    {
+        dds_publisher_->get_datawriter_qos_from_xml(
+            detail::empty_xml_profile("data_writer"), xml_empty_qos, detail::EMPTY_XML_PROFILE_NAME);
+    }
 
-    if (!xml_qos.durability || detail::is_user_configured_(topic_qos, &core::types::TopicQoS::durability_qos))
+    const auto& topic_qos = topic_.topic_qos;
+    auto use_topic_qos = [&](bool defined_in_xml, bool configured_in_yaml)
+            {
+                return !xml_profile_found || !defined_in_xml || configured_in_yaml;
+            };
+
+    if (use_topic_qos(
+                qos.durability().kind != xml_empty_qos.durability().kind,
+                detail::is_user_configured_(topic_qos, &core::types::TopicQoS::durability_qos)))
     {
         qos.durability().kind =
                 (topic_qos.is_transient_local())
@@ -243,7 +252,9 @@ fastdds::dds::DataWriterQos CommonWriter::reckon_writer_qos_() const noexcept
                 : fastdds::dds::DurabilityQosPolicyKind::VOLATILE_DURABILITY_QOS;
     }
 
-    if (!xml_qos.reliability || detail::is_user_configured_(topic_qos, &core::types::TopicQoS::reliability_qos))
+    if (use_topic_qos(
+                qos.reliability().kind != xml_empty_qos.reliability().kind,
+                detail::is_user_configured_(topic_qos, &core::types::TopicQoS::reliability_qos)))
     {
         qos.reliability().kind =
                 (topic_qos.is_reliable())
@@ -251,7 +262,9 @@ fastdds::dds::DataWriterQos CommonWriter::reckon_writer_qos_() const noexcept
                 : fastdds::dds::ReliabilityQosPolicyKind::BEST_EFFORT_RELIABILITY_QOS;
     }
 
-    if (!xml_qos.ownership || detail::is_user_configured_(topic_qos, &core::types::TopicQoS::ownership_qos))
+    if (use_topic_qos(
+                qos.ownership().kind != xml_empty_qos.ownership().kind,
+                detail::is_user_configured_(topic_qos, &core::types::TopicQoS::ownership_qos)))
     {
         qos.ownership().kind =
                 (topic_qos.has_ownership())
@@ -259,7 +272,10 @@ fastdds::dds::DataWriterQos CommonWriter::reckon_writer_qos_() const noexcept
                 : fastdds::dds::OwnershipQosPolicyKind::SHARED_OWNERSHIP_QOS;
     }
 
-    if (!xml_qos.history || detail::is_user_configured_(topic_qos, &core::types::TopicQoS::history_depth))
+    if (use_topic_qos(
+                qos.history().kind != xml_empty_qos.history().kind ||
+                qos.history().depth != xml_empty_qos.history().depth,
+                detail::is_user_configured_(topic_qos, &core::types::TopicQoS::history_depth)))
     {
         if (topic_qos.history_depth == 0U)
         {
