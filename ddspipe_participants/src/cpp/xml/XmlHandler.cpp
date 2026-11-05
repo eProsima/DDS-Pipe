@@ -194,7 +194,7 @@ XmlProfileDefinedQoS get_profile_defined_qos_(
 
     if (it == profiles.end())
     {
-        // Unknown profile (not loaded through XmlHandler): 
+        // Unknown profile (not loaded through XmlHandler):
         // consider every policy as defined in the XML
         return XmlProfileDefinedQoS{true, true, true, true};
     }

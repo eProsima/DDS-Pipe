@@ -59,7 +59,7 @@ public:
     static XmlProfileDefinedQoS get_datawriter_profile_defined_qos(
             const std::string& profile_name);
 
-     /**
+    /**
      * @brief QoS policies explicitly defined in the DataReader XML profile \c profile_name .
      *
      * Fast DDS fills every policy not present in a profile with its default value, so this is the only way to

@@ -1208,7 +1208,7 @@ TEST(ParticipantsCreationgTest, partition_filter_interface_implementations)
 }
 
 /**
- * Test that QoS policies not defined in the XML profile keep the discovered value (topic_qos) 
+ * Test that QoS policies not defined in the XML profile keep the discovered value (topic_qos)
  * instead of being replaced by the Fast DDS default DataWriter QoS (RELIABLE, TRANSIENT_LOCAL).
  */
 TEST(ParticipantsCreationgTest, writer_xml_undefined_qos_kept_from_discovered_topic_qos)
@@ -1275,7 +1275,7 @@ TEST(ParticipantsCreationgTest, writer_xml_undefined_qos_kept_from_discovered_to
 }
 
 /**
- * Test that QoS policies not defined in the XML profile keep the discovered value (topic_qos) 
+ * Test that QoS policies not defined in the XML profile keep the discovered value (topic_qos)
  * instead of being replaced by the Fast DDS default DataReader QoS (BEST_EFFORT, VOLATILE).
  */
 TEST(ParticipantsCreationgTest, reader_xml_undefined_qos_kept_from_discovered_topic_qos)
@@ -1342,7 +1342,7 @@ TEST(ParticipantsCreationgTest, reader_xml_undefined_qos_kept_from_discovered_to
 }
 
 /**
- * Test that a QoS policy explicitly defined in the XML profile is kept even if its value matches 
+ * Test that a QoS policy explicitly defined in the XML profile is kept even if its value matches
  * the Fast DDS default, while the policies not defined in the XML keep the discovered value.
  */
 TEST(ParticipantsCreationgTest, writer_xml_explicit_default_qos_not_overridden_by_discovered_topic_qos)
