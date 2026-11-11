@@ -1,0 +1,15 @@
+struct First
+{
+    long value;
+};
+
+struct Second
+{
+    string text;
+};
+
+enum Color
+{
+    RED,
+    GREEN
+};

@@ -60,7 +60,7 @@ utils::ReturnCode load_idl_types(
                     return true;
                 }
 
-                // A type name keeps its first definition, as Fast DDS does within a directory
+                // A type name keeps its first definition, so the order of the IDL files decides
                 const auto loaded = std::find_if(types.begin(), types.end(),
                 [&](const fastdds::dds::DynamicType::_ref_type& type)
                 {

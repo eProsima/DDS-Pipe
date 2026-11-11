@@ -103,9 +103,6 @@ constexpr const char* EASY_MODE_TAG("ros2-easy-mode"); //! IP of the remote Disc
 
 // Simple RTPS related tags
 constexpr const char* DOMAIN_ID_TAG("domain"); //! Domain Id of the participant
-constexpr const char* IDL_TYPES_PATHS_TAG("idl-types-paths"); //! IDL files or directories to load types from
-constexpr const char* IDL_INCLUDE_PATHS_TAG("idl-include-paths"); //! Directories to search the IDL includes in
-constexpr const char* IDL_TYPES_PRIORITY_TAG("idl-types-priority"); //! Prefer the IDL types over the discovered ones
 
 // Discovery Server related tags
 constexpr const char* DISCOVERY_SERVER_GUID_PREFIX_TAG("discovery-server-guid"); //! TODO: add comment
@@ -188,6 +185,11 @@ constexpr const char* XML_RAW_TAG("raw"); //! Xml RAW as string
 constexpr const char* XML_FILES_TAG("files"); //! XML files
 constexpr const char* XML_PARTICIPANT_PROFILE_TAG("profile"); //! Xml profile to participant
 constexpr const char* ENDPOINT_PROFILE_NAME_TAG("endpoint-profile-name"); //! XML profile name to use for endpoint QoS lookup
+
+// IDL types tags
+constexpr const char* IDL_TYPES_PATHS_TAG("idl-types-paths"); //! IDL files to load types from
+constexpr const char* IDL_INCLUDE_PATHS_TAG("idl-include-paths"); //! Directories to search the IDL includes in
+constexpr const char* IDL_TYPES_PRIORITY_TAG("idl-types-priority"); //! Prefer the IDL types over the discovered ones
 
 // Old versions tags
 constexpr const char* PARTICIPANT_KIND_TAG_V1("type"); //! Participant Kind

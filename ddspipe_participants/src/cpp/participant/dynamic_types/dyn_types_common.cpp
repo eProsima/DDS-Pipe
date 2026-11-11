@@ -75,7 +75,7 @@ void notify_type_discovered(
     const auto idl_type = idl_types.find(type_name);
 
     if (idl_type != idl_types.end() &&
-            (idl_types_priority || fastdds::dds::xtypes::TK_NONE == type_identifier._d()))
+            (idl_types_priority || fastdds::dds::xtypes::EK_COMPLETE != type_identifier._d()))
     {
         type_identifier = idl_type->second;
     }

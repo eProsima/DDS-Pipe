@@ -14,6 +14,7 @@
 
 #pragma once
 
+#include <set>
 #include <vector>
 
 #include <ddspipe_core/types/dds/CustomTransport.hpp>
@@ -59,7 +60,7 @@ public:
     std::set<std::string> allowed_partition_list {};
     std::map<std::string, std::string> content_topic_filter_dict {};
 
-    // IDL files or directories whose types resolve the endpoints that do not share them
+    // IDL files whose types resolve the endpoints that do not share them
     std::set<std::string> idl_types_paths {};
     // Directories where the includes of those IDL files are searched for, in order
     std::vector<std::string> idl_include_paths {};
