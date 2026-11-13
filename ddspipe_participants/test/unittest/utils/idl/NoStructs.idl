@@ -1,0 +1,5 @@
+enum Shape
+{
+    SQUARE,
+    CIRCLE
+};

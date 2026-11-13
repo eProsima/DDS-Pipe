@@ -186,6 +186,11 @@ constexpr const char* XML_FILES_TAG("files"); //! XML files
 constexpr const char* XML_PARTICIPANT_PROFILE_TAG("profile"); //! Xml profile to participant
 constexpr const char* ENDPOINT_PROFILE_NAME_TAG("endpoint-profile-name"); //! XML profile name to use for endpoint QoS lookup
 
+// IDL types tags
+constexpr const char* IDL_TYPES_PATHS_TAG("idl-types-paths"); //! IDL files to load types from
+constexpr const char* IDL_INCLUDE_PATHS_TAG("idl-include-paths"); //! Directories to search the IDL includes in
+constexpr const char* IDL_TYPES_PRIORITY_TAG("idl-types-priority"); //! Prefer the IDL types over the discovered ones
+
 // Old versions tags
 constexpr const char* PARTICIPANT_KIND_TAG_V1("type"); //! Participant Kind
 
