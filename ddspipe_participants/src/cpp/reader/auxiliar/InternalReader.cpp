@@ -38,9 +38,14 @@ InternalReader::InternalReader(
 
 void InternalReader::enable_nts_() noexcept
 {
-    // Process data added to queue while being disabled
-    std::lock_guard<DataReceivedType> lock(data_to_send_);
-    if (!data_to_send_.empty())
+    // BaseReader::enable() holds mutex_, which also protects callback removal.
+    // Release the queue lock before notifying: a callback may take data inline.
+    bool pending;
+    {
+        std::lock_guard<DataReceivedType> lock(data_to_send_);
+        pending = !data_to_send_.empty();
+    }
+    if (pending)
     {
         on_data_available_();
     }
@@ -49,10 +54,14 @@ void InternalReader::enable_nts_() noexcept
 void InternalReader::simulate_data_reception(
         std::unique_ptr<IRoutingData>&& data) noexcept
 {
-    std::lock_guard<DataReceivedType> lock(data_to_send_);
-
-    // Even if disabled, the data will be stored
-    data_to_send_.push(std::move(data));
+    // Match take()/enable(): BaseReader mutex before the queue lock. Holding
+    // it through dispatch makes disable()/unset wait for an active invocation.
+    std::lock_guard<std::recursive_mutex> reader_lock(mutex_);
+    {
+        std::lock_guard<DataReceivedType> queue_lock(data_to_send_);
+        // This general-purpose reader retains data while disabled.
+        data_to_send_.push(std::move(data));
+    }
 
     if (enabled_)
     {
