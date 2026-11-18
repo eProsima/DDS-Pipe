@@ -104,7 +104,8 @@ protected:
             fastdds::dds::DomainParticipant* participant,
             fastdds::dds::Topic* topic_entity,
             const bool repeater,
-            const bool xml_lookup_enabled = false);
+            const bool xml_lookup_enabled = false,
+            const bool xml_profile_standalone = false);
 
     /////////////////////////
     // IWRITER METHODS
@@ -176,6 +177,7 @@ protected:
     fastdds::dds::Topic* dds_topic_;
     bool repeater_;
     bool xml_lookup_enabled_;
+    bool xml_profile_standalone_;
 
     /////////////////////////
     // INTERNAL VARIABLES

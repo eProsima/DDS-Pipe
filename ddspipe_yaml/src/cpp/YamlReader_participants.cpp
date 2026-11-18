@@ -347,6 +347,27 @@ void YamlReader::fill(
         object.is_repeater = YamlReader::get<bool>(yml, IS_REPEATER_TAG, version);
     }
 
+    // Optional endpoint QoS mode
+    if (YamlReader::is_tag_present(yml, ENDPOINT_QOS_MODE_TAG))
+    {
+        const std::string mode = YamlReader::get<std::string>(yml, ENDPOINT_QOS_MODE_TAG, version);
+
+        if (mode == ENDPOINT_QOS_MODE_XML_OVERRIDABLE_TAG)
+        {
+            object.endpoint_qos_mode = participants::EndpointQoSMode::XML_OVERRIDABLE;
+        }
+        else if (mode == ENDPOINT_QOS_MODE_XML_STANDALONE_TAG)
+        {
+            object.endpoint_qos_mode = participants::EndpointQoSMode::XML_STANDALONE;
+        }
+        else
+        {
+            throw eprosima::utils::ConfigurationException(
+                      utils::Formatter() << "Unknown " << ENDPOINT_QOS_MODE_TAG << " value: " << mode
+                                         << ". Valid values are: " << ENDPOINT_QOS_MODE_XML_OVERRIDABLE_TAG
+                                         << ", " << ENDPOINT_QOS_MODE_XML_STANDALONE_TAG << ".");
+        }
+    }
 }
 
 template<>

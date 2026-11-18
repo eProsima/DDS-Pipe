@@ -40,7 +40,8 @@ MultiWriter::MultiWriter(
         fastdds::dds::DomainParticipant* participant,
         fastdds::dds::Topic* topic_entity,
         const bool repeater /* = false */,
-        const bool xml_lookup_enabled /* = false */)
+        const bool xml_lookup_enabled /* = false */,
+        const bool xml_profile_standalone /* = false */)
     : BaseWriter(participant_id)
     , dds_participant_(participant)
     , dds_topic_(topic_entity)
@@ -48,6 +49,7 @@ MultiWriter::MultiWriter(
     , topic_(topic)
     , repeater_(repeater)
     , xml_lookup_enabled_(xml_lookup_enabled)
+    , xml_profile_standalone_(xml_profile_standalone)
 {
     // Do nothing
 }
@@ -143,7 +145,8 @@ QoSSpecificWriter* MultiWriter::create_writer_nts_(
         this->dds_participant_,
         this->dds_topic_,
         repeater_,
-        xml_lookup_enabled_);
+        xml_lookup_enabled_,
+        xml_profile_standalone_);
     // No filters
     writer->init(std::set<std::string>());
 
