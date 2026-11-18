@@ -30,6 +30,7 @@ set(TEST_LIST
         read_simple_participant_optional_fields
         read_discovery_server_participant_across_versions
         read_initial_peers_and_xml_participant_configuration
+        get_xml_participant_endpoint_qos_mode
         xml_handler_configuration_invalid_file_message
     )
 

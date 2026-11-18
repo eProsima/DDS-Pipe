@@ -24,6 +24,17 @@ namespace ddspipe {
 namespace participants {
 
 /**
+ * How the QoS of a matching XML endpoint profile are used.
+ */
+enum class EndpointQoSMode
+{
+    //! The XML profile is used as base, and the Topic QoS (discovered and YAML) override it.
+    XML_OVERRIDABLE,
+    //! The XML profile is used as is.
+    XML_STANDALONE,
+};
+
+/**
  * This data struct represents a configuration for a Participant loaded from an XML profile.
  */
 struct XmlParticipantConfiguration : public SimpleParticipantConfiguration
@@ -49,6 +60,8 @@ public:
     /////////////////////////
 
     utils::Fuzzy<std::string> participant_profile {};
+
+    EndpointQoSMode endpoint_qos_mode {EndpointQoSMode::XML_OVERRIDABLE};
 };
 
 } /* namespace participants */

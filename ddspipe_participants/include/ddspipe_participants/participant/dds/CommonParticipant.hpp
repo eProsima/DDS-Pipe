@@ -233,6 +233,13 @@ protected:
         return false;
     }
 
+    //! Whether a matching XML endpoint profile is used as is, without overriding any of its QoS.
+    DDSPIPE_PARTICIPANTS_DllAPI
+    virtual bool xml_profile_standalone_() const noexcept
+    {
+        return false;
+    }
+
     DDSPIPE_PARTICIPANTS_DllAPI
     virtual
     fastdds::dds::DomainParticipantQos

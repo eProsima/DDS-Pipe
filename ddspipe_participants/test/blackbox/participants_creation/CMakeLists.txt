@@ -30,8 +30,11 @@ set(TEST_LIST
         reader_topic_profile_lookup
         writer_xml_override
         reader_xml_override
-        writer_xml_qos_not_overridden_when_yaml_unset
-        writer_xml_qos_not_overridden_by_discovered_topic_qos
+        writer_xml_qos_overridden_by_discovered_topic_qos
+        reader_xml_qos_overridden_by_discovered_topic_qos
+        writer_xml_standalone_qos_not_overridden
+        reader_xml_standalone_qos_not_overridden
+        xml_participant_endpoint_qos_mode
         writer_endpoint_profile_name_override
         writer_topic_profile_lookup_not_enabled_by_default
         reader_topic_profile_lookup_not_enabled_by_default

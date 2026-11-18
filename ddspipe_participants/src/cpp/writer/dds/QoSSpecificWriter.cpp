@@ -30,9 +30,11 @@ QoSSpecificWriter::QoSSpecificWriter(
         fastdds::dds::DomainParticipant* participant,
         fastdds::dds::Topic* topic_entity,
         const bool repeater /* = false */,
-        const bool xml_lookup_enabled /* = false */)
+        const bool xml_lookup_enabled /* = false */,
+        const bool xml_profile_standalone /* = false */)
     : CommonWriter(
-        participant_id, topic, payload_pool, participant, topic_entity, repeater, xml_lookup_enabled)
+        participant_id, topic, payload_pool, participant, topic_entity, repeater, xml_lookup_enabled,
+        xml_profile_standalone)
     , specific_qos_(specific_qos)
 {
 }

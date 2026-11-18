@@ -121,7 +121,8 @@ protected:
             const std::shared_ptr<core::PayloadPool>& payload_pool,
             fastdds::dds::DomainParticipant* participant,
             fastdds::dds::Topic* topic_entity,
-            const bool xml_lookup_enabled = false);
+            const bool xml_lookup_enabled = false,
+            const bool xml_profile_standalone = false);
 
     // Specific enable/disable do not need to be implemented
 
@@ -179,6 +180,7 @@ protected:
     fastdds::dds::DomainParticipant* dds_participant_;
     fastdds::dds::Topic* dds_topic_;
     bool xml_lookup_enabled_;
+    bool xml_profile_standalone_;
 
     /////////////////////////
     // INTERNAL VARIABLES

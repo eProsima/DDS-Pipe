@@ -92,6 +92,11 @@ bool XmlParticipant::xml_lookup_enabled_() const noexcept
     return true;
 }
 
+bool XmlParticipant::xml_profile_standalone_() const noexcept
+{
+    return xml_specific_configuration_.endpoint_qos_mode == EndpointQoSMode::XML_STANDALONE;
+}
+
 fastdds::dds::DomainParticipantQos XmlParticipant::reckon_participant_qos_() const
 {
     fastdds::dds::DomainParticipantQos qos = CommonParticipant::reckon_participant_qos_();
