@@ -81,3 +81,37 @@ add_unittest_executable(
         "${TEST_LIST}"
         "${TEST_EXTRA_LIBRARIES}"
     )
+
+#############
+# RpcTopic #
+#############
+
+set(TEST_NAME RpcTopicTest)
+
+set(TEST_SOURCES
+        RpcTopicTest.cpp
+        ${PROJECT_SOURCE_DIR}/src/cpp/types/topic/rpc/RpcTopic.cpp
+        ${PROJECT_SOURCE_DIR}/src/cpp/types/topic/dds/DdsTopic.cpp
+        ${PROJECT_SOURCE_DIR}/src/cpp/types/topic/Topic.cpp
+        ${PROJECT_SOURCE_DIR}/src/cpp/types/dds/TopicQoS.cpp
+    )
+
+set(TEST_LIST
+        request_discovered_reply_registered
+        request_discovered_reply_not_registered
+        reply_discovered_request_registered
+        reply_discovered_request_not_registered
+    )
+
+set(TEST_EXTRA_LIBRARIES
+        fastcdr
+        fastdds
+        cpp_utils
+    )
+
+add_unittest_executable(
+        "${TEST_NAME}"
+        "${TEST_SOURCES}"
+        "${TEST_LIST}"
+        "${TEST_EXTRA_LIBRARIES}"
+    )
