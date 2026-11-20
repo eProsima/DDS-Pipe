@@ -213,13 +213,11 @@ CommonReader::CommonReader(
         const std::shared_ptr<core::PayloadPool>& payload_pool,
         fastdds::dds::DomainParticipant* participant,
         fastdds::dds::Topic* topic_entity,
-        const bool xml_lookup_enabled /* = false */,
-        const bool xml_profile_standalone /* = false */)
+        const EndpointQoSMode endpoint_qos_mode /* = EndpointQoSMode::XML_DISABLED */)
     : BaseReader(participant_id, topic.topic_qos.max_rx_rate, topic.topic_qos.downsampling)
     , dds_participant_(participant)
     , dds_topic_(topic_entity)
-    , xml_lookup_enabled_(xml_lookup_enabled)
-    , xml_profile_standalone_(xml_profile_standalone)
+    , endpoint_qos_mode_(endpoint_qos_mode)
     , payload_pool_(payload_pool)
     , topic_(topic)
     , dds_subscriber_(nullptr)
@@ -295,7 +293,7 @@ fastdds::dds::DataReaderQos CommonReader::reckon_reader_qos_() const
             ? topic_.topic_qos.endpoint_profile_name.get_value()
             : topic_.topic_name();
 
-    const bool xml_profile_found = xml_lookup_enabled_ &&
+    const bool xml_profile_found = (endpoint_qos_mode_ != EndpointQoSMode::XML_DISABLED) &&
             (fastdds::dds::RETCODE_OK == dds_subscriber_->get_datareader_qos_from_profile(profile_key, qos));
 
     if (!xml_profile_found)
@@ -305,7 +303,7 @@ fastdds::dds::DataReaderQos CommonReader::reckon_reader_qos_() const
 
     // Unless the XML profile is explicitly used as is, the following policies are taken from the Topic QoS
     // (YAML > discovered > DDS Pipe defaults), overriding the ones of the XML profile (if any).
-    if (!(xml_profile_found && xml_profile_standalone_))
+    if (!(xml_profile_found && endpoint_qos_mode_ == EndpointQoSMode::XML_STANDALONE))
     {
         const auto& topic_qos = topic_.topic_qos;
 

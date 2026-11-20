@@ -33,11 +33,9 @@ SpecificQoSReader::SpecificQoSReader(
         fastdds::dds::DomainParticipant* participant,
         fastdds::dds::Topic* topic_entity,
         const std::shared_ptr<core::DiscoveryDatabase>& discovery_database,
-        const bool xml_lookup_enabled /* = false */,
-        const bool xml_profile_standalone /* = false */)
+        const EndpointQoSMode endpoint_qos_mode /* = EndpointQoSMode::XML_DISABLED */)
     : CommonReader(
-        participant_id, topic, payload_pool, participant, topic_entity, xml_lookup_enabled,
-        xml_profile_standalone)
+        participant_id, topic, payload_pool, participant, topic_entity, endpoint_qos_mode)
     , discovery_database_(discovery_database)
 {
 }

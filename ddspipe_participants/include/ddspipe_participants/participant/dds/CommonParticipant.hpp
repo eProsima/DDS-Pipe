@@ -38,6 +38,7 @@
 
 #include <ddspipe_participants/configuration/SimpleParticipantConfiguration.hpp>
 #include <ddspipe_participants/library/library_dll.h>
+#include <ddspipe_participants/types/dds/EndpointQoSMode.hpp>
 
 namespace eprosima {
 namespace ddspipe {
@@ -226,18 +227,11 @@ protected:
     // INTERNAL VIRTUAL METHODS
     /////////////////////////
 
-    //! Whether XML endpoint profile lookup is enabled. Disabled by default for plain (non-XML) participants.
+    //! How the XML endpoint profiles are applied. Lookup disabled by default for plain (non-XML) participants.
     DDSPIPE_PARTICIPANTS_DllAPI
-    virtual bool xml_lookup_enabled_() const noexcept
+    virtual EndpointQoSMode endpoint_qos_mode_() const noexcept
     {
-        return false;
-    }
-
-    //! Whether a matching XML endpoint profile is used as is, without overriding any of its QoS.
-    DDSPIPE_PARTICIPANTS_DllAPI
-    virtual bool xml_profile_standalone_() const noexcept
-    {
-        return false;
+        return EndpointQoSMode::XML_DISABLED;
     }
 
     DDSPIPE_PARTICIPANTS_DllAPI

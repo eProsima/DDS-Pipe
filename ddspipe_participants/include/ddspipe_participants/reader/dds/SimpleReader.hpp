@@ -49,8 +49,7 @@ public:
             const std::shared_ptr<core::PayloadPool>& payload_pool,
             fastdds::dds::DomainParticipant* participant,
             fastdds::dds::Topic* topic_entity,
-            const bool xml_lookup_enabled = false,
-            const bool xml_profile_standalone = false);
+            const EndpointQoSMode endpoint_qos_mode = EndpointQoSMode::XML_DISABLED);
 };
 
 } /* namespace dds */

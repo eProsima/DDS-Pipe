@@ -55,8 +55,7 @@ public:
             fastdds::dds::DomainParticipant* participant,
             fastdds::dds::Topic* topic_entity,
             const std::shared_ptr<core::DiscoveryDatabase>& discovery_database,
-            const bool xml_lookup_enabled = false,
-            const bool xml_profile_standalone = false);
+            const EndpointQoSMode endpoint_qos_mode = EndpointQoSMode::XML_DISABLED);
 
 protected:
 

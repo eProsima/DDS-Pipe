@@ -18,21 +18,11 @@
 
 #include <ddspipe_participants/configuration/SimpleParticipantConfiguration.hpp>
 #include <ddspipe_participants/library/library_dll.h>
+#include <ddspipe_participants/types/dds/EndpointQoSMode.hpp>
 
 namespace eprosima {
 namespace ddspipe {
 namespace participants {
-
-/**
- * How the QoS of a matching XML endpoint profile are used.
- */
-enum class EndpointQoSMode
-{
-    //! The XML profile is used as base, and the Topic QoS (discovered and YAML) override it.
-    XML_OVERRIDABLE,
-    //! The XML profile is used as is.
-    XML_STANDALONE,
-};
 
 /**
  * This data struct represents a configuration for a Participant loaded from an XML profile.
@@ -61,6 +51,7 @@ public:
 
     utils::Fuzzy<std::string> participant_profile {};
 
+    //! How the XML endpoint profiles are applied. XML_DISABLED disables the profile lookup.
     EndpointQoSMode endpoint_qos_mode {EndpointQoSMode::XML_OVERRIDABLE};
 };
 

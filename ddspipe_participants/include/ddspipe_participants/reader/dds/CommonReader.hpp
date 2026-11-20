@@ -34,6 +34,7 @@
 
 #include <ddspipe_participants/library/library_dll.h>
 #include <ddspipe_participants/reader/auxiliar/BaseReader.hpp>
+#include <ddspipe_participants/types/dds/EndpointQoSMode.hpp>
 
 namespace eprosima {
 namespace ddspipe {
@@ -121,8 +122,7 @@ protected:
             const std::shared_ptr<core::PayloadPool>& payload_pool,
             fastdds::dds::DomainParticipant* participant,
             fastdds::dds::Topic* topic_entity,
-            const bool xml_lookup_enabled = false,
-            const bool xml_profile_standalone = false);
+            const EndpointQoSMode endpoint_qos_mode = EndpointQoSMode::XML_DISABLED);
 
     // Specific enable/disable do not need to be implemented
 
@@ -179,8 +179,7 @@ protected:
 
     fastdds::dds::DomainParticipant* dds_participant_;
     fastdds::dds::Topic* dds_topic_;
-    bool xml_lookup_enabled_;
-    bool xml_profile_standalone_;
+    EndpointQoSMode endpoint_qos_mode_;
 
     /////////////////////////
     // INTERNAL VARIABLES
