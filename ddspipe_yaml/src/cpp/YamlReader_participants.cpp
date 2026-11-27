@@ -327,10 +327,16 @@ participants::EndpointQoSMode YamlReader::get(
         return participants::EndpointQoSMode::XML_STANDALONE;
     }
 
+    if (mode == ENDPOINT_QOS_MODE_DISABLED_TAG)
+    {
+        return participants::EndpointQoSMode::XML_DISABLED;
+    }
+
     throw eprosima::utils::ConfigurationException(
               utils::Formatter() << "Unknown " << ENDPOINT_QOS_MODE_TAG << " value: " << mode
                                  << ". Valid values are: " << ENDPOINT_QOS_MODE_XML_OVERRIDABLE_TAG
-                                 << ", " << ENDPOINT_QOS_MODE_XML_STANDALONE_TAG << ".");
+                                 << ", " << ENDPOINT_QOS_MODE_XML_STANDALONE_TAG
+                                 << ", " << ENDPOINT_QOS_MODE_DISABLED_TAG << ".");
 }
 
 //////////////////////////////////

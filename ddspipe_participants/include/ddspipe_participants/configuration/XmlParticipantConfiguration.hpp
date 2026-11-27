@@ -51,7 +51,7 @@ public:
 
     utils::Fuzzy<std::string> participant_profile {};
 
-    //! How the XML endpoint profiles are applied. XML_DISABLED disables the profile lookup.
+    //! How the XML endpoint profiles are applied. XML_DISABLED (YAML value "disabled") disables the profile lookup.
     EndpointQoSMode endpoint_qos_mode {EndpointQoSMode::XML_OVERRIDABLE};
 };
 
