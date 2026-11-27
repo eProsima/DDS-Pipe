@@ -265,6 +265,12 @@ TEST(YamlReaderParticipantsTest, get_xml_participant_endpoint_qos_mode)
         ASSERT_EQ(participant.endpoint_qos_mode, participants::EndpointQoSMode::XML_STANDALONE);
     }
 
+    {
+        auto participant = YamlReader::get<participants::XmlParticipantConfiguration>(
+            xml_participant_yaml(ENDPOINT_QOS_MODE_DISABLED_TAG), LATEST);
+        ASSERT_EQ(participant.endpoint_qos_mode, participants::EndpointQoSMode::XML_DISABLED);
+    }
+
     ASSERT_THROW(
         YamlReader::get<participants::XmlParticipantConfiguration>(xml_participant_yaml("unknown"), LATEST),
         eprosima::utils::ConfigurationException);
