@@ -134,14 +134,14 @@ CommonWriter::CommonWriter(
         fastdds::dds::DomainParticipant* participant,
         fastdds::dds::Topic* topic_entity,
         const bool repeater,
-        const bool xml_lookup_enabled /* = false */)
+        const EndpointQoSMode endpoint_qos_mode /* = EndpointQoSMode::XML_DISABLED */)
     : BaseWriter(participant_id, topic.topic_qos.max_tx_rate)
     , dds_participant_(participant)
     , dds_topic_(topic_entity)
     , payload_pool_(new core::PayloadPoolMediator(payload_pool))
     , topic_(topic)
     , repeater_(repeater)
-    , xml_lookup_enabled_(xml_lookup_enabled)
+    , endpoint_qos_mode_(endpoint_qos_mode)
     , dds_publisher_(nullptr)
     , writer_(nullptr)
 {
@@ -217,7 +217,7 @@ fastdds::dds::DataWriterQos CommonWriter::reckon_writer_qos_() const noexcept
             ? topic_.topic_qos.endpoint_profile_name.get_value()
             : topic_.topic_name();
 
-    const bool xml_profile_found = xml_lookup_enabled_ &&
+    const bool xml_profile_found = (endpoint_qos_mode_ != EndpointQoSMode::XML_DISABLED) &&
             (fastdds::dds::RETCODE_OK == dds_publisher_->get_datawriter_qos_from_profile(profile_key, qos));
 
     if (!xml_profile_found)
@@ -225,45 +225,35 @@ fastdds::dds::DataWriterQos CommonWriter::reckon_writer_qos_() const noexcept
         qos = dds_publisher_->get_default_datawriter_qos();
     }
 
-    // If a profile was found, only override it with fields the user explicitly set (YAML).
-    // Otherwise, every field is derived from topic_qos.
-    const auto& source_qos = xml_profile_found ? topic_.user_configured_qos : topic_.topic_qos;
-    const bool override_all = !xml_profile_found;
-
-    if (override_all || source_qos.durability_qos.is_set())
+    // Unless the XML profile is explicitly used as is, the following policies are taken from the Topic QoS
+    // (YAML > discovered > DDS Pipe defaults), overriding the ones of the XML profile (if any).
+    if (!(xml_profile_found && endpoint_qos_mode_ == EndpointQoSMode::XML_STANDALONE))
     {
+        const auto& topic_qos = topic_.topic_qos;
+
         qos.durability().kind =
-                (source_qos.is_transient_local())
+                (topic_qos.is_transient_local())
                 ? fastdds::dds::DurabilityQosPolicyKind::TRANSIENT_LOCAL_DURABILITY_QOS
                 : fastdds::dds::DurabilityQosPolicyKind::VOLATILE_DURABILITY_QOS;
-    }
 
-    if (override_all || source_qos.reliability_qos.is_set())
-    {
         qos.reliability().kind =
-                (source_qos.is_reliable())
+                (topic_qos.is_reliable())
                 ? fastdds::dds::ReliabilityQosPolicyKind::RELIABLE_RELIABILITY_QOS
                 : fastdds::dds::ReliabilityQosPolicyKind::BEST_EFFORT_RELIABILITY_QOS;
-    }
 
-    if (override_all || source_qos.ownership_qos.is_set())
-    {
         qos.ownership().kind =
-                (source_qos.has_ownership())
+                (topic_qos.has_ownership())
                 ? fastdds::dds::OwnershipQosPolicyKind::EXCLUSIVE_OWNERSHIP_QOS
                 : fastdds::dds::OwnershipQosPolicyKind::SHARED_OWNERSHIP_QOS;
-    }
 
-    if (override_all || source_qos.history_depth.is_set())
-    {
-        if (source_qos.history_depth == 0U)
+        if (topic_qos.history_depth == 0U)
         {
             qos.history().kind = eprosima::fastdds::dds::HistoryQosPolicyKind::KEEP_ALL_HISTORY_QOS;
         }
         else
         {
             qos.history().kind = eprosima::fastdds::dds::HistoryQosPolicyKind::KEEP_LAST_HISTORY_QOS;
-            qos.history().depth = source_qos.history_depth;
+            qos.history().depth = topic_qos.history_depth;
         }
     }
 

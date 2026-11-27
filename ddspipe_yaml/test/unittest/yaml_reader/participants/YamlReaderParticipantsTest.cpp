@@ -235,7 +235,45 @@ TEST(YamlReaderParticipantsTest, read_initial_peers_and_xml_participant_configur
         ASSERT_TRUE(participant.is_repeater);
         ASSERT_TRUE(participant.participant_profile.is_set());
         ASSERT_EQ(participant.participant_profile.get_reference(), "participant_profile");
+        ASSERT_EQ(participant.endpoint_qos_mode, participants::EndpointQoSMode::XML_OVERRIDABLE);
     }
+}
+
+/**
+ * Test that the endpoint QoS mode of an XML participant is read from the YAML.
+ */
+TEST(YamlReaderParticipantsTest, get_xml_participant_endpoint_qos_mode)
+{
+    auto xml_participant_yaml = [](const std::string& mode)
+            {
+                Yaml yml;
+                participantid_to_yaml(yml, core::types::ParticipantId("xml_participant"));
+                yml[XML_PARTICIPANT_PROFILE_TAG] = "participant_profile";
+                yml[ENDPOINT_QOS_MODE_TAG] = mode;
+                return yml;
+            };
+
+    {
+        auto participant = YamlReader::get<participants::XmlParticipantConfiguration>(
+            xml_participant_yaml(ENDPOINT_QOS_MODE_XML_OVERRIDABLE_TAG), LATEST);
+        ASSERT_EQ(participant.endpoint_qos_mode, participants::EndpointQoSMode::XML_OVERRIDABLE);
+    }
+
+    {
+        auto participant = YamlReader::get<participants::XmlParticipantConfiguration>(
+            xml_participant_yaml(ENDPOINT_QOS_MODE_XML_STANDALONE_TAG), LATEST);
+        ASSERT_EQ(participant.endpoint_qos_mode, participants::EndpointQoSMode::XML_STANDALONE);
+    }
+
+    {
+        auto participant = YamlReader::get<participants::XmlParticipantConfiguration>(
+            xml_participant_yaml(ENDPOINT_QOS_MODE_DISABLED_TAG), LATEST);
+        ASSERT_EQ(participant.endpoint_qos_mode, participants::EndpointQoSMode::XML_DISABLED);
+    }
+
+    ASSERT_THROW(
+        YamlReader::get<participants::XmlParticipantConfiguration>(xml_participant_yaml("unknown"), LATEST),
+        eprosima::utils::ConfigurationException);
 }
 
 /**

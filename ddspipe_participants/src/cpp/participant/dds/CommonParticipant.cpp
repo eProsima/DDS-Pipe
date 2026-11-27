@@ -159,7 +159,7 @@ std::shared_ptr<core::IWriter> CommonParticipant::create_writer(
             dds_participant_,
             fastdds_topic,
             configuration_->is_repeater,
-            xml_lookup_enabled_());
+            endpoint_qos_mode_());
     }
     else
     {
@@ -170,7 +170,7 @@ std::shared_ptr<core::IWriter> CommonParticipant::create_writer(
             dds_participant_,
             fastdds_topic,
             configuration_->is_repeater,
-            xml_lookup_enabled_());
+            endpoint_qos_mode_());
         writer->init(partition_filter_);
 
         return writer;
@@ -227,7 +227,7 @@ std::shared_ptr<core::IReader> CommonParticipant::create_reader(
             dds_participant_,
             fastdds_topic,
             discovery_database_,
-            xml_lookup_enabled_());
+            endpoint_qos_mode_());
         // Add the filters data structures
         // if these filters are empty, the filters are not applied.
         reader->init(partition_filter_, content_topic_filter_expr);
@@ -242,7 +242,7 @@ std::shared_ptr<core::IReader> CommonParticipant::create_reader(
             this->payload_pool_,
             dds_participant_,
             fastdds_topic,
-            xml_lookup_enabled_());
+            endpoint_qos_mode_());
         // Add the filters data structures
         // if these filters are empty, the filters are not applied.
         reader->init(partition_filter_, content_topic_filter_expr);

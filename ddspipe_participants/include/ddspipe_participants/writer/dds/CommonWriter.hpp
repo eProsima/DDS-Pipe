@@ -32,6 +32,7 @@
 #include <ddspipe_participants/library/library_dll.h>
 #include <ddspipe_participants/efficiency/cache_change/CacheChangePool.hpp>
 #include <ddspipe_participants/writer/auxiliar/BaseWriter.hpp>
+#include <ddspipe_participants/types/dds/EndpointQoSMode.hpp>
 
 namespace eprosima {
 namespace ddspipe {
@@ -104,7 +105,7 @@ protected:
             fastdds::dds::DomainParticipant* participant,
             fastdds::dds::Topic* topic_entity,
             const bool repeater,
-            const bool xml_lookup_enabled = false);
+            const EndpointQoSMode endpoint_qos_mode = EndpointQoSMode::XML_DISABLED);
 
     /////////////////////////
     // IWRITER METHODS
@@ -175,7 +176,7 @@ protected:
     fastdds::dds::DomainParticipant* dds_participant_;
     fastdds::dds::Topic* dds_topic_;
     bool repeater_;
-    bool xml_lookup_enabled_;
+    EndpointQoSMode endpoint_qos_mode_;
 
     /////////////////////////
     // INTERNAL VARIABLES

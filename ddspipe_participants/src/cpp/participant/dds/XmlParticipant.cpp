@@ -87,9 +87,9 @@ std::shared_ptr<core::IReader> XmlParticipant::create_reader(
     }
 }
 
-bool XmlParticipant::xml_lookup_enabled_() const noexcept
+EndpointQoSMode XmlParticipant::endpoint_qos_mode_() const noexcept
 {
-    return true;
+    return xml_specific_configuration_.endpoint_qos_mode;
 }
 
 fastdds::dds::DomainParticipantQos XmlParticipant::reckon_participant_qos_() const

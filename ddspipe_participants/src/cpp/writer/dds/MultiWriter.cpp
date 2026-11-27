@@ -40,14 +40,14 @@ MultiWriter::MultiWriter(
         fastdds::dds::DomainParticipant* participant,
         fastdds::dds::Topic* topic_entity,
         const bool repeater /* = false */,
-        const bool xml_lookup_enabled /* = false */)
+        const EndpointQoSMode endpoint_qos_mode /* = EndpointQoSMode::XML_DISABLED */)
     : BaseWriter(participant_id)
     , dds_participant_(participant)
     , dds_topic_(topic_entity)
     , payload_pool_(payload_pool)
     , topic_(topic)
     , repeater_(repeater)
-    , xml_lookup_enabled_(xml_lookup_enabled)
+    , endpoint_qos_mode_(endpoint_qos_mode)
 {
     // Do nothing
 }
@@ -143,7 +143,7 @@ QoSSpecificWriter* MultiWriter::create_writer_nts_(
         this->dds_participant_,
         this->dds_topic_,
         repeater_,
-        xml_lookup_enabled_);
+        endpoint_qos_mode_);
     // No filters
     writer->init(std::set<std::string>());
 

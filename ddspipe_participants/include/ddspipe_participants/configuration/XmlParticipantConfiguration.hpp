@@ -18,6 +18,7 @@
 
 #include <ddspipe_participants/configuration/SimpleParticipantConfiguration.hpp>
 #include <ddspipe_participants/library/library_dll.h>
+#include <ddspipe_participants/types/dds/EndpointQoSMode.hpp>
 
 namespace eprosima {
 namespace ddspipe {
@@ -49,6 +50,9 @@ public:
     /////////////////////////
 
     utils::Fuzzy<std::string> participant_profile {};
+
+    //! How the XML endpoint profiles are applied. XML_DISABLED (YAML value "disabled") disables the profile lookup.
+    EndpointQoSMode endpoint_qos_mode {EndpointQoSMode::XML_OVERRIDABLE};
 };
 
 } /* namespace participants */

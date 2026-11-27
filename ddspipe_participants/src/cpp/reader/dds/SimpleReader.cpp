@@ -30,9 +30,9 @@ SimpleReader::SimpleReader(
         const std::shared_ptr<core::PayloadPool>& payload_pool,
         fastdds::dds::DomainParticipant* participant,
         fastdds::dds::Topic* topic_entity,
-        const bool xml_lookup_enabled /* = false */)
+        const EndpointQoSMode endpoint_qos_mode /* = EndpointQoSMode::XML_DISABLED */)
     : CommonReader(
-        participant_id, topic, payload_pool, participant, topic_entity, xml_lookup_enabled)
+        participant_id, topic, payload_pool, participant, topic_entity, endpoint_qos_mode)
 {
     // Do nothing
 }

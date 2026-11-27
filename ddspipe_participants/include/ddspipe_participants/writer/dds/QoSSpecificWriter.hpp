@@ -55,7 +55,7 @@ public:
             fastdds::dds::DomainParticipant* participant,
             fastdds::dds::Topic* topic_entity,
             const bool repeater = false,
-            const bool xml_lookup_enabled = false);
+            const EndpointQoSMode endpoint_qos_mode = EndpointQoSMode::XML_DISABLED);
 
 protected:
 

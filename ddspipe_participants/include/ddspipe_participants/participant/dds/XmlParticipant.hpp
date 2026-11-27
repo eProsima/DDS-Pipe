@@ -61,7 +61,7 @@ protected:
     /////////////////////////
 
     DDSPIPE_PARTICIPANTS_DllAPI
-    virtual bool xml_lookup_enabled_() const noexcept override;
+    virtual EndpointQoSMode endpoint_qos_mode_() const noexcept override;
 
     DDSPIPE_PARTICIPANTS_DllAPI
     virtual
